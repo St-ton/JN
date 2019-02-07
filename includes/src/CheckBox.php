@@ -568,7 +568,7 @@ class CheckBox
             return false;
         }
         $conf = Shop::getSettings([CONF_EMAILS]);
-        if (isset($conf['emails']['email_master_absender']) && mb_strlen($conf['emails']['email_master_absender']) > 0) {
+        if (!empty($conf['emails']['email_master_absender'])) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             $mail                = new stdClass();
             $mail->oCheckBox     = $oCheckBox;

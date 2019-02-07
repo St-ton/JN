@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\ExtensionData;
+namespace Plugin\Data;
 
 use Tightenco\Collect\Support\Collection;
 use function Functional\first;
@@ -12,7 +12,7 @@ use function Functional\group;
 
 /**
  * Class Localization
- * @package Plugin\ExtensionData
+ * @package Plugin\Data
  */
 class Localization
 {

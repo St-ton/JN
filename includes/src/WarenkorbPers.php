@@ -229,9 +229,9 @@ class WarenkorbPers
      */
     public function schreibeDB(): self
     {
-        $ins                = new stdClass();
-        $ins->kKunde        = $this->kKunde;
-        $ins->dErstellt     = $this->dErstellt;
+        $ins                  = new stdClass();
+        $ins->kKunde          = $this->kKunde;
+        $ins->dErstellt       = $this->dErstellt;
         $this->kWarenkorbPers = Shop::Container()->getDB()->insert('twarenkorbpers', $ins);
         unset($ins);
 

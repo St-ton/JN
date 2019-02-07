@@ -120,11 +120,11 @@ class Emailhistory
             foreach ($members as $member) {
                 $cMethod = 'get' . mb_substr($member, 1);
                 if (method_exists($this, $cMethod)) {
-                    $val        = $this->$cMethod();
-                    $mValue     = $val === null
+                    $val    = $this->$cMethod();
+                    $mValue = $val === null
                         ? 'NULL'
                         : ("'" . $db->escape($val) . "'");
-                    $set[] = "{$member} = {$mValue}";
+                    $set[]  = "{$member} = {$mValue}";
                 }
             }
             $sql .= implode(', ', $set);

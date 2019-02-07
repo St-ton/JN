@@ -7,7 +7,7 @@
         {math equation="a * b" a=$link->getLevel()-1 b=20 assign=fac}
         <td style="width: 40%">
             <div style="margin-left:{if $fac > 0}{$fac}px{else}0{/if}; padding-top: 7px" {if $link->getLevel() > 0 && $link->getParent() > 0}class="sub"{/if}>
-                {$link->getDisplayName()}{if $missingLinkTranslations|count > 0} <i title="Fehlende Übersetzungen: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
+                {$link->getDisplayName()}{if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
             </div>
         </td>
         <td class="tcenter floatforms" style="width: 50%">
@@ -84,7 +84,7 @@
                             value="{$link->getID()}"
                             class="btn btn-danger{if $link->getPluginID() > 0} disabled{/if}"
                             {if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if}
-                            title="{if $deleteCount > 1}Achtung: Link ist in {$deleteCount} Linkgruppen vorhanden und wird aus allen gelöscht!{else}{__('delete')}{/if}">
+                            title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}">
                         <i class="fa fa-trash"></i>{if $deleteCount > 1} ({$deleteCount}){/if}
                     </button>
                 </div>

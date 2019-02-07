@@ -11,7 +11,7 @@
                 {if $oPluginAdminMenu->kPluginAdminMenu !== $confItem->menuID}
                     {continue}
                 {/if}
-                {if $confItem->confType === Plugin\ExtensionData\Config::TYPE_NOT_CONFIGURABLE}
+                {if $confItem->confType === Plugin\Data\Config::TYPE_NOT_CONFIGURABLE}
                     {if $open > 0}
                         </div><!-- .panel-body -->
                         </div><!-- .panel -->
@@ -41,9 +41,9 @@
                         </span>
                         <span class="input-group-wrap">
                         {if $confItem->inputType === Plugin\Admin\InputType::SELECT}
-                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === Plugin\ExtensionData\Config::TYPE_DYNAMIC}[]{/if}" class="form-control combo"{if $confItem->confType === Plugin\ExtensionData\Config::TYPE_DYNAMIC} multiple{/if}>
+                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}" class="form-control combo"{if $confItem->confType === Plugin\ExtensionData\Config::TYPE_DYNAMIC} multiple{/if}>
                                 {foreach $confItem->options as $option}
-                                    {if $confItem->confType === Plugin\ExtensionData\Config::TYPE_DYNAMIC && $confItem->value|is_array}
+                                    {if $confItem->confType === Plugin\Data\Config::TYPE_DYNAMIC && $confItem->value|is_array}
                                         {assign var=selected value=($option->value|in_array:$confItem->value)}
                                     {else}
                                         {assign var=selected value=($confItem->value == $option->value)}
@@ -108,8 +108,8 @@
                 </div><!-- .panel-body -->
                 </div><!-- .panel -->
             {/if}
-            <button name="speichern" type="submit" value="{__('pluginSettingSave')}" class="btn btn-primary">
-                <i class="fa fa-save"></i> {__('pluginSettingSave')}
+            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary">
+                <i class="fa fa-save"></i> {__('save')}
             </button>
         </form>
     </div>

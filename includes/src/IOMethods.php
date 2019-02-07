@@ -709,7 +709,7 @@ class IOMethods
         $options->nDownload                 = 0;
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
-        $oArtikel                                    = new Artikel();
+        $oArtikel                           = new Artikel();
         $oArtikel->fuelleArtikel($kVaterArtikel, $options, \Session\Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
@@ -882,7 +882,7 @@ class IOMethods
                 $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
 
                 $kGesetzteEigeschaftWerte = [$kEigenschaft => $kEigenschaftWert];
-                $invalidVariations          = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
+                $invalidVariations        = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
 
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
                 if (in_array($kEigenschaftWert, $invalidVariations[$kEigenschaft])) {

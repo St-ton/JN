@@ -14,9 +14,6 @@ msgstr "Erstellen Sie eigene Shop-Seiten mit xHTML-Inhalt, Links zu URLs oder Sp
 msgid "linksUrl"
 msgstr "https://jtl-url.de/rcl9g"
 
-msgid "linkGroup"
-msgstr "Linkgruppe"
-
 msgid "linkGroupMove"
 msgstr "In Linkgruppe verschieben"
 
@@ -46,9 +43,6 @@ msgstr "Templatename"
 
 msgid "addLink"
 msgstr "Seite hinzufügen"
-
-msgid "newLink"
-msgstr "Speichern"
 
 msgid "newLinks"
 msgstr "Seite erstellen/ändern"
@@ -80,14 +74,8 @@ msgstr "Nur auszufüllen, wenn der Seitentyp <em>Seite mit eigenem xHtml-Inhalt<
 msgid "restrictedToCustomerGroups"
 msgstr "Sichtbar für"
 
-msgid "all"
-msgstr "Alle"
-
 msgid "linkTitle"
 msgstr "Überschrift"
-
-msgid "linkContent"
-msgstr "Inhalt"
 
 msgid "linkSeo"
 msgstr "Suchmaschinenname"
@@ -95,20 +83,8 @@ msgstr "Suchmaschinenname"
 msgid "choose"
 msgstr "Bitte wählen"
 
-msgid "startpage"
-msgstr "Startseite"
-
 msgid "shipping"
 msgstr "Informationen zum Versand"
-
-msgid "login"
-msgstr "Login"
-
-msgid "register"
-msgstr "Registrieren"
-
-msgid "basket"
-msgstr "Warenkorb"
 
 msgid "forgotPassword"
 msgstr "Passwort vergessen"
@@ -146,9 +122,6 @@ msgstr "Druck-Button anzeigen"
 msgid "noFollow"
 msgstr "\"nofollow\"- bzw. \"noindex\"-Attribut setzen, um Suchmaschinen von der Indizierung der Seite abzuhalten"
 
-msgid "contact"
-msgstr "Kontakt"
-
 msgid "tagging"
 msgstr "Tagging Übersicht"
 
@@ -158,35 +131,17 @@ msgstr "Livesuche"
 msgid "manufacturer"
 msgstr "Hersteller Übersicht"
 
-msgid "newsletter"
-msgstr "Newsletter"
-
 msgid "newsletterArchive"
 msgstr "Newsletterarchiv"
 
-msgid "sitemap"
-msgstr "Sitemap"
-
-msgid "news"
-msgstr "News"
-
 msgid "newsArchive"
 msgstr "Newsarchiv"
-
-msgid "umfrage"
-msgstr "Umfrage"
 
 msgid "gratisGeschenk"
 msgstr "Gratis Geschenk"
 
 msgid "wrb"
 msgstr "WRB"
-
-msgid "loeschlinkgruppeYes"
-msgstr "Ja"
-
-msgid "loeschlinkgruppeNo"
-msgstr "Nein"
 
 msgid "linkPicAdd"
 msgstr "weiteres Bild"
@@ -202,9 +157,6 @@ msgstr "Container-Fluid?"
 
 msgid "noData"
 msgstr "keine Links vorhanden"
-
-msgid "active"
-msgstr "Aktiv"
 
 msgid "successLinkFromLinkGroupDelete"
 msgstr "Link erfolgreich aus Linkgruppe entfernt."
@@ -259,3 +211,27 @@ msgstr "Fehler: Der Link konnte nicht kopiert werden, da er bereits in der Zielg
 
 msgid "successLinkCopy"
 msgstr "Sie haben den Link %s erfolgreich kopiert."
+
+msgid "dangerDeleteAllLinksInLinkGroup"
+msgstr "Alle Links innerhalb dieser Linkgruppe werden ebenfalls gelöscht."
+
+msgid "dangerDeleteLinksAlso"
+msgstr "Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht"
+
+msgid "sureDeleteLinkGroup"
+msgstr "Wollen Sie die Linkgruppe \"<strong>%s</strong>\" wirklich löschen?"
+
+msgid "continueEdit"
+msgstr "und weiter bearbeiten"
+
+msgid "createWithSearchEngineName"
+msgstr "(anlegen unter \"Suchmaschinenname\")"
+
+msgid "sureDeleteLink"
+msgstr "Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links und alle Kopien gelöscht werden!"
+
+msgid "linksWithoutLinkGroup"
+msgstr "Links ohne Linkgruppe"
+
+msgid "dangerLinkWillGetDeleted"
+msgstr "Achtung: Link ist in %s Linkgruppen vorhanden und wird aus allen gelöscht!"

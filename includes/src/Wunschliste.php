@@ -759,8 +759,8 @@ class Wunschliste
     {
         $db = Shop::Container()->getDB();
         if (isset($_POST['WunschlisteName']) && mb_strlen($_POST['WunschlisteName']) > 0) {
-            $cName = StringHandler::htmlentities(StringHandler::filterXSS(mb_substr($_POST['WunschlisteName'], 0, 254)));
-            $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $cName]);
+            $name = StringHandler::htmlentities(StringHandler::filterXSS(mb_substr($_POST['WunschlisteName'], 0, 254)));
+            $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $name]);
         }
         $positions = $db->selectAll(
             'twunschlistepos',

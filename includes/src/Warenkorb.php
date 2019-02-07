@@ -979,7 +979,7 @@ class Warenkorb
             }
             if ($bName && $oKonfigitem->getUseOwnName()) {
                 foreach (\Session\Frontend::getLanguages() as $language) {
-                    $oKonfigitemsprache               = new \Extensions\Konfigitemsprache(
+                    $oKonfigitemsprache                = new \Extensions\Konfigitemsprache(
                         $oKonfigitem->getKonfigitem(),
                         $language->kSprache
                     );

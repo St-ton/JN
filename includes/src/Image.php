@@ -415,7 +415,7 @@ class Image
         if (!is_dir($directory) && !mkdir($directory, 0777, true)) {
             $error = error_get_last();
             if (empty($error)) {
-                $error = "Unable to create directory {$directory}";
+                $error = 'Unable to create directory ' . $directory;
             }
             throw new Exception(is_array($error) ? $error['message'] : $error);
         }

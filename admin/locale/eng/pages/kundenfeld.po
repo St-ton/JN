@@ -14,17 +14,11 @@ msgstr "Diese Kundenfelder werden zusätzlich bei der Erstellung eines Kundenkon
 msgid "kundenfeldExistingDesc"
 msgstr "Ihre angelegten Kundenfelder:"
 
-msgid "kundenfeldSave"
-msgstr "Speichern"
-
 msgid "kundenfeldName"
 msgstr "Kundenattribut Feldname"
 
 msgid "kundenfeldNameShort"
 msgstr "Attributname"
-
-msgid "kundenfeldSort"
-msgstr "Sortierung"
 
 msgid "kundenfeldPflicht"
 msgstr "Pflichtfeld?"
@@ -34,15 +28,6 @@ msgstr "Feldtyp"
 
 msgid "kundenfeldSortDesc"
 msgstr "Ganzzahl, z.B. 10 (leer oder 0 keine, Sortierung willkürlich)"
-
-msgid "kundenfeldDel"
-msgstr "Löschen"
-
-msgid "kundenfeldUpdate"
-msgstr "Aktualisieren"
-
-msgid "kundenfeldValue"
-msgstr "Werte"
 
 msgid "kundenfeldPflichtDesc"
 msgstr "(*) = Pflichtfeld"
@@ -58,15 +43,6 @@ msgstr "Nachträglich editierbar?"
 
 msgid "kundenfeldEdit"
 msgstr "Kundenfeld bearbeiten"
-
-msgid "kundenfeldYes"
-msgstr "Ja"
-
-msgid "kundenfeldNo"
-msgstr "Nein"
-
-msgid "kundenfeldSettings"
-msgstr "Einstellungen"
 
 msgid "kundenfeldCreate"
 msgstr "Neues Kundenfeld erstellen"
@@ -100,3 +76,15 @@ msgstr "Anmeldung zur Zeit nicht möglich."
 
 msgid "errorLoginDataExpired"
 msgstr "Anmeldedaten nicht mehr gültig."
+
+msgid "errorFieldNeedsAtLeastOneValue"
+msgstr "Das Feld muss mindestens einen Wert haben!"
+
+msgid "errorChooseField"
+msgstr "Bitte wählen Sie zuerst ein Feld aus!"
+
+msgid "sureDeleteSelected"
+msgstr "Wollen Sie wirklich die ausgewählten Felder löschen? Alle zugeordneten Kundenwerte gehen dabei verloren!"
+
+msgid "infoChangeFieldType"
+msgstr "Wenn Sie den Feldtyp ändern, werden alle Kundenwerte - soweit möglich - automatisch an den neuen Typ angepasst!"

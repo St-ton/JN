@@ -21,7 +21,7 @@
         "ext-xml": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "imanee/imanee": "1.2.*",
+        "imanee/imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
         "jtlshop/shop4-systemcheck": "^1.1",
@@ -45,15 +45,15 @@
         "jtlshop/semver": "~0.0.5",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
-        "gettext/gettext": "^4.6",
-        "sensiolabs/security-checker": "^5.0"
+        "gettext/gettext": "^4.6"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
         "nikic/php-parser": "^2.1",
         "symfony/finder": "^4.0",
         "phpmd/phpmd": "@stable",
-        "phpunit/phpunit": "^7.3"
+        "phpunit/phpunit": "^7.3",
+        "sensiolabs/security-checker": "^5.0"
     },
     "suggest": {
         "ext-redis": "Better caching method",
@@ -90,7 +90,7 @@
     "autoload": {
         "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],
         "psr-4": {
-            "": ["src/","../extensions/"]
+            "": ["src/","../plugins/"]
         }
     }
 }

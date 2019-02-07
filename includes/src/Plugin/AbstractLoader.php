@@ -9,17 +9,17 @@ namespace Plugin;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
-use Plugin\ExtensionData\AdminMenu;
-use Plugin\ExtensionData\Cache;
-use Plugin\ExtensionData\Config;
-use Plugin\ExtensionData\License;
-use Plugin\ExtensionData\Links;
-use Plugin\ExtensionData\Localization;
-use Plugin\ExtensionData\MailTemplates;
-use Plugin\ExtensionData\Meta;
-use Plugin\ExtensionData\Paths;
-use Plugin\ExtensionData\PaymentMethods;
-use Plugin\ExtensionData\Widget;
+use Plugin\Data\AdminMenu;
+use Plugin\Data\Cache;
+use Plugin\Data\Config;
+use Plugin\Data\License;
+use Plugin\Data\Links;
+use Plugin\Data\Localization;
+use Plugin\Data\MailTemplates;
+use Plugin\Data\Meta;
+use Plugin\Data\Paths;
+use Plugin\Data\PaymentMethods;
+use Plugin\Data\Widget;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -172,8 +172,8 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadPaths(string $pluginDir): Paths
     {
         $shopURL  = \Shop::getURL(true) . '/';
-        $basePath = \PFAD_ROOT . \PFAD_EXTENSIONS . $pluginDir . \DIRECTORY_SEPARATOR;
-        $baseURL  = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
+        $basePath = \PFAD_ROOT . \PLUGIN_DIR . $pluginDir . \DIRECTORY_SEPARATOR;
+        $baseURL  = $shopURL . \PLUGIN_DIR . $pluginDir . '/';
 
         $paths = new Paths();
         $paths->setShopURL($shopURL);
@@ -207,10 +207,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return Cache
      */
-    protected function loadCacheData(AbstractExtension $extension): Cache
+    protected function loadCacheData(PluginInterface $extension): Cache
     {
         $cache = new Cache();
         $cache->setGroup(\CACHING_GROUP_PLUGIN . '_' . $extension->getID());
@@ -220,10 +220,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return AdminMenu
      */
-    protected function loadAdminMenu(AbstractExtension $extension): AdminMenu
+    protected function loadAdminMenu(PluginInterface $extension): AdminMenu
     {
         $i     = -1;
         $menus = \array_map(function ($menu) use (&$i) {
@@ -255,11 +255,11 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
-     * @param Collection        $items
+     * @param PluginInterface $extension
+     * @param Collection      $items
      * @return Collection
      */
-    protected function addMarkdownToAdminMenu(AbstractExtension $extension, Collection $items): Collection
+    protected function addMarkdownToAdminMenu(PluginInterface $extension, Collection $items): Collection
     {
         $meta     = $extension->getMeta();
         $lastItem = $items->last();
@@ -372,10 +372,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return Widget
      */
-    protected function loadWidgets(AbstractExtension $extension): Widget
+    protected function loadWidgets(PluginInterface $extension): Widget
     {
         $data = $this->db->selectAll(
             'tadminwidgets',
@@ -392,10 +392,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return MailTemplates
      */
-    protected function loadMailTemplates(AbstractExtension $extension): MailTemplates
+    protected function loadMailTemplates(PluginInterface $extension): MailTemplates
     {
         $data          = $this->db->queryPrepared(
             'SELECT * FROM tpluginemailvorlage
@@ -411,10 +411,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return PaymentMethods
      */
-    protected function loadPaymentMethods(AbstractExtension $extension): PaymentMethods
+    protected function loadPaymentMethods(PluginInterface $extension): PaymentMethods
     {
         $methods = $this->db->query(
             "SELECT *

@@ -221,7 +221,7 @@ function speicherVorlage($post)
         $cArtikel           = ';' . $cArtikel . ';';
         $cHersteller        = ';' . $cHersteller . ';';
         $cKategorie         = ';' . $cKategorie . ';';
-        $tpl = new stdClass();
+        $tpl                = new stdClass();
         if ($kNewsletterVorlage !== null) {
             $tpl->kNewsletterVorlage = $kNewsletterVorlage;
         }
@@ -237,8 +237,8 @@ function speicherVorlage($post)
         $tpl->cInhaltHTML   = $post['cHtml'];
         $tpl->cInhaltText   = $post['cText'];
 
-        $dt                             = new DateTime($oZeit->dZeit);
-        $now                            = new DateTime();
+        $dt              = new DateTime($oZeit->dZeit);
+        $now             = new DateTime();
         $tpl->dStartZeit = ($dt > $now)
             ? $dt->format('Y-m-d H:i:s')
             : $now->format('Y-m-d H:i:s');
@@ -1184,7 +1184,7 @@ function gibArtikelObjekte($productIDs, $campaign = '', int $customerGroupID = 0
     if (!is_array($productIDs) || count($productIDs) === 0) {
         return [];
     }
-    $products   = [];
+    $products       = [];
     $shopURL        = Shop::getURL() . '/';
     $imageBaseURL   = Shop::getImageBaseURL();
     $defaultOptions = Artikel::getDefaultOptions();
@@ -1236,8 +1236,8 @@ function gibHerstellerObjekte($manufacturerIDs, $campaign = 0, int $langID = 0)
         return [];
     }
     $manufacturers = [];
-    $shopURL         = Shop::getURL() . '/';
-    $imageBaseURL    = Shop::getImageBaseURL();
+    $shopURL       = Shop::getURL() . '/';
+    $imageBaseURL  = Shop::getImageBaseURL();
     foreach ($manufacturerIDs as $id) {
         $id = (int)$id;
         if ($id > 0) {
@@ -1275,7 +1275,7 @@ function gibKategorieObjekte($categoryIDs, $campaign = 0)
         return [];
     }
     $categories = [];
-    $shopURL        = Shop::getURL() . '/';
+    $shopURL    = Shop::getURL() . '/';
     foreach ($categoryIDs as $id) {
         $id = (int)$id;
         if ($id > 0) {

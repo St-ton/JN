@@ -48,14 +48,14 @@ class MediaImage implements IMedia
      */
     public static function getThumb($type, $id, $mixed, $size, int $number = 1): string
     {
-        $req      = MediaImageRequest::create([
+        $req   = MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
             'name'   => Image::getCustomName($type, $mixed),
             'ext'    => Image::getSettings()['format'],
         ]);
-        $thumb    = $req->getThumb($size);
+        $thumb = $req->getThumb($size);
         if (!file_exists(PFAD_ROOT . $thumb) && !file_exists(PFAD_ROOT . $req->getRaw())) {
             $fallback = $req->getFallbackThumb($size);
             $thumb    = file_exists(PFAD_ROOT . $fallback)
@@ -90,7 +90,7 @@ class MediaImage implements IMedia
      */
     public static function getStats($type, bool $filesize = false): stdClass
     {
-        $result = (object) [
+        $result = (object)[
             'total'     => 0,
             'corrupted' => 0,
             'fallback'  => 0,
@@ -267,7 +267,8 @@ class MediaImage implements IMedia
         header('Accept-Ranges: none');
         header('Content-Encoding: None');
 
-        header('Content-Length: ' . mb_strlen($data));
+        // no multibyte string here
+        header('Content-Length: ' . strlen($data));
         header('Content-Type: ' . $imanee->getMime());
 
         if ($nocache === true) {
@@ -299,7 +300,7 @@ class MediaImage implements IMedia
         }
 
         foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
-            $res = (object) [
+            $res = (object)[
                 'success'    => true,
                 'error'      => null,
                 'renderTime' => 0,

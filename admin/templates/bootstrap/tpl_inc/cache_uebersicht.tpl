@@ -95,7 +95,7 @@
                         <div class="input-container" style="max-width: 50%;">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="cache-action">Aktion</label>
+                                    <label for="cache-action">{__('action')}</label>
                                 </span>
                                 <span class="input-group-wrap">
                                     <select class="form-control" name="cache-action" id="cache-action">
@@ -133,28 +133,28 @@
                     <table class="table">
                         {if isset($stats.uptime_h) && $stats.uptime_h !== null}
                             <tr class="cache-row">
-                                <td>Uptime:</td>
+                                <td>{__('uptime')}:</td>
                                 <td>{$stats.uptime_h}</td>
                             </tr>
                         {/if}
                         {if isset($stats.mem) && $stats.mem !== null}
                             <tr class="cache-row">
-                                <td>Komplette Größe:</td>
+                                <td>{__('fullSize')}:</td>
                                 <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
                             </tr>
                         {/if}
                         {if isset($stats.entries) && $stats.entries !== null}
                             <tr class="cache-row">
-                                <td>Anzahl Einträge:</td>
+                                <td>{__('entriesCount')}:</td>
                                 <td>{$stats.entries}</td>
                             </tr>
                         {/if}
                         {if isset($stats.misses) && $stats.misses !== null}
                             <tr class="cache-row">
-                                <td>Misses:</td>
+                                <td>{__('misses')}:</td>
                                 <td>{$stats.misses}
                                     {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.mps|string_format:'%.2f'} Misses/s)</span>
+                                        <span class="inline"> ({$stats.mps|string_format:'%.2f'} {__('misses')}/s)</span>
                                     {/if}
                                 </td>
                             </tr>
@@ -164,14 +164,14 @@
                                 <td>Hits:</td>
                                 <td>{$stats.hits}
                                     {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.hps|string_format:'%.2f'} Hits/s)</span>
+                                        <span class="inline"> ({$stats.hps|string_format:'%.2f'} {__('hits')}/s)</span>
                                     {/if}
                                 </td>
                             </tr>
                         {/if}
                         {if isset($stats.inserts) && $stats.inserts !== null}
                             <tr class="cache-row">
-                                <td>Inserts:</td>
+                                <td>{__('inserts')}:</td>
                                 <td>{$stats.inserts}</td>
                             </tr>
                         {/if}
@@ -180,7 +180,7 @@
                 {if isset($stats.slow) && is_array($stats.slow)}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Slowlog</h3>
+                            <h3 class="panel-title">{__('slowlog')}</h3>
                         </div>
                         {if $stats.slow|@count > 0}
                             <table class="table">
@@ -208,35 +208,35 @@
                     </div>
                     <table class="table cache-stats" id="opcache-stats">
                         <tr class="cache-row">
-                            <td>Aktiviert:</td>
+                            <td>{__('activated')}:</td>
                             <td class="value">{if $opcache_stats->enabled === true}ja{else}nein{/if}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Belegter Speicher:</td>
+                            <td>{__('busySpace')}:</td>
                             <td class="value">{$opcache_stats->memoryUsed} MB</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Freier Speicher:</td>
+                            <td>{__('emptySpace')}:</td>
                             <td class="value">{$opcache_stats->memoryFree} MB</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Anzahl Skripte im Cache:</td>
+                            <td>{__('scriptCountInCache')}:</td>
                             <td class="value">{$opcache_stats->numberScrips}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Anzahl Keys im Cache:</td>
+                            <td>{__('keyCountInCache')}:</td>
                             <td class="value">{$opcache_stats->numberKeys}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Hits:</td>
+                            <td>{__('hits')}:</td>
                             <td class="value">{$opcache_stats->hits}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Misses:</td>
+                            <td>{__('misses')}:</td>
                             <td class="value">{$opcache_stats->misses}</td>
                         </tr>
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
-                            <td>Hit-Rate:</td>
+                            <td>{__('hitRate')}:</td>
                             <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fa fa-info-circle right"></i></td>
                         </tr>
                         <tr class="cache-row">
@@ -259,11 +259,11 @@
             {if $tplcacheStats !== null}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Template Cache</h3>
+                        <h3 class="panel-title">{__('templateCache')}</h3>
                     </div>
                     <table class="table cache-stats" id="tplcache-stats">
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
-                            <td>Dateien Frontend:</td>
+                            <td>{__('files')} {__('frontend')}</td>
                             <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
                         </tr>
                         {if $tplcacheStats->frontend|count > 0}
@@ -282,7 +282,7 @@
                         </tr>
                         {/if}
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
-                            <td>Dateien Backend:</td>
+                            <td>{__('files')} {__('backend')}</td>
                             <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
                         </tr>
                         {if $tplcacheStats->backend|count > 0}
@@ -308,26 +308,26 @@
             {if !empty($all_methods) && $all_methods|@count > 0}
                 <div class="panel panel-default settings">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__('config')}</h3>
+                        <h3 class="panel-title">{__('settings')}</h3>
                     </div>
                     <form method="post" action="cache.php">
                         {$jtl_token}
                         <div class="panel-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="runcount">Durchläufe</label>
+                                    <label for="runcount">{__('runs')}</label>
                                 </span>
                                 <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="repeat">Wiederholungen</label>
+                                    <label for="repeat">{__('repeats')}</label>
                                 </span>
                                 <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="testdata">Testdaten</label>
+                                    <label for="testdata">{__('testData')}</label>
                                 </span>
                                 <span class="input-group-wrap">
                                     <select class="form-control" name="testdata" id="testdata">
@@ -339,7 +339,7 @@
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="methods">Methoden</label>
+                                    <label for="methods">{__('methods')}</label>
                                 </span>
                                 <select class="form-control" name="methods[]" id="methods" multiple>
                                     {foreach $all_methods as $method}
@@ -363,20 +363,20 @@
                                         <h3 class="panel-title">{$result.method}</h3>
                                     </div>
                                     <div class="panel-body">
-                                    <p><span class="opt">Status: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
-                                    <p><span class="opt">Zeit get: </span>
+                                    <p><span class="opt">{__('status')}: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
+                                    <p><span class="opt">{__('time')} get: </span>
                                         {if $result.status !== 'failed' && $result.status !== 'invalid'}
                                             <span class="text">{$result.timings.get}s</span>
-                                            <span class="text">({$result.rps.get} Einträge/s)</span>
+                                            <span class="text">({$result.rps.get} {__('entries')}/s)</span>
                                         {else}
                                             <span class="text">-</span>
                                         {/if}
                                     </p>
 
-                                    <p><span class="opt">Zeit set: </span>
+                                    <p><span class="opt">{__('time')} set: </span>
                                         {if $result.status !== 'failed' && $result.status !== 'invalid'}
                                             <span class="text">{$result.timings.set}s</span>
-                                            <span class="text">({$result.rps.set} Einträge/s)</span>
+                                            <span class="text">({$result.rps.set} {__('entries')}/s)</span>
                                         {else}
                                             <span class="text">-</span>
                                         {/if}
@@ -386,11 +386,11 @@
                             {/if}
                         {/foreach}
                     {else}
-                        <div class="alert alert-warning">Konnte Benchmark nicht ausführen.</div>
+                        <div class="alert alert-warning">{__('errorBenchmark')}</div>
                     {/if}
                 {/if}
             {else}
-                <div class="alert alert-warning">Keine Methoden gefunden.</div>
+                <div class="alert alert-warning">{__('errorMethodNotFound')}</div>
             {/if}
         </div>
         <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'settings'} active in{/if}">
@@ -401,7 +401,7 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Allgemein</h3>
+                        <h3 class="panel-title">{__('general')}</h3>
                     </div>
                     <div class="panel-body">
                         {foreach $settings as $setting}
@@ -438,7 +438,7 @@
                 <div id="row_toggle_cache" style="display: none;">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Erweitert</h3>
+                            <h3 class="panel-title">{__('extended')}</h3>
                         </div>
                         <div class="panel-body">
                             {foreach $advanced_settings as $setting}

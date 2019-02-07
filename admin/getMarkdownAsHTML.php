@@ -20,7 +20,7 @@ $oAccount->redirectOnFailure();
 if (isset($_POST['path']) && Form::validateToken()) {
     $path = realpath($_POST['path']);
     if ($path !== false
-        && (mb_strpos($path . DIRECTORY_SEPARATOR, PFAD_ROOT . PFAD_EXTENSIONS) === 0
+        && (mb_strpos($path . DIRECTORY_SEPARATOR, PFAD_ROOT . PLUGIN_DIR) === 0
             || mb_strpos($path . DIRECTORY_SEPARATOR, PFAD_ROOT . PFAD_PLUGIN) === 0)
     ) {
         $info = pathinfo($path);

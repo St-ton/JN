@@ -7,7 +7,7 @@
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{__('settings')}: Allgemein</h3>
+                <h3 class="panel-title">{__('settings')}: {__('general')}</h3>
             </div>
             <div class="panel-body">
                 <ul class="jtl-list-group">
@@ -85,10 +85,10 @@
                         <span class="input-group-wrap">
                             <select id="nMailSenden" name="nMailSenden" class="form-control combo">
                                 <option value="1"{if $zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_EINGANG} selected="selected"{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                                 <option value="0"{if !($zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_EINGANG)} selected="selected"{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                             </select>
                         </span>
@@ -101,10 +101,10 @@
                         <span class="input-group-wrap">
                             <select id="nMailSendenStorno" name="nMailSendenStorno" class="form-control combo">
                                 <option value="1"{if $zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_STORNO} selected="selected"{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                                 <option value="0"{if !($zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_STORNO)} selected="selected"{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                             </select>
                         </span>
@@ -131,10 +131,10 @@
                             <span class="input-group-wrap">
                                 <select id="nWaehrendBestellung" name="nWaehrendBestellung" class="combo form-control">
                                     <option value="1"{if isset($zahlungsart->nWaehrendBestellung) && $zahlungsart->nWaehrendBestellung == 1} selected{/if}>
-                                        Ja
+                                        {__('yes')}
                                     </option>
                                     <option value="0"{if isset($zahlungsart->nWaehrendBestellung) && $zahlungsart->nWaehrendBestellung == 0} selected{/if}>
-                                        Nein
+                                        {__('no')}
                                     </option>
                                 </select>
                             </span>

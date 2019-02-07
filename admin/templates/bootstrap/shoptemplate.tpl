@@ -25,7 +25,7 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Mobil</h3>
+                        <h3 class="panel-title">{__('mobile')}</h3>
                     </div>
                     <div class="panel-body">
                         {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
@@ -33,15 +33,15 @@
                         {/if}
                         <div class="item input-group">
                             <span class="input-group-addon">
-                                <label for="eTyp">Standard-Template für mobile Endgeräte?</label>
+                                <label for="eTyp">{__('standardTemplateMobil')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="eTyp" id="eTyp">
-                                    <option value="standard" {if $oTemplate->eTyp === 'standard'}selected="selected"{/if}>Nein
-                                        (optimiert für Standard-Browser)
+                                    <option value="standard" {if $oTemplate->eTyp === 'standard'}selected="selected"{/if}>
+                                        {__('optimizeBrowser')}
                                     </option>
-                                    <option value="mobil" {if $oTemplate->eTyp === 'mobil'}selected="selected"{/if}>Ja (optimiert
-                                        für mobile Endgeräte)
+                                    <option value="mobil" {if $oTemplate->eTyp === 'mobil'}selected="selected"{/if}>
+                                        {__('optimizeMobile')}
                                     </option>
                                 </select>
                             </span>
@@ -61,7 +61,7 @@
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
                                     <div class="col-xs-12">
                                         <div class="item input-group" id="theme-preview-wrap" style="display: none;">
-                                            <span class="input-group-addon"><strong>Vorschau</strong></span>
+                                            <span class="input-group-addon"><strong>{__('preview')}</strong></span>
                                             <img id="theme-preview" alt="" />
                                         </div>
                                         <script type="text/javascript">
@@ -147,7 +147,8 @@
                                                                   rows="{if isset($oSetting->vTextAreaAttr_arr.Rows)}{$oSetting->vTextAreaAttr_arr.Rows}{/if}"
                                                                   id="{$oSection->cKey}-{$oSetting->cKey}"
                                                                   placeholder="{$oSetting->cPlaceholder}"
-                                                                  >{$oSetting->cTextAreaValue|escape:'html'}</textarea>
+                                                                  >{$oSetting->cTextAreaValue|escape:'html'}
+                                                        </textarea>
                                                     </div>
                                                 {elseif $oSetting->cType === 'password'}
                                                     <div class="form-group">
@@ -213,7 +214,7 @@
                 <input type="hidden" name="type" value="settings" />
                 <input type="hidden" name="ordner" value="{$oTemplate->cOrdner}" />
                 <input type="hidden" name="admin" value="{$admin}" />
-                <button type="submit" class="btn btn-primary">{if isset($smarty.get.activate)}<i class="fa fa-share"></i> Template aktivieren{else}<i class="fa fa-save"></i> Speichern{/if}</button>
+                <button type="submit" class="btn btn-primary">{if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}<i class="fa fa-save"></i> {__('save')}{/if}</button>
             </div>
         </div>
     </form>
@@ -224,8 +225,8 @@
             <tr>
                 <th></th>
                 <th></th>
-                <th class="text-center">Status</th>
-                <th class="text-center">Version</th>
+                <th class="text-center">{__('status')}</th>
+                <th class="text-center">{__('version')}</th>
                 <th></th>
             </tr>
             </thead>
@@ -247,11 +248,11 @@
                                 <span class="label label-default">
                                  <i class="fa fa-folder-o" aria-hidden="true"></i> {$oTemplate->cOrdner}
                                 </span>
-                                {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="Erbt von {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
+                                {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{__('inheritsFrom')} {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
 
                                 {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
                                     {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
-                                        <span class="label label-warning"><i class="fa fa-info-circle" aria-hidden="true"></i> <abbr title="Originalversion {$oStored->cVersion} vorhanden">{$oStored->cVersion}</abbr></span>
+                                        <span class="label label-warning"><i class="fa fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
                                     {/foreach}
                                 {/if}
                                 <!--
@@ -266,11 +267,11 @@
                     <td class="text-vcenter text-center">
                         {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
                             <h4 class="label-wrap">
-                                <span class="label label-danger">Fehlerhaft</span>
+                                <span class="label label-danger">{__('faulty')}</span>
                             </h4>
                         {elseif $oTemplate->bAktiv}
                             <h4 class="label-wrap">
-                                <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endgeräte){/if}</span>
+                                <span class="label label-success">{__('activated')} {if $oTemplate->eTyp === 'mobil'} ({__('mobileDevices')}{/if}</span>
                             </h4>
                         {/if}
                     </td>
@@ -279,17 +280,17 @@
                     </td>
                     <td class="text-vcenter text-center">
                         {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
-                            <span class="error"><strong>Achtung:</strong><br />Parent-Template fehlt.</span>
+                            <span class="error"><strong>{__('danger')}:</strong><br />{__('parentTemplateMissing')}.</span>
                         {else}
                             {if !$oTemplate->bAktiv}
                                 {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
+                                    <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('activate')}</a>
                                 {else}
-                                    <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
+                                    <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('activate')}</a>
                                 {/if}
                             {else}
                                 {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> Einstellungen</a>
+                                    <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> {__('settings')}</a>
                                 {/if}
                             {/if}
                         {/if}

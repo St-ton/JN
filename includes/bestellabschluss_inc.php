@@ -1040,7 +1040,11 @@ function fakeBestellung()
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
 
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = mb_substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = mb_substr(
+            strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])),
+            0,
+            1000
+        );
     }
     $cart                    = \Session\Frontend::getCart();
     $customer                = \Session\Frontend::getCustomer();

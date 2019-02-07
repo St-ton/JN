@@ -3,12 +3,12 @@
     <input class="form-control" type="text" id="categories_list_input" value="{if isset($cSearch)}{$cSearch}{/if}" autocomplete="off" />
     <div class="select_wrapper">
         <div class="search">
-            <h2>gefundene Kategorien</h2>
+            <h2>{__('found')} {__('categories')}</h2>
             <select multiple="multiple" name="categories_list_found">
             </select>
         </div>
         <div class="added">
-            <h2>Gewählte Kategorien</h2>
+            <h2>{__('selected')} {__('categories')}</h2>
             <select multiple="multiple" name="categories_list_selected">
             </select>
         </div>

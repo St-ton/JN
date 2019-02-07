@@ -20,20 +20,11 @@ msgstr "Wasserzeichenfunktion aktivieren"
 msgid "brandingActiveDesc"
 msgstr "Wenn diese option aktiviert ist, werden alle Bilder beim Übertragen von der Wawi in den Shop automatisch mit einem Wasserzeichen versehen"
 
-msgid "brandingPosition"
-msgstr "Position"
-
 msgid "brandingPositionDesc"
 msgstr "Wählen Sie eine Position im Bild, wo das Wasserzeichen angezeigt werden soll\" title=\"Wählen Sie die Position des Wasserzeichens innerhalb des Bildes"
 
-msgid "brandingTransparency"
-msgstr "Transparenz"
-
 msgid "brandingTransparencyDesc"
 msgstr "Geben Sie die Transparenz des Wasserzeichens in Prozent ein. Empfohlen wird ein Wert um 50"
-
-msgid "brandingSize"
-msgstr "Grösse"
 
 msgid "brandingSizeDesc"
 msgstr "Geben Sie die Größe des Wasserzeichens in Prozent vom Gesamtbild ein. Empfohlen wird ein Wert um 30. Bei 0 wird das Brandingbild nicht skaliert."

@@ -10,9 +10,9 @@
                 {if isset($oLand_arr) && count($oLand_arr) > 0}
                 <ul class="list-group">
                     <li class="boxRow panel-heading">
-                        <div class="col-xs-1"><strong>{__('plz_ort_iso')}</strong></div>
+                        <div class="col-xs-1"><strong>{__('iso')}</strong></div>
                         <div class="col-xs-4"><strong>{__('plz_ort_country')}</strong></div>
-                        <div class="col-xs-3"><strong>{__('plz_ort_date')}</strong></div>
+                        <div class="col-xs-3"><strong>{__('date')}</strong></div>
                         <div class="col-xs-3"><strong>{__('plz_ort_size')}</strong></div>
                         <div class="col-xs-1"></div>
                     </li>
@@ -31,7 +31,7 @@
                 {/if}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__('plz_ort_import_cancel')}</a>
+                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__('cancel')}</a>
             </div>
         </div>
     </div>

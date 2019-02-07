@@ -19,20 +19,8 @@ msgstr "Frequenz"
 msgid "headingRunning"
 msgstr "Läuft aktuell"
 
-msgid "headingAction"
-msgstr "Aktion"
-
-msgid "btnDelete"
-msgstr "löschen"
-
-msgid "btnReset"
-msgstr "zurücksetzen"
-
 msgid "createQueueEntry"
 msgstr "Queueeintrag erstellen"
-
-msgid "btnCreate"
-msgstr "erstellen"
 
 msgid "msgCreated"
 msgstr "Erfolgreich erstellt."
@@ -49,11 +37,5 @@ msgstr "Bildercache"
 msgid "statusemail"
 msgstr "Status-Mails"
 
-msgid "newsletter"
-msgstr "Newsletter"
-
 msgid "dataprotection"
 msgstr "Kundendatenanonymisierung"
-
-msgid "exportformat"
-msgstr "Exportformat"

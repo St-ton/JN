@@ -6,7 +6,7 @@ msgid "kampagne"
 msgstr "Kampagnen"
 
 msgid "kampagneDesc"
-msgstr ""
+msgstr " "
 
 msgid "kampagneURL"
 msgstr "https://jtl-url.de/v5kan"
@@ -25,15 +25,6 @@ msgstr "Kampagnen"
 
 msgid "kampagneNewBTN"
 msgstr "neue Kampagne erstellen"
-
-msgid "kampagneEditBTN"
-msgstr "editieren"
-
-msgid "kampagneBackBTN"
-msgstr "zurück"
-
-msgid "kampagneStatsBTN"
-msgstr "Statistik"
 
 msgid "kampagneDetailStatsBTN"
 msgstr "Aktualisieren"
@@ -62,23 +53,8 @@ msgstr "Zeitraum"
 msgid "kampagneView"
 msgstr "Ansicht"
 
-msgid "kampagneDateFrom"
-msgstr "von"
-
 msgid "kampagneDateTill"
 msgstr "bis (inkl.)"
-
-msgid "kampagneStatYear"
-msgstr "Jährlich"
-
-msgid "kampagneStatMonth"
-msgstr "Monatlich"
-
-msgid "kampagneStatWeek"
-msgstr "Wöchentlich"
-
-msgid "kampagneStatDay"
-msgstr "Täglich"
 
 msgid "kampagneCreate"
 msgstr "Neue Kampagne"
@@ -101,14 +77,8 @@ msgstr "Typ des Kampagnenwertes"
 msgid "kampagneValueStatic"
 msgstr "Fester Kampagnenwert"
 
-msgid "kampagneDynamic"
-msgstr "Dynamisch"
-
 msgid "kampagneStatic"
 msgstr "Fester Wert"
-
-msgid "kampagnenActive"
-msgstr "Aktiviert"
 
 msgid "kampagnenDate"
 msgstr "Erstellt am"

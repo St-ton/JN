@@ -150,7 +150,7 @@ class Lieferschein
         $ins->nStatus          = $this->nStatus;
         $ins->dErstellt        = $this->dErstellt;
         $ins->bEmailVerschickt = $this->bEmailVerschickt ? 1 : 0;
-        $kPrim                  = Shop::Container()->getDB()->insert('tlieferschein', $ins);
+        $kPrim                 = Shop::Container()->getDB()->insert('tlieferschein', $ins);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }

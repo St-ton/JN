@@ -4442,7 +4442,7 @@ class Artikel
         $searchSpecials = SearchSpecial::getAll($languageID);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
-        if (!empty($searchSpecials) && is_array($searchSpecials) && count($searchSpecials) > 0) {
+        if (!empty($searchSpecials)) {
             $specials = [
                 SEARCHSPECIALS_BESTSELLER       => $this->istBestseller(),
                 SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
@@ -4513,30 +4513,11 @@ class Artikel
             }
             $this->bSuchspecial_arr = $specials;
             // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
-            $imageBaseURL = Shop::getImageBaseURL();
             foreach ($searchSpecials as $overlay) {
-                if (!isset($overlay->kSuchspecialOverlay)
-                    || empty($this->bSuchspecial_arr[$overlay->kSuchspecialOverlay])
-                ) {
+                if (empty($this->bSuchspecial_arr[$overlay->getType()])) {
                     continue;
                 }
-                $image               = new stdClass();
-                $image->cPfadRetina  = PFAD_SUCHSPECIALOVERLAY_RETINA . $overlay->cBildPfad;
-                $image->cPfadGross   = PFAD_SUCHSPECIALOVERLAY_GROSS . $overlay->cBildPfad;
-                $image->cPfadNormal  = PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlay->cBildPfad;
-                $image->cPfadKlein   = PFAD_SUCHSPECIALOVERLAY_KLEIN . $overlay->cBildPfad;
-                $image->cSuchspecial = $overlay->cSuchspecial;
-                $image->nMargin      = $overlay->nMargin;
-                $image->nTransparenz = $overlay->nTransparenz;
-                $image->nGroesse     = $overlay->nGroesse;
-                $image->nPosition    = $overlay->nPosition;
-                $image->cURLRetina   = $imageBaseURL . $image->cPfadRetina;
-                $image->cURLGross    = $imageBaseURL . $image->cPfadGross;
-                $image->cURLNormal   = $imageBaseURL . $image->cPfadNormal;
-                $image->cURLKlein    = $imageBaseURL . $image->cPfadKlein;
-
-                $this->oSuchspecialBild = $image;
-                break;
+                $this->oSuchspecialBild = $overlay;
             }
         }
 

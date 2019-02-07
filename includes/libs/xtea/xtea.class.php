@@ -71,7 +71,7 @@ class XTEA
             if ($this->cbc == 1) {
                 //$text mit letztem Geheimtext XOR Verknuepfen
                 //$text is XORed with the previous ciphertext
-                $text[$i] ^= $cipher[$a - 1][0];
+                $text[$i]     ^= $cipher[$a - 1][0];
                 $text[$i + 1] ^= $cipher[$a - 1][1];
             }
 
@@ -79,7 +79,7 @@ class XTEA
             $a++;
         }
 
-        $output = "";
+        $output = '';
         for ($i = 0; $i < count($cipher); $i++) {
             $output .= $this->_long2str($cipher[$i][0]);
             $output .= $this->_long2str($cipher[$i][1]);
@@ -113,7 +113,7 @@ class XTEA
             }
         }
 
-        $output = "";
+        $output = '';
         for ($i = 0; $i < count($plain); $i++) {
             $output .= $this->_long2str($plain[$i][0]);
             $output .= $this->_long2str($plain[$i][1]);
@@ -138,11 +138,11 @@ class XTEA
     public function benchmark($length = 1000)
     {
         //1000 Byte String
-        $string = str_pad("", $length, "text");
+        $string = str_pad('', $length, 'text');
 
         //Key-Setup
         $start1 = time() + (double)microtime();
-        $xtea   = new XTEA("key");
+        $xtea   = new XTEA('key');
         $end1   = time() + (double)microtime();
 
         //Encryption
@@ -150,14 +150,16 @@ class XTEA
         $xtea->Encrypt($string);
         $end2 = time() + (double)microtime();
 
-        echo "Encrypting " . $length . " bytes: " . round($end2 - $start2,
-                2) . " seconds (" . round($length / ($end2 - $start2), 2) . " bytes/second)<br>";
+        echo 'Encrypting ' . $length . ' bytes: ' . round(
+            $end2 - $start2,
+            2
+        ) . ' seconds (' . round($length / ($end2 - $start2), 2) . ' bytes/second)<br>';
     }
 
     //verify the correct implementation of the blowfish algorithm
     public function check_implementation()
     {
-        $xtea    = new XTEA("");
+        $xtea    = new XTEA('');
         $vectors = array(
             array(
                 array(0x00000000, 0x00000000, 0x00000000, 0x00000000),
@@ -201,15 +203,19 @@ class XTEA
 
         /* start cycle */
         for ($i = 0; $i < 32; $i++) {
-            $y = $this->_add($y,
+            $y = $this->_add(
+                $y,
                 $this->_add($z << 4 ^ $this->_rshift($z, 5), $z) ^
-                $this->_add($sum, $this->key[$sum & 3]));
+                $this->_add($sum, $this->key[$sum & 3])
+            );
 
             $sum = $this->_add($sum, $delta);
 
-            $z = $this->_add($z,
+            $z = $this->_add(
+                $z,
                 $this->_add($y << 4 ^ $this->_rshift($y, 5), $y) ^
-                $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3]));
+                $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3])
+            );
         }
 
         /* end cycle */
@@ -227,13 +233,17 @@ class XTEA
 
         /* start cycle */
         for ($i = 0; $i < 32; $i++) {
-            $z   = $this->_add($z,
+            $z   = $this->_add(
+                $z,
                 -($this->_add($y << 4 ^ $this->_rshift($y, 5), $y) ^
-                    $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3])));
+                $this->_add($sum, $this->key[$this->_rshift($sum, 11) & 3]))
+            );
             $sum = $this->_add($sum, -$delta);
-            $y   = $this->_add($y,
+            $y   = $this->_add(
+                $y,
                 -($this->_add($z << 4 ^ $this->_rshift($z, 5), $z) ^
-                    $this->_add($sum, $this->key[$sum & 3])));
+                $this->_add($sum, $this->key[$sum & 3]))
+            );
         }
         /* end cycle */
 
@@ -256,9 +266,9 @@ class XTEA
 
         // do right shift
         if (0 > $integer) {
-            $integer &= 0x7fffffff;                     // remove sign bit before shift
+            $integer  &= 0x7fffffff;                     // remove sign bit before shift
             $integer >>= $n;                            // right shift
-            $integer |= 1 << (31 - $n);                 // set shifted sign bit
+            $integer  |= 1 << (31 - $n);                 // set shifted sign bit
         } else {
             $integer >>= $n;                            // use normal right shift
         }

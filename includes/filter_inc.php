@@ -624,7 +624,7 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
     $res     = [];
     $naviURL = $productFilter->getFilterURL()->getURL();
     $seo     = $seo && mb_strpos($naviURL, '?') === false;
-    if ($pages->getTotalPages() > 0 && $pages->getCurrentPage()> 0) {
+    if ($pages->getTotalPages() > 0 && $pages->getCurrentPage() > 0) {
         $nMax = (int)floor($maxPages / 2);
         if ($pages->getTotalPages() > $maxPages) {
             if ($pages->getCurrentPage() - $nMax >= 1) {

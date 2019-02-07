@@ -35,9 +35,6 @@ msgstr "Randabstand vom Artikelbild"
 msgid "suchspecialoverlayMarginDesc"
 msgstr "Wieviele Pixel Randabstand soll das innere Overlaybild zum Artikelbild haben?"
 
-msgid "suchspecialoverlayClarity"
-msgstr "Transparenz"
-
 msgid "suchspecialoverlayClarityDesc"
 msgstr "Wieviel Prozent Transparenz soll das Overlaybild haben?"
 
@@ -46,9 +43,6 @@ msgstr "Größe des Overlays in Pixel (px)"
 
 msgid "suchspecialoverlaySizeDesc"
 msgstr "Wie groß soll das Overlaybild Overlaybild sein? Z.B. 50px"
-
-msgid "suchspecialoverlayPosition"
-msgstr "Position"
 
 msgid "suchspecialoverlayPositionDesc"
 msgstr "Position vom Overlaybild im Artikelbild-Container. Diese Funktion ist veraltet und wird in aktuellen JTL-Shop 4-Templates nicht länger unterstützt."

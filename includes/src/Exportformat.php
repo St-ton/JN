@@ -1294,12 +1294,12 @@ class Exportformat
                     $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
                 }
 
-                $product->cDeeplink             = $shopURL . '/' . $product->cURL;
-                $product->Artikelbild           = $product->Bilder[0]->cPfadGross
+                $product->cDeeplink    = $shopURL . '/' . $product->cURL;
+                $product->Artikelbild  = $product->Bilder[0]->cPfadGross
                     ? $imageBaseURL . $product->Bilder[0]->cPfadGross
                     : '';
-                $product->Lieferbar             = $product->fLagerbestand <= 0 ? 'N' : 'Y';
-                $product->Lieferbar_01          = $product->fLagerbestand <= 0 ? 0 : 1;
+                $product->Lieferbar    = $product->fLagerbestand <= 0 ? 'N' : 'Y';
+                $product->Lieferbar_01 = $product->fLagerbestand <= 0 ? 0 : 1;
 
                 $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->getExportformat());
                 if (!empty($_out)) {

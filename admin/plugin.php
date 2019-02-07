@@ -10,7 +10,7 @@ use Helpers\Request;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
@@ -53,7 +53,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 $upd->cName   = $current->cWertName;
                 if (isset($_POST[$current->cWertName])) {
                     if (is_array($_POST[$current->cWertName])) {
-                        if ($current->cConf === \Plugin\ExtensionData\Config::TYPE_DYNAMIC) {
+                        if ($current->cConf === \Plugin\Data\Config::TYPE_DYNAMIC) {
                             // selectbox with "multiple" attribute
                             $upd->cWert = serialize($_POST[$current->cWertName]);
                         } else {

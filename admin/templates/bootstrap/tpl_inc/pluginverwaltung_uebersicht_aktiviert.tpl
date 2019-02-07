@@ -21,7 +21,7 @@
                             <th>{__('pluginEditLocales')}</th>
                             <th>{__('pluginEditLinkgrps')}</th>
                             <th>{__('pluginBtnLicence')}</th>
-                            <th>Aktionen</th>
+                            <th>{__('actions')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -44,9 +44,9 @@
                                         {foreach $allPluginItems as $p}
                                             {if $p->getID() === $plugin->getPluginID()}
                                                 {if $p->isShop5Compatible() === false}
-                                                    <span title="Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {elseif $p->isShop5Compatible() === false && $p->isShop4Compatible() === false}
-                                                    <span title="Achtung: Plugin ist nicht vollständig Shop4-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {/if}
                                                 {break}
                                             {/if}
@@ -104,14 +104,14 @@
                         <tfoot>
                         <tr>
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="10"><label for="ALLMSGS1">{__('pluginSelectAll')}</label></td>
+                            <td colspan="10"><label for="ALLMSGS1">{__('selectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <div class="panel-footer">
                     <div class="save btn-group">
-                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('pluginBtnDeActivate')}</button>
+                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('deactivate')}</button>
                         <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('pluginBtnDeInstall')}</button>
                     </div>
                 </div>

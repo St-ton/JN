@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\AdminAccount;
 use DB\Services as DbService;
 use Filter\ProductFilter;
 use Helpers\Product;
@@ -769,8 +770,8 @@ final class Shop
             $cache->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
         $dispatcher      = \Events\Dispatcher::getInstance();
-        $extensionLoader = new \Plugin\ExtensionLoader($db, $cache);
-        $pluginLoader    = new \Plugin\PluginLoader($db, $cache);
+        $extensionLoader = new \Plugin\PluginLoader($db, $cache);
+        $pluginLoader    = new \Plugin\LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
             $loader = isset($plugin->bExtension) && (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
             if (($p = \Plugin\Helper::bootstrap($plugin->kPlugin, $loader)) !== null) {
@@ -978,18 +979,18 @@ final class Shop
         self::$bKatFilterNotFound        = false;
         self::$bHerstellerFilterNotFound = false;
         executeHook(HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
-        $seite        = 0;
-        $manufSeo     = [];
-        $katseo       = '';
-        $customSeo    = [];
-        $shopURLdata  = parse_url(self::getURL());
+        $seite       = 0;
+        $manufSeo    = [];
+        $katseo      = '';
+        $customSeo   = [];
+        $shopURLdata = parse_url(self::getURL());
         $baseURLdata = parse_url($uri);
-        $seo          = isset($baseURLdata['path'])
+        $seo         = isset($baseURLdata['path'])
             ? mb_substr($baseURLdata['path'], isset($shopURLdata['path'])
                 ? (mb_strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
-        $seo          = Request::extractExternalParams($seo);
+        $seo         = Request::extractExternalParams($seo);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();
@@ -1893,10 +1894,10 @@ final class Shop
             $loggingConf = self::getConfig([CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
             foreach ($loggingConf as $value) {
-                if ($value === AdminLoginConfig::CONFIG_DB) {
+                if ($value === \Backend\AdminLoginConfig::CONFIG_DB) {
                     $handlers[] = (new NiceDBHandler($container->getDB(), Logger::INFO))
                         ->setFormatter(new LineFormatter('%message%', null, false, true));
-                } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
+                } elseif ($value === \Backend\AdminLoginConfig::CONFIG_FILE) {
                     $handlers[] = (new StreamHandler(PFAD_LOGFILES . 'auth.log', Logger::INFO))
                         ->setFormatter(new LineFormatter(null, null, false, true));
                 }
@@ -1976,7 +1977,7 @@ final class Shop
         $container->setSingleton(\L10n\GetText::class, function () {
             return new \L10n\GetText();
         });
-        $container->setSingleton(\AdminAccount::class, function (Container $container) {
+        $container->setSingleton(AdminAccount::class, function (Container $container) {
             return new AdminAccount(
                 $container->getDB(),
                 $container->getBackendLogService(),

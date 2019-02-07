@@ -4,10 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Revision;
+
 $scc = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
 $scc->registerComponents();
 
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
        ->registerPlugin(
            Smarty::PLUGIN_FUNCTION,
@@ -27,15 +29,15 @@ $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrencyConversionSmarty', 
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, '__', [\Shop::Container()->getGetText(), 'translate']);
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function getRevisions(array $params, $smarty): string
 {
     $secondary = $params['secondary'] ?? false;
     $data      = $params['data'] ?? null;
-    $revision  = new Revision();
+    $revision  = new Revision(Shop::Container()->getDB());
 
     return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
                   ->assign('secondary', $secondary)
@@ -45,11 +47,10 @@ function getRevisions(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array $params
  * @return string
  */
-function getCurrencyConversionSmarty(array $params, $smarty): string
+function getCurrencyConversionSmarty(array $params): string
 {
     $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
@@ -71,8 +72,8 @@ function getCurrencyConversionSmarty(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function getCurrencyConversionTooltipButton(array $params, $smarty): string
@@ -92,8 +93,8 @@ function getCurrencyConversionTooltipButton(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  */
 function getCurrentPage($params, $smarty): void
 {
@@ -106,8 +107,8 @@ function getCurrentPage($params, $smarty): void
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function getHelpDesc(array $params, $smarty): string
@@ -149,8 +150,8 @@ function permission($cRecht): bool
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function SmartyConvertDate(array $params, $smarty)
@@ -176,8 +177,8 @@ function SmartyConvertDate(array $params, $smarty)
 /**
  * Map marketplace categoryId to localized category name
  *
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  */
 function getExtensionCategory(array $params, $smarty): void
 {
@@ -202,11 +203,10 @@ function getExtensionCategory(array $params, $smarty): void
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array $params
  * @return string|null
  */
-function formatVersion(array $params, $smarty): ?string
+function formatVersion(array $params): ?string
 {
     if (!isset($params['value'])) {
         return null;
@@ -225,11 +225,10 @@ function formatVersion(array $params, $smarty): ?string
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @param Smarty\JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
-function gravatarImage(array $params, $smarty): string
+function gravatarImage(array $params): string
 {
     $email = $params['email'] ?? null;
     if ($email === null) {
@@ -253,8 +252,8 @@ function gravatarImage(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function captchaMarkup(array $params, $smarty): string

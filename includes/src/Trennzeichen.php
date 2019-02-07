@@ -240,7 +240,7 @@ class Trennzeichen
      */
     public function save(bool $bPrim = true)
     {
-        $data        = new stdClass();
+        $data = new stdClass();
         foreach (array_keys(get_object_vars($this)) as $member) {
             $data->$member = $this->$member;
         }

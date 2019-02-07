@@ -33,7 +33,7 @@
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static stdClass getDefaultLanguage(bool $shop = true)
- * @method static array|int|string getAllLanguages(int $returnType)
+ * @method static array|int|string getAllLanguages(int $returnType = 0)
  */
 class Sprache
 {
@@ -151,7 +151,8 @@ class Sprache
      * @param \Cache\JTLCacheInterface $cache
      * @return Sprache
      */
-    public static function getInstance(\DB\DbInterface $db = null, \Cache\JTLCacheInterface $cache = null): self {
+    public static function getInstance(\DB\DbInterface $db = null, \Cache\JTLCacheInterface $cache = null): self
+    {
         return self::$instance ?? new self($db, $cache);
     }
 
@@ -160,7 +161,8 @@ class Sprache
      * @param \DB\DbInterface|null          $db
      * @param \Cache\JTLCacheInterface|null $cache
      */
-    public function __construct(\DB\DbInterface $db = null, \Cache\JTLCacheInterface $cache = null) {
+    public function __construct(\DB\DbInterface $db = null, \Cache\JTLCacheInterface $cache = null)
+    {
         self::$instance = $this;
         $this->cache    = $cache ?? Shop::Container()->getCache();
         $this->db       = $db ?? Shop::Container()->getDB();
@@ -274,7 +276,7 @@ class Sprache
                 'SELECT * FROM tsprache ORDER BY kSprache ASC',
                 \DB\ReturnType::COLLECTION
             );
-            $tags = [CACHING_GROUP_LANGUAGE];
+            $tags    = [CACHING_GROUP_LANGUAGE];
 
             return true;
         });
@@ -298,7 +300,7 @@ class Sprache
      * @param int $kSprache
      * @return stdClass|null
      */
-    private function mappedGetIsoFromLangID(int $kSprache)
+    private function mappedGetIsoFromLangID(int $kSprache): ?stdClass
     {
         return $this->byLangID[$kSprache] ?? null;
     }
@@ -307,7 +309,7 @@ class Sprache
      * @param string $cISO
      * @return stdClass|null
      */
-    private function mappedGetLangIDFromIso(string $cISO)
+    private function mappedGetLangIDFromIso(string $cISO): ?stdClass
     {
         return $this->byISO[$cISO] ?? null;
     }
@@ -341,9 +343,8 @@ class Sprache
                 $this->currentISOCode = $language->cISO;
             }
         }
-
-        $this->currentLanguageID  = $this->mappekISO($this->currentISOCode);
-        $_SESSION['kSprachISO']   = $this->currentLanguageID;
+        $this->currentLanguageID = $this->mappekISO($this->currentISOCode);
+        $_SESSION['kSprachISO']  = $this->currentLanguageID;
 
         return $this;
     }
@@ -1095,7 +1096,7 @@ class Sprache
                 } elseif ($page !== null) {
                     $lang->cURL = $page->getURL($lang->kSprache);
                     if (mb_strpos($lang->cURL, '/?s=') !== false) {
-                        $lang->cURL     .= '&amp;lang=' . $lang->cISO;
+                        $lang->cURL    .= '&amp;lang=' . $lang->cISO;
                         $lang->cURLFull = rtrim($shopURL, '/') . $lang->cURL;
                     } else {
                         $lang->cURLFull = $lang->cURL;

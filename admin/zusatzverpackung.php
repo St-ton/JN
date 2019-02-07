@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
@@ -43,7 +43,9 @@ if ($action === 'save') {
         JTL_CHARSET
     );
 
-    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)) {
+    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO])
+        && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)
+    ) {
         $cFehler .= __('errorNameMissing') . '<br />';
     }
     if (!(is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0)) {

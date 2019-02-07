@@ -5,6 +5,7 @@ stages:
   - build
   - deploy
   - cleanUp
+  - stagingPre
   - staging
 
 .testingScript: &testingScript |
@@ -116,33 +117,42 @@ stages:
   }
 
 .devCheckoutScripts: &devCheckoutScripts |
+  export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+  export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
+
+  function downloadProcess() {
+    export RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
+    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+
+    curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $RUNNER_PATH_ZIP -d $EXTRACTION_PATH
+    rm $RUNNER_PATH_ZIP
+  }
   function deployProcess() {
     export PHP_VERSION=$1;
-    export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
-    export DOWNLOAD_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
-    export DOWNLOAD_PATH_ZIP="$DOWNLOAD_PATH.zip";
-    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
-    export MIGRATION_COUNT_BEFORE=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+    export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
-    curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
-    unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
-    rm $DOWNLOAD_PATH_ZIP
+    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH;
 
-    export MIGRATION_COUNT_AFTER=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "
-        require_once '${DOWNLOAD_PATH}/includes/globalinclude.php'; \
-        \$manager = new MigrationManager(null); \
-        \$manager->migrate(null); \
-        try {
-          \$result = \$manager->migrate(null);
-        } catch (Exception \$e) {
-          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
-          \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
-          echo \$result;
-          exit(1);
-        }
+      require_once '$DEPLOY_PATH/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+          foreach (\$migrations as \$migration) { \
+              echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
+          } \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
       ";
     fi
   }
@@ -302,6 +312,18 @@ removeContainer:
   when: on_failure
   tags:
     - build
+
+stagingPreDeploy:
+  stage: stagingPre
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - downloadProcess
+  only:
+    - master
+  tags:
+    - dev-checkout
 
 stagingDevPhp72:
   stage: staging

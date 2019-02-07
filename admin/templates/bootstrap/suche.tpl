@@ -14,7 +14,7 @@
                     <li class="backend-search-item" tabindex="-1">
                         <a href="einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1"
                            class="value">
-                            <span>{$s->cName} (Einstellungsnr.: {$s->kEinstellungenConf})</span>
+                            <span>{$s->cName} ({__('settingNumberShort')}: {$s->kEinstellungenConf})</span>
                             <small>{$s->cBeschreibung}</small>
                         </a>
                     </li>
@@ -24,7 +24,7 @@
     {/foreach}
 {elseif isset($shippings)}
     <li>
-        <h4><a href="versandarten.php" class="value">Versandartenübersicht</a></h4>
+        <h4><a href="versandarten.php" class="value">{__('shippingTypesOverview')}</a></h4>
     </li>
     <li>
         <ul class="backend-search-section">
@@ -41,7 +41,7 @@
     </li>
 {elseif isset($paymentMethods)}
     <li>
-        <h4><a href="zahlungsarten.php" class="value">Zahlungsartenübersicht</a></h4>
+        <h4><a href="zahlungsarten.php" class="value">{__('paymentTypesOverview')}</a></h4>
     </li>
     <li>
         <ul class="backend-search-section">

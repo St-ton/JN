@@ -10,7 +10,7 @@ use Helpers\Request;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
@@ -23,8 +23,8 @@ $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
 $parser          = new \JTL\XMLParser();
 $uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
-$validator       = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
-$modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db, $parser);
+$validator       = new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser);
+$modernValidator = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
 $listing         = new \Plugin\Admin\Listing($db, $cache, $validator, $modernValidator);
 $installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
 $updater         = new \Plugin\Admin\Updater($db, $installer);

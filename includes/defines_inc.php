@@ -86,7 +86,7 @@ define('URLART_NEWSMONAT', 9);
 define('URLART_NEWSKATEGORIE', 10);
 define('URLART_UMFRAGE', 11);
 define('URLART_SEARCHSPECIALS', 12);
-// bestellstati
+// bestellstatus
 define('BESTELLUNG_STATUS_STORNO', -1);
 define('BESTELLUNG_STATUS_OFFEN', 1);
 define('BESTELLUNG_STATUS_IN_BEARBEITUNG', 2);
@@ -266,7 +266,7 @@ define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
 define('PFAD_PLUGIN_MIGRATIONS', 'migrations/');
-define('PFAD_EXTENSIONS', 'extensions/');
+define('PLUGIN_DIR', 'plugins/');
 define('PLUGIN_INFO_FILE', 'info.xml');
 define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');

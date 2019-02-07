@@ -23,10 +23,10 @@
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="tleft" style="width: 10px;">&nbsp;</th>
-                                        <th class="tleft">{__('exportformatFormatSingle')}</th>
+                                        <th class="tleft">{__('exportformat')}</th>
                                         <th class="tleft">{__('exportformatOptions')}</th>
                                         <th class="tcenter">{__('exportformatStart')}</th>
-                                        <th class="tcenter">{__('exportformatEveryXHourShort')}</th>
+                                        <th class="tcenter">{__('repetition')}</th>
                                         <th class="tcenter">{__('exportformatExported')}</th>
                                         <th class="tcenter">{__('exportformatLastStart')}</th>
                                         <th class="tcenter">{__('exportformatNextStart')}</th>
@@ -67,7 +67,7 @@
                                 <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
                                 <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fa fa-trash"></i> {__('exportformatDelete')}</button>
                                 <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
-                                <button name="action[uebersicht]" type="submit" value="1" class="btn btn-default"><i class="fa fa-refresh"></i> {__('exportformatRefresh')}</button>
+                                <button name="action[uebersicht]" type="submit" value="1" class="btn btn-default"><i class="fa fa-refresh"></i> {__('refresh')}</button>
                             </div>
                         </div>
                     {else}
@@ -91,10 +91,10 @@
                     <div class="form-group">
                         <label for="nStunden">{__('exportformatLastXHourPre')}</label>
                         <input size="2" class="form-control" id="nStunden" name="nStunden" type="text" value="{$nStunden}" />
-                        <label>{__('exportformatLastXHourPost')}</label>
+                        <label>{__('hours')}</label>
                     </div>
                     <div class="btn-group">
-                        <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i> {__('exportformatShow')}</button>
+                        <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i> {__('show')}</button>
                     </div>
                 </form>
             </div>
@@ -107,8 +107,8 @@
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table table-striped">
                                 <tr>
-                                    <th class="th-1">{__('exportformatFormatSingle')}</th>
-                                    <th class="th-2">{__('exportformatFilename')}</th>
+                                    <th class="th-1">{__('exportformat')}</th>
+                                    <th class="th-2">{__('filename')}</th>
                                     <th class="th-3">{__('exportformatOptions')}</th>
                                     <th class="th-4">{__('exportformatExported')}</th>
                                     <th class="th-5">{__('exportformatLastStart')}</th>

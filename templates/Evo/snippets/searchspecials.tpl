@@ -3,9 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 <img class="overlay-img hidden-xs"
-     srcset="{$Artikel->oSuchspecialBild->cURLKlein},
-                     {$Artikel->oSuchspecialBild->cURLNormal} 2x,
-                     {$Artikel->oSuchspecialBild->cURLGross} 3x,
-                     {$Artikel->oSuchspecialBild->cURLRetina} 4x"
+     srcset="{$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_XS)},
+             {$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM)} 2x,
+             {$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_MD)} 3x,
+             {$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_LG)} 4x"
      src="{$src}"
-     alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$alt}{/if}"/>
+     alt="{if isset($Artikel->oSuchspecialBild->getName())}{$Artikel->oSuchspecialBild->getName()}{else}{$alt}{/if}"/>

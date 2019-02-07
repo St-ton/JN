@@ -37,7 +37,7 @@ class Backend extends AbstractSession
     public function __construct()
     {
         parent::__construct(true, self::DEFAULT_SESSION);
-        self::$instance = $this;
+        self::$instance        = $this;
         $_SESSION['jtl_token'] = $_SESSION['jtl_token'] ?? \Shop::Container()->getCryptoService()->randomString(32);
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
             $lang                    = \Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');

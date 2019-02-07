@@ -11,12 +11,12 @@
                 <thead>
                 <tr>
                     <th class="th-1"></th>
-                    <th class="th-2">{__('zusatzverpackungName')}</th>
-                    <th class="th-3">{__('zusatzverpackungPrice')}</th>
-                    <th class="th-4">{__('zusatzverpackungMinValue')}</th>
+                    <th class="th-2">{__('name')}</th>
+                    <th class="th-3">{__('price')}</th>
+                    <th class="th-4">{__('minOrderValue')}</th>
                     <th class="th-5">{__('zusatzverpackungExemptFromCharge')}</th>
-                    <th class="th-6">{__('zusatzverpackungCustomerGrp')}</th>
-                    <th class="th-7">{__('zusatzverpackungActive')}</th>
+                    <th class="th-6">{__('customerGroup')}</th>
+                    <th class="th-7">{__('active')}</th>
                     <th class="th-8">&nbsp;</th>
                 </tr>
                 </thead>
@@ -58,8 +58,8 @@
                     <i class="fa fa-share"></i> {__('zusatzverpackungAdd')}
                 </a>
                 {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
-                    <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {__('zusatzverpackungDelete')}</button>
-                    <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('zusatzverpackungUpdate')}</button>
+                    <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
+                    <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('refresh')}</button>
                 {/if}
             </div>
         </div>

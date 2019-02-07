@@ -18,7 +18,7 @@
                         <table class="list table">
                             <thead>
                                 <tr>
-                                    <th title="Aktiv"></th>
+                                    <th title="{__('active')}"></th>
                                     <th></th>
                                     <th>{__('name')} {call sortControls oPagination=$oPagination nSortBy=0}</th>
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.newCustomer}<th>{__('value')}</th>{/if}
@@ -64,11 +64,11 @@
                                         <td>
                                             {$oKupon->nVerwendungenBisher}
                                             {if $oKupon->nVerwendungen > 0}
-                                                von {$oKupon->nVerwendungen}</td>
+                                            {__('from')} {$oKupon->nVerwendungen}</td>
                                             {/if}
                                         <td>
                                             {if !empty({$oKupon->cKundengruppe})}
-                                                nur {$oKupon->cKundengruppe}<br>
+                                                {__('only')} {$oKupon->cKundengruppe}<br>
                                             {/if}
                                             {if !empty({$oKupon->cArtikelInfo})}
                                                 {$oKupon->cArtikelInfo} {__('products')}<br>

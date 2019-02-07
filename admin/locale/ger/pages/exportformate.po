@@ -14,20 +14,11 @@ msgstr "Hier können Sie Formate zum Exportieren Ihrer Artikeldaten definieren."
 msgid "languageCurrencyCustGrp"
 msgstr "Sprache/Währung/Kundengruppe"
 
-msgid "filename"
-msgstr "Dateiname"
-
 msgid "campaigns"
 msgstr "Kampagne"
 
 msgid "lastModified"
 msgstr "zuletzt erstellt"
-
-msgid "actions"
-msgstr "Aktionen"
-
-msgid "name"
-msgstr "Name"
 
 msgid "markedElement"
 msgstr "Markiertes Element"
@@ -35,23 +26,11 @@ msgstr "Markiertes Element"
 msgid "createExportFile"
 msgstr "Erstelle Exportdatei"
 
-msgid "createExportFileShort"
-msgstr "Erstellen"
-
 msgid "createExportFileAsync"
 msgstr "Erstelle Exportdatei (asynchron)"
 
 msgid "createExportFileAsyncShort"
 msgstr "Erstellen (asynchron)"
-
-msgid "edit"
-msgstr "Bearbeiten"
-
-msgid "delete"
-msgstr "Löschen"
-
-msgid "do"
-msgstr "Ausführen"
 
 msgid "newExportformat"
 msgstr "Neues Exportformat erstellen"
@@ -65,18 +44,6 @@ msgstr "Neues Exportformat speichern"
 msgid "modifyExportformatSave"
 msgstr "Überarbeitetes Exportformat speichern"
 
-msgid "language"
-msgstr "Sprache"
-
-msgid "currency"
-msgstr "Währung"
-
-msgid "customerGroup"
-msgstr "Kundengruppe"
-
-msgid "header"
-msgstr "Kopfzeile"
-
 msgid "onlyIfNeeded"
 msgstr "Nur angeben, wenn Exportdatei die Kopfzeile enthalten soll"
 
@@ -88,9 +55,6 @@ msgstr "Smarty wird genutzt. Achtung: PHP-Tags und Inhalte sind nicht erlaubt."
 
 msgid "download"
 msgstr "Datei herunterladen"
-
-msgid "footer"
-msgstr "Fusszeile"
 
 msgid "onlyIfNeededFooter"
 msgstr "Nur angeben, wenn die Fusszeile angehängt werden soll"
@@ -119,9 +83,6 @@ msgstr "Nur Kindartikel exportieren"
 msgid "splitSize"
 msgstr "Grösse pro Datei (MB)"
 
-msgid "FillOut"
-msgstr "Bitte ausfüllen"
-
 msgid "successFormatEdit"
 msgstr "Das Exportformat %s wurde erfolgreich geändert."
 
@@ -136,3 +97,15 @@ msgstr "Exportformat konnte nicht gelöscht werden."
 
 msgid "errorFormatCreate"
 msgstr "Das Exportformat %s konnte nicht erstellt werden. Fehlende Schreibrechte?"
+
+msgid "errorExport"
+msgstr "Es ist ein Fehler beim Erstellen der Exportdatei aufgetreten."
+
+msgid "availableFormats"
+msgstr "Vorhandene Exportformate"
+
+msgid "exportAll"
+msgstr "Alle exportieren"
+
+msgid "sureDeleteFormat"
+msgstr "Exportformat löschen?"

@@ -9,7 +9,7 @@ namespace Plugin;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
-use Plugin\ExtensionData\Config;
+use Plugin\Data\Config;
 
 /**
  * Class Helper
@@ -107,7 +107,7 @@ class Helper
 
     /**
      * @param string $pluginID
-     * @return null|AbstractExtension
+     * @return null|PluginInterface
      */
     public static function getPluginById(string $pluginID)
     {
@@ -127,8 +127,8 @@ class Helper
                 continue;
             }
             $loader = (int)$plugin->bExtension === 1
-                ? new ExtensionLoader($db, $cache)
-                : new PluginLoader($db, $cache);
+                ? new PluginLoader($db, $cache)
+                : new LegacyPluginLoader($db, $cache);
 
             return $loader->init((int)$plugin->kPlugin, false, $langID);
         }
@@ -172,7 +172,7 @@ class Helper
         }
         foreach ($plugins as $plugin) {
             $path = (int)$plugin->bExtension === 1
-                ? \PFAD_ROOT . \PFAD_EXTENSIONS . $plugin->cVerzeichnis . '/' .
+                ? \PFAD_ROOT . \PLUGIN_DIR . $plugin->cVerzeichnis . '/' .
                 \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE
                 : \PFAD_ROOT . \PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
                 \PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . \PFAD_PLUGIN_FRONTEND . \PFAD_PLUGIN_TEMPLATE;
@@ -186,13 +186,13 @@ class Helper
     }
 
     /**
-     * @param AbstractExtension $plugin
-     * @param array             $params
+     * @param PluginInterface $plugin
+     * @param array           $params
      * @return bool
      * @former pluginLizenzpruefung()
      * @since 5.0.0
      */
-    public static function licenseCheck(AbstractExtension $plugin, array $params = []): bool
+    public static function licenseCheck(PluginInterface $plugin, array $params = []): bool
     {
         $license = $plugin->getLicense();
         if ($license->hasLicenseCheck()) {
@@ -238,8 +238,8 @@ class Helper
     }
 
     /**
-     * @param AbstractExtension|Plugin $plugin
-     * @param int                      $state
+     * @param PluginInterface|LegacyPlugin $plugin
+     * @param int                          $state
      * @former aenderPluginZahlungsartStatus()
      * @since 5.0.0
      */
@@ -448,7 +448,7 @@ class Helper
                 return null;
             }
             $bootstrapper = new $class($plugin, $loader->getDB(), $loader->getCache());
-            if (!\is_subclass_of($bootstrapper, AbstractPlugin::class)) {
+            if (!\is_subclass_of($bootstrapper, Bootstrapper::class)) {
                 return null;
             }
             self::$bootstrapper[$id] = $bootstrapper;
@@ -483,6 +483,6 @@ class Helper
         $cache = $cache ?? \Shop::Container()->getCache();
         $db    = $db ?? \Shop::Container()->getDB();
 
-        return $isExtension ? new ExtensionLoader($db, $cache) : new PluginLoader($db, $cache);
+        return $isExtension ? new PluginLoader($db, $cache) : new LegacyPluginLoader($db, $cache);
     }
 }

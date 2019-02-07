@@ -11,18 +11,6 @@ msgstr "https://jtl-url.de/paktb"
 msgid "emailblacklistDesc"
 msgstr "Mit Hilfe der E-Mail-Blacklist können Sie E-Mail-Adressen sperren. Gesperrte E-Mail-Adressen können nicht für unregistrierte Bestellvorgänge verwendet werden."
 
-msgid "emailblacklistSave"
-msgstr "Speichern"
-
-msgid "emailblacklistDelete"
-msgstr "Löschen"
-
-msgid "emailblacklistAdd"
-msgstr "Hinzufügen"
-
-msgid "emailblacklistUpdate"
-msgstr "Aktualisieren"
-
 msgid "emailblacklistEmail"
 msgstr "E-Mail-Adressen"
 

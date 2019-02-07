@@ -22,7 +22,7 @@
 
                     {block name='searchspecial-overlay'}
                         {if isset($Artikel->oSuchspecialBild)}
-                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->cURLKlein alt=$alt}
+                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
                         {/if}
                     {/block}
 
@@ -31,9 +31,6 @@
                     {/if}
                 </a>
             {/block}
-            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
-                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
-            {/if}
         </div>
         <div class="col-xs-5 product-detail">
             {block name='product-title'}
@@ -42,6 +39,9 @@
                 </h4>
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
             {/block}
+            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
+                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
+            {/if}
             {block name='product-manufacturer'}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
                     <div class="media hidden-xs top0 bottom5" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">

@@ -4,8 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\AdminTemplate;
+use Backend\Notification;
 use Helpers\Form;
-use Helpers\GeneralObject;
 use Helpers\Request;
 
 require_once __DIR__ . '/admin_menu.php';
@@ -19,7 +20,6 @@ $db                 = Shop::Container()->getDB();
 $currentTemplateDir = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
     && $config['template']['general']['use_minify'] === 'Y');
-
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;

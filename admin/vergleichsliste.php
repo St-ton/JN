@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 \Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';

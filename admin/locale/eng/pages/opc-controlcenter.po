@@ -26,3 +26,30 @@ msgstr "Verfügbare Portlets"
 msgid "opcBlueprints"
 msgstr "Verfügbare Vorlagen"
 
+msgid "sureDeleteAll"
+msgstr "Wollen Sie wirklich alle Entwürfe für die Seite löschen?"
+
+msgid "sureDelete"
+msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+
+msgid "replaceExtend"
+msgstr "Ersetzt/Erweitert"
+
+msgid "lastChange"
+msgstr "Letzte Änderung"
+
+msgid "changedNow"
+msgstr "Gerade bearbeitet"
+
+msgid "tillUnknown"
+msgstr "Auf unbestimmte Zeit"
+
+msgid "deleteDraft"
+msgstr "Entwurf löschen."
+
+msgid "deleteDraftAll"
+msgstr "Alle Entwürfe löschen."
+
+msgid "unpublished"
+msgstr "Unveröffentlicht"
+

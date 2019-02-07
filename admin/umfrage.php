@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $db          = Shop::Container()->getDB();
 $cHinweis    = '';
 $cFehler     = '';
@@ -467,7 +467,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $question->oUmfrageFrageAntwort_arr = $db->selectAll(
                             'tumfragefrageantwort',
                             'kUmfrageFrage',
-                            (int)$$question->kUmfrageFrage,
+                            (int)$question->kUmfrageFrage,
                             'kUmfrageFrageAntwort, kUmfrageFrage, cName',
                             'nSort'
                         );

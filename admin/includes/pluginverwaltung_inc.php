@@ -6,32 +6,32 @@
 
 /**
  * @param int    $kPlugin
- * @param string $cVerzeichnis
+ * @param string $dir
  * @return int
  * @deprecated since 5.0.0
  */
-function pluginPlausi(int $kPlugin, $cVerzeichnis = '')
+function pluginPlausi(int $kPlugin, $dir = '')
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $validator = new \Plugin\Admin\Validation\PluginValidator(Shop::Container()->getDB(), new \JTL\XMLParser());
-    $validator->setDir($cVerzeichnis);
+    $validator = new \Plugin\Admin\Validation\LegacyPluginValidator(Shop::Container()->getDB(), new \JTL\XMLParser());
+    $validator->setDir($dir);
 
     return $validator->validateByPluginID($kPlugin);
 }
 
 /**
- * @param array  $XML_arr
- * @param string $cVerzeichnis
+ * @param array  $xml
+ * @param string $dir
  * @return int
  * @deprecated since 5.0.0
  */
-function pluginPlausiIntern($XML_arr, $cVerzeichnis)
+function pluginPlausiIntern($xml, $dir)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $validator = new \Plugin\Admin\Validation\PluginValidator(Shop::Container()->getDB(), new \JTL\XMLParser());
-    $validator->setDir($cVerzeichnis);
+    $validator = new \Plugin\Admin\Validation\LegacyPluginValidator(Shop::Container()->getDB(), new \JTL\XMLParser());
+    $validator->setDir($dir);
 
-    return $validator->pluginPlausiIntern($XML_arr, false);
+    return $validator->pluginPlausiIntern($xml, false);
 }
 
 /**
@@ -48,8 +48,8 @@ function updatePlugin(int $kPlugin)
     $cache           = Shop::Container()->getCache();
     $parser          = new \JTL\XMLParser();
     $uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
-    $validator       = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
-    $modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db, $parser);
+    $validator       = new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser);
+    $modernValidator = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
     $installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
     $updater         = new \Plugin\Admin\Updater($db, $installer);
 
@@ -71,8 +71,8 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
     $cache           = Shop::Container()->getCache();
     $parser          = new \JTL\XMLParser();
     $uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
-    $validator       = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
-    $modernValidator = new \Plugin\Admin\Validation\ExtensionValidator($db, $parser);
+    $validator       = new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser);
+    $modernValidator = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
     $installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {
@@ -86,8 +86,8 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
 /**
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
- * @param \Plugin\Plugin $oPlugin
- * @param bool   $forceReload
+ * @param \Plugin\LegacyPlugin $oPlugin
+ * @param bool                 $forceReload
  * @return int
  * @throws Exception
  * @deprecated since 5.0.0
@@ -102,8 +102,8 @@ function reloadPlugin($oPlugin, $forceReload = false)
     $stateChanger = new \Plugin\Admin\StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validation\PluginValidator($db, $parser),
-        new \Plugin\Admin\Validation\ExtensionValidator($db, $parser)
+        new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser),
+        new \Plugin\Admin\Validation\PluginValidator($db, $parser)
     );
 
     return $stateChanger->reload($oPlugin, $forceReload);
@@ -124,8 +124,8 @@ function aktivierePlugin(int $kPlugin): int
     $stateChanger = new \Plugin\Admin\StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validation\PluginValidator($db, $parser),
-        new \Plugin\Admin\Validation\ExtensionValidator($db, $parser)
+        new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser),
+        new \Plugin\Admin\Validation\PluginValidator($db, $parser)
     );
 
     return $stateChanger->activate($kPlugin);

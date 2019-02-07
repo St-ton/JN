@@ -51,25 +51,25 @@
                 </ul>
                 <ul class="backend-navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
+                        <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="{__('help')}">
                             <i class="fa fa-question-circle"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>
                                 <a href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
-                                    Erste Schritte
+                                    {__('firstSteps')}
                                 </a>
                                 <a href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
-                                    JTL Guide
+                                    {__('jtlGuide')}
                                 </a>
                                 <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">
-                                    JTL Forum
+                                    {__('jtlForum')}
                                 </a>
                                 <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
-                                    Training
+                                    {__('training')}
                                 </a>
                                 <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
-                                    Servicepartner
+                                    {__('servicePartners')}
                                 </a>
                             </li>
                         </ul>
@@ -115,7 +115,7 @@
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>
                                 <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop">
-                                    <i class="fa fa-shopping-cart"></i> Zum Shop
+                                    <i class="fa fa-shopping-cart"></i> {__('goShop')}
                                 </a>
                                 <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}"
                                    title="{__('logout')}">

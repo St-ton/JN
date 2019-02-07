@@ -2,17 +2,11 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "preferences"
-msgstr "Einstellungen"
-
 msgid "preferencesURL"
 msgstr "https://jtl-url.de/u56j2"
 
 msgid "preferencesDesc"
 msgstr "Klicken Sie den Bereich an, den Sie einstellen möchten."
-
-msgid "configure"
-msgstr "einstellen"
 
 msgid "savePreferences"
 msgstr "Einstellungen speichern"

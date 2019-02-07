@@ -12,19 +12,19 @@ use Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-$cHinweis         = '';
-$cFehler          = '';
-$action           = '';
-$tab              = Kupon::TYPE_STANDARD;
-$oSprache_arr     = Sprache::getAllLanguages();
-$oKupon           = null;
-$res              = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
+$cHinweis     = '';
+$cFehler      = '';
+$action       = '';
+$tab          = Kupon::TYPE_STANDARD;
+$oSprache_arr = Sprache::getAllLanguages();
+$oKupon       = null;
+$res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
     if ($importType === 0 && $importDeleteDone === false) {
         Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', \DB\ReturnType::AFFECTED_ROWS);
         Shop::Container()->getDB()->query('TRUNCATE TABLE tkuponsprache', \DB\ReturnType::AFFECTED_ROWS);

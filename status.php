@@ -23,6 +23,12 @@ if (isset($_GET['uid'])) {
         \DB\ReturnType::SINGLE_OBJECT
     );
     if (empty($status->kBestellung)) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('statusOrderNotFound', 'errorMessages'),
+            'statusOrderNotFound',
+            ['saveInSession' => true]
+        );
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
         exit;
     }
@@ -33,6 +39,12 @@ if (isset($_GET['uid'])) {
            ->assign('showLoginPanel', \Session\Frontend::getCustomer()->isLoggedIn())
            ->assign('billingAddress', $order->oRechnungsadresse);
 } else {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_DANGER,
+        Shop::Lang()->get('uidNotFound', 'errorMessages'),
+        'wrongUID',
+        ['saveInSession' => true]
+    );
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
 }

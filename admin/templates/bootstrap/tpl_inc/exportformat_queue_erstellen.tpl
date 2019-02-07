@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__('exportformatFormat')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('exportformats')}
 {literal}
     <script type="text/javascript">
         $(document).ready(function () {
@@ -29,7 +29,7 @@
                 </div>
                 <table class="kundenfeld table" id="formtable">
                     <tr>
-                        <td><label for="kExportformat">{__('exportformatFormat')}</label></td>
+                        <td><label for="kExportformat">{__('exportformats')}</label></td>
                         <td>
                             <select name="kExportformat" id="kExportformat" class="form-control">
                                 <option value="-1"></option>
@@ -55,15 +55,15 @@
                             <input type="number" min="1" value="{if !empty($oCron->frequency) && $oCron->frequency != 24 && $oCron->frequency != 48 && $oCron->frequency != 168}{assign var=showCustomInput value=true}{$oCron->frequency}{/if}" class="form-control" name="{if $showCustomInput}nAlleXStundenCustom{/if}"{if !$showCustomInput} style="display:none;"{/if} id="custom-freq-input" />
                             <select id="nAlleXStunden" name="nAlleXStunden" class="form-control">
                                 <option value="24"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 24) || (isset($oCron->frequency) && $oCron->frequency === 24)} selected{/if}>
-                                    24 Stunden
+                                    24 {__('hours')}
                                 </option>
                                 <option value="48"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 48) || (isset($oCron->frequency) && $oCron->frequency === 48)} selected{/if}>
-                                    48 Stunden
+                                    48 {__('days')}
                                 </option>
                                 <option value="168"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 168) || (isset($oCron->frequency) && $oCron->frequency === 168)} selected{/if}>
-                                    1 Woche
+                                    1 {__('week')}
                                 </option>
-                                <option value="custom" id="custom-freq"{if $showCustomInput} selected{/if}>eigene</option>
+                                <option value="custom" id="custom-freq"{if $showCustomInput} selected{/if}>{__('own')}</option>
                             </select>
                         </td>
                     </tr>

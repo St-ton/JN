@@ -13,7 +13,7 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'kwk_uebersicht';

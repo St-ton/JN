@@ -122,8 +122,9 @@ class KategorieListe
             $cacheID = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
             $res     = Shop::Container()->getCache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
             if ($res === false) {
-                //could not save to cache - so save to session like in 3.18 base
-                $_SESSION['kKategorieVonUnterkategorien_arr'] = self::$allCats[$cacheID]['kKategorieVonUnterkategorien_arr'];
+                // could not save to cache - so save to session like in 3.18 base
+                $_SESSION['kKategorieVonUnterkategorien_arr'] =
+                    self::$allCats[$cacheID]['kKategorieVonUnterkategorien_arr'];
                 $_SESSION['oKategorie_arr']                   = self::$allCats[$cacheID]['oKategorie_arr'];
             }
         }

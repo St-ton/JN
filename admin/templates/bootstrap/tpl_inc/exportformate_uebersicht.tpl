@@ -34,7 +34,7 @@
         }
 
         function error_export(cb) {
-            alert('Es ist ein Fehler beim Erstellen der Exportdatei aufgetreten');
+            alert('{/literal}{__('errorExport')}{literal}');
         }
 
         function show_export_info(cb) {
@@ -73,7 +73,7 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Vorhandene Exportformate</h3>
+            <h3 class="panel-title">{__('availableFormats')}</h3>
         </div>
         <div class="table-responsive">
             <table class="table">
@@ -113,7 +113,7 @@
                                         {/if}
                                         <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{__('download')}"><i class="fa fa-download"></i></button>
                                         <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{__('edit')}"><i class="fa fa-edit"></i></button>
-                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__('delete')}" onclick="return confirm('Exportformat löschen?');"><i class="fa fa-trash"></i></button>
+                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>
@@ -126,7 +126,7 @@
         <div class="panel-footer">
             <div class="submit-wrap btn-group">
                 <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newExportformat')}</a>
-                <a class="btn btn-default" href="#" id="exportall">Alle exportieren</a>
+                <a class="btn btn-default" href="#" id="exportall">{__('exportAll')}</a>
             </div>
         </div>
     </div>

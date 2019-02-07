@@ -33,7 +33,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $smarty->assign('kKundengruppe', Request::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
-            $cFehler .= 'Fehler: Bitte geben Sie eine gültige Kundengruppe an.<br />';
+            $cFehler .= __('errorInvalidCustomerGroup') . '<br />';
         }
     } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
         if (speicherAGBWRB(
@@ -42,9 +42,9 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $_POST,
             Request::verifyGPCDataInt('kText')
         )) {
-            $cHinweis .= 'Ihre AGB bzw. WRB wurde erfolgreich gespeichert.<br />';
+            $cHinweis .= __('successSave') . '<br />';
         } else {
-            $cFehler .= 'Fehler: Ihre AGB/WRB konnte nicht gespeichert werden.<br />';
+            $cFehler .= __('errorSave') . '<br />';
         }
     }
 }

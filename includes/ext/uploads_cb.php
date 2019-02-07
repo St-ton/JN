@@ -41,7 +41,7 @@ if (!empty($_FILES)) {
     }
     if (isset($fileData['error'], $fileData['name'])
         && (int)$fileData['error'] === UPLOAD_ERR_OK
-        && strpos($realPath . DS, PFAD_UPLOADS) === 0
+        && mb_strpos($realPath . DS, PFAD_UPLOADS) === 0
         && move_uploaded_file($cTempFile, $cTargetFile)
     ) {
         $oFile         = new stdClass();
@@ -73,7 +73,7 @@ if (!empty($_REQUEST['action'])) {
             $realPath   = realpath($targetInfo['dirname']);
             if (!isset($targetInfo['extension'])
                 && isset($_SESSION['Uploader'][$cUnique])
-                && strpos($realPath . DS, PFAD_UPLOADS) === 0
+                && mb_strpos($realPath . DS, PFAD_UPLOADS) === 0
             ) {
                 unset($_SESSION['Uploader'][$cUnique]);
                 if (file_exists($cFilePath)) {
@@ -91,7 +91,7 @@ if (!empty($_REQUEST['action'])) {
             break;
 
         case 'preview':
-            $oUpload   = new UploadDatei();
+            $oUpload   = new \Extensions\UploadDatei();
             $kKunde    = (int)$_SESSION['Kunde']->kKunde;
             $cFilePath = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
             $kUpload   = (int)Shop::Container()->getCryptoService()->decryptXTEA(rawurldecode($_REQUEST['secret']));

@@ -8,9 +8,9 @@ namespace OPC;
 
 use DB\DbInterface;
 use DB\ReturnType;
+use OPC\Portlets\MissingPortlet;
 use Plugin\Extension;
 use Plugin\ExtensionLoader;
-use Plugin\Plugin;
 
 /**
  * Class DB
@@ -213,32 +213,43 @@ class DB
             throw new \InvalidArgumentException("The OPC portlet class name '$class' is invalid.");
         }
 
-        $portletDB = $this->shopDB->select('topcportlet', 'cClass', $class);
+        $portletDB   = $this->shopDB->select('topcportlet', 'cClass', $class);
+        $isInstalled = \is_object($portletDB);
+        $isActive    = $isInstalled && (int)$portletDB->bActive === 1;
+        $fromPlugin  = $isInstalled && (int)$portletDB->kPlugin > 0;
 
-        if (!\is_object($portletDB)) {
-            throw new \Exception("The OPC portlet with class name '$class' could not be found.");
-        }
-
-        if ((int)$portletDB->bActive !== 1) {
-            throw new \Exception("The OPC portlet with class name '$class' is inactive.");
-        }
-
-        if ($portletDB->kPlugin > 0) {
+        if ($fromPlugin) {
             $loader  = new ExtensionLoader($this->shopDB, \Shop::Container()->getCache());
+            /** @var Extension $plugin */
             $plugin  = $loader->init((int)$portletDB->kPlugin);
-            $include = $plugin->getPaths()->getPortletsPath() .
-                $portletDB->cClass . '/' . $portletDB->cClass . '.php';
+            $include = $plugin->getPaths()->getPortletsPath() . $portletDB->cClass . '/' . $portletDB->cClass
+                . '.php';
             require_once $include;
         }
 
-        /** @var Portlet $portlet */
-        $fullClass = "\\OPC\\Portlets\\$class";
-        $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
+        if ($isInstalled && $isActive) {
+            /** @var Portlet $portlet */
+            $fullClass = "\\OPC\\Portlets\\$class";
+            $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
+            return $portlet
+                ->setTitle($portletDB->cTitle)
+                ->setGroup($portletDB->cGroup)
+                ->setActive((int)$portletDB->bActive === 1);
+        }
 
-        return $portlet
-            ->setTitle($portletDB->cTitle)
-            ->setGroup($portletDB->cGroup)
-            ->setActive((int)$portletDB->bActive === 1);
+        /** @var MissingPortlet $portlet */
+        $portlet = (new MissingPortlet('MissingPortlet', 0, 0))
+            ->setMissingClass($class)
+            ->setTitle('Missing Portlet "' . $class . '"')
+            ->setGroup('hidden')
+            ->setActive(false);
+
+        if ($fromPlugin) {
+            $portlet->setInactivePlugin($plugin)
+                    ->setTitle('Missing Portlet "' . $class . '" (' . $plugin->getPluginID() . ')');
+        }
+
+        return $portlet;
     }
 
     /**

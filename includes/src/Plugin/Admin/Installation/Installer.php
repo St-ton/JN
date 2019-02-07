@@ -182,8 +182,8 @@ final class Installer
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
         if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
-            && \strlen($baseNode['LicenceClass']) > 0
-            && \strlen($baseNode['LicenceClassFile']) > 0
+            && \mb_strlen($baseNode['LicenceClass']) > 0
+            && \mb_strlen($baseNode['LicenceClassFile']) > 0
         ) {
             $licenceClass     = $baseNode['LicenceClass'];
             $licenceClassName = $baseNode['LicenceClassFile'];
@@ -263,7 +263,7 @@ final class Installer
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
 
-            if (!isset($hits1[0]) || \strlen($hits1[0]) !== \strlen($i)) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $nVersionTMP = (int)$versionData['nr'];
@@ -334,16 +334,16 @@ final class Installer
         $line     = '';
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
-            if ($data !== '' && \strpos($data, '--') !== 0) {
-                if (\strpos($data, 'CREATE TABLE') !== false) {
+            if ($data !== '' && \mb_strpos($data, '--') !== 0) {
+                if (\mb_strpos($data, 'CREATE TABLE') !== false) {
                     $line .= \trim($data);
-                } elseif (\strpos($data, 'INSERT') !== false) {
+                } elseif (\mb_strpos($data, 'INSERT') !== false) {
                     $line .= \trim($data);
                 } else {
                     $line .= \trim($data);
                 }
 
-                if (\substr($data, \strlen($data) - 1, 1) === ';') {
+                if (\mb_substr($data, \mb_strlen($data) - 1, 1) === ';') {
                     $sqlLines[] = $line;
                     $line       = '';
                 }
@@ -370,12 +370,13 @@ final class Installer
             return $targetVersion;
         }
 
-        return $manager->migrate(null);
+        return $manager->migrate();
     }
 
     /**
-     * @param string $sqlFile
-     * @param int    $version
+     * @param string    $sqlFile
+     * @param int       $version
+     * @param \stdClass $plugin
      * @return int
      * @throws \Exceptions\CircularReferenceException
      * @throws \Exceptions\ServiceNotFoundException
@@ -397,13 +398,13 @@ final class Installer
         $sqlRegEx = '/xplugin[_]{1}' . $plugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
         foreach ($lines as $sql) {
             $sql = \StringHandler::removeNumerousWhitespaces($sql);
-            if (\stripos($sql, 'create table') !== false) {
+            if (\mb_stripos($sql, 'create table') !== false) {
                 // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
+                $index = (\mb_stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
                 $tmp   = \explode(' ', $sql);
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($table)) {
+                if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_CREATE;
                 }
                 $exists = $this->db->select('tplugincustomtabelle', 'cTabelle', $table);
@@ -414,14 +415,14 @@ final class Installer
 
                     $this->db->insert('tplugincustomtabelle', $customTable);
                 }
-            } elseif (\stripos($sql, 'drop table') !== false) {
+            } elseif (\mb_stripos($sql, 'drop table') !== false) {
                 // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
                 // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
+                $index = (\mb_stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
                 $tmp   = \explode(' ', \StringHandler::removeNumerousWhitespaces($sql));
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (\strlen($hits[0]) !== \strlen($table)) {
+                if (\mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_DELETE;
                 }
             }

@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $db       = Shop::Container()->getDB();
@@ -228,7 +228,7 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     $uploadfiles = glob(PFAD_UPLOADS . '*');
 
                     foreach ($uploadfiles as $file) {
-                        if (is_file($file) && strpos($file, '.') !== 0) {
+                        if (is_file($file) && mb_strpos($file, '.') !== 0) {
                             unlink($file);
                         }
                     }
@@ -244,9 +244,9 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
         }
         Shop::Container()->getCache()->flushAll();
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-        $cHinweis = 'Der Shop wurde mit Ihren gewählten Optionen zurückgesetzt.';
+        $cHinweis = __('successShopReturn');
     } else {
-        $cFehler = 'Bitte wählen Sie mindestens eine Option aus.';
+        $cFehler = __('errorChooseOption');
     }
 
     executeHook(HOOK_BACKEND_SHOP_RESET_AFTER);

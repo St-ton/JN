@@ -3,8 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='doctype'}<!DOCTYPE html>{/block}
-<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
-      {elseif $nSeitenTyp == URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
+<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
+      {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
       {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
 {block name='head'}
 <head>
@@ -16,14 +16,29 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
 
-        <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta itemprop="url" content="{$cCanonicalURL}"/>
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
         <meta property="og:description" content="{$meta_description|truncate:1000:'':true}" />
-        <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
+
+        {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->Bilder)}
+            <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLGross}" />
+            <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
+        {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
+            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif'
+            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
+        }
+            <meta itemprop="image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
+            <meta property="og:image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
+        {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($oNewsArchiv->getPreviewImage())}
+            <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
+            <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
+        {else}
+            <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
+            <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
+        {/if}
     {/block}
 
     <title itemprop="name">{block name='head-title'}{$meta_title}{/block}</title>
@@ -36,10 +51,6 @@
 
     {block name='head-icons'}
             <link type="image/x-icon" href="{$shopFaviconURL}" rel="icon">
-        {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
-            <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
-            <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
-        {/if}
     {/block}
 
     {block name='head-resources'}
@@ -137,7 +148,7 @@
                                 <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
                                 <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                                     {if isset($ShopLogoURL)}
-                                        {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
+                                        {imageTag src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
                                     {else}
                                         <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                     {/if}

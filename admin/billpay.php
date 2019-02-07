@@ -20,17 +20,17 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 $cFehler = null;
 $cStep   = 'uebersicht';
 
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 /** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
 
-if (strlen($oBillpay->getSetting('pid')) > 0
-    && strlen($oBillpay->getSetting('mid')) > 0
-    && strlen($oBillpay->getSetting('bpsecure')) > 0
+if (mb_strlen($oBillpay->getSetting('pid')) > 0
+    && mb_strlen($oBillpay->getSetting('mid')) > 0
+    && mb_strlen($oBillpay->getSetting('bpsecure')) > 0
 ) {
     $oItem_arr = [];
     $oConfig   = $oBillpay->getApi('module_config');
@@ -106,9 +106,9 @@ if (strlen($oBillpay->getSetting('pid')) > 0
            ->assign('oItem_arr', $oItem_arr)
            ->assign('oPagiLog', $oPagiLog);
 } else {
-    $cFehler = 'Billpay wurde bisher nicht konfiguriert. ' .
+    $cFehler = __('errorBillpayNotConfigured') .
         '<a href="https://jtl-url.de/0kqhs" rel="noopener" target="_blank">' .
-        '<i class="fa fa-external-link"></i> Zur Dokumentation</a>';
+        '<i class="fa fa-external-link"></i>' . __('docu') . '</a>';
 }
 
 $smarty->assign('cFehlerBillpay', $cFehler);
@@ -140,10 +140,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
                 case 'pass':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             Shop::Container()->getDB()->delete(

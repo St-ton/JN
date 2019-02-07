@@ -86,32 +86,31 @@ class Lieferschein
      */
     private function loadFromDB(int $kLieferschein = 0, $oData = null): self
     {
-        $oObj = Shop::Container()->getDB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
-        if ($oObj !== null && $oObj->kLieferschein > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $setter = 'set' . substr($cMember, 1);
+        $item = Shop::Container()->getDB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
+        if ($item !== null && $item->kLieferschein > 0) {
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $setter = 'set' . mb_substr($member, 1);
                 if (is_callable([$this, $setter])) {
-                    $this->$setter($oObj->$cMember);
+                    $this->$setter($item->$member);
                 } else {
-                    $this->$cMember = $oObj->$cMember;
+                    $this->$member = $item->$member;
                 }
             }
 
-            $kLieferscheinPos_arr = Shop::Container()->getDB()->selectAll(
+            $positions = Shop::Container()->getDB()->selectAll(
                 'tlieferscheinpos',
                 'kLieferschein',
                 $kLieferschein,
                 'kLieferscheinPos'
             );
-            foreach ($kLieferscheinPos_arr as $oLieferscheinPos) {
-                $pos                           = new Lieferscheinpos($oLieferscheinPos->kLieferscheinPos);
+            foreach ($positions as $position) {
+                $pos                           = new Lieferscheinpos($position->kLieferscheinPos);
                 $pos->oLieferscheinPosInfo_arr = [];
 
                 $posInfos = Shop::Container()->getDB()->selectAll(
                     'tlieferscheinposinfo',
                     'kLieferscheinPos',
-                    (int)$oLieferscheinPos->kLieferscheinPos,
+                    (int)$position->kLieferscheinPos,
                     'kLieferscheinPosInfo'
                 );
                 if (is_array($posInfos) && !empty($posInfos)) {
@@ -123,14 +122,14 @@ class Lieferschein
                 $this->oLieferscheinPos_arr[] = $pos;
             }
 
-            $kVersand_arr = Shop::Container()->getDB()->selectAll(
+            $shippings = Shop::Container()->getDB()->selectAll(
                 'tversand',
                 'kLieferschein',
                 $kLieferschein,
                 'kVersand'
             );
-            foreach ($kVersand_arr as $oVersand) {
-                $this->oVersand_arr[] = new Versand($oVersand->kVersand, $oData);
+            foreach ($shippings as $shipping) {
+                $this->oVersand_arr[] = new Versand($shipping->kVersand, $oData);
             }
         }
 
@@ -143,15 +142,15 @@ class Lieferschein
      */
     public function save(bool $bPrim = true)
     {
-        $oObj                   = new stdClass();
-        $oObj->kInetBestellung  = $this->kInetBestellung;
-        $oObj->cLieferscheinNr  = $this->cLieferscheinNr;
-        $oObj->cHinweis         = $this->cHinweis;
-        $oObj->nFulfillment     = $this->nFulfillment;
-        $oObj->nStatus          = $this->nStatus;
-        $oObj->dErstellt        = $this->dErstellt;
-        $oObj->bEmailVerschickt = $this->bEmailVerschickt ? 1 : 0;
-        $kPrim                  = Shop::Container()->getDB()->insert('tlieferschein', $oObj);
+        $ins                   = new stdClass();
+        $ins->kInetBestellung  = $this->kInetBestellung;
+        $ins->cLieferscheinNr  = $this->cLieferscheinNr;
+        $ins->cHinweis         = $this->cHinweis;
+        $ins->nFulfillment     = $this->nFulfillment;
+        $ins->nStatus          = $this->nStatus;
+        $ins->dErstellt        = $this->dErstellt;
+        $ins->bEmailVerschickt = $this->bEmailVerschickt ? 1 : 0;
+        $kPrim                  = Shop::Container()->getDB()->insert('tlieferschein', $ins);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }

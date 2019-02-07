@@ -357,7 +357,7 @@ class News extends MainModel
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
+        $this->dErstellt = (mb_convert_case($dErstellt, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 
@@ -378,7 +378,7 @@ class News extends MainModel
      */
     public function setGueltigVon($dGueltigVon): self
     {
-        $this->dGueltigVon = (strtoupper($dGueltigVon) === 'NOW()')
+        $this->dGueltigVon = (mb_convert_case($dGueltigVon, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dGueltigVon;
 
@@ -399,7 +399,7 @@ class News extends MainModel
      */
     public function setGueltigVonJS($dGueltigVonJS): self
     {
-        $this->dGueltigVonJS = (strtoupper($dGueltigVonJS) === 'NOW()')
+        $this->dGueltigVonJS = (mb_convert_case($dGueltigVonJS, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dGueltigVonJS;
 
@@ -490,7 +490,7 @@ class News extends MainModel
             $oSprache = Sprache::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
-        $oObj_arr  = Shop::Container()->getDB()->query(
+        $newsData  = Shop::Container()->getDB()->query(
             "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                 COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                 FROM tnews
@@ -514,14 +514,14 @@ class News extends MainModel
                 {$cSqlLimit}",
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        $oNews_arr = [];
-        foreach ($oObj_arr as $oObj) {
-            $oObj->cUrl    = URL::buildURL($oObj, URLART_NEWS);
-            $oObj->cUrlExt = Shop::getURL() . "/{$oObj->cUrl}";
-            $oNews_arr[]   = new self(null, $oObj);
+        $newsItems = [];
+        foreach ($newsData as $item) {
+            $item->cUrl    = URL::buildURL($item, URLART_NEWS);
+            $item->cUrlExt = Shop::getURL() . '/' . $item->cUrl;
+            $newsItems[]   = new self(null, $item);
         }
 
-        return $oNews_arr;
+        return $newsItems;
     }
 
     /**
@@ -538,8 +538,8 @@ class News extends MainModel
         bool $showOnlyActive = false
     ): array {
         $cacheID = 'newsCategories_Lang_' . $kSprache;
-        if ($noCache || ($oNewsCategories_arr = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $oNewsCategories     = Shop::Container()->getDB()->query(
+        if ($noCache || ($categories = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $data       = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de,
                 t.name AS cName
                     FROM tnewskategorie
@@ -549,12 +549,12 @@ class News extends MainModel
                     ORDER BY nSort ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-            $oNewsCategories     = is_array($oNewsCategories) ? $oNewsCategories : [];
-            $oNewsCategories_arr = self::buildNewsCategoryTree($oNewsCategories);
-            Shop::Container()->getCache()->set($cacheID, $oNewsCategories_arr, [CACHING_GROUP_OBJECT], 3600);
+            $data       = is_array($data) ? $data : [];
+            $categories = self::buildNewsCategoryTree($data);
+            Shop::Container()->getCache()->set($cacheID, $categories, [CACHING_GROUP_OBJECT], 3600);
         }
 
-        return $flatten ? self::flattenNewsCategoryTree($oNewsCategories_arr) : $oNewsCategories_arr;
+        return $flatten ? self::flattenNewsCategoryTree($categories) : $categories;
     }
 
     /**

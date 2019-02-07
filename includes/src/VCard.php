@@ -122,7 +122,7 @@ class VCard
      * @param string $vcardData
      * @return VCard
      */
-    protected function createInstance($vcardData)
+    protected function createInstance($vcardData): self
     {
         $className = static::class;
 
@@ -133,7 +133,7 @@ class VCard
      * @param string $encodedStr
      * @return string
      */
-    protected static function correctEncoding($encodedStr)
+    protected static function correctEncoding($encodedStr): string
     {
         // das erste BASE64 final = sign muss maskiert werden, damit es vom nachfolgenden replace nicht ersetzt wird
         $encodedStr = preg_replace('{(\n\s.+)=(\n)}', '$1-base64=-$2', $encodedStr);
@@ -152,7 +152,7 @@ class VCard
      * @param string $str
      * @return string
      */
-    protected static function unescape($str)
+    protected static function unescape($str): string
     {
         return str_replace(
             ['\:', '\;', '\,', self::NL],
@@ -167,7 +167,7 @@ class VCard
      * @param array|null $rawParams
      * @return array
      */
-    protected static function parseParameters($key, array $rawParams = null)
+    protected static function parseParameters($key, array $rawParams = null): array
     {
         $result = [];
         $type   = [];
@@ -179,7 +179,7 @@ class VCard
         // Parameter in (key, value) pairs aufteilen
         $params = [];
         foreach ($rawParams as $item) {
-            $params[] = explode('=', strtolower($item));
+            $params[] = explode('=', mb_convert_case($item, MB_CASE_LOWER));
         }
 
         foreach ($params as $index => $param) {
@@ -215,7 +215,7 @@ class VCard
                         $type = array_merge($type, explode(',', $param[1]));
                         break;
                     case 'value':
-                        if (strtolower($param[1]) === 'url') {
+                        if (mb_convert_case($param[1], MB_CASE_LOWER) === 'url') {
                             $result['encoding'] = 'uri';
                         }
                         break;
@@ -260,17 +260,17 @@ class VCard
      * parses a vcard line
      * @param string $line
      */
-    protected function parseVCardLine($line)
+    protected function parseVCardLine($line): void
     {
         [$key, $rawValue] = explode(':', $line, 2);
 
-        $key = strtolower(trim(self::unescape($key)));
+        $key = mb_convert_case(trim(self::unescape($key)), MB_CASE_LOWER);
         if (in_array($key, ['begin', 'end'], true)) {
             // begin und end müssen nicht weiter geparst werden
             return;
         }
 
-        if ((strpos($key, 'agent') === 0) && (stripos($rawValue, 'begin:vcard') !== false)) {
+        if ((mb_strpos($key, 'agent') === 0) && (mb_stripos($rawValue, 'begin:vcard') !== false)) {
             $vCard = $this->createInstance(str_replace('-wrap-', "\n", $rawValue));
 
             if (!isset($this->data[$key])) {
@@ -288,7 +288,7 @@ class VCard
         $type     = false;
         $params   = [];
 
-        if (strpos($key, 'item') === 0) {
+        if (mb_strpos($key, 'item') === 0) {
             $tmpKey = explode('.', $key, 2);
             $key    = $tmpKey[1];
         }
@@ -318,7 +318,7 @@ class VCard
 
         // prüfe auf zusätzliche Doppelpunk getrennte parameter (z.B. Apples "X-ABCROP-RECTANGLE" für photos)
         if (isset($params['encoding'])
-            && strpos($rawValue, ':') !== false
+            && mb_strpos($rawValue, ':') !== false
             && in_array($key, self::$elementsFile, true)
             && in_array($params['encoding'], ['b', 'base64'], true)
         ) {
@@ -361,7 +361,7 @@ class VCard
      * parses vcard
      * @throws Exception
      */
-    protected function parseVCard()
+    protected function parseVCard(): void
     {
         $beginCount = preg_match_all('{^BEGIN\:VCARD}miS', $this->rawVCard);
         $endCount   = preg_match_all('{^END\:VCARD}miS', $this->rawVCard);
@@ -381,7 +381,7 @@ class VCard
             $this->rawVCard = str_replace("\r", self::NL, $this->rawVCard);
             $this->rawVCard = preg_replace('{(\n+)}', self::NL, $this->rawVCard);
 
-            if ($this->mode == self::MODE_MULTIPLE) {
+            if ($this->mode === self::MODE_MULTIPLE) {
                 $this->rawVCard = explode('BEGIN:VCARD', $this->rawVCard);
                 // leere Einträge entfernen
                 $this->rawVCard = array_filter($this->rawVCard);
@@ -396,7 +396,7 @@ class VCard
 
                 foreach ($lines as $line) {
                     // Zeilen ohne Doppelpunkt überspringen
-                    if (strpos($line, ':') === false) {
+                    if (mb_strpos($line, ':') === false) {
                         continue;
                     }
 
@@ -413,7 +413,7 @@ class VCard
      */
     public function __get($property)
     {
-        $property = strtolower($property);
+        $property = mb_convert_case($property, MB_CASE_LOWER);
 
         if ($property === 'mode') {
             return $this->mode;
@@ -449,8 +449,8 @@ class VCard
                 $result = $propData[$property];
 
                 foreach ($result as $key => $value) {
-                    if (stripos($value['Value'], 'uri:') === 0) {
-                        $result[$key]['Value']    = substr($value, 4);
+                    if (mb_stripos($value['Value'], 'uri:') === 0) {
+                        $result[$key]['Value']    = mb_substr($value, 4);
                         $result[$key]['Encoding'] = 'uri';
                     }
                 }
@@ -492,7 +492,7 @@ class VCard
      */
     public function __isset($property)
     {
-        $property = strtolower($property);
+        $property = mb_convert_case($property, MB_CASE_LOWER);
 
         if ($property === 'mode') {
             return isset($this->mode);
@@ -566,7 +566,7 @@ class VCard
      * @param int $vCard
      * @return vCard
      */
-    public function selectVCard($vCard)
+    public function selectVCard($vCard): self
     {
         $vCard        = (int)$vCard;
         $this->iVCard = 0;
@@ -580,12 +580,8 @@ class VCard
     /**
      * @return stdClass
      */
-    public function asKunde()
+    public function asKunde(): stdClass
     {
-        $Einstellungen = Shop::getSettings([
-            CONF_KUNDEN
-        ]);
-
         $Kunde = new stdClass();
         if (isset($this->GENDER)) {
             $Kunde->cAnrede = $this->GENDER === 'F' ? 'w' : 'm';
@@ -629,7 +625,7 @@ class VCard
                 $Kunde->cLand = Sprache::getIsoCodeByCountryName($adr->Region);
             }
             if ($Kunde->cLand === 'noISO') {
-                $Kunde->cLand = $Einstellungen['kunden']['kundenregistrierung_standardland'];
+                $Kunde->cLand = Shop::getConfigValue(CONF_KUNDEN, 'kundenregistrierung_standardland');
             }
             if (preg_match('/^(.*)[\. ]*([0-9]+[a-zA-Z]?)$/U', $Kunde->cStrasse, $hits)) {
                 $Kunde->cStrasse    = $hits[1];

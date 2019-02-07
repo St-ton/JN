@@ -4,9 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\JSONAPI;
 use Helpers\Form;
+use Backend\AdminIO;
 
-/** @global AdminAccount $oAccount */
+/** @global \Backend\AdminAccount $oAccount */
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -46,8 +48,8 @@ $io
     ->register('getCurrencyConversion', 'getCurrencyConversionIO')
     ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
     ->register('getNotifyDropIO')
-    ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
-    ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])
+    ->register('getNewTwoFA', ['Backend\TwoFA', 'getNewTwoFA'])
+    ->register('genTwoFAEmergencyCodes', ['Backend\TwoFA', 'genTwoFAEmergencyCodes'])
     ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
     ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
     ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')

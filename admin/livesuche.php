@@ -10,7 +10,7 @@ use Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 setzeSprache();
@@ -19,20 +19,20 @@ $hinweis     = '';
 $fehler      = '';
 $settingsIDs = [423, 425, 422, 437, 438];
 $db          = Shop::Container()->getDB();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 $cLivesucheSQL         = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
-if (strlen(Request::verifyGPDataString('cSuche')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
     $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
 
-    if (strlen($cSuche) > 0) {
+    if (mb_strlen($cSuche) > 0) {
         $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
         $smarty->assign('cSuche', $cSuche);
     } else {
-        $fehler = 'Fehler: Bitte geben Sie einen Suchbegriff ein.';
+        $fehler = __('errorSearchTermMissing');
     }
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
@@ -72,7 +72,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     if (isset($_POST['suchanfragenUpdate'])) {
         if (is_array($_POST['kSuchanfrageAll']) && count($_POST['kSuchanfrageAll']) > 0) {
             foreach ($_POST['kSuchanfrageAll'] as $kSuchanfrage) {
-                if (strlen($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0
+                if (mb_strlen($_POST['nAnzahlGesuche_' . $kSuchanfrage]) > 0
                     && (int)$_POST['nAnzahlGesuche_' . $kSuchanfrage] > 0
                 ) {
                     $_upd                 = new stdClass();
@@ -146,7 +146,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         }
         foreach ($Suchanfragen as $sucheanfrage) {
             if (!isset($_POST['mapping_' . $sucheanfrage->kSuchanfrage])
-                || strtolower($sucheanfrage->cSuche) !== strtolower($_POST['mapping_' . $sucheanfrage->kSuchanfrage])
+                || mb_convert_case($sucheanfrage->cSuche, MB_CASE_LOWER) !== mb_convert_case($_POST['mapping_' . $sucheanfrage->kSuchanfrage], MB_CASE_LOWER)
             ) {
                 if (!empty($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
                     $nMappingVorhanden                      = 1;
@@ -188,27 +188,29 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                             $upd
                         );
 
-                        $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
-                            '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
+                        $hinweis .= sprintf(
+                            __('successSearchMap'),
+                            $suchanfragemapping_obj->cSuche,
+                            $suchanfragemapping_obj->cSucheNeu
+                        ) . '<br />';
                     }
                 }
             } else {
-                $fehler .= 'Die Suchanfrage "' . $sucheanfrage->cSuche .
-                    '" kann nicht auf den gleichen Suchebegriff gemappt werden.';
+                $fehler .= __('errorSearchMapSelf');
             }
         }
 
-        $hinweis .= 'Die Suchanfragen wurden erfolgreich aktualisiert.<br />';
+        $hinweis .= __('successSearchRefresh') . '<br />';
     } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
         $cMapping = Request::verifyGPDataString('cMapping');
 
-        if (strlen($cMapping) > 0) {
+        if (mb_strlen($cMapping) > 0) {
             if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
                 foreach ($_POST['kSuchanfrage'] as $kSuchanfrage) {
                     $query = $db->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
 
                     if ($query->kSuchanfrage > 0) {
-                        if (strtolower($query->cSuche) !== strtolower($cMapping)) {
+                        if (mb_convert_case($query->cSuche, MB_CASE_LOWER) !== mb_convert_case($cMapping, MB_CASE_LOWER)) {
                             $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $cMapping);
                             if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                                 $queryMapping                 = new stdClass();
@@ -251,29 +253,26 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                         \DB\ReturnType::DEFAULT
                                     );
 
-                                    $hinweis = 'Ihre markierten Suchanfragen wurden erfolgreich auf "' .
-                                        $cMapping . '" gemappt.';
+                                    $hinweis = __('successSearchMapMultiple');
                                 }
                             } else {
-                                $fehler = 'Fehler: Sie haben versucht auf eine nicht ' .
-                                    'existierende Suchanfrage zu mappen.';
+                                $fehler = __('errorSearchMapToNotExist');
                                 break;
                             }
                         } else {
-                            $fehler = 'Die Suchanfrage "' . $query->cSuche .
-                                '" kann nicht auf den gleichen Suchebegriff gemappt werden.';
+                            $fehler = sprintf(__('errorSearchMapSelf'), $query->cSuche);
                             break;
                         }
                     } else {
-                        $fehler = 'Fehler: Sie haben versucht eine nicht existierende Suchanfrage zu mappen.';
+                        $fehler = __('errorSearchMapNotExist');
                         break;
                     }
                 }
             } else {
-                $fehler = 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.';
+                $fehler = __('errorAtLeastOneSearch');
             }
         } else {
-            $fehler = 'Fehler: Bitte geben Sie ein Mappingname an.';
+            $fehler = __('errorMapNameMissing');
         }
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         if (is_array($_POST['kSuchanfrage'])) {
@@ -291,13 +290,11 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                 $db->insert('tsuchanfrageblacklist', $obj);
                 // Aus tseo loeschen
                 $db->delete('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$kSuchanfrage]);
-                $hinweis .= 'Die Suchanfrage "' . $kSuchanfrage_obj->cSuche .
-                    '" wurde erfolgreich gelöscht.<br />';
-                $hinweis .= 'Die Suchanfrage "' . $kSuchanfrage_obj->cSuche .
-                    '" wurde auf die Blacklist hinzugefügt.<br />';
+                $hinweis .= sprintf(__('successSearchDelete'), $kSuchanfrage_obj->cSuche) . '<br />';
+                $hinweis .= sprintf(__('successSearchBlacklist'), $kSuchanfrage_obj->cSuche) . '<br />';
             }
         } else {
-            $fehler .= 'Bitte wählen Sie mindestens eine Suchanfrage aus.<br />';
+            $fehler .= __('errorAtLeastOneSearch') . '<br />';
         }
     }
 } elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 2) { // Erfolglos mapping
@@ -313,8 +310,8 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         );
         foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {
             $idx = 'mapping_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos;
-            if (isset($_POST[$idx]) && strlen($_POST[$idx]) > 0) {
-                if (strtolower($Suchanfrageerfolglos->cSuche) !== strtolower($_POST[$idx])) {
+            if (isset($_POST[$idx]) && mb_strlen($_POST[$idx]) > 0) {
+                if (mb_convert_case($Suchanfrageerfolglos->cSuche, MB_CASE_LOWER) !== mb_convert_case($_POST[$idx], MB_CASE_LOWER)) {
                     $suchanfragemapping_obj                 = new stdClass();
                     $suchanfragemapping_obj->kSprache       = $_SESSION['kSprache'];
                     $suchanfragemapping_obj->cSuche         = $Suchanfrageerfolglos->cSuche;
@@ -363,17 +360,21 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                 (int)$oAlteSuche->kSuchanfrageErfolglos
                             );
 
-                            $hinweis .= 'Die Suchanfrage "' . $suchanfragemapping_obj->cSuche .
-                                '" wurde erfolgreich auf "' . $suchanfragemapping_obj->cSucheNeu . '" gemappt.<br />';
+                            $hinweis .= sprintf(
+                                __('successSearchMap'),
+                                $suchanfragemapping_obj->cSuche,
+                                $suchanfragemapping_obj->cSucheNeu
+                            ) . '<br />';
                         }
                     } else {
-                        $fehler .= 'Das Mapping von "' . $suchanfragemapping_obj->cSuche .
-                            '" auf "' . $suchanfragemapping_obj->cSucheNeu .
-                            '" würde eine Schleife verursachen.<br />';
+                        $fehler .= sprintf(
+                            __('errorSearchMapLoop'),
+                            $suchanfragemapping_obj->cSuche,
+                            $suchanfragemapping_obj->cSucheNeu
+                        ) . '<br />';
                     }
                 } else {
-                    $fehler .= 'Die Suchanfrage "' . $Suchanfrageerfolglos->cSuche .
-                        '" kann nicht auf den gleichen Suchbegriff gemappt werden.';
+                    $fehler .= sprintf(__('errorSearchMapSelf'), $Suchanfrageerfolglos->cSuche);
                 }
             } elseif ((int)$_POST['nErfolglosEditieren'] === 1) {
                 $idx = 'cSuche_' . $Suchanfrageerfolglos->kSuchanfrageErfolglos;
@@ -400,9 +401,9 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     $kSuchanfrageErfolglos
                 );
             }
-            $hinweis = 'Ihre markierten Suchanfragen wurden erfolgreich gelöscht.';
+            $hinweis = __('successSearchDeleteMultiple');
         } else {
-            $fehler = 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.';
+            $fehler = __('errorAtLeastOneSearch');
         }
     }
     $smarty->assign('tab', 'erfolglos');
@@ -421,7 +422,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         }
     }
     $smarty->assign('tab', 'blacklist');
-    $hinweis .= 'Die Blacklist wurde erfolgreich aktualisiert.';
+    $hinweis .= __('successBlacklistRefresh');
 } elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 4) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kSuchanfrageMapping'])) {
@@ -431,19 +432,19 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     'kSuchanfrageMapping',
                     (int)$kSuchanfrageMapping
                 );
-                if (isset($queryMapping->cSuche) && strlen($queryMapping->cSuche) > 0) {
+                if (isset($queryMapping->cSuche) && mb_strlen($queryMapping->cSuche) > 0) {
                     $db->delete(
                         'tsuchanfragemapping',
                         'kSuchanfrageMapping',
                         (int)$kSuchanfrageMapping
                     );
-                    $hinweis .= 'Das Mapping "' . $queryMapping->cSuche . '" wurde erfolgreich gelöscht.<br />';
+                    $hinweis .= sprintf(__('successSearchMapDelete'), $queryMapping->cSuche);
                 } else {
-                    $fehler .= 'Es wurde kein Mapping mit der ID "' . $kSuchanfrageMapping . '" gefunden.<br />';
+                    $fehler .= __('errorSearchMapNotFound') . '<br />';
                 }
             }
         } else {
-            $fehler .= 'Bitte wählen Sie mindestens ein Mapping aus.<br />';
+            $fehler .= __('errorAtLeastOneSearchMap') . '<br />';
         }
     }
     $smarty->assign('tab', 'mapping');
@@ -492,7 +493,7 @@ $Suchanfragen = $db->query(
     \DB\ReturnType::ARRAY_OF_OBJECTS
 );
 
-if (isset($Suchanfragen->tcSeo) && strlen($Suchanfragen->tcSeo) > 0) {
+if (isset($Suchanfragen->tcSeo) && mb_strlen($Suchanfragen->tcSeo) > 0) {
     $Suchanfragen->cSeo = $Suchanfragen->tcSeo;
 }
 unset($Suchanfragen->tcSeo);

@@ -26,7 +26,7 @@ class StringHandler
      * @param string $string
      * @return string
      */
-    public static function unhtmlentities($string)
+    public static function unhtmlentities($string): string
     {
         // replace numeric entities
         $string = preg_replace_callback(
@@ -103,8 +103,8 @@ class StringHandler
             ? str_replace(['\\\'', '\\'], '', $string)
             : str_replace(['\"', '\\\'', '\\', '"', '\''], '', $string);
 
-        if ((int)$nSuche === 1 && strlen($string) > 10) {
-            $string = substr(str_replace(['(', ')', ';'], '', $string), 0, 50);
+        if ((int)$nSuche === 1 && mb_strlen($string) > 10) {
+            $string = mb_substr(str_replace(['(', ')', ';'], '', $string), 0, 50);
         }
 
         return $string;
@@ -242,9 +242,9 @@ class StringHandler
      */
     public static function convertISO2ISO639(string $ISO)
     {
-        $cISO_arr = self::getISOMappings();
+        $mappings = self::getISOMappings();
 
-        return $cISO_arr[$ISO];
+        return $mappings[$ISO];
     }
 
     /**
@@ -255,7 +255,7 @@ class StringHandler
     {
         $mappings = self::getISOMappings();
         foreach ($mappings as $cISO639 => $cISO) {
-            if (strtolower($cISO) === strtolower($ISO)) {
+            if (mb_convert_case($cISO, MB_CASE_LOWER) === mb_convert_case($ISO, MB_CASE_LOWER)) {
                 return $cISO639;
             }
         }
@@ -520,7 +520,9 @@ class StringHandler
         ) {
             $input = self::convertUTF8($input);
         }
-        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii')
+            ? idn_to_ascii($input, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46)
+            : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_EMAIL);
 
         return $validate
@@ -543,7 +545,9 @@ class StringHandler
         ) {
             $input = self::convertUTF8($input);
         }
-        $input     = function_exists('idn_to_ascii') ? idn_to_ascii($input) : $input;
+        $input     = function_exists('idn_to_ascii')
+            ? idn_to_ascii($input, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46)
+            : $input;
         $sanitized = filter_var($input, FILTER_SANITIZE_URL);
 
         return $validate
@@ -557,7 +561,7 @@ class StringHandler
      * @param array $parts
      * @return string - the resulting URL
      */
-    public static function buildUrl(array $parts)
+    public static function buildUrl(array $parts): string
     {
         return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
             (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
@@ -605,7 +609,7 @@ class StringHandler
         if (!preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;
         }
-        list($tag, $monat, $jahr) = explode('.', $data);
+        [$tag, $monat, $jahr] = explode('.', $data);
         if (!checkdate($monat, $tag, $jahr)) {
             return 3;
         }
@@ -653,17 +657,17 @@ class StringHandler
             'l' => URLART_LIVESUCHE
         ];
         foreach ($hits[0] as $hit) {
-            $cParameter = substr($hit, strpos($hit, '#') + 1, 1);
-            $nBis       = strpos($hit, ':', 4);
+            $cParameter = mb_substr($hit, mb_strpos($hit, '#') + 1, 1);
+            $nBis       = mb_strpos($hit, ':', 4);
             // Es wurde kein Name angegeben
             if ($nBis === false) {
-                $nBis  = strpos($hit, ':', 3);
-                $nVon  = strpos($hit, '#', $nBis);
-                $cKey  = substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
+                $nBis  = mb_strpos($hit, ':', 3);
+                $nVon  = mb_strpos($hit, '#', $nBis);
+                $cKey  = mb_substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
                 $cName = '';
             } else {
-                $cKey  = substr($hit, 4, $nBis - 4);
-                $cName = substr($hit, $nBis + 1, strpos($hit, '#', $nBis) - ($nBis + 1));
+                $cKey  = mb_substr($hit, 4, $nBis - 4);
+                $cName = mb_substr($hit, $nBis + 1, mb_strpos($hit, '#', $nBis) - ($nBis + 1));
             }
 
             $oObjekt = new stdClass();
@@ -855,7 +859,7 @@ class StringHandler
             }
             executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_PARSENEWSTEXT);
 
-            if (strlen($cName) > 0) {
+            if (mb_strlen($cName) > 0) {
                 $oObjekt->cName = $cName;
                 $cName          = ':' . $cName;
             }
@@ -967,7 +971,7 @@ class StringHandler
      */
     public static function removeNumerousWhitespaces($string): string
     {
-        while (strpos($string, '  ')) {
+        while (mb_strpos($string, '  ')) {
             $string = str_replace('  ', ' ', $string);
         }
 

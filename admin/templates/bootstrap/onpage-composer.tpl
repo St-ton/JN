@@ -249,10 +249,13 @@
                 <form id="configForm">
                     <div class="modal-body" id="configModalBody"></div>
                     <div class="modal-footer">
-                        <div class="btn-group">
+                        <div class="btn-group" id="stdConfigButtons">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
                             <button class="btn btn-primary">{__('Save')}</button>
                         </div>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="missingConfigButtons">
+                            {__('OK')}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -371,7 +374,7 @@
                                     </label>
                                 </div>
                                 <div class="btn-group pull-right">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
                                     <button class="btn btn-primary">Tour starten</button>
                                 </div>
                             </form>
@@ -409,7 +412,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('cancel')}</button>
                             <button class="btn btn-primary">Übernehmen</button>
                         </div>
                     </div>
@@ -448,7 +451,7 @@
             Portlet-Label
         </button>
         <button type="button" class="btn btn-default btn-sm" id="btnConfig" title="Einstellungen bearbeiten">
-            <i class="fa fa-pencil"></i>
+            <i class="fa fa-edit"></i>
         </button>
         <button type="button" class="btn btn-default btn-sm" id="btnClone" title="Auswahl kopieren">
             <i class="fa fa-clone"></i>
@@ -457,7 +460,7 @@
             <i class="fa fa-star"></i>
         </button>
         <button type="button" class="btn btn-default btn-sm" id="btnParent" title="Gehe eine Ebene höher">
-            <i class="fa fa-level-up"></i>
+            <i class="fa fa-level-up fas fa-level-up-alt"></i>
         </button>
         <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="Auswahl löschen [Entf]">
             <i class="fa fa-trash"></i>

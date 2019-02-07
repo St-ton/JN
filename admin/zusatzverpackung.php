@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
@@ -43,11 +43,11 @@ if ($action === 'save') {
         JTL_CHARSET
     );
 
-    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)) {
-        $cFehler .= 'Fehler: Bitte geben Sie der Verpackung einen Namen.<br />';
+    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)) {
+        $cFehler .= __('errorNameMissing') . '<br />';
     }
     if (!(is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0)) {
-        $cFehler .= 'Fehler: Bitte wählen Sie mindestens eine Kundengruppe aus.<br />';
+        $cFehler .= __('errorCustomerGroupMissing') . '<br />';
     }
 
     if ($cFehler !== '') {
@@ -91,8 +91,7 @@ if ($action === 'save') {
                 );
             Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
         }
-        $cHinweis .= 'Die Verpackung "' . $_POST['cName_' .
-            $oSprache_arr[0]->cISO] . '" wurde erfolgreich gespeichert.<br />';
+        $cHinweis .= sprintf(__('successPackagingSave'), $_POST['cName_' . $oSprache_arr[0]->cISO]) . '<br />';
     }
 } elseif ($action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
     $kVerpackung = Request::verifyGPCDataInt('kVerpackung');
@@ -124,9 +123,9 @@ if ($action === 'save') {
             // tverpackungsprache loeschen
             Shop::Container()->getDB()->delete('tverpackungsprache', 'kVerpackung', $kVerpackung);
         }
-        $cHinweis .= 'Die markierten Verpackungen wurden erfolgreich gelöscht.<br />';
+        $cHinweis .= __('successPackagingDelete') . '<br />';
     } else {
-        $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Verpackung.<br />';
+        $cFehler .= __('errorAtLeastOnePackaging') . '<br />';
     }
 } elseif ($action === 'refresh') {
     if (isset($_POST['nAktivTMP']) && is_array($_POST['nAktivTMP']) && count($_POST['nAktivTMP']) > 0) {
@@ -135,7 +134,7 @@ if ($action === 'save') {
             $upd->nAktiv = isset($_POST['nAktiv']) && in_array($kVerpackung, $_POST['nAktiv'], true) ? 1 : 0;
             Shop::Container()->getDB()->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);
         }
-        $cHinweis .= 'Ihre markierten Verpackungen wurden erfolgreich aktualisiert.<br />';
+        $cHinweis .= __('successPackagingSaveMultiple') . '<br />';
     }
 }
 
@@ -192,7 +191,7 @@ function gibKundengruppeObj($cKundengruppe)
     $kKundengruppeTMP_arr = [];
     $cKundengruppeTMP_arr = [];
 
-    if (strlen($cKundengruppe) > 0) {
+    if (mb_strlen($cKundengruppe) > 0) {
         // Kundengruppen holen
         $oKundengruppe_arr = Shop::Container()->getDB()->query(
             'SELECT kKundengruppe, cName FROM tkundengruppe',
@@ -236,7 +235,7 @@ function holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, &$smar
 {
     $oVerpackung->oSprach_arr = [];
     foreach ($_POST as $key => $value) {
-        if (strpos($key, 'cName') !== false) {
+        if (mb_strpos($key, 'cName') !== false) {
             $cISO                                   = explode('cName_', $key)[1];
             $idx                                    = 'cBeschreibung_' . $cISO;
             $oVerpackung->oSprach_arr[$cISO]        = new stdClass();

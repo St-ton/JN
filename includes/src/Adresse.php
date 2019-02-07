@@ -186,11 +186,11 @@ class Adresse
      */
     public function mappeAnrede(string $anrede): string
     {
-        switch (strtolower($anrede)) {
+        switch (mb_convert_case($anrede, MB_CASE_LOWER)) {
             case 'm':
-                return Shop::Lang()->get('salutationM', 'global');
+                return Shop::Lang()->get('salutationM');
             case 'w':
-                return Shop::Lang()->get('salutationW', 'global');
+                return Shop::Lang()->get('salutationW');
             default:
                 return '';
         }
@@ -203,9 +203,9 @@ class Adresse
     public function pruefeLandISO(string $iso): string
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $matches);
-        if (strlen($matches[0]) !== strlen($iso)) {
+        if (mb_strlen($matches[0]) !== mb_strlen($iso)) {
             $o = Sprache::getIsoCodeByCountryName($iso);
-            if ($o !== 'noISO' && strlen($o) > 0) {
+            if ($o !== 'noISO' && mb_strlen($o) > 0) {
                 $iso = $o;
             }
         }

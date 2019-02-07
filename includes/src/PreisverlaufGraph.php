@@ -332,13 +332,13 @@ class PreisverlaufGraph
     public $ColorText;
 
     /**
-     * @param int    $kArtikel
-     * @param int    $kKundegruppe
-     * @param int    $nMonat
-     * @param array  $oConfig_arr
-     * @param object $oPreisConfig
+     * @param int    $productID
+     * @param int    $customerGroupID
+     * @param int    $month
+     * @param array  $config
+     * @param object $priceConfig
      */
-    public function __construct($kArtikel, $kKundegruppe, $nMonat, $oConfig_arr, $oPreisConfig)
+    public function __construct($productID, $customerGroupID, $month, $config, $priceConfig)
     {
         $this->nPolsterLinks   = 25;
         $this->nPolsterRechts  = 25;
@@ -400,8 +400,8 @@ class PreisverlaufGraph
         $this->cSchriftart         = 'GeosansLight.ttf';
         $this->cSchriftverzeichnis = PFAD_ROOT . PFAD_FONTS . '/';
 
-        $this->oConfig_arr  = $oConfig_arr;
-        $this->oPreisConfig = $oPreisConfig;
+        $this->oConfig_arr  = $config;
+        $this->oPreisConfig = $priceConfig;
         $this->setzeBreiteHoehe();
         $this->berechneSigniPunkte();
         $this->image = @imagecreate($this->nBreite, $this->nHoehe);
@@ -413,7 +413,7 @@ class PreisverlaufGraph
             $this->ColorBackground[2]
         );
 
-        if ($this->berechneMinMaxPreis((int)$kArtikel, (int)$kKundegruppe, (int)$nMonat)) {
+        if ($this->berechneMinMaxPreis((int)$productID, (int)$customerGroupID, (int)$month)) {
             $this->berechneYPreisStep();
         }
     }
@@ -428,7 +428,7 @@ class PreisverlaufGraph
      */
     public function holePreisverlauf(int $kArtikel, int $kKundegruppe, int $nMonat): array
     {
-        $oPreisverlauf_arr = Shop::Container()->getDB()->queryPrepared(
+        $items = Shop::Container()->getDB()->queryPrepared(
             'SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
                 WHERE kArtikel = :aid
@@ -442,29 +442,29 @@ class PreisverlaufGraph
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        if (count($oPreisverlauf_arr) === 0) {
+        if (count($items) === 0) {
             return [];
         }
-        $this->nAnzahlTage = count($oPreisverlauf_arr);
+        $this->nAnzahlTage = count($items);
 
         if ($this->oPreisConfig->Netto > 0) {
-            foreach ($oPreisverlauf_arr as $i => $oPreisverlauf) {
-                $oPreisverlauf_arr[$i]->fVKNetto +=
+            foreach ($items as $i => $oPreisverlauf) {
+                $items[$i]->fVKNetto +=
                     ($oPreisverlauf->fVKNetto * ($this->oPreisConfig->Netto / 100.0));
             }
         }
         if ($this->nAnzahlTage > 1) {
-            $this->nMaxTimestamp = $oPreisverlauf_arr[0]->timestamp;
-            $this->nMinTimestamp = $oPreisverlauf_arr[count($oPreisverlauf_arr) - 1]->timestamp;
+            $this->nMaxTimestamp = $items[0]->timestamp;
+            $this->nMinTimestamp = $items[count($items) - 1]->timestamp;
             $this->nDiffStamp    = $this->nMaxTimestamp - $this->nMinTimestamp;
 
-            return $oPreisverlauf_arr;
+            return $items;
         }
         if ($this->nAnzahlTage === 1) {
-            $this->nMaxTimestamp = $oPreisverlauf_arr[0]->timestamp;
+            $this->nMaxTimestamp = $items[0]->timestamp;
             $this->nMinTimestamp = $this->nMaxTimestamp;
 
-            return $oPreisverlauf_arr;
+            return $items;
         }
 
         return [];
@@ -483,14 +483,13 @@ class PreisverlaufGraph
         $this->oPreisverlaufData_arr = $this->holePreisverlauf($kArtikel, $kKundegruppe, $nMonat);
 
         if (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) > 1) {
-            $fVKNetto_arr = [];
-
+            $net = [];
             foreach ($this->oPreisverlaufData_arr as $oPreisverlauf) {
-                $fVKNetto_arr[] = $oPreisverlauf->fVKNetto;
+                $net[] = $oPreisverlauf->fVKNetto;
             }
 
-            $this->fMaxPreis  = round((float)max($fVKNetto_arr), 2);
-            $this->fMinPreis  = round((float)min($fVKNetto_arr), 2);
+            $this->fMaxPreis  = round((float)max($net), 2);
+            $this->fMinPreis  = round((float)min($net), 2);
             $this->fDiffPreis = $this->fMaxPreis - $this->fMinPreis;
         } elseif ($this->oPreisverlaufData_arr !== null && count($this->oPreisverlaufData_arr) === 1) {
             $this->fMaxPreis = $this->oPreisverlaufData_arr[0]->fVKNetto;
@@ -827,30 +826,29 @@ class PreisverlaufGraph
         if (count($this->oConfig_arr) <= 0) {
             return;
         }
-        foreach ($this->oConfig_arr as $i => $oConfig) {
-            if (preg_match('/#[A-Fa-f0-9]{6}/', $oConfig->cWert) == 1) {
-                $nDecZahl_arr = [];
+        foreach ($this->oConfig_arr as $i => $config) {
+            if (preg_match('/#[A-Fa-f0-9]{6}/', $config->cWert) == 1) {
+                $decimals   = [];
+                $cWertSub   = mb_substr($config->cWert, 1);
+                $decimals[] = hexdec(mb_substr($cWertSub, 0, 2));
+                $decimals[] = hexdec(mb_substr($cWertSub, 2, 2));
+                $decimals[] = hexdec(mb_substr($cWertSub, 4, 2));
 
-                $cWertSub       = substr($oConfig->cWert, 1);
-                $nDecZahl_arr[] = hexdec(substr($cWertSub, 0, 2));
-                $nDecZahl_arr[] = hexdec(substr($cWertSub, 2, 2));
-                $nDecZahl_arr[] = hexdec(substr($cWertSub, 4, 2));
-
-                switch ($oConfig->cName) {
+                switch ($config->cName) {
                     case 'preisverlauf_hintergrundfarbe':
-                        $this->ColorBackground = $nDecZahl_arr;
+                        $this->ColorBackground = $decimals;
                         break;
                     case 'preisverlauf_gridfarbe':
-                        $this->ColorGrid = $nDecZahl_arr;
+                        $this->ColorGrid = $decimals;
                         break;
                     case 'preisverlauf_graphfarbe':
-                        $this->ColorGraph = $nDecZahl_arr;
+                        $this->ColorGraph = $decimals;
                         break;
                     case 'preisverlauf_boxfarbe':
-                        $this->ColorBox = $nDecZahl_arr;
+                        $this->ColorBox = $decimals;
                         break;
                     case 'preisverlauf_textfarbe':
-                        $this->ColorText = $nDecZahl_arr;
+                        $this->ColorText = $decimals;
                         break;
                 }
             }
@@ -865,34 +863,34 @@ class PreisverlaufGraph
         if (count($this->oConfig_arr) <= 0) {
             return;
         }
-        foreach ($this->oConfig_arr as $oConfig) {
-            switch ($oConfig->cName) {
+        foreach ($this->oConfig_arr as $config) {
+            switch ($config->cName) {
                 case 'preisverlauf_breite':
-                    $this->nBreite = (int)$oConfig->cWert;
+                    $this->nBreite = (int)$config->cWert;
                     break;
                 case 'preisverlauf_hoehe':
-                    $this->nHoehe = (int)$oConfig->cWert;
+                    $this->nHoehe = (int)$config->cWert;
                     break;
                 case 'preisverlauf_schriftgroesse':
-                    $this->nSchriftgroesse = (int)$oConfig->cWert;
+                    $this->nSchriftgroesse = (int)$config->cWert;
                     break;
                 case 'preisverlauf_padding_oben':
-                    $this->nPolsterOben = (int)$oConfig->cWert;
+                    $this->nPolsterOben = (int)$config->cWert;
                     break;
                 case 'preisverlauf_padding_links':
-                    $this->nPolsterLinks = (int)$oConfig->cWert;
+                    $this->nPolsterLinks = (int)$config->cWert;
                     break;
                 case 'preisverlauf_padding_unten':
-                    $this->nPolsterUnten = (int)$oConfig->cWert;
+                    $this->nPolsterUnten = (int)$config->cWert;
                     break;
                 case 'preisverlauf_padding_rechts':
-                    $this->nPolsterRechts = (int)$oConfig->cWert;
+                    $this->nPolsterRechts = (int)$config->cWert;
                     break;
                 case 'preisverlauf_padding_x':
-                    $this->nInternPolsterX = (int)$oConfig->cWert;
+                    $this->nInternPolsterX = (int)$config->cWert;
                     break;
                 case 'preisverlauf_padding_y':
-                    $this->nInternPolsterY = (int)$oConfig->cWert;
+                    $this->nInternPolsterY = (int)$config->cWert;
                     break;
             }
         }

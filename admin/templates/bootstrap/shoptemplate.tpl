@@ -1,16 +1,16 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='shoptemplate'}
-{assign var="cBeschreibung" value=__('shoptemplatesDesc')}
+{assign var=cBeschreibung value=__('shoptemplatesDesc')}
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
-    {assign var="cTitel" value="Einstellungen: "|cat:$oTemplate->cName}
+    {assign var=cTitel value='Einstellungen: '|cat:$oTemplate->cName}
     {if !empty($oTemplate->cDokuURL)}
-        {assign var="cDokuURL" value=$oTemplate->cDokuURL}
+        {assign var=cDokuURL value=$oTemplate->cDokuURL}
     {else}
-        {assign var="cDokuURL" value=__('shoptemplateURL')}
+        {assign var=cDokuURL value=__('shoptemplateURL')}
     {/if}
 {else}
-    {assign var="cTitel" value=__('shoptemplates')}
-    {assign var="cDokuURL" value=__('shoptemplateURL')}
+    {assign var=cTitel value=__('shoptemplates')}
+    {assign var=cDokuURL value=__('shoptemplateURL')}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung cDokuURL=$cDokuURL}
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
@@ -33,15 +33,15 @@
                         {/if}
                         <div class="item input-group">
                             <span class="input-group-addon">
-                                <label for="eTyp">Standard-Template f&uuml;r mobile Endger&auml;te?</label>
+                                <label for="eTyp">Standard-Template für mobile Endgeräte?</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="eTyp" id="eTyp">
                                     <option value="standard" {if $oTemplate->eTyp === 'standard'}selected="selected"{/if}>Nein
-                                        (optimiert f&uuml;r Standard-Browser)
+                                        (optimiert für Standard-Browser)
                                     </option>
                                     <option value="mobil" {if $oTemplate->eTyp === 'mobil'}selected="selected"{/if}>Ja (optimiert
-                                        f&uuml;r mobile Endger&auml;te)
+                                        für mobile Endgeräte)
                                     </option>
                                 </select>
                             </span>
@@ -136,9 +136,9 @@
                                                             {rdelim});
                                                     </script>
                                                 {elseif $oSetting->cType === 'number'}
-                                                    <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
+                                                    <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
-                                                    <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
+                                                    <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'textarea' }
                                                     <div class="form-group">
                                                         <textarea style="resize:{if isset($oSetting->vTextAreaAttr_arr.Resizable)}{$oSetting->vTextAreaAttr_arr.Resizable}{/if};max-width:800%;width:100%;border:none"
@@ -199,7 +199,7 @@
                                                 {/if}
                                             </span>
                                         {else}
-                                            <input type="hidden" name="cWert[]" value="{$oSetting->cValue|escape:"html"}" />
+                                            <input type="hidden" name="cWert[]" value="{$oSetting->cValue|escape:'html'}" />
                                         {/if}
                                     </div>
                                 </div>
@@ -270,7 +270,7 @@
                             </h4>
                         {elseif $oTemplate->bAktiv}
                             <h4 class="label-wrap">
-                                <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endger&auml;te){/if}</span>
+                                <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endgeräte){/if}</span>
                             </h4>
                         {/if}
                     </td>

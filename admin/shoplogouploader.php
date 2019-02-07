@@ -9,7 +9,7 @@ use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'shoplogouploader_inc.php';
 
 if (isset($_POST['key'], $_POST['logo'])) {
@@ -45,26 +45,26 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {
-            $cHinweis .= 'Ihr Logo wurde erfolgreich gelöscht.<br />';
+            $cHinweis .= __('successLogoDelete') . '<br />';
         } else {
-            $cFehler .= 'Fehler beim Löschen des Logos.<br />';
+            $cFehler .= __('errorLogoDelete') . '<br />';
         }
     }
     $nReturnValue = saveShopLogo($_FILES);
     if ($nReturnValue === 1) {
-        $cHinweis .= 'Ihr Logo wurde erfolgreich hochgeladen.<br />';
+        $cHinweis .= __('successLogoUpload') . '<br />';
     } else {
         // 2 = Dateiname entspricht nicht der Konvention oder fehlt
         // 3 = Dateityp entspricht nicht der (Nur jpg/gif/png/bmp/ Bilder) Konvention oder fehlt
         switch ($nReturnValue) {
             case 2:
-                $cFehler .= 'Fehler: Dateiname entspricht nicht der Konvention oder fehlt.';
+                $cFehler .= __('errorFileName');
                 break;
             case 3:
-                $cFehler .= 'Fehler: Dateityp entspricht nicht der Konvention (nur jpg/gif/png/bmp) oder fehlt.';
+                $cFehler .= __('errorFileType');
                 break;
             case 4:
-                $cFehler .= 'Fehler beim Verschieben des Logos.';
+                $cFehler .= __('errorFileMove');
                 break;
             default:
                 break;

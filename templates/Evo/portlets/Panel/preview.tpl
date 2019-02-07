@@ -1,0 +1,1 @@
+{include file='./panel.tpl' isPreview=true}

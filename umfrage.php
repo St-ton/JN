@@ -11,22 +11,19 @@ require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 
 Shop::run();
 Shop::setPageType(PAGE_UMFRAGE);
-$smarty                 = Shop::Smarty();
-$cParameter_arr         = Shop::getParameters();
-$cHinweis               = '';
-$cCanonicalURL          = '';
-$step                   = 'umfrage_uebersicht';
-$nAktuelleSeite         = max(1, Request::verifyGPCDataInt('s'));
-$sourveys               = [];
-$linkHelper             = Shop::Container()->getLinkService();
-$kLink                  = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
-$link                   = (new \Link\Link(Shop::Container()->getDB()))->load($kLink);
-$AufgeklappteKategorien = new KategorieListe();
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$db                     = Shop::Container()->getDB();
-$controller             = new \Survey\Controller($db, $smarty);
-$surveyID               = $cParameter_arr['kUmfrage'];
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$smarty         = Shop::Smarty();
+$params         = Shop::getParameters();
+$alertHelper    = Shop::Container()->getAlertService();
+$cCanonicalURL  = '';
+$step           = 'umfrage_uebersicht';
+$nAktuelleSeite = max(1, Request::verifyGPCDataInt('s'));
+$sourveys       = [];
+$linkHelper     = Shop::Container()->getLinkService();
+$kLink          = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
+$link           = (new \Link\Link(Shop::Container()->getDB()))->load($kLink);
+$db             = Shop::Container()->getDB();
+$controller     = new \Survey\Controller($db, $smarty);
+$surveyID       = $params['kUmfrage'];
 if ($surveyID > 0) {
     $customerID = Session\Frontend::getCustomer()->getID();
     $step       = 'umfrage_uebersicht';
@@ -49,7 +46,7 @@ if ($surveyID > 0) {
             } elseif ($_SESSION['Umfrage']->nEnde === 0) {
                 $step = 'umfrage_ergebnis';
                 executeHook(HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS);
-                $cHinweis = $controller->bearbeiteUmfrageAuswertung();
+                $alertHelper->addAlert(Alert::TYPE_NOTE, $controller->bearbeiteUmfrageAuswertung(), 'pollNote');
             } else {
                 $step = 'umfrage_uebersicht';
             }
@@ -75,9 +72,11 @@ if ($step === 'umfrage_uebersicht') {
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('Link', $link)
-       ->assign('fehler', $controller->getErrorMsg())
+if ($controller->getErrorMsg() !== '') {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'pollError');
+}
+
+$smarty->assign('Link', $link)
        ->assign('step', $step)
        ->assign('oUmfrage_arr', $sourveys)
        ->assign('nAktuelleSeite', $nAktuelleSeite);

@@ -212,12 +212,12 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oSuchfilter_arr = gibSuchFilterOptionen($FilterSQL, $NaviFilter); // cURL
-    foreach ($oSuchfilter_arr as $key => $oSuchfilter) {
-        $oSuchfilter_arr[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
+    $searchFilters = gibSuchFilterOptionen($FilterSQL, $NaviFilter); // cURL
+    foreach ($searchFilters as $key => $sf) {
+        $searchFilters[$key]->cURL = StringHandler::htmlentitydecode($sf->cURL);
     }
 
-    return \Boxes\Items\AbstractBox::getJSONString($oSuchfilter_arr);
+    return \Boxes\Items\AbstractBox::getJSONString($searchFilters);
 }
 
 /**
@@ -229,11 +229,11 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
 function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oTags_arr = gibTagFilterOptionen($FilterSQL, $NaviFilter);
-    foreach ($oTags_arr as $key => $oTags) {
-        $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
+    $tags = gibTagFilterOptionen($FilterSQL, $NaviFilter);
+    foreach ($tags as $key => $oTags) {
+        $tags[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
     }
-    return \Boxes\Items\AbstractBox::getJSONString($oTags_arr);
+    return \Boxes\Items\AbstractBox::getJSONString($tags);
 }
 
 /**
@@ -418,16 +418,16 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
 
 /**
  * @param object       $oPreis
- * @param object|array $oPreisspannenfilter_arr
+ * @param object|array $priceRangeFilter
  * @return string
  * @deprecated since 5.0.0
  */
-function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = null)
+function berechnePreisspannenSQL($oPreis, $priceRangeFilter = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getProductFilter()
                ->getPriceRangeFilter()
-               ->getPriceRangeSQL($oPreis, \Session\Frontend::getCurrency(), $oPreisspannenfilter_arr);
+               ->getPriceRangeSQL($oPreis, \Session\Frontend::getCurrency(), $priceRangeFilter);
 }
 
 /**
@@ -584,11 +584,11 @@ function setzeUsersortierung($NaviFilter)
 
 /**
  * @deprecated since 5.0.0
- * @param array  $Einstellungen
+ * @param array  $conf
  * @param object $NaviFilter
  * @param int    $nDarstellung
  */
-function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0)
+function gibErweiterteDarstellung($conf, $NaviFilter, $nDarstellung = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     updateNaviFilter($NaviFilter)->getMetaData()->getExtendedView($nDarstellung);
@@ -618,12 +618,12 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
         $p->setCurrentPage($pages->AktuelleSeite);
         $pages = $p;
     }
-    if (strlen($filterURL) > 0) {
+    if (mb_strlen($filterURL) > 0) {
         $seo = false;
     }
-    $oSeite_arr = [];
-    $naviURL    = $productFilter->getFilterURL()->getURL();
-    $seo        = $seo && strpos($naviURL, '?') === false;
+    $res     = [];
+    $naviURL = $productFilter->getFilterURL()->getURL();
+    $seo     = $seo && mb_strpos($naviURL, '?') === false;
     if ($pages->getTotalPages() > 0 && $pages->getCurrentPage()> 0) {
         $nMax = (int)floor($maxPages / 2);
         if ($pages->getTotalPages() > $maxPages) {
@@ -655,13 +655,13 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
                     $oSeite->cURL = $naviURL . $filterURL;
                 } elseif ($seo) {
                     $cURL         = $naviURL;
-                    $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                    $oSeite->cURL = mb_strpos(basename($cURL), 'index.php') !== false
                         ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
                         : $cURL . SEP_SEITE . $oSeite->nSeite;
                 } else {
                     $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $filterURL;
                 }
-                $oSeite_arr[] = $oSeite;
+                $res[] = $oSeite;
             }
         } else {
             // Laufe alle Seiten durch und baue URLs + Seitenzahl
@@ -675,55 +675,55 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
                     $oSeite->cURL = $naviURL . $filterURL;
                 } elseif ($seo) {
                     $cURL         = $naviURL;
-                    $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                    $oSeite->cURL = mb_strpos(basename($cURL), 'index.php') !== false
                         ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
                         : $cURL . SEP_SEITE . $oSeite->nSeite;
                 } else {
                     $oSeite->cURL = $naviURL . '&amp;seite=' . $oSeite->nSeite . $filterURL;
                 }
-                $oSeite_arr[] = $oSeite;
+                $res[] = $oSeite;
             }
         }
         // Baue Zurück-URL
-        $oSeite_arr['zurueck']       = new stdClass();
-        $oSeite_arr['zurueck']->nBTN = 1;
+        $res['zurueck']       = new stdClass();
+        $res['zurueck']->nBTN = 1;
         if ($pages->getCurrentPage() > 1) {
-            $oSeite_arr['zurueck']->nSeite = $pages->getCurrentPage() - 1;
-            if ($oSeite_arr['zurueck']->nSeite === 1) {
-                $oSeite_arr['zurueck']->cURL = $naviURL . $filterURL;
+            $res['zurueck']->nSeite = $pages->getCurrentPage() - 1;
+            if ($res['zurueck']->nSeite === 1) {
+                $res['zurueck']->cURL = $naviURL . $filterURL;
             } elseif ($seo) {
                 $cURL = $naviURL;
-                if (strpos(basename($cURL), 'index.php') !== false) {
-                    $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' .
-                        $oSeite_arr['zurueck']->nSeite . $filterURL;
+                if (mb_strpos(basename($cURL), 'index.php') !== false) {
+                    $res['zurueck']->cURL = $cURL . '&amp;seite=' .
+                        $res['zurueck']->nSeite . $filterURL;
                 } else {
-                    $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE .
-                        $oSeite_arr['zurueck']->nSeite;
+                    $res['zurueck']->cURL = $cURL . SEP_SEITE .
+                        $res['zurueck']->nSeite;
                 }
             } else {
-                $oSeite_arr['zurueck']->cURL = $naviURL . '&amp;seite=' .
-                    $oSeite_arr['zurueck']->nSeite . $filterURL;
+                $res['zurueck']->cURL = $naviURL . '&amp;seite=' .
+                    $res['zurueck']->nSeite . $filterURL;
             }
         }
         // Baue Vor-URL
-        $oSeite_arr['vor']       = new stdClass();
-        $oSeite_arr['vor']->nBTN = 1;
+        $res['vor']       = new stdClass();
+        $res['vor']->nBTN = 1;
         if ($pages->getCurrentPage() < $pages->getMaxPage()) {
-            $oSeite_arr['vor']->nSeite = $pages->getCurrentPage() + 1;
+            $res['vor']->nSeite = $pages->getCurrentPage() + 1;
             if ($seo) {
                 $cURL = $naviURL;
-                if (strpos(basename($cURL), 'index.php') !== false) {
-                    $oSeite_arr['vor']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $filterURL;
+                if (mb_strpos(basename($cURL), 'index.php') !== false) {
+                    $res['vor']->cURL = $cURL . '&amp;seite=' . $res['vor']->nSeite . $filterURL;
                 } else {
-                    $oSeite_arr['vor']->cURL = $cURL . SEP_SEITE . $oSeite_arr['vor']->nSeite;
+                    $res['vor']->cURL = $cURL . SEP_SEITE . $res['vor']->nSeite;
                 }
             } else {
-                $oSeite_arr['vor']->cURL = $naviURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $filterURL;
+                $res['vor']->cURL = $naviURL . '&amp;seite=' . $res['vor']->nSeite . $filterURL;
             }
         }
     }
 
-    return $oSeite_arr;
+    return $res;
 }
 
 /**

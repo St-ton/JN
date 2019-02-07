@@ -109,7 +109,7 @@ class LessParser
     {
         $matches = [];
 
-        switch (strtolower($type)) {
+        switch (mb_convert_case($type, MB_CASE_LOWER)) {
             case 'color':
                 // rgb(255,255,255)
                 if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
@@ -148,7 +148,7 @@ class LessParser
     protected function rgb2html($r, $g, $b): string
     {
         if (is_array($r) && count($r) === 3) {
-            list($r, $g, $b) = $r;
+            [$r, $g, $b] = $r;
         }
 
         $r = (int)$r;
@@ -159,9 +159,9 @@ class LessParser
         $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
         $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color  = (strlen($r) < 2 ? '0' : '') . $r;
-        $color .= (strlen($g) < 2 ? '0' : '') . $g;
-        $color .= (strlen($b) < 2 ? '0' : '') . $b;
+        $color  = (mb_strlen($r) < 2 ? '0' : '') . $r;
+        $color .= (mb_strlen($g) < 2 ? '0' : '') . $g;
+        $color .= (mb_strlen($b) < 2 ? '0' : '') . $b;
 
         return '#' . $color;
     }

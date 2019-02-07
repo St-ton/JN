@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAIL_REPORTS_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statusemail_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -23,10 +23,9 @@ if (Form::validateToken()) {
         $statusMail->sendAllActiveStatusMails();
     } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if ($statusMail->updateConfig()) {
-            $cHinweis .= 'Ihre Einstellungen wurden übernommen.<br>';
+            $cHinweis .= __('successChangesSave') . '<br>';
         } else {
-            $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. ' .
-                'Bitte prüfen Sie Ihre Eingaben.<br>';
+            $cFehler .= __('errorConfigSave') . '<br>';
         }
         $step = 'statusemail_uebersicht';
     }

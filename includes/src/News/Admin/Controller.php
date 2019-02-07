@@ -6,9 +6,12 @@
 
 namespace News\Admin;
 
+use Backend\Revision;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
 use DB\ReturnType;
+use Helpers\Request;
+use JTL\SeoHelper;
 use News\Category;
 use News\CategoryInterface;
 use News\CategoryList;
@@ -112,7 +115,7 @@ class Controller
             $newsItem->dGueltigVon   = \DateTime::createFromFormat('d.m.Y H:i', $dateValidFrom)->format('Y-m-d H:i:00');
             $newsItem->cPreviewImage = $previewImage;
             if ($update === true) {
-                $revision = new \Revision();
+                $revision = new Revision($this->db);
                 $revision->addRevision('news', $newsItemID, true);
                 $this->db->update('tnews', 'kNews', $newsItemID, $newsItem);
                 $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $newsItemID]);
@@ -149,9 +152,7 @@ class Controller
                 $seoData->cKey     = 'kNews';
                 $seoData->kKey     = $newsItemID;
                 $seoData->kSprache = $langID;
-                $seoData->cSeo     = \JTL\SeoHelper::checkSeo(
-                    \JTL\SeoHelper::getSeo($this->getSeo($post, $languages, $iso))
-                );
+                $seoData->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($this->getSeo($post, $languages, $iso)));
                 $this->db->insert('tnewssprache', $loc);
                 $this->db->insert('tseo', $seoData);
 
@@ -188,9 +189,7 @@ class Controller
                         ]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
-                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
-                    );
+                    $oSeo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($prefix . '-' . $month . '-' . $year));
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $monthOverview->kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -215,9 +214,7 @@ class Controller
                         ['kNewsMonatsUebersicht', $kNewsMonatsUebersicht, $langID]
                     );
                     $oSeo           = new \stdClass();
-                    $oSeo->cSeo     = \JTL\SeoHelper::checkSeo(
-                        \JTL\SeoHelper::getSeo($prefix . '-' . $month . '-' . $year)
-                    );
+                    $oSeo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($prefix . '-' . $month . '-' . $year));
                     $oSeo->cKey     = 'kNewsMonatsUebersicht';
                     $oSeo->kKey     = $kNewsMonatsUebersicht;
                     $oSeo->kSprache = $langID;
@@ -255,11 +252,11 @@ class Controller
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {
-                $tab = \Helpers\Request::verifyGPDataString('tab');
+                $tab = Request::verifyGPDataString('tab');
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->msg);
             }
         } else {
-            $newsCategories = $this->getAllNewsCategories(false);
+            $newsCategories = $this->getAllNewsCategories();
             $newsItem       = new Item($this->db);
             $this->step     = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
@@ -490,7 +487,7 @@ class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cSeo));
+            $seoData->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($cSeo));
             if (empty($seoData->cSeo)) {
                 continue;
             }
@@ -519,11 +516,11 @@ class Controller
             $error = true;
             $this->setErrorMsg('Verzeichnis konnte nicht erstellt werden: ' . $dir);
         }
-        if (isset($_FILES['previewImage']['name']) && \strlen($_FILES['previewImage']['name']) > 0) {
-            $extension = \substr(
+        if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
+            $extension = \mb_substr(
                 $_FILES['previewImage']['type'],
-                \strpos($_FILES['previewImage']['type'], '/') + 1,
-                \strlen($_FILES['previewImage']['type']) - \strpos($_FILES['previewImage']['type'], '/') + 1
+                \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
+                \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
             );
             if ($extension === 'jpe') { // not elegant, but since it's 99% jpg..
                 $extension = 'jpg';
@@ -556,16 +553,16 @@ class Controller
         if (empty($_FILES['previewImage']['name'])) {
             return '';
         }
-        $extension = \substr(
+        $extension = \mb_substr(
             $_FILES['previewImage']['type'],
-            \strpos($_FILES['previewImage']['type'], '/') + 1,
-            \strlen($_FILES['previewImage']['type']) - \strpos($_FILES['previewImage']['type'], '/') + 1
+            \mb_strpos($_FILES['previewImage']['type'], '/') + 1,
+            \mb_strlen($_FILES['previewImage']['type']) - \mb_strpos($_FILES['previewImage']['type'], '/') + 1
         );
         if ($extension === 'jpe') {
             $extension = 'jpg';
         }
         foreach ($oldImages as $image) {
-            if (\strpos($image->cDatei, 'preview') !== false) {
+            if (\mb_strpos($image->cDatei, 'preview') !== false) {
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
@@ -596,10 +593,10 @@ class Controller
                 && $_FILES['Bilder']['error'][$i - $counter] === \UPLOAD_ERR_OK
             ) {
                 $type      = $_FILES['Bilder']['type'][$i - $counter];
-                $extension = \substr(
+                $extension = \mb_substr(
                     $type,
-                    \strpos($type, '/') + 1,
-                    \strlen($type) - \strpos($type, '/') + 1
+                    \mb_strpos($type, '/') + 1,
+                    \mb_strlen($type) - \mb_strpos($type, '/') + 1
                 );
                 // not elegant, but since it's 99% jpg..
                 if ($extension === 'jpe') {
@@ -607,7 +604,7 @@ class Controller
                 }
                 // check if image exists and delete
                 foreach ($oldImages as $image) {
-                    if (\strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
+                    if (\mb_strpos($image->cDatei, 'Bild' . ($i + 1) . '.') !== false
                         && $_FILES['Bilder']['name'][$i - $counter] !== ''
                     ) {
                         $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
@@ -750,7 +747,7 @@ class Controller
                 continue;
             }
             $image           = new \stdClass();
-            $image->cName    = \substr($fileName, 0, \strpos($fileName, '.' . $fileinfo->getExtension()));
+            $image->cName    = \mb_substr($fileName, 0, \mb_strpos($fileName, '.' . $fileinfo->getExtension()));
             $image->cURL     = $base . $itemID . '/' . $fileName;
             $image->cURLFull = $imageBaseURL . $base . $itemID . '/' . $fileName;
             $image->cDatei   = $fileName;
@@ -776,7 +773,7 @@ class Controller
             }
             $this->flushCache();
             $this->setMsg('Ihre markierten Kommentare wurden erfolgreich gelöscht.');
-            $tab    = \Helpers\Request::verifyGPDataString('tab');
+            $tab    = Request::verifyGPDataString('tab');
             $params = [
                 'news'  => '1',
                 'nd'    => '1',
@@ -814,7 +811,7 @@ class Controller
             if ($imageName === 'preview') {
                 $upd                = new \stdClass();
                 $upd->cPreviewImage = '';
-                if (\strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
+                if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) === false) {
                     $this->db->update('tnews', 'kNews', $id, $upd);
                 } else {
                     $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
@@ -842,7 +839,7 @@ class Controller
         $imgPath1 = \realpath(\PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER);
         $imgPath2 = \realpath(\PFAD_ROOT . \PFAD_NEWSBILDER);
 
-        return \strpos($real, $imgPath1) === 0 || \strpos($real, $imgPath2) === 0;
+        return \mb_strpos($real, $imgPath1) === 0 || \mb_strpos($real, $imgPath2) === 0;
     }
 
 
@@ -870,10 +867,10 @@ class Controller
             }
             $urlParams['tab'] = $tab;
             if (isset($tabPageMapping[$tab])
-                && \Helpers\Request::verifyGPCDataInt($tabPageMapping[$tab]) > 1
+                && Request::verifyGPCDataInt($tabPageMapping[$tab]) > 1
                 && !\array_key_exists($tabPageMapping[$tab], $urlParams)
             ) {
-                $urlParams[$tabPageMapping[$tab]] = \Helpers\Request::verifyGPCDataInt($tabPageMapping[$tab]);
+                $urlParams[$tabPageMapping[$tab]] = Request::verifyGPCDataInt($tabPageMapping[$tab]);
             }
         }
 
@@ -913,7 +910,7 @@ class Controller
                 $text
             );
         }
-        if (\count($images) > 0 && \strpos(\end($images), 'preview') !== false) {
+        if (\count($images) > 0 && \mb_strpos(\end($images), 'preview') !== false) {
             $text = \str_replace(
                 '$#preview#$',
                 '<img alt="" src="' . $shopURL . \PFAD_NEWSBILDER . $id . '/' . $images[\count($images) - 1] . '" />',

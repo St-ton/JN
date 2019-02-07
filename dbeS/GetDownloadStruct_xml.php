@@ -6,45 +6,4 @@
 
 require_once __DIR__ . '/NetSync_inc.php';
 
-/**
- * Class ArticleDownloads
- */
-class ArticleDownloads extends NetSyncHandler
-{
-    /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
-     * @param int $eRequest
-     */
-    protected function request($eRequest)
-    {
-        switch ($eRequest) {
-            case NetSyncRequest::DOWNLOADFOLDERS:
-                $bPreview            = (int)$_POST['bPreview'];
-                $oDownloadFolder_arr = getFolderStruct($bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS);
-                self::throwResponse(NetSyncResponse::OK, $oDownloadFolder_arr);
-                break;
-
-            case NetSyncRequest::DOWNLOADFILESINFOLDER:
-                $bPreview = (int)$_POST['bPreview'];
-                if (!isset($_POST['cBasePath']) || empty($_POST['cBasePath'])) {
-                    $_POST['cBasePath'] = $bPreview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS;
-                }
-                $cBasePath = $_POST['cBasePath'];
-                if (is_dir($cBasePath)) {
-                    $oFiles_arr = getFilesStruct($cBasePath, $bPreview);
-                    self::throwResponse(NetSyncResponse::OK, $oFiles_arr);
-                } else {
-                    self::throwResponse(NetSyncResponse::FOLDERNOTEXISTS);
-                }
-                break;
-        }
-    }
-}
-
-NetSyncHandler::create('ArticleDownloads');
+\dbeS\NetSyncHandler::create(\dbeS\ArticleDownloads::class);

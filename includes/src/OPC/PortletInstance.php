@@ -296,13 +296,13 @@ class PortletInstance implements \JsonSerializable
         $styleString = '';
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (\strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
+                if (\mb_strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
                     $this->addClass($styleName);
-                } elseif (\stripos($styleName, 'margin-') !== false
-                    || \stripos($styleName, 'padding-') !== false
-                    || \stripos($styleName, 'border-width') !== false
-                    || \stripos($styleName, '-width') !== false
-                    || \stripos($styleName, '-height') !== false
+                } elseif (\mb_stripos($styleName, 'margin-') !== false
+                    || \mb_stripos($styleName, 'padding-') !== false
+                    || \mb_stripos($styleName, 'border-width') !== false
+                    || \mb_stripos($styleName, '-width') !== false
+                    || \mb_stripos($styleName, '-height') !== false
                 ) {
                     $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . 'px; ';
                 } else {
@@ -353,7 +353,15 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttributeString(): string
     {
-        return 'data-portlet="' . \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES) . '"';
+        return 'data-portlet="' . $this->getDataAttribute() . '"';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataAttribute(): string
+    {
+        return \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES);
     }
 
     /**
@@ -404,7 +412,7 @@ class PortletInstance implements \JsonSerializable
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcset = \substr($srcset, 0, -1); // remove trailing comma
+        $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
 
         if (\is_array($widthHeuristics)) {
             foreach ($widthHeuristics as $breakpoint => $col) {
@@ -463,8 +471,13 @@ class PortletInstance implements \JsonSerializable
      * @param null $default
      * @return string
      */
-    public function getImageAttributeString($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
-    {
+    public function getImageAttributeString(
+        $src = null,
+        $alt = null,
+        $title = null,
+        $divisor = 1,
+        $default = null
+    ): string {
         $imgAttribs = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
 
         return "srcset='{$imgAttribs['srcset']}' srcsizes='{$imgAttribs['srcsizes']}' src='{$imgAttribs['src']}'
@@ -476,9 +489,10 @@ class PortletInstance implements \JsonSerializable
      * @param string $alt
      * @param string $title
      * @param int    $divisor
+     * @param null   $default
      * @return $this
      */
-    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
+    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): self
     {
         $imageAttributes = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
 

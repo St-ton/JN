@@ -9,6 +9,7 @@ ifndef('JTL_CHARSET', 'utf-8');
 ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
+mb_internal_encoding(strtoupper(JTL_CHARSET));
 date_default_timezone_set('Europe/Berlin');
 ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
@@ -267,8 +268,8 @@ function shop_writeable_paths()
     global $shop_writeable_paths;
 
     return array_map(function ($v) {
-        if (strpos($v, PFAD_ROOT) === 0) {
-            $v = substr($v, strlen(PFAD_ROOT));
+        if (mb_strpos($v, PFAD_ROOT) === 0) {
+            $v = mb_substr($v, mb_strlen(PFAD_ROOT));
         }
 
         return trim($v, '/\\');

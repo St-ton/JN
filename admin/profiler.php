@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $oAccount->permission('PROFILER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $tab      = 'uebersicht';
 $cFehler  = '';
 $cHinweis = '';
@@ -19,16 +19,16 @@ if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Eintrag erfolgreich gelöscht.';
+            $cHinweis = __('successEntryDelete');
         } else {
-            $cFehler = 'Eintrag konnte nicht gelöscht werden.';
+            $cFehler = __('errorEntryDelete');
         }
     } elseif (isset($_POST['delete-all']) && $_POST['delete-all'] === 'y') {
         $res = deleteProfileRun(true);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = 'Einträge erfolgreich gelöscht. ';
+            $cHinweis = __('successEntriesDelete');
         } else {
-            $cFehler = 'Einträge konnten nicht gelöscht werden. ';
+            $cFehler = __('errorEntriesDelete');
         }
     }
 }

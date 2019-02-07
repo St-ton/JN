@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "zusatzverpackung"
 msgstr "Zusatzverpackung"
 
@@ -70,3 +74,20 @@ msgstr "'Neue Zusatzverpackung anlegen'"
 msgid "zusatzverpackungAddedNone"
 msgstr "Keine Zusatzverpackung angelegt"
 
+msgid "errorNameMissing"
+msgstr "Fehler: Bitte geben Sie der Verpackung einen Namen."
+
+msgid "errorCustomerGroupMissing"
+msgstr "Fehler: Bitte wählen Sie mindestens eine Kundengruppe aus."
+
+msgid "successPackagingSave"
+msgstr "Die Verpackung %s wurde erfolgreich gespeichert."
+
+msgid "successPackagingDelete"
+msgstr "Die markierten Verpackungen wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOnePackaging"
+msgstr "Fehler: Bitte markieren Sie mindestens eine Verpackung."
+
+msgid "successPackagingSaveMultiple"
+msgstr "Ihre markierten Verpackungen wurden erfolgreich aktualisiert."

@@ -13,7 +13,7 @@ use JTLShop\SemVer\VersionCollection;
 class Updater
 {
     /**
-     * @var boolean
+     * @var bool
      */
     protected static $isVerified = false;
 
@@ -142,7 +142,7 @@ class Updater
      * @return stdClass
      * @throws Exception
      */
-    public function getVersion()
+    public function getVersion(): stdClass
     {
         $v = Shop::Container()->getDB()->query('SELECT * FROM tversion', \DB\ReturnType::SINGLE_OBJECT);
 
@@ -261,7 +261,7 @@ class Updater
         $lines = file($sqlFile);
         foreach ($lines as $i => $line) {
             $line = trim($line);
-            if (strpos($line, '--') === 0 || strpos($line, '#') === 0) {
+            if (mb_strpos($line, '--') === 0 || mb_strpos($line, '#') === 0) {
                 unset($lines[$i]);
             }
         }
@@ -374,7 +374,7 @@ class Updater
         $id        = reset($pendingMigrations);
         $migration = $manager->getMigrationById($id);
 
-        $manager->executeMigration($migration, IMigration::UP);
+        $manager->executeMigration($migration);
 
         return $migration;
     }

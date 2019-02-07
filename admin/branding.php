@@ -10,7 +10,7 @@ use Helpers\Request;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'branding_uebersicht';
@@ -22,9 +22,9 @@ if (Request::verifyGPCDataInt('branding') === 1) {
         && Form::validateToken()
     ) {
         if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
-            $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
+            $cHinweis .= __('successConfigSave') . '<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
+            $cFehler .= __('errorFillRequired');
         }
     }
     // Hole bestimmtes branding
@@ -84,7 +84,7 @@ function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
     $oBrandingEinstellung->dTransparenz = $cPost_arr['dTransparenz'];
     $oBrandingEinstellung->dGroesse     = $cPost_arr['dGroesse'];
 
-    if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
+    if (mb_strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
         $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding .
             mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
     } else {
@@ -99,13 +99,13 @@ function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
     }
 
     if ($oBrandingEinstellung->kBranding > 0
-        && strlen($oBrandingEinstellung->cPosition) > 0
-        && strlen($oBrandingEinstellung->cBrandingBild) > 0
+        && mb_strlen($oBrandingEinstellung->cPosition) > 0
+        && mb_strlen($oBrandingEinstellung->cBrandingBild) > 0
     ) {
         // Alte Einstellung loeschen
         Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
 
-        if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
+        if (mb_strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
             loescheBrandingBild($oBrandingEinstellung->kBranding);
             speicherBrandingBild($cFiles_arr, $oBrandingEinstellung->kBranding);
         }

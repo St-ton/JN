@@ -10,8 +10,8 @@ use Pagination\Filter;
 use Pagination\Pagination;
 
 /**
- * @global Smarty\JTLSmarty $smarty
- * @global AdminAccount     $oAccount
+ * @global \Smarty\JTLSmarty     $smarty
+ * @global \Backend\AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
@@ -22,7 +22,7 @@ $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
-        $cHinweis = 'Ihr Systemlog wurde erfolgreich gelöscht.';
+        $cHinweis = __('successSystemLogReset');
     } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update(
@@ -32,11 +32,11 @@ if (Form::validateToken()) {
             (object)['cWert' => $minLogLevel]
         );
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
-        $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
+        $cHinweis = __('successConfigSave');
         $smarty->assign('cTab', 'config');
     } elseif (Request::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
-            $cHinweis = Jtllog::deleteIDs($_REQUEST['selected']) . ' markierte Log-Einträge wurden gelöscht.';
+            $cHinweis = Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete');
         }
     }
 }

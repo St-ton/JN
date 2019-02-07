@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "shippingmethods"
 msgstr "Versandarten"
 
@@ -270,3 +274,54 @@ msgstr "Fehlende Klassen anzeigen"
 
 msgid "versandartenSortDesc"
 msgstr "Je niedriger die Priorität, desto weiter oben diese Versandart."
+
+msgid "successShippingMethodDelete"
+msgstr "Versandart erfolgreich gelöscht!"
+
+msgid "successShippingMethodDuplicated"
+msgstr "Versandart wurde erfolgreich dupliziert."
+
+msgid "errorShippingMethodDuplicated"
+msgstr "Versandart konnte nicht dupliziert werden!"
+
+msgid "errorZIPOverlap"
+msgstr "Die PLZ %s überschneidet sich mit %s.<br />Bitte geben Sie eine andere PLZ an."
+
+msgid "errorZIPAreaOverlap"
+msgstr "Der PLZ-Bereich %s überschneidet sich mit %s.<br />Bitte geben Sie einen anderen PLZ Bereich an."
+
+msgid "successZIPAdd"
+msgstr "PLZ wurde erfolgreich hinzugefügt."
+
+msgid "errorZIPMissing"
+msgstr "Sie müssen eine PLZ oder einen PLZ-Bereich angeben!"
+
+msgid "successListAdd"
+msgstr "Zuschlagsliste wurde erfolgreich hinzugefügt."
+
+msgid "errorListNameMissing"
+msgstr "Bitte geben Sie der Zuschlagsliste einen Namen!"
+
+msgid "errorListPriceMissing"
+msgstr "Bitte geben Sie einen Preis für den Zuschlag ein!"
+
+msgid "successShippingMethodCreate"
+msgstr "Die Versandart <strong>%s</strong> wurde erfolgreich hinzugefügt."
+
+msgid "successShippingMethodChange"
+msgstr "Die Versandart <strong>%s</strong> wurde erfolgreich geändert."
+
+msgid "errorShippingMethodNameMissing"
+msgstr "Bitte geben Sie dieser Versandart einen Namen!"
+
+msgid "errorShippingMethodCountryMissing"
+msgstr "Bitte mindestens ein Versandland ankreuzen!"
+
+msgid "errorShippingMethodPaymentMissing"
+msgstr "Bitte mindestens eine akzeptierte Zahlungsart auswählen!"
+
+msgid "errorShippingMethodPriceMissing"
+msgstr "Bitte mindestens einen Staffelpreis angeben!"
+
+msgid "errorShippingFreeMax"
+msgstr "Ihr Versandkostenfrei Wert darf maximal %s sein!"

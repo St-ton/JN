@@ -793,7 +793,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * special json string for sidebar clouds
      *
-     * @param array  $oCloud_arr
+     * @param array  $cloud
      * @param string $nSpeed
      * @param string $nOpacity
      * @param bool   $cColor
@@ -801,7 +801,7 @@ abstract class AbstractBox implements BoxInterface
      * @return string
      */
     public static function getJSONString(
-        $oCloud_arr,
+        $cloud,
         $nSpeed = '1',
         $nOpacity = '0.2',
         $cColor = false,
@@ -809,7 +809,7 @@ abstract class AbstractBox implements BoxInterface
     ): string {
         $iCur = 0;
         $iMax = 15;
-        if (!\count($oCloud_arr)) {
+        if (!\count($cloud)) {
             return '';
         }
         $tags                       = [];
@@ -825,7 +825,7 @@ abstract class AbstractBox implements BoxInterface
             return '0x' . $cColor;
         };
 
-        foreach ($oCloud_arr as $oCloud) {
+        foreach ($cloud as $oCloud) {
             if ($iCur++ >= $iMax) {
                 break;
             }
@@ -836,7 +836,7 @@ abstract class AbstractBox implements BoxInterface
             $tags['tags'][] = [
                 'name'  => $cName,
                 'url'   => $oCloud->cURL,
-                'size'  => (\count($oCloud_arr) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
+                'size'  => (\count($cloud) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
                 'color' => $cColor ?: $cRandomColor,
                 'hover' => $cColorHover ?: $cRandomColor
             ];

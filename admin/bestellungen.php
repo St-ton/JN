@@ -24,21 +24,21 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zurückgesetzt.';
+                $cHinweis = __('successOrderReset');
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
-                $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
+                $cFehler = __('errorAtLeastOneOrder');
                 break;
         }
     } else {
-        $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
+        $cFehler = __('errorAtLeastOneOrder');
     }
 } elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
     $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-    if (strlen($cSuche) > 0) {
+    if (mb_strlen($cSuche) > 0) {
         $cSuchFilter = $cSuche;
     } else {
-        $cFehler = 'Fehler: Bitte geben Sie eine Bestellnummer ein.';
+        $cFehler = __('errorMissingOrderNumber');
     }
 }
 

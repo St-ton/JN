@@ -11,7 +11,7 @@ use Pagination\Pagination;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 
@@ -21,14 +21,12 @@ if (!file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && is_writable(P
 
 if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
     $cFehler = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' .
-        ' kann nicht geschrieben werden. Bitte achten Sie darauf, ' .
-        'dass diese Datei ausreichende Schreibrechte besitzt. ' .
-        'Ansonsten kann keine Sitemap erstellt werden.';
+        __('errorSitemapCreatePermission');
 } elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
-    $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> wurde erfolgreich aktualisiert.';
+    $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> ' . __('successSave');
 }
 // Tabs
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
@@ -47,7 +45,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         );
     }
 
-    $cHinweis = 'Ihre markierten Sitemap Downloads wurden erfolgreich gelöscht.';
+    $cHinweis = __('successSitemapDLDelete');
 } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
     $reports = isset($_POST['kSitemapReport'])
         ? array_map('\intval', $_POST['kSitemapReport'])
@@ -61,7 +59,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         );
     }
 
-    $cHinweis = 'Ihre markierten Sitemap Reports wurden erfolgreich gelöscht.';
+    $cHinweis = __('successSitemapReportDelete');
 }
 
 $nYearDownloads = Request::verifyGPCDataInt('nYear_downloads');
@@ -73,7 +71,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
             WHERE YEAR(tsitemaptracker.dErstellt) = ' . $nYearDownloads,
         \DB\ReturnType::AFFECTED_ROWS
     );
-    $cHinweis       = 'Ihre markierten Sitemap Downloads für ' . $nYearDownloads . ' wurden erfolgreich gelöscht.';
+    $cHinweis       = sprintf(__('successSitemapDLDeleteByYear'), $nYearDownloads);
     $nYearDownloads = 0;
 }
 
@@ -83,7 +81,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && For
             WHERE YEAR(tsitemapreport.dErstellt) = ' . $nYearReports,
         \DB\ReturnType::AFFECTED_ROWS
     );
-    $cHinweis     = 'Ihre Sitemap Reports für ' . $nYearReports . ' wurden erfolgreich gelöscht.';
+    $cHinweis     = sprintf(__('successSitemapReportDeleteByYear'), $nYearReports);
     $nYearReports = 0;
 }
 

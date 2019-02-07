@@ -670,22 +670,22 @@ class Exportformat
     }
 
     /**
-     * @param array $einstellungenAssoc_arr
+     * @param array $config
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function insertEinstellungen(array $einstellungenAssoc_arr): bool
+    public function insertEinstellungen(array $config): bool
     {
         $ok = true;
-        foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
-            $oObj = new stdClass();
-            if (is_array($einstellungAssoc_arr) && count($einstellungAssoc_arr) > 0) {
-                foreach (array_keys($einstellungAssoc_arr) as $cMember) {
-                    $oObj->$cMember = $einstellungAssoc_arr[$cMember];
+        foreach ($config as $item) {
+            $ins = new stdClass();
+            if (is_array($item) && count($item) > 0) {
+                foreach (array_keys($item) as $cMember) {
+                    $ins->$cMember = $item[$cMember];
                 }
-                $oObj->kExportformat = $this->getExportformat();
+                $ins->kExportformat = $this->getExportformat();
             }
-            $ok = $ok && ($this->db->insert('texportformateinstellungen', $oObj) > 0);
+            $ok = $ok && ($this->db->insert('texportformateinstellungen', $ins) > 0);
         }
 
         return $ok;
@@ -925,7 +925,7 @@ class Exportformat
     private function writeHeader($handle): int
     {
         $header = $this->getKopfzeile();
-        if (strlen($header) === 0) {
+        if (mb_strlen($header) === 0) {
             return 0;
         }
         $encoding = $this->getKodierung();
@@ -946,7 +946,7 @@ class Exportformat
     private function writeFooter($handle): int
     {
         $footer = $this->getFusszeile();
-        if (strlen($footer) === 0) {
+        if (mb_strlen($footer) === 0) {
             return 0;
         }
         $encoding = $this->getKodierung();
@@ -967,13 +967,13 @@ class Exportformat
         }
         $fileCounter       = 1;
         $fileNameSplit_arr = [];
-        $nFileTypePos      = strrpos($this->cDateiname, '.');
+        $nFileTypePos      = mb_strrpos($this->cDateiname, '.');
         // Dateiname splitten nach Name + Typ
         if ($nFileTypePos === false) {
             $fileNameSplit_arr[0] = $this->cDateiname;
         } else {
-            $fileNameSplit_arr[0] = substr($this->cDateiname, 0, $nFileTypePos);
-            $fileNameSplit_arr[1] = substr($this->cDateiname, $nFileTypePos);
+            $fileNameSplit_arr[0] = mb_substr($this->cDateiname, 0, $nFileTypePos);
+            $fileNameSplit_arr[1] = mb_substr($this->cDateiname, $nFileTypePos);
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
         clearstatcache();
@@ -986,7 +986,7 @@ class Exportformat
             $nSizeDatei = 0;
             while (($cContent = fgets($handle)) !== false) {
                 if ($nZeile > 1) {
-                    $nSizeZeile = strlen($cContent) + 2;
+                    $nSizeZeile = mb_strlen($cContent) + 2;
                     // Schwelle erreicht?
                     if ($nSizeDatei <= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
                         // Schreibe Content
@@ -1039,7 +1039,7 @@ class Exportformat
     {
         if (is_dir(PFAD_ROOT . PFAD_EXPORT) && ($dir = opendir(PFAD_ROOT . PFAD_EXPORT)) !== false) {
             while (($cDatei = readdir($dir)) !== false) {
-                if ($cDatei !== $fileName && strpos($cDatei, $fileNameSplit) !== false) {
+                if ($cDatei !== $fileName && mb_strpos($cDatei, $fileNameSplit) !== false) {
                     unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
                 }
             }
@@ -1071,7 +1071,7 @@ class Exportformat
         }
         $started = false;
         $this->setQueue($queueObject)->initSession()->initSmarty();
-        if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($this->getPlugin() > 0 && mb_strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
                 '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
@@ -1153,7 +1153,7 @@ class Exportformat
             $this->writeHeader($datei);
         }
         $content          = $this->getContent();
-        $categoryFallback = (strpos($content, '->oKategorie_arr') !== false);
+        $categoryFallback = (mb_strpos($content, '->oKategorie_arr') !== false);
         $options          = Artikel::getExportOptions();
         $helper           = Category::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL          = Shop::getURL();
@@ -1290,7 +1290,7 @@ class Exportformat
                 }
                 // Kampagne URL
                 if (!empty($this->campaignParameter)) {
-                    $cSep           = (strpos($product->cURL, '.php') !== false) ? '&' : '?';
+                    $cSep           = (mb_strpos($product->cURL, '.php') !== false) ? '&' : '?';
                     $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
                 }
 
@@ -1313,7 +1313,7 @@ class Exportformat
                 }
             }
         }
-        if (strlen($cOutput) > 0) {
+        if (mb_strlen($cOutput) > 0) {
             fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
                 ? StringHandler::convertUTF8($cOutput)
                 : $cOutput));
@@ -1335,7 +1335,7 @@ class Exportformat
                     ],
                     ReturnType::DEFAULT
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) === 'on')
+                $protocol = ((isset($_SERVER['HTTPS']) && mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) === 'on')
                     || Request::checkSSL() === 2)
                     ? 'https://'
                     : 'http://';
@@ -1454,11 +1454,11 @@ class Exportformat
         $extensionWhitelist = array_map('\strtolower', explode(',', EXPORTFORMAT_ALLOWED_FORMATS));
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
-        } elseif (strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
+        } elseif (mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
-        } elseif (strpos(realpath($pathinfo['dirname']), realpath(PFAD_ROOT)) === false) {
+        } elseif (mb_strpos(realpath($pathinfo['dirname']), realpath(PFAD_ROOT)) === false) {
             $validation['cDateiname'] = 3;
-        } elseif (!in_array(strtolower($pathinfo['extension']), $extensionWhitelist, true)) {
+        } elseif (!in_array(mb_convert_case($pathinfo['extension'], MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;
         } else {
             $this->setDateiname($post['cDateiname']);
@@ -1470,11 +1470,11 @@ class Exportformat
             $validation['cContent'] = 1;
         } elseif (!EXPORTFORMAT_ALLOW_PHP
             && (
-                strpos($post['cContent'], '{php}') !== false
-                || strpos($post['cContent'], '<?php') !== false
-                || strpos($post['cContent'], '<%') !== false
-                || strpos($post['cContent'], '<%=') !== false
-                || strpos($post['cContent'], '<script language="php">') !== false
+                mb_strpos($post['cContent'], '{php}') !== false
+                || mb_strpos($post['cContent'], '<?php') !== false
+                || mb_strpos($post['cContent'], '<%') !== false
+                || mb_strpos($post['cContent'], '<%=') !== false
+                || mb_strpos($post['cContent'], '<script language="php">') !== false
             )
         ) {
             $validation['cContent'] = 2;

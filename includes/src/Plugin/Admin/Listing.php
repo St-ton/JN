@@ -208,7 +208,7 @@ final class Listing
     private function sort(): void
     {
         $this->plugins->sortBy(function (ListingItem $item) {
-            return \strtolower($item->getName());
+            return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }
 }

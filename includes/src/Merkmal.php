@@ -167,7 +167,7 @@ class Merkmal
                                         AND standardSprache.kSprache = {$kSprache}";
                 $cOrderBy         = 'ORDER BY tmw.nSort, standardSprache.cWert';
             }
-            $oMerkmalWertTMP_arr    = Shop::Container()->getDB()->query(
+            $tmpAttributes          = Shop::Container()->getDB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
                     {$cJoinMerkmalwert}
@@ -176,7 +176,7 @@ class Merkmal
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
             $this->oMerkmalWert_arr = [];
-            foreach ($oMerkmalWertTMP_arr as $oMerkmalWertTMP) {
+            foreach ($tmpAttributes as $oMerkmalWertTMP) {
                 $this->oMerkmalWert_arr[] = new MerkmalWert((int)$oMerkmalWertTMP->kMerkmalWert, $this->kSprache);
             }
         }
@@ -186,7 +186,7 @@ class Merkmal
         $this->nBildKleinVorhanden = 0;
         $this->cBildpfadGross      = BILD_KEIN_MERKMALBILD_VORHANDEN;
         $this->nBildGrossVorhanden = 0;
-        if (strlen($this->cBildpfad) > 0) {
+        if (mb_strlen($this->cBildpfad) > 0) {
             if (file_exists(PFAD_MERKMALBILDER_KLEIN . $this->cBildpfad)) {
                 $this->cBildpfadKlein      = PFAD_MERKMALBILDER_KLEIN . $this->cBildpfad;
                 $this->nBildKleinVorhanden = 1;
@@ -266,7 +266,7 @@ class Merkmal
                 $oMerkmalWert                     = new MerkmalWert(0, $this->kSprache);
                 $attributes[$i]->oMerkmalWert_arr = $oMerkmalWert->holeAlleMerkmalWerte($oMerkmal->kMerkmal);
 
-                if (strlen($oMerkmal->cBildpfad) > 0) {
+                if (mb_strlen($oMerkmal->cBildpfad) > 0) {
                     $attributes[$i]->cBildpfadKlein  = PFAD_MERKMALBILDER_KLEIN . $oMerkmal->cBildpfad;
                     $attributes[$i]->cBildpfadNormal = PFAD_MERKMALBILDER_NORMAL . $oMerkmal->cBildpfad;
                 } else {

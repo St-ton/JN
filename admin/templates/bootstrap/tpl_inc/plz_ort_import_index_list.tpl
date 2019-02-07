@@ -7,7 +7,7 @@
         <div class="col-xs-3"><strong>{__('plz_ort_count')}</strong></div>
         <div class="col-xs-1"><strong>{__('plz_ort_action')}</strong></div>
     </li>
-    {foreach from=$oPlzOrt_arr item="oPlzOrt"}
+    {foreach $oPlzOrt_arr as $oPlzOrt}
     <li class="list-group-item boxRow">
         <div class="col-xs-1">{$oPlzOrt->cLandISO}</div>
         <div class="col-xs-4">{$oPlzOrt->cDeutsch}</div>

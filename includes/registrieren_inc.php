@@ -8,14 +8,14 @@ use Helpers\Tax;
 use Helpers\ShippingMethod;
 
 /**
- * @param array $cPost_arr
+ * @param array $post
  * @return array|int
  */
-function kundeSpeichern(array $cPost_arr)
+function kundeSpeichern(array $post)
 {
     global $Kunde,
            $step,
-           $editRechnungsadresse,
+           $edit,
            $knd,
            $cKundenattribut_arr;
 
@@ -26,34 +26,34 @@ function kundeSpeichern(array $cPost_arr)
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
-    $editRechnungsadresse = (int)$cPost_arr['editRechnungsadresse'];
-    $step                 = 'formular';
-    Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($cPost_arr));
-    $fehlendeAngaben     = (!$editRechnungsadresse)
+    $edit = (int)$post['editRechnungsadresse'];
+    $step = 'formular';
+    Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($post));
+    $fehlendeAngaben     = (!$edit)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);
-    $knd                 = getKundendaten($cPost_arr, 1, 0);
-    $cKundenattribut_arr = getKundenattribute($cPost_arr);
+    $knd                 = getKundendaten($post, 1, 0);
+    $cKundenattribut_arr = getKundenattribute($post);
     $kKundengruppe       = \Session\Frontend::getCustomerGroup()->getID();
     $oCheckBox           = new CheckBox();
     $fehlendeAngaben     = array_merge(
         $fehlendeAngaben,
-        $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true)
+        $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true)
     );
 
-    if (isset($cPost_arr['shipping_address'])) {
-        if ((int)$cPost_arr['shipping_address'] === 0) {
-            $cPost_arr['kLieferadresse'] = 0;
-            $cPost_arr['lieferdaten']    = 1;
-            pruefeLieferdaten($cPost_arr);
-        } elseif (isset($cPost_arr['kLieferadresse']) && (int)$cPost_arr['kLieferadresse'] > 0) {
-            pruefeLieferdaten($cPost_arr);
-        } elseif (isset($cPost_arr['register']['shipping_address'])) {
-            pruefeLieferdaten($cPost_arr['register']['shipping_address'], $fehlendeAngaben);
+    if (isset($post['shipping_address'])) {
+        if ((int)$post['shipping_address'] === 0) {
+            $post['kLieferadresse'] = 0;
+            $post['lieferdaten']    = 1;
+            pruefeLieferdaten($post);
+        } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
+            pruefeLieferdaten($post);
+        } elseif (isset($post['register']['shipping_address'])) {
+            pruefeLieferdaten($post['register']['shipping_address'], $fehlendeAngaben);
         }
-    } elseif (isset($cPost_arr['lieferdaten']) && (int)$cPost_arr['lieferdaten'] === 1) {
+    } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
         // compatibility with older template
-        pruefeLieferdaten($cPost_arr, $fehlendeAngaben);
+        pruefeLieferdaten($post, $fehlendeAngaben);
     }
     $nReturnValue = angabenKorrekt($fehlendeAngaben);
 
@@ -68,11 +68,11 @@ function kundeSpeichern(array $cPost_arr)
             CHECKBOX_ORT_REGISTRIERUNG,
             $kKundengruppe,
             true,
-            $cPost_arr,
+            $post,
             ['oKunde' => $knd]
-        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true);
+        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true);
 
-        if ($editRechnungsadresse && $_SESSION['Kunde']->kKunde > 0) {
+        if ($edit && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
             unset($knd->cPasswort);
             $knd->updateInDB();
@@ -191,13 +191,13 @@ function kundeSpeichern(array $cPost_arr)
             Tax::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
         }
-        if ((int)$cPost_arr['checkout'] === 1) {
+        if ((int)$post['checkout'] === 1) {
             //weiterleitung zum chekout
             header('Location: ' . Shop::Container()->getLinkService()
                                       ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
-        if (isset($cPost_arr['ajaxcheckout_return']) && (int)$cPost_arr['ajaxcheckout_return'] === 1) {
+        if (isset($post['ajaxcheckout_return']) && (int)$post['ajaxcheckout_return'] === 1) {
             return 1;
         }
         if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
@@ -207,15 +207,15 @@ function kundeSpeichern(array $cPost_arr)
             exit;
         }
     } else {
-        if ((int)$cPost_arr['checkout'] === 1) {
+        if ((int)$post['checkout'] === 1) {
             //weiterleitung zum chekout
             $_SESSION['checkout.register']        = 1;
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
-            $_SESSION['checkout.cPost_arr']       = $cPost_arr;
+            $_SESSION['checkout.cPost_arr']       = $post;
 
             //keep shipping address on error
-            if (isset($cPost_arr['register']['shipping_address'])) {
-                $_SESSION['Lieferadresse'] = getLieferdaten($cPost_arr['register']['shipping_address']);
+            if (isset($post['register']['shipping_address'])) {
+                $_SESSION['Lieferadresse'] = getLieferdaten($post['register']['shipping_address']);
             }
 
             header('Location: ' . Shop::Container()->getLinkService()
@@ -285,14 +285,18 @@ function gibKunde()
 function gibKundeFromVCard($vCardFile)
 {
     if (is_file($vCardFile)) {
-        global $Kunde, $hinweis;
+        global $Kunde;
 
         try {
             $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
             $Kunde = $vCard->selectVCard(0)->asKunde();
             Shop::Smarty()->assign('Kunde', $Kunde);
         } catch (Exception $e) {
-            $hinweis = Shop::Lang()->get('uploadError');
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('uploadError'),
+                'uploadError'
+            );
         }
     }
 }

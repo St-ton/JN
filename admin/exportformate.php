@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\Revision;
 use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -12,7 +13,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 \Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $fehler              = '';
 $hinweis             = '';
 $step                = 'uebersicht';
@@ -33,7 +34,7 @@ if (isset($_GET['kExportformat'])
 
     if (isset($_GET['err'])) {
         $smarty->assign('oSmartyError', $oSmartyError);
-        $fehler = '<b>Smarty-Syntax Fehler.</b><br />';
+        $fehler = __('smartySyntaxError') . '<br />';
         if (is_array($_SESSION['last_error'])) {
             $fehler .= $_SESSION['last_error']['message'];
             unset($_SESSION['last_error']);
@@ -47,17 +48,17 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
             $kExportformat = (int)$_POST['kExportformat'];
-            $revision      = new Revision();
+            $revision      = new Revision($db);
             $revision->addRevision('export', $kExportformat);
             $ef->update();
-            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich geändert.';
+            $hinweis .= sprintf(__('successFormatEdit'), $ef->getName());
         } else {
             $kExportformat = $ef->save();
-            $hinweis      .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
+            $hinweis      .= sprintf(__('successFormatCreate'), $ef->getName());
         }
 
         $db->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = $db->selectAll(
+        $Conf = $db->selectAll(
             'teinstellungenconf',
             'kEinstellungenSektion',
             CONF_EXPORTFORMATE,
@@ -80,7 +81,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
             }
             $db->insert('texportformateinstellungen', $aktWert);
@@ -98,15 +99,15 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
-        $fehler = 'Fehler: Bitte überprüfen Sie Ihre Eingaben.';
+        $fehler = __('errorCheckInput');
     }
 }
 $cAction       = null;
 $kExportformat = null;
-if (isset($_POST['action']) && strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
+if (isset($_POST['action']) && mb_strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
     $cAction       = $_POST['action'];
     $kExportformat = (int)$_POST['kExportformat'];
-} elseif (isset($_GET['action']) && strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
+} elseif (isset($_GET['action']) && mb_strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
     $cAction       = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }
@@ -164,9 +165,9 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             );
 
             if ($bDeleted > 0) {
-                $hinweis = 'Exportformat erfolgreich gelöscht.';
+                $hinweis = __('successFormatDelete');
             } else {
-                $fehler = 'Exportformat konnte nicht gelöscht werden.';
+                $fehler = __('errorFormatDelete');
             }
             break;
         case 'exported':
@@ -177,13 +178,12 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
                     || (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 if (empty($_GET['hasError'])) {
-                    $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
+                    $hinweis = sprintf(__('successFormatCreate'), $exportformat->cName);
                 } else {
-                    $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.' .
-                        ' Fehlende Schreibrechte?';
+                    $fehler = sprintf(__('errorFormatCreate'), $exportformat->cName);
                 }
             } else {
-                $fehler = 'Das Exportformat <b>' . $exportformat->cName . '</b> konnte nicht erstellt werden.';
+                $fehler = sprintf(__('errorFormatCreate'), $exportformat->cName);
             }
             break;
         default:
@@ -217,7 +217,7 @@ if ($step === 'uebersicht') {
         );
         $exportformate[$i]->bPluginContentExtern = false;
         if ($exportformate[$i]->kPlugin > 0
-            && strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+            && mb_strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
         ) {
             $exportformate[$i]->bPluginContentExtern = true;
         }
@@ -251,7 +251,7 @@ if ($step === 'neuer Export') {
         $exportformat->cKopfzeile = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", '<tab>', $exportformat->cContent);
         $exportformat->cFusszeile = str_replace("\t", '<tab>', $exportformat->cFusszeile);
-        if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($exportformat->kPlugin > 0 && mb_strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $exportformat->bPluginContentFile = true;
         }
         $smarty->assign('Exportformat', $exportformat);

@@ -14,7 +14,7 @@ $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 Tax::setTaxRates();
 $db                 = Shop::Container()->getDB();
 $standardwaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
@@ -44,7 +44,7 @@ if (isset($_POST['del'])
     && Form::validateToken()
     && Versandart::deleteInDB($_POST['del'])
 ) {
-    $cHinweis .= 'Versandart erfolgreich gelöscht!';
+    $cHinweis .= __('successShippingMethodDelete');
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
 if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && Form::validateToken()) {
@@ -80,10 +80,10 @@ if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && Form::validateToken()) {
 if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && Form::validateToken()) {
     $step = 'uebersicht';
     if (Versandart::cloneShipping($_POST['clone'])) {
-        $cHinweis .= 'Versandart wurde erfolgreich dupliziert';
+        $cHinweis .= __('successShippingMethodDuplicated');
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
-        $cFehler .= 'Versandart konnte nicht dupliziert werden!';
+        $cFehler .= __('errorShippingMethodDuplicated');
     }
 }
 
@@ -113,7 +113,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken())
 if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
     $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
     $cISO             = StringHandler::convertISO6392ISO(Request::verifyGPDataString('cISO'));
-    if ($kVersandzuschlag > 0 && (strlen($cISO) > 0 && $cISO !== 'noISO')) {
+    if ($kVersandzuschlag > 0 && (mb_strlen($cISO) > 0 && $cISO !== 'noISO')) {
         $step = 'Zuschlagsliste';
         $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
         if (isset($fee->kVersandzuschlag) && $fee->kVersandzuschlag > 0) {
@@ -201,34 +201,40 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         // (multiple single ZIP or multiple ZIP-ranges)
         $szPLZ = $szPLZRange = $szOverlap = '';
         foreach ($plz_x as $oResult) {
-            if (!empty($oResult->cPLZ) && (0 < strlen($szPLZ))) {
+            if (!empty($oResult->cPLZ) && (0 < mb_strlen($szPLZ))) {
                 $szPLZ .= ', ' . $oResult->cPLZ;
-            } elseif (!empty($oResult->cPLZ) && (0 === strlen($szPLZ))) {
+            } elseif (!empty($oResult->cPLZ) && (0 === mb_strlen($szPLZ))) {
                 $szPLZ = $oResult->cPLZ;
             }
-            if (!empty($oResult->cPLZAb) && (0 < strlen($szPLZRange))) {
+            if (!empty($oResult->cPLZAb) && (0 < mb_strlen($szPLZRange))) {
                 $szPLZRange .= ', ' . $oResult->cPLZAb . '-' . $oResult->cPLZBis;
-            } elseif (!empty($oResult->cPLZAb) && (0 === strlen($szPLZRange))) {
+            } elseif (!empty($oResult->cPLZAb) && (0 === mb_strlen($szPLZRange))) {
                 $szPLZRange = $oResult->cPLZAb . '-' . $oResult->cPLZBis;
             }
         }
-        if ((0 < strlen($szPLZ)) && (0 < strlen($szPLZRange))) {
+        if ((0 < mb_strlen($szPLZ)) && (0 < mb_strlen($szPLZRange))) {
             $szOverlap = $szPLZ . ' und ' . $szPLZRange;
         } else {
-            $szOverlap = (0 < strlen($szPLZ)) ? $szPLZ : $szPLZRange;
+            $szOverlap = (0 < mb_strlen($szPLZ)) ? $szPLZ : $szPLZRange;
         }
         // form an error-string, if there are any errors, or insert the input into the DB
-        if (0 < strlen($szOverlap)) {
+        if (0 < mb_strlen($szOverlap)) {
             $cFehler = '&nbsp;';
             if (!empty($ZuschlagPLZ->cPLZ)) {
-                $cFehler .= 'Die PLZ ' . $ZuschlagPLZ->cPLZ;
+                $cFehler .= sprintf(
+                    __('errorZIPOverlap'),
+                    $ZuschlagPLZ->cPLZ,
+                    $szOverlap
+                );
             } else {
-                $cFehler .= 'Der PLZ-Bereich ' . $ZuschlagPLZ->cPLZAb . '-' . $ZuschlagPLZ->cPLZBis;
+                $cFehler .= sprintf(
+                    __('errorZIPAreaOverlap'),
+                    $ZuschlagPLZ->cPLZAb . '-' . $ZuschlagPLZ->cPLZBis,
+                    $szOverlap
+                );
             }
-            $cFehler .= ' überschneidet sich mit ' . $szOverlap .
-                '.<br>Bitte geben Sie eine andere PLZ / PLZ Bereich an.';
         } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
-            $cHinweis .= 'PLZ wurde erfolgreich hinzugefügt.';
+            $cHinweis .= __('successZIPAdd');
         }
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
@@ -236,7 +242,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         if ('' !== $szErrorString) {
             $cFehler .= $szErrorString;
         } else {
-            $cFehler .= 'Sie müssen eine PLZ oder einen PLZ-Bereich angeben!';
+            $cFehler .= __('errorZIPMissing');
         }
     }
 }
@@ -258,7 +264,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
             $db->delete('tversandzuschlag', 'kVersandzuschlag', (int)$Zuschlag->kVersandzuschlag);
         }
         if (($kVersandzuschlag = $db->insert('tversandzuschlag', $Zuschlag)) > 0) {
-            $cHinweis .= 'Zuschlagsliste wurde erfolgreich hinzugefügt.';
+            $cHinweis .= __('successListAdd');
         }
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
             $kVersandzuschlag = $Zuschlag->kVersandzuschlag;
@@ -284,10 +290,10 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         if (!$Zuschlag->cName) {
-            $cFehler .= 'Bitte geben Sie der Zuschlagsliste einen Namen! ';
+            $cFehler .= __('errorListNameMissing');
         }
         if (!$Zuschlag->fZuschlag) {
-            $cFehler .= 'Bitte geben Sie einen Preis für den Zuschlag ein! ';
+            $cFehler .= __('errorListPriceMissing');
         }
     }
 }
@@ -356,15 +362,15 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         }
         //preisstaffel beachten
         if (!isset($_POST['bis'][0])
-            || strlen($_POST['bis'][0]) === 0
+            || mb_strlen($_POST['bis'][0]) === 0
             || !isset($_POST['preis'][0])
-            || strlen($_POST['preis'][0]) === 0
+            || mb_strlen($_POST['preis'][0]) === 0
         ) {
             $staffelDa = false;
         }
         if (is_array($_POST['bis']) && is_array($_POST['preis'])) {
             foreach ($_POST['bis'] as $i => $fBis) {
-                if (isset($_POST['preis'][$i]) && strlen($fBis) > 0) {
+                if (isset($_POST['preis'][$i]) && mb_strlen($fBis) > 0) {
                     unset($oVersandstaffel);
                     $oVersandstaffel         = new stdClass();
                     $oVersandstaffel->fBis   = (float)str_replace(',', '.', $fBis);
@@ -411,14 +417,14 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         $kVersandart = 0;
         if ((int)$_POST['kVersandart'] === 0) {
             $kVersandart = $db->insert('tversandart', $Versandart);
-            $cHinweis   .= 'Die Versandart <strong>' . $Versandart->cName . '</strong> wurde erfolgreich hinzugefügt.';
+            $cHinweis   .= sprintf(__('successShippingMethodCreate'), $Versandart->cName);
         } else {
             //updaten
             $kVersandart = (int)$_POST['kVersandart'];
             $db->update('tversandart', 'kVersandart', $kVersandart, $Versandart);
             $db->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
             $db->delete('tversandartstaffel', 'kVersandart', $kVersandart);
-            $cHinweis .= 'Die Versandart <strong>' . $Versandart->cName . '</strong> wurde erfolgreich geändert.';
+            $cHinweis .= __('successShippingMethodChange');
         }
         if ($kVersandart > 0) {
             foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
@@ -469,19 +475,19 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
     } else {
         $step = 'neue Versandart';
         if (!$Versandart->cName) {
-            $cFehler .= '<p>Bitte geben Sie dieser Versandart einen Namen!</p>';
+            $cFehler .= __('errorShippingMethodNameMissing');
         }
         if (count($_POST['land']) < 1) {
-            $cFehler .= '<p>Bitte mindestens ein Versandland ankreuzen!</p>';
+            $cFehler .= __('errorShippingMethodCountryMissing');
         }
         if (count($_POST['kZahlungsart']) < 1) {
-            $cFehler .= '<p>Bitte mindestens eine akzeptierte Zahlungsart auswählen!</p>';
+            $cFehler .= __('errorShippingMethodPaymentMissing');
         }
         if (!$staffelDa) {
-            $cFehler .= '<p>Bitte mindestens einen Staffelpreis angeben!</p>';
+            $cFehler .= __('errorShippingMethodPriceMissing');
         }
         if (!$bVersandkostenfreiGueltig) {
-            $cFehler .= '<p>Ihr Versandkostenfrei Wert darf maximal ' . $fMaxVersandartStaffelBis . ' sein!</p>';
+            $cFehler .= __('errorShippingFreeMax');
         }
         if ((int)$_POST['kVersandart'] > 0) {
             $Versandart = $db->select('tversandart', 'kVersandart', (int)$_POST['kVersandart']);

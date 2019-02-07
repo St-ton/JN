@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "paymentmethods"
 msgstr "Zahlungsarten"
 
@@ -117,3 +121,9 @@ msgstr "https://jtl-url.de/covba"
 
 msgid "paymentsDesc"
 msgstr "Hier können Sie alle Zahlungseingänge zu einer gewünschten Zahlungsart einsehen und deren Abgleichs-Status zur Wawi untersuchen."
+
+msgid "successPaymentMethodCheck"
+msgstr "Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft."
+
+msgid "successLogReset"
+msgstr "Der Fehlerlog von %s wurde erfolgreich zurückgesetzt."

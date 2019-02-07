@@ -193,6 +193,7 @@ define('HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN', 26);
  * Anzeige des Kundenkontos
  *
  * @file jtl.php
+ * @param Lieferadresse[] deliveryAddresses - since 5.0.0
  */
 define('HOOK_JTL_PAGE_MEINKKONTO', 27);
 
@@ -1693,7 +1694,7 @@ define('HOOK_GET_MANUFACTURERS', 226);
 /**
  * @since 4.06
  * @file admin/templates/bootstrap/php/functions.php
- * @param AdminAccount - oAdminAccount
+ * @param \Backend\AdminAccount - oAdminAccount
  * @param string       - url
  */
 define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);

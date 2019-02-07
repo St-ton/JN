@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';
@@ -17,7 +17,7 @@ if (isset($_GET['del']) && (int)$_GET['del'] > 0 && Form::validateToken()) {
     Shop::Container()->getDB()->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
     Shop::Container()->getDB()->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
 
-    $cHinweis = 'Der Betreff wurde erfolgreich gelöscht';
+    $cHinweis = __('successSubjectDelete');
 }
 
 if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateToken()) {
@@ -49,7 +49,7 @@ if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateTo
         Shop::Container()->getDB()->insert('tspezialcontentsprache', $spezialContent3);
         unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
-    $cHinweis .= 'Inhalt wurde erfolgreich gespeichert.';
+    $cHinweis .= __('successContentSave');
     $cTab      = 'content';
 }
 
@@ -71,11 +71,11 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
         $kKontaktBetreff = 0;
         if ((int)$_POST['kKontaktBetreff'] === 0) {
             $kKontaktBetreff = Shop::Container()->getDB()->insert('tkontaktbetreff', $neuerBetreff);
-            $cHinweis       .= 'Betreff wurde erfolgreich hinzugefügt.';
+            $cHinweis       .= __('successSubjectCreate');
         } else {
             $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
             Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
-            $cHinweis .= 'Der Betreff <strong>' . $neuerBetreff->cName . '</strong> wurde erfolgreich geändert.';
+            $cHinweis .= sprintf(__('successSubjectSave'), $neuerBetreff->cName);
         }
         $sprachen                             = Sprache::getAllLanguages();
         $neuerBetreffSprache                  = new stdClass();
@@ -100,7 +100,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
 
         $smarty->assign('hinweis', $cHinweis);
     } else {
-        $error = 'Der Betreff konnte nicht gespeichert werden';
+        $error = __('errorSubjectSave');
         $step  = 'betreff';
         $smarty->assign('cFehler', $error);
     }

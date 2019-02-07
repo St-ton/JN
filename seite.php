@@ -13,12 +13,10 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-$smarty                 = Shop::Smarty();
-$Einstellungen          = Shopsetting::getInstance()->getAll();
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$linkHelper             = Shop::Container()->getLinkService();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+$smarty      = Shop::Smarty();
+$conf        = Shopsetting::getInstance()->getAll();
+$linkHelper  = Shop::Container()->getLinkService();
+$alertHelper = Shop::Container()->getAlertService();
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
 }
@@ -30,20 +28,19 @@ if ($link === null || !$link->isVisible()) {
 $requestURL = URL::buildURL($link, URLART_SEITE);
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $cCanonicalURL = Shop::getURL() . '/';
-} elseif (strpos($requestURL, '.php') === false) {
+} elseif (mb_strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-$AufgeklappteKategorien = new KategorieListe();
 if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if ($link->getRedirectCode() > 0) {
         header('Location: ' . $cCanonicalURL, true, $link->getRedirectCode());
         exit();
     }
     $smarty->assign('StartseiteBoxen', CMSHelper::getHomeBoxes())
-           ->assign('oNews_arr', $Einstellungen['news']['news_benutzen'] === 'Y'
-               ? CMSHelper::getHomeNews($Einstellungen)
+           ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
+               ? CMSHelper::getHomeNews($conf)
                : []);
-    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
+    \Extensions\AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
@@ -56,7 +53,11 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     ));
 } elseif ($link->getLinkType() === LINKTYP_VERSAND) {
     if (isset($_POST['land'], $_POST['plz']) && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'])) {
-        $smarty->assign('fehler', Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'),
+            'missingParamShippingDetermination'
+        );
     }
     $smarty->assign(
         'laender',
@@ -65,72 +66,53 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         )
     );
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
-    $smarty->assign('LivesucheTop', CMSHelper::getLiveSearchTop($Einstellungen))
-           ->assign('LivesucheLast', CMSHelper::getLiveSearchLast($Einstellungen));
+    $liveSearchTop  = CMSHelper::getLiveSearchTop($conf);
+    $liveSearchLast = CMSHelper::getLiveSearchLast($conf);
+    if (count($liveSearchTop) === 0 && count($liveSearchLast) === 0) {
+        $alertHelper->addAlert(Alert::TYPE_WARNING, Shop::Lang()->get('noDataAvailable'), 'noDataAvailable');
+    }
+    $smarty->assign('LivesucheTop', $liveSearchTop)
+           ->assign('LivesucheLast', $liveSearchLast);
 } elseif ($link->getLinkType() === LINKTYP_TAGGING) {
-    $smarty->assign('Tagging', CMSHelper::getTagging($Einstellungen));
+    $smarty->assign('Tagging', CMSHelper::getTagging($conf));
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
 } elseif ($link->getLinkType() === LINKTYP_NEWSLETTERARCHIV) {
     $smarty->assign('oNewsletterHistory_arr', CMSHelper::getNewsletterHistory());
 } elseif ($link->getLinkType() === LINKTYP_SITEMAP) {
     Shop::setPageType(PAGE_SITEMAP);
-    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $Einstellungen);
+    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
     $sitemap->assignData($smarty);
 } elseif ($link->getLinkType() === LINKTYP_404) {
-    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $Einstellungen);
+    $sitemap = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
     $sitemap->assignData($smarty);
     Shop::setPageType(PAGE_404);
+    $alertHelper->addAlert(Alert::TYPE_DANGER, Shop::Lang()->get('pageNotFound'), 'pageNotFound');
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
-    if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
-        $oArtikelGeschenk_arr = CMSHelper::getFreeGifts($Einstellungen);
+    if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
+        $oArtikelGeschenk_arr = CMSHelper::getFreeGifts($conf);
         if (is_array($oArtikelGeschenk_arr) && count($oArtikelGeschenk_arr) > 0) {
             $smarty->assign('oArtikelGeschenk_arr', $oArtikelGeschenk_arr);
         } else {
-            $cFehler .= Shop::Lang()->get('freegiftsNogifts', 'errorMessages');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('freegiftsNogifts', 'errorMessages'),
+                'freegiftsNogifts'
+            );
         }
     }
 } elseif ($link->getLinkType() === LINKTYP_AUSWAHLASSISTENT) {
-    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->getID(), Shop::getLanguage(), $smarty);
+    \Extensions\AuswahlAssistent::startIfRequired(
+        AUSWAHLASSISTENT_ORT_LINK,
+        $link->getID(),
+        Shop::getLanguageID(),
+        $smarty
+    );
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
-$smarty->assign('Link', $link)
-       ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
-       ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
-       ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
-
-$cMetaTitle       = $link->getMetaTitle();
-$cMetaDescription = $link->getMetaDescription() ?? null;
-$cMetaKeywords    = $link->getMetaKeyword() ?? null;
-$kSprache         = Shop::getLanguage();
-$globalMeta       = $oGlobaleMetaAngabenAssoc_arr[$kSprache] ?? null;
-if ($globalMeta !== null) {
-    if (empty($cMetaTitle)) {
-        $cMetaTitle = $globalMeta->Title;
-    }
-    if (empty($cMetaDescription)) {
-        $cMetaDescription = $globalMeta->Meta_Description;
-    }
-    if (empty($cMetaKeywords)) {
-        $cMetaKeywords = $globalMeta->Meta_Keywords;
-    }
-}
-$cMetaTitle       = \Filter\Metadata::prepareMeta(
-    $cMetaTitle,
-    null,
-    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_title']
-);
-$cMetaDescription = \Filter\Metadata::prepareMeta(
-    $cMetaDescription,
-    null,
-    (int)$Einstellungen['metaangaben']['global_meta_maxlaenge_description']
-);
-
-$smarty->assign('meta_title', $cMetaTitle)
-       ->assign('meta_description', $cMetaDescription)
-       ->assign('meta_keywords', $cMetaKeywords);
+$smarty->assign('Link', $link);
 
 executeHook(HOOK_SEITE_PAGE);
 

@@ -10,7 +10,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $cFehler     = '';
 $cHinweis    = '';
@@ -29,7 +29,7 @@ switch ($action) {
         for ($i = 0; $i < $count; $i++) {
             $slide  = new Slide();
             $aSlide = $_REQUEST['aSlide'][$aSlideKey[$i]];
-            if (strpos($aSlideKey[$i], 'neu') === false) {
+            if (mb_strpos($aSlideKey[$i], 'neu') === false) {
                 $slide->setID((int)$aSlideKey[$i]);
             }
 
@@ -103,10 +103,10 @@ switch ($action) {
                 header('Location: ' . $redirectUrl);
                 exit;
             }
-            $cFehler .= 'Slider konnte nicht gespeichert werden.';
+            $cFehler .= __('errorSliderSave');
 
             if (empty($cFehler)) {
-                $cHinweis = 'Änderungen erfolgreich gespeichert.';
+                $cHinweis = __('successSliderSave');
             }
         }
         break;
@@ -117,7 +117,7 @@ switch ($action) {
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);
         if (!is_object($slider)) {
-            $cFehler = 'Slider wurde nicht gefunden.';
+            $cFehler = __('errorSliderNotFound');
             $action  = 'view';
         }
         break;
@@ -128,7 +128,7 @@ switch ($action) {
         }
         $slider = new Slider();
         $slider->load($kSlider, false);
-        $smarty->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+        $smarty->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oExtension', holeExtension($kSlider));
 
@@ -146,7 +146,7 @@ switch ($action) {
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
-            $cFehler = 'Slider wurde nicht gefunden.';
+            $cFehler = __('errorSliderNotFound');
             $action  = 'view';
             break;
         }
@@ -154,7 +154,7 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oSlider', new Slider());
         break;
@@ -166,7 +166,7 @@ switch ($action) {
             header('Location: ' . $redirectUrl);
             exit;
         }
-        $cFehler = 'Slider konnte nicht entfernt werden.';
+        $cFehler = __('errorSliderRemove');
         break;
 
     default:

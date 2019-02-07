@@ -31,7 +31,7 @@ class SortingType
      * @param int $type
      * @return string|null
      */
-    public function mapSortTypeToClassName(int $type)
+    public function mapSortTypeToClassName(int $type): ?string
     {
         switch ($type) {
             case \SEARCH_SORT_NONE:
@@ -77,7 +77,7 @@ class SortingType
             return (int)$sort;
         }
         // Usersortierung ist ein String aus einem Kategorieattribut
-        switch (\strtolower($sort)) {
+        switch (\mb_convert_case($sort, \MB_CASE_LOWER)) {
             case \SEARCH_SORT_CRITERION_NAME:
             case \SEARCH_SORT_CRITERION_NAME_ASC:
                 return \SEARCH_SORT_NAME_ASC;

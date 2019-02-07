@@ -34,7 +34,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=warenlager from=$oWarenlager_arr item=oWarenlager}
+                        {foreach $oWarenlager_arr as $oWarenlager}
                             <tr>
                                 <td class="checkext">
                                     <input name="kWarenlager[]" type="checkbox" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
@@ -47,8 +47,8 @@
                             </tr>
                             <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
                                 <td colspan="4">
-                                {foreach name=sprachen from=$oSprache_arr item=oSprache}
-                                    {assign var="kSprache" value=$oSprache->kSprache}
+                                {foreach $oSprache_arr as $oSprache}
+                                    {assign var=kSprache value=$oSprache->kSprache}
                                         <div class="input-group">
                                             <span class="input-group-addon">
                                                 <label for="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]">{$oSprache->cNameDeutsch}</label>

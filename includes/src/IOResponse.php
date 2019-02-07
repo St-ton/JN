@@ -127,7 +127,7 @@ class IOResponse implements JsonSerializable
         $result = [];
 
         foreach ($trace as $i => $t) {
-            $result[] = '#' . ($i + 1) . substr($t, strpos($t, ' '));
+            $result[] = '#' . ($i + 1) . mb_substr($t, mb_strpos($t, ' '));
         }
 
         return $result;

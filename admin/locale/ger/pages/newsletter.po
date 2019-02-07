@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "newsletterqueue"
 msgstr "Warteschlange"
 
@@ -238,3 +242,44 @@ msgstr "Opt-In IP"
 msgid "newsletterOptInDate"
 msgstr "Opt-In Date"
 
+msgid "successNewsletterAboDelete"
+msgstr "Ihre markierten Newsletter-Abonnenten wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNewsletterAbo"
+msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten."
+
+msgid "successNewsletterAbounlock"
+msgstr "Ihre markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet."
+
+msgid "successNewsletterAboAdd"
+msgstr "Newsletter-Empfänger wurde erfolgreich hinzugefügt"
+
+msgid "errorFillEmail"
+msgstr "Bitte füllen Sie das Feld Email aus."
+
+msgid "successDelete"
+msgstr " wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNewsletter"
+msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter"
+
+msgid "errorAtLeastOneHistory"
+msgstr "Fehler: Bitte markieren Sie mindestens eine History."
+
+msgid "successNewsletterTemplateEdit"
+msgstr "Ihre Newslettervorlage %s wurde erfolgreich editiert."
+
+msgid "successNewsletterTemplateSave"
+msgstr "Ihre Newslettervorlage %s wurde erfolgreich gespeichert."
+
+msgid "successNewsletterPrepared"
+msgstr "Der Newsletter %s wurde zum Versenden vorbereitet."
+
+msgid "errorTestTemplateEmpty"
+msgstr "Die Empfänger-Adresse zum Testen ist leer."
+
+msgid "successTestEmailTo"
+msgstr "Die Newslettervorlage %s wurde zum Testen an %s gesendet."
+
+msgid "successNewsletterTemplateDelete"
+msgstr "Die Newslettervorlage wurde erfolgreich gelöscht."

@@ -60,18 +60,15 @@ abstract class MainModel
      */
     public function toJSON()
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $cMethod = 'get' . substr($cMember, 1);
-                if (method_exists($this, $cMethod)) {
-                    $oObj->$cMember = $this->$cMethod();
-                }
+        $item = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $method = 'get' . mb_substr($member, 1);
+            if (method_exists($this, $method)) {
+                $item->$member = $this->$method();
             }
         }
 
-        return json_encode($oObj);
+        return json_encode($item);
     }
 
     /**
@@ -79,56 +76,47 @@ abstract class MainModel
      */
     public function toCSV()
     {
-        $cMember_arr = array_keys(get_object_vars($this));
-        $cCSV        = '';
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $i => $cMember) {
-                $cMethod = 'get' . substr($cMember, 1);
-                if (method_exists($this, $cMethod)) {
-                    $cSep = '';
-                    if ($i > 0) {
-                        $cSep = ';';
-                    }
-
-                    $cCSV .= $cSep . $this->$cMethod();
+        $csv = '';
+        foreach (array_keys(get_object_vars($this)) as $i => $member) {
+            $method = 'get' . mb_substr($member, 1);
+            if (method_exists($this, $method)) {
+                $sep = '';
+                if ($i > 0) {
+                    $sep = ';';
                 }
+
+                $csv .= $sep . $this->$method();
             }
         }
 
-        return $cCSV;
+        return $csv;
     }
 
     /**
-     * @param array $Nonpublics
+     * @param array $nonpublics
      * @return stdClass
      */
-    public function getPublic(array $Nonpublics)
+    public function getPublic(array $nonpublics)
     {
-        $Obj     = new stdClass();
-        $members = array_keys(get_object_vars($this));
-        if (is_array($members) && count($members) > 0) {
-            foreach ($members as $member) {
-                if (!in_array($member, $Nonpublics, true)) {
-                    $Obj->$member = $this->$member;
-                }
+        $item = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            if (!in_array($member, $nonpublics, true)) {
+                $item->$member = $this->$member;
             }
         }
 
-        return $Obj;
+        return $item;
     }
 
     /**
-     * @param object $oObj
+     * @param object $obj
      */
-    public function loadObject($oObj)
+    public function loadObject($obj)
     {
-        $cMember_arr = array_keys(get_object_vars($oObj));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $cMethod = 'set' . substr($cMember, 1);
-                if (method_exists($this, $cMethod)) {
-                    $this->$cMethod($oObj->$cMember);
-                }
+        foreach (array_keys(get_object_vars($obj)) as $member) {
+            $method = 'set' . mb_substr($member, 1);
+            if (method_exists($this, $method)) {
+                $this->$method($obj->$member);
             }
         }
     }

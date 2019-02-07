@@ -11,20 +11,21 @@ require_once PFAD_INCLUDES . 'bewertung_inc.php';
 
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
-$cParameter_arr = Shop::getParameters();
-$Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+$params         = Shop::getParameters();
+$conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+$ratingAllowed  = true;
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     speicherBewertung(
-        $cParameter_arr['kArtikel'],
+        $params['kArtikel'],
         \Session\Frontend::getCustomer()->getID(),
         Shop::getLanguageID(),
         Request::verifyGPDataString('cTitel'),
         Request::verifyGPDataString('cText'),
-        $cParameter_arr['nSterne']
+        $params['nSterne']
     );
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
     speicherHilfreich(
-        $cParameter_arr['kArtikel'],
+        $params['kArtikel'],
         \Session\Frontend::getCustomer()->getID(),
         Shop::getLanguageID(),
         Request::verifyGPCDataInt('btgseite'),
@@ -43,33 +44,40 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         exit();
     }
     $AktuellerArtikel = new Artikel();
-    $AktuellerArtikel->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
+    $AktuellerArtikel->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());
     if (!$AktuellerArtikel->kArtikel) {
         header('Location: ' . Shop::getURL() . '/', true, 303);
         exit;
     }
-    $AufgeklappteKategorien = new KategorieListe();
     if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
             Shop::getLanguageID(),
-            $Einstellungen['bewertung']['bewertung_anzahlseite'],
+            $conf['bewertung']['bewertung_anzahlseite'],
             0,
             -1,
-            $Einstellungen['bewertung']['bewertung_freischalten'],
-            $cParameter_arr['nSortierung']
+            $conf['bewertung']['bewertung_freischalten'],
+            $params['nSortierung']
         );
         $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
     }
-
-    if ($Einstellungen['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
-        Shop::Smarty()->assign(
-            'nArtikelNichtGekauft',
-            pruefeKundeArtikelGekauft(
-                $AktuellerArtikel->kArtikel,
-                $_SESSION['Kunde']->kKunde
-            )
+    if (!\Session\Frontend::getCustomer()->isLoggedIn()) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('loginFirst', 'product rating'),
+            'loginFirst',
+            ['showInAlertListTemplate' => false]
         );
+        $ratingAllowed = false;
+    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, \Session\Frontend::getCustomer()) === false) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('productNotBuyed', 'product rating'),
+            'productNotBuyed',
+            ['showInAlertListTemplate' => false]
+        );
+        $ratingAllowed = false;
     }
+
     Shop::Smarty()->assign(
         'BereitsBewertet',
         pruefeKundeArtikelBewertet(
@@ -78,6 +86,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         )
     )
         ->assign('Artikel', $AktuellerArtikel)
+        ->assign('ratingAllowed', $ratingAllowed)
         ->assign(
             'oBewertung',
             Shop::Container()->getDB()->select(

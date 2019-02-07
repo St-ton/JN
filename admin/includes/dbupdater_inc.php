@@ -96,15 +96,15 @@ function loescheVerzeichnisUpdater($cPfad)
 {
     $bLinux = true;
     // Linux oder Windows?
-    if (strpos($cPfad, '\\') !== false) {
+    if (mb_strpos($cPfad, '\\') !== false) {
         $bLinux = false;
     }
 
     if ($bLinux) {
-        if (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '/') === false) {
+        if (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '/') === false) {
             $cPfad .= '/';
         }
-    } elseif (strpos(substr($cPfad, strlen($cPfad) - 1, 1), '\\') === false) {
+    } elseif (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '\\') === false) {
         $cPfad .= '\\';
     }
 
@@ -129,7 +129,7 @@ function loescheVerzeichnisUpdater($cPfad)
 
         return false;
     }
-    echo $cPfad . ' ist kein Verzeichnis<br>';
+    echo $cPfad . __('errorIsNoDir') . '<br>';
 
     return false;
 }
@@ -191,23 +191,20 @@ function mappeFehlerCode(int $nFehlerCode)
     if ($nFehlerCode > 0) {
         switch ($nFehlerCode) {
             case 1:
-                return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. ' .
-                    'Bitte versuchen Sie es erneut.';
+                return __('errorSqlUpdate');
                 break;
             case 100:
-                return 'Das Update wurde erfolgreich abgeschlossen.<br>';
+                return __('successUpdate') . '<br />';
                 break;
             case 999:
-                return 'Fehler: Ein SQL-Befehl im Update hat 3 mal nicht funktioniert. ' .
-                    'Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support!<br /><br />' .
-                    '<a href="mailto:' . JTLSUPPORT_EMAIL . '?subject=Shop-Update Fehler">Support kontaktieren</a>';
+                return __('errorUpdate') . '<br /><br />' .
+                    '<a href="mailto:' . JTLSUPPORT_EMAIL . '?subject=Shop-Update Fehler">' .
+                    __('contactSupport') . '</a>';
                 break;
             default:
-                return 'Unbekannter Fehler';
+                return __('errorUnknown');
         }
     }
-
-    return 'Unbekannter Fehler';
 }
 
 /**

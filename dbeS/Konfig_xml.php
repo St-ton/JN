@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use dbeS\TableMapper as Mapper;
+
 require_once __DIR__ . '/syncinclude.php';
 
 $return  = 3;
@@ -45,27 +47,26 @@ function bearbeiteInsert($oXml)
 {
     // Konfiggruppe
     foreach ($oXml->tkonfiggruppe as $oXmlKonfiggruppe) {
-        $oKonfiggruppe = JTLMapArr($oXmlKonfiggruppe, $GLOBALS['mKonfigGruppe']);
+        $oKonfiggruppe = JTLMapArr($oXmlKonfiggruppe, Mapper::getMapping('mKonfigGruppe'));
         DBUpdateInsert('tkonfiggruppe', [$oKonfiggruppe], 'kKonfiggruppe');
         // Konfiggruppesprache
         foreach ($oXmlKonfiggruppe->tkonfiggruppesprache as $oXmlKonfiggruppesprache) {
-            $oKonfiggruppesprache = JTLMapArr($oXmlKonfiggruppesprache, $GLOBALS['mKonfigSprache']);
+            $oKonfiggruppesprache = JTLMapArr($oXmlKonfiggruppesprache, Mapper::getMapping('mKonfigSprache'));
             DBUpdateInsert('tkonfiggruppesprache', [$oKonfiggruppesprache], 'kKonfiggruppe', 'kSprache');
         }
         // Konfiggruppeitem
         loescheKonfigitem((int)$oKonfiggruppe->kKonfiggruppe);
-
         foreach ($oXmlKonfiggruppe->tkonfigitem as $oXmlKonfigitem) {
-            $oKonfigitem = JTLMapArr($oXmlKonfigitem, $GLOBALS['mKonfigItem']);
+            $oKonfigitem = JTLMapArr($oXmlKonfigitem, Mapper::getMapping('mKonfigItem'));
             DBUpdateInsert('tkonfigitem', [$oKonfigitem], 'kKonfigitem');
             // Konfiggruppeitemsprache
             foreach ($oXmlKonfigitem->tkonfigitemsprache as $oXmlKonfigitemsprache) {
-                $oKonfigitemsprache = JTLMapArr($oXmlKonfigitemsprache, $GLOBALS['mKonfigSprache']);
+                $oKonfigitemsprache = JTLMapArr($oXmlKonfigitemsprache, Mapper::getMapping('mKonfigSprache'));
                 DBUpdateInsert('tkonfigitemsprache', [$oKonfigitemsprache], 'kKonfigitem', 'kSprache');
             }
             // Konfiggruppeitemsprache
             foreach ($oXmlKonfigitem->tkonfigitempreis as $oXmlKonfigitempreis) {
-                $oKonfigitempreis = JTLMapArr($oXmlKonfigitempreis, $GLOBALS['mKonfigItemPreis']);
+                $oKonfigitempreis = JTLMapArr($oXmlKonfigitempreis, Mapper::getMapping('mKonfigItemPreis'));
                 DBUpdateInsert('tkonfigitempreis', [$oKonfigitempreis], 'kKonfigitem', 'kKundengruppe');
             }
         }
@@ -90,9 +91,9 @@ function bearbeiteDeletes($oXml)
  */
 function loescheKonfiggruppe(int $kKonfiggruppe)
 {
-    if ($kKonfiggruppe > 0 && class_exists('Konfiggruppe')) {
+    if ($kKonfiggruppe > 0 && \Extensions\Konfiggruppe::checkLicense()) {
         // todo: alle items löschen
-        $oKonfig = new Konfiggruppe($kKonfiggruppe);
+        $oKonfig = new \Extensions\Konfiggruppe($kKonfiggruppe);
         $nRows   = $oKonfig->delete();
         Shop::Container()->getLogService()->debug($nRows . ' Konfiggruppen gelöscht');
     }
@@ -113,8 +114,8 @@ function loescheKonfigitem(int $kKonfiggruppe)
  */
 function loescheKonfigitempreis(int $kKonfigitem)
 {
-    if ($kKonfigitem > 0 && class_exists('Konfigitempreis')) {
-        $oKonfig = new Konfigitempreis($kKonfigitem);
+    if ($kKonfigitem > 0 && \Extensions\Konfigitempreis::checkLicense()) {
+        $oKonfig = new \Extensions\Konfigitempreis($kKonfigitem);
         $nRows   = $oKonfig->delete();
         Shop::Container()->getLogService()->debug($nRows . ' Konfigitempreise gelöscht');
     }

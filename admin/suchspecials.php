@@ -11,21 +11,20 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_KUNDENFELD]);
-$cHinweis      = '';
-$cFehler       = '';
-$step          = 'suchspecials';
+/** @global \Smarty\JTLSmarty $smarty */
+$cHinweis = '';
+$cFehler  = '';
+$step     = 'suchspecials';
 
 setzeSprache();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
 } elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && Form::validateToken()) {
     // Suchspecials aus der DB holen und in smarty assignen
-    $oSuchSpecials_arr       = Shop::Container()->getDB()->selectAll(
+    $searchSpecials   = Shop::Container()->getDB()->selectAll(
         'tseo',
         ['cKey', 'kSprache'],
         ['suchspecial',
@@ -33,213 +32,205 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         '*',
         'kKey'
     );
-    $oSuchSpecialsTMP_arr    = [];
-    $nSuchSpecialsLoesch_arr = [];
-    $cBestSellerSeo          = strip_tags(Shop::Container()->getDB()->escape($_POST['bestseller']));
-    $cSonderangeboteSeo      = Shop::Container()->getDB()->escape($_POST['sonderangebote']);
-    $cNeuImSortimentSeo      = strip_tags(Shop::Container()->getDB()->escape($_POST['neu_im_sortiment']));
-    $cTopAngeboteSeo         = strip_tags(Shop::Container()->getDB()->escape($_POST['top_angebote']));
-    $cInKuerzeVerfuegbarSeo  = strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar']));
-    $cTopBewertetSeo         = strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet']));
-
-    // Pruefe BestSeller
-    if (strlen($cBestSellerSeo) > 0 && !pruefeSuchspecialSeo(
-        $oSuchSpecials_arr,
-        $cBestSellerSeo,
+    $ssTmp            = [];
+    $ssToDelete       = [];
+    $bestSellerSeo    = strip_tags(Shop::Container()->getDB()->escape($_POST['bestseller']));
+    $specialOffersSeo = Shop::Container()->getDB()->escape($_POST['sonderangebote']);
+    $newProductsSeo   = strip_tags(Shop::Container()->getDB()->escape($_POST['neu_im_sortiment']));
+    $topOffersSeo     = strip_tags(Shop::Container()->getDB()->escape($_POST['top_angebote']));
+    $releaseSeo       = strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar']));
+    $topRatedSeo      = strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet']));
+    if (mb_strlen($bestSellerSeo) > 0 && !pruefeSuchspecialSeo(
+        $searchSpecials,
+        $bestSellerSeo,
         SEARCHSPECIALS_BESTSELLER
     )) {
-        $cBestSellerSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cBestSellerSeo));
+        $bestSellerSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($bestSellerSeo));
 
-        if ($cBestSellerSeo !== $_POST['bestseller']) {
-            $cHinweis .= 'Das BestSeller Seo "' . StringHandler::filterXSS($_POST['bestseller']) .
-                '" war bereits vorhanden und wurde in "' . $cBestSellerSeo . '" umbenannt.<br />';
+        if ($bestSellerSeo !== $_POST['bestseller']) {
+            $cHinweis .= sprintf(
+                __('errorExistRename'),
+                StringHandler::filterXSS($_POST['bestseller']),
+                $bestSellerSeo
+            ) . '<br />';
         }
-
-        unset($oBestSeller);
         $oBestSeller       = new stdClass();
         $oBestSeller->kKey = SEARCHSPECIALS_BESTSELLER;
-        $oBestSeller->cSeo = $cBestSellerSeo;
+        $oBestSeller->cSeo = $bestSellerSeo;
 
-        $oSuchSpecialsTMP_arr[] = $oBestSeller;
-    } elseif (strlen($cBestSellerSeo) === 0) {
-        // cSeo loeschen
-        $nSuchSpecialsLoesch_arr[] = SEARCHSPECIALS_BESTSELLER;
+        $ssTmp[] = $oBestSeller;
+    } elseif (mb_strlen($bestSellerSeo) === 0) {
+        $ssToDelete[] = SEARCHSPECIALS_BESTSELLER;
     }
     // Pruefe Sonderangebote
-    if (strlen($cSonderangeboteSeo) > 0 && !pruefeSuchspecialSeo(
-        $oSuchSpecials_arr,
-        $cSonderangeboteSeo,
+    if (mb_strlen($specialOffersSeo) > 0 && !pruefeSuchspecialSeo(
+        $searchSpecials,
+        $specialOffersSeo,
         SEARCHSPECIALS_SPECIALOFFERS
     )) {
-        $cSonderangeboteSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cSonderangeboteSeo));
+        $specialOffersSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($specialOffersSeo));
 
-        if ($cSonderangeboteSeo !== $_POST['sonderangebote']) {
-            $cHinweis .= 'Das Sonderangebot Seo "' . StringHandler::filterXSS($_POST['sonderangebote']) .
-                '" war bereits vorhanden und wurde auf "' . $cSonderangeboteSeo . '" umbenannt.<br />';
+        if ($specialOffersSeo !== $_POST['sonderangebote']) {
+            $cHinweis .= sprintf(
+                __('errorSpecialExistRename'),
+                StringHandler::filterXSS($_POST['sonderangebote']),
+                $specialOffersSeo
+            ) . '<br />';
         }
+        $specialOffer       = new stdClass();
+        $specialOffer->kKey = SEARCHSPECIALS_SPECIALOFFERS;
+        $specialOffer->cSeo = $specialOffersSeo;
 
-        unset($oSonderangebot);
-        $oSonderangebot       = new stdClass();
-        $oSonderangebot->kKey = SEARCHSPECIALS_SPECIALOFFERS;
-        $oSonderangebot->cSeo = $cSonderangeboteSeo;
-
-        $oSuchSpecialsTMP_arr[] = $oSonderangebot;
-    } elseif (strlen($cSonderangeboteSeo) === 0) {
+        $ssTmp[] = $specialOffer;
+    } elseif (mb_strlen($specialOffersSeo) === 0) {
         // cSeo loeschen
-        $nSuchSpecialsLoesch_arr[] = SEARCHSPECIALS_SPECIALOFFERS;
+        $ssToDelete[] = SEARCHSPECIALS_SPECIALOFFERS;
     }
     // Pruefe Neu im Sortiment
-    if (strlen($cNeuImSortimentSeo) > 0 && !pruefeSuchspecialSeo(
-        $oSuchSpecials_arr,
-        $cNeuImSortimentSeo,
+    if (mb_strlen($newProductsSeo) > 0 && !pruefeSuchspecialSeo(
+        $searchSpecials,
+        $newProductsSeo,
         SEARCHSPECIALS_NEWPRODUCTS
     )) {
-        $cNeuImSortimentSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cNeuImSortimentSeo));
+        $newProductsSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($newProductsSeo));
 
-        if ($cNeuImSortimentSeo !== $_POST['neu_im_sortiment']) {
-            $cHinweis .= 'Das Neu im Sortiment Seo "' . StringHandler::filterXSS($_POST['neu_im_sortiment']) .
-                '" war bereits vorhanden und wurde auf "' . $cNeuImSortimentSeo . '" umbenannt.<br />';
+        if ($newProductsSeo !== $_POST['neu_im_sortiment']) {
+            $cHinweis .= sprintf(
+                __('errorNewExistRename'),
+                StringHandler::filterXSS($_POST['neu_im_sortiment']),
+                $newProductsSeo
+            ) . '<br />';
         }
+        $newProducts       = new stdClass();
+        $newProducts->kKey = SEARCHSPECIALS_NEWPRODUCTS;
+        $newProducts->cSeo = $newProductsSeo;
 
-        unset($oNeuImSortiment);
-        $oNeuImSortiment       = new stdClass();
-        $oNeuImSortiment->kKey = SEARCHSPECIALS_NEWPRODUCTS;
-        $oNeuImSortiment->cSeo = $cNeuImSortimentSeo;
-
-        $oSuchSpecialsTMP_arr[] = $oNeuImSortiment;
-    } elseif (strlen($cNeuImSortimentSeo) === 0) {
+        $ssTmp[] = $newProducts;
+    } elseif (mb_strlen($newProductsSeo) === 0) {
         // cSeo leoschen
-        $nSuchSpecialsLoesch_arr[] = SEARCHSPECIALS_NEWPRODUCTS;
+        $ssToDelete[] = SEARCHSPECIALS_NEWPRODUCTS;
     }
     // Pruefe Top Angebote
-    if (strlen($cTopAngeboteSeo) > 0 && !pruefeSuchspecialSeo(
-        $oSuchSpecials_arr,
-        $cTopAngeboteSeo,
+    if (mb_strlen($topOffersSeo) > 0 && !pruefeSuchspecialSeo(
+        $searchSpecials,
+        $topOffersSeo,
         SEARCHSPECIALS_TOPOFFERS
     )) {
-        $cTopAngeboteSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cTopAngeboteSeo));
+        $topOffersSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($topOffersSeo));
 
-        if ($cTopAngeboteSeo !== $_POST['top_angebote']) {
-            $cHinweis .= 'Das Top Angebote Seo "' . StringHandler::filterXSS($_POST['top_angebote']) .
-                '" war bereits vorhanden und wurde auf "' . $cTopAngeboteSeo . '" umbenannt.<br />';
+        if ($topOffersSeo !== $_POST['top_angebote']) {
+            $cHinweis .= sprintf(
+                __('errorTopProductsExistRename'),
+                StringHandler::filterXSS($_POST['top_angebote']),
+                $topOffersSeo
+            ) . '<br />';
         }
+        $topOffers       = new stdClass();
+        $topOffers->kKey = SEARCHSPECIALS_TOPOFFERS;
+        $topOffers->cSeo = $topOffersSeo;
 
-        unset($oTopAngebote);
-        $oTopAngebote       = new stdClass();
-        $oTopAngebote->kKey = SEARCHSPECIALS_TOPOFFERS;
-        $oTopAngebote->cSeo = $cTopAngeboteSeo;
-
-        $oSuchSpecialsTMP_arr[] = $oTopAngebote;
-    } elseif (strlen($cTopAngeboteSeo) === 0) {
+        $ssTmp[] = $topOffers;
+    } elseif (mb_strlen($topOffersSeo) === 0) {
         // cSeo loeschen
-        $nSuchSpecialsLoesch_arr[] = SEARCHSPECIALS_TOPOFFERS;
+        $ssToDelete[] = SEARCHSPECIALS_TOPOFFERS;
     }
     // Pruefe In kuerze Verfuegbar
-    if (strlen($cInKuerzeVerfuegbarSeo) > 0 && !pruefeSuchspecialSeo(
-        $oSuchSpecials_arr,
-        $cInKuerzeVerfuegbarSeo,
+    if (mb_strlen($releaseSeo) > 0 && !pruefeSuchspecialSeo(
+        $searchSpecials,
+        $releaseSeo,
         SEARCHSPECIALS_UPCOMINGPRODUCTS
     )) {
-        $cInKuerzeVerfuegbarSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cInKuerzeVerfuegbarSeo));
-        if ($cInKuerzeVerfuegbarSeo !== $_POST['in_kuerze_verfuegbar']) {
-            $cHinweis .= 'Das In kürze Verfügbar Seo "' .
-                StringHandler::filterXSS($_POST['in_kuerze_verfuegbar']) .
-                '" war bereits vorhanden und wurde auf "' . $cInKuerzeVerfuegbarSeo . '" umbenannt.<br />';
+        $releaseSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($releaseSeo));
+        if ($releaseSeo !== $_POST['in_kuerze_verfuegbar']) {
+            $cHinweis .= sprintf(
+                __('errorSoonExistRename'),
+                StringHandler::filterXSS($_POST['in_kuerze_verfuegbar']),
+                $releaseSeo
+            ) . '<br />';
         }
-        $oInKuerzeVerfuegbar       = new stdClass();
-        $oInKuerzeVerfuegbar->kKey = SEARCHSPECIALS_UPCOMINGPRODUCTS;
-        $oInKuerzeVerfuegbar->cSeo = $cInKuerzeVerfuegbarSeo;
+        $release       = new stdClass();
+        $release->kKey = SEARCHSPECIALS_UPCOMINGPRODUCTS;
+        $release->cSeo = $releaseSeo;
 
-        $oSuchSpecialsTMP_arr[] = $oInKuerzeVerfuegbar;
-    } elseif (strlen($cInKuerzeVerfuegbarSeo) === 0) {
+        $ssTmp[] = $release;
+    } elseif (mb_strlen($releaseSeo) === 0) {
         // cSeo loeschen
-        $nSuchSpecialsLoesch_arr[] = SEARCHSPECIALS_UPCOMINGPRODUCTS;
+        $ssToDelete[] = SEARCHSPECIALS_UPCOMINGPRODUCTS;
     }
     // Pruefe Top bewertet
-    if (strlen($cTopBewertetSeo) > 0 && !pruefeSuchspecialSeo(
-        $oSuchSpecials_arr,
-        $cTopBewertetSeo,
+    if (mb_strlen($topRatedSeo) > 0 && !pruefeSuchspecialSeo(
+        $searchSpecials,
+        $topRatedSeo,
         SEARCHSPECIALS_TOPREVIEWS
     )) {
-        $cTopBewertetSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($cTopBewertetSeo));
+        $topRatedSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($topRatedSeo));
 
-        if ($cTopBewertetSeo !== $_POST['top_bewertet']) {
-            $cHinweis .= 'Das In kürze Verfügbar Seo "' .
-                StringHandler::filterXSS($_POST['top_bewertet']) .
-                '" war bereits vorhanden und wurde auf "' . $cTopBewertetSeo . '" umbenannt.<br />';
+        if ($topRatedSeo !== $_POST['top_bewertet']) {
+            $cHinweis .= sprintf(
+                __('errorTopRatingExistRename'),
+                StringHandler::filterXSS($_POST['top_bewertet']),
+                $topRatedSeo
+            ) . '<br />';
         }
-        $oTopBewertet       = new stdClass();
-        $oTopBewertet->kKey = SEARCHSPECIALS_TOPREVIEWS;
-        $oTopBewertet->cSeo = $cTopBewertetSeo;
+        $topRated       = new stdClass();
+        $topRated->kKey = SEARCHSPECIALS_TOPREVIEWS;
+        $topRated->cSeo = $topRatedSeo;
 
-        $oSuchSpecialsTMP_arr[] = $oTopBewertet;
-    } elseif (strlen($cTopBewertetSeo) === 0) {
+        $ssTmp[] = $topRated;
+    } elseif (mb_strlen($topRatedSeo) === 0) {
         // cSeo loeschen
-        $nSuchSpecialsLoesch_arr[] = SEARCHSPECIALS_TOPREVIEWS;
+        $ssToDelete[] = SEARCHSPECIALS_TOPREVIEWS;
     }
     // tseo speichern
-    if (count($oSuchSpecialsTMP_arr) > 0) {
-        $cSQL = '';
-        foreach ($oSuchSpecialsTMP_arr as $i => $oSuchSpecialsTMP) {
-            if ($i > 0) {
-                $cSQL .= ', ' . (int)$oSuchSpecialsTMP->kKey;
-            } else {
-                $cSQL .= (int)$oSuchSpecialsTMP->kKey;
-            }
+    if (count($ssTmp) > 0) {
+        $ids = [];
+        foreach ($ssTmp as $i => $item) {
+            $ids[] = (int)$item->kKey;
         }
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . '
-                    AND kKey IN (' . $cSQL . ')',
+                    AND kKey IN (' . implode(',', $ids) . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
-        foreach ($oSuchSpecialsTMP_arr as $oSuchSpecialsTMP) {
+        foreach ($ssTmp as $item) {
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = $oSuchSpecialsTMP->cSeo;
+            $oSeo->cSeo     = $item->cSeo;
             $oSeo->cKey     = 'suchspecial';
-            $oSeo->kKey     = $oSuchSpecialsTMP->kKey;
+            $oSeo->kKey     = $item->kKey;
             $oSeo->kSprache = $_SESSION['kSprache'];
 
             Shop::Container()->getDB()->insert('tseo', $oSeo);
         }
     }
-    // nicht gesetzte seos loeschen
-    if (count($nSuchSpecialsLoesch_arr) > 0) {
-        $cSQL = '';
-        foreach ($nSuchSpecialsLoesch_arr as $i => $nSuchSpecialsLoesch) {
-            if ($i > 0) {
-                $cSQL .= ', ' . (int)$nSuchSpecialsLoesch;
-            } else {
-                $cSQL .= (int)$nSuchSpecialsLoesch;
-            }
-        }
+    if (count($ssToDelete) > 0) {
         Shop::Container()->getDB()->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . '
-                    AND kKey IN (' . $cSQL . ')',
+                    AND kKey IN (' . implode(',', $ssToDelete) . ')',
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
 
-    $cHinweis .= 'Ihre Seos wurden erfolgreich gespeichert bzw. aktualisiert.<br />';
+    $cHinweis .= __('successSeoSave') . '<br />';
 }
 
-$oSuchSpecials_arrTMP = Shop::Container()->getDB()->selectAll(
+$ssSeoData      = Shop::Container()->getDB()->selectAll(
     'tseo',
     ['cKey', 'kSprache'],
     ['suchspecial', (int)$_SESSION['kSprache']],
     '*',
     'kKey'
 );
-$oSuchSpecials_arr    = [];
-foreach ($oSuchSpecials_arrTMP as $oSuchSpecials) {
-    $oSuchSpecials_arr[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
+$searchSpecials = [];
+foreach ($ssSeoData as $oSuchSpecials) {
+    $searchSpecials[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
 }
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
-       ->assign('oSuchSpecials_arr', $oSuchSpecials_arr)
+       ->assign('oSuchSpecials_arr', $searchSpecials)
        ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
@@ -256,7 +247,7 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
  */
 function pruefeSuchspecialSeo($oSuchSpecials_arr, $cSeo, $kKey)
 {
-    if (is_array($oSuchSpecials_arr) && count($oSuchSpecials_arr) > 0 && strlen($cSeo) && $kKey > 0) {
+    if ($kKey > 0 && is_array($oSuchSpecials_arr) && count($oSuchSpecials_arr) > 0 && mb_strlen($cSeo)) {
         foreach ($oSuchSpecials_arr as $oSuchSpecials) {
             if ($oSuchSpecials->kKey == $kKey && $oSuchSpecials->cSeo === $cSeo) {
                 return true;

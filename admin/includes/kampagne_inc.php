@@ -345,7 +345,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 {
     $cryptoService = Shop::Container()->getCryptoService();
     $data          = [];
-    if ((int)$kKampagne > 0 && (int)$oKampagneDef->kKampagneDef > 0 && strlen($cStamp) > 0) {
+    if ((int)$kKampagne > 0 && (int)$oKampagneDef->kKampagneDef > 0 && mb_strlen($cStamp) > 0) {
         $cSQLSELECT = '';
         $cSQLWHERE  = '';
         baueDefDetailSELECTWHERE($cSQLSELECT, $cSQLWHERE, $cStamp);
@@ -462,8 +462,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = (int)$data[$i]->nRegistriert === 1
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                         if ($data[$i]->fGesamtsumme !== 'n.v.') {
                             $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
@@ -518,8 +518,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -570,8 +570,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         }
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                         if ($data[$i]->fGesamtsumme !== 'n.v.') {
                             $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
@@ -705,8 +705,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -757,8 +757,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                         if ($data[$i]->nRegistriert !== 'n.v.') {
                             $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? 'Ja'
-                                : 'Nein';
+                                ? __('yes')
+                                : __('no');
                         }
                     }
 
@@ -1078,7 +1078,7 @@ function gibDetailDatumZeitraum()
  */
 function gibStamp($cStampOld, $nSprung, $nAnsicht)
 {
-    if (strlen($cStampOld) > 0 && ($nSprung == -1 || $nSprung == 1) && $nAnsicht > 0) {
+    if (mb_strlen($cStampOld) > 0 && ($nSprung == -1 || $nSprung == 1) && $nAnsicht > 0) {
         $cFkt = ($nSprung == 1) ? 'DATE_ADD' : 'DATE_SUB';
 
         switch ((int)$nAnsicht) {
@@ -1168,13 +1168,13 @@ function speicherKampagne($oKampagne)
     }
 
     // Plausi
-    if (strlen($oKampagne->cName) === 0) {
+    if (mb_strlen($oKampagne->cName) === 0) {
         return 3;// Kampagnenname ist leer
     }
-    if (strlen($oKampagne->cParameter) === 0) {
+    if (mb_strlen($oKampagne->cParameter) === 0) {
         return 4;// Kampagnenparamter ist leer
     }
-    if (strlen($oKampagne->cWert) === 0 && $oKampagne->nDynamisch != 1) {
+    if (mb_strlen($oKampagne->cWert) === 0 && $oKampagne->nDynamisch != 1) {
         return 5;//  Kampagnenwert ist leer
     }
     // Name schon vorhanden?
@@ -1229,22 +1229,22 @@ function mappeFehlerCodeSpeichern($nReturnValue)
     if ((int)$nReturnValue > 0) {
         switch ((int)$nReturnValue) {
             case 2:
-                return 'Fehler: Kampagne konnte nicht gespeichert werden';
+                return __('errorCampaignSave');
                 break;
             case 3:
-                return 'Fehler: Bitte geben Sie einen Kampagnennamen ein.';
+                return __('errorCampaignNameMissing');
                 break;
             case 4:
-                return 'Fehler: Bitte geben Sie einen Kampagnenparameter ein.';
+                return __('errorCampaignParameterMissing');
                 break;
             case 5:
-                return 'Fehler: Bitte geben Sie einen Kampagnenwert ein.';
+                return __('errorCampaignValueMissing');
                 break;
             case 6:
-                return 'Fehler: Der angegebene Kampagnenname ist bereits vergeben.';
+                return __('errorCampaignNameDuplicate');
                 break;
             case 7:
-                return 'Fehler: Der angegebene Kampagnenparameter ist bereits vergeben.';
+                return __('errorCampaignParameterDuplicate');
                 break;
         }
     }
@@ -1348,12 +1348,12 @@ function setzeDetailZeitraum($cDatumNow_arr)
 function checkGesamtStatZeitParam()
 {
     $cStamp = '';
-    if (strlen(Request::verifyGPDataString('cZeitParam')) > 0) {
+    if (mb_strlen(Request::verifyGPDataString('cZeitParam')) > 0) {
         $span      = base64_decode(Request::verifyGPDataString('cZeitParam'));
         $spanParts = explode(' - ', $span);
         $dateStart = $spanParts[0] ?? '';
         $dateEnd   = $spanParts[1] ?? '';
-        if (strlen($dateEnd) === 0) {
+        if (mb_strlen($dateEnd) === 0) {
             [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
 
             $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
@@ -1435,7 +1435,7 @@ function checkGesamtStatZeitParam()
 function mappeENGMonat($cMonat)
 {
     $cMonatDE = '';
-    if (strlen($cMonat) > 0) {
+    if (mb_strlen($cMonat) > 0) {
         switch ($cMonat) {
             case '01':
                 $cMonatDE .= Shop::Lang()->get('january', 'news');
@@ -1523,10 +1523,10 @@ function PrepareLineChartKamp($Stats, $Type)
         $chart->setActive(true);
         $data = [];
         foreach ($Stats as $Date => $Dates) {
-            if (strpos($Date, 'Gesamt') === false) {
+            if (mb_strpos($Date, 'Gesamt') === false) {
                 $x = '';
                 foreach ($Dates as $Key => $Stat) {
-                    if (strpos($Key, 'cDatum') !== false) {
+                    if (mb_strpos($Key, 'cDatum') !== false) {
                         $x = $Dates[$Key];
                     }
 

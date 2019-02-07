@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "configureContactform"
 msgstr "Kontaktformulareinstellungen"
 
@@ -48,3 +52,18 @@ msgstr "Inhalte"
 
 msgid "config"
 msgstr "Einstellungen"
+
+msgid "successContentSave"
+msgstr "Inhalt wurde erfolgreich gespeichert."
+
+msgid "successSubjectCreate"
+msgstr "Betreff wurde erfolgreich hinzugefügt."
+
+msgid "errorSubjectSave"
+msgstr "Der Betreff konnte nicht gespeichert werden"
+
+msgid "successSubjectSave"
+msgstr "Der Betreff %s wurde erfolgreich geändert."
+
+msgid "successSubjectDelete"
+msgstr "Der Betreff wurde erfolgreich gelöscht"

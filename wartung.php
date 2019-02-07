@@ -8,15 +8,11 @@ use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
-$Einstellungen = Shop::getSettings([CONF_GLOBAL]);
-if ($Einstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
+if (Shop::getSettings([CONF_GLOBAL])['global']['wartungsmodus_aktiviert'] === 'N') {
     header('Location: ' . Shop::getURL(), true, 307);
     exit;
 }
 Shop::setPageType(PAGE_WARTUNG);
-$AktuelleKategorie      = new Kategorie(Request::verifyGPCDataInt('kategorie'));
-$AufgeklappteKategorien = new KategorieListe();
-$AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

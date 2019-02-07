@@ -100,7 +100,7 @@ class ZahlungsLog
      */
     public static function add($cModulId, $cLog, $cLogData = '', $nLevel = LOGLEVEL_ERROR): int
     {
-        if (strlen($cModulId) === 0) {
+        if (mb_strlen($cModulId) === 0) {
             return 0;
         }
 
@@ -115,28 +115,28 @@ class ZahlungsLog
     }
 
     /**
-     * @param array $cModulId_arr
-     * @param int   $nStart
-     * @param int   $nLimit
-     * @param int   $nLevel
+     * @param array $moduleIDs
+     * @param int   $offset
+     * @param int   $limit
+     * @param int   $level
      * @return array
      */
-    public static function getLog($cModulId_arr, int $nStart = 0, int $nLimit = 100, int $nLevel = -1): array
+    public static function getLog($moduleIDs, int $offset = 0, int $limit = 100, int $level = -1): array
     {
-        if (!is_array($cModulId_arr)) {
-            $cModulId_arr = (array)$cModulId_arr;
+        if (!is_array($moduleIDs)) {
+            $moduleIDs = (array)$moduleIDs;
         }
-        array_walk($cModulId_arr, function (&$value) {
+        array_walk($moduleIDs, function (&$value) {
             $value = sprintf("'%s'", $value);
         });
-        $cSQLModulId = implode(',', $cModulId_arr);
-        $cSQLLevel   = ($nLevel >= 0) ? ('AND nLevel = ' . $nLevel) : '';
+        $cSQLModulId = implode(',', $moduleIDs);
+        $cSQLLevel   = ($level >= 0) ? ('AND nLevel = ' . $level) : '';
 
         return Shop::Container()->getDB()->query(
             'SELECT * FROM tzahlungslog
                 WHERE cModulId IN(' . $cSQLModulId . ') ' . $cSQLLevel . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
-                LIMIT ' . $nStart . ', ' . $nLimit,
+                LIMIT ' . $offset . ', ' . $limit,
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
     }

@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cfehler  = '';
 
@@ -28,7 +28,7 @@ function checkeFarbCode($cFarbCode)
     if (preg_match('/#[A-Fa-f0-9]{6}/', $cFarbCode) == 1) {
         return $cFarbCode;
     }
-    $GLOBALS['cfehler'] = 'Bitte den Farbcode in folgender Schreibweise angeben: z.B. #FFFFFF';
+    $GLOBALS['cfehler'] = __('errorColorCode');
 
     return '#000000';
 }

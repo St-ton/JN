@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\AdminFavorite;
+use Backend\Notification;
 use Helpers\Form;
 use Helpers\Request;
 
@@ -117,7 +119,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($confData) === 0) {
-        return 'Fehler beim Speichern Ihrer Einstellungen.';
+        return __('errorConfigSave');
     }
     foreach ($confData as $config) {
         $val                        = new stdClass();
@@ -133,7 +135,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
                 $val->cWert = (int)$val->cWert;
                 break;
             case 'text':
-                $val->cWert = substr($val->cWert, 0, 255);
+                $val->cWert = mb_substr($val->cWert, 0, 255);
                 break;
             case 'listbox':
                 bearbeiteListBox($val->cWert, $val->cName, $val->kEinstellungenSektion);
@@ -150,7 +152,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
     }
     Shop::Container()->getCache()->flushTags($tags);
 
-    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
+    return __('successConfigSave');
 }
 
 /**
@@ -203,7 +205,7 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
 function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
 {
     if (!Form::validateToken()) {
-        return 'Fehler: Cross site request forgery.';
+        return __('errorCSRF');
     }
     $confData = Shop::Container()->getDB()->selectAll(
         'teinstellungenconf',
@@ -213,7 +215,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
         'nSort'
     );
     if (count($confData) === 0) {
-        return 'Fehler beim Speichern Ihrer Einstellungen.';
+        return __('errorConfigSave');
     }
     foreach ($confData as $config) {
         $val                        = new stdClass();
@@ -229,7 +231,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
                 $val->cWert = (int)$val->cWert;
                 break;
             case 'text':
-                $val->cWert = substr($val->cWert, 0, 255);
+                $val->cWert = mb_substr($val->cWert, 0, 255);
                 break;
             case 'listbox':
             case 'selectkdngrp':
@@ -248,7 +250,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
     }
     Shop::Container()->getCache()->flushTags($tags);
 
-    return 'Ihre Einstellungen wurden erfolgreich übernommen.';
+    return __('successConfigSave');
 }
 
 /**
@@ -384,7 +386,7 @@ function setzeSpracheTrustedShops()
         $_SESSION['TrustedShops']->oSprache->cNameSprache = $cISOSprache_arr['de'];
     }
     // setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1 && strlen($_POST['cISOSprache']) > 0) {
+    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1 && mb_strlen($_POST['cISOSprache']) > 0) {
         $_SESSION['TrustedShops']->oSprache->cISOSprache  =
             StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
         $_SESSION['TrustedShops']->oSprache->cNameSprache =
@@ -437,7 +439,7 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
  */
 function ermittleDatumWoche(string $cDatum)
 {
-    if (strlen($cDatum) < 0) {
+    if (mb_strlen($cDatum) < 0) {
         return [];
     }
     list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);
@@ -511,7 +513,7 @@ function getJTLVersionDB(bool $bDate = false)
  */
 function getMaxFileSize($size_str)
 {
-    switch (substr($size_str, -1)) {
+    switch (mb_substr($size_str, -1)) {
         case 'M':
         case 'm':
             return (int)$size_str * 1048576;
@@ -619,7 +621,7 @@ function getCsvDelimiter(string $filename)
     $firstLine = fgets($file);
 
     foreach ([';', ',', '|', '\t'] as $delim) {
-        if (strpos($firstLine, $delim) !== false) {
+        if (mb_strpos($firstLine, $delim) !== false) {
             fclose($file);
 
             return $delim;

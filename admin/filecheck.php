@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis                   = '';
 $modifiedFilesError         = '';
 $orphanedFilesError         = '';
@@ -21,10 +21,10 @@ $validateOrphanedFilesState = getAllOrphanedFiles($orphanedFiles, $errorsCountOr
 if ($validateModifiedFilesState !== 1) {
     switch ($validateModifiedFilesState) {
         case 2:
-            $modifiedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht.';
+            $modifiedFilesError = __('errorFileNotFound');
             break;
         case 3:
-            $modifiedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste ist leer.';
+            $modifiedFilesError = __('errorFileListEmpty');
             break;
         default:
             $modifiedFilesError = '';
@@ -34,10 +34,10 @@ if ($validateModifiedFilesState !== 1) {
 if ($validateOrphanedFilesState !== 1) {
     switch ($validateOrphanedFilesState) {
         case 2:
-            $orphanedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht.';
+            $orphanedFilesError = __('errorFileNotFound');
             break;
         case 3:
-            $orphanedFilesError = 'Fehler: Die Datei mit der aktuellen Dateiliste ist leer.';
+            $orphanedFilesError = __('errorFileListEmpty');
             break;
         default:
             $orphanedFilesError = '';

@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_ARTICLEOVERLAYS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'suchspecialoverlay_uebersicht';
@@ -27,9 +27,9 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
     ) {
         if (speicherEinstellung($oID, $_POST, $_FILES)) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-            $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
+            $cHinweis .= __('successConfigSave') . '<br />';
         } else {
-            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
+            $cFehler .= __('errorFillRequired') . '<br />';
         }
     }
     if ($oID > 0) {

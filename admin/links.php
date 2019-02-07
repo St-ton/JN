@@ -13,7 +13,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $hinweis            = '';
 $fehler             = '';
 $step               = 'uebersicht';
@@ -37,9 +37,9 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 ) {
     $res = $linkAdmin->removeLinkFromLinkGroup((int)$_POST['removefromlinkgroup'], (int)$_POST['kLinkgruppe']);
     if ($res > 0) {
-        $hinweis .= 'Link erfolgreich aus Linkgruppe entfernt.';
+        $hinweis .= __('successLinkFromLinkGroupDelete');
     } else {
-        $fehler .= 'Link konnte nicht aus Linkgruppe entfernt werden.';
+        $fehler .= __('errorLinkFromLinkGroupDelete');
     }
     unset($_POST['kLinkgruppe']);
     $step       = 'uebersicht';
@@ -49,9 +49,9 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && Form::validateToken()) {
     $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
-        $hinweis .= 'Link erfolgreich gelöscht!';
+        $hinweis .= __('successLinkDelete');
     } else {
-        $fehler .= 'Link konnte nicht gelöscht werden.';
+        $fehler .= __('errorLinkDelete');
     }
     $clearCache = true;
     $step       = 'uebersicht';
@@ -80,12 +80,12 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         $linkGroupID = (int)$_POST['kLinkgruppe'];
     }
     if ($linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
-        $hinweis   .= 'Linkgruppe erfolgreich gelöscht!';
+        $hinweis   .= __('successLinkGroupDelete');
         $clearCache = true;
         $step       = 'uebersicht';
         $_POST      = [];
     } else {
-        $fehler .= 'Linkgruppe konnte nicht gelöscht werden.';
+        $fehler .= __('errorLinkGroupDelete');
     }
 }
 
@@ -111,9 +111,9 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         $link = $linkAdmin->createOrUpdateLink($_POST);
         if ((int)$_POST['kLink'] === 0) {
-            $hinweis .= 'Link wurde erfolgreich hinzugefügt.';
+            $hinweis .= __('successLinkCreate');
         } else {
-            $hinweis .= 'Der Link <strong>' . $link->getDisplayName() . '</strong> wurde erfolgreich geändert.';
+            $hinweis .= sprintf(__('successLinkEdit'), $link->getDisplayName());
         }
         $clearCache = true;
         $kLink      = $link->getID();
@@ -140,10 +140,10 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
                 ) {
                     $type         = $_FILES['Bilder']['type'][$i - $nZaehler];
                     $cUploadDatei = $cUploadVerzeichnis . $kLink . '/Bild' . ($i + 1) . '.' .
-                        substr(
+                        mb_substr(
                             $type,
-                            strpos($type, '/') + 1,
-                            strlen($type) - strpos($type, '/') + 1
+                            mb_strpos($type, '/') + 1,
+                            mb_strlen($type) - mb_strpos($type, '/') + 1
                         );
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }
@@ -193,14 +193,14 @@ if ($continue
                     120
                 );
                 $oDatei            = new stdClass();
-                $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
+                $oDatei->cName     = mb_substr($Datei, 0, mb_strpos($Datei, '.'));
                 $oDatei->cNameFull = $Datei;
                 $oDatei->cURL      = '<img class="link_image" src="' .
                     $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $Datei . '" />';
-                $oDatei->nBild     = (int)substr(
+                $oDatei->nBild     = (int)mb_substr(
                     str_replace('Bild', '', $Datei),
                     0,
-                    strpos(str_replace('Bild', '', $Datei), '.')
+                    mb_strpos(str_replace('Bild', '', $Datei), '.')
                 );
                 $cDatei_arr[]      = $oDatei;
             }
@@ -225,18 +225,16 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
         );
         if ($linkGroupTemplateExists !== null && $_POST['kLinkgruppe'] !== $linkGroupTemplateExists->kLinkgruppe) {
             $step   = 'neue Linkgruppe';
-            $fehler = 'Fehler: Bitte wählen Sie einen eindeutigen Template-Namen.';
+            $fehler = __('errorTemplateNameDuplicate');
             $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                 ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
         } else {
             if ((int)$_POST['kLinkgruppe'] === 0) {
                 $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-                $hinweis .= 'Linkgruppe wurde erfolgreich hinzugefügt.';
+                $hinweis .= __('successLinkGroupCreate');
             } else {
                 $linkgruppe = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
-                $hinweis   .= 'Die Linkgruppe <strong>' .
-                    $linkgruppe->cName .
-                    '</strong> wurde erfolgreich geändert.';
+                $hinweis   .= sprintf(__('successLinkGroupEdit'), $linkgruppe->cName);
             }
             $step = 'uebersicht';
         }
@@ -244,7 +242,7 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
         $clearCache = true;
     } else {
         $step   = 'neue Linkgruppe';
-        $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
+        $fehler = __('errorFillRequired');
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }
@@ -258,17 +256,17 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
             (int)$_POST['kLinkgruppe']
         );
         if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-            $fehler .= 'Fehler: Der Link konnte nicht verschoben werden, da er bereits in der Zielgruppe existiert.';
+            $fehler .= __('errorLinkMoveDuplicate');
         } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_NOT_FOUND) {
-            $fehler .= 'Fehler: Es konnte kein Link mit Ihrem Key gefunden werden.';
+            $fehler .= __('errorLinkKeyNotFound');
         } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-            $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
+            $fehler .= __('errorLinkGroupKeyNotFound');
         } elseif ($res instanceof \Link\LinkInterface) {
-            $hinweis   .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich verschoben.';
+            $hinweis   .= sprintf(__('successLinkMove'), $link->getDisplayName());
             $step       = 'uebersicht';
             $clearCache = true;
         } else {
-            $fehler .= 'Ein unbekannter Fehler ist aufgetreten.';
+            $fehler .= __('errorUnknownLong');
         }
     }
     $step = 'uebersicht';
@@ -281,17 +279,17 @@ if (isset($_POST['kopiere_in_linkgruppe'])
 ) {
     $res = $linkAdmin->copyLinkToLinkGroup((int)$_POST['kLink'], (int)$_POST['kLinkgruppe']);
     if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-        $fehler .= 'Fehler: Der Link konnte nicht kopiert werden, da er bereits in der Zielgruppe existiert.';
+        $fehler .= __('errorLinkCopyDuplicate');
     } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_NOT_FOUND) {
-        $fehler .= 'Fehler: Es konnte kein Link mit Ihrem Key gefunden werden.';
+        $fehler .= __('errorLinkKeyNotFound');
     } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-        $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
+        $fehler .= __('errorLinkGroupKeyNotFound');
     } elseif ($res instanceof \Link\LinkInterface) {
-        $hinweis   .= 'Sie haben den Link "' . $link->getDisplayName() . '" erfolgreich kopiert.';
+        $hinweis   .= sprintf(__('successLinkCopy'), $link->getDisplayName());
         $step       = 'uebersicht';
         $clearCache = true;
     } else {
-        $fehler .= 'Ein unbekannter Fehler ist aufgetreten.';
+        $fehler .= __('errorUnknownLong');
     }
 }
 // Ordnet einen Link neu an
@@ -301,11 +299,11 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
         && (int)$_POST['kLinkgruppe'] > 0
         && ($oLink = $linkAdmin->updateParentID((int)$_POST['kLink'], (int)$_POST['kVaterLink'])) !== false
     ) {
-        $hinweis   .= "Sie haben den Link '" . $oLink->cName . "' erfolgreich verschoben.";
+        $hinweis   .= sprintf(__('successLinkMove'), $oLink->cName);
         $step       = 'uebersicht';
         $clearCache = true;
     } else {
-        $fehler .= 'Fehler: Link konnte nicht verschoben werden.';
+        $fehler .= __('errorLinkMove');
     }
 }
 if ($clearCache === true) {

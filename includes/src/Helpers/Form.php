@@ -194,7 +194,7 @@ class Form
         if (isset($_POST['nachricht']) && $_POST['nachricht']) {
             $msg->cNachricht = StringHandler::filterXSS($_POST['nachricht']);
         }
-        if (isset($msg->cAnrede) && \strlen($msg->cAnrede) === 1) {
+        if (isset($msg->cAnrede) && \mb_strlen($msg->cAnrede) === 1) {
             if ($msg->cAnrede === 'm') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
             } elseif ($msg->cAnrede === 'w') {
@@ -279,12 +279,12 @@ class Form
         $Objekt->tnachricht           = self::baueKontaktFormularVorgaben();
         $Objekt->tnachricht->cBetreff = $betreffSprache->cName;
 
-        $conf     = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
-        $from     = new \stdClass();
-        $from_arr = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
-        $mail     = new \stdClass();
-        if (\is_array($from_arr) && \count($from_arr)) {
-            foreach ($from_arr as $f) {
+        $conf    = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
+        $from    = new \stdClass();
+        $senders = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
+        $mail    = new \stdClass();
+        if (\is_array($senders) && \count($senders)) {
+            foreach ($senders as $f) {
                 $from->{$f->cKey} = $f->cValue;
             }
             $mail->fromEmail = $from->cEmailOut;

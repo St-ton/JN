@@ -167,9 +167,8 @@ class MerkmalWert
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
-            $cMember_arr = array_keys(get_object_vars($oMerkmalWert));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oMerkmalWert->$cMember;
+            foreach (array_keys(get_object_vars($oMerkmalWert)) as $member) {
+                $this->$member = $oMerkmalWert->$member;
             }
             $this->cURL     = URL::buildURL($this, URLART_MERKMAL);
             $this->cURLFull = URL::buildURL($this, URLART_MERKMAL, true);
@@ -185,7 +184,7 @@ class MerkmalWert
         $this->kSprache             = (int)$this->kSprache;
         $this->kMerkmal             = (int)$this->kMerkmal;
         $this->kMerkmalWert         = (int)$this->kMerkmalWert;
-        if ($this->cBildpfad !== null && strlen($this->cBildpfad) > 0) {
+        if ($this->cBildpfad !== null && mb_strlen($this->cBildpfad) > 0) {
             if (file_exists(PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad)) {
                 $this->cBildpfadKlein      = PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad;
                 $this->nBildKleinVorhanden = 1;
@@ -252,7 +251,7 @@ class MerkmalWert
         foreach ($data as $value) {
             $value->cURL     = URL::buildURL($value, URLART_MERKMAL);
             $value->cURLFull = URL::buildURL($value, URLART_MERKMAL, true);
-            if (isset($value->cBildpfad) && strlen($value->cBildpfad) > 0) {
+            if (isset($value->cBildpfad) && mb_strlen($value->cBildpfad) > 0) {
                 $value->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $value->cBildpfad;
                 $value->cBildpfadNormal = PFAD_MERKMALWERTBILDER_NORMAL . $value->cBildpfad;
             } else {

@@ -16,7 +16,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -63,9 +63,9 @@
                             <select class="form-control" id="kParent" name="kParent">
                                 <option value="0"> - Hauptkategorie - </option>
                                 {if $oNewsKategorie->getParentID()}
-                                    {assign var='selectedCat' value=$oNewsKategorie->getParentID()}
+                                    {assign var=selectedCat value=$oNewsKategorie->getParentID()}
                                 {else}
-                                    {assign var='selectedCat' value=0}
+                                    {assign var=selectedCat value=0}
                                 {/if}
                                 {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
                             </select>
@@ -137,9 +137,9 @@
                     </div>
                 </div>
             </div>
-            {foreach name=sprachen from=$sprachen item=sprache}
-                {assign var='cISO' value=$sprache->cISO}
-                {assign var='langID' value=$sprache->kSprache}
+            {foreach $sprachen as $sprache}
+                {assign var=cISO value=$sprache->cISO}
+                {assign var=langID value=$sprache->kSprache}
                 <input type="hidden" name="lang_{$cISO}" value="{$sprache->kSprache}">
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
@@ -183,7 +183,7 @@
                         <div class="panel-footer">
                             <span class="btn-group">
                                 <button name="speichern" type="button" value="{__('newsSave')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
-                                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> Abbrechen</a>
+                                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
                             </span>
                         </div>
                     </div>

@@ -61,16 +61,18 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 
 try {
-    Shop::Container()->getDB();
+    $db = Shop::Container()->getDB();
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-Shop::Container()->getCache()->setJtlCacheConfig();
+$cache = Shop::Container()->getCache();
+$cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 $config = Shop::getSettings([CONF_GLOBAL])['global'];
+$lang   = Sprache::getInstance($db, $cache);
 if (PHP_SAPI !== 'cli'
     && $config['kaufabwicklung_ssl_nutzen'] === 'P'
-    && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
+    && (!isset($_SERVER['HTTPS']) || (mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
         || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))
@@ -80,7 +82,7 @@ if (PHP_SAPI !== 'cli'
     if (!$https) {
         $lang = '';
         if (!Sprache::isDefaultLanguageActive(true)) {
-            $lang = strpos($_SERVER['REQUEST_URI'], '?')
+            $lang = mb_strpos($_SERVER['REQUEST_URI'], '?')
                 ? '&lang=' . $_SESSION['cISOSprache']
                 : '?lang=' . $_SESSION['cISOSprache'];
         }
@@ -96,10 +98,9 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $oPluginHookListe_arr         = \Plugin\Helper::getHookList();
-    $nSystemlogFlag               = Jtllog::getSytemlogFlag();
-    $template                     = Template::getInstance();
-    $oGlobaleMetaAngabenAssoc_arr = \Filter\Metadata::getGlobalMetaData();
+    $pluginHooks    = \Plugin\Helper::getHookList();
+    $template       = Template::getInstance();
+    $globalMetaData = \Filter\Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)
         ? \Session\Frontend::getInstance(true, true, 'JTLCRON')
@@ -114,7 +115,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
         }
         $bAdminWartungsmodus = true;
     }
-    Sprache::getInstance();
     Shop::bootstrap();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new Smarty(Shop::Smarty()));

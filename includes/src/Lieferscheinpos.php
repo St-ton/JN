@@ -56,11 +56,10 @@ class Lieferscheinpos
      */
     private function loadFromDB(int $id = 0): self
     {
-        $oObj = Shop::Container()->getDB()->select('tlieferscheinpos', 'kLieferscheinPos', $id);
-        if ($oObj !== null && $oObj->kLieferscheinPos > 0) {
-            $cMember_arr = array_keys(get_object_vars($oObj));
-            foreach ($cMember_arr as $cMember) {
-                $this->$cMember = $oObj->$cMember;
+        $item = Shop::Container()->getDB()->select('tlieferscheinpos', 'kLieferscheinPos', $id);
+        if ($item !== null && $item->kLieferscheinPos > 0) {
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $this->$member = $item->$member;
             }
             $this->kBestellPos      = (int)$this->kBestellPos;
             $this->kLieferschein    = (int)$this->kLieferschein;
@@ -77,16 +76,13 @@ class Lieferscheinpos
      */
     public function save(bool $bPrim = true)
     {
-        $oObj        = new stdClass();
-        $cMember_arr = array_keys(get_object_vars($this));
-        if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-            foreach ($cMember_arr as $cMember) {
-                $oObj->$cMember = $this->$cMember;
-            }
+        $ins = new stdClass();
+        foreach (array_keys(get_object_vars($this)) as $member) {
+            $ins->$member = $this->$member;
         }
 
-        unset($oObj->kLieferscheinPos, $oObj->oLieferscheinPosInfo_arr);
-        $kPrim = Shop::Container()->getDB()->insert('tlieferscheinpos', $oObj);
+        unset($ins->kLieferscheinPos, $ins->oLieferscheinPosInfo_arr);
+        $kPrim = Shop::Container()->getDB()->insert('tlieferscheinpos', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;

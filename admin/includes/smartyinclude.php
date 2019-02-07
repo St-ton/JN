@@ -4,8 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\AdminTemplate;
+use Backend\Notification;
 use Helpers\Form;
-use Helpers\GeneralObject;
 use Helpers\Request;
 
 require_once __DIR__ . '/admin_menu.php';
@@ -117,7 +118,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                 if (empty($urlParts['query'])) {
                     $urlParts['query'] = [];
                 } else {
-                    parse_str($urlParts['query'], $urlParts['query']);
+                    mb_parse_str($urlParts['query'], $urlParts['query']);
                 }
 
                 if ($link->cURL === $curScriptFileName

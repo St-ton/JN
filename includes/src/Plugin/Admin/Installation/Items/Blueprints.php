@@ -41,7 +41,7 @@ class Blueprints extends AbstractItem
         foreach ($this->getNode() as $i => $blueprint) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $blueprintJson = \file_get_contents($base . $blueprint['JSONFile']);

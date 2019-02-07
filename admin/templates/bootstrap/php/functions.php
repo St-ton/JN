@@ -3,31 +3,41 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-/** @global Smarty\JTLSmarty $smarty */
-$smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
-       ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
-       ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')
-       ->registerPlugin('function', 'SmartyConvertDate', 'SmartyConvertDate')
-       ->registerPlugin('function', 'getHelpDesc', 'getHelpDesc')
-       ->registerPlugin('function', 'getExtensionCategory', 'getExtensionCategory')
-       ->registerPlugin('function', 'formatVersion', 'formatVersion')
-       ->registerPlugin('modifier', 'formatByteSize', ['StringHandler', 'formatSize'])
-       ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
-       ->registerPlugin('function', 'getRevisions', 'getRevisions')
-       ->registerPlugin('function', 'captchaMarkup', 'captchaMarkup')
-       ->registerPlugin('modifier', 'permission', 'permission')
-       ->registerPlugin('function', '__', [\Shop::Container()->getGetText(), 'translate']);
+
+use Backend\Revision;
+
+$scc = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
+$scc->registerComponents();
+
+/** @global \Smarty\JTLSmarty $smarty */
+$smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
+       ->registerPlugin(
+           Smarty::PLUGIN_FUNCTION,
+           'getCurrencyConversionTooltipButton',
+           'getCurrencyConversionTooltipButton'
+       )
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrentPage', 'getCurrentPage')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'SmartyConvertDate', 'SmartyConvertDate')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getHelpDesc', 'getHelpDesc')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getExtensionCategory', 'getExtensionCategory')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'formatVersion', 'formatVersion')
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'formatByteSize', ['StringHandler', 'formatSize'])
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gravatarImage', 'gravatarImage')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getRevisions', 'getRevisions')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', 'captchaMarkup')
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'permission', 'permission')
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, '__', [\Shop::Container()->getGetText(), 'translate']);
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function getRevisions(array $params, $smarty): string
 {
     $secondary = $params['secondary'] ?? false;
     $data      = $params['data'] ?? null;
-    $revision  = new Revision();
+    $revision  = new Revision(Shop::Container()->getDB());
 
     return $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
                   ->assign('secondary', $secondary)
@@ -37,11 +47,10 @@ function getRevisions(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array $params
  * @return string
  */
-function getCurrencyConversionSmarty(array $params, $smarty): string
+function getCurrencyConversionSmarty(array $params): string
 {
     $bForceSteuer = !(isset($params['bSteuer']) && $params['bSteuer'] === false);
     if (!isset($params['fPreisBrutto'])) {
@@ -63,8 +72,8 @@ function getCurrencyConversionSmarty(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function getCurrencyConversionTooltipButton(array $params, $smarty): string
@@ -84,8 +93,8 @@ function getCurrencyConversionTooltipButton(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  */
 function getCurrentPage($params, $smarty): void
 {
@@ -98,8 +107,8 @@ function getCurrentPage($params, $smarty): void
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function getHelpDesc(array $params, $smarty): string
@@ -141,15 +150,15 @@ function permission($cRecht): bool
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function SmartyConvertDate(array $params, $smarty)
 {
-    if (isset($params['date']) && strlen($params['date']) > 0) {
+    if (isset($params['date']) && mb_strlen($params['date']) > 0) {
         $oDateTime = new DateTime($params['date']);
-        if (isset($params['format']) && strlen($params['format']) > 1) {
+        if (isset($params['format']) && mb_strlen($params['format']) > 1) {
             $cDate = $oDateTime->format($params['format']);
         } else {
             $cDate = $oDateTime->format('d.m.Y H:i:s');
@@ -168,8 +177,8 @@ function SmartyConvertDate(array $params, $smarty)
 /**
  * Map marketplace categoryId to localized category name
  *
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  */
 function getExtensionCategory(array $params, $smarty): void
 {
@@ -194,11 +203,10 @@ function getExtensionCategory(array $params, $smarty): void
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array $params
  * @return string|null
  */
-function formatVersion(array $params, $smarty): ?string
+function formatVersion(array $params): ?string
 {
     if (!isset($params['value'])) {
         return null;
@@ -217,11 +225,10 @@ function formatVersion(array $params, $smarty): ?string
  * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
  * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
  *
- * @param Smarty\JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
  * @return string
  */
-function gravatarImage(array $params, $smarty): string
+function gravatarImage(array $params): string
 {
     $email = $params['email'] ?? null;
     if ($email === null) {
@@ -233,7 +240,7 @@ function gravatarImage(array $params, $smarty): string
     $params = array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
 
     $url = 'https://www.gravatar.com/avatar/';
-    $url .= md5(strtolower(trim($email)));
+    $url .= md5(mb_convert_case(trim($email), MB_CASE_LOWER));
     $url .= '?' . http_build_query($params, '', '&');
 
     executeHook(HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
@@ -245,8 +252,8 @@ function gravatarImage(array $params, $smarty): string
 }
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array             $params
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
 function captchaMarkup(array $params, $smarty): string

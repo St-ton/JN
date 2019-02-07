@@ -7,6 +7,8 @@
 namespace Sitemap;
 
 use DB\DbInterface;
+use Helpers\Request;
+use Helpers\Tax;
 use Psr\Log\LoggerInterface;
 use Sitemap\Factories\FactoryInterface;
 use Sitemap\ItemRenderers\RendererInterface;
@@ -168,11 +170,11 @@ final class Export
      */
     private function setSessionData(array $customerGroupIDs): void
     {
-        $defaultLang             = \Sprache::getDefaultLanguage(true);
+        $defaultLang             = \Sprache::getDefaultLanguage();
         $defaultLangID           = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
-        \Helpers\Tax::setTaxRates();
+        Tax::setTaxRates();
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new \Kundengruppe();
         }
@@ -207,7 +209,7 @@ final class Export
         }
         $indexURL = \urlencode($this->baseURL . 'sitemap_index.xml');
         foreach ([self::SITEMAP_URL_GOOGLE, self::SITEMAP_URL_BING] as $url) {
-            $status = \Helpers\Request::http_get_status($url . $indexURL);
+            $status = Request::http_get_status($url . $indexURL);
             if ($status !== 200) {
                 $this->logger->notice('Sitemap ping to ' . $url . ' failed with status ' . $status);
             }
@@ -221,7 +223,7 @@ final class Export
     private function isURLBlocked(string $url): bool
     {
         return \Functional\some($this->blockedURLs, function ($e) use ($url) {
-            return \strpos($url, $e) !== false;
+            return \mb_strpos($url, $e) !== false;
         });
     }
 
@@ -257,7 +259,7 @@ final class Export
             return false;
         }
         while (($file = \readdir($dh)) !== false) {
-            if ($file === 'sitemap_index.xml' || \strpos($file, 'sitemap_') !== false) {
+            if ($file === 'sitemap_index.xml' || \mb_strpos($file, 'sitemap_') !== false) {
                 \unlink(self::EXPORT_DIR . $file);
             }
         }

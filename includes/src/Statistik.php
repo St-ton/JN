@@ -56,7 +56,7 @@ class Statistik
         $this->nStampVon         = 0;
         $this->nStampBis         = 0;
 
-        if (strlen($cDatumVon) > 0 && strlen($cDatumBis) > 0) {
+        if (mb_strlen($cDatumVon) > 0 && mb_strlen($cDatumBis) > 0) {
             $this->cDatumVon_arr = Date::getDateParts($cDatumVon);
             $this->cDatumBis_arr = Date::getDateParts($cDatumBis);
         } elseif ((int)$nStampVon > 0 && (int)$nStampBis > 0) {
@@ -128,7 +128,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL('dZeit');
 
-            $oStatTMP_arr = Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->query(
                 "SELECT * , SUM(t.nCount) AS nCount
                     FROM (
                         SELECT IF(cReferer = '', 'direkter Einstieg', cReferer) AS cReferer, 
@@ -148,8 +148,6 @@ class Statistik
                     ORDER BY nCount DESC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            return $oStatTMP_arr;
         }
 
         return [];
@@ -169,7 +167,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL('dZeit');
 
-            $oStatTMP_arr = Shop::Container()->getDB()->query(
+            return Shop::Container()->getDB()->query(
                 'SELECT tbesucherbot.cUserAgent, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -187,8 +185,6 @@ class Statistik
                     ORDER BY nCount DESC ' . ($nLimit > -1 ? 'LIMIT ' . $nLimit : ''),
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            return $oStatTMP_arr;
         }
 
         return [];
@@ -207,7 +203,7 @@ class Statistik
 
             $oDatumSQL = $this->baueDatumSQL('tbestellung.dErstellt');
 
-            $oStatTMP_arr = Shop::Container()->getDB()->query(
+            return $this->mergeDaten(Shop::Container()->getDB()->query(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
                     DATE_FORMAT(tbestellung.dErstellt, '%m') AS nMonth, 
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
@@ -219,9 +215,7 @@ class Statistik
                     " . $oDatumSQL->cGroupBy . '
                     ORDER BY tbestellung.dErstellt ASC',
                 \DB\ReturnType::ARRAY_OF_OBJECTS
-            );
-
-            return $this->mergeDaten($oStatTMP_arr);
+            ));
         }
 
         return [];
@@ -239,7 +233,8 @@ class Statistik
             $this->gibAnzeigeIntervall();
 
             $oDatumSQL    = $this->baueDatumSQL('dZeit');
-            $oStatTMP_arr = Shop::Container()->getDB()->query(
+
+            return Shop::Container()->getDB()->query(
                 "SELECT *, SUM(t.nCount) AS nCount
                     FROM
                     (
@@ -258,8 +253,6 @@ class Statistik
                     ORDER BY nCount DESC",
                 \DB\ReturnType::ARRAY_OF_OBJECTS
             );
-
-            return $oStatTMP_arr;
         }
 
         return [];
@@ -323,12 +316,12 @@ class Statistik
 
         if (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) {
             $cZeitVon = '00:00:00';
-            if (isset($this->cDatumVon_arr['cZeit']) && strlen($this->cDatumVon_arr['cZeit']) > 0) {
+            if (isset($this->cDatumVon_arr['cZeit']) && mb_strlen($this->cDatumVon_arr['cZeit']) > 0) {
                 $cZeitVon = $this->cDatumVon_arr['cZeit'];
             }
 
             $cZeitBis = '23:59:59';
-            if (isset($this->cDatumBis_arr['cZeit']) && strlen($this->cDatumBis_arr['cZeit']) > 0) {
+            if (isset($this->cDatumBis_arr['cZeit']) && mb_strlen($this->cDatumBis_arr['cZeit']) > 0) {
                 $cZeitBis = $this->cDatumBis_arr['cZeit'];
             }
 
@@ -373,8 +366,7 @@ class Statistik
         if (!$this->nAnzeigeIntervall) {
             return [];
         }
-        // $oStat_arr vorbelegen
-        $oStat_arr = [];
+        $stats = [];
 
         switch ($this->nAnzeigeIntervall) {
             case 1: // Stunden
@@ -389,7 +381,7 @@ class Statistik
                         date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
-                    $oStat_arr[]   = $oStat;
+                    $stats[]   = $oStat;
                 }
                 break;
 
@@ -405,7 +397,7 @@ class Statistik
                         date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
-                    $oStat_arr[]   = $oStat;
+                    $stats[]   = $oStat;
                 }
                 break;
 
@@ -421,7 +413,7 @@ class Statistik
                         date('Y', $this->nStampVon)
                     );
                     $oStat->nCount = 0;
-                    $oStat_arr[]   = $oStat;
+                    $stats[]   = $oStat;
                 }
                 break;
 
@@ -440,12 +432,12 @@ class Statistik
                     $oStat         = new stdClass();
                     $oStat->dZeit  = mktime(0, 0, 0, 1, 1, $i);
                     $oStat->nCount = 0;
-                    $oStat_arr[]   = $oStat;
+                    $stats[]   = $oStat;
                 }
                 break;
         }
 
-        return $oStat_arr;
+        return $stats;
     }
 
     /**
@@ -454,7 +446,7 @@ class Statistik
      */
     private function mergeDaten($tmpData): array
     {
-        $oStat_arr = $this->vordefStats();
+        $stats = $this->vordefStats();
         if ($this->nStampVon !== null) {
             switch ($this->nAnzeigeIntervall) {
                 case 1: // Stunden
@@ -511,48 +503,48 @@ class Statistik
                     break;
             }
 
-            foreach ($oStat_arr as $i => $oStat) {
+            foreach ($stats as $i => $oStat) {
                 $time = (int)$oStat->dZeit;
                 if ($time < $start || $time > $end) {
-                    unset($oStat_arr[$i]);
+                    unset($stats[$i]);
                 }
             }
-            $oStat_arr = array_values($oStat_arr);
+            $stats = array_values($stats);
         }
-        if (count($oStat_arr) > 0 && count($tmpData) > 0) {
-            foreach ($oStat_arr as $i => $oStat) {
+        if (count($stats) > 0 && count($tmpData) > 0) {
+            foreach ($stats as $i => $oStat) {
                 $bFound = false;
                 foreach ($tmpData as $oStatTMP) {
                     $bBreak = false;
                     switch ($this->nAnzeigeIntervall) {
                         case 1: // Stunden
                             if (date('H', $oStat->dZeit) === $oStatTMP->nHour) {
-                                $oStat_arr[$i]->nCount = $oStatTMP->nCount;
-                                $oStat_arr[$i]->dZeit  = $oStatTMP->nHour;
+                                $stats[$i]->nCount = $oStatTMP->nCount;
+                                $stats[$i]->dZeit  = $oStatTMP->nHour;
                                 $bBreak                = true;
                             }
                             break;
 
                         case 2: // Tage
                             if (date('d.m.', $oStat->dZeit) === $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.') {
-                                $oStat_arr[$i]->nCount = $oStatTMP->nCount;
-                                $oStat_arr[$i]->dZeit  = $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.';
+                                $stats[$i]->nCount = $oStatTMP->nCount;
+                                $stats[$i]->dZeit  = $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.';
                                 $bBreak                = true;
                             }
                             break;
 
                         case 3: // Monate
                             if (date('m.Y', $oStat->dZeit) === $oStatTMP->nMonth . '.' . $oStatTMP->nYear) {
-                                $oStat_arr[$i]->nCount = $oStatTMP->nCount;
-                                $oStat_arr[$i]->dZeit  = $oStatTMP->nMonth . '.' . $oStatTMP->nYear;
+                                $stats[$i]->nCount = $oStatTMP->nCount;
+                                $stats[$i]->dZeit  = $oStatTMP->nMonth . '.' . $oStatTMP->nYear;
                                 $bBreak                = true;
                             }
                             break;
 
                         case 4: // Jahre
                             if (date('Y', $oStat->dZeit) === $oStatTMP->nYear) {
-                                $oStat_arr[$i]->nCount = $oStatTMP->nCount;
-                                $oStat_arr[$i]->dZeit  = $oStatTMP->nYear;
+                                $stats[$i]->nCount = $oStatTMP->nCount;
+                                $stats[$i]->dZeit  = $oStatTMP->nYear;
                                 $bBreak                = true;
                             }
                             break;
@@ -567,22 +559,22 @@ class Statistik
                 if (!$bFound) {
                     switch ($this->nAnzeigeIntervall) {
                         case 1: // Stunden
-                            $oStat_arr[$i]->dZeit = date('H', $oStat_arr[$i]->dZeit);
+                            $stats[$i]->dZeit = date('H', $stats[$i]->dZeit);
                             break;
                         case 2: // Tage
-                            $oStat_arr[$i]->dZeit = date('d.m.', $oStat_arr[$i]->dZeit);
+                            $stats[$i]->dZeit = date('d.m.', $stats[$i]->dZeit);
                             break;
                         case 3: // Monate
-                            $oStat_arr[$i]->dZeit = date('m.Y', $oStat_arr[$i]->dZeit);
+                            $stats[$i]->dZeit = date('m.Y', $stats[$i]->dZeit);
                             break;
                         case 4: // Jahre
-                            $oStat_arr[$i]->dZeit = date('Y', $oStat_arr[$i]->dZeit);
+                            $stats[$i]->dZeit = date('Y', $stats[$i]->dZeit);
                             break;
                     }
                 }
             }
 
-            return $oStat_arr;
+            return $stats;
         }
 
         return [];

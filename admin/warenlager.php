@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cStep    = 'uebersicht';
 $cHinweis = '';
 $cFehler  = '';
@@ -35,7 +35,7 @@ if ($cAction === 'update') {
             Shop::Container()->getDB()->delete('twarenlagersprache', 'kWarenlager', (int)$kWarenlager);
 
             foreach ($cSpracheAssoc_arr as $kSprache => $cName) {
-                if (strlen(trim($cName)) > 1) {
+                if (mb_strlen(trim($cName)) > 1) {
                     $oObj              = new stdClass();
                     $oObj->kWarenlager = (int)$kWarenlager;
                     $oObj->kSprache    = (int)$kSprache;
@@ -47,7 +47,7 @@ if ($cAction === 'update') {
         }
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $cHinweis = 'Ihre Warenlager wurden erfolgreich aktualisiert';
+    $cHinweis = __('successStoreRefresh');
 }
 
 if ($cStep === 'uebersicht') {

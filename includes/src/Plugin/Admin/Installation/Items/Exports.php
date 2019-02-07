@@ -7,6 +7,7 @@
 namespace Plugin\Admin\Installation\Items;
 
 use Plugin\InstallCode;
+use Session\Frontend;
 
 /**
  * Class Exports
@@ -31,13 +32,13 @@ class Exports extends AbstractItem
     public function install(): int
     {
         $defaultCustomerGroupID = \Kundengruppe::getDefaultGroupID();
-        $language               = \Sprache::getDefaultLanguage(true);
+        $language               = \Sprache::getDefaultLanguage();
         $defaultLanguageID      = $language->kSprache;
-        $defaultCurrencyID      = \Session\Frontend::getCurrency()->getID();
+        $defaultCurrencyID      = Frontend::getCurrency()->getID();
         foreach ($this->getNode() as $i => $data) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits);
-            if (\strlen($hits[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $export                   = new \stdClass();
@@ -49,7 +50,7 @@ class Exports extends AbstractItem
             $export->cName            = $data['Name'];
             $export->cDateiname       = $data['FileName'];
             $export->cKopfzeile       = $data['Header'];
-            $export->cContent         = (isset($data['Content']) && \strlen($data['Content']) > 0)
+            $export->cContent         = (isset($data['Content']) && \mb_strlen($data['Content']) > 0)
                 ? $data['Content']
                 : 'PluginContentFile_' . $data['ContentFile'];
             $export->cFusszeile       = $data['Footer'] ?? null;
@@ -75,7 +76,7 @@ class Exports extends AbstractItem
             $exportConf                = new \stdClass();
             $exportConf->kExportformat = $exportID;
             $exportConf->cName         = 'exportformate_lager_ueber_null';
-            $exportConf->cWert         = \strlen($data['OnlyStockGreaterZero']) !== 0
+            $exportConf->cWert         = \mb_strlen($data['OnlyStockGreaterZero']) !== 0
                 ? $data['OnlyStockGreaterZero']
                 : 'N';
             $this->db->insert('texportformateinstellungen', $exportConf);

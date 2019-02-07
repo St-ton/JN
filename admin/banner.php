@@ -20,7 +20,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     $oBanner     = new ImageMap();
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
     $cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    if (strlen($cName) === 0) {
+    if (mb_strlen($cName) === 0) {
         $cPlausi_arr['cName'] = 1;
     }
     $cBannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
@@ -54,7 +54,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     if ($bDatum !== null && $bDatum < $vDatum) {
         $cPlausi_arr['bDatum'] = 2;
     }
-    if (strlen($cBannerPath) === 0) {
+    if (mb_strlen($cBannerPath) === 0) {
         $cPlausi_arr['cBannerPath'] = 1;
     }
     if (count($cPlausi_arr) === 0) {
@@ -104,12 +104,12 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
         if ($kImageMap && $ins > 0) {
             $cAction  = 'view';
-            $cHinweis = 'Banner wurde erfolgreich gespeichert.';
+            $cHinweis = __('successSave');
         } else {
-            $cFehler = 'Banner konnte nicht angelegt werden.';
+            $cFehler = __('errorSave');
         }
     } else {
-        $cFehler = 'Bitte füllen Sie alle Pflichtfelder die mit einem * marktiert sind aus';
+        $cFehler = __('errorFillRequired');
         $smarty->assign('cPlausi_arr', $cPlausi_arr)
                ->assign('cName', $_POST['cName'] ?? null)
                ->assign('vDatum', $_POST['vDatum'] ?? null)
@@ -129,7 +129,7 @@ switch ($cAction) {
     case 'area':
         $oBanner = holeBanner((int)$_POST['id'], false);
         if (!is_object($oBanner)) {
-            $cFehler = 'Banner wurde nicht gefunden';
+            $cFehler = __('errrorBannerNotFound');
             $cAction = 'view';
             break;
         }
@@ -144,20 +144,20 @@ switch ($cAction) {
 
         $smarty->assign('oExtension', holeExtension($id))
                ->assign('cBannerFile_arr', holeBannerDateien())
-               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
                ->assign('oBanner', $oBanner);
 
         if (!is_object($oBanner)) {
-            $cFehler = 'Banner wurde nicht gefunden.';
+            $cFehler = __('errrorBannerNotFound');
             $cAction = 'view';
         }
         break;
 
     case 'new':
         $smarty->assign('oBanner', $oBanner ?? null)
-               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('cBannerLocation', PFAD_BILDER_BANNER)
                ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
@@ -166,9 +166,9 @@ switch ($cAction) {
 
     case 'delete':
         if (entferneBanner((int)$_POST['id'])) {
-            $cHinweis = 'Erfolgreich entfernt.';
+            $cHinweis = __('successDeleted');
         } else {
-            $cFehler = 'Banner konnte nicht entfernt werden.';
+            $cFehler = __('errorDeleted');
         }
         break;
 

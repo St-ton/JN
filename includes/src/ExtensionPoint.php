@@ -30,15 +30,15 @@ class ExtensionPoint
     protected $kKundengruppe;
 
     /**
-     * @param int   $nSeitenTyp
-     * @param array $cParam_arr
+     * @param int   $pageType
+     * @param array $params
      * @param int   $kSprache
      * @param int   $kKundengruppe
      */
-    public function __construct(int $nSeitenTyp, array $cParam_arr, int $kSprache, int $kKundengruppe)
+    public function __construct(int $pageType, array $params, int $kSprache, int $kKundengruppe)
     {
-        $this->nSeitenTyp    = $nSeitenTyp;
-        $this->cParam_arr    = $cParam_arr;
+        $this->nSeitenTyp    = $pageType;
+        $this->cParam_arr    = $params;
         $this->kSprache      = $kSprache;
         $this->kKundengruppe = $kKundengruppe;
     }
@@ -64,13 +64,13 @@ class ExtensionPoint
             ],
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($extensions as $oExtension) {
+        foreach ($extensions as $extension) {
             $instance = null;
-            $class    = ucfirst($oExtension->cClass);
+            $class    = ucfirst($extension->cClass);
             if (class_exists($class)) {
                 /** @var IExtensionPoint $instance */
                 $instance = new $class();
-                $instance->init((int)$oExtension->kInitial);
+                $instance->init((int)$extension->kInitial);
             } else {
                 Shop::Container()->getLogService()->error('Extension "' . $class . '" not found');
             }
@@ -84,68 +84,68 @@ class ExtensionPoint
      */
     public function getPageKey(): stdClass
     {
-        $oKey         = new stdClass();
-        $oKey->cValue = '';
-        $oKey->cKey   = null;
-        $oKey->nPage  = $this->nSeitenTyp;
+        $key         = new stdClass();
+        $key->cValue = '';
+        $key->cKey   = null;
+        $key->nPage  = $this->nSeitenTyp;
 
-        switch ($oKey->nPage) {
+        switch ($key->nPage) {
             case PAGE_ARTIKEL:
-                $oKey->cKey   = 'kArtikel';
-                $oKey->cValue = isset($this->cParam_arr['kArtikel']) ? (int)$this->cParam_arr['kArtikel'] : null;
+                $key->cKey   = 'kArtikel';
+                $key->cValue = isset($this->cParam_arr['kArtikel']) ? (int)$this->cParam_arr['kArtikel'] : null;
                 break;
 
             case PAGE_NEWS:
                 if (isset($this->cParam_arr['kNewsKategorie']) && (int)$this->cParam_arr['kNewsKategorie'] > 0) {
-                    $oKey->cKey   = 'kNewsKategorie';
-                    $oKey->cValue = (int)$this->cParam_arr['kNewsKategorie'];
+                    $key->cKey   = 'kNewsKategorie';
+                    $key->cValue = (int)$this->cParam_arr['kNewsKategorie'];
                 } else {
-                    $oKey->cKey   = 'kNews';
-                    $oKey->cValue = isset($this->cParam_arr['kNews']) ? (int)$this->cParam_arr['kNews'] : null;
+                    $key->cKey   = 'kNews';
+                    $key->cValue = isset($this->cParam_arr['kNews']) ? (int)$this->cParam_arr['kNews'] : null;
                 }
                 break;
 
             case PAGE_BEWERTUNG:
-                $oKey->cKey   = 'kArtikel';
-                $oKey->cValue = (int)$this->cParam_arr['kArtikel'];
+                $key->cKey   = 'kArtikel';
+                $key->cValue = (int)$this->cParam_arr['kArtikel'];
                 break;
 
             case PAGE_EIGENE:
-                $oKey->cKey   = 'kLink';
-                $oKey->cValue = (int)$this->cParam_arr['kLink'];
+                $key->cKey   = 'kLink';
+                $key->cValue = (int)$this->cParam_arr['kLink'];
                 break;
 
             case PAGE_UMFRAGE:
-                $oKey->cKey   = 'kUmfrage';
-                $oKey->cValue = (int)$this->cParam_arr['kUmfrage'];
+                $key->cKey   = 'kUmfrage';
+                $key->cValue = (int)$this->cParam_arr['kUmfrage'];
                 break;
 
             case PAGE_ARTIKELLISTE:
                 $productFilter = Shop::getProductFilter();
                 // MerkmalWert
                 if ($productFilter->hasAttributeValue()) {
-                    $oKey->cKey   = 'kMerkmalWert';
-                    $oKey->cValue = $productFilter->getAttributeValue()->getValue();
+                    $key->cKey   = 'kMerkmalWert';
+                    $key->cValue = $productFilter->getAttributeValue()->getValue();
                 } elseif ($productFilter->hasCategory()) {
                     // Kategorie
-                    $oKey->cKey   = 'kKategorie';
-                    $oKey->cValue = $productFilter->getCategory()->getValue();
+                    $key->cKey   = 'kKategorie';
+                    $key->cValue = $productFilter->getCategory()->getValue();
                 } elseif ($productFilter->hasManufacturer()) {
                     // Hersteller
-                    $oKey->cKey   = 'kHersteller';
-                    $oKey->cValue = $productFilter->getManufacturer()->getValue();
+                    $key->cKey   = 'kHersteller';
+                    $key->cValue = $productFilter->getManufacturer()->getValue();
                 } elseif ($productFilter->hasTag()) {
                     // Tag
-                    $oKey->cKey   = 'kTag';
-                    $oKey->cValue = $productFilter->getTag()->getValue();
+                    $key->cKey   = 'kTag';
+                    $key->cValue = $productFilter->getTag()->getValue();
                 } elseif ($productFilter->hasSearch()) {
                     // Suchbegriff
-                    $oKey->cKey   = 'cSuche';
-                    $oKey->cValue = $productFilter->getSearch()->getValue();
+                    $key->cKey   = 'cSuche';
+                    $key->cValue = $productFilter->getSearch()->getValue();
                 } elseif ($productFilter->hasSearchSpecial()) {
                     // Suchspecial
-                    $oKey->cKey   = 'kSuchspecial';
-                    $oKey->cValue = $productFilter->getSearchSpecial()->getValue();
+                    $key->cKey   = 'kSuchspecial';
+                    $key->cValue = $productFilter->getSearchSpecial()->getValue();
                 }
 
                 break;
@@ -179,6 +179,6 @@ class ExtensionPoint
                 break;
         }
 
-        return $oKey;
+        return $key;
     }
 }

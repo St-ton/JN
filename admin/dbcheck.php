@@ -2,8 +2,8 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- * @global AdminAccount $oAccount
- * @global JTLSmarty $smarty
+ * @global \Backend\AdminAccount $oAccount
+ * @global \Smarty\JTLSmarty     $smarty
  */
 
 use Helpers\Form;
@@ -16,8 +16,8 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
 $cHinweis          = '';
 $cFehler           = '';
-$cDBError_arr      = [];
-$cDBFileStruct_arr = getDBFileStruct();
+$dbErrors          = [];
+$dbFileStruct      = getDBFileStruct();
 $maintenanceResult = null;
 $engineUpdate      = null;
 $fulltextIndizes   = null;
@@ -30,13 +30,13 @@ if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 's
 
     header('Content-Type: text/plain');
     header('Content-Disposition: attachment; filename="' . $scriptName . '"');
-    echo doEngineUpdateScript($scriptName, array_keys($cDBFileStruct_arr));
+    echo doEngineUpdateScript($scriptName, array_keys($dbFileStruct));
 
     exit;
 }
 
-$cDBStruct_arr = getDBStruct(true, true);
-$Einstellungen = Shop::getSettings([
+$dbStruct = getDBStruct(true, true);
+$conf     = Shop::getSettings([
     CONF_GLOBAL,
     CONF_ARTIKELUEBERSICHT,
 ]);
@@ -45,34 +45,34 @@ if (!empty($_POST['action']) && !empty($_POST['check'])) {
     $maintenanceResult = doDBMaintenance($_POST['action'], $_POST['check']);
 }
 
-if (empty($cDBFileStruct_arr)) {
-    $cFehler = 'Fehler beim Lesen der Struktur-Datei.';
+if (empty($dbFileStruct)) {
+    $cFehler = __('errorReadStructureFile');
 }
 
-if (strlen($cFehler) === 0) {
-    $cDBError_arr = compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr);
+if (mb_strlen($cFehler) === 0) {
+    $dbErrors = compareDBStruct($dbFileStruct, $dbStruct);
 }
 
-if (count($cDBError_arr) > 0) {
-    $cEngineError = array_filter($cDBError_arr, function ($item) {
-        return strpos($item, 'keine InnoDB-Tabelle') !== false
-            || strpos($item, 'falsche Kollation') !== false
-            || strpos($item, 'Datentyp text in Spalte') !== false;
+if (count($dbErrors) > 0) {
+    $engineErrors = array_filter($dbErrors, function ($item) {
+        return mb_strpos($item, __('errorNoInnoTable')) !== false
+            || mb_strpos($item, __('errorWrongCollation')) !== false
+            || mb_strpos($item, __('errorDatatTypeInRow')) !== false;
     });
-    if (count($cEngineError) > 5) {
-        $engineUpdate    = determineEngineUpdate($cDBStruct_arr);
+    if (count($engineErrors) > 5) {
+        $engineUpdate    = determineEngineUpdate($dbStruct);
         $fulltextIndizes = DBMigrationHelper::getFulltextIndizes();
     }
 }
 
 $smarty->assign('cFehler', $cFehler)
-       ->assign('cDBFileStruct_arr', $cDBFileStruct_arr)
-       ->assign('cDBStruct_arr', $cDBStruct_arr)
-       ->assign('cDBError_arr', $cDBError_arr)
+       ->assign('cDBFileStruct_arr', $dbFileStruct)
+       ->assign('cDBStruct_arr', $dbStruct)
+       ->assign('cDBError_arr', $dbErrors)
        ->assign('maintenanceResult', $maintenanceResult)
        ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
        ->assign('tab', isset($_REQUEST['tab']) ? StringHandler::filterXSS($_REQUEST['tab']) : '')
-       ->assign('Einstellungen', $Einstellungen)
+       ->assign('Einstellungen', $conf)
        ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
        ->assign('FulltextIndizes', $fulltextIndizes)
        ->assign('engineUpdate', $engineUpdate)

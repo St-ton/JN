@@ -7,16 +7,6 @@
 {/block}
 
 {block name='content'}
-    {if !empty($hinweis)}
-        <div class="alert alert-success">
-            {$hinweis}
-        </div>
-    {/if}
-    {if !empty($fehler)}
-        <div class="alert alert-danger">
-            {$fehler}
-        </div>
-    {/if}
     {include file='snippets/extension.tpl'}
     {if !isset($cPost_arr)}
         {assign var=cPost_arr value=array()}

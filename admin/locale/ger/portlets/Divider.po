@@ -1,0 +1,2 @@
+msgid "Divider"
+msgstr "Trennlinie"

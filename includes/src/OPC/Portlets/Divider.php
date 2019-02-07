@@ -34,14 +34,6 @@ class Divider extends Portlet
     }
 
     /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Trennlinie';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array

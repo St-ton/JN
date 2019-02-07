@@ -160,7 +160,7 @@ class Attribute extends BaseAttribute
     public function setSeo(array $languages): FilterInterface
     {
         $value         = $this->getValue();
-        $oSeo_arr      = $this->batchAttributeData[$value]
+        $seoData       = $this->batchAttributeData[$value]
             ?? $this->productFilter->getDB()->queryPrepared(
                 'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, 
                     tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache
@@ -174,14 +174,14 @@ class Attribute extends BaseAttribute
         $currentLangID = $this->productFilter->getFilterConfig()->getLanguageID();
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($oSeo_arr as $oSeo) {
-                $oSeo->kSprache = (int)$oSeo->kSprache;
-                if ($language->kSprache === $oSeo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+            foreach ($seoData as $seo) {
+                $seo->kSprache = (int)$seo->kSprache;
+                if ($language->kSprache === $seo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $seo->cSeo;
                     if ($language->kSprache === $currentLangID) {
-                        $this->setAttributeID($oSeo->kMerkmal)
-                             ->setName($oSeo->cWert)
-                             ->setFrontendName($oSeo->cWert);
+                        $this->setAttributeID($seo->kMerkmal)
+                             ->setName($seo->cWert)
+                             ->setFrontendName($seo->cWert);
                     }
                     break;
                 }
@@ -483,10 +483,10 @@ class Attribute extends BaseAttribute
         $filterURLGenerator = $this->productFilter->getFilterURL();
         $i                  = 0;
         foreach ($attributeFilterCollection as $attributeFilter) {
-            $baseSrcSmall  = \strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcSmall  = \mb_strlen($attributeFilter->cMMBildPfad) > 0
                 ? \PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
-            $baseSrcNormal = \strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcNormal = \mb_strlen($attributeFilter->cMMBildPfad) > 0
                 ? \PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
 
@@ -512,10 +512,10 @@ class Attribute extends BaseAttribute
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
                 $attributeValue            = new Option();
-                $baseSrcSmall              = \strlen($filterValue->cMMWBildPfad) > 0
+                $baseSrcSmall              = \mb_strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                $baseSrcNormal             = \strlen($filterValue->cMMWBildPfad) > 0
+                $baseSrcNormal             = \mb_strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 $attributeValue->setData('kMerkmalWert', $filterValue->kMerkmalWert)

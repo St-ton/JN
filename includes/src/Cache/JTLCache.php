@@ -289,7 +289,7 @@ final class JTLCache implements JTLCacheInterface
         // merge defaults with assigned options and set them
         $this->options = \array_merge($defaults, $options);
         // always add trailing slash
-        if (\substr($this->options['cache_dir'], \strlen($this->options['cache_dir']) - 1) !== '/') {
+        if (\mb_substr($this->options['cache_dir'], \mb_strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
         if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
@@ -347,30 +347,27 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function getJtlCacheConfig(): array
+    public function getJtlCacheConfig(array $config): array
     {
         // the DB class is needed for this
         if (!\class_exists('Shop')) {
             return [];
         }
-        $cacheConfig = \Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING);
-        $cacheInit   = [];
-        if (!empty($cacheConfig)) {
-            foreach ($cacheConfig as $_conf) {
-                if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
-                    $value = true;
-                } elseif ($_conf->cWert === 'N' || $_conf->cWert === 'n') {
-                    $value = false;
-                } elseif ($_conf->cWert === '') {
-                    $value = null;
-                } elseif (\is_numeric($_conf->cWert)) {
-                    $value = (int)$_conf->cWert;
-                } else {
-                    $value = $_conf->cWert;
-                }
-                // naming convention is 'caching_'<var-name> for options saved in database
-                $cacheInit[\str_replace('caching_', '', $_conf->cName)] = $value;
+        $cacheInit = [];
+        foreach ($config as $_conf) {
+            if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
+                $value = true;
+            } elseif ($_conf->cWert === 'N' || $_conf->cWert === 'n') {
+                $value = false;
+            } elseif ($_conf->cWert === '') {
+                $value = null;
+            } elseif (\is_numeric($_conf->cWert)) {
+                $value = (int)$_conf->cWert;
+            } else {
+                $value = $_conf->cWert;
             }
+            // naming convention is 'caching_'<var-name> for options saved in database
+            $cacheInit[\str_replace('caching_', '', $_conf->cName)] = $value;
         }
         // disabled cache types are saved as serialized string in db
         if (isset($cacheInit['types_disabled'])
@@ -386,9 +383,9 @@ final class JTLCache implements JTLCacheInterface
     /**
      * @inheritdoc
      */
-    public function setJtlCacheConfig(): JTLCacheInterface
+    public function setJtlCacheConfig(array $config): JTLCacheInterface
     {
-        $this->setOptions($this->getJtlCacheConfig())->init();
+        $this->setOptions($this->getJtlCacheConfig($config))->init();
 
         return $this;
     }
@@ -404,7 +401,6 @@ final class JTLCache implements JTLCacheInterface
             // preload shop settings and lang vars to avoid single cache/mysql requests
             $settings = \Shopsetting::getInstance();
             $settings->preLoad();
-            \Shop::Lang()->preLoad();
         } else {
             // set fallback null method
             $this->setCache('null');
@@ -742,7 +738,7 @@ final class JTLCache implements JTLCacheInterface
 //
 //        return \array_filter(\array_map(
 //            function ($m) {
-//                return \strpos($m, 'class.cachingMethod') !== false
+//                return \mb_strpos($m, 'class.cachingMethod') !== false
 //                    ? \str_replace(['class.cachingMethod.', '.php'], '', $m)
 //                    : false;
 //            },

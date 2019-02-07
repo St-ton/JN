@@ -171,7 +171,7 @@ class Kundengruppe
         $obj               = new stdClass();
         $obj->cName        = $this->name;
         $obj->fRabatt      = $this->discount;
-        $obj->cStandard    = strtoupper($this->default);
+        $obj->cStandard    = mb_convert_case($this->default, MB_CASE_UPPER);
         $obj->cShopLogin   = $this->cShopLogin;
         $obj->nNettoPreise = (int)$this->isMerchant;
         $kPrim             = Shop::Container()->getDB()->insert('tkundengruppe', $obj);
@@ -487,19 +487,19 @@ class Kundengruppe
      */
     public static function getGroups(): array
     {
-        $oKdngrp_arr = [];
-        $oObj_arr    = Shop::Container()->getDB()->query(
+        $groups = [];
+        $items  = Shop::Container()->getDB()->query(
             'SELECT kKundengruppe 
                 FROM tkundengruppe',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oObj_arr as $oObj) {
-            if (isset($oObj->kKundengruppe) && $oObj->kKundengruppe > 0) {
-                $oKdngrp_arr[] = new self($oObj->kKundengruppe);
+        foreach ($items as $item) {
+            if (isset($item->kKundengruppe) && $item->kKundengruppe > 0) {
+                $groups[] = new self((int)$item->kKundengruppe);
             }
         }
 
-        return $oKdngrp_arr;
+        return $groups;
     }
 
     /**
@@ -610,7 +610,7 @@ class Kundengruppe
                 (int)$this->id
             );
             foreach ($attributes as $attribute) {
-                $this->Attribute[strtolower($attribute->cName)] = $attribute->cWert;
+                $this->Attribute[mb_convert_case($attribute->cName, MB_CASE_LOWER)] = $attribute->cWert;
             }
         }
 
@@ -649,7 +649,7 @@ class Kundengruppe
                 $kKundengruppe
             );
             foreach ($attributes as $Att) {
-                $attributes[strtolower($Att->cName)] = $Att->cWert;
+                $attributes[mb_convert_case($Att->cName, MB_CASE_LOWER)] = $Att->cWert;
             }
         }
 

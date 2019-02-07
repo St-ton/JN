@@ -1,9 +1,9 @@
-<div id="{$propname}" class="input-group colorpicker-component {$class}">
+<div id="config-{$propname}" class="input-group colorpicker-component {$class}">
     <input class="form-control" name="{$propname}" value="{$prop}" {if $required}required{/if}>
     <span class="input-group-addon"><i></i></span>
 </div>
 <script>
-    $('#{$propname}').colorpicker({
+    $('#config-{$propname}').colorpicker({
         format: '{$colorFormat}',
         colorSelectors: {
             '#ffffff': '#ffffff',

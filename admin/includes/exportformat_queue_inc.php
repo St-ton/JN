@@ -95,19 +95,19 @@ function rechneUmAlleXStunden($nAlleXStd)
             if ($nAlleXStd >= 365) {
                 $nAlleXStd /= 365;
                 if ($nAlleXStd == 1) {
-                    $nAlleXStd .= ' Jahr';
+                    $nAlleXStd .= __('year');
                 } else {
-                    $nAlleXStd .= ' Jahre';
+                    $nAlleXStd .= __('years');
                 }
             } elseif ($nAlleXStd == 1) {
-                $nAlleXStd .= ' Tag';
+                $nAlleXStd .= __('day');
             } else {
-                $nAlleXStd .= ' Tage';
+                $nAlleXStd .= __('days');
             }
         } elseif ($nAlleXStd > 1) {
-            $nAlleXStd .= ' Stunden';
+            $nAlleXStd .= __('hour');
         } else {
-            $nAlleXStd .= ' Stunde';
+            $nAlleXStd .= __('hours');
         }
 
         return $nAlleXStd;
@@ -297,10 +297,10 @@ function holeExportformatQueueBearbeitet($hours)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
-function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty)
+function exportformatQueueActionErstellen(\Smarty\JTLSmarty $smarty)
 {
     $smarty->assign('oExportformat_arr', holeAlleExportformate());
 
@@ -308,11 +308,11 @@ function exportformatQueueActionErstellen(Smarty\JTLSmarty $smarty)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  * @return string
  */
-function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionEditieren(\Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kCron = Request::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
@@ -322,7 +322,7 @@ function exportformatQueueActionEditieren(Smarty\JTLSmarty $smarty, array &$mess
         $smarty->assign('oCron', $oCron)
                ->assign('oExportformat_arr', holeAlleExportformate());
     } else {
-        $messages['error'] .= 'Fehler: Bitte wählen Sie eine gültige Warteschlange aus.';
+        $messages['error'] .= __('errorWrongQueue');
         $step               = 'uebersicht';
     }
 
@@ -339,12 +339,12 @@ function exportformatQueueActionLoeschen(array &$messages)
 
     if (is_array($kCron_arr) && count($kCron_arr) > 0) {
         if (loescheExportformatCron($kCron_arr)) {
-            $messages['notice'] .= 'Ihr ausgewählten Warteschlangen wurde erfolgreich gelöscht.';
+            $messages['notice'] .= __('successQueueDelete');
         } else {
-            $messages['error'] .= 'Fehler: Es ist ein unbekannter Fehler aufgetreten.<br />';
+            $messages['error'] .= __('errorUnknownLong') . '<br />';
         }
     } else {
-        $messages['error'] .= 'Fehler: Bitte wählen Sie eine gültige Warteschlange aus.';
+        $messages['error'] .= __('errorWrongQueue');
     }
 
     return 'loeschen_result';
@@ -366,17 +366,17 @@ function exportformatQueueActionTriggern(array &$messages)
         $jobCount  = count($oJobQueue_arr);
 
         if ($cronCount === 0 && $jobCount === 0) {
-            $messages['error'] .= 'Es wurde kein Cron-Job gestartet.<br />';
+            $messages['error'] .= __('errorCronStart') . '<br />';
         } elseif ($cronCount === 1) {
-            $messages['notice'] .= 'Es wurde ein Cron-Job gestartet.<br />';
+            $messages['notice'] .= __('successCronStart') . '<br />';
         } elseif ($cronCount > 1) {
-            $messages['notice'] .= 'Es wurden ' . $cronCount . ' Cron-Jobs gestartet.<br />';
+            $messages['notice'] .= sprintf(__('errorCronsStart'), $cronCount) . '<br />';
         }
 
         if ($jobCount === 1) {
-            $messages['notice'] .= 'Es wurde eine Job-Queue abgearbeitet.<br />';
+            $messages['notice'] .= __('successQueueDone') . '<br />';
         } elseif ($jobCount > 1) {
-            $messages['notice'] .= 'Es wurden ' . $jobCount . ' Job-Queues abgearbeitet.<br />';
+            $messages['notice'] .= sprintf(__('successQueuseDone'), $jobCount) . '<br />';
         }
     }
 
@@ -384,10 +384,10 @@ function exportformatQueueActionTriggern(array &$messages)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
+ * @param \Smarty\JTLSmarty $smarty
  * @return string
  */
-function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty)
+function exportformatQueueActionFertiggestellt(\Smarty\JTLSmarty $smarty)
 {
     $nStunden = Request::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
@@ -401,11 +401,11 @@ function exportformatQueueActionFertiggestellt(Smarty\JTLSmarty $smarty)
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  * @return string
  */
-function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellenEintragen(\Smarty\JTLSmarty $smarty, array &$messages)
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
@@ -426,27 +426,27 @@ function exportformatQueueActionErstellenEintragen(Smarty\JTLSmarty $smarty, arr
                     : null;
                 $nStatus = erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCron);
                 if ($nStatus === 1) {
-                    $messages['notice'] .= 'Ihre neue Exportwarteschlange wurde erfolgreich angelegt.';
+                    $messages['notice'] .= __('successQueueCreate');
                     $step                = 'erstellen_success';
                 } elseif ($nStatus === -1) {
-                    $messages['error'] .= 'Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden.<br />';
+                    $messages['error'] .= __('errorFormatInQueue') . '<br />';
                     $step               = 'erstellen';
                 } else {
-                    $messages['error'] .= 'Fehler: Es ist ein unbekannter Fehler aufgetreten.<br />';
+                    $messages['error'] .= __('errorUnknownLong') . '<br />';
                     $step               = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
-                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein.<br />';
+                $messages['error'] .= __('errorGreaterEqualOne') . '<br />';
                 $step               = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }
         } else { // Kein gueltiges Datum + Uhrzeit
-            $messages['error'] .= 'Fehler: Bitte geben Sie ein gültiges Datum ein.<br />';
+            $messages['error'] .= __('errorEnterValidDate') . '<br />';
             $step               = 'erstellen';
             $smarty->assign('oFehler', $oValues);
         }
     } else { // Kein gueltiges Exportformat
-        $messages['error'] .= 'Fehler: Bitte wählen Sie ein gültiges Exportformat aus.<br />';
+        $messages['error'] .= __('errorFormatSelect') . '<br />';
         $step               = 'erstellen';
         $smarty->assign('oFehler', $oValues);
     }
@@ -484,11 +484,11 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
 
 /**
  * @param string           $step
- * @param Smarty\JTLSmarty $smarty
+ * @param \Smarty\JTLSmarty $smarty
  * @param array            $messages
  * @return void
  */
-function exportformatQueueFinalize($step, Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueFinalize($step, \Smarty\JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['exportformatQueue.notice'])) {
         $messages['notice'] = $_SESSION['exportformatQueue.notice'];

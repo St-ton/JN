@@ -100,7 +100,7 @@
                                 <tr>
                                     <td></td>
                                     <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">Alle ausw&auml;hlen</label></td>
+                                    <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">{__('globalSelectAll')}</label></td>
                                 </tr>
                             </tfoot>
                         </table>

@@ -7,7 +7,7 @@
 use Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
 $cFehler  = '';
@@ -32,7 +32,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
         \DB\ReturnType::AFFECTED_ROWS
     );
 
-    $cHinweis = 'Erfolgreich gespeichert.';
+    $cHinweis = __('successConfigSave');
 }
 
 $user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);

@@ -6,52 +6,49 @@
 
 require_once __DIR__ . '/syncinclude.php';
 
-$return  = 3;
-$xml_obj = [];
+$return = 3;
+$xml    = [];
 if (auth()) {
     $db     = Shop::Container()->getDB();
     $return = 0;
 
-    $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] =
-        $db->query(
-            "SELECT *
-                FROM tverfuegbarkeitsbenachrichtigung
-                WHERE cAbgeholt = 'N'
-                LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
-            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
-        );
+    $current = $db->query(
+        "SELECT *
+            FROM tverfuegbarkeitsbenachrichtigung
+            WHERE cAbgeholt = 'N'
+            LIMIT " . LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
+        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+    );
 
-    $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] =
-        count($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung']);
-    for ($i = 0; $i < $xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
-        $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr'] =
-            buildAttributes(
-                $xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i]
-            );
+    $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = count($current);
+    for ($i = 0; $i < $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
+        $current[$i . ' attr'] = buildAttributes($current[$i]);
         $db->query(
             "UPDATE tverfuegbarkeitsbenachrichtigung
                 SET cAbgeholt = 'Y'
                 WHERE kVerfuegbarkeitsbenachrichtigung = " .
-            (int)$xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'],
+            (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'],
             \DB\ReturnType::DEFAULT
         );
     }
-    $xml_obj['queueddata']['uploadqueue']['tuploadqueue'] = $db->query(
+    $xml['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = $current;
+
+    $xml['queueddata']['uploadqueue']['tuploadqueue'] = $db->query(
         'SELECT *
             FROM tuploadqueue
             LIMIT ' . LIMIT_UPLOADQUEUE,
         \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
 
-    $xml_obj['tuploadqueue attr']['anzahl'] = count($xml_obj['queueddata']['uploadqueue']['tuploadqueue']);
-    for ($i = 0; $i < $xml_obj['tuploadqueue attr']['anzahl']; $i++) {
-        $xml_obj['queueddata']['uploadqueue']['tuploadqueue'][$i . ' attr'] =
-            buildAttributes($xml_obj['queueddata']['uploadqueue']['tuploadqueue'][$i]);
+    $xml['tuploadqueue attr']['anzahl'] = count($xml['queueddata']['uploadqueue']['tuploadqueue']);
+    for ($i = 0; $i < $xml['tuploadqueue attr']['anzahl']; $i++) {
+        $xml['queueddata']['uploadqueue']['tuploadqueue'][$i . ' attr'] =
+            buildAttributes($xml['queueddata']['uploadqueue']['tuploadqueue'][$i]);
     }
 }
 
-if ($xml_obj['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] > 0 || $xml_obj['tuploadqueue attr']['anzahl'] > 0) {
-    zipRedirect(time() . '.jtl', $xml_obj);
+if ($xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] > 0 || $xml['tuploadqueue attr']['anzahl'] > 0) {
+    zipRedirect(time() . '.jtl', $xml);
 }
 
 echo $return;

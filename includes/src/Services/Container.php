@@ -6,6 +6,7 @@
 
 namespace Services;
 
+use Backend\AdminAccount;
 use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
@@ -181,6 +182,9 @@ class Container extends ContainerBase implements DefaultServicesInterface
         return $this->get(AlertServiceInterface::class);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getGetText(): GetText
     {
         return $this->get(GetText::class);
@@ -189,9 +193,9 @@ class Container extends ContainerBase implements DefaultServicesInterface
     /**
      * @inheritdoc
      */
-    public function getAdminAccount(): \AdminAccount
+    public function getAdminAccount(): AdminAccount
     {
-        return $this->get(\AdminAccount::class);
+        return $this->get(AdminAccount::class);
     }
 
     /**

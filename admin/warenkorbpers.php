@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
@@ -20,12 +20,12 @@ $settingsIDs       = [540];
 $searchSQL         = new stdClass();
 $searchSQL->cJOIN  = '';
 $searchSQL->cWHERE = '';
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (strlen(Request::verifyGPDataString('cSuche')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
     $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
-    if (strlen($cSuche) > 0) {
+    if (mb_strlen($cSuche) > 0) {
         $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
             OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
             OR tkunde.cMail LIKE '%" . $cSuche . "%')";
@@ -48,7 +48,7 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 
     if ($oWarenkorbPers->entferneSelf()) {
-        $cHinweis .= 'Ihr ausgewählter Warenkorb wurde erfolgreich gelöscht.';
+        $cHinweis .= __('successCartPersPosDelete');
     }
 
     unset($oWarenkorbPers);

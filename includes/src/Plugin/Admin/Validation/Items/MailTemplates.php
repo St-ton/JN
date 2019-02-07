@@ -33,7 +33,7 @@ class MailTemplates extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
             \preg_match(
@@ -41,25 +41,25 @@ class MailTemplates extends AbstractItem
                 $tpl['Name'],
                 $hits1
             );
-            if (\strlen($hits1[0]) !== \strlen($tpl['Name'])) {
+            if (\mb_strlen($hits1[0]) !== \mb_strlen($tpl['Name'])) {
                 return InstallCode::INVALID_TEMPLATE_NAME;
             }
             if ($tpl['Type'] !== 'text/html' && $tpl['Type'] !== 'text') {
                 return InstallCode::INVALID_TEMPLATE_TYPE;
             }
-            if (!isset($tpl['ModulId']) || \strlen($tpl['ModulId']) === 0) {
+            if (!isset($tpl['ModulId']) || \mb_strlen($tpl['ModulId']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_MODULE_ID;
             }
-            if (!isset($tpl['Active']) || \strlen($tpl['Active']) === 0) {
+            if (!isset($tpl['Active']) || \mb_strlen($tpl['Active']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_ACTIVE;
             }
-            if (!isset($tpl['AKZ']) || \strlen($tpl['AKZ']) === 0) {
+            if (!isset($tpl['AKZ']) || \mb_strlen($tpl['AKZ']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_AKZ;
             }
-            if (!isset($tpl['AGB']) || \strlen($tpl['AGB']) === 0) {
+            if (!isset($tpl['AGB']) || \mb_strlen($tpl['AGB']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_AGB;
             }
-            if (!isset($tpl['WRB']) || \strlen($tpl['WRB']) === 0) {
+            if (!isset($tpl['WRB']) || \mb_strlen($tpl['WRB']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_WRB;
             }
             if (!isset($tpl['TemplateLanguage'])
@@ -72,16 +72,16 @@ class MailTemplates extends AbstractItem
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
-                if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
+                if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
-                    $len = \strlen($localized['iso']);
-                    if ($len === 0 || \strlen($hits[0]) !== $len) {
+                    $len = \mb_strlen($localized['iso']);
+                    if ($len === 0 || \mb_strlen($hits[0]) !== $len) {
                         return InstallCode::INVALID_EMAIL_TEMPLATE_ISO;
                     }
-                } elseif (\strlen($hits2[0]) === \strlen($l)) {
+                } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
                     \preg_match('/[a-zA-Z0-9\/_\-.#: ]+/', $localized['Subject'], $hits1);
-                    $len = \strlen($localized['Subject']);
-                    if ($len === 0 || \strlen($hits1[0]) !== $len) {
+                    $len = \mb_strlen($localized['Subject']);
+                    if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_EMAIL_TEMPLATE_SUBJECT;
                     }
                 }

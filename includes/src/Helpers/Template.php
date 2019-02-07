@@ -348,7 +348,7 @@ class Template
             }
         }
         $template->bEinstellungen = isset($xml->Settings->Section) || $template->bChild;
-        if (\strlen($template->cName) === 0) {
+        if (\mb_strlen($template->cName) === 0) {
             $template->cName = $template->cOrdner;
         }
         if ($this->cachingEnabled === true) {

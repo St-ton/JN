@@ -160,20 +160,21 @@ class Request
      */
     public static function checkSSL(): int
     {
-        $conf       = Shop::getSettings([\CONF_GLOBAL]);
-        $cSSLNutzen = $conf['global']['kaufabwicklung_ssl_nutzen'];
+        $conf   = Shop::getSettings([\CONF_GLOBAL]);
+        $useSSL = $conf['global']['kaufabwicklung_ssl_nutzen'];
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             $_SERVER['HTTPS'] = 'on';
         }
-        // Ist im Server SSL aktiv?
-        if (isset($_SERVER['HTTPS']) && (\strtolower($_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1')) {
-            if ($cSSLNutzen === 'P') { // SSL durch Einstellung erlaubt?
+        if (isset($_SERVER['HTTPS']) &&
+            (\mb_convert_case($_SERVER['HTTPS'], \MB_CASE_LOWER) === 'on' || $_SERVER['HTTPS'] === '1')
+        ) {
+            if ($useSSL === 'P') { // SSL durch Einstellung erlaubt?
                 return 2;
             }
 
             return 1;
         }
-        if ($cSSLNutzen === 'P') {
+        if ($useSSL === 'P') {
             return 4;
         }
 
@@ -242,7 +243,7 @@ class Request
      */
     public static function http_get_contents($url, int $timeout = 5, $post = null)
     {
-        return self::make_http_request($url, $timeout, $post, false);
+        return self::make_http_request($url, $timeout, $post);
     }
 
     /**
@@ -290,9 +291,9 @@ class Request
                 \curl_setopt($curl, \CURLOPT_POSTFIELDS, $post);
             }
 
-            $cData     = self::curl_exec_follow($curl);
-            $cInfo_arr = \curl_getinfo($curl);
-            $nCode     = (int)$cInfo_arr['http_code'];
+            $cData = self::curl_exec_follow($curl);
+            $info  = \curl_getinfo($curl);
+            $nCode = (int)$info['http_code'];
 
             \curl_close($curl);
         } elseif (\ini_get('allow_url_fopen')) {
@@ -326,7 +327,7 @@ class Request
     {
         return isset($_REQUEST['isAjax'])
             || (isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                && \strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+                && \mb_convert_case($_SERVER['HTTP_X_REQUESTED_WITH'], \MB_CASE_LOWER) === 'xmlhttprequest');
     }
 
     /**

@@ -86,7 +86,7 @@ build_create()
 
 build_composer_execute()
 {
-    composer install --no-dev -q -d ${REPOSITORY_DIR}/includes;
+    composer install --no-dev -a -o -q -d ${REPOSITORY_DIR}/includes;
 }
 
 build_create_deleted_files_csv()
@@ -138,7 +138,7 @@ build_add_old_files()
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    composer install --no-dev -a -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
 }
 
 build_create_md5_hashfile()
@@ -183,17 +183,17 @@ build_create_config_file()
 build_migrate()
 {
     php -r "
-        require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
-        \$manager = new MigrationManager(null); \
-        \$manager->migrate(null); \
-        try {
-            \$result = \$manager->migrate(null);
-        } catch (Exception \$e) {
-            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
-            \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
-            echo \$result;
-            exit(1);
-        }
+    require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
     ";
 
     echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
@@ -326,7 +326,7 @@ build_add_files_to_patch_dir()
         mkdir /tmp_composer/includes;
         touch /tmp_composer/includes/composer.json;
         git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer/includes/composer.json;
-        composer install --no-dev -q -d /tmp_composer/includes;
+        composer install --no-dev -a -o -q -d /tmp_composer/includes;
 
         while read -r line;
         do

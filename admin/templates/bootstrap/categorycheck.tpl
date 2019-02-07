@@ -5,7 +5,7 @@
     <div class="systemcheck">
         {if !$passed}
             <div class="alert alert-warning">
-                Es wurden Kategorien ohne korrekte Elternkategorie gefunden.
+                {__('errorCatsWithoutParents')}
             </div>
             <table class="table table-striped table-hover">
                 <thead>
@@ -24,7 +24,7 @@
                 </tbody>
             </table>
         {else}
-            <div class="alert alert-info">Keine verwaisten Kategorien gefunden.</div>
+            <div class="alert alert-info">{__('infoNoOrphanedCats')}</div>
         {/if}
     </div>
 </div>

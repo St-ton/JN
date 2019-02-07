@@ -5,8 +5,8 @@
  */
 
 require_once __DIR__ . '/syncinclude.php';
-$return  = 3;
-$xml_obj = [];
+$return = 3;
+$xml    = [];
 if (auth()) {
     $return  = 0;
     $cXML    = '<?xml version="1.0" ?>' . "\n";

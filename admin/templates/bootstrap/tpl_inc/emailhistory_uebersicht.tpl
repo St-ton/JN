@@ -23,14 +23,14 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Achtung!</h4>
+                            <h4 class="modal-title">{__('danger')}!</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Wollen Sie wirklich das komplette eMail-Log löschen?</p>
+                            <p>{__('sureEmailDelete')}</p>
                         </div>
                         <div class="modal-footer">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fa fa-check"></i>&nbsp;Ok</button>
+                                <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fa fa-check"></i>&nbsp;{__('ok')}</button>
                                 <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
                             </div>
                             </div>

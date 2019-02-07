@@ -11,9 +11,10 @@
  */
 function createSearchIndex($index, $create)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
     require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
-    $index    = strtolower(StringHandler::xssClean($index));
+    $index    = mb_convert_case(StringHandler::xssClean($index), MB_CASE_LOWER);
     $cHinweis = '';
     $cFehler  = '';
 
@@ -115,6 +116,7 @@ function clearSearchCache()
 {
     Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer', \DB\ReturnType::AFFECTED_ROWS);
     Shop::Container()->getDB()->query('DELETE FROM tsuchcache', \DB\ReturnType::AFFECTED_ROWS);
+    Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
 
     return ['hinweis' => __('successSearchCacheDelete')];
 }

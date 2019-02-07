@@ -5,10 +5,12 @@
  */
 
 use Helpers\Form;
+use Helpers\Overlay;
+use Helpers\Request;
 use Helpers\Template as TemplateHelper;
 
 /**
- * @global Smarty\JTLSmarty $smarty
+ * @global \Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
@@ -22,6 +24,7 @@ $lessVarsSkin   = [];
 $lessColors_arr = [];
 $lessColorsSkin = [];
 $template       = Template::getInstance();
+$db             = Shop::Container()->getDB();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
@@ -76,7 +79,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
     }
 }
 if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToken()) {
-    $dir          = Shop::Container()->getDB()->escape($_POST['ordner']);
+    $dir          = $db->escape($_POST['ordner']);
     $parentFolder = null;
     $tplXML       = $template->leseXML($dir);
     if (!empty($tplXML->Parent)) {
@@ -87,11 +90,11 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     $sectionCount = count($_POST['cSektion']);
     $uploadError  = '';
     for ($i = 0; $i < $sectionCount; $i++) {
-        $section = Shop::Container()->getDB()->escape($_POST['cSektion'][$i]);
-        $name    = Shop::Container()->getDB()->escape($_POST['cName'][$i]);
-        $value   = Shop::Container()->getDB()->escape($_POST['cWert'][$i]);
+        $section = $db->escape($_POST['cSektion'][$i]);
+        $name    = $db->escape($_POST['cName'][$i]);
+        $value   = $db->escape($_POST['cWert'][$i]);
         // for uploads, the value of an input field is the $_FILES index of the uploaded file
-        if (strpos($value, 'upload-') === 0) {
+        if (mb_strpos($value, 'upload-') === 0) {
             // all upload fields have to start with "upload-" - so check for that
             if (!empty($_FILES[$value]['name']) && $_FILES[$value]['error'] === UPLOAD_ERR_OK) {
                 // we have an upload field and the file is set in $_FILES array
@@ -106,15 +109,15 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                         if (!isset($_setting->cKey, $_setting->rawAttributes['target']) || $_setting->cKey !== $name) {
                             continue;
                         }
-                        //target folder
+                        // target folder
                         $base = PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' .
                             $_setting->rawAttributes['target'];
-                        //optional target file name + extension
+                        // optional target file name + extension
                         if (isset($_setting->rawAttributes['targetFileName'])) {
                             $value = $_setting->rawAttributes['targetFileName'];
                         }
                         $targetFile = $base . $value;
-                        if (strpos($targetFile, $base) !== 0
+                        if (mb_strpos($targetFile, $base) !== 0
                             || !move_uploaded_file($file['tmp_name'], $targetFile)
                         ) {
                             $uploadError = '&uploadError=true';
@@ -139,14 +142,20 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     } else {
         $cFehler = __('errorTemplateSave');
     }
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-    //re-init smarty with new template - problematic because of re-including functions.php
+
+    if (Request::verifyGPCDataInt('activate') === 1) {
+        $overlayHelper = new Overlay($db);
+        $overlayHelper->loadOverlaysFromTemplateFolder($_POST['ordner']);
+    }
+
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    // re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateToken()) {
-    $dir          = Shop::Container()->getDB()->escape($_GET['settings']);
+if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
+    $dir          = $db->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($dir, $admin);
     $tplXML       = $templateHelper->getXML($dir, false);
     $preview      = [];
@@ -169,8 +178,8 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateT
         } else {
             $cFehler = __('errorTemplateSave');
         }
-        Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-        //re-init smarty with new template - problematic because of re-including functions.php
+        $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+        // re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
         // iterate over each "Section"
@@ -241,14 +250,14 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && Form::validateT
            ->assign('themesLessColorsSkin', $lessColorsSkin)
            ->assign('themesLessColorsJSON', json_encode($lessColors_arr))
            ->assign('oEinstellungenXML', $tplConfXML);
-} elseif (isset($_GET['switch']) && strlen($_GET['switch']) > 0) {
+} elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
         $cHinweis = __('successTemplateSave');
     } else {
         $cFehler = __('errorTemplateSave');
     }
 
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())

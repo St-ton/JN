@@ -59,7 +59,7 @@ class Emailhistory
             $this->loadFromDB($kEmailhistory);
         } elseif ($oObj !== null && is_object($oObj)) {
             foreach (array_keys(get_object_vars($oObj)) as $member) {
-                $cMethod = 'set' . substr($member, 1);
+                $cMethod = 'set' . mb_substr($member, 1);
                 if (method_exists($this, $cMethod)) {
                     $this->$cMethod($oObj->$member);
                 }
@@ -118,13 +118,13 @@ class Emailhistory
         if (is_array($members) && count($members) > 0) {
             $db = Shop::Container()->getDB();
             foreach ($members as $member) {
-                $cMethod = 'get' . substr($member, 1);
+                $cMethod = 'get' . mb_substr($member, 1);
                 if (method_exists($this, $cMethod)) {
-                    $val        = $this->$cMethod();
-                    $mValue     = $val === null
+                    $val    = $this->$cMethod();
+                    $mValue = $val === null
                         ? 'NULL'
                         : ("'" . $db->escape($val) . "'");
-                    $set[] = "{$member} = {$mValue}";
+                    $set[]  = "{$member} = {$mValue}";
                 }
             }
             $sql .= implode(', ', $set);

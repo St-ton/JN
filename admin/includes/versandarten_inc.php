@@ -240,7 +240,7 @@ function getShippingByName(string $cSearch)
     $db     = Shop::Container()->getDB();
     foreach (explode(',', $cSearch) as $cSearchPos) {
         $cSearchPos = trim($cSearchPos);
-        if (strlen($cSearchPos) > 2) {
+        if (mb_strlen($cSearchPos) > 2) {
             $shippingByName_arr = $db->queryPrepared(
                 'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va

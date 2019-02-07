@@ -11,23 +11,11 @@ msgstr "Abonnenten hinzufügen"
 msgid "newsletterURL"
 msgstr "https://jtl-url.de/guvcz"
 
-msgid "newsletterqueuesubject"
-msgstr "Betreff"
-
-msgid "newsletterqueuecustomergroup"
-msgstr "Kundengruppe"
-
 msgid "newsletterqueuedate"
 msgstr "Start"
 
 msgid "newsletterdraft"
 msgstr "Vorlage"
-
-msgid "newsletterdraftsubject"
-msgstr "Betreff"
-
-msgid "newsletterdraftoptions"
-msgstr "Optionen"
 
 msgid "newsletterlastsubscriber"
 msgstr "Letzten 20 Newsletter-Abonnenten"
@@ -44,20 +32,8 @@ msgstr "Inaktive Abonnenten"
 msgid "newslettersubscribername"
 msgstr "Abonnent"
 
-msgid "newslettersubscriberfirstname"
-msgstr "Vorname"
-
-msgid "newslettersubscriberlastname"
-msgstr "Nachname"
-
 msgid "newslettersubscriberanrede"
 msgstr "Anrede"
-
-msgid "newslettersubscriberemail"
-msgstr "E-Mail"
-
-msgid "newslettersubscriberlang"
-msgstr "Sprache"
 
 msgid "newsletterhistory"
 msgstr "Historie"
@@ -70,9 +46,6 @@ msgstr "Start"
 
 msgid "newsletterdraftcreate"
 msgstr "Vorlage erstellen"
-
-msgid "newsletterdelete"
-msgstr "Löschen"
 
 msgid "newsletterNewSearch"
 msgstr "neue Suche"
@@ -107,29 +80,11 @@ msgstr "Name der Vorlage"
 msgid "newsletterdraftcharacter"
 msgstr "Diese Vorlage versenden als"
 
-msgid "newsletterdraftsave"
-msgstr "speichern"
-
-msgid "newsletterconfig"
-msgstr "Einstellungen"
-
 msgid "newsletterconfigdesc"
 msgstr "Diese E-Maileinstellungen gelten für den Newsletterversand."
 
-msgid "newsletterback"
-msgstr "zurück"
-
 msgid "newsletterartnr"
 msgstr "Artikelnummer"
-
-msgid "newslettercampaign"
-msgstr "Kampagne"
-
-msgid "newslettermanufacturer"
-msgstr "Hersteller"
-
-msgid "newslettercategory"
-msgstr "Kategorien"
 
 msgid "newsletternewartnr"
 msgstr "weiteres Artikelfeld"
@@ -154,9 +109,6 @@ msgstr "(dd/mm/yyyy hh:ii)"
 
 msgid "newsletterdraftcal"
 msgstr "Kalender"
-
-msgid "newsletter"
-msgstr "Newsletter"
 
 msgid "newsletterdesc"
 msgstr "Verwalten Sie hier Ihre Newsletter sowie Abonnenten. Beachten Sie, dass Newsletter pro Sprache verwaltet werden."
@@ -188,9 +140,6 @@ msgstr "Alle Abonnenten"
 msgid "newsletterSubscriberListDesc"
 msgstr ""
 
-msgid "newslettersubscriberCustomerGrp"
-msgstr "Kundengruppe"
-
 msgid "newslettersubscriberSearch"
 msgstr "Abonnentensuche"
 
@@ -215,9 +164,6 @@ msgstr "Standardvorlagen"
 msgid "newsletterdraftStdShort"
 msgstr "Standardvorlage"
 
-msgid "newsletterdraftStdPicture"
-msgstr "Vorschau"
-
 msgid "newsletterdraftStdUse"
 msgstr "Vorlage benutzen"
 
@@ -229,9 +175,6 @@ msgstr "Bitte ausfüllen"
 
 msgid "newsletterPicLink"
 msgstr "Optionaler Bildlink"
-
-msgid "newsletterPreview"
-msgstr "Vorschau"
 
 msgid "newsletterAltTag"
 msgstr "Alt Tag"
@@ -283,3 +226,9 @@ msgstr "Die Newslettervorlage %s wurde zum Testen an %s gesendet."
 
 msgid "successNewsletterTemplateDelete"
 msgstr "Die Newslettervorlage wurde erfolgreich gelöscht."
+
+msgid "availableTemplates"
+msgstr "Vorhandene Vorlagen"
+
+msgid "newsletterNoAccount"
+msgstr "Newsletterempfänger ohne Kundenkonto"

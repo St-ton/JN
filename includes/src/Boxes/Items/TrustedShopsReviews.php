@@ -43,7 +43,7 @@ final class TrustedShopsReviews extends AbstractBox
         if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $validISOCodes, true)) {
             $ts       = new \TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \strlen($tsRating->cTSID) > 0) {
+            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \mb_strlen($tsRating->cTSID) > 0) {
                 $localizedURLs = [
                     'de' => 'https://www.trustedshops.com/bewertung/info_' . $tsRating->cTSID . '.html',
                     'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tsRating->cTSID . '.html',

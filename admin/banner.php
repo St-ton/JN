@@ -20,7 +20,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     $oBanner     = new ImageMap();
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
     $cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    if (strlen($cName) === 0) {
+    if (mb_strlen($cName) === 0) {
         $cPlausi_arr['cName'] = 1;
     }
     $cBannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
@@ -54,7 +54,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     if ($bDatum !== null && $bDatum < $vDatum) {
         $cPlausi_arr['bDatum'] = 2;
     }
-    if (strlen($cBannerPath) === 0) {
+    if (mb_strlen($cBannerPath) === 0) {
         $cPlausi_arr['cBannerPath'] = 1;
     }
     if (count($cPlausi_arr) === 0) {
@@ -144,7 +144,7 @@ switch ($cAction) {
 
         $smarty->assign('oExtension', holeExtension($id))
                ->assign('cBannerFile_arr', holeBannerDateien())
-               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
                ->assign('oBanner', $oBanner);
@@ -157,7 +157,7 @@ switch ($cAction) {
 
     case 'new':
         $smarty->assign('oBanner', $oBanner ?? null)
-               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('cBannerLocation', PFAD_BILDER_BANNER)
                ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))

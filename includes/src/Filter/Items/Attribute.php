@@ -483,10 +483,10 @@ class Attribute extends BaseAttribute
         $filterURLGenerator = $this->productFilter->getFilterURL();
         $i                  = 0;
         foreach ($attributeFilterCollection as $attributeFilter) {
-            $baseSrcSmall  = \strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcSmall  = \mb_strlen($attributeFilter->cMMBildPfad) > 0
                 ? \PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
-            $baseSrcNormal = \strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcNormal = \mb_strlen($attributeFilter->cMMBildPfad) > 0
                 ? \PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
 
@@ -512,10 +512,10 @@ class Attribute extends BaseAttribute
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
                 $attributeValue            = new Option();
-                $baseSrcSmall              = \strlen($filterValue->cMMWBildPfad) > 0
+                $baseSrcSmall              = \mb_strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                $baseSrcNormal             = \strlen($filterValue->cMMWBildPfad) > 0
+                $baseSrcNormal             = \mb_strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 $attributeValue->setData('kMerkmalWert', $filterValue->kMerkmalWert)

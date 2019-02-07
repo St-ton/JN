@@ -68,7 +68,7 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
     $kSprache     = Shop::getLanguageID();
     $cSQL         = '';
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
-    if (strlen($cDatumSQL) > 0) {
+    if (mb_strlen($cDatumSQL) > 0) {
         $cSQL = '   JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     JOIN tnews 
@@ -89,12 +89,12 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                AND tseo.kSprache = " . $kSprache . "
-                AND tnewskategorie.kSprache = " . $kSprache . "
-            WHERE t.languageID = " . $kSprache
-            . $activeFilter . "
+                AND tseo.kSprache = " . $kSprache . '
+                AND tnewskategorie.kSprache = ' . $kSprache . '
+            WHERE t.languageID = ' . $kSprache
+            . $activeFilter . '
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort",
+            ORDER BY tnewskategorie.nSort',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -228,8 +228,8 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
-                AND tseo.kSprache = " . Shop::getLanguageID() . "
-            WHERE tnews.kNews = " . $kNews . " 
+                AND tseo.kSprache = " . Shop::getLanguageID() . '
+            WHERE tnews.kNews = ' . $kNews . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
@@ -298,12 +298,12 @@ function getNewsCategory(int $kNews)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                AND tseo.kSprache = " . Shop::getLanguageID() . "
-            WHERE tnewskategorie.kSprache = " . Shop::getLanguageID() . "
-                AND tnewskategorienews.kNewsKategorie IN (" . implode(',', $newsCategories) . ")
+                AND tseo.kSprache = " . Shop::getLanguageID() . '
+            WHERE tnewskategorie.kSprache = ' . Shop::getLanguageID() . '
+                AND tnewskategorienews.kNewsKategorie IN (' . implode(',', $newsCategories) . ')
                 AND tnewskategorie.nAktiv = 1
             GROUP BY tnewskategorie.kNewsKategorie
-            ORDER BY tnewskategorie.nSort DESC",
+            ORDER BY tnewskategorie.nSort DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -320,10 +320,10 @@ function getNewsComments(int $kNews, $cLimitSQL)
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
-            WHERE tnewskommentar.kNews = " . $kNews . "
+            WHERE tnewskommentar.kNews = " . $kNews . '
                 AND tnewskommentar.nAktiv = 1
             ORDER BY tnewskommentar.dErstellt DESC
-            LIMIT " . $cLimitSQL,
+            LIMIT ' . $cLimitSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -388,21 +388,21 @@ function getNewsOverview($oSQL, $cLimitSQL)
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
-                AND tseo.kSprache = " . Shop::getLanguageID() . "
+                AND tseo.kSprache = " . Shop::getLanguageID() . '
             LEFT JOIN tnewskommentar 
                 ON tnewskommentar.kNews = tnews.kNews 
                 AND tnewskommentar.nAktiv = 1
-            " . $oSQL->cNewsKatSQL . "
+            ' . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                AND t.languageID = " . Shop::getLanguageID() . "
-                " . $oSQL->cDatumSQL . "
+                AND t.languageID = " . Shop::getLanguageID() . '
+                ' . $oSQL->cDatumSQL . '
             GROUP BY tnews.kNews
-            " . $oSQL->cSortSQL . "
-            LIMIT " . $cLimitSQL,
+            ' . $oSQL->cSortSQL . '
+            LIMIT ' . $cLimitSQL,
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -416,18 +416,18 @@ function getFullNewsOverview($oSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
-        "SELECT COUNT(DISTINCT(tnews.kNews)) AS nAnzahl
+        'SELECT COUNT(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
             JOIN tnewssprache t
                 ON t.kNews = tnews.kNews
-            " . $oSQL->cNewsKatSQL . "
+            ' . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                " . $oSQL->cDatumSQL . "
-                AND t.languageID = " . Shop::getLanguageID(),
+                " . $oSQL->cDatumSQL . '
+                AND t.languageID = ' . Shop::getLanguageID(),
         \DB\ReturnType::SINGLE_OBJECT
     );
 }
@@ -441,19 +441,19 @@ function getNewsDateArray($oSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
-        "SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
+        'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
             FROM tnews
             JOIN tnewssprache t
                 ON tnews.kNews = t.kNews
-            " . $oSQL->cNewsKatSQL . "
+            ' . $oSQL->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                AND t.languageID = " . Shop::getLanguageID() . "
+                AND t.languageID = " . Shop::getLanguageID() . '
             GROUP BY nJahr, nMonat
-            ORDER BY dGueltigVon DESC",
+            ORDER BY dGueltigVon DESC',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -486,7 +486,7 @@ function holeNewsBilder(int $kNews, $uploadDir)
         while (false !== ($file = readdir($handle))) {
             if ($file !== '.' && $file !== '..') {
                 $image           = new stdClass();
-                $image->cName    = substr($file, 0, strpos($file, '.'));
+                $image->cName    = mb_substr($file, 0, mb_strpos($file, '.'));
                 $image->cURL     = PFAD_NEWSBILDER . $kNews . '/' . $file;
                 $image->cURLFull = $baseURL . PFAD_NEWSBILDER . $kNews . '/' . $file;
                 $image->cDatei   = $file;

@@ -57,7 +57,7 @@ abstract class AbstractValidator implements ValidatorInterface
      */
     public function setDir(string $dir): void
     {
-        $this->dir = \strpos($dir, \PFAD_ROOT) === 0
+        $this->dir = \mb_strpos($dir, \PFAD_ROOT) === 0
             ? $dir
             : self::BASE_DIR . $dir;
     }

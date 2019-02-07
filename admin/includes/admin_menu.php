@@ -392,14 +392,14 @@ $adminMenu = [
 //                'link' => 'marktplatz.php',
 //                'rights' => 'PLUGIN_ADMIN_VIEW',
 //            ],
-        __('Plug-in administration') => (object)[
-            'link'   => 'pluginverwaltung.php',
-            'rights' => 'PLUGIN_ADMIN_VIEW',
-        ],
-        __('Plug-in profiler')       => (object)[
-            'link'   => 'profiler.php',
-            'rights' => 'PROFILER_VIEW',
-        ],
+            __('Plug-in administration') => (object)[
+                'link'   => 'pluginverwaltung.php',
+                'rights' => 'PLUGIN_ADMIN_VIEW',
+            ],
+            __('Plug-in profiler')       => (object)[
+                'link'   => 'profiler.php',
+                'rights' => 'PROFILER_VIEW',
+            ],
         ],
         __('Plugins')  => 'DYNAMIC_PLUGINS',
     ],

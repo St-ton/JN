@@ -25,7 +25,7 @@ function executeHook(int $hookID, $args_arr = [])
     foreach ($hookList[$hookID] as $item) {
         $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {
-            $loader  = new \Plugin\PluginLoader($db, $cache);
+            $loader  = new \Plugin\LegacyPluginLoader($db, $cache);
             $oPlugin = $loader->init((int)$item->kPlugin);
             if ($oPlugin === null) {
                 continue;
@@ -68,8 +68,8 @@ function executeHook(int $hookID, $args_arr = [])
 }
 
 /**
- * @param \Plugin\Plugin $oPlugin
- * @param array          $params
+ * @param \Plugin\LegacyPlugin $oPlugin
+ * @param array                $params
  * @return bool
  * @deprecated since 5.0.0
  */
@@ -80,8 +80,8 @@ function pluginLizenzpruefung($oPlugin, array $params = []): bool
 }
 
 /**
- * @param \Plugin\Plugin $oPlugin
- * @param int            $nStatus
+ * @param \Plugin\LegacyPlugin $oPlugin
+ * @param int                  $nStatus
  * @deprecated since 5.0.0
  */
 function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)

@@ -13,7 +13,7 @@
                 <td><input class="form-control" id="cName" name="cName" type="text" value="{$oBewertung->cName}" /></td>
             </tr>
             <tr>
-                <td><label for="cTitel">{__('ratingTitle')}:</label></td>
+                <td><label for="cTitel">{__('name')}:</label></td>
                 <td><input class="form-control" id="cTitel" name="cTitel" type="text" value="{$oBewertung->cTitel}" /></td>
             </tr>
             <tr>
@@ -38,7 +38,7 @@
             </tr>
         </table>
         <div class="save_wrapper">
-            <button name="bewertungsubmit" type="submit" value="{__('ratingSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('ratingSave')}</button>
+            <button name="bewertungsubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
         </div>
     </form>
 </div>

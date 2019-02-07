@@ -5,9 +5,6 @@ msgstr ""
 msgid "statisticTitle"
 msgstr "Statistik"
 
-msgid "statisticBesucher"
-msgstr "Besucher"
-
 msgid "statisticBesucherURL"
 msgstr "https://jtl-url.de/sd6h2"
 
@@ -59,42 +56,6 @@ msgstr "Alle Monate"
 msgid "allYears"
 msgstr "Alle Jahre"
 
-msgid "january"
-msgstr "Januar"
-
-msgid "february"
-msgstr "Februar"
-
-msgid "march"
-msgstr "März"
-
-msgid "april"
-msgstr "April"
-
-msgid "may"
-msgstr "Mai"
-
-msgid "june"
-msgstr "Juni"
-
-msgid "july"
-msgstr "Juli"
-
-msgid "august"
-msgstr "August"
-
-msgid "september"
-msgstr "September"
-
-msgid "october"
-msgstr "Oktober"
-
-msgid "november"
-msgstr "November"
-
-msgid "december"
-msgstr "Dezember"
-
 msgid "filters"
 msgstr "Folgende Filter setzen:"
 
@@ -109,12 +70,6 @@ msgstr "Bezahlt"
 
 msgid "filter4"
 msgstr "Versendet"
-
-msgid "day"
-msgstr "Tag"
-
-msgid "month"
-msgstr "Monat"
 
 msgid "numbersOfOrder"
 msgstr "Anzahl Bestellungen"
@@ -236,9 +191,6 @@ msgstr "Sortieren nach"
 msgid "orderNo"
 msgstr " Bestell-Nr."
 
-msgid "visiter"
-msgstr "Besucher"
-
 msgid "browser"
 msgstr "Browser"
 
@@ -256,9 +208,6 @@ msgstr "Kunden-Nr."
 
 msgid "accountBuild"
 msgstr "Kunden erstellt"
-
-msgid "orders"
-msgstr "Bestellungen"
 
 msgid "searchKey"
 msgstr "Suchbegriffe"
@@ -356,9 +305,6 @@ msgstr "Benachrichtigen, wenn verfügbar (nicht versendet)"
 msgid "restrictions"
 msgstr "Artikel"
 
-msgid "language"
-msgstr "Sprache"
-
 msgid "dateOfQuestion"
 msgstr "Datum der Anfrage"
 
@@ -367,3 +313,6 @@ msgstr "Versendet"
 
 msgid "productName"
 msgstr "Name"
+
+msgid "statisticType"
+msgstr "Statistiktyp"

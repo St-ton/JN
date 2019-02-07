@@ -618,13 +618,13 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
         $p->setCurrentPage($pages->AktuelleSeite);
         $pages = $p;
     }
-    if (strlen($filterURL) > 0) {
+    if (mb_strlen($filterURL) > 0) {
         $seo = false;
     }
     $res     = [];
     $naviURL = $productFilter->getFilterURL()->getURL();
-    $seo     = $seo && strpos($naviURL, '?') === false;
-    if ($pages->getTotalPages() > 0 && $pages->getCurrentPage()> 0) {
+    $seo     = $seo && mb_strpos($naviURL, '?') === false;
+    if ($pages->getTotalPages() > 0 && $pages->getCurrentPage() > 0) {
         $nMax = (int)floor($maxPages / 2);
         if ($pages->getTotalPages() > $maxPages) {
             if ($pages->getCurrentPage() - $nMax >= 1) {
@@ -655,7 +655,7 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
                     $oSeite->cURL = $naviURL . $filterURL;
                 } elseif ($seo) {
                     $cURL         = $naviURL;
-                    $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                    $oSeite->cURL = mb_strpos(basename($cURL), 'index.php') !== false
                         ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
                         : $cURL . SEP_SEITE . $oSeite->nSeite;
                 } else {
@@ -675,7 +675,7 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
                     $oSeite->cURL = $naviURL . $filterURL;
                 } elseif ($seo) {
                     $cURL         = $naviURL;
-                    $oSeite->cURL = strpos(basename($cURL), 'index.php') !== false
+                    $oSeite->cURL = mb_strpos(basename($cURL), 'index.php') !== false
                         ? $cURL . '&amp;seite=' . $oSeite->nSeite . $filterURL
                         : $cURL . SEP_SEITE . $oSeite->nSeite;
                 } else {
@@ -693,7 +693,7 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
                 $res['zurueck']->cURL = $naviURL . $filterURL;
             } elseif ($seo) {
                 $cURL = $naviURL;
-                if (strpos(basename($cURL), 'index.php') !== false) {
+                if (mb_strpos(basename($cURL), 'index.php') !== false) {
                     $res['zurueck']->cURL = $cURL . '&amp;seite=' .
                         $res['zurueck']->nSeite . $filterURL;
                 } else {
@@ -712,7 +712,7 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
             $res['vor']->nSeite = $pages->getCurrentPage() + 1;
             if ($seo) {
                 $cURL = $naviURL;
-                if (strpos(basename($cURL), 'index.php') !== false) {
+                if (mb_strpos(basename($cURL), 'index.php') !== false) {
                     $res['vor']->cURL = $cURL . '&amp;seite=' . $res['vor']->nSeite . $filterURL;
                 } else {
                     $res['vor']->cURL = $cURL . SEP_SEITE . $res['vor']->nSeite;

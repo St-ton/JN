@@ -11,12 +11,13 @@ use DB\DbInterface;
 use DB\ReturnType;
 use JTL\XMLParser;
 use Mapper\PluginValidation;
-use Plugin\AbstractExtension;
+use Plugin\AbstractPlugin;
 use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\ExtensionLoader;
-use Plugin\InstallCode;
-use Plugin\Plugin;
+use Plugin\PluginInterface;
 use Plugin\PluginLoader;
+use Plugin\InstallCode;
+use Plugin\LegacyPlugin;
+use Plugin\LegacyPluginLoader;
 use Tightenco\Collect\Support\Collection;
 use function Functional\map;
 
@@ -28,7 +29,7 @@ final class Listing
 {
     private const PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
-    private const EXTENSIONS_DIR = \PFAD_ROOT . \PFAD_EXTENSIONS;
+    private const EXTENSIONS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
     /**
      * @var DbInterface
@@ -102,13 +103,13 @@ final class Listing
                 return $e;
             }
         );
-        $pluginLoader    = new PluginLoader($this->db, $this->cache);
-        $extensionLoader = new ExtensionLoader($this->db, $this->cache);
+        $pluginLoader    = new LegacyPluginLoader($this->db, $this->cache);
+        $extensionLoader = new PluginLoader($this->db, $this->cache);
         foreach ($pluginIDs as $pluginID) {
             if ($pluginID->bExtension === 1) {
                 $plugin = $extensionLoader->init($pluginID->kPlugin, true);
             } else {
-                $pluginLoader->setPlugin(new Plugin());
+                $pluginLoader->setPlugin(new LegacyPlugin());
                 $plugin = $pluginLoader->init($pluginID->kPlugin, true);
             }
             $plugin->getMeta()->setUpdateAvailable($plugin->getMeta()->getVersion() < $plugin->getCurrentVersion());
@@ -133,7 +134,7 @@ final class Listing
      */
     public function getAll(Collection $installed): Collection
     {
-        $installedPlugins = $installed->map(function (AbstractExtension $item) {
+        $installedPlugins = $installed->map(function (PluginInterface $item) {
             return $item->getPaths()->getBaseDir();
         });
         $parser           = new XMLParser();
@@ -152,35 +153,51 @@ final class Listing
      */
     private function parsePluginsDir(XMLParser $parser, string $pluginDir, $installedPlugins): Collection
     {
-        $validator = $pluginDir === self::EXTENSIONS_DIR
+        $isExtension = $pluginDir === self::EXTENSIONS_DIR;
+        $validator   = $isExtension
             ? $this->modernValidator
             : $this->validator;
-        foreach (new \DirectoryIterator($pluginDir) as $fileinfo) {
-            if ($fileinfo->isDot() || !$fileinfo->isDir()) {
-                continue;
+
+        if (\is_dir($pluginDir)) {
+            foreach (new \DirectoryIterator($pluginDir) as $fileinfo) {
+                if ($fileinfo->isDot() || !$fileinfo->isDir()) {
+                    continue;
+                }
+                $dir = $fileinfo->getBasename();
+                $info = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
+                if (!\file_exists($info)) {
+                    continue;
+                }
+                $xml = $parser->parse($info);
+                $code = $validator->validateByPath($pluginDir . $dir);
+                $xml['cVerzeichnis'] = $dir;
+                $xml['cFehlercode'] = $code;
+                $item = new ListingItem();
+                $plugin = $item->parseXML($xml);
+                $plugin->setPath($pluginDir . $dir);
+
+                if ($isExtension) {
+                    \Shop::Container()->getGetText()->loadPluginItemLocale('base', $item);
+                }
+
+                $msgid = $item->getID() . '_desc';
+                $desc  = __($msgid);
+
+                if ($desc !== $msgid) {
+                    $item->setDescription($desc);
+                }
+
+                if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
+                    $plugin->setInstalled(true);
+                    $plugin->setHasError(false);
+                    $plugin->setIsShop4Compatible(true);
+                } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
+                    $plugin->setAvailable(true);
+                    $plugin->setHasError(false);
+                    $plugin->setIsShop4Compatible($code === InstallCode::OK);
+                }
+                $this->plugins[] = $plugin;
             }
-            $dir  = $fileinfo->getBasename();
-            $info = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
-            if (!\file_exists($info)) {
-                continue;
-            }
-            $xml                 = $parser->parse($info);
-            $code                = $validator->validateByPath($pluginDir . $dir);
-            $xml['cVerzeichnis'] = $dir;
-            $xml['cFehlercode']  = $code;
-            $item                = new ListingItem();
-            $plugin              = $item->parseXML($xml);
-            $plugin->setPath($pluginDir . $dir);
-            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
-                $plugin->setInstalled(true);
-                $plugin->setHasError(false);
-                $plugin->setIsShop4Compatible(true);
-            } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
-                $plugin->setAvailable(true);
-                $plugin->setHasError(false);
-                $plugin->setIsShop4Compatible($code === InstallCode::OK);
-            }
-            $this->plugins[] = $plugin;
         }
 
         return $this->plugins;
@@ -192,7 +209,7 @@ final class Listing
     private function sort(): void
     {
         $this->plugins->sortBy(function (ListingItem $item) {
-            return \strtolower($item->getName());
+            return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }
 }

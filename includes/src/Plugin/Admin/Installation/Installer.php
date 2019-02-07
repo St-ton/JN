@@ -10,12 +10,13 @@ use DB\DbInterface;
 use DB\ReturnType;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
-use Plugin\AbstractExtension;
+use Plugin\AbstractPlugin;
 use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\ExtensionLoader;
+use Plugin\PluginInterface;
+use Plugin\PluginLoader;
 use Plugin\Helper;
 use Plugin\InstallCode;
-use Plugin\PluginLoader;
+use Plugin\LegacyPluginLoader;
 use Plugin\State;
 
 /**
@@ -50,7 +51,7 @@ final class Installer
     private $extensionValidator;
 
     /**
-     * @var AbstractExtension|null
+     * @var PluginInterface|null
      */
     private $plugin;
 
@@ -95,17 +96,17 @@ final class Installer
     }
 
     /**
-     * @return AbstractExtension|null
+     * @return PluginInterface|null
      */
-    public function getPlugin(): ?AbstractExtension
+    public function getPlugin(): ?PluginInterface
     {
         return $this->plugin;
     }
 
     /**
-     * @param AbstractExtension|null $plugin
+     * @param PluginInterface|null $plugin
      */
-    public function setPlugin(AbstractExtension $plugin): void
+    public function setPlugin(PluginInterface $plugin): void
     {
         $this->plugin = $plugin;
     }
@@ -122,7 +123,7 @@ final class Installer
         $validator = $this->pluginValidator;
         $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
-            $baseDir           = \PFAD_ROOT . \PFAD_EXTENSIONS . \basename($this->dir);
+            $baseDir           = \PFAD_ROOT . \PLUGIN_DIR . \basename($this->dir);
             $validator         = $this->extensionValidator;
             $this->isExtension = true;
             if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
@@ -169,21 +170,21 @@ final class Installer
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
             $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
-            $loader         = new PluginLoader($this->db, \Shop::Container()->getCache());
+            $loader         = new LegacyPluginLoader($this->db, \Shop::Container()->getCache());
         } else {
             $version      = $baseNode['Version'];
-            $basePath     = \PFAD_ROOT . \PFAD_EXTENSIONS . $this->dir . \DIRECTORY_SEPARATOR;
+            $basePath     = \PFAD_ROOT . \PLUGIN_DIR . $this->dir . \DIRECTORY_SEPARATOR;
             $versionedDir = $basePath;
             $versionNode  = [];
             $modern       = true;
-            $loader       = new ExtensionLoader($this->db, \Shop::Container()->getCache());
+            $loader       = new PluginLoader($this->db, \Shop::Container()->getCache());
         }
         $tags = empty($baseNode['Install'][0]['FlushTags'])
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
         if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
-            && \strlen($baseNode['LicenceClass']) > 0
-            && \strlen($baseNode['LicenceClassFile']) > 0
+            && \mb_strlen($baseNode['LicenceClass']) > 0
+            && \mb_strlen($baseNode['LicenceClassFile']) > 0
         ) {
             $licenceClass     = $baseNode['LicenceClass'];
             $licenceClassName = $baseNode['LicenceClassFile'];
@@ -242,8 +243,8 @@ final class Installer
         }
 
         $factory = $this->isExtension
-            ? new PluginInstallerFactory($this->db, $xml, $plugin)
-            : new ExtensionInstallerFactory($this->db, $xml, $plugin);
+            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin)
+            : new PluginInstallerFactory($this->db, $xml, $plugin);
         $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($kPlugin);
@@ -263,7 +264,7 @@ final class Installer
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
 
-            if (!isset($hits1[0]) || \strlen($hits1[0]) !== \strlen($i)) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $nVersionTMP = (int)$versionData['nr'];
@@ -334,16 +335,16 @@ final class Installer
         $line     = '';
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
-            if ($data !== '' && \strpos($data, '--') !== 0) {
-                if (\strpos($data, 'CREATE TABLE') !== false) {
+            if ($data !== '' && \mb_strpos($data, '--') !== 0) {
+                if (\mb_strpos($data, 'CREATE TABLE') !== false) {
                     $line .= \trim($data);
-                } elseif (\strpos($data, 'INSERT') !== false) {
+                } elseif (\mb_strpos($data, 'INSERT') !== false) {
                     $line .= \trim($data);
                 } else {
                     $line .= \trim($data);
                 }
 
-                if (\substr($data, \strlen($data) - 1, 1) === ';') {
+                if (\mb_substr($data, \mb_strlen($data) - 1, 1) === ';') {
                     $sqlLines[] = $line;
                     $line       = '';
                 }
@@ -398,13 +399,13 @@ final class Installer
         $sqlRegEx = '/xplugin[_]{1}' . $plugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
         foreach ($lines as $sql) {
             $sql = \StringHandler::removeNumerousWhitespaces($sql);
-            if (\stripos($sql, 'create table') !== false) {
+            if (\mb_stripos($sql, 'create table') !== false) {
                 // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
+                $index = (\mb_stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
                 $tmp   = \explode(' ', $sql);
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($table)) {
+                if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_CREATE;
                 }
                 $exists = $this->db->select('tplugincustomtabelle', 'cTabelle', $table);
@@ -415,14 +416,14 @@ final class Installer
 
                     $this->db->insert('tplugincustomtabelle', $customTable);
                 }
-            } elseif (\stripos($sql, 'drop table') !== false) {
+            } elseif (\mb_stripos($sql, 'drop table') !== false) {
                 // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
                 // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
+                $index = (\mb_stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
                 $tmp   = \explode(' ', \StringHandler::removeNumerousWhitespaces($sql));
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (\strlen($hits[0]) !== \strlen($table)) {
+                if (\mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_DELETE;
                 }
             }

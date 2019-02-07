@@ -46,7 +46,7 @@ interface LoaderInterface
      * @param int  $id
      * @param bool $invalidateCache
      * @param int  $languageID
-     * @return Plugin|Extension
+     * @return LegacyPlugin|Plugin
      * @throws \InvalidArgumentException
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null);
@@ -54,18 +54,18 @@ interface LoaderInterface
     /**
      * @param object $obj
      * @param string $currentLanguageCode
-     * @return AbstractExtension
+     * @return PluginInterface
      */
     public function loadFromObject($obj, string $currentLanguageCode);
 
     /**
-     * @return AbstractExtension|null
+     * @return PluginInterface|null
      */
-    public function loadFromCache(): ?AbstractExtension;
+    public function loadFromCache(): ?PluginInterface;
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return bool
      */
-    public function saveToCache(AbstractExtension $extension): bool;
+    public function saveToCache(PluginInterface $extension): bool;
 }

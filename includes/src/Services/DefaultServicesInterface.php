@@ -6,6 +6,7 @@
 
 namespace Services;
 
+use Backend\AdminAccount;
 use Boxes\FactoryInterface;
 use Cache\JTLCacheInterface;
 use DB\DbInterface;
@@ -139,9 +140,9 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getGetText() : GetText;
 
     /**
-     * @return \AdminAccount
+     * @return AdminAccount
      */
-    public function getAdminAccount(): \AdminAccount;
+    public function getAdminAccount(): AdminAccount;
 
     /**
      * @return JTLDebugBar

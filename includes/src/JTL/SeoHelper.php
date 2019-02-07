@@ -154,7 +154,7 @@ class SeoHelper
             \chr(180) => ''
         ];
         $str = \preg_replace('~[^\w-/]~', '', strtr($str, $arr));
-        while (\strpos($str, '--') !== false) {
+        while (\mb_strpos($str, '--') !== false) {
             $str = \str_replace('--', '-', $str);
         }
 

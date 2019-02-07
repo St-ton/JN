@@ -8,13 +8,13 @@
                 -{if $oUmfrageStats->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
             </div>
             <div class="col-md-3">
-                <strong>{__('umfrageCustomerGrp')}:</strong><br/>
+                <strong>{__('customerGroup')}:</strong><br/>
                 {foreach $oUmfrageStats->cKundengruppe_arr as $cKundengruppe}
                     {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                 {/foreach}
             </div>
             <div class="col-md-3">
-                <strong>{__('umfrageActive')}:</strong><br/>
+                <strong>{__('active')}:</strong><br/>
                 {$oUmfrageStats->nAktiv}
             </div>
             <div class="col-md-3">
@@ -24,7 +24,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <strong>{__('umfrageText')}:</strong><br/>
+                <strong>{__('description')}:</strong><br/>
                 {$oUmfrageStats->cBeschreibung}
             </div>
         </div>

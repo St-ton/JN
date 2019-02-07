@@ -68,9 +68,6 @@ msgstr "Aktualisiert am"
 msgid "pluginFolder"
 msgstr "Verzeichnis"
 
-msgid "status"
-msgstr "Status"
-
 msgid "statusInstalled"
 msgstr "Installiert"
 
@@ -89,12 +86,6 @@ msgstr "Updaten"
 msgid "pluginBtnInstall"
 msgstr "Installieren"
 
-msgid "pluginBtnActivate"
-msgstr "Aktivieren"
-
-msgid "pluginBtnDeActivate"
-msgstr "Deaktivieren"
-
 msgid "pluginBtnDeInstall"
 msgstr "Deinstallieren"
 
@@ -110,12 +101,6 @@ msgstr "ändern"
 msgid "pluginBtnLicence"
 msgstr "Lizenz"
 
-msgid "pluginBtnSave"
-msgstr "Speichern"
-
-msgid "pluginBtnBack"
-msgstr "zurück"
-
 msgid "pluginLocalesStd"
 msgstr "auf den Installationszustand zurücksetzen"
 
@@ -124,9 +109,6 @@ msgstr "Sprachvariablen"
 
 msgid "pluginEditLinkgrps"
 msgstr "Linkgruppen"
-
-msgid "pluginSelectAll"
-msgstr "Alle auswählen"
 
 msgid "pluginUpdateExists"
 msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann geupdated werden"
@@ -181,3 +163,21 @@ msgstr "Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
 
 msgid "successVariableRestore"
 msgstr "Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt."
+
+msgid "surePluginUpdate"
+msgstr "Wollen Sie das Plugin wirklich updaten?"
+
+msgid "successPluginUpload"
+msgstr "Plugin erfolgreich hochgeladen."
+
+msgid "errorPluginUpload"
+msgstr "Plugin konnte nicht hochgeladen werden."
+
+msgid "sureResetLangVar"
+msgstr "Wollen Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br><br> *Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren."
+
+msgid "dangerPluginNotCompatible"
+msgstr "Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen."
+
+msgid "licensePlugin"
+msgstr "Plugin Lizenz"

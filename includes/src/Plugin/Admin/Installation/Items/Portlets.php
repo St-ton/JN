@@ -33,7 +33,7 @@ class Portlets extends AbstractItem
         foreach ($this->getNode() as $i => $portlet) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $oPortlet = (object)[

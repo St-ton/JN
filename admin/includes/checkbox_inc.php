@@ -18,12 +18,12 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
         return $plausi;
     }
     if (is_array($cPost_arr) && count($cPost_arr) > 0) {
-        if (!isset($cPost_arr['cName']) || strlen($cPost_arr['cName']) === 0) {
+        if (!isset($cPost_arr['cName']) || mb_strlen($cPost_arr['cName']) === 0) {
             $plausi['cName'] = 1;
         }
         $bText = false;
         foreach ($oSprache_arr as $oSprache) {
-            if (strlen($cPost_arr['cText_' . $oSprache->cISO]) > 0) {
+            if (mb_strlen($cPost_arr['cText_' . $oSprache->cISO]) > 0) {
                 $bText = true;
                 break;
             }
@@ -50,13 +50,13 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
                 }
             }
         }
-        if (!isset($cPost_arr['nPflicht']) || strlen($cPost_arr['nPflicht']) === 0) {
+        if (!isset($cPost_arr['nPflicht']) || mb_strlen($cPost_arr['nPflicht']) === 0) {
             $plausi['nPflicht'] = 1;
         }
-        if (!isset($cPost_arr['nAktiv']) || strlen($cPost_arr['nAktiv']) === 0) {
+        if (!isset($cPost_arr['nAktiv']) || mb_strlen($cPost_arr['nAktiv']) === 0) {
             $plausi['nAktiv'] = 1;
         }
-        if (!isset($cPost_arr['nLogging']) || strlen($cPost_arr['nLogging']) === 0) {
+        if (!isset($cPost_arr['nLogging']) || mb_strlen($cPost_arr['nLogging']) === 0) {
             $plausi['nLogging'] = 1;
         }
         if (!isset($cPost_arr['nSort']) || (int)$cPost_arr['nSort'] === 0) {

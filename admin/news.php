@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;
@@ -26,7 +26,7 @@ $languages      = Sprache::getAllLanguages();
 $defaultLang    = Sprache::getDefaultLanguage();
 
 $_SESSION['kSprache'] = $defaultLang->kSprache;
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $backTab = Request::verifyGPDataString('tab');
     $smarty->assign('cTab', $backTab);
 
@@ -59,7 +59,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             foreach ($languages as $lang) {
                 $monthPrefix           = new stdClass();
                 $monthPrefix->kSprache = $lang->kSprache;
-                if (strlen($_POST['praefix_' . $lang->cISO]) > 0) {
+                if (mb_strlen($_POST['praefix_' . $lang->cISO]) > 0) {
                     $monthPrefix->cPraefix = htmlspecialchars(
                         $_POST['praefix_' . $lang->cISO],
                         ENT_COMPAT | ENT_HTML401,
@@ -153,7 +153,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $controller->setErrorMsg(__('errorAtLeastOneNewsCat'));
         }
     } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) {
-        if (strlen(Request::verifyGPDataString('delpic')) > 0) {
+        if (mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($controller->deleteNewsImage(
                 Request::verifyGPDataString('delpic'),
                 (int)$_GET['kNewsKategorie'],
@@ -206,7 +206,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         $newsItemID     = $controller->getContinueWith() > 0
             ? $controller->getContinueWith()
             : (int)$_GET['kNews'];
-        if (strlen(Request::verifyGPDataString('delpic')) > 0) {
+        if (mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($controller->deleteNewsImage(Request::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {
                 $controller->setMsg(__('successNewsImageDelete'));
             } else {

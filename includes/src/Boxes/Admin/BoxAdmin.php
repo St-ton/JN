@@ -437,11 +437,11 @@ final class BoxAdmin
      */
     public function getTemplates(int $pageID = -1): array
     {
-        $templates    = [];
-        $sql         = $pageID >= 0
+        $templates = [];
+        $sql       = $pageID >= 0
             ? 'WHERE (cVerfuegbar = "' . $pageID . '" OR cVerfuegbar = "0")'
             : '';
-        $data = $this->db->query(
+        $data      = $this->db->query(
             'SELECT * 
                 FROM tboxvorlage ' . $sql . ' 
                 ORDER BY cVerfuegbar ASC',

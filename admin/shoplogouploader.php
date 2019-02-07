@@ -9,7 +9,7 @@ use Helpers\Request;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'shoplogouploader_inc.php';
 
 if (isset($_POST['key'], $_POST['logo'])) {

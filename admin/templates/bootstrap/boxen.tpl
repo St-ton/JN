@@ -121,7 +121,7 @@
                                 <strong>{__('boxTemplate')}</strong>
                             </th>
                             <th>
-                                <strong>{__('boxPosition')}</strong>
+                                <strong>{__('position')}</strong>
                             </th>
                         </tr>
                         {foreach $invisibleBoxes as $invisibleBox}

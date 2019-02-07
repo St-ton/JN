@@ -24,7 +24,7 @@
                     <th>{__('headingLastStarted')}</th>
                     <th>{__('headingFrequency')}</th>
                     <th>{__('headingRunning')}</th>
-                    <th>{__('headingAction')}</th>
+                    <th>{__('action')}</th>
                     </thead>
                     <tbody>
                         {foreach $jobs as $job}
@@ -37,11 +37,11 @@
                                 <td>
                                     <span class="btn-group">
                                         <button class="btn btn-danger btn-xs" type="submit" name="delete" value="{$job->getCronID()}">
-                                            <i class="fa fa-trash"></i> {__('btnDelete')}
+                                            <i class="fa fa-trash"></i> {__('delete')}
                                         </button>
                                         {if $job->isRunning()}
                                             <button class="btn btn-default btn-xs" type="submit" name="reset" value="{$job->getQueueID()}">
-                                                <i class="fa fa-refresh"></i> {__('btnReset')}
+                                                <i class="fa fa-refresh"></i> {__('reset')}
                                             </button>
                                         {/if}
                                     </span>
@@ -103,7 +103,7 @@
                     </span>
                 </div>
                 <button type="submit" class="btn btn-primary" name="add-cron" value="1">
-                    <i class="fa fa-save"></i> {__('btnCreate')}
+                    <i class="fa fa-save"></i> {__('create')}
                 </button>
             </form>
         </div>

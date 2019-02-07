@@ -136,9 +136,9 @@ class AuswahlAssistentOrt
     public static function saveLocation(array $params, int $groupID): bool
     {
         if ($groupID > 0 && \is_array($params) && \count($params) > 0) {
-            if (isset($params['cKategorie']) && \strlen($params['cKategorie']) > 0) {
+            if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
                 foreach (\explode(';', $params['cKategorie']) as $cKategorie) {
-                    if ((int)$cKategorie > 0 && \strlen($cKategorie) > 0) {
+                    if ((int)$cKategorie > 0 && \mb_strlen($cKategorie) > 0) {
                         $ins                          = new \stdClass();
                         $ins->kAuswahlAssistentGruppe = $groupID;
                         $ins->cKey                    = \AUSWAHLASSISTENT_ORT_KATEGORIE;
@@ -201,7 +201,7 @@ class AuswahlAssistentOrt
     {
         $checks = [];
         // Ort
-        if ((!isset($params['cKategorie']) || \strlen($params['cKategorie']) === 0)
+        if ((!isset($params['cKategorie']) || \mb_strlen($params['cKategorie']) === 0)
             && (!isset($params['kLink_arr'])
                 || !\is_array($params['kLink_arr'])
                 || \count($params['kLink_arr']) === 0)
@@ -210,7 +210,7 @@ class AuswahlAssistentOrt
             $checks['cOrt'] = 1;
         }
         // Ort Kategorie
-        if (isset($params['cKategorie']) && \strlen($params['cKategorie']) > 0) {
+        if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
             $categories = \explode(';', $params['cKategorie']);
             if (!\is_array($categories) || \count($categories) === 0) {
                 $checks['cKategorie'] = 1;
@@ -219,7 +219,7 @@ class AuswahlAssistentOrt
                 $checks['cKategorie'] = 2;
             }
             foreach ($categories as $cKategorie) {
-                if ((int)$cKategorie > 0 && \strlen($cKategorie) > 0) {
+                if ((int)$cKategorie > 0 && \mb_strlen($cKategorie) > 0) {
                     if ($update) {
                         if (self::isCategoryTaken(
                             $cKategorie,
@@ -375,7 +375,7 @@ class AuswahlAssistentOrt
      */
     public static function getLocation($cKey, int $kKey, int $kSprache, bool $bBackend = false): ?self
     {
-        if ($kKey > 0 && $kSprache > 0 && \strlen($cKey) > 0) {
+        if ($kKey > 0 && $kSprache > 0 && \mb_strlen($cKey) > 0) {
             $item = \Shop::Container()->getDB()->executeQueryPrepared(
                 'SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort AS o

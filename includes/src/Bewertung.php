@@ -210,14 +210,14 @@ class Bewertung
             \DB\ReturnType::SINGLE_OBJECT
         );
         if (isset($total->fDurchschnitt) && (int)$total->fDurchschnitt > 0) {
-            $total->fDurchschnitt = round($total->fDurchschnitt * 2) / 2;
-            $total->nAnzahl       = (int)$total->nAnzahl;
-            $this->oBewertungGesamt          = $total;
+            $total->fDurchschnitt   = round($total->fDurchschnitt * 2) / 2;
+            $total->nAnzahl         = (int)$total->nAnzahl;
+            $this->oBewertungGesamt = $total;
         } else {
-            $total                = new stdClass();
-            $total->fDurchschnitt = 0;
-            $total->nAnzahl       = 0;
-            $this->oBewertungGesamt          = $total;
+            $total                  = new stdClass();
+            $total->fDurchschnitt   = 0;
+            $total->nAnzahl         = 0;
+            $this->oBewertungGesamt = $total;
         }
         $this->nAnzahlSprache = ((int)$totalLocalized->nAnzahlSprache > 0)
             ? (int)$totalLocalized->nAnzahlSprache

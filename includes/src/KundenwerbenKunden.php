@@ -78,7 +78,7 @@ class KundenwerbenKunden
      */
     public function __construct($cEmail = '')
     {
-        if (strlen($cEmail) > 0) {
+        if (mb_strlen($cEmail) > 0) {
             $this->loadFromDB($cEmail);
         }
     }
@@ -89,7 +89,7 @@ class KundenwerbenKunden
      */
     private function loadFromDB($mail): self
     {
-        if (strlen($mail) > 0) {
+        if (mb_strlen($mail) > 0) {
             $mail = StringHandler::filterXSS($mail);
             $oKwK = Shop::Container()->getDB()->select('tkundenwerbenkunden', 'cEmail', $mail);
             if (isset($oKwK->kKundenWerbenKunden) && $oKwK->kKundenWerbenKunden > 0) {
@@ -149,7 +149,7 @@ class KundenwerbenKunden
      */
     public function verbucheBestandskundenBoni($cMail): self
     {
-        if (strlen($cMail) === 0) {
+        if (mb_strlen($cMail) === 0) {
             return $this;
         }
         $oBestandskunde = Shop::Container()->getDB()->queryPrepared(
@@ -165,10 +165,10 @@ class KundenwerbenKunden
         if (isset($oBestandskunde->kKunde) && $oBestandskunde->kKunde > 0) {
             $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
             if ($conf['kundenwerbenkunden']['kwk_nutzen'] === 'Y') {
-                $guthaben              = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
+                $guthaben             = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
                 $mail                 = new stdClass();
                 $mail->tkunde         = new Kunde($oBestandskunde->kKunde);
-                $oKundeTMP             = new Kunde();
+                $oKundeTMP            = new Kunde();
                 $mail->oNeukunde      = $oKundeTMP->holRegKundeViaEmail($cMail);
                 $mail->oBestandskunde = $mail->tkunde;
                 $mail->Einstellungen  = $conf;
@@ -229,7 +229,7 @@ class KundenwerbenKunden
         $cNachname = StringHandler::filterXSS($post['cNachname']);
         $cEmail    = StringHandler::filterXSS($post['cEmail']);
 
-        return strlen($cVorname) > 0 && strlen($cNachname) > 0 && StringHandler::filterEmailAddress($cEmail) !== false;
+        return mb_strlen($cVorname) > 0 && mb_strlen($cNachname) > 0 && StringHandler::filterEmailAddress($cEmail) !== false;
     }
 
     /**

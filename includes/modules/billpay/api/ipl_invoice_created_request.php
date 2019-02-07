@@ -284,7 +284,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_base_amount()
     {
-        return (int) $this->base_amount;
+        return (int)$this->base_amount;
     }
 
     /**
@@ -293,7 +293,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_cart_amount()
     {
-        return (int) $this->cart_amount;
+        return (int)$this->cart_amount;
     }
 
     /**
@@ -302,7 +302,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_surcharge()
     {
-        return (int) $this->surcharge;
+        return (int)$this->surcharge;
     }
 
     /**
@@ -312,7 +312,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_interest()
     {
-        return (int) $this->interest;
+        return (int)$this->interest;
     }
 
     /**

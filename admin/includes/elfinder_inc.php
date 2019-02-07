@@ -21,7 +21,7 @@ function access($attr, $path, $data, $volume, $isDir, $relpath)
     $basename = basename($path);
 
     // if file/folder begins with '.' (dot) but with out volume root
-    return $basename[0] === '.' && strlen($relpath) !== 1
+    return $basename[0] === '.' && mb_strlen($relpath) !== 1
         ? !($attr === 'read' || $attr === 'write') // set read+write to false, other (locked+hidden) set to true
         : null;                                    // else elFinder decide it itself
 }

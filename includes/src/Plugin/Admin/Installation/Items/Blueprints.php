@@ -31,7 +31,7 @@ class Blueprints extends AbstractItem
     public function install(): int
     {
         $base = $this->plugin->bExtension === 1
-            ? \PFAD_ROOT . \PFAD_EXTENSIONS .
+            ? \PFAD_ROOT . \PLUGIN_DIR .
             $this->plugin->cVerzeichnis . '/' .
             \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS
             : \PFAD_ROOT . \PFAD_PLUGIN .
@@ -41,7 +41,7 @@ class Blueprints extends AbstractItem
         foreach ($this->getNode() as $i => $blueprint) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $blueprintJson = \file_get_contents($base . $blueprint['JSONFile']);

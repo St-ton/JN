@@ -17,8 +17,8 @@ if (auth()) {
     } else {
         $return = 0;
         foreach ($syncFiles as $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
             if (strpos($xmlFile, 'ack_verfuegbarkeitsbenachrichtigungen.xml') !== false) {
                 bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml);
             } elseif (strpos($xmlFile, 'ack_uploadqueue.xml') !== false) {

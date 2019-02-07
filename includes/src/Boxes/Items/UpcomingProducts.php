@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\SearchSpecial;
 use Session\Frontend;
 
 /**
@@ -33,16 +34,16 @@ final class UpcomingProducts extends AbstractBox
             $cacheID        = 'box_ikv_' . $customerGroupID . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $productIDs = \Shop::Container()->getDB()->queryPrepared(
-                    "SELECT tartikel.kArtikel
+                    'SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :cid
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            $stockFilterSQL
-                            $parentSQL
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL ' .
+                            $stockFilterSQL . ' ' .
+                            $parentSQL . '
                             AND NOW() < tartikel.dErscheinungsdatum
-                        ORDER BY RAND() LIMIT :lmt",
+                        ORDER BY RAND() LIMIT :lmt',
                     ['cid' => $customerGroupID, 'lmt' => $limit],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -56,7 +57,7 @@ final class UpcomingProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
+                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

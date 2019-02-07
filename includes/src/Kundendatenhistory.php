@@ -156,7 +156,7 @@ class Kundendatenhistory extends MainModel
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = (strtoupper($dErstellt) === 'NOW()')
+        $this->dErstellt = (mb_convert_case($dErstellt, MB_CASE_UPPER) === 'NOW()')
             ? date('Y-m-d H:i:s')
             : $dErstellt;
 
@@ -209,17 +209,17 @@ class Kundendatenhistory extends MainModel
         $members = array_keys(get_object_vars($this));
         if (is_array($members) && count($members) > 0) {
             foreach ($members as $member) {
-                $method = 'get' . substr($member, 1);
+                $method = 'get' . mb_substr($member, 1);
                 if (method_exists($this, $method)) {
-                    $val        = $this->$method();
-                    $mValue     = $val === null
+                    $val    = $this->$method();
+                    $mValue = $val === null
                         ? 'NULL'
                         : ("'" . Shop::Container()->getDB()->escape($val) . "'");
-                    $set[] = "{$member} = {$mValue}";
+                    $set[]  = "{$member} = {$mValue}";
                 }
             }
             $sql .= implode(', ', $set);
-            $sql .= " WHERE kKundendatenHistory = {$this->getKundendatenHistory()}";
+            $sql .= ' WHERE kKundendatenHistory = ' . $this->getKundendatenHistory();
 
             return Shop::Container()->getDB()->query($sql, \DB\ReturnType::AFFECTED_ROWS);
         }

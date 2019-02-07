@@ -60,7 +60,7 @@ class Migration_20180801165500 extends Migration implements IMigration
             $new                  = new stdClass();
             $new->kNews           = (int)$newsEntry->kNews;
             $new->languageID      = (int)$newsEntry->kSprache;
-            $new->languageCode    = Shop::Lang()->_getIsoFromLangID($new->languageID)->cISO ?? 'ger';
+            $new->languageCode    = Shop::Lang()->getIsoFromLangID($new->languageID)->cISO ?? 'ger';
             $new->title           = $newsEntry->cBetreff;
             $new->content         = $newsEntry->cText;
             $new->preview         = $newsEntry->cVorschauText;
@@ -74,7 +74,7 @@ class Migration_20180801165500 extends Migration implements IMigration
             $new                  = new stdClass();
             $new->kNewsKategorie  = (int)$newsCategory->kNewsKategorie;
             $new->languageID      = (int)$newsCategory->kSprache;
-            $new->languageCode    = Shop::Lang()->_getIsoFromLangID($new->languageID)->cISO ?? 'ger';
+            $new->languageCode    = Shop::Lang()->getIsoFromLangID($new->languageID)->cISO ?? 'ger';
             $new->name            = $newsCategory->cName;
             $new->description     = $newsCategory->cBeschreibung;
             $new->metaTitle       = $newsCategory->cMetaTitle;

@@ -15,7 +15,7 @@
             {if $Emailvorlage->cModulId !== 'core_jtl_anbieterkennzeichnung'}
                 <div class="settings panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Einstellungen</h3>
+                        <h3 class="panel-title">{__('settings')}</h3>
                     </div>
                     <div class="panel-body">
                         <div class="input-group">
@@ -25,10 +25,10 @@
                             <span class="input-group-wrap">
                                 <select name="cEmailActive" id="cEmailActive" class="form-control">
                                     <option value="Y"{if isset($Emailvorlage->cAktiv) && $Emailvorlage->cAktiv === 'Y'} selected{/if}>
-                                        Ja
+                                        {__('yes')}
                                     </option>
                                     <option value="N"{if isset($Emailvorlage->cAktiv) && $Emailvorlage->cAktiv === 'N'} selected{/if}>
-                                        Nein
+                                        {__('no')}
                                     </option>
                                 </select>
                             </span>
@@ -50,7 +50,7 @@
                                 <label for="cEmailCopyTo">{__('emailCopyTo')} </label>
                             </span>
                             <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($oEmailEinstellungAssoc_arr.cEmailCopyTo)}{$oEmailEinstellungAssoc_arr.cEmailCopyTo|escape}{/if}" />
-                            <span class="input-group-addon">(mehrere durch Semikolon getrennt) </span>
+                            <span class="input-group-addon">{__('multipleDividedColon')} </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -59,9 +59,9 @@
                             <span class="input-group-wrap">
                                 <select name="cMailTyp" id="cMailTyp" class="form-control">
                                     <option value="text/html" {if $Emailvorlage->cMailTyp === 'text/html'}selected{/if}>
-                                        text/html
+                                        {__('textHtml')}
                                     </option>
-                                    <option value="text" {if $Emailvorlage->cMailTyp === 'text'}selected{/if}>text
+                                    <option value="text" {if $Emailvorlage->cMailTyp === 'text'}selected{/if}>{__('text')}
                                     </option>
                                 </select>
                             </span>
@@ -129,29 +129,29 @@
             {/if}
             <div class="box_info panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Platzhalter (Beispiele)</h3>
+                    <h3 class="panel-title">{__('placeholder')} ({__('example')})</h3>
                 </div>
                 <div class="panel-body">
                     <code>
                     <span class="elem">
                         <span class="name">{ldelim}$Kunde->cAnrede{rdelim}</span><br />
-                        <span class="for">m</span><br />
+                        <span class="for">{__('maleShort')}</span><br />
                     </span>
                     <span class="elem">
                         <span class="name">{ldelim}$Kunde->cAnredeLocalized{rdelim}</span><br />
-                        <span class="for">Herr</span><br />
+                        <span class="for">{__('mister')}</span><br />
                     </span>
                     <span class="elem">
                         <span class="name">{ldelim}$Kunde->cVorname{rdelim}</span><br />
-                        <span class="for">Max</span><br />
+                        <span class="for">{__('firstNameStub')}</span><br />
                     </span>
                     <span class="elem">
                         <span class="name">{ldelim}$Kunde->cNachname{rdelim}</span><br />
-                        <span class="for">Mustermann</span><br />
+                        <span class="for">{__('lastNameStub')}</span><br />
                     </span>
                     <span class="elem">
                         <span class="name">{ldelim}$Firma->cName{rdelim}</span><br />
-                        <span class="for">Muster GmbH</span><br />
+                        <span class="for">{__('companyStub')}</span><br />
                     </span>
                     </code>
                 </div>
@@ -160,7 +160,7 @@
                 <div class="box_info panel panel-default">
                     {assign var=kSprache value=$sprache->kSprache}
                     <div class="panel-heading">
-                        <h3 class="panel-title">Inhalt {$sprache->cNameDeutsch}</h3>
+                        <h3 class="panel-title">{__('content')} {$sprache->cNameDeutsch}</h3>
                     </div>
                     <div class="panel-body">
                         {if $Emailvorlage->cModulId !== 'core_jtl_anbieterkennzeichnung'}

@@ -2958,6 +2958,7 @@ class Artikel
                             $oArtikelOptionen                            = new stdClass();
                             $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
                             $oArtikelOptionen->nArtikelAttribute         = 1;
+                            $oArtikelOptionen->nVariationen              = 0;
                             $oArtikel                                    = new self();
                             $oArtikel->fuelleArtikel($oVariationKombiKinderAssoc, $oArtikelOptionen);
 

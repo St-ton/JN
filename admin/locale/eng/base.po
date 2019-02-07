@@ -1450,3 +1450,114 @@ msgstr "Konto"
 
 msgid "shop"
 msgstr "Shop"
+
+msgid "pageHome"
+msgstr "Home"
+
+msgid "pageShipping"
+msgstr "Shipping"
+
+msgid "pageWRB"
+msgstr "Cancellation"
+
+msgid "pageAGB"
+msgstr "Conditions"
+
+msgid "pageTagging"
+msgstr "Tagging"
+
+msgid "pageLiveSearch"
+msgstr "Livesearch"
+
+msgid "pageDataProtection"
+msgstr "Data protection"
+
+msgid "pageManufacturer"
+msgstr "Manufacturer"
+
+msgid "pageSitemap"
+msgstr "Sitemap"
+
+msgid "pageGifts"
+msgstr "Gifts"
+
+msgid "pageSelectionAssitant"
+msgstr "Selection assitant"
+
+msgid "pageCustom"
+msgstr "Custom Page"
+
+msgid "pageAccount"
+msgstr "Account"
+
+msgid "pageLogin"
+msgstr "Login"
+
+msgid "pageRegister"
+msgstr "Register"
+
+msgid "pageCart"
+msgstr "Cart"
+
+msgid "pageForgotPassword"
+msgstr "Forgot Password"
+
+msgid "pageContact"
+msgstr "Contact"
+
+msgid "pageNewsletter"
+msgstr "Newsletter"
+
+msgid "pageNewsletterArchive"
+msgstr "Newsletterarchive"
+
+msgid "pageNews"
+msgstr "News"
+
+msgid "pageNewsMonth"
+msgstr "Newsmonth"
+
+msgid "pageNewsCategory"
+msgstr "Newscategory"
+
+msgid "pageNewsDetail"
+msgstr "Newsdetail"
+
+msgid "pagePoll"
+msgstr "Poll"
+
+msgid "pagePlugin"
+msgstr "Plugin"
+
+msgid "page404"
+msgstr "404"
+
+msgid "pageOrderProcess"
+msgstr "Order process"
+
+msgid "pageOrderFinalize"
+msgstr "Order finalize"
+
+msgid "pageWishList"
+msgstr "wishlist"
+
+msgid "pageCompareList"
+msgstr "Comparelist"
+
+msgid "pageProduct"
+msgstr "Product"
+
+msgid "pageProductList"
+msgstr "Prroduclist"
+
+msgid "pageRating"
+msgstr "Rating"
+
+msgid "pageMaintenance"
+msgstr "Maintenance"
+
+msgid "pageOrderStatus"
+msgstr "Order status"
+
+msgid "pageUnknown"
+msgstr "Unknown"

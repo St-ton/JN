@@ -546,92 +546,6 @@ final class BoxAdmin
     }
 
     /**
-     * @param int $type
-     * @return string
-     */
-    public function mapPageTypeToPageName(int $type): string
-    {
-        switch ($type) {
-            case \PAGE_STARTSEITE:
-                return 'Startseite';
-            case \PAGE_VERSAND:
-                return 'Versand';
-            case \PAGE_WRB:
-                return 'WRB';
-            case \PAGE_AGB:
-                return 'AGB';
-            case \PAGE_TAGGING:
-                return 'Tagging';
-            case \PAGE_LIVESUCHE:
-                return 'Livesuche';
-            case \PAGE_DATENSCHUTZ:
-                return 'Datenschutz';
-            case \PAGE_HERSTELLER:
-                return 'Hersteller';
-            case \PAGE_SITEMAP:
-                return 'Sitemap';
-            case \PAGE_GRATISGESCHENK:
-                return 'Gratisgeschenke';
-            case \PAGE_AUSWAHLASSISTENT:
-                return 'Auswahlassistent';
-            case \PAGE_EIGENE:
-                return 'Seite';
-            case \PAGE_MEINKONTO:
-                return 'Mein Konto';
-            case \PAGE_LOGIN:
-                return 'Login';
-            case \PAGE_REGISTRIERUNG:
-                return 'Registrieren';
-            case \PAGE_WARENKORB:
-                return 'Warenkorb';
-            case \PAGE_PASSWORTVERGESSEN:
-                return 'Passwort vergessen';
-            case \PAGE_KONTAKT:
-                return 'Kontakt';
-            case \PAGE_NEWSLETTER:
-                return 'Newsletter';
-            case \PAGE_NEWSLETTERARCHIV:
-                return 'Newsletterarchiv';
-            case \PAGE_NEWS:
-                return 'News';
-            case \PAGE_NEWSMONAT:
-                return 'Newsmonat';
-            case \PAGE_NEWSKATEGORIE:
-                return 'Newskategorie';
-            case \PAGE_NEWSDETAIL:
-                return 'Newsdetail';
-            case \PAGE_UMFRAGE:
-                return 'Umfrage';
-            case \PAGE_PLUGIN:
-                return 'Plugin';
-            case \PAGE_404:
-                return '404';
-            case \PAGE_BESTELLVORGANG:
-                return 'Bestellvorgang';
-            case \PAGE_BESTELLABSCHLUSS:
-                return 'Bestellabschluss';
-            case \PAGE_WUNSCHLISTE:
-                return 'Wunschliste';
-            case \PAGE_VERGLEICHSLISTE:
-                return 'Vergleichsliste';
-            case \PAGE_ARTIKEL:
-                return 'Artikel';
-            case \PAGE_ARTIKELLISTE:
-                return 'Artikelliste';
-            case \PAGE_BEWERTUNG:
-                return 'Bewertung';
-            case \PAGE_WARTUNG:
-                return 'Wartung';
-            case \PAGE_BESTELLSTATUS:
-                return 'Bestellstatus';
-            case \PAGE_UNBEKANNT:
-                return 'Unbekannt';
-            default:
-                return '';
-        }
-    }
-
-    /**
      * @return array
      */
     public function getMappedValidPageTypes(): array
@@ -639,7 +553,7 @@ final class BoxAdmin
         return \Functional\map($this->getValidPageTypes(), function ($pageID) {
             return [
                 'pageID'   => $pageID,
-                'pageName' => $this->mapPageTypeToPageName($pageID)
+                'pageName' => (new \Mapper\PageTypeToPageNiceName())->mapPageTypeToPageNiceName($pageID)
             ];
         });
     }

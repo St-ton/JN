@@ -2,7 +2,7 @@
 {config_load file="$lang.conf" section='login'}
 {config_load file="$lang.conf" section='shopupdate'}
 
-{if permission('DASHBOARD_VIEW')}
+{if 'DASHBOARD_VIEW'|permission}
     <script type="text/javascript" src="../includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="../includes/libs/flashchart/js/swfobject.js"></script>
     <script type="text/javascript" src="{$currentTemplateDir}js/html.sortable.js"></script>

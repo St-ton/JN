@@ -24,5 +24,4 @@ $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrencyConversionSmarty', 
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gravatarImage', [$plugins, 'gravatarImage'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getRevisions', [$plugins, 'getRevisions'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', [$plugins, 'captchaMarkup'])
-       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'permission', [$plugins, 'permission'])
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, '__', [\Shop::Container()->getGetText(), 'translate']);
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'permission', [$plugins, 'permission']);

@@ -153,35 +153,51 @@ final class Listing
      */
     private function parsePluginsDir(XMLParser $parser, string $pluginDir, $installedPlugins): Collection
     {
-        $validator = $pluginDir === self::EXTENSIONS_DIR
+        $isExtension = $pluginDir === self::EXTENSIONS_DIR;
+        $validator   = $isExtension
             ? $this->modernValidator
             : $this->validator;
-        foreach (new \DirectoryIterator($pluginDir) as $fileinfo) {
-            if ($fileinfo->isDot() || !$fileinfo->isDir()) {
-                continue;
+
+        if (\is_dir($pluginDir)) {
+            foreach (new \DirectoryIterator($pluginDir) as $fileinfo) {
+                if ($fileinfo->isDot() || !$fileinfo->isDir()) {
+                    continue;
+                }
+                $dir = $fileinfo->getBasename();
+                $info = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
+                if (!\file_exists($info)) {
+                    continue;
+                }
+                $xml = $parser->parse($info);
+                $code = $validator->validateByPath($pluginDir . $dir);
+                $xml['cVerzeichnis'] = $dir;
+                $xml['cFehlercode'] = $code;
+                $item = new ListingItem();
+                $plugin = $item->parseXML($xml);
+                $plugin->setPath($pluginDir . $dir);
+
+                if ($isExtension) {
+                    \Shop::Container()->getGetText()->loadPluginItemLocale('base', $item);
+                }
+
+                $msgid = $item->getID() . '_desc';
+                $desc  = __($msgid);
+
+                if ($desc !== $msgid) {
+                    $item->setDescription($desc);
+                }
+
+                if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
+                    $plugin->setInstalled(true);
+                    $plugin->setHasError(false);
+                    $plugin->setIsShop4Compatible(true);
+                } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
+                    $plugin->setAvailable(true);
+                    $plugin->setHasError(false);
+                    $plugin->setIsShop4Compatible($code === InstallCode::OK);
+                }
+                $this->plugins[] = $plugin;
             }
-            $dir  = $fileinfo->getBasename();
-            $info = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
-            if (!\file_exists($info)) {
-                continue;
-            }
-            $xml                 = $parser->parse($info);
-            $code                = $validator->validateByPath($pluginDir . $dir);
-            $xml['cVerzeichnis'] = $dir;
-            $xml['cFehlercode']  = $code;
-            $item                = new ListingItem();
-            $plugin              = $item->parseXML($xml);
-            $plugin->setPath($pluginDir . $dir);
-            if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {
-                $plugin->setInstalled(true);
-                $plugin->setHasError(false);
-                $plugin->setIsShop4Compatible(true);
-            } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
-                $plugin->setAvailable(true);
-                $plugin->setHasError(false);
-                $plugin->setIsShop4Compatible($code === InstallCode::OK);
-            }
-            $this->plugins[] = $plugin;
         }
 
         return $this->plugins;

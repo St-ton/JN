@@ -8,8 +8,8 @@ namespace L10n;
 
 use Gettext\Translations;
 use Gettext\Translator;
-use Plugin\AbstractPlugin;
 use Plugin\PluginInterface;
+use Plugin\Admin\ListingItem;
 
 /**
  * Class GetText
@@ -75,6 +75,18 @@ class GetText
     public function loadPluginLocale(string $domain, PluginInterface $plugin): self
     {
         return $this->addLocale($plugin->getPaths()->getBasePath(), $domain);
+    }
+
+    /**
+     * @param string      $domain
+     * @param ListingItem $item
+     * @return GetText
+     */
+    public function loadPluginItemLocale(string $domain, ListingItem $item): self
+    {
+        $dir = \PFAD_ROOT . \PLUGIN_DIR . $item->getDir() . '/';
+
+        return $this->addLocale($dir, $domain);
     }
 
     /**

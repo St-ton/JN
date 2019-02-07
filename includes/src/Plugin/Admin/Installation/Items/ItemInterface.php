@@ -7,7 +7,7 @@
 namespace Plugin\Admin\Installation\Items;
 
 use DB\DbInterface;
-use Plugin\Plugin;
+use Plugin\LegacyPlugin;
 
 /**
  * Interface ItemInterface
@@ -17,10 +17,10 @@ interface ItemInterface
 {
     /**
      * ItemInterface constructor.
-     * @param DbInterface           $db
-     * @param array|null            $baseNode
-     * @param \stdClass             $plugin
-     * @param \stdClass|Plugin|null $oldPlugin
+     * @param DbInterface                 $db
+     * @param array|null                  $baseNode
+     * @param \stdClass                   $plugin
+     * @param \stdClass|LegacyPlugin|null $oldPlugin
      */
     public function __construct(DbInterface $db = null, array $baseNode = null, $plugin = null, $oldPlugin = null);
 

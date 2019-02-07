@@ -34,7 +34,7 @@
             <a data-toggle="tab" role="tab" href="#blacklist">{__('blacklist')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('livesucheSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -56,7 +56,7 @@
                             </span>
                             <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                             <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__('livesucheSearchBTN')}" class="btn btn-primary"><i class="fa fa-search"></i> {__('livesucheSearchBTN')}</button>
+                                <button name="submitSuche" type="submit" value="{__('search')}" class="btn btn-primary"><i class="fa fa-search"></i> {__('search')}</button>
                             </span>
                         </div>
                     </div>

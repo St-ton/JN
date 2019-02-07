@@ -7,7 +7,8 @@
 namespace Widgets;
 
 use DB\DbInterface;
-use Plugin\AbstractExtension;
+use Plugin\AbstractPlugin;
+use Plugin\PluginInterface;
 use Smarty\JTLSmarty;
 
 /**
@@ -17,9 +18,9 @@ use Smarty\JTLSmarty;
 interface WidgetInterface
 {
     /**
-     * @param JTLSmarty $smarty
-     * @param DbInterface  $db
-     * @param \Plugin|\Plugin\Extension $oPlugin
+     * @param JTLSmarty              $smarty
+     * @param DbInterface            $db
+     * @param \Plugin|\Plugin\Plugin $oPlugin
      */
     public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $oPlugin = null);
 
@@ -44,14 +45,14 @@ interface WidgetInterface
     public function setDB(DbInterface $oDB): void;
 
     /**
-     * @return AbstractExtension
+     * @return PluginInterface
      */
-    public function getPlugin(): AbstractExtension;
+    public function getPlugin(): PluginInterface;
 
     /**
-     * @param AbstractExtension $oPlugin
+     * @param PluginInterface $oPlugin
      */
-    public function setPlugin(AbstractExtension $oPlugin): void;
+    public function setPlugin(PluginInterface $oPlugin): void;
 
     /**
      *

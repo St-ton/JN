@@ -1,11 +1,11 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterdraftStdPicture') cBeschreibung=__('newsletterdesc')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('preview') cBeschreibung=__('newsletterdesc')}
 <div id="content" class="container-fluid">
     <form method="post" action="newsletter.php">
         {$jtl_token}
         <input name="tab" type="hidden" value="newslettervorlagen" />
         <table class="table newsletter">
             <tr>
-                <td><b>{__('newsletterdraftsubject')}</b>:</td>
+                <td><b>{__('subject')}</b>:</td>
                 <td>{$oNewsletterVorlage->cBetreff}</td>
             </tr>
 
@@ -25,6 +25,6 @@
         <div style="text-align: center;">
             <textarea class="form-control" style="width: 100%; height: 300px;" readonly>{$oNewsletterVorlage->cInhaltText}</textarea></div>
         <br />
-        <button class="btn btn-primary" name="back" type="submit" value="{__('newsletterback')}"><i class="fa fa-angle-double-left"></i> {__('newsletterback')}</button>
+        <button class="btn btn-primary" name="back" type="submit" value="{__('back')}"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
     </form>
 </div>

@@ -30,7 +30,7 @@
             </div>
             <div class="form-group">
                 <select id="kKupon" name="kKupon" class="combo form-control">
-                    <option value="-1">Alle</option>
+                    <option value="-1">{__('all')}</option>
                     {foreach $coupons_arr as $coupon_arr}
                         <option value="{$coupon_arr.kKupon}"{if isset($coupon_arr.aktiv) && $coupon_arr.aktiv} selected{/if}>{$coupon_arr.cName}</option>
                     {/foreach}
@@ -69,9 +69,9 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>{__('couponName')}</th>
-                        <th>{__('customerName')}</th>
-                        <th>{__('orderNumber')}</th>
+                        <th>{__('coupon')}</th>
+                        <th>{__('customer')}</th>
+                        <th>{__('orderNumberShort')}</th>
                         <th>{__('couponValue')}</th>
                         <th>{__('orderValue')}</th>
                         <th>{__('date')}</th>
@@ -107,7 +107,7 @@
                                                     <thead>
                                                     <tr>
                                                         <th>{__('orderPosition')}</th>
-                                                        <th>{__('amount')}</th>
+                                                        <th>{__('count')}</th>
                                                         <th>{__('unitPrice')}</th>
                                                         <th>{__('totalPrice')}</th>
                                                     </tr>

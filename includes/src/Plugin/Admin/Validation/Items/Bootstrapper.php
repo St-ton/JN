@@ -6,7 +6,7 @@
 
 namespace Plugin\Admin\Validation\Items;
 
-use Plugin\AbstractPlugin;
+use Plugin\Bootstrapper;
 use Plugin\InstallCode;
 
 /**
@@ -35,7 +35,7 @@ class Bootstrapper extends AbstractItem
 
         $bootstrapper = new $class((object)['cPluginID' => $namespace], null, null);
 
-        return \is_subclass_of($bootstrapper, AbstractPlugin::class)
+        return \is_subclass_of($bootstrapper, Bootstrapper::class)
             ? InstallCode::OK
             : InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION;
     }

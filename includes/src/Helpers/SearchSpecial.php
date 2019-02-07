@@ -20,55 +20,30 @@ class SearchSpecial
 {
     /**
      * @param int $langID
-     * @return array|mixed
+     * @return \Media\Image\Overlay[]
      * @former holeAlleSuchspecialOverlays()
      * @since 5.0.0
      */
-    public static function getAll(int $langID = 0)
+    public static function getAll(int $langID = 0): array
     {
         $langID  = $langID > 0 ? $langID : Shop::getLanguageID();
         $cacheID = 'haso_' . $langID;
         if (($overlays = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $ssoList = Shop::Container()->getDB()->query(
-                'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache,
-                    tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
-                    tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
-                    tsuchspecialoverlaysprache.nTransparenz,
-                    tsuchspecialoverlaysprache.nGroesse, tsuchspecialoverlaysprache.nPosition
-                    FROM tsuchspecialoverlay
-                    JOIN tsuchspecialoverlaysprache
-                        ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                        AND tsuchspecialoverlaysprache.kSprache = ' . $langID . '
-                    WHERE tsuchspecialoverlaysprache.nAktiv = 1
-                        AND tsuchspecialoverlaysprache.nPrio > 0
-                    ORDER BY tsuchspecialoverlaysprache.nPrio DESC',
+            $overlays = [];
+            $types    = Shop::Container()->getDB()->query(
+                'SELECT kSuchspecialOverlay
+                    FROM tsuchspecialoverlay',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-
-            $overlays = [];
-            foreach ($ssoList as $sso) {
-                $sso->kSuchspecialOverlay = (int)$sso->kSuchspecialOverlay;
-                $sso->nAktiv              = (int)$sso->nAktiv;
-                $sso->nPrio               = (int)$sso->nPrio;
-                $sso->nMargin             = (int)$sso->nMargin;
-                $sso->nTransparenz        = (int)$sso->nTransparenz;
-                $sso->nGroesse            = (int)$sso->nGroesse;
-                $sso->nPosition           = (int)$sso->nPosition;
-
-                $idx                         = \mb_convert_case(
-                    \str_replace([' ', '-', '_'], '', $sso->cSuchspecial),
-                    MB_CASE_LOWER
-                );
-                $idx                         = \preg_replace(
-                    ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/'],
-                    ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'],
-                    $idx
-                );
-                $overlays[$idx]              = $sso;
-                $overlays[$idx]->cPfadKlein  = \PFAD_SUCHSPECIALOVERLAY_KLEIN . $overlays[$idx]->cBildPfad;
-                $overlays[$idx]->cPfadNormal = \PFAD_SUCHSPECIALOVERLAY_NORMAL . $overlays[$idx]->cBildPfad;
-                $overlays[$idx]->cPfadGross  = \PFAD_SUCHSPECIALOVERLAY_GROSS . $overlays[$idx]->cBildPfad;
+            foreach ($types as $type) {
+                $overlay = \Media\Image\Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
+                if ($overlay->getActive() === 1) {
+                    $overlays[] = $overlay;
+                }
             }
+            $overlays = \Functional\sort($overlays, function (\Media\Image\Overlay $left, \Media\Image\Overlay $right) {
+                return $left->getPriority() > $right->getPriority();
+            });
             Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);
         }
 

@@ -131,26 +131,28 @@ stages:
   function deployProcess() {
     export PHP_VERSION=$1;
     export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
-    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
-    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH
+    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH;
 
-    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "
-        require_once '${DEPLOY_PATH}/includes/globalinclude.php'; \
-        \$time    = date('YmdHis'); \
-        \$manager = new MigrationManager(); \
-
-        try {
-          \$result = \$manager->migrate($time);
-        } catch (Exception \$e) {
-          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
-          \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
-          echo \$result;
-          exit(1);
-        }
+      require_once '$DEPLOY_PATH/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+          foreach (\$migrations as \$migration) { \
+              echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
+          } \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
       ";
     fi
   }

@@ -150,7 +150,7 @@ trait PortletHtml
         }
 
         if (\count($desc) > 0) {
-            $tabs = [__('General') => $desc] + $tabs;
+            $tabs = [__('general') => $desc] + $tabs;
         }
 
         $res  = '';

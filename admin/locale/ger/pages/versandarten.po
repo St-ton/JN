@@ -325,3 +325,9 @@ msgstr "Bitte mindestens einen Staffelpreis angeben!"
 
 msgid "errorShippingFreeMax"
 msgstr "Ihr Versandkostenfrei Wert darf maximal %s sein!"
+
+msgid "sendShippingNotification"
+msgstr "Versandbestätigung senden?"
+
+msgid "deleteShippingMethod"
+msgstr "Versandart löschen: "

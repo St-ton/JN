@@ -11,8 +11,8 @@
         <thead>
         <tr>
             <th width="5%">#</th>
-            <th width="60%">Migration</th>
-            <th width="250%" class="text-center">{if $filter != 2}Ausgeführt{/if}</th>
+            <th width="60%">{__('migration')}</th>
+            <th width="250%" class="text-center">{if $filter != 2}{__('executed')}{/if}</th>
             <th width="10%" class="text-center"></th>
         </tr>
         </thead>
@@ -49,26 +49,26 @@
     <input type="hidden" name="update" value="1" />
     {if $updatesAvailable}
         <div class="alert alert-warning">
-            <h4><i class="fa fa-warning"></i> Datenbankaktualisierung {if $hasDifferentVersions}von Version {$currentDatabaseVersion} auf Version {$currentFileVersion}{/if} erforderlich</h4>
-            Klicken Sie auf <a href="dbupdater.php?action=update" data-callback="update">jetzt aktualisieren</a>, um die Datenbankaktualisierung durchzuführen.
+            <h4><i class="fa fa-warning"></i> {__('dbUpdate')} {if $hasDifferentVersions}{__('fromVersion')} {$currentDatabaseVersion} {__('toVersion')} {$currentFileVersion}{/if} {__('required')}.</h4>
+            {__('infoUpdateNow')}
         </div>
 
         <div class="btn-group btn-group-md" id="btn-update-group" role="group">
-            <a href="dbupdater.php?action=update" class="btn btn-success" data-callback="update"><i class="fa fa-flash"></i> Jetzt aktualisieren</a>
+            <a href="dbupdater.php?action=update" class="btn btn-success" data-callback="update"><i class="fa fa-flash"></i> {__('updateNow')}</a>
             <div class="btn-group btn-group-md" role="group">
                 <button id="backup-button" type="button" class="btn btn-default dropdown-toggle ladda-button" data-size="l" data-style="zoom-out" data-spinner-color="#000" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="ladda-label">Sicherungskopie &nbsp; <i class="fa fa-caret-down"></i></span>
+                    <span class="ladda-label">{__('saveCopy')} &nbsp; <i class="fa fa-caret-down"></i></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="dbupdater.php?action=backup" data-callback="backup"><i class="fa fa-cloud-download"></i> &nbsp; Auf Server ablegen</a></li>
-                    <li><a href="dbupdater.php?action=backup&download" data-callback="backup" data-download="true"><i class="fa fa-download"></i> &nbsp; Herunterladen</a></li>
+                    <li><a href="dbupdater.php?action=backup" data-callback="backup"><i class="fa fa-cloud-download"></i> &nbsp; {__('putOnServer')}</a></li>
+                    <li><a href="dbupdater.php?action=backup&download" data-callback="backup" data-download="true"><i class="fa fa-download"></i> &nbsp;{__('download')}</a></li>
                 </ul>
             </div>
         </div>
     {else}
         <div class="alert alert-success h4">
             <p class="text-center">
-                Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version {$currentDatabaseVersion}).
+                {__('dbUpToDate')} {$currentDatabaseVersion}).
             </p>
         </div>
     {/if}
@@ -77,7 +77,7 @@
 {if isset($manager) && is_object($manager)}
     <p>&nbsp;</p>
     {if $updatesAvailable}
-        {migration_list manager=$manager filter=2 title='Nicht-ausgeführte Migrationen'}
+        {migration_list manager=$manager filter=2 title=__('openMigrations')}
     {/if}
-    {migration_list manager=$manager filter=1 title='Erfolgreiche Migrationen'}
+    {migration_list manager=$manager filter=1 title=__('successfullMigrations')}
 {/if}

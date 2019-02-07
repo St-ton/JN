@@ -128,7 +128,7 @@ handleCsvExportAction(
                     FROM tredirect' .
                     ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
                     ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
-                    " LIMIT $i, 1000",
+                    ' LIMIT ' . $i . ', 1000',
                 \DB\ReturnType::QUERYSINGLE
             );
 

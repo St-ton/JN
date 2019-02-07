@@ -7,7 +7,8 @@
 namespace Widgets;
 
 use DB\DbInterface;
-use Plugin\AbstractExtension;
+use Plugin\AbstractPlugin;
+use Plugin\PluginInterface;
 use Smarty\ContextType;
 use Smarty\JTLSmarty;
 
@@ -28,7 +29,7 @@ abstract class AbstractWidget implements WidgetInterface
     public $oDB;
 
     /**
-     * @var AbstractExtension
+     * @var PluginInterface
      */
     public $oPlugin;
 
@@ -81,17 +82,17 @@ abstract class AbstractWidget implements WidgetInterface
     }
 
     /**
-     * @return AbstractExtension
+     * @return PluginInterface
      */
-    public function getPlugin(): AbstractExtension
+    public function getPlugin(): PluginInterface
     {
         return $this->oPlugin;
     }
 
     /**
-     * @param AbstractExtension $oPlugin
+     * @param PluginInterface $oPlugin
      */
-    public function setPlugin(AbstractExtension $oPlugin): void
+    public function setPlugin(PluginInterface $oPlugin): void
     {
         $this->oPlugin = $oPlugin;
     }

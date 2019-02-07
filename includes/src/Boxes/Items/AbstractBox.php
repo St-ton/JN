@@ -113,12 +113,12 @@ abstract class AbstractBox implements BoxInterface
     protected $templateFile = '';
 
     /**
-     * @var \Plugin\Plugin|null
+     * @var \Plugin\LegacyPlugin|null
      */
     protected $plugin;
 
     /**
-     * @var \Plugin\Extension|null
+     * @var \Plugin\Plugin|null
      */
     protected $extension;
 
@@ -421,33 +421,33 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @return null|\Plugin\Plugin
+     * @return null|\Plugin\LegacyPlugin
      */
-    public function getPlugin(): ?\Plugin\Plugin
+    public function getPlugin(): ?\Plugin\LegacyPlugin
     {
         return $this->plugin;
     }
 
     /**
-     * @param null|\Plugin\Plugin $plugin
+     * @param null|\Plugin\LegacyPlugin $plugin
      */
-    public function setPlugin(?\Plugin\Plugin $plugin): void
+    public function setPlugin(?\Plugin\LegacyPlugin $plugin): void
     {
         $this->plugin = $plugin;
     }
 
     /**
-     * @return null|\Plugin\Extension
+     * @return null|\Plugin\Plugin
      */
-    public function getExtension(): ?\Plugin\Extension
+    public function getExtension(): ?\Plugin\Plugin
     {
         return $this->extension;
     }
 
     /**
-     * @param null|\Plugin\Extension $extension
+     * @param null|\Plugin\Plugin $extension
      */
-    public function setExtension(?\Plugin\Extension $extension): void
+    public function setExtension(?\Plugin\Plugin $extension): void
     {
         $this->extension = $extension;
     }

@@ -15,6 +15,7 @@ $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'suchspecials';
+$db       = Shop::Container()->getDB();
 
 setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -23,8 +24,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
 } elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && Form::validateToken()) {
-    // Suchspecials aus der DB holen und in smarty assignen
-    $searchSpecials   = Shop::Container()->getDB()->selectAll(
+    $searchSpecials   = $db->selectAll(
         'tseo',
         ['cKey', 'kSprache'],
         ['suchspecial',
@@ -34,12 +34,12 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     );
     $ssTmp            = [];
     $ssToDelete       = [];
-    $bestSellerSeo    = strip_tags(Shop::Container()->getDB()->escape($_POST['bestseller']));
-    $specialOffersSeo = Shop::Container()->getDB()->escape($_POST['sonderangebote']);
-    $newProductsSeo   = strip_tags(Shop::Container()->getDB()->escape($_POST['neu_im_sortiment']));
-    $topOffersSeo     = strip_tags(Shop::Container()->getDB()->escape($_POST['top_angebote']));
-    $releaseSeo       = strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar']));
-    $topRatedSeo      = strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet']));
+    $bestSellerSeo    = strip_tags($db->escape($_POST['bestseller']));
+    $specialOffersSeo = $db->escape($_POST['sonderangebote']);
+    $newProductsSeo   = strip_tags($db->escape($_POST['neu_im_sortiment']));
+    $topOffersSeo     = strip_tags($db->escape($_POST['top_angebote']));
+    $releaseSeo       = strip_tags($db->escape($_POST['in_kuerze_verfuegbar']));
+    $topRatedSeo      = strip_tags($db->escape($_POST['top_bewertet']));
     if (mb_strlen($bestSellerSeo) > 0 && !pruefeSuchspecialSeo(
         $searchSpecials,
         $bestSellerSeo,
@@ -187,7 +187,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         foreach ($ssTmp as $i => $item) {
             $ids[] = (int)$item->kKey;
         }
-        Shop::Container()->getDB()->query(
+        $db->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . '
@@ -201,11 +201,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             $oSeo->kKey     = $item->kKey;
             $oSeo->kSprache = $_SESSION['kSprache'];
 
-            Shop::Container()->getDB()->insert('tseo', $oSeo);
+            $db->insert('tseo', $oSeo);
         }
     }
     if (count($ssToDelete) > 0) {
-        Shop::Container()->getDB()->query(
+        $db->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . '
@@ -217,7 +217,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $cHinweis .= __('successSeoSave') . '<br />';
 }
 
-$ssSeoData      = Shop::Container()->getDB()->selectAll(
+$ssSeoData      = $db->selectAll(
     'tseo',
     ['cKey', 'kSprache'],
     ['suchspecial', (int)$_SESSION['kSprache']],

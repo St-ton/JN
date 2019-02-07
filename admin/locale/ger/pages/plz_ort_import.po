@@ -11,24 +11,6 @@ msgstr "Hier können Sie aktuelle Daten für PLZ und Orte aus OpenGeoDB importie
 msgid "plz_ort_available"
 msgstr "Vorhandene PLZ und Ortsdaten"
 
-msgid "plz_ort_iso"
-msgstr "ISO"
-
-msgid "plz_ort_country"
-msgstr "Land"
-
-msgid "plz_ort_continent"
-msgstr "Kontinent"
-
-msgid "plz_ort_count"
-msgstr "Einträge"
-
-msgid "plz_ort_action"
-msgstr "Aktion"
-
-msgid "plz_ort_date"
-msgstr "Datum"
-
 msgid "plz_ort_size"
 msgstr "Dateigröße"
 
@@ -52,12 +34,6 @@ msgstr "Nein, nicht löschen"
 
 msgid "plz_ort_import_delete_yes"
 msgstr "Ja, Löschen"
-
-msgid "plz_ort_import_ok"
-msgstr "OK"
-
-msgid "plz_ort_import_cancel"
-msgstr "Abbrechen"
 
 msgid "plz_ort_import_refresh_desc"
 msgstr "Neue Daten importieren..."

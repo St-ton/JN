@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\ExtensionData;
+namespace Plugin\Data;
 
 use Tightenco\Collect\Support\Collection;
 use function Functional\reindex;
 
 /**
  * Class Widget
- * @package Plugin\ExtensionData
+ * @package Plugin\Data
  */
 class Widget
 {

@@ -17,7 +17,7 @@ use DB\DbInterface;
 use DB\ReturnType;
 use Filter\ProductFilter;
 use Filter\Visibility;
-use Plugin\ExtensionLoader;
+use Plugin\PluginLoader;
 use Plugin\State;
 use Session\Frontend;
 use Smarty\JTLSmarty;
@@ -426,7 +426,7 @@ class BoxService implements BoxServiceInterface
             $box->map($boxes);
             $class = \get_class($box);
             if ($class === Plugin::class) {
-                $plugin = new \Plugin\Plugin($box->getCustomID());
+                $plugin = new \Plugin\LegacyPlugin($box->getCustomID());
                 $box->setTemplateFile(
                     $plugin->getPaths()->getFrontendPath() .
                     \PFAD_PLUGIN_BOXEN .
@@ -434,7 +434,7 @@ class BoxService implements BoxServiceInterface
                 );
                 $box->setPlugin($plugin);
             } elseif ($class === Extension::class) {
-                $loader    = new ExtensionLoader($this->db, $this->cache);
+                $loader    = new PluginLoader($this->db, $this->cache);
                 $extension = $loader->init($box->getCustomID());
 
                 $box->setTemplateFile(

@@ -21,7 +21,7 @@
         "ext-xml": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "imanee/imanee": "1.2.*",
+        "imanee/imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
         "jtlshop/shop4-systemcheck": "^1.1",
@@ -90,7 +90,7 @@
     "autoload": {
         "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],
         "psr-4": {
-            "": ["src/","../extensions/"]
+            "": ["src/","../plugins/"]
         }
     }
 }

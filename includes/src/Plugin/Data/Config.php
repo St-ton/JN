@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\ExtensionData;
+namespace Plugin\Data;
 
 use Plugin\Admin\InputType;
 use Tightenco\Collect\Support\Collection;
@@ -58,9 +58,7 @@ class Config
             $cfg->id          = (int)$base->id;
             $cfg->valueID     = $base->confName;
             $cfg->menuID      = (int)$base->menuID;
-            $cfg->niceName    = $base->name;
             $cfg->name        = $base->confNicename;
-            $cfg->description = $base->description;
             $cfg->inputType   = $base->inputType;
             $cfg->sort        = (int)$base->nSort;
             $cfg->confType    = $base->confType;
@@ -70,6 +68,21 @@ class Config
                 : $base->currentValue;
 //            $cfg->raw         = $base;
             $cfg->options = [];
+
+            $msgid         = $cfg->valueID . '_name';
+            $cfg->niceName = __($msgid);
+
+            if ($cfg->niceName === $msgid) {
+                $cfg->niceName = $base->name;
+            }
+
+            $msgid            = $cfg->valueID . '_desc';
+            $cfg->description = __($msgid);
+
+            if ($cfg->description === $msgid) {
+                $cfg->description = $base->description;
+            }
+
             if (!empty($cfg->sourceFile)
                 && ($cfg->inputType === InputType::SELECT || $cfg->inputType === InputType::RADIO)
             ) {
@@ -77,9 +90,15 @@ class Config
             } elseif (!($base->confValue === null && $base->confNicename === null)) {
                 foreach ($values as $value) {
                     $opt           = new \stdClass();
-                    $opt->niceName = $value->confNicename;
                     $opt->value    = $value->confValue;
                     $opt->sort     = (int)$value->confSort;
+
+                    $msgid         = $cfg->valueID . '_value(' . $value->confValue . ')';
+                    $opt->niceName = __($msgid);
+
+                    if ($opt->niceName === $msgid) {
+                        $opt->niceName = $value->confNicename;
+                    }
 
                     $cfg->options[] = $opt;
                 }

@@ -6,9 +6,10 @@
 
 namespace OPC;
 
-use Plugin\AbstractExtension;
-use Plugin\Extension;
-use Plugin\ExtensionLoader;
+use Plugin\AbstractPlugin;
+use Plugin\Plugin;
+use Plugin\PluginInterface;
+use Plugin\PluginLoader;
 
 /**
  * Class Portlet
@@ -26,7 +27,7 @@ abstract class Portlet implements \JsonSerializable
     protected $id = 0;
 
     /**
-     * @var Extension
+     * @var Plugin
      */
     protected $plugin;
 
@@ -61,7 +62,7 @@ abstract class Portlet implements \JsonSerializable
         $this->class = $class;
         $this->id    = $id;
         if ($pluginId > 0) {
-            $loader       = new ExtensionLoader(\Shop::Container()->getDB(), \Shop::Container()->getCache());
+            $loader       = new PluginLoader(\Shop::Container()->getDB(), \Shop::Container()->getCache());
             $this->plugin = $loader->init($pluginId);
         }
 
@@ -173,9 +174,9 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return AbstractExtension|null
+     * @return PluginInterface|null
      */
-    public function getPlugin(): ?AbstractExtension
+    public function getPlugin(): ?PluginInterface
     {
         return $this->plugin;
     }

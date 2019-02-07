@@ -45,37 +45,44 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nAktiv" id="nAktiv" class="form-control combo">
-                                    <option value="1"{if $oBranding->nAktiv == 1} selected{/if}>Ja</option>
-                                    <option value="0"{if $oBranding->nAktiv == 0} selected{/if}>Nein</option>
+                                    <option value="1"{if $oBranding->nAktiv == 1} selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if $oBranding->nAktiv == 0} selected{/if}>{__('no')}</option>
                                 </select>
                             </span>
                             <span class="input-group-addon">{getHelpDesc cDesc=__('brandingActiveDesc')}</span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cPosition">{__('brandingPosition')}</label>
+                                <label for="cPosition">{__('position')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cPosition" id="cPosition" class="form-control combo">
-                                    <option value="oben"{if $oBranding->cPosition === 'oben'} selected{/if}>oben</option>
-                                    <option value="oben-rechts"{if $oBranding->cPosition === 'oben-rechts'} selected{/if}>
-                                        oben-rechts
+                                    <option value="oben"{if $oBranding->cPosition === 'oben'} selected{/if}>
+                                        {__('top')}
                                     </option>
-                                    <option value="rechts"{if $oBranding->cPosition === 'rechts'} selected{/if}>rechts
+                                    <option value="oben-rechts"{if $oBranding->cPosition === 'oben-rechts'} selected{/if}>
+                                        {__('topRight')}
+                                    </option>
+                                    <option value="rechts"{if $oBranding->cPosition === 'rechts'} selected{/if}>
+                                        {__('right')}
                                     </option>
                                     <option value="unten-rechts"{if $oBranding->cPosition === 'unten-rechts'} selected{/if}>
-                                        unten-rechts
+                                        {__('bottomRight')}
                                     </option>
-                                    <option value="unten"{if $oBranding->cPosition === 'unten'} selected{/if}>unten</option>
+                                    <option value="unten"{if $oBranding->cPosition === 'unten'} selected{/if}>
+                                        {__('bottom')}
+                                    </option>
                                     <option value="unten-links"{if $oBranding->cPosition === 'unten-links'} selected{/if}>
-                                        unten-links
+                                        {__('bottomLeft')}
                                     </option>
-                                    <option value="links"{if $oBranding->cPosition === 'links'} selected{/if}>links</option>
+                                    <option value="links"{if $oBranding->cPosition === 'links'} selected{/if}>
+                                        {__('left')}
+                                    </option>
                                     <option value="oben-links"{if $oBranding->cPosition === 'oben-links'} selected{/if}>
-                                        oben-links
+                                        {__('topLeft')}
                                     </option>
                                     <option value="zentriert"{if $oBranding->cPosition === 'zentriert'} selected{/if}>
-                                        zentriert
+                                        {__('centered')}
                                     </option>
                                 </select>
                             </span>
@@ -83,7 +90,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="dTransparenz">{__('brandingTransparency')}</label>
+                                <label for="dTransparenz">{__('transparency')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <input class="form-control" type="text" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
@@ -92,7 +99,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="dGroesse">{__('brandingSize')}</label>
+                                <label for="dGroesse">{__('size')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <input class="form-control" type="text" name="dGroesse" id="dGroesse" value="{$oBranding->dGroesse}" tabindex="1" />

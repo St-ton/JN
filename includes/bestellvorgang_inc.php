@@ -1460,7 +1460,7 @@ function getPaymentSurchageDiscount($paymentMethod)
 
 /**
  * @param string $moduleID
- * @return bool|\Plugin\AbstractExtension
+ * @return bool|\Plugin\PluginInterface
  */
 function gibPluginZahlungsart($moduleID)
 {

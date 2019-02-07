@@ -26,7 +26,7 @@
             <a data-toggle="tab" role="tab" href="#suchspecials">{__('suchspecials')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('suchsepcialsSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -78,14 +78,14 @@
                             </div>
                         </div>
                         <div class="panel-footer">
-                            <button type="submit" value="{__('suchspecialsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('suchspecialsSave')}</button>
+                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
         <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='suchspecials.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='suchspecials.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>
 </div>

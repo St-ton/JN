@@ -44,9 +44,7 @@ if (!empty($_POST) && Form::validateToken()) {
 }
 
 $oConfig_arr = getAdminSectionSettings(CONF_FTP);
-$x = \Shop::Container()->getGetText()->localizeConfig($oConfig_arr);
-
-dd($x, $oConfig_arr);
+\Shop::Container()->getGetText()->localizeConfigs($oConfig_arr);
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oConfig', Shop::getSettings([CONF_FTP])['ftp'])

@@ -9,7 +9,7 @@ nur für das aktuell ausgewählte Template vorgenommen und gespeichert.
 
 
 Bei neuen Templates
-===================
+-------------------
 
 Wenn Sie ein eigenes Template entwickeln, besteht die Möglichkeit direkt eigene Overlays für dieses mitzuliefern.
 Dazu müssen die originalen Bilder in den Ordner **templatename/images/overlay/original/** gelegt werden. Die Dateinamen
@@ -23,7 +23,7 @@ sind dabei nach dem Muster **overlay_sprache_overlaytype.grafikformat** zu wähl
 Die entsprechenden Overlay-Größen werden angelegt, sobald das Template aktiviert wird.
 
 Typen und Sprache
-=================
+-----------------
 
 Die ID's der Sprache können sie der Datenbanktabelle **tsprache** entnehmen, die Overlay-Typen der Tabelle
 **tsuchspecialoverlay**.

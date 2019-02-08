@@ -4,20 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-include_once('/var/www/html/shop4_07/includes/vendor/apache/log4php/src/main/php/Logger.php');
-Logger::configure('/var/www/html/shop4_07/_logging_conf.xml');
-$oLogger = Logger::getLogger('default');
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --DEBUG--
-
-
 use Helpers\FileSystem;
 
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
-//if (auth()) {
+if (auth()) {
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
     if (!KEEP_SYNC_FILES) {
         \Helpers\FileSystem::delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
@@ -31,9 +24,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     foreach ($jobs as $oLastJob) {
         switch ((int)$oLastJob->nJob) {
             case LASTJOBS_BEWERTUNGSERINNNERUNG:
-                $oLogger->debug('job bewertungserinnerung running..'); // --DEBUG--
-                require_once PFAD_ROOT . PFAD_ADMIN . 'includes/bewertungserinnerung.php';
-                baueBewertungsErinnerung();
+                $recipients = (new \ReviewReminder())->getRecipients();
+                foreach($recipients as $recipient) {
+                    sendeMail(MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient); // move this from bewertungserinnerung at this place here!
+                }
                 updateJob(LASTJOBS_BEWERTUNGSERINNNERUNG);
                 break;
             case LASTJOBS_SITEMAP:
@@ -79,8 +73,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
         }
     }
     die('0');
-//}
-//die('3');
+}
+die('3');
 
 /**
  * Hole alle Jobs

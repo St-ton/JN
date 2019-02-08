@@ -1865,10 +1865,10 @@ msgid "sonstiges_gratisgeschenk_nutzen_desc"
 msgstr "Hier legen Sie fest, ob Gratisgeschenke im Warenkorb angeboten werden, sobald ein Kunde den dafür erforderlichen Mindestbestellwert erreicht hat."
 
 msgid "sonstiges_gratisgeschenk_anzahl_name"
-msgstr "Anzahl Gratisgeschenke auf der Übersichtsseite"
+msgstr "Anzahl Gratisgeschenke auf der Übersichtsseite/im Warenkorb"
 
 msgid "sonstiges_gratisgeschenk_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Gratisgeschenke auf der Übersichtsseite angezeigt werden. Geben Sie 0 an, um alle Gratisgeschenke anzuzeigen."
+msgstr "Hier legen Sie fest, wie viele Gratisgeschenke auf der Übersichtsseite und im Warenkorb angezeigt werden. Geben Sie 0 an, um alle Gratisgeschenke anzuzeigen."
 
 msgid "sonstiges_gratisgeschenk_sortierung_name"
 msgstr "Gratisgeschenke sortieren nach"
@@ -2829,6 +2829,12 @@ msgstr "Maximalanzahl von Zeichen in Meta Description"
 
 msgid "global_meta_maxlaenge_description_desc"
 msgstr "Hier legen Sie fest, wie viele Zeichen die Meta Description maximal haben darf (inklusive Leerzeichen)."
+
+msgid "global_cancellation_time_name"
+msgstr "Retourenfrist"
+
+msgid "global_cancellation_time_desc"
+msgstr "Retourenfrist im gesamten Shop."
 
 msgid "news_benutzen_name"
 msgstr "News-System benutzen"

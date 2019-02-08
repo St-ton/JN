@@ -319,7 +319,7 @@
                                 <span class="input-group-wrap">
                                     <select class="select2 form-control" name="Versandklassen"
                                             onchange="checkCombination();updateVK();" multiple="multiple">
-                                        <option value="-1"{if $VK@iteration >1} disabled="disabled"{/if} selected>{__('allCombinations')}</option>
+                                        <option value="-1">{__('allCombinations')}</option>
                                         {foreach $versandKlassen as $vclass}
                                             <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
                                         {/foreach}

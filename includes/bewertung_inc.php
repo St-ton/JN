@@ -13,8 +13,9 @@
  * @param string $title
  * @param string $text
  * @param int    $stars
+ * @return string
  */
-function speicherBewertung(int $productID, int $customerID, int $langID, $title, $text, int $stars)
+function speicherBewertung(int $productID, int $customerID, int $langID, $title, $text, int $stars): string
 {
     $conf    = Shop::getSettings([CONF_BEWERTUNG]);
     $article = new Artikel();
@@ -22,23 +23,23 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     $url = !empty($article->cURLFull)
         ? (mb_strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
         : (Shop::getURL() . '/?a=' . $productID . '&');
+    if ($stars < 1 || $stars > 5) {
+        return $url . 'bewertung_anzeigen=1&cFehler=f05';
+    }
     if ($customerID <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
-        header('Location: ' . $url . 'cFehler=f04', true, 303);
-        exit;
+        return $url . 'bewertung_anzeigen=1&cFehler=f04';
     }
     $title = StringHandler::htmlentities(StringHandler::filterXSS($title));
     $text  = StringHandler::htmlentities(StringHandler::filterXSS($text));
 
-    if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '' || $stars <= 0) {
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f01', true, 303);
-        exit;
+    if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '') {
+        return $url . 'bewertung_anzeigen=1&cFehler=f01';
     }
     unset($oBewertungBereitsVorhanden);
     // Prüfe ob die Einstellung (Bewertung nur bei bereits gekauftem Artikel) gesetzt ist
     // und der Kunde den Artikel bereits gekauft hat
     if (pruefeKundeArtikelGekauft($productID, \Session\Frontend::getCustomer()) === false) {
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f03');
-        exit;
+        return $url . 'bewertung_anzeigen=1&cFehler=f03';
     }
     $reward                  = 0.0;
     $rating                  = new stdClass();
@@ -75,19 +76,13 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     unset($oBewertungBereitsVorhanden);
     if ($nFreischalten === 0) {
         if ($reward > 0) {
-            header(
-                'Location: ' . $url . 'bewertung_anzeigen=1&fB=' .
-                $reward . '&cHinweis=h04',
-                true,
-                301
-            );
-            exit;
+            return $url . 'bewertung_anzeigen=1&fB=' . $reward . '&cHinweis=h04';
         }
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h01', true, 303);
-        exit;
+
+        return $url . 'bewertung_anzeigen=1&cHinweis=h01';
     }
-    header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h05', true, 303);
-    exit;
+
+    return $url . 'bewertung_anzeigen=1&cHinweis=h05';
 }
 
 

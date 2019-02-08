@@ -49,16 +49,16 @@ class GetText
     /**
      * @return string
      */
-    public function getAdminDir()
+    public function getAdminDir(): string
     {
         return \PFAD_ROOT . \PFAD_ADMIN;
     }
 
     /**
-     * @param AbstractExtension $plugin
+     * @param PluginInterface $plugin
      * @return string
      */
-    public function getPluginDir(AbstractExtension $plugin)
+    public function getPluginDir(PluginInterface $plugin): string
     {
         return $plugin->getPaths()->getBasePath();
     }
@@ -83,11 +83,11 @@ class GetText
     }
 
     /**
-     * @param string $domain
-     * @param AbstractExtension $plugin
+     * @param string          $domain
+     * @param PluginInterface $plugin
      * @return string
      */
-    public function getPluginMoPath(string $domain, AbstractExtension $plugin): string
+    public function getPluginMoPath(string $domain, PluginInterface $plugin): string
     {
         return $this->getMoPath($this->getPluginDir($plugin), $domain);
     }

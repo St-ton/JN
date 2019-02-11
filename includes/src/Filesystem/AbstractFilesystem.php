@@ -1,4 +1,8 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace Filesystem;
 
@@ -21,11 +25,12 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @param array $options
      */
-    public function __construct($options = array())
+    public function __construct(array $options = [])
     {
-        $this->options = array_merge(array(
-            'root' => null,
-        ), $options);
+        $this->options = array_merge(
+            ['root' => null],
+            $options
+        );
 
         $this->setPathPrefix($this->options['root']);
     }
@@ -35,9 +40,9 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @param string $prefix
      */
-    public function setPathPrefix($prefix)
+    public function setPathPrefix(string $prefix) : void
     {
-        $prefix = (string) $prefix;
+        $prefix = (string)$prefix;
 
         if ($prefix === '') {
             $this->pathPrefix = null;
@@ -53,7 +58,7 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @return string path prefix
      */
-    public function getPathPrefix()
+    public function getPathPrefix() : string
     {
         return $this->pathPrefix;
     }
@@ -67,7 +72,7 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @throws Exception
      */
-    public function applyPathPrefix($path)
+    public function applyPathPrefix(string $path) : string
     {
         $path = Path::clean($path);
 
@@ -78,7 +83,7 @@ abstract class AbstractFilesystem implements IFilesystem
         $rooted = Path::combine($this->getPathPrefix(), $path);
 
         if (!$this->hasPathPrefix($rooted)) {
-            throw new Exception("Path '{$rooted}' is not within defined root");
+            throw new Exception(sprintf("Path '%s' is not within defined root", $rooted));
         }
 
         return $rooted;
@@ -91,7 +96,7 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @return string path without the prefix
      */
-    public function removePathPrefix($path)
+    public function removePathPrefix(string $path) : string
     {
         if (!$this->hasPathPrefix($path)) {
             return $path;
@@ -110,7 +115,7 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @return bool
      */
-    public function hasPathPrefix($path)
+    public function hasPathPrefix(string $path) : string
     {
         $prefix = $this->getPathPrefix();
 

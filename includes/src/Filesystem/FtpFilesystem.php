@@ -1,4 +1,8 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace Filesystem;
 
@@ -51,7 +55,7 @@ class FtpFilesystem extends AbstractFilesystem
      */
     public function getMeta($path)
     {
-        $location = $this->applyPathPrefix($path);
+        $location  = $this->applyPathPrefix($path);
         $directory = Path::getDirectoryName($path);
 
         $listing = $this->getRawList('-a', str_replace('*', '\\*', $location));
@@ -70,7 +74,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function get($file, $mode = null)
+    public function get($file /*, $mode = null*/)
     {
         $stream = fopen('php://temp', 'w+b');
         $result = @ftp_fget($this->getLink(), $stream, $file, FTP_BINARY);
@@ -91,7 +95,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function put($file, $contents, $mode = null)
+    public function put($file, $contents /*, $mode = null*/)
     {
         $stream = fopen('php://temp', 'w+b');
         fwrite($stream, $contents);
@@ -120,7 +124,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chown($path, $owner)
+    public function chown(/*$path, $owner*/)
     {
         throw new RuntimeException();
     }
@@ -128,7 +132,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chgrp($path, $group)
+    public function chgrp(/*$path, $group*/)
     {
         throw new RuntimeException();
     }
@@ -139,10 +143,10 @@ class FtpFilesystem extends AbstractFilesystem
     public function chmod($file, $mode = null)
     {
         if (!function_exists('ftp_chmod')) {
-            return (bool) @ftp_site($this->getLink(), sprintf('CHMOD %o %s', $mode, $file));
+            return (bool)@ftp_site($this->getLink(), sprintf('CHMOD %o %s', $mode, $file));
         }
 
-        return (bool) @ftp_chmod($this->getLink(), $mode, $file);
+        return (bool)@ftp_chmod($this->getLink(), $mode, $file);
     }
 
     /**
@@ -242,7 +246,7 @@ class FtpFilesystem extends AbstractFilesystem
      */
     public function deleteDirectory($directory, $preserve = false)
     {
-        $link = $this->getLink();
+        $link     = $this->getLink();
         $contents = $this->listContents($directory, true); // array_reverse
 
         foreach ($contents as $object) {
@@ -300,14 +304,27 @@ class FtpFilesystem extends AbstractFilesystem
     protected function connect()
     {
         if ($this->options['ssl'] && function_exists('ftp_ssl_connect')) {
-            $this->link = @ftp_ssl_connect($this->options['hostname'], $this->options['port'], $this->options['timeout']);
+            $this->link = @ftp_ssl_connect(
+                $this->options['hostname'],
+                $this->options['port'],
+                $this->options['timeout']
+            );
         } else {
-            $this->link = @ftp_connect($this->options['hostname'], $this->options['port'], $this->options['timeout']);
+            $this->link = @ftp_connect(
+                $this->options['hostname'],
+                $this->options['port'],
+                $this->options['timeout']
+            );
         }
 
         if (!$this->link) {
-            throw new Exception(sprintf('Connection to %s:%d failed',
-                $this->options['hostname'], $this->options['port']));
+            throw new Exception(
+                sprintf(
+                    'Connection to %s:%d failed',
+                    $this->options['hostname'],
+                    $this->options['port']
+                )
+            );
         }
 
         if (!@ftp_login($this->link, $this->options['username'], $this->options['password'])) {
@@ -324,8 +341,8 @@ class FtpFilesystem extends AbstractFilesystem
 
         try {
             $this->getActualPermissions();
+        } catch (Exception $e) {
         }
-        catch (Exception $e) {}
     }
 
     protected function disconnect()
@@ -395,13 +412,16 @@ class FtpFilesystem extends AbstractFilesystem
     {
         $path = $prefix;
 
-        $listing = array_filter($listing, function ($line) {
-            if (!empty($line) && !preg_match('#.* \.(\.)?$|^total#', $line)) {
-                return true;
-            }
+        $listing = array_filter(
+            $listing,
+            function ($line) {
+                if (!empty($line) && !preg_match('#.* \.(\.)?$|^total#', $line)) {
+                    return true;
+                }
 
-            return false;
-        });
+                return false;
+            }
+        );
 
         while ($item = array_shift($listing)) {
             if (preg_match('#^.*:$#', $item)) {
@@ -431,32 +451,35 @@ class FtpFilesystem extends AbstractFilesystem
     protected function parseListing($item, $path)
     {
         $location = $this->removePathPrefix($path);
-        $item = preg_replace('#\s+#', ' ', trim($item), 7);
+        $item     = preg_replace('#\s+#', ' ', trim($item), 7);
 
         if (count(explode(' ', $item, 9)) !== 9) {
-            throw new Exception("Error parsing '$item' , not enough parts.");
+            throw new Exception(sprintf("Error parsing '%s' , not enough parts.", $item));
         }
 
         list($perms, /*$number*/, $owner, $group, $size, $d1, $d2, $d3, $filename) = explode(' ', $item, 9);
 
-        $type = $this->parseType($perms);
-        $perms = $this->parsePermissions($perms);
+        $type     = $this->parseType($perms);
+        $perms    = $this->parsePermissions($perms);
         $modified = $this->parseDate($d1, $d2, $d3);
 
         $mode = $this->calcMode($owner, $group, $perms);
 
-        $options = array_merge($mode, [
-            'type' => $type,
-            'path' => $location,
-            'filename' => $filename,
-            'perms' => $perms,
-            'size' => (int) $size,
-            'owner' => $owner,
-            'group' => $group,
-            'aTime' => $modified,
-            'mTime' => $modified,
-            'cTime' => $modified
-        ]);
+        $options = array_merge(
+            $mode,
+            [
+                'type' => $type,
+                'path' => $location,
+                'filename' => $filename,
+                'perms' => $perms,
+                'size' => (int)$size,
+                'owner' => $owner,
+                'group' => $group,
+                'aTime' => $modified,
+                'mTime' => $modified,
+                'cTime' => $modified
+            ]
+        );
 
         return new FileInfo($options);
     }
@@ -468,9 +491,12 @@ class FtpFilesystem extends AbstractFilesystem
         $permissions = substr($permissions, 1);
         $permissions = strtr($permissions, $map);
 
-        $parts = array_map(function ($part) {
-            return array_sum(str_split($part));
-        }, str_split($permissions, 3));
+        $parts = array_map(
+            function ($part) {
+                return array_sum(str_split($part));
+            },
+            str_split($permissions, 3)
+        );
 
         return octdec(implode('', $parts));
     }
@@ -504,7 +530,7 @@ class FtpFilesystem extends AbstractFilesystem
 
     protected function directoryTree($path)
     {
-        $tree = [];
+        $tree        = [];
         $directories = array_filter(explode('/', $path));
         foreach ($directories as $dir) {
             $tree[] = count($tree)
@@ -532,7 +558,7 @@ class FtpFilesystem extends AbstractFilesystem
     {
         $file = Path::combine(PFAD_COMPILEDIR, sha1(md5(microtime(true))));
         if ($this->put($file, 'ftp-test')) {
-            $meta = $this->getMeta($file);
+            $meta          = $this->getMeta($file);
             $this->fsOwner = $meta->getOwner();
             $this->fsGroup = $meta->getGroup();
             $this->delete($file);

@@ -1,4 +1,8 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace Filesystem;
 
@@ -19,7 +23,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function get($path, $mode = null)
+    public function get($path /*, $mode = null*/)
     {
         $location = $this->applyPathPrefix($path);
 
@@ -159,7 +163,7 @@ class LocalFilesystem extends AbstractFilesystem
      */
     public function moveDirectory($from, $to, $overwrite = false)
     {
-        $location = $this->applyPathPrefix($from);
+        $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
 
         if ($overwrite && is_dir($destination)) {
@@ -176,7 +180,7 @@ class LocalFilesystem extends AbstractFilesystem
      */
     public function copyDirectory($from, $to, $mode = null)
     {
-        $location = $this->applyPathPrefix($from);
+        $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
 
         if (!is_dir($location)) {
@@ -252,7 +256,7 @@ class LocalFilesystem extends AbstractFilesystem
             : $this->getDirectoryIterator($location);
 
         foreach ($iterator as $file) {
-            yield $this->mapFileInfo($file);
+            yield $this->mapFileInfo($file);//Generator<Item>
         }
     }
 
@@ -266,7 +270,7 @@ class LocalFilesystem extends AbstractFilesystem
     protected function getFilePath(SplFileInfo $file)
     {
         $location = $file->getPathname();
-        $path = $this->removePathPrefix($location);
+        $path     = $this->removePathPrefix($location);
 
         return trim(str_replace('\\', '/', $path), '/');
     }
@@ -281,26 +285,29 @@ class LocalFilesystem extends AbstractFilesystem
         $location = $this->removePathPrefix($file->getPath());
 
         $options = [
-            'path' => (string) $location,
+            'path' => (string)$location,
             'filename' => $file->getFilename(),
         ];
 
         if ($file->isDir() || $file->isFile() || $file->isLink()) {
-            $options = array_merge($options, [
-                'type' => $file->getType(),
-                'perms' => $file->getPerms(),
-                'size' => $file->getSize(),
-                'owner' => $file->getOwner(),
-                'group' => $file->getGroup(),
+            $options = array_merge(
+                $options,
+                [
+                    'type' => $file->getType(),
+                    'perms' => $file->getPerms(),
+                    'size' => $file->getSize(),
+                    'owner' => $file->getOwner(),
+                    'group' => $file->getGroup(),
 
-                'aTime' => $file->getATime(),
-                'mTime' => $file->getMTime(),
-                'cTime' => $file->getCTime(),
+                    'aTime' => $file->getATime(),
+                    'mTime' => $file->getMTime(),
+                    'cTime' => $file->getCTime(),
 
-                'readable' => $file->isReadable(),
-                'writable' => $file->isWritable(),
-                'executable' => $file->isExecutable(),
-            ]);
+                    'readable' => $file->isReadable(),
+                    'writable' => $file->isWritable(),
+                    'executable' => $file->isExecutable(),
+                ]
+            );
         }
 
         return new FileInfo($options);

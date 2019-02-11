@@ -45,7 +45,8 @@
         "jtlshop/semver": "~0.0.5",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
-        "gettext/gettext": "^4.6"
+        "gettext/gettext": "^4.6",
+        "jtl/oauth2-client": "^1.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

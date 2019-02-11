@@ -28,13 +28,11 @@ class Migration_20181117133300 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `tstoreauth` (
-                `access_token` varchar(100) NOT NULL,
-                `refresh_token` varchar(100) NULL,
-                `created_at` datetime NOT NULL,
-                `expires_at` datetime NULL,
-                PRIMARY KEY (`access_token`)
-            ) ENGINE = InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
+            "CREATE TABLE `tstoreauth` (
+                `auth_code` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+                `access_token` text COLLATE utf8_unicode_ci,
+                `created_at` datetime NOT NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
         );
     }
 

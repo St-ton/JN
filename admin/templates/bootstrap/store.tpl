@@ -1,7 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='store'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#store# cBeschreibung=#storeDesc# cDokuURL=#storeUrl#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('store') cBeschreibung=__('storeDesc') cDokuURL=__('storeUrl')}
 
 <div id="content" class="container-fluid">
 {if isset($error)}
@@ -10,9 +9,9 @@
     <form action="store.php" method="POST">
         {$jtl_token}
         {if $hasAuth}
-            <button name="action" value="revoke" class="btn btn-danger">{#storeRevoke#}</button>
+            <button name="action" value="revoke" class="btn btn-danger">{__('storeRevoke')}</button>
         {else}
-            <button name="action" value="redirect" class="btn btn-primary">{#storeLink#}</button>
+            <button name="action" value="redirect" class="btn btn-primary">{__('storeLink')}</button>
         {/if}
     </form>
 </div>

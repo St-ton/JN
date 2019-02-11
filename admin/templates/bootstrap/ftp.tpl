@@ -1,15 +1,14 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='ftp'}
 
 {if isset($isShopRoot)}
     {if $isShopRoot}
-        {$cHinweis = #ftpValidConnection#}
+        {$cHinweis = __('ftpValidConnection')}
     {else}
-        {$cFehler = #ftpInvalidShopRoot#}
+        {$cFehler = __('ftpInvalidShopRoot')}
     {/if}
 {/if}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#ftp# cBeschreibung=#ftpDesc# cDokuURL=#ftpUrl#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('ftp') cBeschreibung=__('ftpDesc') cDokuURL=__('ftpUrl')}
 
 <div id="content" class="container-fluid">
     <div id="settings">
@@ -75,7 +74,7 @@
                             <h3 class="panel-title">{$cnf->cName}
                             <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
-                                <span class="path"><strong>{#settingspath#}:</strong> {$cnf->cSektionsPfad}</span>
+                                <span class="path"><strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}
                             </h3>
                         </div>
@@ -88,8 +87,8 @@
                 </div><!-- /.panel -->
                 {/if}
                 <div class="btn-group">
-                    <button name="save" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-save"></i> {#ftpSave#}</button>
-                    <button name="test" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {#ftpTest#}</button>
+                    <button name="save" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-save"></i> {__('ftpSave')}</button>
+                    <button name="test" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('ftpTest')}</button>
                 </div>
             </div>
         </form>

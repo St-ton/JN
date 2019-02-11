@@ -11,6 +11,8 @@
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
+use Helpers\Form;
+
 $cHinweis      = '';
 $cFehler       = '';
 $shopSettings  = Shopsetting::getInstance();

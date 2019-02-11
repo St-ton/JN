@@ -96,7 +96,7 @@ class BaseAttribute extends AbstractFilter
         if (\count($attributeValues) > 0) {
             $attributeValue = $attributeValues[0];
             unset($attributeValues[0]);
-            if (\strlen($attributeValue->cWert) > 0) {
+            if (\mb_strlen($attributeValue->cWert) > 0) {
                 if (!empty($this->getName())) {
                     $this->setName($attributeValue->cName . ': ' . $attributeValue->cWert);
                 } elseif (!empty($attributeValue->cMMName)) {
@@ -106,9 +106,9 @@ class BaseAttribute extends AbstractFilter
                 }
                 if (\count($attributeValues) > 0) {
                     foreach ($attributeValues as $attr) {
-                        if (isset($attr->cName) && \strlen($attr->cName) > 0) {
+                        if (isset($attr->cName) && \mb_strlen($attr->cName) > 0) {
                             $this->setName($this->getName() . ', ' . $attr->cName . ': ' . $attr->cWert);
-                        } elseif (isset($attr->cMMName) && \strlen($attr->cMMName) > 0) {
+                        } elseif (isset($attr->cMMName) && \mb_strlen($attr->cMMName) > 0) {
                             $this->setName($this->getName() . ', ' . $attr->cMMName . ': ' . $attr->cWert);
                         }
                     }

@@ -44,7 +44,7 @@ function gibLetzteBildNummer($linkID)
     }
     $max = 0;
     foreach ($images as $image) {
-        $num = substr($image, 4, (strlen($image) - strpos($image, '.')) - 3);
+        $num = mb_substr($image, 4, (mb_strlen($image) - mb_strpos($image, '.')) - 3);
         if ($num > $max) {
             $max = $num;
         }
@@ -67,10 +67,10 @@ function parseText($text, int $linkID)
         $handle = opendir($uploadDir . $linkID);
         while (($file = readdir($handle)) !== false) {
             if ($file !== '.' && $file !== '..') {
-                $imageID          = (int)substr(
+                $imageID          = (int)mb_substr(
                     str_replace('Bild', '', $file),
                     0,
-                    strpos(str_replace('Bild', '', $file), '.')
+                    mb_strpos(str_replace('Bild', '', $file), '.')
                 );
                 $images[$imageID] = $file;
                 $sort[]           = $imageID;
@@ -208,7 +208,7 @@ function getGesetzteKundengruppen($link)
 
         return $ret;
     }
-    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || strtolower($link->cKundengruppen) === 'null') {
+    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || mb_convert_case($link->cKundengruppen, MB_CASE_LOWER) === 'null') {
         $ret[0] = true;
 
         return $ret;

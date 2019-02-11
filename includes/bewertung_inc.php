@@ -13,39 +13,40 @@
  * @param string $title
  * @param string $text
  * @param int    $stars
- * @return bool
+ * @return string
  */
-function speicherBewertung(int $productID, int $customerID, int $langID, $title, $text, int $stars)
+function speicherBewertung(int $productID, int $customerID, int $langID, $title, $text, int $stars): string
 {
-    $conf = Shop::getSettings([CONF_BEWERTUNG]);
-    if ($customerID <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
-        return false;
-    }
-    $title   = StringHandler::htmlentities(StringHandler::filterXSS($title));
-    $text    = StringHandler::htmlentities(StringHandler::filterXSS($text));
+    $conf    = Shop::getSettings([CONF_BEWERTUNG]);
     $article = new Artikel();
     $article->fuelleArtikel($productID, Artikel::getDefaultOptions());
     $url = !empty($article->cURLFull)
-        ? (strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
+        ? (mb_strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
         : (Shop::getURL() . '/?a=' . $productID . '&');
+    if ($stars < 1 || $stars > 5) {
+        return $url . 'bewertung_anzeigen=1&cFehler=f05';
+    }
+    if ($customerID <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
+        return $url . 'bewertung_anzeigen=1&cFehler=f04';
+    }
+    $title = StringHandler::htmlentities(StringHandler::filterXSS($title));
+    $text  = StringHandler::htmlentities(StringHandler::filterXSS($text));
 
-    if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '' || $stars <= 0) {
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f01', true, 303);
-        exit;
+    if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '') {
+        return $url . 'bewertung_anzeigen=1&cFehler=f01';
     }
     unset($oBewertungBereitsVorhanden);
     // Prüfe ob die Einstellung (Bewertung nur bei bereits gekauftem Artikel) gesetzt ist
     // und der Kunde den Artikel bereits gekauft hat
-    if (pruefeKundeArtikelGekauft($productID, $_SESSION['Kunde']->kKunde)) {
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f03');
-        exit;
+    if (pruefeKundeArtikelGekauft($productID, \Session\Frontend::getCustomer()) === false) {
+        return $url . 'bewertung_anzeigen=1&cFehler=f03';
     }
     $reward                  = 0.0;
     $rating                  = new stdClass();
     $rating->kArtikel        = $productID;
     $rating->kKunde          = $customerID;
     $rating->kSprache        = $langID;
-    $rating->cName           = $_SESSION['Kunde']->cVorname . ' ' . substr($_SESSION['Kunde']->cNachname, 0, 1);
+    $rating->cName           = $_SESSION['Kunde']->cVorname . ' ' . mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
     $rating->cTitel          = $title;
     $rating->cText           = strip_tags($text);
     $rating->nHilfreich      = 0;
@@ -75,19 +76,13 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     unset($oBewertungBereitsVorhanden);
     if ($nFreischalten === 0) {
         if ($reward > 0) {
-            header(
-                'Location: ' . $url . 'bewertung_anzeigen=1&fB=' .
-                $reward . '&cHinweis=h04',
-                true,
-                301
-            );
-            exit;
+            return $url . 'bewertung_anzeigen=1&fB=' . $reward . '&cHinweis=h04';
         }
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h01', true, 303);
-        exit;
+
+        return $url . 'bewertung_anzeigen=1&cHinweis=h01';
     }
-    header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h05', true, 303);
-    exit;
+
+    return $url . 'bewertung_anzeigen=1&cHinweis=h05';
 }
 
 
@@ -291,13 +286,16 @@ function pruefeKundeArtikelBewertet(int $productID, int $customerID): int
 
 /**
  * @param int $productID
- * @param int $customerID
- * @return int
+ * @param Kunde $customer
+ * @return bool
  */
-function pruefeKundeArtikelGekauft(int $productID, int $customerID): int
+function pruefeKundeArtikelGekauft(int $productID, \Kunde $customer): bool
 {
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
-    if ($customerID > 0 && $productID > 0 && Shop::getSettingValue(CONF_BEWERTUNG, 'bewertung_artikel_gekauft')) {
+    if ($productID > 0
+        && Shop::getSettingValue(CONF_BEWERTUNG, 'bewertung_artikel_gekauft') === 'Y'
+        && $customer->isLoggedIn()
+    ) {
         $order = Shop::Container()->getDB()->queryPrepared(
             'SELECT tbestellung.kBestellung
                 FROM tbestellung
@@ -312,18 +310,18 @@ function pruefeKundeArtikelGekauft(int $productID, int $customerID): int
                     OR twarenkorbpos.kArtikel = tartikel.kArtikel)',
             [
                 'aid' => $productID,
-                'cid' => $customerID
+                'cid' => $customer->getID()
             ],
             \DB\ReturnType::SINGLE_OBJECT
         );
 
         if (!isset($order->kBestellung) || !$order->kBestellung) {
             // Kunde hat diesen Artikel noch nicht gekauft und darf somit laut Einstellung keine Bewertung abgeben
-            return 1;
+            return false;
         }
     }
 
-    return 0;
+    return true;
 }
 
 /**
@@ -366,7 +364,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
     ) {
         return $reward;
     }
-    if ((int)$conf['bewertung']['bewertung_stufe2_anzahlzeichen'] <= strlen($rating->cText)) {
+    if ((int)$conf['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($rating->cText)) {
         // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
         // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
         if (((float)$ratingBonus->fGuthabenProMonat +

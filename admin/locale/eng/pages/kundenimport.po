@@ -14,9 +14,6 @@ msgstr "Hier haben Sie die Möglichkeit, Kundendaten aus anderen Shopsystemen sa
 msgid "csvFile"
 msgstr "Kunden CSV - Datei"
 
-msgid "format"
-msgstr "Format"
-
 msgid "customerGroup"
 msgstr "Kunden diese Kundengruppe zuweisen"
 

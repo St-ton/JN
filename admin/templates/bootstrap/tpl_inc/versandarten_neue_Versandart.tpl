@@ -88,7 +88,7 @@
         <div class="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Allgemein</h3>
+                    <h3 class="panel-title">{__('general')}</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="jtl-list-group">
@@ -195,7 +195,7 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cSendConfirmationMail">Versandbestätigung senden?</label>
+                                <label for="cSendConfirmationMail">{__('sendShippingNotification')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="cSendConfirmationMail" id="cSendConfirmationMail" class="combo form-control">
@@ -278,8 +278,9 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
                             <div class="input-group-btn">
                                 <button class="btn btn-danger" type="button"
-                                        onclick="$(this).parent().parent().detach(); updateVK();"><span
-                                            class="glyphicon glyphicon-remove"></span></button>
+                                        onclick="$(this).parent().parent().detach(); updateVK();">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
                             </div>
                         </li>
                         {if !empty($Versandart->cVersandklassen)}
@@ -307,7 +308,8 @@
                                     <div class="input-group-btn">
                                         <button class="btn btn-danger" type="button"
                                                 onclick="$(this).parent().parent().detach(); updateVK();">
-                                            <span class="glyphicon glyphicon-remove"></span></button>
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </button>
                                     </div>
                                     {/if}
                                 </li>
@@ -317,7 +319,7 @@
                                 <span class="input-group-wrap">
                                     <select class="select2 form-control" name="Versandklassen"
                                             onchange="checkCombination();updateVK();" multiple="multiple">
-                                        <option value="-1"{if $VK@iteration >1} disabled="disabled"{/if} selected>{__('allCombinations')}</option>
+                                        <option value="-1">{__('allCombinations')}</option>
                                         {foreach $versandKlassen as $vclass}
                                             <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
                                         {/foreach}
@@ -371,7 +373,7 @@
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">Zahlungsart</th>
+                                    <th class="tleft">{__('paymentType')}</th>
                                     <th></th>
                                     <th>{__('amount')}</th>
                                     <th></th>
@@ -396,7 +398,7 @@
                                         <td>
                                             <select name="cAufpreisTyp_{$kZahlungsart}" id="cAufpreisTyp_{$kZahlungsart}" class="form-control">
                                                 <option value="festpreis"{if isset($VersandartZahlungsarten[$kZahlungsart]->cAufpreisTyp) && $VersandartZahlungsarten[$kZahlungsart]->cAufpreisTyp === 'festpreis'} selected{/if}>
-                                                    Betrag
+                                                    {__('amount')}
                                                 </option>
                                                 <option value="prozent"{if isset($VersandartZahlungsarten[$kZahlungsart]->cAufpreisTyp) && $VersandartZahlungsarten[$kZahlungsart]->cAufpreisTyp === 'prozent'} selected{/if}>
                                                     %

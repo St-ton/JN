@@ -7,6 +7,7 @@
 namespace Boxes\Items;
 
 use DB\ReturnType;
+use Helpers\SearchSpecial;
 use Session\Frontend;
 
 /**
@@ -39,11 +40,11 @@ final class NewProducts extends AbstractBox
             if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
                 $productIDs = \Shop::Container()->getDB()->query(
-                    "SELECT tartikel.kArtikel
+                    'SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
-                            ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = $customerGroupID
+                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . "
                             AND cNeu = 'Y' 
@@ -61,7 +62,7 @@ final class NewProducts extends AbstractBox
                 $products = new \ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
+                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_NEUIMSORTIMENT, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

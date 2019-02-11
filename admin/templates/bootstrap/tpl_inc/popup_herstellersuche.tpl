@@ -3,12 +3,12 @@
     <input class="form-control" type="text" id="manufacturer_list_input" value="{if isset($cSearch)}{$cSearch}{/if}" autocomplete="off" />
     <div class="select_wrapper">
         <div class="search">
-            <h2>Gefundene Hersteller</h2>
+            <h2>{__('found')} {__('manufacturer')}</h2>
             <select multiple="multiple" name="manufacturer_list_found">
             </select>
         </div>
         <div class="added">
-            <h2>Gewählte Hersteller</h2>
+            <h2>{__('selected')} {__('manufacturer')}</h2>
             <select multiple="multiple" name="manufacturer_list_selected">
             </select>
         </div>

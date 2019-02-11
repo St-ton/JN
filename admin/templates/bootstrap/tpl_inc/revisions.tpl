@@ -1,7 +1,7 @@
 <hr>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Revisionen</h3>
+        <h3 class="panel-title">{__('revisions')}</h3>
     </div>
     <div class="panel-body">
         {if $revisions|count > 0}
@@ -59,8 +59,8 @@
                                     <input type="hidden" value="{$revision->type}" name="revision-type" />
                                     <input type="hidden" value="{if $secondary === true}1{else}0{/if}" name="revision-secondary" />
                                     <span class="btn-group">
-                                        <button type="submit" class="btn btn-primary" name="revision-action" value="restore"><i class="fa fa-refresh"></i> Revision wiederherstellen</button>
-                                        <button type="submit" class="btn btn-danger" name="revision-action" value="delete"><i class="fa fa-trash"></i> Revision löschen</button>
+                                        <button type="submit" class="btn btn-primary" name="revision-action" value="restore"><i class="fa fa-refresh"></i> {__('revisionRestore')}</button>
+                                        <button type="submit" class="btn btn-danger" name="revision-action" value="delete"><i class="fa fa-trash"></i> {__('revisionDelete')}</button>
                                     </span>
                                 </form>
                             </div>
@@ -69,7 +69,7 @@
                 {/foreach}
             </div>
         {else}
-            <div class="alert alert-info">Keine Revisionen vorhanden.</div>
+            <div class="alert alert-info">{__('noRevisions')}</div>
         {/if}
     </div>
 </div>

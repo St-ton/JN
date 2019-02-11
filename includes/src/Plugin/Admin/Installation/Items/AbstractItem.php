@@ -7,7 +7,7 @@
 namespace Plugin\Admin\Installation\Items;
 
 use DB\DbInterface;
-use Plugin\Plugin;
+use Plugin\LegacyPlugin;
 
 /**
  * Class AbstractItem
@@ -26,7 +26,7 @@ abstract class AbstractItem implements ItemInterface
     protected $plugin;
 
     /**
-     * @var \stdClass|Plugin|null
+     * @var \stdClass|LegacyPlugin|null
      */
     protected $oldPlugin;
 
@@ -86,7 +86,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @return Plugin|\stdClass|null
+     * @return LegacyPlugin|\stdClass|null
      */
     public function getOldPlugin()
     {
@@ -94,7 +94,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @param Plugin|\stdClass|null $oldPlugin
+     * @param LegacyPlugin|\stdClass|null $oldPlugin
      */
     public function setOldPlugin($oldPlugin): void
     {

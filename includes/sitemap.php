@@ -48,7 +48,7 @@ sendRequestFile($cDatei);
 function getRequestBot(): int
 {
     foreach (array_keys(Visitor::getSpiders()) as $agent) {
-        if (stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
+        if (mb_stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
             $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
 
             return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
@@ -88,7 +88,7 @@ function sendRequestFile($cFile)
     $cAbsoluteFile  = PFAD_ROOT . PFAD_EXPORT . basename($cFile);
     $cFileExtension = pathinfo($cAbsoluteFile, PATHINFO_EXTENSION);
 
-    switch (strtolower($cFileExtension)) {
+    switch (mb_convert_case($cFileExtension, MB_CASE_LOWER)) {
         case 'xml':
             $cContentType = 'application/xml';
             break;

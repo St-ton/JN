@@ -90,9 +90,9 @@ class Tax
         if ($merchantCountryCode !== $deliveryCountryCode
             && $merchantCountryCode !== $billingCountryCode
             && !empty(Frontend::getCustomer()->cUSTID)
-            && (\strcasecmp($billingCountryCode, \substr(Frontend::getCustomer()->cUSTID, 0, 2)) === 0
+            && (\strcasecmp($billingCountryCode, \mb_substr(Frontend::getCustomer()->cUSTID, 0, 2)) === 0
                 || (\strcasecmp($billingCountryCode, 'GR') === 0
-                    && \strcasecmp(\substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
+                    && \strcasecmp(\mb_substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
             $deliveryCountry = $db->select('tland', 'cISO', $deliveryCountryCode);
             $shopCountry     = $db->select('tland', 'cISO', $merchantCountryCode);
@@ -122,23 +122,23 @@ class Tax
                 $link->setLinkType(\LINKTYP_STARTSEITE);
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_ERROR,
+                    Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
+                    'missingTaxZoneForDeliveryCountry'
+                );
                 Shop::Smarty()
-                    ->assign('cFehler', Shop::Lang()->get(
-                        'missingTaxZoneForDeliveryCountry',
-                        'errorMessages',
-                        $country
-                    ))
                     ->assign('Link', $link)
                     ->display('layout/index.tpl');
                 exit;
             }
 
             if ($redirURL === $urlHelper->normalize()) {
-                Shop::Smarty()->assign(
-                    'cFehler',
-                    Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages')
-                    . '<br/>'
-                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country)
+                Shop::Container()->getAlertService()->addAlert(
+                    \Alert::TYPE_ERROR,
+                    Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
+                    . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
+                    'missingParamShippingDetermination'
                 );
 
                 return;

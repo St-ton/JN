@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';

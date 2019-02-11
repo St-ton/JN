@@ -122,8 +122,9 @@ class KategorieListe
             $cacheID = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
             $res     = Shop::Container()->getCache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
             if ($res === false) {
-                //could not save to cache - so save to session like in 3.18 base
-                $_SESSION['kKategorieVonUnterkategorien_arr'] = self::$allCats[$cacheID]['kKategorieVonUnterkategorien_arr'];
+                // could not save to cache - so save to session like in 3.18 base
+                $_SESSION['kKategorieVonUnterkategorien_arr'] =
+                    self::$allCats[$cacheID]['kKategorieVonUnterkategorien_arr'];
                 $_SESSION['oKategorie_arr']                   = self::$allCats[$cacheID]['oKategorie_arr'];
             }
         }
@@ -346,7 +347,7 @@ class KategorieListe
 
                 $category->cURL     = URL::buildURL($category, URLART_KATEGORIE);
                 $category->cURLFull = URL::buildURL($category, URLART_KATEGORIE, true);
-                if ($languageID > 0 && !Sprache::isDefaultLanguageActive() && strlen($category->cName_spr) > 0) {
+                if ($languageID > 0 && !Sprache::isDefaultLanguageActive() && mb_strlen($category->cName_spr) > 0) {
                     $category->cName         = $category->cName_spr;
                     $category->cBeschreibung = $category->cBeschreibung_spr;
                 }
@@ -367,7 +368,7 @@ class KategorieListe
                     \DB\ReturnType::ARRAY_OF_OBJECTS
                 );
                 foreach ($categoryAttributes as $categoryAttribute) {
-                    $id = strtolower($categoryAttribute->cName);
+                    $id = mb_convert_case($categoryAttribute->cName, MB_CASE_LOWER);
                     if ($categoryAttribute->bIstFunktionsAttribut) {
                         $category->categoryFunctionAttributes[$id] = $categoryAttribute->cWert;
                     } else {

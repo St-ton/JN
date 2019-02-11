@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis        = '';
 $cFehler         = '';
 $cStep           = 'uebersicht';
@@ -21,7 +21,7 @@ $nAnzahlProSeite = 15;
 $oSprach_arr     = Sprache::getAllLanguages();
 $oCheckBox       = new CheckBox();
 $cTab            = $cStep;
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $cTab = Request::verifyGPDataString('tab');
 }
 if (isset($_POST['erstellenShowButton'])) {

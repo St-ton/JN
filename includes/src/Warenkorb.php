@@ -151,11 +151,39 @@ class Warenkorb
     {
         static $depAmount = null;
 
-        if ($excludePos !== null || !isset($depAmount, $depAmount[$productID])) {
-            $depAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
+        if ($excludePos !== null) {
+            $tmpAmount = $this->getAllDependentAmount($onlyStockRelevant, $excludePos);
+
+            return $tmpAmount[$productID] ?? 0;
+        }
+
+        if (!isset($depAmount, $depAmount[$productID])) {
+            $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
         }
 
         return $depAmount[$productID] ?? 0;
+    }
+
+    /**
+     * @param int   $position
+     * @param float $amount
+     * @return float
+     */
+    public function getMaxAvailableAmount(int $position, float $amount): float
+    {
+        foreach ($this->PositionenArr[$position]->Artikel->getAllDependentProducts(true) as $dependent) {
+            $depProduct = $dependent->product;
+            $depAmount  = $this->getDependentAmount($depProduct->kArtikel, true, [$position]);
+            $newAmount  = floor(
+                ($depProduct->fLagerbestand - $depAmount) / $depProduct->fPackeinheit / $dependent->stockFactor
+            );
+
+            if ($newAmount < $amount) {
+                $amount = $newAmount;
+            }
+        }
+
+        return $amount;
     }
 
     /**
@@ -265,39 +293,42 @@ class Warenkorb
             }
             $neuePos = false;
             // hat diese Position schon einen EigenschaftWert ausgewaehlt
-            // und ist das dieselbe eigenschaft wie ausgewaehlt?
-            foreach ($Position->WarenkorbPosEigenschaftArr as $wke) {
-                foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
-                    // gleiche Eigenschaft suchen
-                    if ($oEigenschaftwerte->kEigenschaft != $wke->kEigenschaft) {
-                        continue;
-                    }
-                    // ist es ein Freifeld mit unterschieldichem Inhalt oder eine Eigenschaft mit unterschielichem Wert?
-                    if (($wke->kEigenschaftWert > 0
-                            && $wke->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
-                        || (($wke->cTyp === 'FREIFELD' || $wke->cTyp === 'PFLICHT-FREIFELD')
-                            && $wke->cEigenschaftWertName[$iso] != $oEigenschaftwerte->cFreifeldWert)
-                    ) {
-                        $neuePos = true;
-                        break;
+            // und ist das dieselbe Eigenschaft wie ausgewaehlt?
+            if (!$cUnique) {
+                foreach ($Position->WarenkorbPosEigenschaftArr as $wke) {
+                    foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
+                        // gleiche Eigenschaft suchen
+                        if ($oEigenschaftwerte->kEigenschaft != $wke->kEigenschaft) {
+                            continue;
+                        }
+                        // ist es ein Freifeld mit unterschiedlichem Inhalt
+                        // oder eine Eigenschaft mit unterschiedlichem Wert?
+                        if (($wke->kEigenschaftWert > 0
+                                && $wke->kEigenschaftWert != $oEigenschaftwerte->kEigenschaftWert)
+                            || (($wke->cTyp === 'FREIFELD' || $wke->cTyp === 'PFLICHT-FREIFELD')
+                                && $wke->cEigenschaftWertName[$iso] != $oEigenschaftwerte->cFreifeldWert)
+                        ) {
+                            $neuePos = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if (!$neuePos && !$cUnique) {
-                //erhoehe Anzahl dieser Position
-                $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
-                $this->PositionenArr[$i]->nAnzahl             += $anzahl;
-                if ($setzePositionsPreise === true) {
-                    $this->setzePositionsPreise();
-                }
-                executeHook(HOOK_WARENKORB_CLASS_FUEGEEIN, [
-                    'kArtikel'      => $kArtikel,
-                    'oPosition_arr' => &$this->PositionenArr,
-                    'nAnzahl'       => &$anzahl,
-                    'exists'        => true
-                ]);
+                if (!$neuePos && !$cUnique) {
+                    //erhoehe Anzahl dieser Position
+                    $this->PositionenArr[$i]->nZeitLetzteAenderung = time();
+                    $this->PositionenArr[$i]->nAnzahl             += $anzahl;
+                    if ($setzePositionsPreise === true) {
+                        $this->setzePositionsPreise();
+                    }
+                    executeHook(HOOK_WARENKORB_CLASS_FUEGEEIN, [
+                        'kArtikel'      => $kArtikel,
+                        'oPosition_arr' => &$this->PositionenArr,
+                        'nAnzahl'       => &$anzahl,
+                        'exists'        => true
+                    ]);
 
-                return $this;
+                    return $this;
+                }
             }
         }
         $options = Artikel::getDefaultOptions();
@@ -355,7 +386,7 @@ class Warenkorb
                 );
             }
             //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
-            $pos->cName[$lang->cISO] = (isset($localized->cName) && strlen(trim($localized->cName)) > 0)
+            $pos->cName[$lang->cISO] = (isset($localized->cName) && mb_strlen(trim($localized->cName)) > 0)
                 ? $localized->cName
                 : $pos->Artikel->cName;
             $lieferstatus_spr        = $db->select(
@@ -417,7 +448,7 @@ class Warenkorb
                             // und der Artikel hat nur eine Dimension als Variation?
                             if (isset($EigenschaftWert->cArtNr)
                                 && count($pos->Artikel->Variationen) === 1
-                                && strlen($EigenschaftWert->cArtNr) > 0
+                                && mb_strlen($EigenschaftWert->cArtNr) > 0
                             ) {
                                 $pos->cArtNr          = $EigenschaftWert->cArtNr;
                                 $pos->Artikel->cArtNr = $EigenschaftWert->cArtNr;
@@ -461,7 +492,7 @@ class Warenkorb
 
             case C_WARENKORBPOS_TYP_VERSANDPOS:
                 if (isset($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()])
-                    && strlen($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()]) > 0
+                    && mb_strlen($_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()]) > 0
                 ) {
                     $pos->cHinweis = $_SESSION['Versandart']->angezeigterHinweistext[Shop::getLanguageCode()];
                 }
@@ -778,7 +809,7 @@ class Warenkorb
         $anz = 0;
         foreach ($this->PositionenArr as $Position) {
             if (in_array($Position->nPosTyp, $posTypes)
-                && (empty($Position->cUnique) || (strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
+                && (empty($Position->cUnique) || (mb_strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
             ) {
                 $anz += ($Position->Artikel->cTeilbar === 'Y') ? 1 : $Position->nAnzahl;
             }
@@ -801,7 +832,7 @@ class Warenkorb
         $anz = 0;
         foreach ($this->PositionenArr as $pos) {
             if (in_array($pos->nPosTyp, $posTypes)
-                && (empty($pos->cUnique) || (strlen($pos->cUnique) > 0 && $pos->kKonfigitem == 0))
+                && (empty($pos->cUnique) || (mb_strlen($pos->cUnique) > 0 && $pos->kKonfigitem == 0))
             ) {
                 ++$anz;
             }
@@ -860,7 +891,7 @@ class Warenkorb
             if ($pos->kArtikel > 0 && $pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 $_oldPosition = clone $pos;
                 $oArtikel     = new Artikel();
-                if (!$oArtikel->fuelleArtikel($pos->kArtikel, $defaultOptions)) {
+                if (!$oArtikel->fuelleArtikel($pos->kArtikel, $defaultOptions) || $oArtikel->kArtikel === null) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
@@ -948,7 +979,7 @@ class Warenkorb
             }
             if ($bName && $oKonfigitem->getUseOwnName()) {
                 foreach (\Session\Frontend::getLanguages() as $language) {
-                    $oKonfigitemsprache               = new \Extensions\Konfigitemsprache(
+                    $oKonfigitemsprache                = new \Extensions\Konfigitemsprache(
                         $oKonfigitem->getKonfigitem(),
                         $language->kSprache
                     );
@@ -996,39 +1027,39 @@ class Warenkorb
      */
     public function gibVersandkostenSteuerklasse($Lieferland_ISO = ''): int
     {
-        $kSteuerklasse = 0;
+        $classID = 0;
         if ($this->config['kaufabwicklung']['bestellvorgang_versand_steuersatz'] === 'US') {
-            $nSteuersatz_arr = [];
-            foreach ($this->PositionenArr as $i => $Position) {
-                if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $Position->kSteuerklasse > 0) {
-                    if (empty($nSteuersatz_arr[$Position->kSteuerklasse])) {
-                        $nSteuersatz_arr[$Position->kSteuerklasse] = $Position->fPreisEinzelNetto * $Position->nAnzahl;
+            $taxRates = [];
+            foreach ($this->PositionenArr as $i => $position) {
+                if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $position->kSteuerklasse > 0) {
+                    if (empty($taxRates[$position->kSteuerklasse])) {
+                        $taxRates[$position->kSteuerklasse] = $position->fPreisEinzelNetto * $position->nAnzahl;
                     } else {
-                        $nSteuersatz_arr[$Position->kSteuerklasse] += $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                        $taxRates[$position->kSteuerklasse] += $position->fPreisEinzelNetto * $position->nAnzahl;
                     }
                 }
             }
-            $fMaxValue = max($nSteuersatz_arr);
-            foreach ($nSteuersatz_arr as $i => $nSteuersatz) {
-                if ($nSteuersatz == $fMaxValue) {
-                    $kSteuerklasse = $i;
+            $fMaxValue = count($taxRates) > 0 ? max($taxRates) : 0;
+            foreach ($taxRates as $i => $rate) {
+                if ($rate === $fMaxValue) {
+                    $classID = $i;
                     break;
                 }
             }
         } else {
-            $steuersatz = -1;
-            foreach ($this->PositionenArr as $i => $Position) {
-                if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-                    && $Position->kSteuerklasse > 0
-                    && Tax::getSalesTax($Position->kSteuerklasse) > $steuersatz
+            $rate = -1;
+            foreach ($this->PositionenArr as $i => $position) {
+                if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                    && $position->kSteuerklasse > 0
+                    && Tax::getSalesTax($position->kSteuerklasse) > $rate
                 ) {
-                    $steuersatz    = Tax::getSalesTax($Position->kSteuerklasse);
-                    $kSteuerklasse = $Position->kSteuerklasse;
+                    $rate    = Tax::getSalesTax($position->kSteuerklasse);
+                    $classID = $position->kSteuerklasse;
                 }
             }
         }
 
-        return (int)$kSteuerklasse;
+        return (int)$classID;
     }
 
     /**
@@ -1348,6 +1379,10 @@ class Warenkorb
                                 - ($reservedStock[$productID] ?? 0))
                             / $depProducts[$productID]->product->fPackeinheit
                             / $depProducts[$productID]->stockFactor);
+
+                        if ($newAmount > $this->PositionenArr[$i]->nAnzahl) {
+                            $newAmount = $this->PositionenArr[$i]->nAnzahl;
+                        }
 
                         if ($newAmount > 0) {
                             $this->PositionenArr[$i]->nAnzahl = $newAmount;

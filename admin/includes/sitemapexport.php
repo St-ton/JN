@@ -18,7 +18,7 @@ function baueSitemap($nDatei, $data)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Shop::Container()->getLogService()->debug(
         'Baue "' . PFAD_EXPORT . 'sitemap_' .
-        $nDatei . '.xml", Datenlaenge ' . strlen($data)
+        $nDatei . '.xml", Datenlaenge ' . mb_strlen($data)
     );
     $conf = Shop::getSettings([CONF_SITEMAP]);
     if (!empty($data)) {
@@ -102,7 +102,7 @@ function makeURL(
     $strRet = "  <url>\n" .
         '     <loc>' . StringHandler::htmlentities(Shop::getURL($ssl)) . '/' .
         StringHandler::htmlentities($strLoc) . "</loc>\n";
-    if (strlen($cGoogleImageURL) > 0) {
+    if (mb_strlen($cGoogleImageURL) > 0) {
         $strRet .=
             "     <image:image>\n" .
             '        <image:loc>' . StringHandler::htmlentities($cGoogleImageURL) . "</image:loc>\n" .
@@ -163,7 +163,7 @@ function isSitemapBlocked($cUrl)
     ];
 
     foreach ($cExclude_arr as $cExclude) {
-        if (strpos($cUrl, $cExclude) !== false) {
+        if (mb_strpos($cUrl, $cExclude) !== false) {
             return true;
         }
     }
@@ -323,7 +323,7 @@ function generateSitemapXML()
                 Image::SIZE_LG,
                 $number
             );
-            if (strlen($cGoogleImage) > 0) {
+            if (mb_strlen($cGoogleImage) > 0) {
                 $cGoogleImage = $imageBaseURL . $cGoogleImage;
             }
         }
@@ -392,7 +392,7 @@ function generateSitemapXML()
                     Image::SIZE_LG,
                     $number
                 );
-                if (strlen($cGoogleImage) > 0) {
+                if (mb_strlen($cGoogleImage) > 0) {
                     $cGoogleImage = $imageBaseURL . $cGoogleImage;
                 }
             }
@@ -448,11 +448,11 @@ function generateSitemapXML()
                     ],
                     \DB\ReturnType::SINGLE_OBJECT
                 );
-                if (isset($oSeo->cSeo) && strlen($oSeo->cSeo) > 0) {
+                if (isset($oSeo->cSeo) && mb_strlen($oSeo->cSeo) > 0) {
                     $tlink->cSeo = $oSeo->cSeo;
                 }
 
-                if (isset($tlink->cSeo) && strlen($tlink->cSeo) > 0) {
+                if (isset($tlink->cSeo) && mb_strlen($tlink->cSeo) > 0) {
                     if ($nSitemap > $nSitemapLimit) {
                         $nSitemap = 1;
                         baueSitemap($nDatei, $sitemap_data);
@@ -463,7 +463,7 @@ function generateSitemapXML()
 
                     $tlink->cLocalizedSeo[$tlink->cISOSprache] = $tlink->cSeo ?? null;
                     $link                                      = URL::buildURL($tlink, URLART_SEITE);
-                    if (strlen($tlink->cSeo) > 0) {
+                    if (mb_strlen($tlink->cSeo) > 0) {
                         $link = $tlink->cSeo;
                     } elseif ($_SESSION['cISOSprache'] !== $tlink->cISOSprache) {
                         $link .= '&lang=' . $tlink->cISOSprache;
@@ -1048,7 +1048,7 @@ function holeGoogleImage($artikel)
     // Falls ja, lade die Bilder des anderen Artikels
     $oBild = new stdClass();
     if (isset($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK])
-        && strlen($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
+        && mb_strlen($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
     ) {
         $cArtNr = StringHandler::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
         $oBild  = Shop::Container()->getDB()->queryPrepared(
@@ -1090,7 +1090,7 @@ function loescheSitemaps()
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_EXPORT) && $dh = opendir(PFAD_ROOT . PFAD_EXPORT)) {
         while (($file = readdir($dh)) !== false) {
-            if ($file === 'sitemap_index.xml' || strpos($file, 'sitemap_') !== false) {
+            if ($file === 'sitemap_index.xml' || mb_strpos($file, 'sitemap_') !== false) {
                 unlink(PFAD_ROOT . PFAD_EXPORT . $file);
             }
         }

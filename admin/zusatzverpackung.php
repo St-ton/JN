@@ -13,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
@@ -43,7 +43,9 @@ if ($action === 'save') {
         JTL_CHARSET
     );
 
-    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO]) && strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)) {
+    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO])
+        && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)
+    ) {
         $cFehler .= __('errorNameMissing') . '<br />';
     }
     if (!(is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0)) {
@@ -191,7 +193,7 @@ function gibKundengruppeObj($cKundengruppe)
     $kKundengruppeTMP_arr = [];
     $cKundengruppeTMP_arr = [];
 
-    if (strlen($cKundengruppe) > 0) {
+    if (mb_strlen($cKundengruppe) > 0) {
         // Kundengruppen holen
         $oKundengruppe_arr = Shop::Container()->getDB()->query(
             'SELECT kKundengruppe, cName FROM tkundengruppe',
@@ -235,7 +237,7 @@ function holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, &$smar
 {
     $oVerpackung->oSprach_arr = [];
     foreach ($_POST as $key => $value) {
-        if (strpos($key, 'cName') !== false) {
+        if (mb_strpos($key, 'cName') !== false) {
             $cISO                                   = explode('cName_', $key)[1];
             $idx                                    = 'cBeschreibung_' . $cISO;
             $oVerpackung->oSprach_arr[$cISO]        = new stdClass();

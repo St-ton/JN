@@ -9,7 +9,7 @@ use Helpers\Form;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'emailblacklist';
@@ -22,7 +22,7 @@ if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && Fo
         Shop::Container()->getDB()->query('TRUNCATE temailblacklist', \DB\ReturnType::AFFECTED_ROWS);
         foreach ($addresses as $mail) {
             $mail = strip_tags(trim($mail));
-            if (strlen($mail) > 0) {
+            if (mb_strlen($mail) > 0) {
                 Shop::Container()->getDB()->insert('temailblacklist', (object)['cEmail' => $mail]);
             }
         }

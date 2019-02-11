@@ -66,15 +66,15 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 
     $cSalt   = sha1(uniqid(mt_rand(), true));
-    $nLaenge = strlen($cSalt);
-    $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - strlen($cPasswort));
+    $nLaenge = mb_strlen($cSalt);
+    $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - mb_strlen($cPasswort));
     $cSalt   = $cHashPasswort
-        ? substr($cHashPasswort, min(strlen($cPasswort), strlen($cHashPasswort) - $nLaenge), $nLaenge)
-        : strrev(substr($cSalt, 0, $nLaenge));
+        ? mb_substr($cHashPasswort, min(mb_strlen($cPasswort), mb_strlen($cHashPasswort) - $nLaenge), $nLaenge)
+        : strrev(mb_substr($cSalt, 0, $nLaenge));
     $cHash   = sha1($cPasswort);
-    $cHash   = sha1(substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort)));
-    $cHash   = substr($cHash, $nLaenge);
-    $cHash   = substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort));
+    $cHash   = sha1(mb_substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . mb_substr($cHash, mb_strlen($cPasswort)));
+    $cHash   = mb_substr($cHash, $nLaenge);
+    $cHash   = mb_substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . mb_substr($cHash, mb_strlen($cPasswort));
 
     return $cHashPasswort && $cHashPasswort !== $cHash ? false : $cHash;
 }
@@ -93,12 +93,12 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
     $cSaltBuchstaben = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
     // Gen SALT
     for ($j = 0; $j < 30; $j++) {
-        $cSalt .= substr($cSaltBuchstaben, mt_rand(0, strlen($cSaltBuchstaben) - 1), 1);
+        $cSalt .= mb_substr($cSaltBuchstaben, mt_rand(0, mb_strlen($cSaltBuchstaben) - 1), 1);
     }
     $cSalt = md5($cSalt);
     mt_srand();
     // Wurde ein String übergeben?
-    if (strlen($cString) > 0) {
+    if (mb_strlen($cString) > 0) {
         // Hat der String Elemente?
         [$strings] = explode(';', $cString);
         if (is_array($strings) && count($strings) > 0) {
@@ -108,13 +108,13 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
 
             $cUID = md5($cUID . $cSalt);
         } else {
-            $sl = strlen($cString);
+            $sl = mb_strlen($cString);
             for ($i = 0; $i < $sl; $i++) {
-                $nPos = mt_rand(0, strlen($cString) - 1);
-                if (((int)date('w') % 2) <= strlen($cString)) {
+                $nPos = mt_rand(0, mb_strlen($cString) - 1);
+                if (((int)date('w') % 2) <= mb_strlen($cString)) {
                     $nPos = (int)date('w') % 2;
                 }
-                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
+                $cUID .= md5(mb_substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
         $cUID = cryptPasswort($cUID . $cSalt);
@@ -122,7 +122,7 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
         $cUID = cryptPasswort(md5(M_PI . $cSalt . md5(time() - mt_rand())));
     }
     // Anzahl Stellen beachten
-    return $nAnzahlStellen > 0 ? substr($cUID, 0, $nAnzahlStellen) : $cUID;
+    return $nAnzahlStellen > 0 ? mb_substr($cUID, 0, $nAnzahlStellen) : $cUID;
 }
 
 /**
@@ -183,7 +183,8 @@ function writeLog($logfile, $entry, $level)
         if (!$logfile) {
             return false;
         }
-        fwrite($logfile,
+        fwrite(
+            $logfile,
             "\n[" . date('m.d.y H:i:s') . '] ' .
             '[' . (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
             $entry
@@ -297,7 +298,7 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
             foreach ($oVariation->Werte as $oVariationWert) {
                 // Ist Variation ausverkauft?
                 if ($oVariationWert->fLagerbestand <= 0) {
-                    $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
+                    $oVariationWert->cNameEigenschaft   = $oVariation->cName;
                     $soldOut[$oVariation->kEigenschaft] = $oVariationWert;
                 }
             }
@@ -406,9 +407,9 @@ function formatCurrency($fSumme)
         if ($fCents < 10) {
             $fCents = '0' . $fCents;
         }
-        for ($i = 0; $i < floor((strlen($fSumme) - (1 + $i)) / 3); $i++) {
-            $fSumme = substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3)) . '.' .
-                substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3));
+        for ($i = 0; $i < floor((mb_strlen($fSumme) - (1 + $i)) / 3); $i++) {
+            $fSumme = mb_substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3)) . '.' .
+                mb_substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3));
         }
     }
 
@@ -630,7 +631,7 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr = [])
  */
 function gibArtikelBildPfad($cPfad)
 {
-    return strlen(trim($cPfad)) > 0
+    return mb_strlen(trim($cPfad)) > 0
         ? $cPfad
         : BILD_KEIN_ARTIKELBILD_VORHANDEN;
 }
@@ -705,15 +706,12 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
  * @param Artikel $oArtikel
  * @param float   $fAnzahl
  * @return int|null
- * @deprecated since 5.0.0
+ * @deprecated since 4.06.10 - should not be used anymore; is replaced by SHOP-1861
  */
 function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 {
-    trigger_error(
-        __FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkCartPartComponent() instead.',
-        E_USER_DEPRECATED
-    );
-    return Cart::checkCartPartComponent($oArtikel, $fAnzahl);
+    trigger_error(__FUNCTION__ . ' is deprecated. This function should not be used anymore..', E_USER_DEPRECATED);
+    return null;
 }
 
 /**
@@ -942,7 +940,7 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 /**
  * @param string $metaProposal the proposed meta text value.
  * @param string $metaSuffix append suffix to meta value that wont be shortened
- * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
  * @return string truncated meta value with optional suffix (always appended if set),
  * @deprecated since 5.0.0
  */
@@ -1761,7 +1759,7 @@ function gibKeyStringFuerKeyArray($cKey_arr, $cSeperator)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cKeys = '';
-    if (is_array($cKey_arr) && count($cKey_arr) > 0 && strlen($cSeperator) > 0) {
+    if (is_array($cKey_arr) && count($cKey_arr) > 0 && mb_strlen($cSeperator) > 0) {
         $cKeys .= ';';
         foreach ($cKey_arr as $i => $cKey) {
             if ($i > 0) {
@@ -1790,7 +1788,7 @@ function gibKeyArrayFuerKeyString($cKeys, $seperator)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $keys = [];
     foreach (explode($seperator, $cKeys) as $cTMP) {
-        if (strlen($cTMP) > 0) {
+        if (mb_strlen($cTMP) > 0) {
             $keys[] = (int)$cTMP;
         }
     }
@@ -1975,7 +1973,7 @@ function gibTokenName(bool $bAlten = false)
         }
     }
 
-    return substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
+    return mb_substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
 }
 
 /**
@@ -1999,7 +1997,7 @@ function setzeSpracheUndWaehrungLink()
         __FUNCTION__ . ' is deprecated. Use Sprache::generateLanguageAndCurrencyLinks() instead.',
         E_USER_DEPRECATED
     );
-    Sprache::generateLanguageAndCurrencyLinks();
+    Shop::Lang()->generateLanguageAndCurrencyLinks();
 }
 
 /**

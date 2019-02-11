@@ -15,7 +15,7 @@ function getItems(bool $filesize = false): array
 {
     return [
         Image::TYPE_PRODUCT => (object)[
-            'name'  => __('typeProduct'),
+            'name'  => __('product'),
             'type'  => Image::TYPE_PRODUCT,
             'stats' => MediaImage::getStats(Image::TYPE_PRODUCT, $filesize)
         ]
@@ -113,6 +113,8 @@ function cleanupStorage(int $index)
  */
 function clearImageCache($type, bool $isAjax = false)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/bilderverwaltung');
+
     if ($type !== null && preg_match('/[a-z]*/', $type)) {
         MediaImage::clearCache($type);
         unset($_SESSION['image_count'], $_SESSION['renderedImages']);

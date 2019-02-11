@@ -14,7 +14,7 @@
             <a data-toggle="tab" role="tab" href="#praemie">{__('kundenwerbenkundenBonis')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('kundenwerbenkundenSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
 
@@ -32,9 +32,9 @@
                             <table class="table table-striped">
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{__('kundenwerbenkundenName')}</th>
+                                    <th class="tleft">{__('name')}</th>
                                     <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                    <th class="tleft">{__('kundenwerbenkundenCredit')}</th>
+                                    <th class="tleft">{__('credit')}</th>
                                     <th class="th-5">{__('kundenwerbenkundenDateInvite')}</th>
                                 </tr>
                                 {foreach $oKwKNichtReg_arr as $oKwKNichtReg}
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <p class="submit">
-                        <button name="loeschen" type="submit" value="{__('kundenwerbenkundenDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('kundenwerbenkundenDelete')}</button>
+                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                     </p>
                 </form>
             {else}
@@ -70,9 +70,9 @@
                     <div id="tabellenLivesuche" class="table-responsive">
                         <table class="table table-striped">
                             <tr>
-                                <th class="tleft">{__('kundenwerbenkundenRegName')}</th>
+                                <th class="tleft">{__('newCustomer')}</th>
                                 <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                <th class="tleft">{__('kundenwerbenkundenCredit')}</th>
+                                <th class="tleft">{__('credit')}</th>
                                 <th class="th-4">{__('kundenwerbenkundenDateInvite')}</th>
                                 <th class="th-5">{__('kundenwerbenkundenDateErstellt')}</th>
                             </tr>
@@ -102,7 +102,7 @@
                         <table class="table table-striped">
                             <tr>
                                 <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                <th class="tleft">{__('kundenwerbenkundenCredit')}</th>
+                                <th class="tleft">{__('credit')}</th>
                                 <th class="">{__('kundenwerbenkundenExtraPoints')}</th>
                                 <th class="th-4">{__('kundenwerbenkundenDateBoni')}</th>
                             </tr>

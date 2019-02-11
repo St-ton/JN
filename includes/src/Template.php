@@ -212,13 +212,13 @@ class Template
         foreach ($items as $item) {
             $frontend = PFAD_PLUGIN_FRONTEND . $item->type . '/' . $item->path;
             if ((int)$item->bExtension === 1) {
-                $item->rel = PFAD_EXTENSIONS . $item->cVerzeichnis . '/';
+                $item->rel = PLUGIN_DIR . $item->cVerzeichnis . '/';
             } else {
                 $item->rel = PFAD_PLUGIN . $item->cVerzeichnis . '/';
                 $frontend  = PFAD_PLUGIN_VERSION . $item->nVersion . '/' . $frontend;
             }
             $item->rel .= $frontend;
-            $item->abs = PFAD_ROOT . $item->rel;
+            $item->abs  = PFAD_ROOT . $item->rel;
         }
 
         return $items;
@@ -544,7 +544,7 @@ class Template
                         // we insert our default "no resizable"
                         $setting->vTextAreaAttr_arr['Resizable'] = 'none';
                         foreach ($attr as $_key => $_val) {
-                            $_val                               = (string)$_val; // cast the value(!)
+                            $_val                              = (string)$_val; // cast the value(!)
                             $setting->vTextAreaAttr_arr[$_key] = $_val;
                             // multiple values of 'disable resizing' are allowed,
                             // but only vertical is ok, if 'resizable' is required
@@ -567,11 +567,11 @@ class Template
                     foreach ($oSection->oSettings_arr as $_setting) {
                         if ($_setting->cKey === $setting->cKey) {
                             $settingExists = true;
-                            $setting      = $_setting;
+                            $setting       = $_setting;
                             break;
                         }
                     }
-                    $setting->bEditable = strlen($setting->bEditable) === 0
+                    $setting->bEditable = mb_strlen($setting->bEditable) === 0
                         ? true
                         : (bool)(int)$setting->bEditable;
                     if ($setting->bEditable && isset($oDBSettings[$oSection->cKey][$setting->cKey])) {
@@ -606,9 +606,9 @@ class Template
                             $optgroup->oValues_arr = [];
                             /** @var SimpleXMLElement $XMLOptgroupOption */
                             foreach ($XMLOptgroup->Option as $XMLOptgroupOption) {
-                                $oOptgroupValues          = new stdClass();
-                                $oOptgroupValues->cName   = (string)$XMLOptgroupOption;
-                                $oOptgroupValues->cValue  = (string)$XMLOptgroupOption->attributes()->Value;
+                                $oOptgroupValues         = new stdClass();
+                                $oOptgroupValues->cName  = (string)$XMLOptgroupOption;
+                                $oOptgroupValues->cValue = (string)$XMLOptgroupOption->attributes()->Value;
                                 $optgroup->oValues_arr[] = $oOptgroupValues;
                             }
                             $setting->oOptgroup_arr[] = $optgroup;
@@ -671,8 +671,8 @@ class Template
             $theme->cName      = (string)$oXMLTheme->attributes()->Name;
             $theme->oFiles_arr = [];
             foreach ($oXMLTheme->File as $cFile) {
-                $oThemeFiles          = new stdClass();
-                $oThemeFiles->cPath   = (string)$cFile->attributes()->Path;
+                $oThemeFiles         = new stdClass();
+                $oThemeFiles->cPath  = (string)$cFile->attributes()->Path;
                 $theme->oFiles_arr[] = $oThemeFiles;
             }
             $lessFiles[$theme->cName] = $theme;
@@ -722,7 +722,7 @@ class Template
                 return false;
             }
             while (($obj = readdir($dh)) !== false) {
-                if (strpos($obj, '.') === 0) {
+                if (mb_strpos($obj, '.') === 0) {
                     continue;
                 }
                 if (!is_dir(PFAD_ROOT . PFAD_COMPILEDIR . $obj)) {

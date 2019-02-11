@@ -187,12 +187,12 @@ class Hersteller
         $imageBaseURL = Shop::getImageBaseURL();
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
-            $this->cURL          = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
+            $this->cURL          = (isset($obj->cSeo) && mb_strlen($obj->cSeo) > 0)
                 ? $shopURL . $obj->cSeo
                 : $shopURL . '?h=' . $obj->kHersteller;
             $this->cBeschreibung = StringHandler::parseNewsText($this->cBeschreibung);
         }
-        if (strlen($this->cBildpfad) > 0) {
+        if (mb_strlen($this->cBildpfad) > 0) {
             $this->cBildpfadKlein  = PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
             $this->cBildpfadNormal = PFAD_HERSTELLERBILDER_NORMAL . $this->cBildpfad;
         } else {
@@ -228,18 +228,18 @@ class Hersteller
                         )';
         }
         $objs    = Shop::Container()->getDB()->query(
-            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+            'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = " . $kSprache . "
+                    AND therstellersprache.kSprache = ' . $kSprache . "
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = " . $kSprache . $sqlWhere . "
-                ORDER BY thersteller.nSortNr, thersteller.cName",
+                    AND tseo.kSprache = " . $kSprache . $sqlWhere . '
+                ORDER BY thersteller.nSortNr, thersteller.cName',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $results = [];

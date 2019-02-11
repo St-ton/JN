@@ -21,23 +21,24 @@ $kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $link       = $linkHelper->getPageLink($kLink);
 $cart       = \Session\Frontend::getCart();
 $smarty     = Shop::Smarty();
+$db         = Shop::Container()->getDB();
 $bestellung = null;
 if (isset($_GET['i'])) {
-    $bestellid = Shop::Container()->getDB()->select('tbestellid', 'cId', $_GET['i']);
+    $bestellid = $db->select('tbestellid', 'cId', $_GET['i']);
     if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
         $bestellung = new Bestellung($bestellid->kBestellung);
         $bestellung->fuelleBestellung(false);
         speicherUploads($bestellung);
-        Shop::Container()->getDB()->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
+        $db->delete('tbestellid', 'kBestellung', (int)$bestellid->kBestellung);
     }
-    Shop::Container()->getDB()->query(
+    $db->query(
         'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)',
         \DB\ReturnType::DEFAULT
     );
     $smarty->assign('abschlussseite', 1);
 } else {
     if (isset($_POST['kommentar'])) {
-        $_SESSION['kommentar'] = substr(strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])), 0, 1000);
+        $_SESSION['kommentar'] = mb_substr(strip_tags($db->escape($_POST['kommentar'])), 0, 1000);
     } elseif (!isset($_SESSION['kommentar'])) {
         $_SESSION['kommentar'] = '';
     }
@@ -72,7 +73,7 @@ if (isset($_GET['i'])) {
         }
         $bestellung = finalisiereBestellung();
         $bestellid  = $bestellung->kBestellung > 0
-            ? Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
+            ? $db->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
             : false;
         if ($bestellung->Lieferadresse === null && !empty($_SESSION['Lieferadresse']->cVorname)) {
             $bestellung->Lieferadresse = gibLieferadresseAusSession();
@@ -89,7 +90,7 @@ if (isset($_GET['i'])) {
 }
 if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-    if ((int)$oTrustedShops->nAktiv === 1 && strlen($oTrustedShops->tsId) > 0) {
+    if ((int)$oTrustedShops->nAktiv === 1 && mb_strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
     }
 }

@@ -95,16 +95,15 @@ class Kampagne
      */
     public function insertInDB(): int
     {
-        $obj             = new stdClass();
-        $obj->cName      = $this->cName;
-        $obj->cParameter = $this->cParameter;
-        $obj->cWert      = $this->cWert;
-        $obj->nDynamisch = $this->nDynamisch;
-        $obj->nAktiv     = $this->nAktiv;
-        $obj->dErstellt  = $this->dErstellt;
-
-        $this->kKampagne  = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        $parts            = Date::getDateParts($this->dErstellt);
+        $obj                = new stdClass();
+        $obj->cName         = $this->cName;
+        $obj->cParameter    = $this->cParameter;
+        $obj->cWert         = $this->cWert;
+        $obj->nDynamisch    = $this->nDynamisch;
+        $obj->nAktiv        = $this->nAktiv;
+        $obj->dErstellt     = $this->dErstellt;
+        $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
+        $parts              = Date::getDateParts($this->dErstellt);
         $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
             $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
 
@@ -199,13 +198,13 @@ class Kampagne
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
-            if (strlen(Request::verifyGPDataString($oKampagne->cParameter)) > 0
+            if (mb_strlen(Request::verifyGPDataString($oKampagne->cParameter)) > 0
                 && isset($oKampagne->nDynamisch)
                 && ((int)$oKampagne->nDynamisch === 1
                     || ((int)$oKampagne->nDynamisch === 0
                         && isset($oKampagne->cWert)
-                        && strtolower($oKampagne->cWert) ===
-                        strtolower(Request::verifyGPDataString($oKampagne->cParameter)))
+                        && mb_convert_case($oKampagne->cWert, MB_CASE_LOWER) ===
+                        mb_convert_case(Request::verifyGPDataString($oKampagne->cParameter), MB_CASE_LOWER))
                 )
             ) {
                 $referrer = Visitor::getReferer();
@@ -244,7 +243,7 @@ class Kampagne
 
             if (!$bKampagnenHit
                 && isset($_SERVER['HTTP_REFERER'])
-                && strpos($_SERVER['HTTP_REFERER'], '.google.') !== false
+                && mb_strpos($_SERVER['HTTP_REFERER'], '.google.') !== false
             ) {
                 // Besucher kommt von Google und hat vorher keine Kampagne getroffen
                 $oVorgang = Shop::Container()->getDB()->select(
@@ -295,8 +294,8 @@ class Kampagne
             $oKampagnenVorgang->dErstellt    = 'NOW()';
 
             if ($customData !== null) {
-                $oKampagnenVorgang->cCustomData = strlen($customData) > 255
-                    ? substr($customData, 0, 255)
+                $oKampagnenVorgang->cCustomData = mb_strlen($customData) > 255
+                    ? mb_substr($customData, 0, 255)
                     : $customData;
             }
 

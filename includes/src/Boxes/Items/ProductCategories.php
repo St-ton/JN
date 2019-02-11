@@ -6,6 +6,7 @@
 
 namespace Boxes\Items;
 
+use Helpers\Category;
 use Session\Frontend;
 
 /**
@@ -36,7 +37,7 @@ final class ProductCategories extends AbstractBox
      */
     private function getCategories(): array
     {
-        $categories = \Helpers\Category::getInstance();
+        $categories = Category::getInstance();
         $list       = $categories->combinedGetAll();
         $boxID      = $this->getCustomID();
         if ($boxID > 0) {

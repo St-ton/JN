@@ -97,10 +97,10 @@
 
 <ul class="nav nav-tabs" role="tablist">
     <li role="presentation"{if $cTab === 'redirects'} class="active"{/if}>
-        <a data-toggle="tab" role="tab" href="#redirects">{__('redirectOverview')}</a>
+        <a data-toggle="tab" role="tab" href="#redirects">{__('overview')}</a>
     </li>
     <li role="presentation"{if $cTab === 'new_redirect'} class="active"{/if}>
-        <a data-toggle="tab" role="tab" href="#new_redirect">{__('redirectCreate')}</a>
+        <a data-toggle="tab" role="tab" href="#new_redirect">{__('create')}</a>
     </li>
 </ul>
 
@@ -186,7 +186,7 @@
                                                     <thead>
                                                         <tr>
                                                             <th>{__('redirectReferer')}</th>
-                                                            <th>{__('redirectRefererDate')}</th>
+                                                            <th>{__('date')}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -297,7 +297,7 @@
                 </div>
                 <div class="panel-footer">
                     <button name="action" value="new" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {__('redirectCreate')}
+                        <i class="fa fa-save"></i> {__('create')}
                     </button>
                 </div>
             </div>

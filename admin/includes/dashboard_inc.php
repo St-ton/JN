@@ -38,7 +38,10 @@ function getWidgets(bool $bActive = true)
             $className          = '\Widgets\\' . $widget->cClass;
             $classPath          = null;
             $widget->cNiceTitle = str_replace(['--', ' '], '-', $widget->cTitle);
-            $widget->cNiceTitle = strtolower(preg_replace('/[äüöß\(\)\/\\\]/iu', '', $widget->cNiceTitle));
+            $widget->cNiceTitle = mb_convert_case(
+                preg_replace('/[äüöß\(\)\/\\\]/iu', '', $widget->cNiceTitle),
+                MB_CASE_LOWER
+            );
             $plugin             = null;
             if ($widget->kPlugin > 0) {
                 $loader = \Plugin\Helper::getLoader($widget->bExtension === 1, $db, $cache);
@@ -162,7 +165,7 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
         $cData = Request::http_get_contents($url, 15, $post);
     }
 
-    if (strpos($cData, '<?xml') === 0) {
+    if (mb_strpos($cData, '<?xml') === 0) {
         $data = simplexml_load_string($cData);
     } else {
         $data = json_decode($cData);

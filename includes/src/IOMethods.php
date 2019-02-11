@@ -64,7 +64,7 @@ class IOMethods
     public function suggestions($keyword): array
     {
         $results = [];
-        if (strlen($keyword) < 2) {
+        if (mb_strlen($keyword) < 2) {
             return $results;
         }
         $smarty     = Shop::Smarty();
@@ -709,7 +709,7 @@ class IOMethods
         $options->nDownload                 = 0;
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
-        $oArtikel                                    = new Artikel();
+        $oArtikel                           = new Artikel();
         $oArtikel->fuelleArtikel($kVaterArtikel, $options, \Session\Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
@@ -882,7 +882,7 @@ class IOMethods
                 $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
 
                 $kGesetzteEigeschaftWerte = [$kEigenschaft => $kEigenschaftWert];
-                $invalidVariations          = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
+                $invalidVariations        = $oArtikel->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
 
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
                 if (in_array($kEigenschaftWert, $invalidVariations[$kEigenschaft])) {
@@ -1125,7 +1125,7 @@ class IOMethods
     {
         $response = new IOResponse();
 
-        if (strlen($country) === 2) {
+        if (mb_strlen($country) === 2) {
             $regions = Staat::getRegions($country);
             $response->script('this.response = ' . json_encode($regions) . ';');
         }
@@ -1141,7 +1141,7 @@ class IOMethods
     {
         $response = new IOResponse();
 
-        if (strlen($country) === 2) {
+        if (mb_strlen($country) === 2) {
             $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
                 \Session\Frontend::getCustomerGroup()->getID(),
                 false,

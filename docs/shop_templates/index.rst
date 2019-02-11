@@ -14,5 +14,6 @@ Templates
     livestyler
     debug
     short_checkout
+    overlays
 
 .. include:: /shop_templates/map.rst.inc

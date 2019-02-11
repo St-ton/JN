@@ -5,6 +5,7 @@
  */
 
 use Helpers\Product;
+use dbeS\TableMapper as Mapper;
 
 require_once __DIR__ . '/syncinclude.php';
 
@@ -26,8 +27,8 @@ if (auth()) {
         $conf   = Shop::getSettings([CONF_GLOBAL]);
         $db->query('START TRANSACTION', \DB\ReturnType::DEFAULT);
         foreach ($syncFiles as $i => $xmlFile) {
-            $d   = file_get_contents($xmlFile);
-            $xml = XML_unserialize($d);
+            $data = file_get_contents($xmlFile);
+            $xml  = \JTL\XML::unserialize($data);
 
             if (strpos($xmlFile, 'artdel.xml') !== false) {
                 $articleIDs = array_merge($articleIDs, bearbeiteDeletes($xml, $conf));
@@ -72,7 +73,6 @@ function bearbeiteDeletes($xml, array $conf)
     foreach ($xml['del_artikel']['kArtikel'] as $kArtikel) {
         $kArtikel      = (int)$kArtikel;
         $kVaterArtikel = Product::getParent($kArtikel);
-        $nIstVater     = $kVaterArtikel > 0 ? 0 : 1;
         checkArtikelBildLoeschung($kArtikel);
 
         $db->queryPrepared(
@@ -122,10 +122,9 @@ function bearbeiteInsert($xml, array $conf)
     if (!is_array($xml['tartikel'])) {
         return $res;
     }
-    $db          = Shop::Container()->getDB();
-    $artikel_arr = mapArray($xml, 'tartikel', $GLOBALS['mArtikel']);
-    // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat.
-    $oSeoOld       = $db->select(
+    $db       = Shop::Container()->getDB();
+    $products = mapArray($xml, 'tartikel', Mapper::getMapping('mArtikel'));
+    $oSeoOld  = $db->select(
         'tartikel',
         'kArtikel',
         (int)$Artikel->kArtikel,
@@ -136,7 +135,7 @@ function bearbeiteInsert($xml, array $conf)
         false,
         'cSeo'
     );
-    $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
+    $seoData  = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
     if (isset($xml['tartikel']['tkategorieartikel'])
         && (int)$conf['global']['kategorien_anzeigefilter'] === EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
         && Shop::Container()->getCache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)
@@ -158,7 +157,7 @@ function bearbeiteInsert($xml, array $conf)
         $newArticleCategoriesObject = mapArray(
             $xml['tartikel'],
             'tkategorieartikel',
-            $GLOBALS['mKategorieArtikel']
+            Mapper::getMapping('mKategorieArtikel')
         );
         foreach ($newArticleCategoriesObject as $newArticleCategory) {
             $newArticleCategories[] = (int)$newArticleCategory->kKategorie;
@@ -277,135 +276,143 @@ function bearbeiteInsert($xml, array $conf)
     }
     $downloadKeys = getDownloadKeys($Artikel->kArtikel);
     loescheArtikel($Artikel->kArtikel, true, $conf);
-    if ($artikel_arr[0]->kArtikel > 0) {
-        if (!$artikel_arr[0]->cSeo) {
+    if ($products[0]->kArtikel > 0) {
+        if (!$products[0]->cSeo) {
             // get seo path from productname, but replace slashes
-            $artikel_arr[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikel_arr[0]->cName);
+            $products[0]->cSeo = \JTL\SeoHelper::getFlatSeoPath($products[0]->cName);
         }
-        $artikel_arr[0]->cSeo = \JTL\SeoHelper::getSeo($artikel_arr[0]->cSeo);
-        $artikel_arr[0]->cSeo = \JTL\SeoHelper::checkSeo($artikel_arr[0]->cSeo);
+        $products[0]->cSeo = \JTL\SeoHelper::getSeo($products[0]->cSeo);
+        $products[0]->cSeo = \JTL\SeoHelper::checkSeo($products[0]->cSeo);
         // persistente werte
-        $artikel_arr[0]->dLetzteAktualisierung = 'NOW()';
+        $products[0]->dLetzteAktualisierung = 'NOW()';
         // mysql strict fixes
-        if (empty($artikel_arr[0]->dMHD)) {
-            $artikel_arr[0]->dMHD = '_DBNULL_';
+        if (empty($products[0]->dMHD)) {
+            $products[0]->dMHD = '_DBNULL_';
         }
-        if (isset($artikel_arr[0]->dErstellt) && $artikel_arr[0]->dErstellt === '') {
-            $artikel_arr[0]->dErstellt = 'NOW()';
+        if (isset($products[0]->dErstellt) && $products[0]->dErstellt === '') {
+            $products[0]->dErstellt = 'NOW()';
         }
-        if (empty($artikel_arr[0]->dZulaufDatum)) {
-            $artikel_arr[0]->dZulaufDatum = '_DBNULL_';
+        if (empty($products[0]->dZulaufDatum)) {
+            $products[0]->dZulaufDatum = '_DBNULL_';
         }
-        if (empty($artikel_arr[0]->dErscheinungsdatum)) {
-            $artikel_arr[0]->dErscheinungsdatum = '_DBNULL_';
+        if (empty($products[0]->dErscheinungsdatum)) {
+            $products[0]->dErscheinungsdatum = '_DBNULL_';
         }
-        if (isset($artikel_arr[0]->fLieferantenlagerbestand) && $artikel_arr[0]->fLieferantenlagerbestand === '') {
-            $artikel_arr[0]->fLieferantenlagerbestand = 0;
-        } elseif (!isset($artikel_arr[0]->fLieferantenlagerbestand)) {
-            $artikel_arr[0]->fLieferantenlagerbestand = 0;
+        if (isset($products[0]->fLieferantenlagerbestand) && $products[0]->fLieferantenlagerbestand === '') {
+            $products[0]->fLieferantenlagerbestand = 0;
+        } elseif (!isset($products[0]->fLieferantenlagerbestand)) {
+            $products[0]->fLieferantenlagerbestand = 0;
         }
-        if (isset($artikel_arr[0]->fZulauf) && $artikel_arr[0]->fZulauf === '') {
-            $artikel_arr[0]->fZulauf = 0;
-        } elseif (!isset($artikel_arr[0]->fZulauf)) {
-            $artikel_arr[0]->fZulauf = 0;
+        if (isset($products[0]->fZulauf) && $products[0]->fZulauf === '') {
+            $products[0]->fZulauf = 0;
+        } elseif (!isset($products[0]->fZulauf)) {
+            $products[0]->fZulauf = 0;
         }
-        if (isset($artikel_arr[0]->fLieferzeit) && $artikel_arr[0]->fLieferzeit === '') {
-            $artikel_arr[0]->fLieferzeit = 0;
-        } elseif (!isset($artikel_arr[0]->fLieferzeit)) {
-            $artikel_arr[0]->fLieferzeit = 0;
+        if (isset($products[0]->fLieferzeit) && $products[0]->fLieferzeit === '') {
+            $products[0]->fLieferzeit = 0;
+        } elseif (!isset($products[0]->fLieferzeit)) {
+            $products[0]->fLieferzeit = 0;
         }
         // temp. fix for syncing with wawi 1.0
-        if (isset($artikel_arr[0]->kVPEEinheit) && is_array($artikel_arr[0]->kVPEEinheit)) {
-            $artikel_arr[0]->kVPEEinheit = $artikel_arr[0]->kVPEEinheit[0];
+        if (isset($products[0]->kVPEEinheit) && is_array($products[0]->kVPEEinheit)) {
+            $products[0]->kVPEEinheit = $products[0]->kVPEEinheit[0];
         }
         // any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
-        if (isset($artikel_arr[0]->fLagerbestand) && $artikel_arr[0]->fLagerbestand > 0) {
+        if (isset($products[0]->fLagerbestand) && $products[0]->fLagerbestand > 0) {
             $delta = $db->query(
                 "SELECT SUM(pos.nAnzahl) AS totalquantity
                     FROM tbestellung b
                     JOIN twarenkorbpos pos
                         ON pos.kWarenkorb = b.kWarenkorb
                     WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . (int)$artikel_arr[0]->kArtikel,
+                        AND pos.kArtikel = " . (int)$products[0]->kArtikel,
                 \DB\ReturnType::SINGLE_OBJECT
             );
             if ($delta->totalquantity > 0) {
                 //subtract delta from stocklevel
-                $artikel_arr[0]->fLagerbestand -= $delta->totalquantity;
+                $products[0]->fLagerbestand -= $delta->totalquantity;
                 if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
                     $logger->debug(
-                        'Artikel-Sync: Lagerbestand von kArtikel ' . $artikel_arr[0]->kArtikel . ' wurde ' .
+                        'Artikel-Sync: Lagerbestand von kArtikel ' . $products[0]->kArtikel . ' wurde ' .
                         'wegen nicht-abgeholter Bestellungen ' .
-                        'um ' . $delta->totalquantity . ' auf ' . $artikel_arr[0]->fLagerbestand . ' reduziert.'
+                        'um ' . $delta->totalquantity . ' auf ' . $products[0]->fLagerbestand . ' reduziert.'
                     );
                 }
             }
         }
-        DBUpdateInsert('tartikel', $artikel_arr, 'kArtikel');
-        executeHook(HOOK_ARTIKEL_XML_BEARBEITEINSERT, ['oArtikel' => $artikel_arr[0]]);
+        DBUpdateInsert('tartikel', $products, 'kArtikel');
+        executeHook(HOOK_ARTIKEL_XML_BEARBEITEINSERT, ['oArtikel' => $products[0]]);
         if (isset($oSeoOld->cSeo)) {
-            checkDbeSXmlRedirect($oSeoOld->cSeo, $artikel_arr[0]->cSeo);
+            checkDbeSXmlRedirect($oSeoOld->cSeo, $products[0]->cSeo);
         }
         $db->query(
             "INSERT INTO tseo
                 SELECT tartikel.cSeo, 'kArtikel', tartikel.kArtikel, tsprache.kSprache
                 FROM tartikel, tsprache
-                WHERE tartikel.kArtikel = " . (int)$artikel_arr[0]->kArtikel . " 
+                WHERE tartikel.kArtikel = " . (int)$products[0]->kArtikel . " 
                     AND tsprache.cStandard = 'Y' 
                     AND tartikel.cSeo != ''",
             \DB\ReturnType::AFFECTED_ROWS
         );
     }
-    $artikelsprache_arr    = mapArray($xml['tartikel'], 'tartikelsprache', $GLOBALS['mArtikelSprache']);
-    $oShopSpracheAssoc_arr = Sprache::getAllLanguages(1);
-    $langCount             = count($artikelsprache_arr);
+    $localized    = mapArray(
+        $xml['tartikel'],
+        'tartikelsprache',
+        Mapper::getMapping('mArtikelSprache')
+    );
+    $allLanguages = Sprache::getAllLanguages(1);
+    $langCount    = count($localized);
     for ($i = 0; $i < $langCount; ++$i) {
-        if (!Sprache::isShopLanguage($artikelsprache_arr[$i]->kSprache, $oShopSpracheAssoc_arr)) {
+        if (!Sprache::isShopLanguage($localized[$i]->kSprache, $allLanguages)) {
             continue;
         }
-        if (!$artikelsprache_arr[$i]->cSeo) {
-            $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getFlatSeoPath($artikelsprache_arr[$i]->cName);
+        if (!$localized[$i]->cSeo) {
+            $localized[$i]->cSeo = \JTL\SeoHelper::getFlatSeoPath($localized[$i]->cName);
         }
-        if (!$artikelsprache_arr[$i]->cSeo) {
-            $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cSeo;
+        if (!$localized[$i]->cSeo) {
+            $localized[$i]->cSeo = $products[0]->cSeo;
         }
-        if (!$artikelsprache_arr[$i]->cSeo) {
-            $artikelsprache_arr[$i]->cSeo = $artikel_arr[0]->cName;
+        if (!$localized[$i]->cSeo) {
+            $localized[$i]->cSeo = $products[0]->cName;
         }
-        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::getSeo($artikelsprache_arr[$i]->cSeo);
-        $artikelsprache_arr[$i]->cSeo = \JTL\SeoHelper::checkSeo($artikelsprache_arr[$i]->cSeo);
+        $localized[$i]->cSeo = \JTL\SeoHelper::getSeo($localized[$i]->cSeo);
+        $localized[$i]->cSeo = \JTL\SeoHelper::checkSeo($localized[$i]->cSeo);
 
-        DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
+        DBUpdateInsert('tartikelsprache', [$localized[$i]], 'kArtikel', 'kSprache');
         $db->delete(
             'tseo',
             ['cKey', 'kKey', 'kSprache'],
-            ['kArtikel', (int)$artikelsprache_arr[$i]->kArtikel, (int)$artikelsprache_arr[$i]->kSprache]
+            ['kArtikel', (int)$localized[$i]->kArtikel, (int)$localized[$i]->kSprache]
         );
 
         $oSeo           = new stdClass();
-        $oSeo->cSeo     = $artikelsprache_arr[$i]->cSeo;
+        $oSeo->cSeo     = $localized[$i]->cSeo;
         $oSeo->cKey     = 'kArtikel';
-        $oSeo->kKey     = $artikelsprache_arr[$i]->kArtikel;
-        $oSeo->kSprache = $artikelsprache_arr[$i]->kSprache;
+        $oSeo->kKey     = $localized[$i]->kArtikel;
+        $oSeo->kSprache = $localized[$i]->kSprache;
         $db->insert('tseo', $oSeo);
         // Insert into tredirect weil sich das SEO vom Artikel geändert hat
-        if (isset($oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache])) {
+        if (isset($seoData[$localized[$i]->kSprache])) {
             checkDbeSXmlRedirect(
-                $oSeoAssoc_arr[$artikelsprache_arr[$i]->kSprache]->cSeo,
-                $artikelsprache_arr[$i]->cSeo
+                $seoData[$localized[$i]->kSprache]->cSeo,
+                $localized[$i]->cSeo
             );
         }
     }
     if (isset($xml['tartikel']['tattribut']) && is_array($xml['tartikel']['tattribut'])) {
-        $Attribut_arr = mapArray($xml['tartikel'], 'tattribut', $GLOBALS['mAttribut']);
-        $aArrCount    = count($Attribut_arr);
-        for ($i = 0; $i < $aArrCount; ++$i) {
-            if (count($Attribut_arr) < 2) {
+        $attributes = mapArray(
+            $xml['tartikel'],
+            'tattribut',
+            Mapper::getMapping('mAttribut')
+        );
+        $attrCount  = count($attributes);
+        for ($i = 0; $i < $attrCount; ++$i) {
+            if (count($attributes) < 2) {
                 loescheAttribute($xml['tartikel']['tattribut attr']['kAttribut']);
                 updateXMLinDB(
                     $xml['tartikel']['tattribut'],
                     'tattributsprache',
-                    $GLOBALS['mAttributSprache'],
+                    Mapper::getMapping('mAttributSprache'),
                     'kAttribut',
                     'kSprache'
                 );
@@ -414,31 +421,31 @@ function bearbeiteInsert($xml, array $conf)
                 updateXMLinDB(
                     $xml['tartikel']['tattribut'][$i],
                     'tattributsprache',
-                    $GLOBALS['mAttributSprache'],
+                    Mapper::getMapping('mAttributSprache'),
                     'kAttribut',
                     'kSprache'
                 );
             }
         }
-        DBUpdateInsert('tattribut', $Attribut_arr, 'kAttribut');
+        DBUpdateInsert('tattribut', $attributes, 'kAttribut');
     }
     if (isset($xml['tartikel']['tmediendatei']) && is_array($xml['tartikel']['tmediendatei'])) {
-        $oMediendatei_arr = mapArray($xml['tartikel'], 'tmediendatei', $GLOBALS['mMediendatei']);
-        $mediaCount       = count($oMediendatei_arr);
+        $mediaFiles = mapArray($xml['tartikel'], 'tmediendatei', Mapper::getMapping('mMediendatei'));
+        $mediaCount = count($mediaFiles);
         for ($i = 0; $i < $mediaCount; ++$i) {
             if ($mediaCount < 2) {
                 loescheMediendateien($xml['tartikel']['tmediendatei attr']['kMedienDatei']);
                 updateXMLinDB(
                     $xml['tartikel']['tmediendatei'],
                     'tmediendateisprache',
-                    $GLOBALS['mMediendateisprache'],
+                    Mapper::getMapping('mMediendateisprache'),
                     'kMedienDatei',
                     'kSprache'
                 );
                 updateXMLinDB(
                     $xml['tartikel']['tmediendatei'],
                     'tmediendateiattribut',
-                    $GLOBALS['mMediendateiattribut'],
+                    Mapper::getMapping('mMediendateiattribut'),
                     'kMedienDateiAttribut'
                 );
             } else {
@@ -446,32 +453,31 @@ function bearbeiteInsert($xml, array $conf)
                 updateXMLinDB(
                     $xml['tartikel']['tmediendatei'][$i],
                     'tmediendateisprache',
-                    $GLOBALS['mMediendateisprache'],
+                    Mapper::getMapping('mMediendateisprache'),
                     'kMedienDatei',
                     'kSprache'
                 );
                 updateXMLinDB(
                     $xml['tartikel']['tmediendatei'][$i],
                     'tmediendateiattribut',
-                    $GLOBALS['mMediendateiattribut'],
+                    Mapper::getMapping('mMediendateiattribut'),
                     'kMedienDateiAttribut'
                 );
             }
         }
-        DBUpdateInsert('tmediendatei', $oMediendatei_arr, 'kMedienDatei');
+        DBUpdateInsert('tmediendatei', $mediaFiles, 'kMedienDatei');
     }
     if (isset($xml['tartikel']['tArtikelDownload']) && is_array($xml['tartikel']['tArtikelDownload'])) {
-        $oDownload_arr = [];
+        $downloads = [];
         loescheDownload($Artikel->kArtikel);
         if (isset($xml['tartikel']['tArtikelDownload']['kDownload'])
             && is_array($xml['tartikel']['tArtikelDownload']['kDownload'])
         ) {
-            $kDownload_arr = $xml['tartikel']['tArtikelDownload']['kDownload'];
-            foreach ($kDownload_arr as $kDownload) {
+            foreach ($xml['tartikel']['tArtikelDownload']['kDownload'] as $kDownload) {
                 $oArtikelDownload            = new stdClass();
                 $oArtikelDownload->kDownload = (int)$kDownload;
                 $oArtikelDownload->kArtikel  = $Artikel->kArtikel;
-                $oDownload_arr[]             = $oArtikelDownload;
+                $downloads[]                 = $oArtikelDownload;
 
                 if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys, true)) !== false) {
                     unset($downloadKeys[$idx]);
@@ -481,26 +487,26 @@ function bearbeiteInsert($xml, array $conf)
             $oArtikelDownload            = new stdClass();
             $oArtikelDownload->kDownload = (int)$xml['tartikel']['tArtikelDownload']['kDownload'];
             $oArtikelDownload->kArtikel  = $Artikel->kArtikel;
-            $oDownload_arr[]             = $oArtikelDownload;
+            $downloads[]             = $oArtikelDownload;
 
             if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys, true)) !== false) {
                 unset($downloadKeys[$idx]);
             }
         }
 
-        DBUpdateInsert('tartikeldownload', $oDownload_arr, 'kArtikel', 'kDownload');
+        DBUpdateInsert('tartikeldownload', $downloads, 'kArtikel', 'kDownload');
     }
     foreach ($downloadKeys as $kDownload) {
         loescheDownload($Artikel->kArtikel, $kDownload);
     }
     if (isset($xml['tartikel']['tstueckliste']) && is_array($xml['tartikel']['tstueckliste'])) {
-        $oStueckliste_arr = mapArray($xml['tartikel'], 'tstueckliste', $GLOBALS['mStueckliste']);
-        $cacheIDs         = [];
-        if (count($oStueckliste_arr) > 0) {
-            loescheStueckliste($oStueckliste_arr[0]->kStueckliste);
+        $partlists = mapArray($xml['tartikel'], 'tstueckliste', Mapper::getMapping('mStueckliste'));
+        $cacheIDs  = [];
+        if (count($partlists) > 0) {
+            loescheStueckliste($partlists[0]->kStueckliste);
         }
-        DBUpdateInsert('tstueckliste', $oStueckliste_arr, 'kStueckliste', 'kArtikel');
-        foreach ($oStueckliste_arr as $_sl) {
+        DBUpdateInsert('tstueckliste', $partlists, 'kStueckliste', 'kArtikel');
+        foreach ($partlists as $_sl) {
             if (isset($_sl->kArtikel)) {
                 $cacheIDs[] = CACHING_GROUP_ARTICLE . '_' . (int)$_sl->kArtikel;
             }
@@ -510,54 +516,58 @@ function bearbeiteInsert($xml, array $conf)
         }
     }
     if (isset($xml['tartikel']['tartikelupload']) && is_array($xml['tartikel']['tartikelupload'])) {
-        $oArtikelUpload_arr = mapArray($xml['tartikel'], 'tartikelupload', $GLOBALS['mArtikelUpload']);
-        foreach ($oArtikelUpload_arr as &$oArtikelUpload) {
-            $oArtikelUpload->nTyp          = 3;
-            $oArtikelUpload->kUploadSchema = $oArtikelUpload->kArtikelUpload;
-            $oArtikelUpload->kCustomID     = $oArtikelUpload->kArtikel;
-            unset($oArtikelUpload->kArtikelUpload, $oArtikelUpload->kArtikel);
+        $uploads = mapArray($xml['tartikel'], 'tartikelupload', Mapper::getMapping('mArtikelUpload'));
+        foreach ($uploads as &$upload) {
+            $upload->nTyp          = 3;
+            $upload->kUploadSchema = $upload->kArtikelUpload;
+            $upload->kCustomID     = $upload->kArtikel;
+            unset($upload->kArtikelUpload, $upload->kArtikel);
         }
-        unset($oArtikelUpload);
+        unset($upload);
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-            $logger->debug('oArtikelUpload_arr: ' . print_r($oArtikelUpload_arr, true));
+            $logger->debug('oArtikelUpload_arr: ' . print_r($uploads, true));
         }
-        DBUpdateInsert('tuploadschema', $oArtikelUpload_arr, 'kUploadSchema', 'kCustomID');
-        if (count($oArtikelUpload_arr) < 2) {
-            $oArtikelUploadSprache_arr = mapArray(
+        DBUpdateInsert('tuploadschema', $uploads, 'kUploadSchema', 'kCustomID');
+        if (count($uploads) < 2) {
+            $localizedUploads = mapArray(
                 $xml['tartikel']['tartikelupload'],
                 'tartikeluploadsprache',
-                $GLOBALS['mArtikelUploadSprache']
+                Mapper::getMapping('mArtikelUploadSprache')
             );
             if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-                $logger->debug('oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true));
+                $logger->debug('oArtikelUploadSprache_arr: ' . print_r($localizedUploads, true));
             }
-            DBUpdateInsert('tuploadschemasprache', $oArtikelUploadSprache_arr, 'kArtikelUpload', 'kSprache');
+            DBUpdateInsert('tuploadschemasprache', $localizedUploads, 'kArtikelUpload', 'kSprache');
         } else {
-            $ulCount = count($oArtikelUpload_arr);
+            $ulCount = count($uploads);
             for ($i = 0; $i < $ulCount; ++$i) {
-                $oArtikelUploadSprache_arr = mapArray(
+                $localizedUploads = mapArray(
                     $xml['tartikel']['tartikelupload'][$i],
                     'tartikeluploadsprache',
-                    $GLOBALS['mArtikelUploadSprache']
+                    Mapper::getMapping('mArtikelUploadSprache')
                 );
                 if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-                    $logger->debug('oArtikelUploadSprache_arr: ' . print_r($oArtikelUploadSprache_arr, true));
+                    $logger->debug('oArtikelUploadSprache_arr: ' . print_r($localizedUploads, true));
                 }
-                DBUpdateInsert('tuploadschemasprache', $oArtikelUploadSprache_arr, 'kArtikelUpload', 'kSprache');
+                DBUpdateInsert('tuploadschemasprache', $localizedUploads, 'kArtikelUpload', 'kSprache');
             }
         }
     }
-    $db->delete('tartikelabnahme', 'kArtikel', $artikel_arr[0]->kArtikel);
+    $db->delete('tartikelabnahme', 'kArtikel', $products[0]->kArtikel);
     if (isset($xml['tartikel']['tartikelabnahme']) && is_array($xml['tartikel']['tartikelabnahme'])) {
-        $oArtikelAbnahmeIntervalle_arr = mapArray($xml['tartikel'], 'tartikelabnahme', $GLOBALS['mArtikelAbnahme']);
-        DBUpdateInsert('tartikelabnahme', $oArtikelAbnahmeIntervalle_arr, 'kArtikel', 'kKundengruppe');
+        $intervals = mapArray($xml['tartikel'], 'tartikelabnahme', Mapper::getMapping('mArtikelAbnahme'));
+        DBUpdateInsert('tartikelabnahme', $intervals, 'kArtikel', 'kKundengruppe');
     }
     if (isset($xml['tartikel']['tartikelkonfiggruppe']) && is_array($xml['tartikel']['tartikelkonfiggruppe'])) {
-        $oArtikelKonfig_arr = mapArray($xml['tartikel'], 'tartikelkonfiggruppe', $GLOBALS['mArtikelkonfiggruppe']);
+        $productConfig = mapArray(
+            $xml['tartikel'],
+            'tartikelkonfiggruppe',
+            Mapper::getMapping('mArtikelkonfiggruppe')
+        );
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-            $logger->debug('oArtikelKonfig_arr: ' . print_r($oArtikelKonfig_arr, true));
+            $logger->debug('oArtikelKonfig_arr: ' . print_r($productConfig, true));
         }
-        DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
+        DBUpdateInsert('tartikelkonfiggruppe', $productConfig, 'kArtikel', 'kKonfiggruppe');
     }
     if (isset($xml['tartikel']['tartikelsonderpreis'])) {
         if ($xml['tartikel']['tartikelsonderpreis']['dEnde'] === '') {
@@ -566,63 +576,78 @@ function bearbeiteInsert($xml, array $conf)
         updateXMLinDB(
             $xml['tartikel']['tartikelsonderpreis'],
             'tsonderpreise',
-            $GLOBALS['mSonderpreise'],
+            Mapper::getMapping('mSonderpreise'),
             'kArtikelSonderpreis',
             'kKundengruppe'
         );
     }
 
-    updateXMLinDB($xml['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
+    updateXMLinDB($xml['tartikel'], 'tpreise', Mapper::getMapping('mPreise'), 'kKundengruppe', 'kArtikel');
 
     if (isset($xml['tartikel']['tpreis'])) {
         handleNewPriceFormat($xml['tartikel']);
     } else {
-        handleOldPriceFormat(mapArray($xml['tartikel'], 'tpreise', $GLOBALS['mPreise']));
+        handleOldPriceFormat(mapArray($xml['tartikel'], 'tpreise', Mapper::getMapping('mPreise')));
     }
 
-    updateXMLinDB($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis'], 'kArtikelSonderpreis');
-    updateXMLinDB($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel'], 'kKategorieArtikel');
-    updateXMLinDB($xml['tartikel'], 'tartikelattribut', $GLOBALS['mArtikelAttribut'], 'kArtikelAttribut');
+    updateXMLinDB(
+        $xml['tartikel'],
+        'tartikelsonderpreis',
+        Mapper::getMapping('mArtikelSonderpreis'),
+        'kArtikelSonderpreis'
+    );
+    updateXMLinDB(
+        $xml['tartikel'],
+        'tkategorieartikel',
+        Mapper::getMapping('mKategorieArtikel'),
+        'kKategorieArtikel'
+    );
+    updateXMLinDB(
+        $xml['tartikel'],
+        'tartikelattribut',
+        Mapper::getMapping('mArtikelAttribut'),
+        'kArtikelAttribut'
+    );
     updateXMLinDB(
         $xml['tartikel'],
         'tartikelsichtbarkeit',
-        $GLOBALS['mArtikelSichtbarkeit'],
+        Mapper::getMapping('mArtikelSichtbarkeit'),
         'kKundengruppe',
         'kArtikel'
     );
-    updateXMLinDB($xml['tartikel'], 'txsell', $GLOBALS['mXSell'], 'kXSell');
-    updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
-    if ((int)$artikel_arr[0]->nIstVater === 1) {
+    updateXMLinDB($xml['tartikel'], 'txsell', Mapper::getMapping('mXSell'), 'kXSell');
+    updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', Mapper::getMapping('mArtikelSichtbarkeit'), 'kMermalWert');
+    if ((int)$products[0]->nIstVater === 1) {
         $db->query(
             'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand) 
                         FROM tartikel 
-                        WHERE kVaterartikel = ' . (int)$artikel_arr[0]->kArtikel . '
+                        WHERE kVaterartikel = ' . (int)$products[0]->kArtikel . '
                      ) AS x
                  )
-                WHERE kArtikel = ' . (int)$artikel_arr[0]->kArtikel,
+                WHERE kArtikel = ' . (int)$products[0]->kArtikel,
             \DB\ReturnType::AFFECTED_ROWS
         );
         Artikel::beachteVarikombiMerkmalLagerbestand(
-            $artikel_arr[0]->kArtikel,
+            $products[0]->kArtikel,
             $conf['global']['artikel_artikelanzeigefilter']
         );
-    } elseif (isset($artikel_arr[0]->kVaterArtikel) && $artikel_arr[0]->kVaterArtikel > 0) {
+    } elseif (isset($products[0]->kVaterArtikel) && $products[0]->kVaterArtikel > 0) {
         $db->query(
             'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
                     (SELECT SUM(fLagerbestand) 
                         FROM tartikel 
-                        WHERE kVaterartikel = ' . (int)$artikel_arr[0]->kVaterArtikel . '
+                        WHERE kVaterartikel = ' . (int)$products[0]->kVaterArtikel . '
                     ) AS x
                 )
-                WHERE kArtikel = ' . (int)$artikel_arr[0]->kVaterArtikel,
+                WHERE kArtikel = ' . (int)$products[0]->kVaterArtikel,
             \DB\ReturnType::AFFECTED_ROWS
         );
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         Artikel::beachteVarikombiMerkmalLagerbestand(
-            $artikel_arr[0]->kVaterArtikel,
+            $products[0]->kVaterArtikel,
             $conf['global']['artikel_artikelanzeigefilter']
         );
     }
@@ -630,8 +655,7 @@ function bearbeiteInsert($xml, array $conf)
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
             $logger->debug('SQLDEL: ' . $xml['tartikel']['SQLDEL']);
         }
-        $cSQL_arr = explode("\n", $xml['tartikel']['SQLDEL']);
-        foreach ($cSQL_arr as $cSQL) {
+        foreach (explode("\n", $xml['tartikel']['SQLDEL']) as $cSQL) {
             if (strlen($cSQL) > 10) {
                 $db->query($cSQL, \DB\ReturnType::AFFECTED_ROWS);
             }
@@ -641,25 +665,23 @@ function bearbeiteInsert($xml, array $conf)
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
             $logger->debug('SQL: ' . $xml['tartikel']['SQL']);
         }
-        $cSQL_arr = explode("\n", $xml['tartikel']['SQL']);
-        foreach ($cSQL_arr as $cSQL) {
+        foreach (explode("\n", $xml['tartikel']['SQL']) as $cSQL) {
             if (strlen($cSQL) > 10) {
                 // Pre Wawi 0.99862 fix
-                if (isset($artikel_arr[0]->kVaterArtikel)
-                    && $artikel_arr[0]->kVaterArtikel > 0
+                if (isset($products[0]->kVaterArtikel)
+                    && $products[0]->kVaterArtikel > 0
                     && !isset($xml['tartikel']['SQLDEL'])
                     && strpos($cSQL, 'teigenschaftkombiwert') !== false
                 ) {
-                    $cDel     = substr($cSQL, strpos($cSQL, 'values ') + strlen('values '));
-                    $cDel_arr = str_replace(['(', ')'], '', explode('),(', $cDel));
-                    $kKey_arr = [];
-                    foreach ($cDel_arr as $cDel) {
-                        $kKey_arr[] = (int)substr($cDel, 0, strpos($cDel, ','));
+                    $del     = substr($cSQL, strpos($cSQL, 'values ') + strlen('values '));
+                    $itemIDs = [];
+                    foreach (str_replace(['(', ')'], '', explode('),(', $del)) as $del) {
+                        $itemIDs[] = (int)substr($del, 0, strpos($del, ','));
                     }
                     $db->query(
                         'DELETE
                             FROM teigenschaftkombiwert 
-                            WHERE kEigenschaftKombi IN (' . implode(',', $kKey_arr) . ')',
+                            WHERE kEigenschaftKombi IN (' . implode(',', $itemIDs) . ')',
                         \DB\ReturnType::AFFECTED_ROWS
                     );
                 }
@@ -670,11 +692,10 @@ function bearbeiteInsert($xml, array $conf)
     // Artikel Warenlager
     $db->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
     if (isset($xml['tartikel']['tartikelwarenlager']) && is_array($xml['tartikel']['tartikelwarenlager'])) {
-        $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
-
-        foreach ($oArtikelWarenlager_arr as $oArtikelWarenlager) {
-            if (empty($oArtikelWarenlager->dZulaufDatum)) {
-                $oArtikelWarenlager->dZulaufDatum = null;
+        $storages = mapArray($xml['tartikel'], 'tartikelwarenlager', Mapper::getMapping('mArtikelWarenlager'));
+        foreach ($storages as $storage) {
+            if (empty($storage->dZulaufDatum)) {
+                $storage->dZulaufDatum = null;
             }
             // Prevent SQL-Exception if duplicate datasets will be sent falsely
             $db->queryPrepared(
@@ -685,25 +706,25 @@ function bearbeiteInsert($xml, array $conf)
                         fZulauf = :fZulauf,
                         dZulaufDatum = :dZulaufDatum',
                 [
-                    'kArtikel'     => $oArtikelWarenlager->kArtikel,
-                    'kWarenlager'  => $oArtikelWarenlager->kWarenlager,
-                    'fBestand'     => $oArtikelWarenlager->fBestand,
-                    'fZulauf'      => $oArtikelWarenlager->fZulauf,
-                    'dZulaufDatum' => $oArtikelWarenlager->dZulaufDatum ?? '_DBNULL_',
+                    'kArtikel'     => $storage->kArtikel,
+                    'kWarenlager'  => $storage->kWarenlager,
+                    'fBestand'     => $storage->fBestand,
+                    'fZulauf'      => $storage->fZulauf,
+                    'dZulaufDatum' => $storage->dZulaufDatum ?? null,
                 ],
                 \DB\ReturnType::QUERYSINGLE
             );
         }
     }
-    $bTesteSonderpreis = false;
+    $testSepcialPrice = false;
     if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
-        $ArtikelSonderpreis_arr = mapArray(
+        $productSpecialPrices = mapArray(
             $xml['tartikel'],
             'tartikelsonderpreis',
-            $GLOBALS['mArtikelSonderpreis']
+            Mapper::getMapping('mArtikelSonderpreis')
         );
-        if ($ArtikelSonderpreis_arr[0]->cAktiv === 'Y') {
-            $specialPriceStart = explode('-', $ArtikelSonderpreis_arr[0]->dStart);
+        if ($productSpecialPrices[0]->cAktiv === 'Y') {
+            $specialPriceStart = explode('-', $productSpecialPrices[0]->dStart);
             if (count($specialPriceStart) > 2) {
                 [$start_jahr, $start_monat, $start_tag] = $specialPriceStart;
             } else {
@@ -711,7 +732,7 @@ function bearbeiteInsert($xml, array $conf)
                 $start_monat = null;
                 $start_tag   = null;
             }
-            $specialPriceEnd = explode('-', $ArtikelSonderpreis_arr[0]->dEnde);
+            $specialPriceEnd = explode('-', $productSpecialPrices[0]->dEnde);
             if (count($specialPriceEnd) > 2) {
                 [$ende_jahr, $ende_monat, $ende_tag] = $specialPriceEnd;
             } else {
@@ -726,74 +747,74 @@ function bearbeiteInsert($xml, array $conf)
             if ($ende_jahr > 0) {
                 $nEndStamp = mktime(0, 0, 0, $ende_monat, $ende_tag + 1, $ende_jahr);
             }
-            $bTesteSonderpreis = ($nNowStamp >= $nStartStamp
-                && ($nNowStamp < $nEndStamp || (int)$ArtikelSonderpreis_arr[0]->dEnde === 0)
-                && ($ArtikelSonderpreis_arr[0]->nIstAnzahl === 0 || ($ArtikelSonderpreis_arr[0]->nIstAnzahl === '1'
-                        && (int)$ArtikelSonderpreis_arr[0]->nAnzahl < (int)$xml['tartikel']['fLagerbestand'])));
+            $testSepcialPrice = ($nNowStamp >= $nStartStamp
+                && ($nNowStamp < $nEndStamp || (int)$productSpecialPrices[0]->dEnde === 0)
+                && ($productSpecialPrices[0]->nIstAnzahl === 0 || ($productSpecialPrices[0]->nIstAnzahl === '1'
+                        && (int)$productSpecialPrices[0]->nAnzahl < (int)$xml['tartikel']['fLagerbestand'])));
         }
-        $spCount = count($ArtikelSonderpreis_arr);
+        $spCount = count($productSpecialPrices);
         for ($i = 0; $i < $spCount; ++$i) {
-            if ($bTesteSonderpreis === true) {
-                $Sonderpreise_arr = mapArray(
+            if ($testSepcialPrice === true) {
+                $specialPrices = mapArray(
                     $xml['tartikel']['tartikelsonderpreis'],
                     'tsonderpreise',
-                    $GLOBALS['mSonderpreise']
+                    Mapper::getMapping('mSonderpreise')
                 );
-                foreach ($Sonderpreise_arr as $Sonderpreise) {
+                foreach ($specialPrices as $specialPrice) {
                     setzePreisverlauf(
-                        $ArtikelSonderpreis_arr[0]->kArtikel,
-                        $Sonderpreise->kKundengruppe,
-                        $Sonderpreise->fNettoPreis
+                        $productSpecialPrices[0]->kArtikel,
+                        $specialPrice->kKundengruppe,
+                        $specialPrice->fNettoPreis
                     );
                 }
             }
             updateXMLinDB(
                 $xml['tartikel']['tartikelsonderpreis'],
                 'tsonderpreise',
-                $GLOBALS['mSonderpreise'],
+                Mapper::getMapping('mSonderpreise'),
                 'kArtikelSonderpreis',
                 'kKundengruppe'
             );
         }
-        DBUpdateInsert('tartikelsonderpreis', $ArtikelSonderpreis_arr, 'kArtikelSonderpreis');
+        DBUpdateInsert('tartikelsonderpreis', $productSpecialPrices, 'kArtikelSonderpreis');
     }
     // Preise für Preisverlauf
     // NettoPreis übertragen, falls kein Sonderpreis gesetzt wurde
-    if (!($bTesteSonderpreis === true
+    if (!($testSepcialPrice === true
         && isset($xml['tartikel']['tartikelsonderpreis'])
         && is_array($xml['tartikel']['tartikelsonderpreis']))
     ) {
-        $oPreis_arr = mapArray($xml['tartikel'], 'tpreise', $GLOBALS['mPreise']);
-        foreach ($oPreis_arr as $oPreis) {
-            setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
+        $prices = mapArray($xml['tartikel'], 'tpreise', Mapper::getMapping('mPreise'));
+        foreach ($prices as $price) {
+            setzePreisverlauf($price->kArtikel, $price->kKundengruppe, $price->fVKNetto);
         }
     }
     if (isset($xml['tartikel']['teigenschaft']) && is_array($xml['tartikel']['teigenschaft'])) {
-        $Eigenschaft_arr = mapArray($xml['tartikel'], 'teigenschaft', $GLOBALS['mEigenschaft']);
-        $eCount          = count($Eigenschaft_arr);
+        $attributes = mapArray($xml['tartikel'], 'teigenschaft', Mapper::getMapping('mEigenschaft'));
+        $eCount     = count($attributes);
         for ($i = 0; $i < $eCount; ++$i) {
-            if (count($Eigenschaft_arr) < 2) {
+            if (count($attributes) < 2) {
                 loescheEigenschaft($xml['tartikel']['teigenschaft attr']['kEigenschaft']);
                 updateXMLinDB(
                     $xml['tartikel']['teigenschaft'],
                     'teigenschaftsprache',
-                    $GLOBALS['mEigenschaftSprache'],
+                    Mapper::getMapping('mEigenschaftSprache'),
                     'kEigenschaft',
                     'kSprache'
                 );
                 updateXMLinDB(
                     $xml['tartikel']['teigenschaft'],
                     'teigenschaftsichtbarkeit',
-                    $GLOBALS['mEigenschaftsichtbarkeit'],
+                    Mapper::getMapping('mEigenschaftsichtbarkeit'),
                     'kEigenschaft',
                     'kKundengruppe'
                 );
-                $EigenschaftWert_arr = mapArray(
+                $attrValues = mapArray(
                     $xml['tartikel']['teigenschaft'],
                     'teigenschaftwert',
-                    $GLOBALS['mEigenschaftWert']
+                    Mapper::getMapping('mEigenschaftWert')
                 );
-                $ewCount             = count($EigenschaftWert_arr);
+                $ewCount    = count($attrValues);
                 for ($o = 0; $o < $ewCount; ++$o) {
                     if ($ewCount < 2) {
                         loescheEigenschaftWert(
@@ -802,28 +823,28 @@ function bearbeiteInsert($xml, array $conf)
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'],
                             'teigenschaftwertsprache',
-                            $GLOBALS['mEigenschaftWertSprache'],
+                            Mapper::getMapping('mEigenschaftWertSprache'),
                             'kEigenschaftWert',
                             'kSprache'
                         );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'],
                             'teigenschaftwertaufpreis',
-                            $GLOBALS['mEigenschaftWertAufpreis'],
+                            Mapper::getMapping('mEigenschaftWertAufpreis'),
                             'kEigenschaftWert',
                             'kKundengruppe'
                         );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'],
                             'teigenschaftwertsichtbarkeit',
-                            $GLOBALS['mEigenschaftWertSichtbarkeit'],
+                            Mapper::getMapping('mEigenschaftWertSichtbarkeit'),
                             'kEigenschaftWert',
                             'kKundengruppe'
                         );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'],
                             'teigenschaftwertabhaengigkeit',
-                            $GLOBALS['mEigenschaftWertAbhaengigkeit'],
+                            Mapper::getMapping('mEigenschaftWertAbhaengigkeit'),
                             'kEigenschaftWert',
                             'kEigenschaftWertZiel'
                         );
@@ -834,34 +855,34 @@ function bearbeiteInsert($xml, array $conf)
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'][$o],
                             'teigenschaftwertsprache',
-                            $GLOBALS['mEigenschaftWertSprache'],
+                            Mapper::getMapping('mEigenschaftWertSprache'),
                             'kEigenschaftWert',
                             'kSprache'
                         );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'][$o],
                             'teigenschaftwertaufpreis',
-                            $GLOBALS['mEigenschaftWertAufpreis'],
+                            Mapper::getMapping('mEigenschaftWertAufpreis'),
                             'kEigenschaftWert',
                             'kKundengruppe'
                         );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'][$o],
                             'teigenschaftwertsichtbarkeit',
-                            $GLOBALS['mEigenschaftWertSichtbarkeit'],
+                            Mapper::getMapping('mEigenschaftWertSichtbarkeit'),
                             'kEigenschaftWert',
                             'kKundengruppe'
                         );
                         updateXMLinDB(
                             $xml['tartikel']['teigenschaft']['teigenschaftwert'][$o],
                             'teigenschaftwertabhaengigkeit',
-                            $GLOBALS['mEigenschaftWertAbhaengigkeit'],
+                            Mapper::getMapping('mEigenschaftWertAbhaengigkeit'),
                             'kEigenschaftWert',
                             'kEigenschaftWertZiel'
                         );
                     }
                 }
-                DBUpdateInsert('teigenschaftwert', $EigenschaftWert_arr, 'kEigenschaftWert');
+                DBUpdateInsert('teigenschaftwert', $attrValues, 'kEigenschaftWert');
             } else {
                 //@todo: this if was added to be able to sync with wawi 1.0 - check.
                 if (isset($xml['tartikel']['teigenschaft'][$i . ' attr'])) {
@@ -869,109 +890,108 @@ function bearbeiteInsert($xml, array $conf)
                 }
                 //@todo: this if was added to be able to sync with wawi 1.0 - check.
                 if (isset($xml['tartikel']['teigenschaft'][$i])) {
+                    $current = $xml['tartikel']['teigenschaft'][$i];
                     updateXMLinDB(
-                        $xml['tartikel']['teigenschaft'][$i],
+                        $current,
                         'teigenschaftsprache',
-                        $GLOBALS['mEigenschaftSprache'],
+                        Mapper::getMapping('mEigenschaftSprache'),
                         'kEigenschaft',
                         'kSprache'
                     );
                     updateXMLinDB(
-                        $xml['tartikel']['teigenschaft'][$i],
+                        $current,
                         'teigenschaftsichtbarkeit',
-                        $GLOBALS['mEigenschaftsichtbarkeit'],
+                        Mapper::getMapping('mEigenschaftsichtbarkeit'),
                         'kEigenschaft',
                         'kKundengruppe'
                     );
-                    $EigenschaftWert_arr = mapArray(
-                        $xml['tartikel']['teigenschaft'][$i],
+                    $attrValues = mapArray(
+                        $current,
                         'teigenschaftwert',
-                        $GLOBALS['mEigenschaftWert']
+                        Mapper::getMapping('mEigenschaftWert')
                     );
-                    $ewCount             = count($EigenschaftWert_arr);
+                    $ewCount    = count($attrValues);
                     for ($o = 0; $o < $ewCount; ++$o) {
                         if ($ewCount < 2) {
                             loescheEigenschaftWert(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert attr']['kEigenschaftWert']
+                                $current['teigenschaftwert attr']['kEigenschaftWert']
                             );
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'],
+                                $current['teigenschaftwert'],
                                 'teigenschaftwertsprache',
-                                $GLOBALS['mEigenschaftWertSprache'],
+                                Mapper::getMapping('mEigenschaftWertSprache'),
                                 'kEigenschaftWert',
                                 'kSprache'
                             );
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'],
+                                $current['teigenschaftwert'],
                                 'teigenschaftwertaufpreis',
-                                $GLOBALS['mEigenschaftWertAufpreis'],
+                                Mapper::getMapping('mEigenschaftWertAufpreis'),
                                 'kEigenschaftWert',
                                 'kKundengruppe'
                             );
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'],
+                                $current['teigenschaftwert'],
                                 'teigenschaftwertsichtbarkeit',
-                                $GLOBALS['mEigenschaftWertSichtbarkeit'],
+                                Mapper::getMapping('mEigenschaftWertSichtbarkeit'),
                                 'kEigenschaftWert',
                                 'kKundengruppe'
                             );
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'],
+                                $current['teigenschaftwert'],
                                 'teigenschaftwertabhaengigkeit',
-                                $GLOBALS['mEigenschaftWertAbhaengigkeit'],
+                                Mapper::getMapping('mEigenschaftWertAbhaengigkeit'),
                                 'kEigenschaftWert',
                                 'kEigenschaftWertZiel'
                             );
                         } else {
-                            loescheEigenschaftWert($xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']);
+                            loescheEigenschaftWert($current['teigenschaftwert'][$o . ' attr']['kEigenschaftWert']);
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o],
+                                $current['teigenschaftwert'][$o],
                                 'teigenschaftwertsprache',
-                                $GLOBALS['mEigenschaftWertSprache'],
+                                Mapper::getMapping('mEigenschaftWertSprache'),
                                 'kEigenschaftWert',
                                 'kSprache'
                             );
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o],
+                                $current['teigenschaftwert'][$o],
                                 'teigenschaftwertaufpreis',
-                                $GLOBALS['mEigenschaftWertAufpreis'],
+                                Mapper::getMapping('mEigenschaftWertAufpreis'),
                                 'kEigenschaftWert',
                                 'kKundengruppe'
                             );
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o],
+                                $current['teigenschaftwert'][$o],
                                 'teigenschaftwertsichtbarkeit',
-                                $GLOBALS['mEigenschaftWertSichtbarkeit'],
+                                Mapper::getMapping('mEigenschaftWertSichtbarkeit'),
                                 'kEigenschaftWert',
                                 'kKundengruppe'
                             );
                             updateXMLinDB(
-                                $xml['tartikel']['teigenschaft'][$i]['teigenschaftwert'][$o],
+                                $current['teigenschaftwert'][$o],
                                 'teigenschaftwertabhaengigkeit',
-                                $GLOBALS['mEigenschaftWertAbhaengigkeit'],
+                                Mapper::getMapping('mEigenschaftWertAbhaengigkeit'),
                                 'kEigenschaftWert',
                                 'kEigenschaftWertZiel'
                             );
                         }
                     }
-                    DBUpdateInsert('teigenschaftwert', $EigenschaftWert_arr, 'kEigenschaftWert');
+                    DBUpdateInsert('teigenschaftwert', $attrValues, 'kEigenschaftWert');
                 }
             }
         }
-        DBUpdateInsert('teigenschaft', $Eigenschaft_arr, 'kEigenschaft');
+        DBUpdateInsert('teigenschaft', $attributes, 'kEigenschaft');
     }
-    // Alle Shop Kundengruppen holen
-    $oKundengruppe_arr = $db->query(
+    $customerGroups = $db->query(
         'SELECT kKundengruppe FROM tkundengruppe',
         \DB\ReturnType::ARRAY_OF_OBJECTS
     );
     $res[]             = (int)$Artikel->kArtikel;
-    fuelleArtikelKategorieRabatt($artikel_arr[0], $oKundengruppe_arr);
-    if (!empty($artikel_arr[0]->kVaterartikel)) {
-        $res[] = (int)$artikel_arr[0]->kVaterartikel;
+    fuelleArtikelKategorieRabatt($products[0], $customerGroups);
+    if (!empty($products[0]->kVaterartikel)) {
+        $res[] = (int)$products[0]->kVaterartikel;
     }
-    // emailbenachrichtigung, wenn verfügbar
-    versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
+    versendeVerfuegbarkeitsbenachrichtigung($products[0]);
 
     return $res;
 }
@@ -1022,9 +1042,9 @@ function removeProductIdfromCoupons(int $kArtikel)
  * @param int   $kArtikel
  * @param bool  $bForce
  * @param array $conf
- * @return array
+ * @return int
  */
-function loescheArtikel(int $kArtikel, bool $bForce = false, array $conf = null)
+function loescheArtikel(int $kArtikel, bool $bForce = false, array $conf = null): int
 {
     $db = Shop::Container()->getDB();
     // get list of all categories the article was associated with
@@ -1057,13 +1077,6 @@ function loescheArtikel(int $kArtikel, bool $bForce = false, array $conf = null)
         }
     }
     if ($kArtikel > 0) {
-        $manufacturerID = $db->queryPrepared(
-            'SELECT kHersteller 
-                FROM tartikel 
-                WHERE kArtikel = :pid',
-            ['pid' => $kArtikel],
-            \DB\ReturnType::SINGLE_OBJECT
-        );
         $db->delete('tseo', ['cKey', 'kKey'], ['kArtikel', $kArtikel]);
         $db->delete('tartikel', 'kArtikel', $kArtikel);
         $db->delete('tpreise', 'kArtikel', $kArtikel);
@@ -1083,21 +1096,15 @@ function loescheArtikel(int $kArtikel, bool $bForce = false, array $conf = null)
         if ($bForce === false) {
             loescheArtikelDownload($kArtikel);
         } else {
-            loescheDownload($kArtikel, null);
+            loescheDownload($kArtikel);
         }
         loescheArtikelUpload($kArtikel);
         loescheKonfig($kArtikel);
 
-        return [
-            'kArtikel'    => $kArtikel,
-            'categories'  => $articleCategories,
-            'kHersteller' => isset($manufacturerID->kHersteller)
-                ? (int)$manufacturerID->kHersteller
-                : 0
-        ];
+        return $kArtikel;
     }
 
-    return [];
+    return 0;
 }
 
 /**
@@ -1284,33 +1291,33 @@ function loescheSonderpreise(int $kArtikel): int
 }
 
 /**
- * @param int $kArtikel
+ * @param int $productID
  */
-function checkArtikelBildLoeschung(int $kArtikel)
+function checkArtikelBildLoeschung(int $productID)
 {
-    $oArtikelPict_arr = Shop::Container()->getDB()->selectAll(
+    $images = Shop::Container()->getDB()->selectAll(
         'tartikelpict',
         'kArtikel',
-        $kArtikel,
+        $productID,
         'kArtikelPict, kMainArtikelBild, cPfad'
     );
-    foreach ($oArtikelPict_arr as $oArtikelPict) {
-        deleteArticleImage($oArtikelPict, $kArtikel);
+    foreach ($images as $image) {
+        deleteArticleImage($image, $productID);
     }
-    Shop::Container()->getCache()->flush('arr_article_images_' . $kArtikel);
+    Shop::Container()->getCache()->flush('arr_article_images_' . $productID);
 }
 
 /**
  * checks whether the article is a child product in any configurator
  * and returns the product IDs of parent products if yes
  *
- * @param int $kArtikel
+ * @param int $productID
  * @return array
  */
-function getConfigParents(int $kArtikel): array
+function getConfigParents(int $productID): array
 {
     $parentProductIDs = [];
-    $configItems      = Shop::Container()->getDB()->selectAll('tkonfigitem', 'kArtikel', $kArtikel, 'kKonfiggruppe');
+    $configItems      = Shop::Container()->getDB()->selectAll('tkonfigitem', 'kArtikel', $productID, 'kKonfiggruppe');
     if (!is_array($configItems) || count($configItems) === 0) {
         return $parentProductIDs;
     }
@@ -1335,13 +1342,13 @@ function getConfigParents(int $kArtikel): array
 }
 
 /**
- * @param  int $kArtikel
+ * @param  int $productID
  * @return int[]
  */
-function getDownloadKeys(int $kArtikel): array
+function getDownloadKeys(int $productID): array
 {
-    if ($kArtikel > 0) {
-        $downloads = Shop::Container()->getDB()->selectAll('tartikeldownload', 'kArtikel', $kArtikel, 'kDownload');
+    if ($productID > 0) {
+        $downloads = Shop::Container()->getDB()->selectAll('tartikeldownload', 'kArtikel', $productID, 'kDownload');
 
         return \Functional\map($downloads, function ($item) {
             return (int)$item->kDownload;
@@ -1362,27 +1369,17 @@ function clearProductCaches($products)
     $start     = microtime(true);
     $cacheTags = [];
     $deps      = [];
-
     foreach ($products as $product) {
-        if (isset($product['kArtikel'])) {
-            // generated by bearbeiteDeletes()
-            $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$product['kArtikel'];
-            if ($product['kHersteller'] > 0) {
-                $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$product['kHersteller'];
-            }
-            foreach ($product['categories'] as $category) {
-                $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . (int)$category->kKategorie;
-            }
-        } elseif (is_numeric($product)) {
-            // generated by bearbeiteInsert()
-            $parentIDs = getConfigParents($product);
-            foreach ($parentIDs as $parentID) {
-                $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$parentID;
-            }
-            $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$product;
-            $deps     [] = (int)$product;
+        if (!is_numeric($product)) {
+            continue;
         }
+        $parentIDs = getConfigParents($product);
+        foreach ($parentIDs as $parentID) {
+            $deps[] = (int)$parentID;
+        }
+        $deps[] = (int)$product;
     }
+    $deps = array_unique($deps);
     // additionally get dependencies for articles that were inserted
     if (count($deps) > 0) {
         // flush cache tags associated with the article's manufacturer ID

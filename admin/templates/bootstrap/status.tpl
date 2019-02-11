@@ -38,7 +38,7 @@
         </td>
         {if $more}
             <td class="text-right">
-                <a href="{$more}" class="btn btn-default btn-xs text-uppercase">Details</a>
+                <a href="{$more}" class="btn btn-default btn-xs text-uppercase">{__('details')}</a>
             </td>
         {/if}
     </tr>
@@ -52,15 +52,15 @@
         <div class="grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="heading-body"><h4 class="panel-title">Cache</h4></div>
+                    <div class="heading-body"><h4 class="panel-title">{__('cache')}</h4></div>
                     <div class="heading-right">
                         <div class="btn-group btn-group-xs">
                             <button class="btn btn-primary dropdown-toggle text-uppercase" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Details <span class="caret"></span>
+                                {__('details')} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="cache.php">System-Cache</a></li>
-                                <li><a href="bilderverwaltung.php">Bilder-Cache</a></li>
+                                <li><a href="cache.php">{__('systemCache')}</a></li>
+                                <li><a href="bilderverwaltung.php">{__('imageCache')}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -72,12 +72,12 @@
                                 {if $status->getObjectCache()->getResultCode() === 1}
                                     {$cacheOptions = $status->getObjectCache()->getOptions()}
                                     <i class="fa fa-check-circle text-four-times text-success"></i>
-                                    <h3 style="margin-top:10px;margin-bottom:0">Aktiviert</h3>
+                                    <h3 style="margin-top:10px;margin-bottom:0">{__('activated')}</h3>
                                     <span style="color:#c7c7c7">{$cacheOptions.method|ucfirst}</span>
                                 {else}
                                     <i class="fa fa-exclamation-circle text-four-times text-info"></i>
-                                    <h3 style="margin-top:10px;margin-bottom:0">Deaktiviert</h3>
-                                    <span style="color:#c7c7c7">System-Cache</span>
+                                    <h3 style="margin-top:10px;margin-bottom:0">{__('deactivated')}</h3>
+                                    <span style="color:#c7c7c7">{__('requirementsMet')}</span>
                                 {/if}
 
                             </div>
@@ -87,7 +87,7 @@
                                 {$imageCache = $status->getImageCache()}
                                 <i class="fa fa-file-image-o text-four-times text-success"></i>
                                 <h3 style="margin-top:10px;margin-bottom:0">{$imageCache->total|number_format}</h3>
-                                <span style="color:#c7c7c7">Bilder im Cache</span>
+                                <span style="color:#c7c7c7">{__('imagesInCache')}</span>
                             </div>
                         </div>
                     </div>
@@ -98,20 +98,20 @@
         <div class="grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4 class="panel-title">Allgemein</h4>
+                    <h4 class="panel-title">{__('general')}</h4>
                 </div>
                 <div class="panel-body">
                     <table class="table table-hover table-striped table-blank text-x1 last-child">
                         <tbody>
-                            {render_item title='Datenbankstruktur' val=$status->validDatabaseStruct() more='dbcheck.php'}
-                            {render_item title='Dateistruktur' val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more='filecheck.php'}
-                            {render_item title='Verzeichnisrechte' val=$status->validFolderPermissions() more='permissioncheck.php'}
-                            {render_item title='Ausstehende Updates' val=!$status->hasPendingUpdates() more='dbupdater.php'}
-                            {render_item title='Installationsverzeichnis' val=!$status->hasInstallDir()}
-                            {render_item title='Profiler aktiv' val=!$status->hasActiveProfiler() more='profiler.php'}
-                            {render_item title='Server' val=$status->hasValidEnvironment() more='systemcheck.php'}
-                            {render_item title='Verwaiste Kategorien' val=$status->getOrphanedCategories() more='categorycheck.php'}
-                            {render_item title='Neue Plugin-Versionen' val=!$status->hasNewPluginVersions() more='pluginverwaltung.php'}
+                            {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more='dbcheck.php'}
+                            {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more='filecheck.php'}
+                            {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more='permissioncheck.php'}
+                            {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more='dbupdater.php'}
+                            {render_item title=__('installDirectory') val=!$status->hasInstallDir()}
+                            {render_item title=__('profilerActive') val=!$status->hasActiveProfiler() more='profiler.php'}
+                            {render_item title=__('server') val=$status->hasValidEnvironment() more='systemcheck.php'}
+                            {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more='categorycheck.php'}
+                            {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more='pluginverwaltung.php'}
                         </tbody>
                     </table>
                 </div>
@@ -121,12 +121,12 @@
         <div class="grid-item">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4 class="panel-title">Subscription</h4>
+                    <h4 class="panel-title">{__('subscription')}</h4>
                 </div>
                 <div class="panel-body">
                     {if $sub === null}
                         <div class="alert alert-danger alert-sm">
-                            <p><i class="fa fa-exclamation-circle"></i> Vorübergehend keine Informationen verfügbar.</p>
+                            <p><i class="fa fa-exclamation-circle"></i> {__('atmNoInfo')}</p>
                         </div>
                     {else}
                         <div class="row vertical-align">
@@ -134,14 +134,14 @@
                                 <div class="text-center">
                                     {if intval($sub->bUpdate) === 0}
                                         <i class="fa fa-check-circle text-four-times text-success"></i>
-                                        <h3 style="margin-top:10px;margin-bottom:0">Gültig</h3>
+                                        <h3 style="margin-top:10px;margin-bottom:0">{__('valid')}</h3>
                                     {else}
                                         {if $sub->nDayDiff <= 0}
                                             <i class="fa fa-exclamation-circle text-four-times text-danger"></i>
-                                            <h3 style="margin-top:10px;margin-bottom:0">Abgelaufen</h3>
+                                            <h3 style="margin-top:10px;margin-bottom:0">{__('expired')}</h3>
                                         {else}
                                             <i class="fa fa-exclamation-circle text-four-times text-info"></i>
-                                            <h3 style="margin-top:10px;margin-bottom:0">Läuft in {$sub->nDayDiff} Tagen ab</h3>
+                                            <h3 style="margin-top:10px;margin-bottom:0">{{__('expiresInXDays')}|sprintf:{$sub->nDayDiff}}</h3>
                                         {/if}
                                     {/if}
                                 </div>
@@ -151,16 +151,16 @@
                                     <table class="table table-hover table-striped table-blank text-x1 last-child">
                                         <tbody>
                                             <tr>
-                                                <td class="text-muted text-right"><strong>Version</strong></td>
+                                                <td class="text-muted text-right"><strong>{__('version')}</strong></td>
                                                 <td>{formatVersion value=$sub->oShopversion->nVersion} <span class="label label-default">{$sub->eTyp}</span></td>
                                             </tr>
                                             <tr>
-                                                <td class="text-muted text-right"><strong>Domain</strong></td>
+                                                <td class="text-muted text-right"><strong>{__('domain')}</strong></td>
                                                 <td>{$sub->cDomain}</td>
                                             </tr>
                                             <tr>
-                                                <td class="text-muted text-right"><strong>Gültig bis</strong></td>
-                                                <td>{$sub->dDownloadBis_DE} <span class="text-muted">({$sub->nDayDiff} Tage)</span></td>
+                                                <td class="text-muted text-right"><strong>{__('valid')} {__('to')}</strong></td>
+                                                <td>{$sub->dDownloadBis_DE} <span class="text-muted">({$sub->nDayDiff} {__('days')})</span></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -177,11 +177,11 @@
             <div class="grid-item">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">Zahlungsarten</h4>
+                        <h4 class="panel-title">{__('paymentTypes')}</h4>
                     </div>
                     <div class="panel-body">
                         <div class="alert alert-info">
-                            Folgende Zahlungsarten beinhalten Protokolle mit Status 'Fehler'
+                            {__('paymentTypesWithError')}
                         </div>
 
                         <table class="table table-condensed table-hover table-striped table-blank last-child">
@@ -193,7 +193,7 @@
                                     </td>
                                     <td class="text-muted"><strong>{$s->cName}</strong></td>
                                     <td class="text-right">
-                                        <a class="btn btn-default btn-xs text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">Details</a>
+                                        <a class="btn btn-default btn-xs text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -210,11 +210,11 @@
             <div class="grid-item">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4 class="panel-title">Plugin</h4>
+                        <h4 class="panel-title">{__('plugin')}</h4>
                     </div>
                     <div class="panel-body">
                         <div class="alert alert-info">
-                            Folgende Plugins benutzen einen identischen Hook.
+                            {__('pluginsWithSameHook')}
                         </div>
 
                         <table class="table table-condensed table-hover table-striped table-blank last-child">
@@ -246,9 +246,9 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="heading-body"><h4 class="panel-title">Server</h4></div>
+                    <div class="heading-body"><h4 class="panel-title">{__('server')}</h4></div>
                     <div class="heading-right">
-                        <a href="systemcheck.php" class="btn btn-primary btn-xs text-uppercase">Details</a>
+                        <a href="systemcheck.php" class="btn btn-primary btn-xs text-uppercase">{__('details')}</a>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -257,8 +257,8 @@
                             <thead>
                             <tr>
                                 <th class="col-xs-7">&nbsp;</th>
-                                <th class="col-xs-3 text-center">Empfohlener Wert</th>
-                                <th class="col-xs-2 text-center">Ihr System</th>
+                                <th class="col-xs-3 text-center">{__('recommendedValue')}</th>
+                                <th class="col-xs-2 text-center">{__('yourSystem')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -281,7 +281,7 @@
                         </table>
                     {else}
                         <div class="alert alert-success">
-                            <p>Alle Vorraussetzungen wurden erfüllt</p>
+                            <p>{__('requirementsMet')}</p>
                         </div>
                     {/if}
                 </div>

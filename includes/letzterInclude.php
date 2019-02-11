@@ -50,7 +50,7 @@ $specialPageTypes   = [
     PAGE_LOGIN
 ];
 if (in_array($pagetType, $specialPageTypes, true)) {
-    $mapper = new \Mapper\PageTypeToLinkType();
+    $mapper           = new \Mapper\PageTypeToLinkType();
     $metaData         = $linkHelper->buildSpecialPageMeta($mapper->map($pagetType));
     $cMetaTitle       = $metaData->cTitle;
     $cMetaDescription = $metaData->cDesc;
@@ -68,14 +68,14 @@ if (is_object($globalMetaData)) {
     }
 }
 if (!isset($AktuelleKategorie)) {
-    $AktuelleKategorie  = new Kategorie(Request::verifyGPCDataInt('kategorie'));
+    $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'));
 }
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
 $linkHelper->activate($pagetType);
-$origin = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
+$origin = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
 $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
@@ -178,7 +178,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
 Kampagne::checkCampaignParameters();
-Sprache::generateLanguageAndCurrencyLinks();
+Shop::Lang()->generateLanguageAndCurrencyLinks();
 $ep = new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
 $ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
@@ -195,12 +195,29 @@ $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
     )->nZaehler
     : 0;
 $debugbar->getTimer()->stopMeasure('init');
+
+// backwards compatibility, create error and note messages for previously used globals $cFehler, $cHinweis, $hinweis
+// since 5.0.0: the new AlertService should be used instead
+$alertHelper = Shop::Container()->getAlertService();
+if (isset($cFehler)) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'miscFehler');
+    \trigger_error('global $cFehler is deprecated.', \E_USER_DEPRECATED);
+}
+if (isset($cHinweis)) {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'miscCHinweis');
+    \trigger_error('global $cHinweis is deprecated.', \E_USER_DEPRECATED);
+}
+if (isset($hinweis)) {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
+    \trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
+}
+
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
-       ->assign('alertList', Shop::Container()->getAlertService()->getAlertlist())
+       ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('dbgBarHead', $debugbarRenderer->renderHead())
        ->assign('dbgBarBody', $debugbarRenderer->render());

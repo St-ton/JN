@@ -483,7 +483,7 @@ class SimpleMail
      */
     public static function checkBlacklist(?string $mail): bool
     {
-        $mail = strtolower(StringHandler::filterXSS($mail));
+        $mail = mb_convert_case(StringHandler::filterXSS($mail), MB_CASE_LOWER);
         if (StringHandler::filterEmailAddress($mail) === false) {
             return true;
         }
@@ -496,10 +496,10 @@ class SimpleMail
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($blacklist as $item) {
-            if (strpos($item->cEmail, '*') !== false) {
+            if (mb_strpos($item->cEmail, '*') !== false) {
                 preg_match('/' . str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked
-                if (isset($hits[0]) && strlen($mail) === strlen($hits[0])) {
+                if (isset($hits[0]) && mb_strlen($mail) === mb_strlen($hits[0])) {
                     // Email schonmal geblockt worden?
                     $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
                     if (!empty($block->cEmail)) {
@@ -516,7 +516,7 @@ class SimpleMail
 
                     return true;
                 }
-            } elseif (strtolower($item->cEmail) === strtolower($mail)) {
+            } elseif (mb_convert_case($item->cEmail, MB_CASE_LOWER) === mb_convert_case($mail, MB_CASE_LOWER)) {
                 // Email schonmal geblockt worden?
                 $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
 

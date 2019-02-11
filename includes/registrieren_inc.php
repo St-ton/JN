@@ -285,14 +285,18 @@ function gibKunde()
 function gibKundeFromVCard($vCardFile)
 {
     if (is_file($vCardFile)) {
-        global $Kunde, $hinweis;
+        global $Kunde;
 
         try {
             $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
             $Kunde = $vCard->selectVCard(0)->asKunde();
             Shop::Smarty()->assign('Kunde', $Kunde);
         } catch (Exception $e) {
-            $hinweis = Shop::Lang()->get('uploadError');
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('uploadError'),
+                'uploadError'
+            );
         }
     }
 }

@@ -1000,6 +1000,12 @@ msgstr "Spamschutz aktivieren"
 msgid "benachrichtigung_abfragen_captcha_desc"
 msgstr "Hier legen Sie fest, ob für Benachrichtigungsanfragen der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
 
+msgid "benachrichtigung_min_lagernd_name"
+msgstr "Benachrichtigung ab prozentualem Mindestlagerbestand"
+
+msgid "benachrichtigung_min_lagernd_desc"
+msgstr "Hier stellen Sie ein, ab welchem Verhältnis zwischen verfügbarem Lagerbestand und Verfügbarkeitsanfragen eine Verfügbarkeitsbenachrichtigung versendet wird. Beispiel: 10 Kunden haben einen Artikel angefragt. Ihr neuer Lagerbestand umfasst 3 Einheiten. Damit eine Verfügbarkeitsbenachrichtigung versendet wird, müssten Sie hier also höchstens 30 Prozent einstellen"
+
 msgid "artikeldetails_vergleichsliste_anzeigen_name"
 msgstr "„Zur Vergleichsliste hinzufügen“ anzeigen"
 
@@ -1859,10 +1865,10 @@ msgid "sonstiges_gratisgeschenk_nutzen_desc"
 msgstr "Hier legen Sie fest, ob Gratisgeschenke im Warenkorb angeboten werden, sobald ein Kunde den dafür erforderlichen Mindestbestellwert erreicht hat."
 
 msgid "sonstiges_gratisgeschenk_anzahl_name"
-msgstr "Anzahl Gratisgeschenke auf der Übersichtsseite"
+msgstr "Anzahl Gratisgeschenke auf der Übersichtsseite/im Warenkorb"
 
 msgid "sonstiges_gratisgeschenk_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Gratisgeschenke auf der Übersichtsseite angezeigt werden. Geben Sie 0 an, um alle Gratisgeschenke anzuzeigen."
+msgstr "Hier legen Sie fest, wie viele Gratisgeschenke auf der Übersichtsseite und im Warenkorb angezeigt werden. Geben Sie 0 an, um alle Gratisgeschenke anzuzeigen."
 
 msgid "sonstiges_gratisgeschenk_sortierung_name"
 msgstr "Gratisgeschenke sortieren nach"
@@ -2823,6 +2829,12 @@ msgstr "Maximalanzahl von Zeichen in Meta Description"
 
 msgid "global_meta_maxlaenge_description_desc"
 msgstr "Hier legen Sie fest, wie viele Zeichen die Meta Description maximal haben darf (inklusive Leerzeichen)."
+
+msgid "global_cancellation_time_name"
+msgstr "Retourenfrist"
+
+msgid "global_cancellation_time_desc"
+msgstr "Retourenfrist im gesamten Shop."
 
 msgid "news_benutzen_name"
 msgstr "News-System benutzen"

@@ -14,6 +14,8 @@ use Filter\Option;
 use Filter\ProductFilter;
 use Filter\States\BaseSearchQuery;
 use Filter\StateSQL;
+use Helpers\Request;
+use JTL\SeoHelper;
 
 /**
  * Class Search
@@ -163,7 +165,7 @@ class Search extends AbstractFilter
     public function setQueryID(string $searchTerm, int $languageID): FilterInterface
     {
         $searchQuery = null;
-        if ($languageID > 0 && \strlen($searchTerm) > 0) {
+        if ($languageID > 0 && \mb_strlen($searchTerm) > 0) {
             $searchQuery = $this->productFilter->getDB()->select(
                 'tsuchanfrage',
                 'cSuche',
@@ -238,7 +240,7 @@ class Search extends AbstractFilter
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => \Helpers\Request::getRealIP()],
+            ['lang' => $languageID, 'ip' => Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = $this->productFilter->getDB()->select(
@@ -248,7 +250,7 @@ class Search extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            \Helpers\Request::getRealIP(),
+            Request::getRealIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -259,7 +261,7 @@ class Search extends AbstractFilter
             // Fülle Suchanfragencache
             $searchQueryCache           = new \stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = \Helpers\Request::getRealIP();
+            $searchQueryCache->cIP      = Request::getRealIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'NOW()';
             $this->productFilter->getDB()->insert('tsuchanfragencache', $searchQueryCache);
@@ -278,8 +280,8 @@ class Search extends AbstractFilter
                 $searchQuery->nAnzahlTreffer  = $hits;
                 $searchQuery->nAnzahlGesuche  = 1;
                 $searchQuery->dZuletztGesucht = 'NOW()';
-                $searchQuery->cSeo            = \JTL\SeoHelper::getSeo($Suchausdruck);
-                $searchQuery->cSeo            = \JTL\SeoHelper::checkSeo($searchQuery->cSeo);
+                $searchQuery->cSeo            = SeoHelper::getSeo($Suchausdruck);
+                $searchQuery->cSeo            = SeoHelper::checkSeo($searchQuery->cSeo);
                 $previuousQuery               = $this->productFilter->getDB()->select(
                     'tsuchanfrage',
                     'kSprache',

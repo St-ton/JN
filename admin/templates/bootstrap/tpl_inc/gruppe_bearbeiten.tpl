@@ -10,16 +10,16 @@
         <input type="hidden" name="tab" value="group_view" />
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Allgemein</h3>
+                <h3 class="panel-title">{__('general')}</h3>
             </div>
             <div class="panel-body">
                 <div class="input-group{if isset($cError_arr.cGruppe)} error{/if}">
-                    <span class="input-group-addon"><label for="cGruppe">Name</label></span>
+                    <span class="input-group-addon"><label for="cGruppe">{__('name')}</label></span>
                     <input class="form-control" type="text" name="cGruppe" id="cGruppe" value="{if isset($oAdminGroup->cGruppe)}{$oAdminGroup->cGruppe}{/if}" />
                     {if isset($cError_arr.cGruppe)}<span class="input-group-addon error" title="{__('FillOut')}><i class="fa fa-exclamation-triangle"></i></span>{/if}
                 </div>
                 <div class="input-group{if isset($cError_arr.cBeschreibung)} error{/if}">
-                    <span class="input-group-addon"><label for="cBeschreibung">Beschreibung</label></span>
+                    <span class="input-group-addon"><label for="cBeschreibung">{__('description')}</label></span>
                     <input class="form-control" type="text" id="cBeschreibung" name="cBeschreibung" value="{if isset($oAdminGroup->cBeschreibung)}{$oAdminGroup->cBeschreibung}{/if}" />
                     {if isset($cError_arr.cBeschreibung)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                 </div>
@@ -28,7 +28,7 @@
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Berechtigungen</h3>
+                <h3 class="panel-title">{__('permissions')}</h3>
             </div>
             <div class="panel-body">
                 {foreach $oAdminDefPermission_arr as $oGroup}

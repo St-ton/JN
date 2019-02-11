@@ -65,12 +65,12 @@
             <input type="hidden" name="kPlugin" value="{if $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Allgemein</h3>
+                    <h3 class="panel-title">{__('general')}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="input-group{if isset($xPlausiVar_arr.cName)} error{/if}">
                         <span class="input-group-addon">
-                            <label for="cName">Name{if isset($xPlausiVar_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                            <label for="cName">{__('name')} {if isset($xPlausiVar_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                         </span>
                         <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getDisplayName())}{$Link->getDisplayName()}{/if}" tabindex="1" />
                     </div>
@@ -85,7 +85,7 @@
                                 <input type="radio" id="nLink3" name="nLinkart" checked="checked" disabled="disabled" />
                                 <label for="nLink3">{__('linkToSpecalPage')}</label>
                                 <select id="nLink3" name="nSpezialseite" disabled="disabled">
-                                    <option selected="selected">Plugin</option>
+                                    <option selected="selected">{__('plugin')}</option>
                                 </select>
                             </p>
                         {else}
@@ -95,7 +95,7 @@
                             </p>
                             <p class="multi_input">
                                 <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 2}checked{elseif $Link->getLinkType() === 2}checked{/if} />
-                                <label for="nLink2">{__('linkToExternalURL')} (anlegen unter "Suchmaschinenname")</label>
+                                <label for="nLink2">{__('linkToExternalURL')} {__('createWithSearchEngineName')}</label>
                             </p>
                             <p class="multi_input" style="margin-bottom: 10px;">
                                 <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 2}checked{/if} />
@@ -148,8 +148,8 @@
                         <span class="input-group-addon"><label for="bIsActive">{__('active')}</label></span>
                         <div class="input-group-wrap">
                             <select class="form-control" type="selectbox" name="bIsActive" id="bIsActive">
-                                <option value="1" {if $Link->getIsEnabled() || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '1')}selected{/if}>Aktiviert</option>
-                                <option value="0" {if !$Link->getIsEnabled() || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '0')}selected{/if}>Deaktiviert</option>
+                                <option value="1" {if $Link->getIsEnabled() || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '1')}selected{/if}>{__('activated')}</option>
+                                <option value="0" {if !$Link->getIsEnabled() || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '0')}selected{/if}>{__('deactivated')}</option>
                             </select>
                         </div>
                     </div>
@@ -165,8 +165,8 @@
                         <span class="input-group-addon"><label for="bSSL">SSL</label></span>
                         <span class="input-group-wrap">
                             <select id="bSSL" class="form-control" name="bSSL">
-                                <option value="0"{if $Link->getSSL() === false || (isset($xPostVar_arr.bSSL) && ($xPostVar_arr.bSSL == 0 || $xPostVar_arr.bSSL == 1))} selected="selected"{/if}>standard</option>
-                                <option value="2"{if $Link->getSSL() === true || (isset($xPostVar_arr.bSSL) && $xPostVar_arr.bSSL == 2)} selected="selected"{/if}>erzwungen</option>
+                                <option value="0"{if $Link->getSSL() === false || (isset($xPostVar_arr.bSSL) && ($xPostVar_arr.bSSL == 0 || $xPostVar_arr.bSSL == 1))} selected="selected"{/if}>{__('standard')}</option>
+                                <option value="2"{if $Link->getSSL() === true || (isset($xPostVar_arr.bSSL) && $xPostVar_arr.bSSL == 2)} selected="selected"{/if}>{__('forced')}</option>
                             </select>
                         </span>
                     </div>
@@ -181,7 +181,7 @@
                         <input class="form-control" type="text" name="nSort" id="nSort" value="{if isset($xPostVar_arr.nSort) && $xPostVar_arr.nSort}{$xPostVar_arr.nSort}{elseif $Link->getSort()}{$Link->getSort()}{/if}" tabindex="6" />
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon"><label for="Bilder_0">Bilder</label></span>
+                        <span class="input-group-addon"><label for="Bilder_0">{__('images')}</label></span>
                         <span class="input-group-wrap">
                             <div id="file_input_wrapper">
                                 <p class="multi_input">
@@ -234,11 +234,11 @@
                         </div>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon"><label for="lang">Sprache</label></span>
+                        <span class="input-group-addon"><label for="lang">{__('language')}</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="cISO" id="lang">
                                 {foreach $sprachen as $sprache}
-                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                                 {/foreach}
                             </select>
                         </span>
@@ -252,7 +252,7 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
                         </div>
                         <div class="panel-body">
                             <div class="input-group">
@@ -275,7 +275,7 @@
                             </div>
                             <div class="input-group">
                                 {assign var=cContent_ISO value="cContent_"|cat:$cISO}
-                                <span class="input-group-addon"><label for="cContent_{$cISO}">{__('linkContent')}</label></span>
+                                <span class="input-group-addon"><label for="cContent_{$cISO}">{__('content')}</label></span>
                                 <span class="input-group-wrap">
                                     <textarea class="form-control ckeditor" id="cContent_{$cISO}" name="cContent_{$cISO}" rows="10" cols="40">{if isset($xPostVar_arr.$cContent_ISO) && $xPostVar_arr.$cContent_ISO}{$xPostVar_arr.$cContent_ISO}{elseif !empty($Link->getContent($langID))}{$Link->getContent($langID)}{/if}</textarea>
                                 </span>
@@ -311,7 +311,7 @@
             {/foreach}
             <div class="panel{if isset($Link->getID())} btn-group{/if}">
                 <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
-                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSave')} und weiter bearbeiten</button>
+                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSave')} {__('continueEdit')}</button>
             </div>
         </form>
         {if isset($Link->getID())}

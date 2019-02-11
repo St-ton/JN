@@ -4,9 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Backend\JSONAPI;
 use Helpers\Form;
+use Backend\AdminIO;
 
-/** @global AdminAccount $oAccount */
+/** @global \Backend\AdminAccount $oAccount */
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -46,8 +48,8 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCurrencyConversion', 'getCurrencyConversionIO')
    ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
    ->register('getNotifyDropIO')
-   ->register('getNewTwoFA', ['TwoFA', 'getNewTwoFA'])
-   ->register('genTwoFAEmergencyCodes', ['TwoFA', 'genTwoFAEmergencyCodes'])
+   ->register('getNewTwoFA', [Backend\TwoFA::class, 'getNewTwoFA'])
+   ->register('genTwoFAEmergencyCodes', [Backend\TwoFA::class, 'genTwoFAEmergencyCodes'])
    ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
@@ -85,5 +87,4 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
    ->register('isDuplicateSpecialLink', 'isDuplicateSpecialLink', $linksInc);
 
-$data = $io->handleRequest($_REQUEST['io']);
-$io->respondAndExit($data);
+$io->respondAndExit($io->handleRequest($_REQUEST['io']));

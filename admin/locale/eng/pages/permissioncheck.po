@@ -10,3 +10,9 @@ msgstr "Mit diesem Tool können Sie die Konsistenz Ihrer Verzeichnisse überprü
 
 msgid "permissioncheckURL"
 msgstr "https://jtl-url.de/5j48f"
+
+msgid "dirCount"
+msgstr "Anzahl Verzeichnisse:"
+
+msgid "dirCountNotWriteable"
+msgstr "Anzahl nicht beschreibbarer Verzeichnisse:"

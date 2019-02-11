@@ -275,7 +275,7 @@ class Kategorie
         $this->cBildURL           = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->cBild              = $imageBaseURL . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->nBildVorhanden     = 0;
-        if (isset($oKategorie->cPfad) && strlen($oKategorie->cPfad) > 0) {
+        if (isset($oKategorie->cPfad) && mb_strlen($oKategorie->cPfad) > 0) {
             $this->cBildURL       = PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
             $this->cBild          = $imageBaseURL . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
             $this->nBildVorhanden = 1;
@@ -307,10 +307,11 @@ class Kategorie
                 } elseif ($attribute->cName === 'meta_keywords') {
                     $this->cMetaKeywords = $attribute->cWert;
                 }
+                $idx = mb_convert_case($attribute->cName, MB_CASE_LOWER);
                 if ($attribute->bIstFunktionsAttribut) {
-                    $this->categoryFunctionAttributes[strtolower($attribute->cName)] = $attribute->cWert;
+                    $this->categoryFunctionAttributes[$idx] = $attribute->cWert;
                 } else {
-                    $this->categoryAttributes[strtolower($attribute->cName)] = $attribute;
+                    $this->categoryAttributes[$idx] = $attribute;
                 }
             }
         }
@@ -318,23 +319,23 @@ class Kategorie
         $this->KategorieAttribute = &$this->categoryFunctionAttributes;
         // lokalisieren
         if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
-            if (isset($oKategorie->cName_spr) && strlen($oKategorie->cName_spr) > 0) {
+            if (isset($oKategorie->cName_spr) && mb_strlen($oKategorie->cName_spr) > 0) {
                 $this->cName = $oKategorie->cName_spr;
                 unset($oKategorie->cName_spr);
             }
-            if (isset($oKategorie->cBeschreibung_spr) && strlen($oKategorie->cBeschreibung_spr) > 0) {
+            if (isset($oKategorie->cBeschreibung_spr) && mb_strlen($oKategorie->cBeschreibung_spr) > 0) {
                 $this->cBeschreibung = $oKategorie->cBeschreibung_spr;
                 unset($oKategorie->cBeschreibung_spr);
             }
-            if (isset($oKategorie->cMetaDescription_spr) && strlen($oKategorie->cMetaDescription_spr) > 0) {
+            if (isset($oKategorie->cMetaDescription_spr) && mb_strlen($oKategorie->cMetaDescription_spr) > 0) {
                 $this->cMetaDescription = $oKategorie->cMetaDescription_spr;
                 unset($oKategorie->cMetaDescription_spr);
             }
-            if (isset($oKategorie->cMetaKeywords_spr) && strlen($oKategorie->cMetaKeywords_spr) > 0) {
+            if (isset($oKategorie->cMetaKeywords_spr) && mb_strlen($oKategorie->cMetaKeywords_spr) > 0) {
                 $this->cMetaKeywords = $oKategorie->cMetaKeywords_spr;
                 unset($oKategorie->cMetaKeywords_spr);
             }
-            if (isset($oKategorie->cTitleTag_spr) && strlen($oKategorie->cTitleTag_spr) > 0) {
+            if (isset($oKategorie->cTitleTag_spr) && mb_strlen($oKategorie->cTitleTag_spr) > 0) {
                 $this->cTitleTag = $oKategorie->cTitleTag_spr;
                 unset($oKategorie->cTitleTag_spr);
             }

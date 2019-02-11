@@ -83,15 +83,15 @@ class PluginCollection
         if ($length === 0) {
             return '';
         }
-        if (\strlen($string) > $length) {
-            $length -= \min($length, \strlen($etc));
+        if (\mb_strlen($string) > $length) {
+            $length -= \min($length, \mb_strlen($etc));
             if (!$break && !$middle) {
-                $string = \preg_replace('/\s+?(\S+)?$/', '', \substr($string, 0, $length + 1));
+                $string = \preg_replace('/\s+?(\S+)?$/', '', \mb_substr($string, 0, $length + 1));
             }
 
             return !$middle
-                ? \substr($string, 0, $length) . $etc
-                : \substr($string, 0, $length / 2) . $etc . \substr($string, -$length / 2);
+                ? \mb_substr($string, 0, $length) . $etc
+                : \mb_substr($string, 0, $length / 2) . $etc . \mb_substr($string, -$length / 2);
         }
 
         return $string;
@@ -113,7 +113,7 @@ class PluginCollection
         if (isset($params['section'], $params['key'])) {
             $cValue = $this->lang->get($params['key'], $params['section']);
             // Für vsprintf ein String der :: exploded wird
-            if (isset($params['printf']) && \strlen($params['printf']) > 0) {
+            if (isset($params['printf']) && \mb_strlen($params['printf']) > 0) {
                 $cValue = \vsprintf($cValue, \explode(':::', $params['printf']));
             }
         }
@@ -133,7 +133,7 @@ class PluginCollection
      */
     public function countCharacters(?string $text): int
     {
-        return $text === null ? 0 : \strlen($text);
+        return $text === null ? 0 : \mb_strlen($text);
     }
 
     /**
@@ -164,11 +164,11 @@ class PluginCollection
         if (\DIRECTORY_SEPARATOR === '\\') {
             $_win_from = ['%D', '%h', '%n', '%r', '%R', '%t', '%T'];
             $_win_to   = ['%m/%d/%y', '%b', "\n", '%I:%M:%S %p', '%H:%M', "\t", '%H:%M:%S'];
-            if (\strpos($format, '%e') !== false) {
+            if (\mb_strpos($format, '%e') !== false) {
                 $_win_from[] = '%e';
                 $_win_to[]   = \sprintf('%\' 2d', \date('j', $timestamp));
             }
-            if (\strpos($format, '%l') !== false) {
+            if (\mb_strpos($format, '%l') !== false) {
                 $_win_from[] = '%l';
                 $_win_to[]   = \sprintf('%\' 2d', \date('h', $timestamp));
             }

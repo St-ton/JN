@@ -2,21 +2,21 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "navigationsfilterSave"
-msgstr "Speichern"
-
 msgid "navigationsfilter"
 msgstr "Produktfilter"
 
 msgid "navigationsfilterDesc"
 msgstr "Konfigurieren Sie hier die Filter- und Anzeigemöglichkeiten von Artikelübersichten."
 
-msgid "navigationsfilterFrom"
-msgstr "Von"
-
-msgid "navigationsfilterTo"
-msgstr "Bis"
-
 msgid "navigationsfilterUrl"
 msgstr "https://jtl-url.de/5u1xg"
+
+msgid "thePriceRange"
+msgstr "Die Preisspanne "
+
+msgid "isInvalid"
+msgstr " ist ungültig."
+
+msgid "overlapps"
+msgstr " überschneidet sich mit anderen."
 

@@ -1,14 +1,23 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use Events\Dispatcher;
+use Plugin\Data\AdminMenu;
+use Plugin\Data\Cache;
+use Plugin\Data\Config;
+use Plugin\Data\Hook;
+use Plugin\Data\License;
+use Plugin\Data\Links;
+use Plugin\Data\Localization;
+use Plugin\Data\MailTemplates;
+use Plugin\Data\Meta;
+use Plugin\Data\Paths;
+use Plugin\Data\PaymentMethods;
+use Plugin\Data\Widget;
 
 /**
  * Class AbstractPlugin
@@ -17,140 +26,380 @@ use Events\Dispatcher;
 abstract class AbstractPlugin implements PluginInterface
 {
     /**
+     * @var int
+     */
+    protected $id;
+
+    /**
      * @var string
      */
-    private $pluginId;
+    protected $pluginID;
 
     /**
-     * @var array
+     * @var int
      */
-    private $notifications = [];
+    protected $state = State::DISABLED;
 
     /**
-     * @var Plugin
+     * @var Meta
      */
-    private $plugin;
+    protected $meta;
 
     /**
-     * @var DbInterface
+     * @var Paths
      */
-    private $db;
+    protected $paths;
 
     /**
-     * @var JTLCacheInterface
+     * @var int
      */
-    private $cache;
+    protected $priority = 5;
 
     /**
-     * AbstractPlugin constructor.
-     * @param AbstractExtension $plugin
-     * @param DbInterface       $db
-     * @param JTLCacheInterface $cache
+     * @var Config
      */
-    final public function __construct($plugin, DbInterface $db, JTLCacheInterface $cache)
+    protected $config;
+
+    /**
+     * @var Links
+     */
+    protected $links;
+
+    /**
+     * @var License
+     */
+    protected $license;
+
+    /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
+     * @var bool
+     */
+    protected $isExtension = false;
+
+    /**
+     * @var bool
+     */
+    protected $bootstrap = false;
+
+    /**
+     * @var Hook[]
+     */
+    protected $hooks;
+
+    /**
+     * @var AdminMenu
+     */
+    protected $adminMenu;
+
+    /**
+     * @var Localization
+     */
+    protected $localization;
+
+    /**
+     * @var Widget
+     */
+    protected $widgets;
+
+    /**
+     * @var MailTemplates
+     */
+    protected $mailTemplates;
+
+    /**
+     * @var PaymentMethods
+     */
+    protected $paymentMethods;
+
+    /**
+     * @inheritdoc
+     */
+    public function getID(): int
     {
-        $this->plugin   = $plugin;
-        $this->pluginId = $plugin->getPluginID();
-        $this->db       = $db;
-        $this->cache    = $cache;
+        return $this->id;
     }
 
     /**
-     * @param Dispatcher $dispatcher
+     * @inheritdoc
      */
-    public function boot(Dispatcher $dispatcher)
+    public function setID(int $id): void
     {
-        $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
-            $dispatcher->forget('backend.notification');
-            foreach ($this->notifications as $n) {
-                $notify->addNotify($n);
-            }
-        });
+        $this->id = $id;
     }
 
     /**
-     * @param int         $type
-     * @param string      $title
-     * @param null|string $description
+     * @inheritdoc
      */
-    final public function addNotify($type, $title, $description = null)
+    public function getPluginID(): string
     {
-        $this->notifications[] = (new \NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
+        return $this->pluginID;
     }
 
     /**
-     *
+     * @inheritdoc
      */
-    public function installed()
+    public function setPluginID(string $pluginID): void
     {
+        $this->pluginID = $pluginID;
     }
 
     /**
-     *
+     * @inheritdoc
      */
-    public function uninstalled()
+    public function getState(): int
     {
+        return $this->state;
     }
 
     /**
-     *
+     * @inheritdoc
      */
-    public function enabled()
+    public function setState(int $state): void
     {
+        $this->state = $state;
     }
 
     /**
-     *
+     * @inheritdoc
      */
-    public function disabled()
+    public function getMeta(): Meta
     {
+        return $this->meta;
     }
 
     /**
-     * @param mixed $oldVersion
-     * @param mixed $newVersion
+     * @inheritdoc
      */
-    public function updated($oldVersion, $newVersion)
+    public function setMeta(Meta $meta): void
     {
+        $this->meta = $meta;
     }
 
     /**
-     * @return AbstractExtension
+     * @inheritdoc
      */
-    public function getPlugin()
+    public function getPaths(): Paths
     {
-        return $this->plugin;
+        return $this->paths;
     }
 
     /**
-     * @return DbInterface
+     * @inheritdoc
      */
-    public function getDB(): DbInterface
+    public function setPaths(Paths $paths): void
     {
-        return $this->db;
+        $this->paths = $paths;
     }
 
     /**
-     * @param DbInterface $db
+     * @inheritdoc
      */
-    public function setDB(DbInterface $db): void
+    public function getPriority(): int
     {
-        $this->db = $db;
+        return $this->priority;
     }
 
     /**
-     * @return JTLCacheInterface
+     * @inheritdoc
      */
-    public function getCache(): JTLCacheInterface
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConfig(): Config
+    {
+        return $this->config;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setConfig(Config $config): void
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLinks(): Links
+    {
+        return $this->links;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLinks(Links $links): void
+    {
+        $this->links = $links;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLicense(): License
+    {
+        return $this->license;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLicense(License $license): void
+    {
+        $this->license = $license;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCache(): Cache
     {
         return $this->cache;
     }
 
     /**
-     * @param JTLCacheInterface $cache
+     * @inheritdoc
      */
-    public function setCache(JTLCacheInterface $cache): void
+    public function setCache(Cache $cache): void
     {
         $this->cache = $cache;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isExtension(): bool
+    {
+        return $this->isExtension;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setIsExtension(bool $isExtension): void
+    {
+        $this->isExtension = $isExtension;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isBootstrap(): bool
+    {
+        return $this->bootstrap;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setBootstrap(bool $bootstrap): void
+    {
+        $this->bootstrap = $bootstrap;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getHooks(): array
+    {
+        return $this->hooks;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setHooks(array $hooks): void
+    {
+        $this->hooks = $hooks;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAdminMenu(): AdminMenu
+    {
+        return $this->adminMenu;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setAdminMenu(AdminMenu $adminMenu): void
+    {
+        $this->adminMenu = $adminMenu;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLocalization(): Localization
+    {
+        return $this->localization;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLocalization(Localization $localization): void
+    {
+        $this->localization = $localization;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getWidgets(): Widget
+    {
+        return $this->widgets;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setWidgets(Widget $widgets): void
+    {
+        $this->widgets = $widgets;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMailTemplates(): MailTemplates
+    {
+        return $this->mailTemplates;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setMailTemplates(MailTemplates $mailTemplates): void
+    {
+        $this->mailTemplates = $mailTemplates;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPaymentMethods(): PaymentMethods
+    {
+        return $this->paymentMethods;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setPaymentMethods(PaymentMethods $paymentMethods): void
+    {
+        $this->paymentMethods = $paymentMethods;
     }
 }

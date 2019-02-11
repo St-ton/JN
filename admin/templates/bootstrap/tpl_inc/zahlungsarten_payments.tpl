@@ -15,13 +15,13 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Datum/Zeit</th>
-                                <th>Bestell-Nr.</th>
-                                <th>Kunde</th>
-                                <th>Gezahlter Betrag</th>
-                                <th>Zahlungsgebühr</th>
-                                <th>Währung</th>
-                                <th>Abgeholt durch Wawi</th>
+                                <th>{__('date')}/{__('time')}</th>
+                                <th>{__('orderNumberShort')}</th>
+                                <th>{__('customer')}</th>
+                                <th>{__('amountPayed')}</th>
+                                <th>{__('paymentDue')}</th>
+                                <th>{__('currency')}</th>
+                                <th>{__('syncedWithWawi')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -74,7 +74,7 @@
                 <div class="btn-group">
                     <button type="submit" name="action" value="paymentwawireset" class="btn btn-danger">
                         <i class="fa fa-refresh"></i>
-                        Wawi-Abholung zurücksetzen
+                        {__('wawiSyncReset')}
                     </button>
                     <a class="btn btn-primary" href="zahlungsarten.php">{__('goBack')}</a>
                 </div>

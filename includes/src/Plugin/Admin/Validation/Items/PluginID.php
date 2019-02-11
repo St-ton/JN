@@ -24,7 +24,7 @@ class PluginID extends AbstractItem
             return InstallCode::INVALID_PLUGIN_ID;
         }
         \preg_match('/[\w_]+/', $baseNode['PluginID'], $hits);
-        if (empty($baseNode['PluginID']) || \strlen($hits[0]) !== \strlen($baseNode['PluginID'])) {
+        if (empty($baseNode['PluginID']) || \mb_strlen($hits[0]) !== \mb_strlen($baseNode['PluginID'])) {
             return InstallCode::INVALID_PLUGIN_ID;
         }
 

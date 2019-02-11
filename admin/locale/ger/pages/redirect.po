@@ -17,12 +17,6 @@ msgstr "Alle ohne Weiterleitung löschen"
 msgid "redirectNew"
 msgstr "Neue Weiterleitung"
 
-msgid "redirectOverview"
-msgstr "Übersicht"
-
-msgid "redirectCreate"
-msgstr "Anlegen"
-
 msgid "redirectFrom"
 msgstr "Quell-URL"
 
@@ -34,9 +28,6 @@ msgstr "Aufrufe"
 
 msgid "redirectReferer"
 msgstr "Verweis"
-
-msgid "redirectRefererDate"
-msgstr "Datum"
 
 msgid "redirectRefererDirect"
 msgstr "Direkteinstieg"

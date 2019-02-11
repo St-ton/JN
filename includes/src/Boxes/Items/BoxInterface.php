@@ -72,24 +72,24 @@ interface BoxInterface
     public function setTemplateFile(string $templateFile): void;
 
     /**
+     * @return null|\Plugin\LegacyPlugin
+     */
+    public function getPlugin(): ?\Plugin\LegacyPlugin;
+
+    /**
+     * @param null|\Plugin\LegacyPlugin $plugin
+     */
+    public function setPlugin(?\Plugin\LegacyPlugin $plugin): void;
+
+    /**
      * @return null|\Plugin\Plugin
      */
-    public function getPlugin(): ?\Plugin\Plugin;
+    public function getExtension(): ?\Plugin\Plugin;
 
     /**
-     * @param null|\Plugin\Plugin $plugin
+     * @param null|\Plugin\Plugin $extension
      */
-    public function setPlugin(?\Plugin\Plugin $plugin): void;
-
-    /**
-     * @return null|\Plugin\Extension
-     */
-    public function getExtension(): ?\Plugin\Extension;
-
-    /**
-     * @param null|\Plugin\Extension $extension
-     */
-    public function setExtension(?\Plugin\Extension $extension): void;
+    public function setExtension(?\Plugin\Plugin $extension): void;
 
     /**
      * @return int

@@ -1,4 +1,9 @@
 <nav class="backend-sidebar">
+    <script>
+        if (window.sessionStorage.sidebarState === 'collapsed') {
+            $('.backend-sidebar').addClass('collapsed');
+        }
+    </script>
     <div class="backend-brandbar">
         <a class="backend-brand" href="index.php" title="Dashboard">
             <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
@@ -74,31 +79,45 @@
                 var width, endWidth;
 
                 if(sidebar.hasClass('collapsed')) {
-                    sidebar.removeClass('collapsed');
-                    sidebar.css('width', 'auto');
-                    width = sidebar.width();
-                    sidebar.addClass('collapsed');
-                    sidebar.css({ width: '' });
-                    sidebar.animate({ width: width }, 200, 'swing', function() {
-                        sidebar.css({ width: '' });
-                        sidebar.removeClass('collapsed');
-                    });
+                    expandSidebar();
                 } else {
-                    width = sidebar.width();
-                    sidebar.addClass('collapsed');
-                    endWidth = sidebar.width();
-                    sidebar.removeClass('collapsed');
-                    sidebar.css({ width: width + 'px' });
-                    sidebar.animate({ width: endWidth }, 200, 'swing', function() {
-                        sidebar.css({ width: '' });
-                    });
-                    sidebar.addClass('collapsed');
+                    collapseSidebar();
                 }
 
                 collapseAll();
                 collapseAllRoot();
 
                 return false;
+            }
+
+            function collapseSidebar()
+            {
+                var sidebar = $('.backend-sidebar');
+                var width   = sidebar.width();
+                sidebar.addClass('collapsed');
+                var endWidth = sidebar.width();
+                sidebar.removeClass('collapsed');
+                sidebar.css({ width: width + 'px' });
+                sidebar.animate({ width: endWidth }, 200, 'swing', function() {
+                    sidebar.css({ width: '' });
+                });
+                sidebar.addClass('collapsed');
+                window.sessionStorage.sidebarState = 'collapsed';
+            }
+
+            function expandSidebar()
+            {
+                var sidebar = $('.backend-sidebar');
+                sidebar.removeClass('collapsed');
+                sidebar.css('width', 'auto');
+                var width = sidebar.width();
+                sidebar.addClass('collapsed');
+                sidebar.css({ width: '' });
+                sidebar.animate({ width: width }, 200, 'swing', function() {
+                    sidebar.css({ width: '' });
+                    sidebar.removeClass('collapsed');
+                    window.sessionStorage.sidebarState = 'expanded';
+                });
             }
 
             function collapseAll()

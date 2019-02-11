@@ -88,7 +88,7 @@ function plzimportDoImport($target, array $sessData, $result): void
         }
 
         while (!feof($fHandle)) {
-            $read += strlen(implode(',', $data));
+            $read += mb_strlen(implode(',', $data));
             $data  = fgetcsv($fHandle, 0, "\t");
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {
@@ -266,10 +266,10 @@ function plzimportDoDownload($target, array $sessData, $result): void
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  */
-function plzimportActionIndex(Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportActionIndex(\Smarty\JTLSmarty $smarty, array &$messages): void
 {
     $status = plzimportActionCheckStatus();
     if (isset($status->running) && $status->running) {
@@ -297,6 +297,8 @@ function plzimportActionUpdateIndex(): array
  */
 function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
+
     $target = StringHandler::filterXSS($target);
     $part   = StringHandler::filterXSS($part);
     $step   = (int)$step;
@@ -430,6 +432,7 @@ function plzimportActionCheckStatus(): stdClass
  */
 function plzimportActionDelTempImport(): array
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
     Shop::Container()->getDB()->delete('tplz', 'cLandISO', 'IMP');
 
     return [
@@ -551,10 +554,10 @@ function plzimportActionRestoreBackup($target = ''): stdClass
 }
 
 /**
- * @param Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param \Smarty\JTLSmarty $smarty
+ * @param array             $messages
  */
-function plzimportFinalize(Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportFinalize(\Smarty\JTLSmarty $smarty, array &$messages): void
 {
     if (isset($_SESSION['plzimport.notice'])) {
         $messages['notice'] = $_SESSION['plzimport.notice'];

@@ -15,11 +15,11 @@
 {function pageButtons}
     <label>
         {if $bMultiplePages}
-            Einträge {$oPagination->getFirstPageItem() + 1}
+            {__('entries')} {$oPagination->getFirstPageItem() + 1}
             - {$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}
             von {$oPagination->getItemCount()}
         {else}
-            Einträge gesamt:
+            {__('allEntries')}
         {/if}
     </label>
     {if $bMultiplePages}
@@ -66,13 +66,13 @@
 {/function}
 
 {function itemsPerPageOptions}
-    <label for="{$oPagination->getId()}_nItemsPerPage">Einträge/Seite</label>
+    <label for="{$oPagination->getId()}_nItemsPerPage">{__('entriesPerPage')}</label>
     <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
             onchange="this.form.submit()">
         {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
             <option value="{$nItemsPerPageOption}"{if $oPagination->getItemsPerPage() == $nItemsPerPageOption} selected="selected"{/if}>
                 {if $nItemsPerPageOption === -1}
-                    alle
+                    {__('all')}
                 {else}
                     {$nItemsPerPageOption}
                 {/if}
@@ -82,17 +82,17 @@
 {/function}
 
 {function sortByDirOptions}
-    <label for="{$oPagination->getId()}_nSortByDir">Sortierung</label>
+    <label for="{$oPagination->getId()}_nSortByDir">{__('sorting')}</label>
     <select class="form-control" name="{$oPagination->getId()}_nSortByDir" id="{$oPagination->getId()}_nSortByDir"
             onchange="this.form.submit()">
         {foreach $oPagination->getSortByOptions() as $i => $cSortByOption}
             <option value="{$i * 2}"
                     {if $i * 2 == $oPagination->getSortByDir()} selected="selected"{/if}>
-                {$cSortByOption[1]} aufsteigend
+                {$cSortByOption[1]} {__('entriesPerPage')}
             </option>
             <option value="{$i * 2 + 1}"
                     {if $i * 2 + 1 == $oPagination->getSortByDir()} selected="selected"{/if}>
-                {$cSortByOption[1]} absteigend
+                {$cSortByOption[1]} {__('entriesPerPage')}
             </option>
         {/foreach}
     </select>

@@ -39,7 +39,7 @@ function checkNewsletterSend() {ldelim}
             {/if}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Vorlage erstellen</h3>
+                    <h3 class="panel-title">{__('newsletterdraftcreate')}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="input-group">
@@ -51,7 +51,7 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cBetreff">{__('newsletterdraftsubject')}</label>
+                            <label for="cBetreff">{__('subject')}</label>
                         </span>
                         <input id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}">
                         {if isset($cPlausiValue_arr.cBetreff)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
@@ -72,7 +72,7 @@ function checkNewsletterSend() {ldelim}
                                                 {if $kKundengruppe == '0'}selected{/if}
                                             {/foreach}
                                         {/if}
-                                        >Newsletterempfänger ohne Kundenkonto</option>
+                                        >{__('newsletterNoAccount')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}"
                                             {if isset($kKundengruppe_arr)}
@@ -96,8 +96,8 @@ function checkNewsletterSend() {ldelim}
                         </span>
                         <span class="input-group-wrap">
                             <select id="cArt" name="cArt" class="form-control combo">
-                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text/html'}selected{/if}>text/html</option>
-                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text'}selected{/if}>text</option>
+                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text/html'}selected{/if}>{__('textHtml')}</option>
+                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text'}selected{/if}>{__('text')}</option>
                             </select>
                         </span>
                     </div>
@@ -161,7 +161,7 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kKampagne">{__('newslettercampaign')}</label>
+                            <label for="kKampagne">{__('campaign')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control " id="kKampagne" name="kKampagne">
@@ -174,8 +174,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='articlePicker'
-                        modalTitle='Artikel auswählen'
-                        searchInputLabel='Suche nach Artikelnamen'
+                        modalTitle="{__('chooseProduct')}"
+                        searchInputLabel="{__('searchProductName')}"
                     }
                     <script>
                         $(function () {
@@ -192,7 +192,7 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedArticles(selected)
                         {
                             $('#articleSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Artikel' : '');
+                                .val(selected.length > 0 ? selected.length + {__('product')} : '');
                             $('#cArtikel')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
@@ -215,8 +215,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='manufacturerPicker'
-                        modalTitle='Hersteller auswählen'
-                        searchInputLabel='Suche nach Herstellernamen'
+                        modalTitle="{__('chooseManufacturer')}"
+                        searchInputLabel="{__('searchManufacturerName')}"
                     }
                     <script>
                         $(function () {
@@ -233,14 +233,14 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedManufacturers(selected)
                         {
                             $('#manufacturerSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Hersteller' : '');
+                                .val(selected.length > 0 ? selected.length + {__('manufacturer')} : '');
                             $('#cHersteller')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="manufacturerSelectionInfo">{__('newslettermanufacturer')}</label>
+                            <label for="manufacturerSelectionInfo">{__('manufacturer')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="manufacturerSelectionInfo">
@@ -256,8 +256,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle='Kategorien auswählen'
-                        searchInputLabel='Suche nach Kategorienamen'
+                        modalTitle="{__('chooseCatgeory')}"
+                        searchInputLabel="{__('searchCatgeoryName')}"
                     }
                     <script>
                         $(function () {
@@ -274,14 +274,14 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedCategories(selected)
                         {
                             $('#categorySelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Kategorien' : '');
+                                .val(selected.length > 0 ? selected.length + {__('category')} : '');
                             $('#cKategorie')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="categorySelectionInfo">{__('newslettercategory')}</label>
+                            <label for="categorySelectionInfo">{__('categories')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="categorySelectionInfo">
@@ -310,7 +310,7 @@ function checkNewsletterSend() {ldelim}
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button class="btn btn-primary" name="speichern" type="submit" value="{__('newsletterdraftsave')}"><i class="fa fa-save"></i> {__('newsletterdraftsave')}</button>
+                        <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                         {if $cOption !== 'editieren'}
                             <button class="btn btn-warning" name="speichern_und_senden" type="button" value="{__('newsletterdraftsaveandsend')}" onclick="checkNewsletterSend();">{__('newsletterdraftsaveandsend')}</button>
                         {/if}
@@ -323,7 +323,7 @@ function checkNewsletterSend() {ldelim}
             {$jtl_token}
             <input name="tab" type="hidden" value="newslettervorlagen" />
             <p>
-                <button class="btn btn-default" name="back" type="submit" value="{__('newsletterback')}"><i class="fa fa-angle-double-left"></i> {__('newsletterback')}</button>
+                <button class="btn btn-default" name="back" type="submit" value="{__('back')}"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
             </p>
         </form>
         {if !empty($oNewsletterVorlage->kNewsletterVorlage)}

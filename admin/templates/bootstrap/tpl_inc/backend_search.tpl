@@ -21,11 +21,9 @@
                         lastIoSearchCall = null;
                     }
 
-                    lastIoSearchCall = ioCall('adminSearch', [value], function (data) {
-                        var tpl = data.data.tpl;
-
-                        if (tpl) {
-                            searchDropdown.html(tpl).addClass('open');
+                    lastIoSearchCall = ioCall('adminSearch', [value], function (html) {
+                        if (html) {
+                            searchDropdown.html(html).addClass('open');
                         } else {
                             searchDropdown.removeClass('open');
                         }

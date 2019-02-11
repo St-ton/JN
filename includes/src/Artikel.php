@@ -3030,6 +3030,7 @@ class Artikel
                     $options                            = new stdClass();
                     $options->nKeinLagerbestandBeachten = 1;
                     $options->nArtikelAttribute         = 1;
+                    $options->nVariationen              = 0;
                     $product                            = new self();
                     $product->fuelleArtikel($kArtikel, $options);
 

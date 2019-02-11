@@ -14,15 +14,15 @@
     {$showShippingWeight = true}
 {/if}
 {$dimension = $Artikel->getDimension()}
+{$funcAttr = $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]|default:0}
 {$showAttributesTable = ($Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
     && !empty($Artikel->oMerkmale_arr) || $showProductWeight || $showShippingWeight
     || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
     && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
     || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0
     && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
-    || (isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN])
-    && $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute))}
+    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $funcAttr == 1)
+    && !empty($Artikel->Attribute))}
 {$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
     && !empty($Artikel->cMedienTyp_arr))}

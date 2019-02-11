@@ -361,6 +361,9 @@ if ($reload === true) {
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
 }
+
+$hasAuth = !!$db->query("SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL", 3);
+
 $smarty->assign('hinweis', $cHinweis)
        ->assign('hinweis64', base64_encode($cHinweis))
        ->assign('fehler', $cFehler)
@@ -372,4 +375,5 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('pluginsAvailable', $pluginsAvailable)
        ->assign('pluginsErroneous', $pluginsErroneous)
        ->assign('allPluginItems', $pluginsAll)
+       ->assign('hasAuth', $hasAuth)
        ->display('pluginverwaltung.tpl');

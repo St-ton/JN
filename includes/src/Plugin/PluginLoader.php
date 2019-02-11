@@ -77,33 +77,141 @@ class PluginLoader extends AbstractLoader
      */
     public function loadFromObject($obj, string $currentLanguageCode): Plugin
     {
-        $id        = (int)$obj->kPlugin;
-        $paths     = $this->loadPaths($obj->cVerzeichnis);
-        $extension = new Plugin();
-        $extension->setIsExtension(true);
-        $extension->setMeta($this->loadMetaData($obj));
-        $extension->setPaths($paths);
-        $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
-        $extension->setState((int)$obj->nStatus);
-        $extension->setID($id);
-        $extension->setBootstrap(true);
-        $extension->setLinks($this->loadLinks($id));
-        $extension->setPluginID($obj->cPluginID);
-        $extension->setPriority((int)$obj->nPrio);
-        $extension->setLicense($this->loadLicense($obj));
-        $extension->setCache($this->loadCacheData($extension));
-        $getText = \Shop::Container()->getGetText();
-        $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
-        $getText->loadPluginLocale($obj->cPluginID, $extension);
-        $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
-        $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));
-        $extension->setWidgets($this->loadWidgets($extension));
-        $extension->setMailTemplates($this->loadMailTemplates($extension));
-        $extension->setPaymentMethods($this->loadPaymentMethods($extension));
+        $currentLanguageCode = $currentLanguageCode
+            ?? \Shop::getLanguageCode()
+            ?? \Sprache::getDefaultLanguage()->cISO;
 
-        $this->loadAdminMenu($extension);
-        $this->saveToCache($extension);
+        $this->plugin->setID((int)$obj->kPlugin);
+        $this->plugin->setPluginID($obj->cPluginID);
+        $this->plugin->setStoreID($obj->cStoreID);
+        $this->plugin->setState((int)$obj->nStatus);
+        $this->plugin->setPriority((int)$obj->nPrio);
+        $this->plugin->setBootstrap((int)$obj->bBootstrap === 1);
+        $this->plugin->setIsExtension(isset($obj->bExtension) && (int)$obj->bExtension === 1);
 
-        return $extension;
+        $this->plugin->setMeta($this->loadMetaData($obj));
+        $this->plugin->setLicense($this->loadLicense($obj));
+        $this->plugin->setLinks(new Links());
+
+        $this->plugin->setCache($this->loadCacheData($this->plugin));
+
+        $this->basePath = \PFAD_ROOT . \PFAD_PLUGIN;
+
+        $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
+        $this->plugin->oPluginHook_arr = $this->loadHooks((int)$obj->kPlugin);
+        $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
+        $this->loadAdminMenu($this->plugin);
+        $this->plugin->setConfig($this->loadConfig($this->plugin->getPaths()->getAdminPath(), $this->plugin->getID()));
+        $this->plugin->setLocalization($this->loadLocalization($this->plugin->getID(), $currentLanguageCode));
+        $this->plugin->setLinks($this->loadLinks($this->plugin->getID()));
+        $this->plugin->setWidgets($this->loadWidgets($this->plugin));
+        $this->plugin->setPaymentMethods($this->loadPaymentMethods($this->plugin));
+        $this->plugin->setMailTemplates($this->loadMailTemplates($this->plugin));
+        $this->saveToCache($this->plugin);
+
+        return $this->plugin;
+    }
+
+    /**
+     * @param AbstractExtension $extension
+     * @return Widget
+     */
+    protected function loadWidgets(AbstractExtension $extension): Widget
+    {
+        $widgets = parent::loadWidgets($extension);
+        foreach ($widgets->getWidgets() as $widget) {
+            $widget->className = \str_replace($widget->namespace, 'Widget', $widget->className);
+            $widget->namespace = null;
+            $widget->classFile = \str_replace(
+                \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET,
+                \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET . 'class.Widget',
+                $widget->classFile
+            );
+        }
+        return $widgets;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    protected function loadHooks(int $id): array
+    {
+        $hooks = \array_map(function ($data) {
+            $hook = new Hook();
+            $hook->setPriority((int)$data->nPriority);
+            $hook->setFile($data->cDateiname);
+            $hook->setID((int)$data->nHook);
+            $hook->setPluginID((int)$data->kPlugin);
+
+            return $hook;
+        }, $this->db->selectAll('tpluginhook', 'kPlugin', $id));
+
+        return $hooks;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function loadPaths(string $pluginDir): Paths
+    {
+        $paths     = parent::loadPaths($pluginDir);
+        $shopURL   = $paths->getShopURL();
+        $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . '/';
+        $versioned = \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . '/';
+        $baseURL   = $shopURL . \PFAD_PLUGIN . $pluginDir . '/';
+
+        $paths->setBaseDir($pluginDir);
+        $paths->setBasePath($basePath);
+        $paths->setVersionedPath($basePath . $versioned);
+        $paths->setFrontendPath($basePath . $versioned . \PFAD_PLUGIN_FRONTEND);
+        $paths->setFrontendURL($baseURL . $versioned . \PFAD_PLUGIN_FRONTEND);
+        $paths->setAdminPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU);
+        $paths->setAdminURL($baseURL . $versioned . \PFAD_PLUGIN_ADMINMENU);
+        $paths->setLicencePath($basePath . $versioned . \PFAD_PLUGIN_LICENCE);
+        $paths->setUninstaller($basePath . $versioned . \PFAD_PLUGIN_UNINSTALL);
+        $paths->setPortletsPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setExportPath($basePath . $versioned . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
+
+        return $paths;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function loadConfig(string $path, int $id): Config
+    {
+        $config       = parent::loadConfig($path, $id);
+        $assocCompat  = [];
+        $confCompat   = [];
+        $configCompat = [];
+        foreach ($config->getOptions()->toArray() as $option) {
+            $assocCompat[$option->valueID] = $option->value;
+
+            $configCompatItem          = new \stdClass();
+            $configCompatItem->kPlugin = $id;
+            $configCompatItem->cName   = $option->valueID;
+            $configCompatItem->cWert   = $option->value;
+            $configCompat[]            = $configCompatItem;
+
+            $confCompatItem                                    = new \stdClass();
+            $confCompatItem->kPluginEinstellungenConf          = $option->id;
+            $confCompatItem->kPlugin                           = $id;
+            $confCompatItem->kPluginAdminMenu                  = $option->menuID;
+            $confCompatItem->cName                             = $option->niceName;
+            $confCompatItem->cBeschreibung                     = $option->description;
+            $confCompatItem->cWertName                         = $option->valueID;
+            $confCompatItem->cInputTyp                         = $option->inputType;
+            $confCompatItem->nSort                             = $option->sort;
+            $confCompatItem->cConf                             = $option->confType;
+            $confCompatItem->cSourceFile                       = $option->sourceFile;
+            $confCompatItem->oPluginEinstellungenConfWerte_arr = $option->options;
+            $confCompat[]                                      = $confCompatItem;
+        }
+        $this->plugin->oPluginEinstellung_arr      = $configCompat;
+        $this->plugin->oPluginEinstellungAssoc_arr = $assocCompat;
+        $this->plugin->oPluginEinstellungConf_arr  = $confCompat;
+
+        return $config;
     }
 }

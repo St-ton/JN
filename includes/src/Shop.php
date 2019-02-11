@@ -1331,9 +1331,9 @@ final class Shop
 
     /**
      * decide which page to load
-     * @return string
+     * @return null|string
      */
-    public static function getEntryPoint(): string
+    public static function getEntryPoint(): ?string
     {
         self::setPageType(PAGE_UNBEKANNT);
         if ((self::$kArtikel > 0 && !self::$kKategorie)

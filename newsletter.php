@@ -247,7 +247,7 @@ if (\Session\Frontend::getCustomer()->getID() > 0) {
     $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($customer->kKunde))
            ->assign('oKunde', $customer);
 }
-$cCanonicalURL = Shop::getURL() . '/newsletter.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('newsletter.php');
 
 $smarty->assign('cOption', $option)
        ->assign('Link', $link)

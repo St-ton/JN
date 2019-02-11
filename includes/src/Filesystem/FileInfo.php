@@ -1,4 +1,8 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace Filesystem;
 
@@ -6,21 +10,21 @@ class FileInfo
 {
     protected $type = null;
 
-    protected $path = null;
+    protected $path     = null;
     protected $filename = null;
 
     protected $aTime = null;
     protected $mTime = null;
     protected $cTime = null;
 
-    protected $size = 0;
+    protected $size  = 0;
     protected $perms = 0;
 
     protected $owner = null;
     protected $group = null;
 
-    protected $readable = false;
-    protected $writable = false;
+    protected $readable   = false;
+    protected $writable   = false;
     protected $executable = false;
 
     /**

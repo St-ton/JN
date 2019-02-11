@@ -1,4 +1,8 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace Filesystem;
 
@@ -136,7 +140,7 @@ class Filesystem implements IFilesystem
     public function moveDirectory($from, $to, $overwrite = false)
     {
         $from = Path::clean($from);
-        $to = Path::clean($to);
+        $to   = Path::clean($to);
 
         return $this->getAdapter()->moveDirectory($from, $to, $overwrite);
     }
@@ -144,7 +148,7 @@ class Filesystem implements IFilesystem
     public function copyDirectory($from, $to, $mode = null)
     {
         $from = Path::clean($from);
-        $to = Path::clean($to);
+        $to   = Path::clean($to);
         $mode = $mode ?: IFilesystem::DIR_PERM;
 
         return $this->getAdapter()->copyDirectory($from, $to, $mode);
@@ -161,18 +165,24 @@ class Filesystem implements IFilesystem
     {
         $list = $this->listContents($directory, $recursive);
 
-        return array_filter($list, function ($item) {
-            return $item['type'] == 'file';
-        });
+        return array_filter(
+            $list,
+            function ($item) {
+                return $item['type'] == 'file';
+            }
+        );
     }
 
     public function listDirectories($directory, $recursive = false)
     {
         $list = $this->listContents($directory, $recursive);
 
-        return array_filter($list, function ($item) {
-            return $item['type'] == 'dir';
-        });
+        return array_filter(
+            $list,
+            function ($item) {
+                return $item['type'] == 'dir';
+            }
+        );
     }
 
     /**
@@ -180,8 +190,6 @@ class Filesystem implements IFilesystem
      *
      * 1. Collect all directories
      * 2.
-     *
-     *
      *
      * @param $directory
      * @param $path
@@ -193,7 +201,7 @@ class Filesystem implements IFilesystem
     public function unzip($directory, $path)
     {
         $directory = Path::clean($directory);
-        $location = Path::clean($path, true);
+        $location  = Path::clean($path, true);
 
         $zipArchive = new ZipArchive();
 
@@ -201,7 +209,7 @@ class Filesystem implements IFilesystem
             throw new Exception('Incompatible Archive.', $code);
         }
 
-        $directories = [];
+        $directories  = [];
         $archive_size = 0;
 
         /*
@@ -303,7 +311,7 @@ class Filesystem implements IFilesystem
     {
         if (is_numeric($identity)) {
             if (function_exists('posix_getpwuid')) {
-                return posix_getpwuid((int) $identity);
+                return posix_getpwuid((int)$identity);
             }
         } else {
             if (function_exists('posix_getpwnam')) {
@@ -318,7 +326,7 @@ class Filesystem implements IFilesystem
     {
         if (is_numeric($identity)) {
             if (function_exists('posix_getgrgid')) {
-                return posix_getgrgid((int) $identity);
+                return posix_getgrgid((int)$identity);
             }
         } else {
             if (function_exists('posix_getgrnam')) {

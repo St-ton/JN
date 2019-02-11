@@ -1,7 +1,7 @@
 <script type="text/javascript">
 function ackCheck(kPlugin, hash)
 {
-    var bCheck = confirm('Wollen Sie das Plugin wirklich updaten?');
+    var bCheck = confirm('{__('sureResetLangVar')}');
     var href = '';
 
     if (bCheck) {
@@ -24,22 +24,22 @@ function ackCheck(kPlugin, hash)
         {if $pluginsByState|@count > 0}
             <ul class="nav nav-tabs" role="tablist">
                 <li class="tab{if !isset($cTab) || $cTab === 'aktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#aktiviert">Aktiviert <span class="badge">{$pluginsByState.status_2|@count}</span></a>
+                    <a data-toggle="tab" role="tab" href="#aktiviert">{__('activated')} <span class="badge">{$pluginsByState.status_2|@count}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'deaktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#deaktiviert">Deaktiviert <span class="badge">{$pluginsByState.status_1|@count}</span></a>
+                    <a data-toggle="tab" role="tab" href="#deaktiviert">{__('deactivated')} <span class="badge">{$pluginsByState.status_1|@count}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'probleme'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#probleme">Probleme <span class="badge">{$PluginErrorCount}</span></a>
+                    <a data-toggle="tab" role="tab" href="#probleme">{__('problems')} <span class="badge">{$PluginErrorCount}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'verfuegbar'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#verfuegbar">Verfügbar <span class="badge">{$pluginsAvailable->count()}</span></a>
+                    <a data-toggle="tab" role="tab" href="#verfuegbar">{__('available')} <span class="badge">{$pluginsAvailable->count()}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#fehlerhaft">Fehlerhaft <span class="badge">{$pluginsErroneous->count()}</span></a>
+                    <a data-toggle="tab" role="tab" href="#fehlerhaft">{__('faulty')} <span class="badge">{$pluginsErroneous->count()}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'upload'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#upload">Upload</a>
+                    <a data-toggle="tab" role="tab" href="#upload">{__('upload')}</a>
                 </li>
             </ul>
             <div class="tab-content">
@@ -90,8 +90,8 @@ function ackCheck(kPlugin, hash)
                                 fi.fileinput('enable');
                         {rdelim});
                     </script>
-                    <div id="plugin-upload-success" class="alert alert-info hidden">Plugin erfolgreich hochgeladen.</div>
-                    <div id="plugin-upload-error" class="alert alert-danger hidden">Plugin konnte nicht hochgeladen werden.</div>
+                    <div id="plugin-upload-success" class="alert alert-info hidden">{__('surePluginUpdate')}</div>
+                    <div id="plugin-upload-error" class="alert alert-danger hidden">{__('errorPluginUpload')}</div>
                 </div>
             </div>
         {/if}

@@ -720,7 +720,7 @@ function ipl_core_build_attr_list_tag($tagName, $attributes, $childTagName, $chi
 function ipl_core_build_list($tagName, $attributes)
 {
     $list = '';
-    foreach ((array) $attributes as $attribute) {
+    foreach ((array)$attributes as $attribute) {
         $list .= '<' . $tagName . ' ' . ipl_core_build_attr_string($attribute) . '/>';
     }
 
@@ -1506,13 +1506,13 @@ function ipl_core_parse_instalment_information($xml, $data)
         $instalmentPlan             = $xml->instl_plan[0];
         $data['instalment_count']   = (int)$instalmentPlan->tagAttrs['num_inst'];
         $data['duration']           = (int)$instalmentPlan->calc[0]->duration[0]->tagData;
-        $data['fee_percent']        = (float) $instalmentPlan->calc[0]->fee_percent[0]->tagData;
+        $data['fee_percent']        = (float)$instalmentPlan->calc[0]->fee_percent[0]->tagData;
         $data['fee_total']          = (int)$instalmentPlan->calc[0]->fee_total[0]->tagData;
         $data['pre_payment_amount'] = (int)$instalmentPlan->calc[0]->pre_payment[0]->tagData;
         $data['total_amount']       = (int)$instalmentPlan->calc[0]->total_amount[0]->tagData;
-        $data['effective_annual']   = (float) $instalmentPlan->calc[0]->eff_anual[0]->tagData;
+        $data['effective_annual']   = (float)$instalmentPlan->calc[0]->eff_anual[0]->tagData;
         // TODO: this should be (int)round(100*float) to be consistent
-        $data['nominal_annual'] = (float) $instalmentPlan->calc[0]->nominal[0]->tagData;
+        $data['nominal_annual'] = (float)$instalmentPlan->calc[0]->nominal[0]->tagData;
         // TODO: response should include surcharge, base_amount and cart_amount to be consistent
 
         // parse the instalment list

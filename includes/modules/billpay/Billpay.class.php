@@ -436,7 +436,7 @@ class Billpay extends PaymentMethod
                 $oData->bToc  = $cBillpay_arr['transaction_credit_toc'] == 'true';
                 $oData->nRate = $cBillpay_arr['transaction_credit_instalments_count'];
 
-                $oData->oRate = (object) [
+                $oData->oRate = (object)[
                     'duration'              => $cBillpay_arr['transaction_credit_duration'],
                     'instalmentsCount'      => $cBillpay_arr['transaction_credit_instalments_count'],
                     'instalmentAmount'      => BPHelper::fmtAmountX(
@@ -1083,16 +1083,16 @@ class Billpay extends PaymentMethod
                             break;
 
                         case 'za_billpay_direct_debit_jtl':
-                            $oInv->cInfo  = "Vielen Dank, dass Sie sich f&uuml;r die Zahlung per Lastschrift " .
+                            $oInv->cInfo  = 'Vielen Dank, dass Sie sich f&uuml;r die Zahlung per Lastschrift ' .
                                 "mit Billpay entschieden haben.\r\n";
                             $oInv->cInfo .= 'Wir buchen den f&auml;lligen Betrag in den n&auml;chsten Tagen von ' .
                              'dem bei der Bestellung angegebenen Konto ab.';
                             break;
 
                         case 'za_billpay_rate_payment_jtl':
-                            $oInv->cInfo  = "Vielen Dank, dass Sie sich f&uuml;r die Zahlart Ratenkauf " .
+                            $oInv->cInfo  = 'Vielen Dank, dass Sie sich f&uuml;r die Zahlart Ratenkauf ' .
                                 "entschieden haben.\r\n";
-                            $oInv->cInfo .= "Die f&auml;lligen Betr&auml;ge werden monatlich von dem bei der " .
+                            $oInv->cInfo .= 'Die f&auml;lligen Betr&auml;ge werden monatlich von dem bei der ' .
                                 "Bestellung angegebenen Konto abgebucht.\r\n\r\n";
 
                             foreach ($oInvoice->get_dues() as $i => $aDue) {
@@ -1106,10 +1106,10 @@ class Billpay extends PaymentMethod
 
                         case 'za_billpay_paylater_jtl':
                             $oInv->cInfo  = "Sie haben sich f&uuml;r die Zahlungsweise PayLater entschieden.\r\n";
-                            $oInv->cInfo .= "Bitte beachten Sie, dass zus&auml;tzlich zu dem auf dieser Rechnung " .
-                                "genannten Rechnungsbetrag weitere Kosten im Zusammenhang mit dem " .
+                            $oInv->cInfo .= 'Bitte beachten Sie, dass zus&auml;tzlich zu dem auf dieser Rechnung ' .
+                                'genannten Rechnungsbetrag weitere Kosten im Zusammenhang mit dem ' .
                                 "Teilzahlungsgesch&auml;ft entstehen.\r\n";
-                            $oInv->cInfo .= "Diese Kosten wurden Ihnen vor Abschluss der Bestellung und auf der " .
+                            $oInv->cInfo .= 'Diese Kosten wurden Ihnen vor Abschluss der Bestellung und auf der ' .
                                 "Bestellbest&auml;tigung angezeigt.\r\n";
                             $oInv->cInfo .= 'Die vollst&auml;ndige Berechnung der zu leistenden Betr&auml;ge " .
                              "im Zusammenhang mit dem Teilzahlungsgesch&auml;ft, sowie s&auml;mtliche " .

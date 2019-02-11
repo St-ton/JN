@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\ExtensionData;
+namespace Plugin\Data;
 
 use function Functional\reindex;
 
 /**
  * Class PaymentMethods
- * @package Plugin\ExtensionData
+ * @package Plugin\Data
  */
 class PaymentMethods
 {

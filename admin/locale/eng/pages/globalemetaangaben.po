@@ -8,12 +8,6 @@ msgstr "Globale Meta-Angaben"
 msgid "globalemetaangabenDesc"
 msgstr "Hier können Sie globale Meta-Angaben (Title, Meta Description, Meta Keywords) pro Sprache definieren."
 
-msgid "globalemetaangabenSave"
-msgstr "Speichern"
-
-msgid "globalemetaangabenTitle"
-msgstr "Titel"
-
 msgid "globalemetaangabenMetaDesc"
 msgstr "Meta Description"
 

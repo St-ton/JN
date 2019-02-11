@@ -13,18 +13,16 @@
                 <td><input class="form-control" id="cName" name="cName" type="text" value="{$oBewertung->cName}" /></td>
             </tr>
             <tr>
-                <td><label for="cTitel">{__('ratingTitle')}:</label></td>
+                <td><label for="cTitel">{__('name')}:</label></td>
                 <td><input class="form-control" id="cTitel" name="cTitel" type="text" value="{$oBewertung->cTitel}" /></td>
             </tr>
             <tr>
                 <td><label for="nSterne">{__('ratingStars')}:</label></td>
                 <td>
                     <select id="nSterne" name="nSterne" class="form-controlcombo">
-                        <option value="1"{if $oBewertung->nSterne == 1} selected{/if}>1</option>
-                        <option value="2"{if $oBewertung->nSterne == 2} selected{/if}>2</option>
-                        <option value="3"{if $oBewertung->nSterne == 3} selected{/if}>3</option>
-                        <option value="4"{if $oBewertung->nSterne == 4} selected{/if}>4</option>
-                        <option value="5"{if $oBewertung->nSterne == 5} selected{/if}>5</option>
+                        {for $i=1 to 5}
+                            <option value="{$i}"{if (int)$oBewertung->nSterne === $i} selected{/if}>{$i}</option>
+                        {/for}
                     </select>
                 </td>
             </tr>
@@ -38,7 +36,7 @@
             </tr>
         </table>
         <div class="save_wrapper">
-            <button name="bewertungsubmit" type="submit" value="{__('ratingSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('ratingSave')}</button>
+            <button name="bewertungsubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
         </div>
     </form>
 </div>

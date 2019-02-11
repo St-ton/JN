@@ -26,7 +26,7 @@
                 <a data-toggle="tab" role="tab" href="#overview">{__('aaOverview')}</a>
             </li>
             <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#config">{__('aaConfig')}</a>
+                <a data-toggle="tab" role="tab" href="#config">{__('settings')}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -42,7 +42,7 @@
                                         <tr>
                                             <th class="check" style="width:35px">&nbsp;</th>
                                             <th class="tcenter">{__('active')}</th>
-                                            <th class="tleft">{__('aaName')}</th>
+                                            <th class="tleft">{__('name')}</th>
                                             <th class="tcenter">{__('aaLocation')}</th>
                                             <th class="tright">&nbsp;</th>
                                         </tr>
@@ -71,7 +71,7 @@
                                                         <div class="btn-group">
                                                             <a class="btn btn-default button down"
                                                                id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
-                                                               title="Fragen anzeigen">
+                                                               title="{__('showQuestions')}">
                                                                 <i class="fa fa-question-circle-o"></i>
                                                             </a>
                                                     {else}
@@ -94,9 +94,9 @@
                                                             <table class="list table">
                                                                 <tr>
                                                                     <th class="tcenter"></th>
-                                                                    <th class="tleft">{__('aaQuestionName')}</th>
-                                                                    <th class="tcenter">{__('aaMerkmal')}</th>
-                                                                    <th class="tcenter">{__('aaSort')}</th>
+                                                                    <th class="tleft">{__('question')}</th>
+                                                                    <th class="tcenter">{__('attribute')}</th>
+                                                                    <th class="tcenter">{__('sorting')}</th>
                                                                     <th class="tright">&nbsp;</th>
                                                                 </tr>
                                                                 {foreach $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr as $oAuswahlAssistentFrage}
@@ -148,7 +148,7 @@
                             <div class="btn-group">
                                 {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
                                     <button type="submit" name="a" value="delGrp" class="btn btn-danger">
-                                        <i class="fa fa-trash"></i> {__('aaDelete')}
+                                        <i class="fa fa-trash"></i> {__('delete')}
                                     </button>
                                 {/if}
                                 <button type="submit" name="a" value="newGrp" class="btn btn-primary">

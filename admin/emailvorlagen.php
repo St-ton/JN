@@ -642,7 +642,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache],
                             $regs
                         );
-                        if (mb_strlen($regs[0]) === mb_strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache])) {
+                        if (mb_strlen($regs[0]) ===
+                            mb_strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache])
+                        ) {
                             $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache];
                             unset($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]);
                         } else {
@@ -713,7 +715,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             foreach ($pdfFiles as $i => $pdf) {
                 $j   = $i + 1;
                 $idx = 'dateiname_' . $j . '_' . $lang->kSprache;
-                if (mb_strlen($_POST['dateiname_' . $j . '_' . $lang->kSprache]) > 0 && mb_strlen($pdfFiles[$j - 1]) > 0) {
+                if (mb_strlen($_POST['dateiname_' . $j . '_' . $lang->kSprache]) > 0
+                    && mb_strlen($pdfFiles[$j - 1]) > 0
+                ) {
                     $regs = [];
                     preg_match('/[A-Za-z0-9_-]+/', $_POST[$idx], $regs);
                     if (mb_strlen($regs[0]) === mb_strlen($_POST[$idx])) {

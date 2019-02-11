@@ -301,12 +301,12 @@ class Redirect
                 $exist = false;
                 if (in_array($row, $options, true)) {
                     $mapping[$row] = $i;
-                    $exist              = true;
+                    $exist         = true;
                 } else {
                     foreach ($members as $cMember) {
                         if ($cMember === $row) {
                             $mapping[$cMember] = $i;
-                            $exist                 = true;
+                            $exist             = true;
                             break;
                         }
                     }
@@ -388,7 +388,7 @@ class Redirect
                     $item->kRedirect = Shop::Container()->getDB()->insert('tredirect', $item);
                 }
             } elseif (mb_strlen($item->cToUrl) > 0) {
-                $redirectUrl = $item->cToUrl;
+                $redirectUrl  = $item->cToUrl;
                 $redirectUrl .= $queryString !== null && !$foundRedirectWithQuery
                     ? '?' . $queryString
                     : '';
@@ -517,8 +517,8 @@ class Redirect
     public function getList($start, $limit, $redirURLs, $sortBy, $dir, $search)
     {
         $where = [];
-        $order     = $sortBy . ' ' . $dir;
-        $limit     = (int)$start . ',' . (int)$limit;
+        $order = $sortBy . ' ' . $dir;
+        $limit = (int)$start . ',' . (int)$limit;
 
         if ($search !== '') {
             $where[] = "cFromUrl LIKE '%" . $search . "%'";

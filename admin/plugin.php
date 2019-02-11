@@ -53,7 +53,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 $upd->cName   = $current->cWertName;
                 if (isset($_POST[$current->cWertName])) {
                     if (is_array($_POST[$current->cWertName])) {
-                        if ($current->cConf === \Plugin\ExtensionData\Config::TYPE_DYNAMIC) {
+                        if ($current->cConf === \Plugin\Data\Config::TYPE_DYNAMIC) {
                             // selectbox with "multiple" attribute
                             $upd->cWert = serialize($_POST[$current->cWertName]);
                         } else {

@@ -770,8 +770,8 @@ final class Shop
             $cache->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
         $dispatcher      = \Events\Dispatcher::getInstance();
-        $extensionLoader = new \Plugin\ExtensionLoader($db, $cache);
-        $pluginLoader    = new \Plugin\PluginLoader($db, $cache);
+        $extensionLoader = new \Plugin\PluginLoader($db, $cache);
+        $pluginLoader    = new \Plugin\LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
             $loader = isset($plugin->bExtension) && (int)$plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
             if (($p = \Plugin\Helper::bootstrap($plugin->kPlugin, $loader)) !== null) {
@@ -979,18 +979,18 @@ final class Shop
         self::$bKatFilterNotFound        = false;
         self::$bHerstellerFilterNotFound = false;
         executeHook(HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
-        $seite        = 0;
-        $manufSeo     = [];
-        $katseo       = '';
-        $customSeo    = [];
-        $shopURLdata  = parse_url(self::getURL());
+        $seite       = 0;
+        $manufSeo    = [];
+        $katseo      = '';
+        $customSeo   = [];
+        $shopURLdata = parse_url(self::getURL());
         $baseURLdata = parse_url($uri);
-        $seo          = isset($baseURLdata['path'])
+        $seo         = isset($baseURLdata['path'])
             ? mb_substr($baseURLdata['path'], isset($shopURLdata['path'])
                 ? (mb_strlen($shopURLdata['path']) + 1)
                 : 1)
             : false;
-        $seo          = Request::extractExternalParams($seo);
+        $seo         = Request::extractExternalParams($seo);
         if ($seo) {
             foreach (self::$productFilter->getCustomFilters() as $customFilter) {
                 $seoParam = $customFilter->getUrlParamSEO();

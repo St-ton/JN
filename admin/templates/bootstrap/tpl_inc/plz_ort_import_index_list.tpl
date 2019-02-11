@@ -1,11 +1,11 @@
 {config_load file="$lang.conf" section='plz_ort_import'}
 <ul class="list-group">
     <li class="boxRow panel-heading">
-        <div class="col-xs-1"><strong>{__('plz_ort_iso')}</strong></div>
+        <div class="col-xs-1"><strong>{__('iso')}</strong></div>
         <div class="col-xs-4"><strong>{__('plz_ort_country')}</strong></div>
-        <div class="col-xs-3"><strong>{__('plz_ort_continent')}</strong></div>
-        <div class="col-xs-3"><strong>{__('plz_ort_count')}</strong></div>
-        <div class="col-xs-1"><strong>{__('plz_ort_action')}</strong></div>
+        <div class="col-xs-3"><strong>{__('continent')}</strong></div>
+        <div class="col-xs-3"><strong>{__('entries')}</strong></div>
+        <div class="col-xs-1"><strong>{__('action')}</strong></div>
     </li>
     {foreach $oPlzOrt_arr as $oPlzOrt}
     <li class="list-group-item boxRow">

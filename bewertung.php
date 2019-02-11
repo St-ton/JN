@@ -11,11 +11,11 @@ require_once PFAD_INCLUDES . 'bewertung_inc.php';
 
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
-$params         = Shop::getParameters();
-$conf           = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
-$ratingAllowed  = true;
+$params        = Shop::getParameters();
+$conf          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+$ratingAllowed = true;
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
-    speicherBewertung(
+    $messageSaveRating = speicherBewertung(
         $params['kArtikel'],
         \Session\Frontend::getCustomer()->getID(),
         Shop::getLanguageID(),
@@ -23,6 +23,8 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         Request::verifyGPDataString('cText'),
         $params['nSterne']
     );
+    header('Location: ' . $messageSaveRating . '#alert-list', true, 303);
+    exit;
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
     speicherHilfreich(
         $params['kArtikel'],

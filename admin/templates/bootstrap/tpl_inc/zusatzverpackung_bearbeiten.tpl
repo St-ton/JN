@@ -11,28 +11,28 @@
                 {foreach $oSprache_arr as $key => $oSprache}
                     {assign var=cISO value=$oSprache->cISO}
                     <tr>
-                        <td><label for="cName_{$oSprache->cISO}">{__('zusatzverpackungName')} ({$oSprache->cNameDeutsch})</label></td>
+                        <td><label for="cName_{$oSprache->cISO}">{__('name')} ({$oSprache->cNameDeutsch})</label></td>
                         <td>
                             <input class="form-control" id="cName_{$oSprache->cISO}" name="cName_{$oSprache->cISO}" type="text" value="{if isset($oVerpackungEdit->oSprach_arr[$cISO]->cName)}{$oVerpackungEdit->oSprach_arr[$cISO]->cName}{/if}" {if $key === 0}required{/if}>
                         </td>
                     </tr>
                 {/foreach}
                 <tr>
-                    <td><label for="fBrutto">{__('zusatzverpackungPrice')} ({__('zusatzverpackungGross')})</label></td>
+                    <td><label for="fBrutto">{__('price')} ({__('gross')})</label></td>
                     <td>
                         <input class="form-control" name="fBrutto" id="fBrutto" type="text" value="{if isset($oVerpackungEdit->fBrutto)}{$oVerpackungEdit->fBrutto}{/if}" onKeyUp="setzePreisAjax(false, 'WertAjax', this)" required/>
                         <span id="WertAjax">{if isset($oVerpackungEdit->fBrutto)}{getCurrencyConversionSmarty fPreisBrutto=$oVerpackungEdit->fBrutto}{/if}</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="fMindestbestellwert">{__('zusatzverpackungMinValue')} ({__('zusatzverpackungGross')})</label></td>
+                    <td><label for="fMindestbestellwert">{__('minOrderValue')} ({__('gross')})</label></td>
                     <td>
                         <input class="form-control" name="fMindestbestellwert" id="fMindestbestellwert" type="text" value="{if isset($oVerpackungEdit->fMindestbestellwert)}{$oVerpackungEdit->fMindestbestellwert}{/if}" onKeyUp="setzePreisAjax(false, 'MindestWertAjax', this)" required/>
                         <span id="MindestWertAjax">{if isset($oVerpackungEdit->fMindestbestellwert)}{getCurrencyConversionSmarty fPreisBrutto=$oVerpackungEdit->fMindestbestellwert}{/if}</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="fKostenfrei">{__('zusatzverpackungExemptFromCharge')} ({__('zusatzverpackungGross')})</label></td>
+                    <td><label for="fKostenfrei">{__('zusatzverpackungExemptFromCharge')} ({__('gross')})</label></td>
                     <td>
                         <input class="form-control" name="fKostenfrei" id="fKostenfrei" type="text" value="{if isset($oVerpackungEdit->fKostenfrei)}{$oVerpackungEdit->fKostenfrei}{/if}" onKeyUp="setzePreisAjax(false, 'KostenfreiAjax', this)" required/>
                         <span id="KostenfreiAjax">{if isset($oVerpackungEdit->fKostenfrei)}{getCurrencyConversionSmarty fPreisBrutto=$oVerpackungEdit->fKostenfrei}{/if}</span>
@@ -41,7 +41,7 @@
                 {foreach $oSprache_arr as $oSprache}
                     {assign var=cISO value=$oSprache->cISO}
                     <tr>
-                        <td><label for="cBeschreibung_{$cISO}">{__('zusatzverpackungDescLang')} ({$oSprache->cNameDeutsch})</label></td>
+                        <td><label for="cBeschreibung_{$cISO}">{__('description')} ({$oSprache->cNameDeutsch})</label></td>
                         <td>
                             <textarea id="cBeschreibung_{$cISO}" name="cBeschreibung_{$cISO}" rows="5" cols="35" class="form-control combo">{if isset($oVerpackungEdit->oSprach_arr[$cISO]->cBeschreibung)}{$oVerpackungEdit->oSprach_arr[$cISO]->cBeschreibung}{/if}</textarea>
                         </td>
@@ -59,10 +59,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="kKundengruppe">{__('zusatzverpackungCustomerGrp')}</label></td>
+                    <td><label for="kKundengruppe">{__('customerGroup')}</label></td>
                     <td>
                         <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control combo" required>
-                            <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>Alle</option>
+                            <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>{__('all')}</option>
                             {foreach $oKundengruppe_arr as $oKundengruppe}
                                 {if (isset($oVerpackungEdit->cKundengruppe) && $oVerpackungEdit->cKundengruppe == '-1') || !isset($oVerpackungEdit) || !$oVerpackungEdit}
                                     <option value="{$oKundengruppe->kKundengruppe}">{$oKundengruppe->cName}</option>
@@ -79,11 +79,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="nAktiv">{__('zusatzverpackungActive')}</label></td>
+                    <td><label for="nAktiv">{__('active')}</label></td>
                     <td>
                         <select id="nAktiv" name="nAktiv" class="form-control combo">
-                            <option value="1"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 1} selected{/if}>Ja</option>
-                            <option value="0"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 0} selected{/if}>Nein</option>
+                            <option value="1"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 1} selected{/if}>{__('yes')}</option>
+                            <option value="0"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 0} selected{/if}>{__('no')}</option>
                         </select>
                     </td>
                 </tr>

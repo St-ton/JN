@@ -10,12 +10,13 @@ use DB\DbInterface;
 use DB\ReturnType;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
-use Plugin\AbstractExtension;
+use Plugin\AbstractPlugin;
 use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\ExtensionLoader;
+use Plugin\PluginInterface;
+use Plugin\PluginLoader;
 use Plugin\Helper;
 use Plugin\InstallCode;
-use Plugin\PluginLoader;
+use Plugin\LegacyPluginLoader;
 use Plugin\State;
 
 /**
@@ -50,7 +51,7 @@ final class Installer
     private $extensionValidator;
 
     /**
-     * @var AbstractExtension|null
+     * @var PluginInterface|null
      */
     private $plugin;
 
@@ -95,17 +96,17 @@ final class Installer
     }
 
     /**
-     * @return AbstractExtension|null
+     * @return PluginInterface|null
      */
-    public function getPlugin(): ?AbstractExtension
+    public function getPlugin(): ?PluginInterface
     {
         return $this->plugin;
     }
 
     /**
-     * @param AbstractExtension|null $plugin
+     * @param PluginInterface|null $plugin
      */
-    public function setPlugin(AbstractExtension $plugin): void
+    public function setPlugin(PluginInterface $plugin): void
     {
         $this->plugin = $plugin;
     }
@@ -122,7 +123,7 @@ final class Installer
         $validator = $this->pluginValidator;
         $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
-            $baseDir           = \PFAD_ROOT . \PFAD_EXTENSIONS . \basename($this->dir);
+            $baseDir           = \PFAD_ROOT . \PLUGIN_DIR . \basename($this->dir);
             $validator         = $this->extensionValidator;
             $this->isExtension = true;
             if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
@@ -169,14 +170,14 @@ final class Installer
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
             $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
-            $loader         = new PluginLoader($this->db, \Shop::Container()->getCache());
+            $loader         = new LegacyPluginLoader($this->db, \Shop::Container()->getCache());
         } else {
             $version      = $baseNode['Version'];
-            $basePath     = \PFAD_ROOT . \PFAD_EXTENSIONS . $this->dir . \DIRECTORY_SEPARATOR;
+            $basePath     = \PFAD_ROOT . \PLUGIN_DIR . $this->dir . \DIRECTORY_SEPARATOR;
             $versionedDir = $basePath;
             $versionNode  = [];
             $modern       = true;
-            $loader       = new ExtensionLoader($this->db, \Shop::Container()->getCache());
+            $loader       = new PluginLoader($this->db, \Shop::Container()->getCache());
         }
         $tags = empty($baseNode['Install'][0]['FlushTags'])
             ? []
@@ -242,8 +243,8 @@ final class Installer
         }
 
         $factory = $this->isExtension
-            ? new PluginInstallerFactory($this->db, $xml, $plugin)
-            : new ExtensionInstallerFactory($this->db, $xml, $plugin);
+            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin)
+            : new PluginInstallerFactory($this->db, $xml, $plugin);
         $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($kPlugin);

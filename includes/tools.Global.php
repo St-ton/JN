@@ -183,7 +183,8 @@ function writeLog($logfile, $entry, $level)
         if (!$logfile) {
             return false;
         }
-        fwrite($logfile,
+        fwrite(
+            $logfile,
             "\n[" . date('m.d.y H:i:s') . '] ' .
             '[' . (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
             $entry
@@ -297,7 +298,7 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
             foreach ($oVariation->Werte as $oVariationWert) {
                 // Ist Variation ausverkauft?
                 if ($oVariationWert->fLagerbestand <= 0) {
-                    $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
+                    $oVariationWert->cNameEigenschaft   = $oVariation->cName;
                     $soldOut[$oVariation->kEigenschaft] = $oVariationWert;
                 }
             }

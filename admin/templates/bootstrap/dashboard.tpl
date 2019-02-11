@@ -32,7 +32,7 @@
 {else}
     {include file='tpl_inc/seite_header.tpl' cTitel=__('dashboard')}
     <div class="alert alert-success">
-        <strong>Es stehen keine weiteren Informationen zur Verfügung.</strong>
+        <strong>{__('noMoreInfo')}</strong>
     </div>
 {/if}
 

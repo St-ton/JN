@@ -10,7 +10,7 @@
     <div class="block clearall">
         <div class="pages tleft">
             <span class="pageinfo">
-                Eintrag: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis} von {$oBlaetterNavi->nAnzahl}
+                {__('entry')}: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis} {__('from')} {$oBlaetterNavi->nAnzahl}
             </span>
             <ul class="pagination">
                 {if $oBlaetterNavi->nAktuelleSeite == 1}

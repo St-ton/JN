@@ -8,9 +8,9 @@
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
-                    <th>Hinweis</th>
-                    <th>Datum</th>
-                    <th>Level</th>
+                    <th>{__('note')}</th>
+                    <th>{__('date')}</th>
+                    <th>{__('level')}</th>
                 </thead>
                 {foreach $paymentLogs as $log}
                     <tr>
@@ -38,7 +38,7 @@
         </div>
     {else}
         <div class="alert alert-info">
-            <p>Keine Logs vorhanden.</p>
+            <p>{__('noLogs')}</p>
         </div>
         <a href="zahlungsarten.php" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</a>
     {/if}

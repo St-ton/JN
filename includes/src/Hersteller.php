@@ -228,18 +228,18 @@ class Hersteller
                         )';
         }
         $objs    = Shop::Container()->getDB()->query(
-            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+            'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = " . $kSprache . "
+                    AND therstellersprache.kSprache = ' . $kSprache . "
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = " . $kSprache . $sqlWhere . "
-                ORDER BY thersteller.nSortNr, thersteller.cName",
+                    AND tseo.kSprache = " . $kSprache . $sqlWhere . '
+                ORDER BY thersteller.nSortNr, thersteller.cName',
             \DB\ReturnType::ARRAY_OF_OBJECTS
         );
         $results = [];

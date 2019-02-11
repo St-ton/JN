@@ -35,9 +35,6 @@ msgstr "Antwort entfernen"
 msgid "clearVotesComent"
 msgstr "Wählen Sie diesen Punkt wirklich nur dann aus, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen wollen. Das Bewertungssystem wird hierbei komplett zurückgesetzt, auch die Kommentare!"
 
-msgid "instructions"
-msgstr "Beschreibung"
-
 msgid "options"
 msgstr "Auswahl"
 
@@ -62,21 +59,6 @@ msgstr "Antwort"
 msgid "ratingStars"
 msgstr "Sterne"
 
-msgid "ratingDate"
-msgstr "Datum"
-
-msgid "ratingSelectAll"
-msgstr "Alle auswählen"
-
-msgid "ragingSave"
-msgstr "speichern"
-
-msgid "ratingActive"
-msgstr "aktivieren"
-
-msgid "ratingDelete"
-msgstr "löschen"
-
 msgid "ratingForProduct"
 msgstr "Bewertungen für einen bestimmten Artikel"
 
@@ -86,32 +68,8 @@ msgstr "Artikelnummer/Artikelname"
 msgid "ratingSearchedFor"
 msgstr "Gesucht nach"
 
-msgid "ratingSearch"
-msgstr "suchen"
-
-msgid "ratingPrevious"
-msgstr "Vorherige"
-
-msgid "ratingNext"
-msgstr "Nächster"
-
-msgid "ratingFrom"
-msgstr "von"
-
 msgid "ratingLast50"
 msgstr "Aktive Bewertungen"
-
-msgid "ratingEdit"
-msgstr "Editieren"
-
-msgid "ratingTitle"
-msgstr "Name"
-
-msgid "ratingSave"
-msgstr "Speichern"
-
-msgid "ratingSettings"
-msgstr "Einstellungen"
 
 msgid "successRatingEdit"
 msgstr "Ihre Bewertung wurde erfolgreich editiert."

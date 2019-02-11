@@ -979,7 +979,7 @@ class Warenkorb
             }
             if ($bName && $oKonfigitem->getUseOwnName()) {
                 foreach (\Session\Frontend::getLanguages() as $language) {
-                    $oKonfigitemsprache               = new \Extensions\Konfigitemsprache(
+                    $oKonfigitemsprache                = new \Extensions\Konfigitemsprache(
                         $oKonfigitem->getKonfigitem(),
                         $language->kSprache
                     );
@@ -1027,39 +1027,39 @@ class Warenkorb
      */
     public function gibVersandkostenSteuerklasse($Lieferland_ISO = ''): int
     {
-        $kSteuerklasse = 0;
+        $classID = 0;
         if ($this->config['kaufabwicklung']['bestellvorgang_versand_steuersatz'] === 'US') {
-            $nSteuersatz_arr = [];
-            foreach ($this->PositionenArr as $i => $Position) {
-                if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $Position->kSteuerklasse > 0) {
-                    if (empty($nSteuersatz_arr[$Position->kSteuerklasse])) {
-                        $nSteuersatz_arr[$Position->kSteuerklasse] = $Position->fPreisEinzelNetto * $Position->nAnzahl;
+            $taxRates = [];
+            foreach ($this->PositionenArr as $i => $position) {
+                if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $position->kSteuerklasse > 0) {
+                    if (empty($taxRates[$position->kSteuerklasse])) {
+                        $taxRates[$position->kSteuerklasse] = $position->fPreisEinzelNetto * $position->nAnzahl;
                     } else {
-                        $nSteuersatz_arr[$Position->kSteuerklasse] += $Position->fPreisEinzelNetto * $Position->nAnzahl;
+                        $taxRates[$position->kSteuerklasse] += $position->fPreisEinzelNetto * $position->nAnzahl;
                     }
                 }
             }
-            $fMaxValue = max($nSteuersatz_arr);
-            foreach ($nSteuersatz_arr as $i => $nSteuersatz) {
-                if ($nSteuersatz == $fMaxValue) {
-                    $kSteuerklasse = $i;
+            $fMaxValue = count($taxRates) > 0 ? max($taxRates) : 0;
+            foreach ($taxRates as $i => $rate) {
+                if ($rate === $fMaxValue) {
+                    $classID = $i;
                     break;
                 }
             }
         } else {
-            $steuersatz = -1;
-            foreach ($this->PositionenArr as $i => $Position) {
-                if ($Position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-                    && $Position->kSteuerklasse > 0
-                    && Tax::getSalesTax($Position->kSteuerklasse) > $steuersatz
+            $rate = -1;
+            foreach ($this->PositionenArr as $i => $position) {
+                if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+                    && $position->kSteuerklasse > 0
+                    && Tax::getSalesTax($position->kSteuerklasse) > $rate
                 ) {
-                    $steuersatz    = Tax::getSalesTax($Position->kSteuerklasse);
-                    $kSteuerklasse = $Position->kSteuerklasse;
+                    $rate    = Tax::getSalesTax($position->kSteuerklasse);
+                    $classID = $position->kSteuerklasse;
                 }
             }
         }
 
-        return (int)$kSteuerklasse;
+        return (int)$classID;
     }
 
     /**

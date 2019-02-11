@@ -13,6 +13,6 @@
 {/foreach}
 {if $oAvailableWidget_arr|@count == 0}
     <div class="widget_item">
-        <p class="title">Keine weiteren Widgets vorhanden.</p>
+        <p class="title">{__('noMoreWidgets')}</p>
     </div>
 {/if}

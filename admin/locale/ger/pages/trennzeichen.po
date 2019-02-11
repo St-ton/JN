@@ -9,13 +9,16 @@ msgid "trennzeichenURL"
 msgstr "https://jtl-url.de/xiepq"
 
 msgid "trennzeichenDesc"
-msgstr ""
-
-msgid "trennzeichenSave"
-msgstr "Speichern"
+msgstr " "
 
 msgid "errorWeightDecimals"
 msgstr "Fehler: Die Anzahl der Dezimalstellen beim Gewicht dürfen nicht größer 4 sein!"
 
 msgid "errorAmountDecimals"
 msgstr "Fehler: Die Anzahl der Dezimalstellen bei der Menge dürfen nicht größer 2 sein!"
+
+msgid "countDecimals"
+msgstr "Anzahl Dezimalstellen"
+
+msgid "thousandDivider"
+msgstr "Tausendertrennzeichen"

@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\ExtensionData;
+namespace Plugin\Data;
 
 use Tightenco\Collect\Support\Collection;
 
 /**
- * Class AdminMenus
- * @package Plugin\ExtensionData
+ * Class AdminMenu
+ * @package Plugin\Data
  */
 class AdminMenu
 {

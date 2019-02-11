@@ -1859,6 +1859,9 @@ class Product
             case 'f04':
                 $error = Shop::Lang()->get('loginFirst', 'product rating');
                 break;
+            case 'f05':
+                $error = Shop::Lang()->get('ratingRange', 'errorMessages');
+                break;
             case 'h01':
                 $error = Shop::Lang()->get('bewertungBewadd', 'messages');
                 break;

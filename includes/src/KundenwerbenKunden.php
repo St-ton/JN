@@ -165,10 +165,10 @@ class KundenwerbenKunden
         if (isset($oBestandskunde->kKunde) && $oBestandskunde->kKunde > 0) {
             $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
             if ($conf['kundenwerbenkunden']['kwk_nutzen'] === 'Y') {
-                $guthaben              = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
+                $guthaben             = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
                 $mail                 = new stdClass();
                 $mail->tkunde         = new Kunde($oBestandskunde->kKunde);
-                $oKundeTMP             = new Kunde();
+                $oKundeTMP            = new Kunde();
                 $mail->oNeukunde      = $oKundeTMP->holRegKundeViaEmail($cMail);
                 $mail->oBestandskunde = $mail->tkunde;
                 $mail->Einstellungen  = $conf;

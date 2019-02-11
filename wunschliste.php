@@ -54,6 +54,7 @@ if ($action !== null && Form::validateToken()) {
         $userOK       = $customerID === (int)$wl->kKunde;
         switch ($action) {
             case 'addToCart':
+                Wunschliste::update($kWunschliste);
                 $wishlistPosition = Wunschliste::getWishListPositionDataByID($kWunschlistePos);
                 if (isset($wishlistPosition->kArtikel) && $wishlistPosition->kArtikel > 0) {
                     $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)

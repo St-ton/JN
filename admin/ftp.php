@@ -13,9 +13,9 @@ $oAccount->redirectOnFailure();
 
 use Helpers\Form;
 
-$cHinweis      = '';
-$cFehler       = '';
-$shopSettings  = Shopsetting::getInstance();
+$cHinweis     = '';
+$cFehler      = '';
+$shopSettings = Shopsetting::getInstance();
 
 \Shop::Container()->getGetText()->loadConfigLocales(true, true);
 

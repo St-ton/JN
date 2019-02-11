@@ -561,7 +561,6 @@ class IOMethods
                        ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
                        ->assign('Einstellungen', Shop::getSettings([CONF_GLOBAL]))
                        ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
-                       ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
                        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
                        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
                        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))

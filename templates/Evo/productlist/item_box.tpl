@@ -101,7 +101,7 @@
                         {else}
                             <div class="quantity-wrapper form-group top7">
                                 <div class="input-group input-group-sm">
-                                    <input type="number" min="0"
+                                    <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
                                            {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
                                            id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
                                            autocomplete="off"

@@ -102,7 +102,6 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
        ->assign('cShopName', $conf['global']['global_shopname'])
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
-       ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
        ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
        ->assign('WarenkorbWarensumme', [
            0 => Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)),

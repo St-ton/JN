@@ -45,7 +45,7 @@
 
             var productId = parseInt(data[this.options.input.id]);
             var quantity = parseFloat(
-                data[this.options.input.quantity]
+                data[(this.options.input.quantity)].replace(',', '.')
             );
 
             if (productId > 0 && quantity > 0) {

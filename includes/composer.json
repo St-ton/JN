@@ -23,7 +23,7 @@
         "ext-zlib": "*",
         "imanee/imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
-        "symfony/var-dumper": "^3.0",
+        "symfony/var-dumper": "^4.2",
         "jtlshop/shop4-systemcheck": "^1.1",
         "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
@@ -45,7 +45,8 @@
         "jtlshop/semver": "~0.0.5",
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
-        "gettext/gettext": "^4.6"
+        "gettext/gettext": "^4.6",
+        "jtl/oauth2-client": "^1.0"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
@@ -84,7 +85,11 @@
         {
             "type": "vcs",
             "url": "https://gitlab.jtl-software.de/jtlshop/scc.git"
-        }
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.jtl-software.de/jtl/oauth2-client.git"
+        }        
 
     ],
     "autoload": {

@@ -304,34 +304,6 @@ function getArrangedArray($oXML_arr, int $nLevel = 1)
 }
 
 /**
- * @return array
- */
-function holeBewertungserinnerungSettings()
-{
-    $conf     = [];
-    $confData = Shop::Container()->getDB()->selectAll(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_BEWERTUNG
-    );
-
-    $conf['bewertung']                                       = [];
-    $conf['bewertung']['bewertungserinnerung_kundengruppen'] = [];
-
-    foreach ($confData as $data) {
-        if ($data->cName) {
-            if ($data->cName === 'bewertungserinnerung_kundengruppen') {
-                $conf['bewertung'][$data->cName][] = $data->cWert;
-            } else {
-                $conf['bewertung'][$data->cName] = $data->cWert;
-            }
-        }
-    }
-
-    return $conf['bewertung'];
-}
-
-/**
  *
  */
 function setzeSprache()

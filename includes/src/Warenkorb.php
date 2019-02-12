@@ -811,7 +811,7 @@ class Warenkorb
             if (in_array($Position->nPosTyp, $posTypes)
                 && (empty($Position->cUnique) || (mb_strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
             ) {
-                $anz += ($Position->Artikel->cTeilbar === 'Y') ? 1 : $Position->nAnzahl;
+                $anz += $Position->nAnzahl;
             }
         }
 

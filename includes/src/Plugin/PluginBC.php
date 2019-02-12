@@ -28,6 +28,7 @@ class PluginBC extends AbstractPlugin
         'cURL'                            => ['getMeta', 'URL'],
         'cVerzeichnis'                    => ['getPaths', 'BaseDir'],
         'cPluginID'                       => 'PluginID',
+        'cStoreID'                        => 'StoreID',
         'cLizenz'                         => ['getLicense', 'Key'],
         'cLizenzKlasse'                   => ['getLicense', 'Class'],
         'cLizenzKlasseName'               => ['getLicense', 'ClassName'],

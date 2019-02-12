@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Helpers\FileSystem;
+
 require_once __DIR__ . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -22,8 +24,10 @@ if (auth()) {
     foreach ($jobs as $oLastJob) {
         switch ((int)$oLastJob->nJob) {
             case LASTJOBS_BEWERTUNGSERINNNERUNG:
-                require_once PFAD_ROOT . PFAD_ADMIN . 'includes/bewertungserinnerung.php';
-                baueBewertungsErinnerung();
+                $recipients = (new \ReviewReminder())->getRecipients();
+                foreach($recipients as $recipient) {
+                    sendeMail(MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient);
+                }
                 updateJob(LASTJOBS_BEWERTUNGSERINNNERUNG);
                 break;
             case LASTJOBS_SITEMAP:

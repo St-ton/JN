@@ -14,8 +14,6 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
 /** @global \Smarty\JTLSmarty $smarty */
-$hinweis            = '';
-$fehler             = '';
 $step               = 'uebersicht';
 $link               = null;
 $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
@@ -24,6 +22,7 @@ $continue           = true;
 $db                 = Shop::Container()->getDB();
 $cache              = Shop::Container()->getCache();
 $linkAdmin          = new \Link\Admin\LinkAdmin($db, $cache);
+$alertHelper        = Shop::Container()->getAlertService();
 if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
     $step = 'neuer Link';
     $link = new \Link\Link($db);
@@ -37,9 +36,13 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 ) {
     $res = $linkAdmin->removeLinkFromLinkGroup((int)$_POST['removefromlinkgroup'], (int)$_POST['kLinkgruppe']);
     if ($res > 0) {
-        $hinweis .= __('successLinkFromLinkGroupDelete');
+        $alertHelper->addAlert(
+            Alert::TYPE_NOTE,
+            __('successLinkFromLinkGroupDelete'),
+            'successLinkFromLinkGroupDelete'
+        );
     } else {
-        $fehler .= __('errorLinkFromLinkGroupDelete');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkFromLinkGroupDelete'), 'errorLinkFromLinkGroupDelete');
     }
     unset($_POST['kLinkgruppe']);
     $step       = 'uebersicht';
@@ -49,9 +52,9 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && Form::validateToken()) {
     $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
-        $hinweis .= __('successLinkDelete');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkDelete'), 'successLinkDelete');
     } else {
-        $fehler .= __('errorLinkDelete');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkDelete'), 'errorLinkDelete');
     }
     $clearCache = true;
     $step       = 'uebersicht';
@@ -80,12 +83,12 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         $linkGroupID = (int)$_POST['kLinkgruppe'];
     }
     if ($linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
-        $hinweis   .= __('successLinkGroupDelete');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkGroupDelete'), 'successLinkGroupDelete');
         $clearCache = true;
         $step       = 'uebersicht';
         $_POST      = [];
     } else {
-        $fehler .= __('errorLinkGroupDelete');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupDelete'), 'errorLinkGroupDelete');
     }
 }
 
@@ -111,9 +114,13 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         $link = $linkAdmin->createOrUpdateLink($_POST);
         if ((int)$_POST['kLink'] === 0) {
-            $hinweis .= __('successLinkCreate');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkCreate'), 'successLinkCreate');
         } else {
-            $hinweis .= sprintf(__('successLinkEdit'), $link->getDisplayName());
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(__('successLinkEdit'), $link->getDisplayName()),
+                'successLinkEdit'
+            );
         }
         $clearCache = true;
         $kLink      = $link->getID();
@@ -154,7 +161,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
         $link = new \Link\Link($db);
         $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
         $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
-        $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }
@@ -224,25 +231,29 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
             $_POST['cTemplatename']
         );
         if ($linkGroupTemplateExists !== null && $_POST['kLinkgruppe'] !== $linkGroupTemplateExists->kLinkgruppe) {
-            $step   = 'neue Linkgruppe';
-            $fehler = __('errorTemplateNameDuplicate');
+            $step = 'neue Linkgruppe';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateNameDuplicate'), 'errorTemplateNameDuplicate');
             $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                 ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
         } else {
             if ((int)$_POST['kLinkgruppe'] === 0) {
                 $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-                $hinweis .= __('successLinkGroupCreate');
+                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkGroupCreate'), 'successLinkGroupCreate');
             } else {
                 $linkgruppe = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
-                $hinweis   .= sprintf(__('successLinkGroupEdit'), $linkgruppe->cName);
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    sprintf(__('successLinkGroupEdit'), $linkgruppe->cName),
+                    'successLinkGroupEdit'
+                );
             }
             $step = 'uebersicht';
         }
 
         $clearCache = true;
     } else {
-        $step   = 'neue Linkgruppe';
-        $fehler = __('errorFillRequired');
+        $step = 'neue Linkgruppe';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         $smarty->assign('xPlausiVar_arr', $oPlausiCMS->getPlausiVar())
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());
     }
@@ -256,17 +267,21 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
             (int)$_POST['kLinkgruppe']
         );
         if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-            $fehler .= __('errorLinkMoveDuplicate');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkMoveDuplicate'), 'errorLinkMoveDuplicate');
         } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_NOT_FOUND) {
-            $fehler .= __('errorLinkKeyNotFound');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
         } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-            $fehler .= __('errorLinkGroupKeyNotFound');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
         } elseif ($res instanceof \Link\LinkInterface) {
-            $hinweis   .= sprintf(__('successLinkMove'), $link->getDisplayName());
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(__('successLinkMove'), $link->getDisplayName()),
+                'successLinkMove'
+            );
             $step       = 'uebersicht';
             $clearCache = true;
         } else {
-            $fehler .= __('errorUnknownLong');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorUnknownLong'), 'errorUnknownLong');
         }
     }
     $step = 'uebersicht';
@@ -279,17 +294,21 @@ if (isset($_POST['kopiere_in_linkgruppe'])
 ) {
     $res = $linkAdmin->copyLinkToLinkGroup((int)$_POST['kLink'], (int)$_POST['kLinkgruppe']);
     if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-        $fehler .= __('errorLinkCopyDuplicate');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkCopyDuplicate'), 'errorLinkCopyDuplicate');
     } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_NOT_FOUND) {
-        $fehler .= __('errorLinkKeyNotFound');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
     } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-        $fehler .= __('errorLinkGroupKeyNotFound');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
     } elseif ($res instanceof \Link\LinkInterface) {
-        $hinweis   .= sprintf(__('successLinkCopy'), $link->getDisplayName());
+        $alertHelper->addAlert(
+            Alert::TYPE_NOTE,
+            sprintf(__('successLinkCopy'), $link->getDisplayName()),
+            'successLinkCopy'
+        );
         $step       = 'uebersicht';
         $clearCache = true;
     } else {
-        $fehler .= __('errorUnknownLong');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorUnknownLong'), 'errorUnknownLong');
     }
 }
 // Ordnet einen Link neu an
@@ -299,11 +318,15 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
         && (int)$_POST['kLinkgruppe'] > 0
         && ($oLink = $linkAdmin->updateParentID((int)$_POST['kLink'], (int)$_POST['kVaterLink'])) !== false
     ) {
-        $hinweis   .= sprintf(__('successLinkMove'), $oLink->cName);
+        $alertHelper->addAlert(
+            Alert::TYPE_NOTE,
+            sprintf(__('successLinkMove'), $oLink->cName),
+            'successLinkMove'
+        );
         $step       = 'uebersicht';
         $clearCache = true;
     } else {
-        $fehler .= __('errorLinkMove');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkMove'), 'errorLinkMove');
     }
 }
 if ($clearCache === true) {
@@ -324,7 +347,5 @@ if ($step === 'neuer Link') {
 }
 $smarty->assign('step', $step)
        ->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
        ->assign('linkAdmin', $linkAdmin)
        ->display('links.tpl');

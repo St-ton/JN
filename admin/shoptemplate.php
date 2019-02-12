@@ -17,8 +17,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
 
-$cHinweis       = '';
-$cFehler        = '';
+$alertHelper    = Shop::Container()->getAlertService();
 $lessVars_arr   = [];
 $lessVarsSkin   = [];
 $lessColors_arr = [];
@@ -43,13 +42,13 @@ if (isset($_POST['key'], $_POST['upload'])) {
 }
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
-        $cHinweis = __('successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
     } elseif ($_GET['check'] === 'false') {
-        $cFehler = __('errorTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 }
 if (isset($_GET['uploadError'])) {
-    $cFehler .= __('errorFileUpload');
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileUpload'), 'errorFileUpload');
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $scss      = new SimpleCSS();
@@ -57,9 +56,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
     $customCSS = $scss->getCustomCSSFile($dir);
     if (isset($_POST['reset']) && (int)$_POST['reset'] === 1) {
         if (file_exists($customCSS) && is_writable($customCSS)) {
-            $cHinweis = __('successLayoutReset');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLayoutReset'), 'successLayoutReset');
         } else {
-            $cFehler = __('errorLayoutReset');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLayoutReset'), 'errorLayoutReset');
         }
     } else {
         $selectors     = $_POST['selector'];
@@ -71,10 +70,13 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
             $scss->addCSS($selectors[$i], $attributes[$i], $values[$i]);
         }
         if (file_put_contents($customCSS, $scss->renderCSS()) === false) {
-            $cFehler = __('errorStyleFilePermission') .
-                $customCSS . '.';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorStyleFilePermission') . $customCSS . '.',
+                'errorLayoutReset'
+            );
         } else {
-            $cHinweis = __('successLayoutSave');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLayoutSave'), 'successLayoutSave');
         }
     }
 }
@@ -138,9 +140,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     }
     $bCheck = __switchTemplate($_POST['ordner'], $_POST['eTyp']);
     if ($bCheck) {
-        $cHinweis = __('successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
     } else {
-        $cFehler = __('errorTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 
     if (Request::verifyGPCDataInt('activate') === 1) {
@@ -174,9 +176,9 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         $oTpl->eTyp = 'admin';
         $bCheck     = __switchTemplate($dir, $oTpl->eTyp);
         if ($bCheck) {
-            $cHinweis = __('successTemplateSave');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
         } else {
-            $cFehler = __('errorTemplateSave');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
         // re-init smarty with new template - problematic because of re-including functions.php
@@ -252,9 +254,9 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
            ->assign('oEinstellungenXML', $tplConfXML);
 } elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
-        $cHinweis = __('successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
     } else {
-        $cFehler = __('errorTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 
     $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
@@ -263,6 +265,4 @@ $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())
        ->assign('oAdminTemplate_arr', $templateHelper->getAdminTemplates())
        ->assign('oStoredTemplate_arr', $templateHelper->getStoredTemplates())
-       ->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis)
        ->display('shoptemplate.tpl');

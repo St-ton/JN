@@ -7,12 +7,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PERMISSIONCHECK_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
 $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT); // to get all folders which need to be writable
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('cDirAssoc_arr', $oFsCheck->getFoldersChecked())
+$smarty->assign('cDirAssoc_arr', $oFsCheck->getFoldersChecked())
        ->assign('oStat', $oFsCheck->getFolderStats())
        ->display('permissioncheck.tpl');

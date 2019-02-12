@@ -34,8 +34,6 @@ switch ($statsType) {
         break;
 }
 /** @global \Smarty\JTLSmarty $smarty */
-$cHinweis          = '';
-$cFehler           = '';
 $nAnzeigeIntervall = 0;
 $filter            = new Filter('statistics');
 $dateRange         = $filter->addDaterangefield(
@@ -72,8 +70,6 @@ $pagination = (new Pagination())
     ->assemble();
 
 $smarty->assign('headline', $statsTypeName)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('nTyp', $statsType)
        ->assign('oStat_arr', $stats)
        ->assign('oStatJSON', getJSON($stats, $nAnzeigeIntervall, $statsType))

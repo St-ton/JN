@@ -18,10 +18,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $db            = Shop::Container()->getDB();
 $newsletterTPL = null;
 $conf          = Shop::getSettings([CONF_NEWSLETTER]);
-$cHinweis      = '';
-$cFehler       = '';
 $step          = 'uebersicht';
 $option        = '';
+$alertHelper   = Shop::Container()->getAlertService();
 
 $inactiveSearchSQL         = new stdClass();
 $inactiveSearchSQL->cJOIN  = '';
@@ -39,27 +38,38 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 if (Form::validateToken()) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (isset($_POST['speichern'])) {
-            $step      = 'uebersicht';
-            $cHinweis .= saveAdminSectionSettings(CONF_NEWSLETTER, $_POST);
+            $step = 'uebersicht';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                saveAdminSectionSettings(CONF_NEWSLETTER, $_POST),
+                'saveSettings'
+            );
         }
     } elseif ((isset($_POST['newsletterabonnent_loeschen'])
             && (int)$_POST['newsletterabonnent_loeschen'] === 1)
         || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1
             && isset($_POST['abonnentloeschenSubmit']))
     ) {
-        if (loescheAbonnenten($_POST['kNewsletterEmpfaenger'])) { // Newsletterabonnenten loeschen
-            $cHinweis .= __('successNewsletterAboDelete') . '<br />';
+        if (loescheAbonnenten($_POST['kNewsletterEmpfaenger'])) {
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewsletterAboDelete'), 'successNewsletterAboDelete');
         } else {
-            $cFehler .= __('errorAtLeastOneNewsletterAbo') . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorAtLeastOneNewsletterAbo'),
+                'errorAtLeastOneNewsletterAbo'
+            );
         }
     } elseif (isset($_POST['abonnentfreischaltenSubmit'])
         && Request::verifyGPCDataInt('inaktiveabonnenten') === 1
     ) {
-        // Newsletterabonnenten freischalten
         if (aktiviereAbonnenten($_POST['kNewsletterEmpfaenger'])) {
-            $cHinweis .= __('successNewsletterAbounlock') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewsletterAbounlock'), 'successNewsletterAbounlock');
         } else {
-            $cFehler .= __('errorAtLeastOneNewsletterAbo') . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorAtLeastOneNewsletterAbo'),
+                'errorAtLeastOneNewsletterAbo'
+            );
         }
     } elseif (isset($_POST['newsletterabonnent_neu']) && (int)$_POST['newsletterabonnent_neu'] === 1) {
         // Newsletterabonnenten hinzufuegen
@@ -77,20 +87,24 @@ if (Form::validateToken()) {
         if (!empty($oNewsletter->cEmail)) {
             $oNewsTmp = $db->select('tnewsletterempfaenger', 'cEmail', $oNewsletter->cEmail);
             if ($oNewsTmp) {
-                $cFehler = 'E-Mail Adresse existiert bereits';
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    'E-Mail Adresse existiert bereits',
+                    'errorEmailExists'
+                );
                 $smarty->assign('oNewsletter', $oNewsletter);
             } else {
                 $db->insert('tnewsletterempfaenger', $oNewsletter);
-                $cHinweis = __('successNewsletterAboAdd');
+                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewsletterAboAdd'), 'successNewsletterAboAdd');
             }
         } else {
-            $cFehler = __('errorFillEmail');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillEmail'), 'errorFillEmail');
             $smarty->assign('oNewsletter', $oNewsletter);
         }
     } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterQueue'])) {
-                $cHinweis = 'Die Newsletterqueue "';
+                $newsletterDeleteMsg = 'Die Newsletterqueue "';
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
                     $entry = $db->query(
                         'SELECT tnewsletterqueue.kNewsletter, tnewsletter.cBetreff
@@ -103,12 +117,13 @@ if (Form::validateToken()) {
                     $db->delete('tnewsletter', 'kNewsletter', (int)$entry->kNewsletter);
                     $db->delete('tjobqueue', ['cKey', 'kKey'], ['kNewsletter', (int)$entry->kNewsletter]);
                     $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
-                    $cHinweis .= $entry->cBetreff . '", ';
+                    $newsletterDeleteMsg .= $entry->cBetreff . '", ';
                 }
-                $cHinweis  = mb_substr($cHinweis, 0, -2);
-                $cHinweis .= __('successDelete') . '<br />';
+                $newsletterDeleteMsg  = mb_substr($newsletterDeleteMsg, 0, -2);
+                $newsletterDeleteMsg .= __('successDelete');
+                $alertHelper->addAlert(Alert::TYPE_NOTE, $newsletterDeleteMsg, 'successDeleteQueue');
             } else {
-                $cFehler .= __('errorAtLeastOneNewsletter') . '.<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
     } elseif ((isset($_POST['newsletterhistory']) && (int)$_POST['newsletterhistory'] === 1)
@@ -116,15 +131,16 @@ if (Form::validateToken()) {
     ) {
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterHistory'])) {
-                $cHinweis = 'Die Newsletterhistory ';
+                $newsletterHistoryDeleteMsg = 'Die Newsletterhistory ';
                 foreach ($_POST['kNewsletterHistory'] as $kNewsletterHistory) {
                     $db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
-                    $cHinweis .= $kNewsletterHistory . ', ';
+                    $newsletterHistoryDeleteMsg .= $kNewsletterHistory . ', ';
                 }
-                $cHinweis  = mb_substr($cHinweis, 0, -2);
-                $cHinweis .= __('successDelete') . '<br />';
+                $newsletterHistoryDeleteMsg  = mb_substr($newsletterHistoryDeleteMsg, 0, -2);
+                $newsletterHistoryDeleteMsg .= __('successDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_NOTE, $newsletterHistoryDeleteMsg, 'successDeleteHistory');
             } else {
-                $cFehler .= __('errorAtLeastOneHistory') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
             }
         } elseif (isset($_GET['anzeigen'])) {
             $step               = 'history_anzeigen';
@@ -231,14 +247,22 @@ if (Form::validateToken()) {
                     $step = 'uebersicht';
                     $smarty->assign('cTab', 'newslettervorlagen');
                     if ($kNewslettervorlage > 0) {
-                        $cHinweis = sprintf(
-                            __('successNewsletterTemplateEdit'),
-                            StringHandler::filterXSS($_POST['cName'])
+                        $alertHelper->addAlert(
+                            Alert::TYPE_NOTE,
+                            printf(
+                                __('successNewsletterTemplateEdit'),
+                                StringHandler::filterXSS($_POST['cName'])
+                            ),
+                            'successNewsletterTemplateEdit'
                         );
                     } else {
-                        $cHinweis .= sprintf(
-                            __('successNewsletterTemplateSave'),
-                            StringHandler::filterXSS($_POST['cName'])
+                        $alertHelper->addAlert(
+                            Alert::TYPE_NOTE,
+                            printf(
+                                __('successNewsletterTemplateSave'),
+                                StringHandler::filterXSS($_POST['cName'])
+                            ),
+                            'successNewsletterTemplateSave'
                         );
                     }
                 }
@@ -480,8 +504,11 @@ if (Form::validateToken()) {
                 $hist->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
                 $hist->dStart           = $newsletterTPL->dStartZeit;
                 $db->insert('tnewsletterhistory', $hist);
-
-                $cHinweis .= sprintf(__('successNewsletterPrepared'), $oNewsletter->cName) .'<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    sprintf(__('successNewsletterPrepared'), $oNewsletter->cName),
+                    'successNewsletterPrepared'
+                );
             }
         } elseif (isset($_POST['speichern_und_testen'])) { // Vorlage speichern und testen
             $newsletterTPL   = speicherVorlage($_POST);
@@ -523,7 +550,11 @@ if (Form::validateToken()) {
             if ($result !== true) {
                 $smarty->assign('cFehler', $result);
             } else {
-                $cHinweis .= sprintf(__('successTestEmailTo'), $newsletterTPL->cName, $oEmailempfaenger->cEmail);
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    sprintf(__('successTestEmailTo'), $newsletterTPL->cName, $oEmailempfaenger->cEmail),
+                    'successNewsletterPrepared'
+                );
             }
         } elseif (isset($_POST['loeschen'])) { // Vorlage loeschen
             $step = 'uebersicht';
@@ -558,9 +589,13 @@ if (Form::validateToken()) {
                         }
                     }
                 }
-                $cHinweis .= __('successNewsletterTemplateDelete') . '<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    __('successNewsletterTemplateDelete'),
+                    'successNewsletterTemplateDelete'
+                );
             } else {
-                $cFehler .= __('errorAtLeastOneNewsletter') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
         $smarty->assign('cOption', $option);
@@ -718,8 +753,6 @@ if ($step === 'uebersicht') {
            ->assign('oPagiAlleAbos', $pagiSubscriptions);
 }
 $smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->assign('nRand', time())
        ->display('newsletter.tpl');

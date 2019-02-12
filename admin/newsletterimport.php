@@ -13,9 +13,7 @@ $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$hinweis = '';
-$fehler  = '';
-
+$alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['newsletterimport'] === 1
     && Form::validateToken()
@@ -23,24 +21,26 @@ if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
-        $format   = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
-        $row      = 0;
-        $formatId = -1;
-        $fmt      = [];
+        $format    = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
+        $row       = 0;
+        $formatId  = -1;
+        $fmt       = [];
+        $importMsg = '';
         while ($data = fgetcsv($file, 2000, ';', '"')) {
             if ($row === 0) {
-                $hinweis .= __('checkHead');
-                $fmt      = checkformat($data, $format);
+                $importMsg .= __('checkHead');
+                $fmt        = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $fehler = __('errorFormatUnknown');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatUnknown'), 'errorFormatUnknown');
                     break;
                 }
-                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
+                $importMsg .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
+                $importMsg .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
             $row++;
         }
+        $alertHelper->addAlert(Alert::TYPE_NOTE, $importMsg, 'importMessage');
         fclose($file);
     }
 }
@@ -50,8 +50,6 @@ $smarty->assign('sprachen', Sprache::getAllLanguages())
            'SELECT * FROM tkundengruppe ORDER BY cName',
            \DB\ReturnType::ARRAY_OF_OBJECTS
        ))
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
        ->display('newsletterimport.tpl');
 
 /**

@@ -7,16 +7,16 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cfehler  = '';
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    $cHinweis .= saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST);
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_NOTE,
+        saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST),
+        'saveSettings'
+    );
 }
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_PREISVERLAUF))
        ->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cfehler)
        ->display('preisverlauf.tpl');
 
 /**

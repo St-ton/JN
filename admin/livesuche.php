@@ -15,10 +15,9 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 setzeSprache();
 
-$hinweis     = '';
-$fehler      = '';
 $settingsIDs = [423, 425, 422, 437, 438];
 $db          = Shop::Container()->getDB();
+$alertHelper = Shop::Container()->getAlertService();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
@@ -32,11 +31,15 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
         $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
         $smarty->assign('cSuche', $cSuche);
     } else {
-        $fehler = __('errorSearchTermMissing');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchTermMissing'), 'errorSearchTermMissing');
     }
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $hinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        saveAdminSettings($settingsIDs, $_POST),
+        'saveSettings'
+    );
     $smarty->assign('tab', 'einstellungen');
 }
 
@@ -189,7 +192,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                             $upd
                         );
 
-                        $hinweis .= sprintf(
+                        $succesMapMessage .= sprintf(
                             __('successSearchMap'),
                             $mapping->cSuche,
                             $mapping->cSucheNeu
@@ -197,11 +200,12 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     }
                 }
             } else {
-                $fehler .= __('errorSearchMapSelf');
+                $errorMapMessage .= sprintf(__('errorSearchMapSelf'), $mapping->cSucheNeu);
             }
         }
-
-        $hinweis .= __('successSearchRefresh') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_NOTE, $succesMapMessage ?? '', 'successSearchMap');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMapMessage ?? '', 'errorSearchMap');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchRefresh'), 'successSearchRefresh');
     } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
         $cMapping = Request::verifyGPDataString('cMapping');
 
@@ -256,26 +260,38 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                         \DB\ReturnType::DEFAULT
                                     );
 
-                                    $hinweis = __('successSearchMapMultiple');
+                                    $alertHelper->addAlert(
+                                        Alert::TYPE_NOTE,
+                                        __('successSearchMapMultiple'),
+                                        'successSearchMapMultiple'
+                                    );
                                 }
                             } else {
-                                $fehler = __('errorSearchMapToNotExist');
+                                $alertHelper->addAlert(
+                                    Alert::TYPE_ERROR,
+                                    __('errorSearchMapToNotExist'),
+                                    'errorSearchMapToNotExist'
+                                );
                                 break;
                             }
                         } else {
-                            $fehler = sprintf(__('errorSearchMapSelf'), $query->cSuche);
+                            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchMapSelf'), 'errorSearchMapSelf');
                             break;
                         }
                     } else {
-                        $fehler = __('errorSearchMapNotExist');
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            __('errorSearchMapNotExist'),
+                            'errorSearchMapNotExist'
+                        );
                         break;
                     }
                 }
             } else {
-                $fehler = __('errorAtLeastOneSearch');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         } else {
-            $fehler = __('errorMapNameMissing');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMapNameMissing'), 'errorMapNameMissing');
         }
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         if (is_array($_POST['kSuchanfrage'])) {
@@ -293,11 +309,20 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                 $db->insert('tsuchanfrageblacklist', $obj);
                 // Aus tseo loeschen
                 $db->delete('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$kSuchanfrage]);
-                $hinweis .= sprintf(__('successSearchDelete'), $kSuchanfrage_obj->cSuche) . '<br />';
-                $hinweis .= sprintf(__('successSearchBlacklist'), $kSuchanfrage_obj->cSuche) . '<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    sprintf(__('successSearchDelete'), $kSuchanfrage_obj->cSuche),
+                    'successSearchDelete'
+                );
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    sprintf(__('successSearchBlacklist'), $kSuchanfrage_obj->cSuche),
+                    'successSearchBlacklist'
+                );
+
             }
         } else {
-            $fehler .= __('errorAtLeastOneSearch') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
         }
     }
 } elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 2) { // Erfolglos mapping
@@ -364,21 +389,33 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                 (int)$oldQuery->kSuchanfrageErfolglos
                             );
 
-                            $hinweis .= sprintf(
-                                __('successSearchMap'),
-                                $mapping->cSuche,
-                                $mapping->cSucheNeu
-                            ) . '<br />';
+                            $alertHelper->addAlert(
+                                Alert::TYPE_NOTE,
+                                sprintf(
+                                    __('successSearchMap'),
+                                    $mapping->cSuche,
+                                    $mapping->cSucheNeu
+                                ),
+                                'successSearchMap'
+                            );
                         }
                     } else {
-                        $fehler .= sprintf(
-                            __('errorSearchMapLoop'),
-                            $mapping->cSuche,
-                            $mapping->cSucheNeu
-                        ) . '<br />';
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            sprintf(
+                                __('errorSearchMapLoop'),
+                                $mapping->cSuche,
+                                $mapping->cSucheNeu
+                            ),
+                            'errorSearchMapLoop'
+                        );
                     }
                 } else {
-                    $fehler .= sprintf(__('errorSearchMapSelf'), $failedQuery->cSuche);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorSearchMapSelf'), $failedQuery->cSuche),
+                        'errorSearchMapSelf'
+                    );
                 }
             } elseif ((int)$_POST['nErfolglosEditieren'] === 1) {
                 $idx = 'cSuche_' . $failedQuery->kSuchanfrageErfolglos;
@@ -404,9 +441,9 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     (int)$queryID
                 );
             }
-            $hinweis = __('successSearchDeleteMultiple');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchDeleteMultiple'), 'successSearchDeleteMultiple');
         } else {
-            $fehler = __('errorAtLeastOneSearch');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
         }
     }
     $smarty->assign('tab', 'erfolglos');
@@ -425,7 +462,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         }
     }
     $smarty->assign('tab', 'blacklist');
-    $hinweis .= __('successBlacklistRefresh');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBlacklistRefresh'), 'successBlacklistRefresh');
 } elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 4) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kSuchanfrageMapping'])) {
@@ -441,13 +478,17 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                         'kSuchanfrageMapping',
                         (int)$mappingID
                     );
-                    $hinweis .= sprintf(__('successSearchMapDelete'), $queryMapping->cSuche);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        sprintf(__('successSearchMapDelete'), $queryMapping->cSuche),
+                        'successSearchMapDelete'
+                    );
                 } else {
-                    $fehler .= __('errorSearchMapNotFound') . '<br />';
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchMapNotFound'), 'errorSearchMapNotFound');
                 }
             }
         } else {
-            $fehler .= __('errorAtLeastOneSearchMap') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearchMap'), 'errorAtLeastOneSearchMap');
         }
     }
     $smarty->assign('tab', 'mapping');
@@ -532,6 +573,4 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->assign('oPagiSuchanfragen', $oPagiSuchanfragen)
        ->assign('oPagiErfolglos', $oPagiErfolglos)
        ->assign('oPagiMapping', $oPagiMapping)
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
        ->display('livesuche.tpl');

@@ -26,7 +26,7 @@ if (auth()) {
             case LASTJOBS_BEWERTUNGSERINNNERUNG:
                 $recipients = (new \ReviewReminder())->getRecipients();
                 foreach($recipients as $recipient) {
-                    sendeMail(MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient); // move this from bewertungserinnerung at this place here!
+                    sendeMail(MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient);
                 }
                 updateJob(LASTJOBS_BEWERTUNGSERINNNERUNG);
                 break;

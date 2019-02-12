@@ -30,7 +30,6 @@ class Migration_20190130130822 extends Migration implements IMigration
         $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 494 AND cWert = "N"');
         $this->execute('UPDATE teinstellungenconfwerte SET nSort = 3 WHERE kEinstellungenConf = 494 AND cWert = "Y"');
         $this->execute('INSERT INTO teinstellungenconfwerte VALUES(494, "", "B", 1)') ;
-        $this->execute('UPDATE teinstellungen SET cWert = "B" WHERE cName = "bewertungserinnerung_nutzen"');
     }
 
     public function down()
@@ -38,6 +37,5 @@ class Migration_20190130130822 extends Migration implements IMigration
         $this->execute('DELETE FROM teinstellungenconfwerte WHERE kEinstellungenConf = 494 AND nSort = 1');
         $this->execute('UPDATE teinstellungenconfwerte SET nSort = 1 WHERE kEinstellungenConf = 494 AND cWert = "Y"');
         $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 494 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungen SET cWert = "N" WHERE cName = "bewertungserinnerung_nutzen"');
     }
 }

@@ -39,6 +39,23 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     }
 } else {
     $oVergleichsliste = new Vergleichsliste();
+    if (isset($oVergleichsliste->oArtikel_arr)) {
+        $oArtikel_arr     = [];
+        $defaultOptions   = Artikel::getDefaultOptions();
+        $linkHelper       = LinkHelper::getInstance();
+        $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
+        foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
+            $artikel = new Artikel();
+            $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+            $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
+            if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
+                $artikel->Variationen = $oArtikel->oVariationen_arr;
+            }
+            $oArtikel_arr[] = $artikel;
+    }
+    $oVergleichsliste               = new stdClass();
+    $oVergleichsliste->oArtikel_arr = $oArtikel_arr;
+}
     $oMerkVaria_arr   = baueMerkmalundVariation($oVergleichsliste);
     // Füge den Vergleich für Statistikzwecke in die DB ein
     setzeVergleich($oVergleichsliste);
@@ -50,23 +67,6 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
     }
 }
 
-if (isset($oVergleichsliste->oArtikel_arr)) {
-    $oArtikel_arr     = [];
-    $defaultOptions   = Artikel::getDefaultOptions();
-    $linkHelper       = LinkHelper::getInstance();
-    $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
-    foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
-        $artikel = new Artikel();
-        $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
-        $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
-        if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
-            $artikel->Variationen = $oArtikel->oVariationen_arr;
-        }
-        $oArtikel_arr[] = $artikel;
-    }
-    $oVergleichsliste               = new stdClass();
-    $oVergleichsliste->oArtikel_arr = $oArtikel_arr;
-}
 // Spaltenbreite
 $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']

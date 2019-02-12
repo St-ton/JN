@@ -2613,3 +2613,9 @@ msgstr "Ja"
 
 msgid "compile_check_value(N)"
 msgstr "Nein"
+
+msgid "ftp_ssl_value(1)"
+msgstr "Ja"
+
+msgid "ftp_ssl_value(0)"
+msgstr "Nein"

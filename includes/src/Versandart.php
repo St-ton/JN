@@ -87,11 +87,6 @@ class Versandart
     public $oVersandartStaffel_arr;
 
     /**
-     * @var int
-     */
-    public $kRechnungsadresse;
-
-    /**
      * @var string
      */
     public $cSendConfirmationMail;
@@ -180,11 +175,10 @@ class Versandart
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
-            $obj->kRechnungsadresse,
             $obj->nMinLiefertage,
             $obj->nMaxLiefertage
         );
-        $this->kRechnungsadresse = Shop::Container()->getDB()->insert('tversandart', $obj);
+        $this->kVersandart = Shop::Container()->getDB()->insert('tversandart', $obj);
 
         return $this->kVersandart;
     }
@@ -198,7 +192,6 @@ class Versandart
         unset(
             $obj->oVersandartSprache_arr,
             $obj->oVersandartStaffel_arr,
-            $obj->kRechnungsadresse,
             $obj->nMinLiefertage,
             $obj->nMaxLiefertage
         );

@@ -198,6 +198,7 @@ final class Installer
         $plugin->cIcon                = $baseNode['Icon'] ?? null;
         $plugin->cVerzeichnis         = $this->dir;
         $plugin->cPluginID            = $baseNode['PluginID'];
+        $plugin->cStoreID             = $baseNode['StoreID'];
         $plugin->cFehler              = '';
         $plugin->cLizenz              = '';
         $plugin->cLizenzKlasse        = $licenceClass;

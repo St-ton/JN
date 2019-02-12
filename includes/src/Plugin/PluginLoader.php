@@ -105,5 +105,6 @@ class PluginLoader extends AbstractLoader
         $this->saveToCache($extension);
 
         return $extension;
+
     }
 }

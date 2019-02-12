@@ -3297,3 +3297,21 @@ msgstr "shop_logo"
 
 msgid "shop_logo_desc"
 msgstr ""
+
+msgid "ftp_hostname_name"
+msgstr "Hostname"
+
+msgid "ftp_port_name"
+msgstr "Port"
+
+msgid "ftp_user_name"
+msgstr "Username"
+
+msgid "ftp_pass_name"
+msgstr "Password"
+
+msgid "ftp_ssl_name"
+msgstr "Encryption (SSL)"
+
+msgid "ftp_path_name"
+msgstr "Path to shop"

@@ -5,7 +5,9 @@
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
 <div class="delivery-status">
 {block name='delivery-status'}
-    {if !$Artikel->nErscheinendesProdukt}
+    {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
+        <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
+    {elseif !$Artikel->nErscheinendesProdukt}
         {if $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' &&
         ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
         $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de) && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'}

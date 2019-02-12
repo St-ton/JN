@@ -1,0 +1,20 @@
+msgid "ftp"
+msgstr "FTP-Account"
+
+msgid "ftpDesc"
+msgstr ""
+
+msgid "ftpURL"
+msgstr ""
+
+msgid "ftpSave"
+msgstr "Speichern"
+
+msgid "ftpTest"
+msgstr "Testen"
+
+msgid "ftpValidConnection"
+msgstr "Verbindung erfolgreich"
+
+msgid "ftpInvalidShopRoot"
+msgstr "Keine gültige Shop-Installation gefunden. Bitte FTP Pfad prüfen"

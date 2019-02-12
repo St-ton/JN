@@ -84,7 +84,7 @@
     </li>
     {include file='layout/header_shop_nav_compare.tpl'}
     {include file='layout/header_shop_nav_wish.tpl'}
-    <li class="hidden-xs cart-menu dropdown{if $WarenkorbArtikelanzahl >= 1} items{/if}{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
+    <li class="hidden-xs cart-menu dropdown{if $nSeitenTyp == 3} current{/if}" data-toggle="basket-items">
         {include file='basket/cart_dropdown_label.tpl'}
     </li>
     {/block}

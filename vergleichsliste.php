@@ -52,10 +52,10 @@ if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
                 $artikel->Variationen = $oArtikel->oVariationen_arr;
             }
             $oArtikel_arr[] = $artikel;
+        }
+        $oVergleichsliste               = new stdClass();
+        $oVergleichsliste->oArtikel_arr = $oArtikel_arr;
     }
-    $oVergleichsliste               = new stdClass();
-    $oVergleichsliste->oArtikel_arr = $oArtikel_arr;
-}
     $oMerkVaria_arr   = baueMerkmalundVariation($oVergleichsliste);
     // Füge den Vergleich für Statistikzwecke in die DB ein
     setzeVergleich($oVergleichsliste);

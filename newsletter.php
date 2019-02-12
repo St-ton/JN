@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
 use Helpers\Request;
 
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -23,7 +24,6 @@ foreach ($links as $l) {
     }, false);
     if ($ok === true) {
         $oLink = $l;
-
         break;
     }
 }
@@ -85,10 +85,7 @@ if (isset($_GET['fc']) && mb_strlen($_GET['fc']) > 0) {
 } elseif (isset($_GET['lc']) && mb_strlen($_GET['lc']) > 0) { // Loeschcode wurde uebergeben
     $option     = 'loeschen';
     $deleteCode = StringHandler::htmlentities(strip_tags($_GET['lc']));
-    $recicpient = $db->select(
-        'tnewsletterempfaenger',
-        'cLoeschCode', $deleteCode
-    );
+    $recicpient = $db->select('tnewsletterempfaenger', 'cLoeschCode', $deleteCode);
     if (!empty($recicpient->cLoeschCode)) {
         executeHook(
             HOOK_NEWSLETTER_PAGE_EMPFAENGERLOESCHEN,
@@ -112,10 +109,9 @@ if (isset($_GET['fc']) && mb_strlen($_GET['fc']) > 0) {
         $hist->cRegIp       = Request::getRealIP();
         $db->insert('tnewsletterempfaengerhistory', $hist);
 
-        executeHook(
-            HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN,
-            ['oNewsletterEmpfaengerHistory' => $hist]
-        );
+        executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, [
+            'oNewsletterEmpfaengerHistory' => $hist
+        ]);
         $blacklist            = new stdClass();
         $blacklist->cMail     = $recicpient->cEmail;
         $blacklist->dErstellt = 'NOW()';
@@ -251,7 +247,7 @@ if (\Session\Frontend::getCustomer()->getID() > 0) {
     $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($customer->kKunde))
            ->assign('oKunde', $customer);
 }
-$cCanonicalURL = Shop::getURL() . '/newsletter.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('newsletter.php');
 
 $smarty->assign('cOption', $option)
        ->assign('Link', $link)

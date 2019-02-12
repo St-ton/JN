@@ -11,8 +11,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \Smarty\JTLSmarty     $smarty */
 /** @global \Backend\AdminAccount $oAccount */
-$oUpdater = new Updater();
-$cFehler  = '';
+$oUpdater    = new Updater();
+$alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $csrfOK = true;
     // Check if shop version is new enough for csrf validation
@@ -29,37 +29,45 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
             case \Backend\AdminLoginStatus::ERROR_LOCKED:
             case \Backend\AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED:
                 $lockTime = $oAccount->getLockedMinutes();
-                $cFehler  = sprintf(__('lockForMinutes'), $lockTime);
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(__('lockForMinutes'), $lockTime),
+                    'errorFillRequired'
+                );
                 break;
 
             case \Backend\AdminLoginStatus::ERROR_USER_NOT_FOUND:
             case \Backend\AdminLoginStatus::ERROR_INVALID_PASSWORD:
-                $cFehler = __('errorWrongPasswordUser');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired)
                     && $_SESSION['AdminAccount']->TwoFA_expired === true
                 ) {
-                    $cFehler = __('errorTwoFactorExpired');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTwoFactorExpired'), 'errorTwoFactorExpired');
                 }
                 break;
 
             case \Backend\AdminLoginStatus::ERROR_USER_DISABLED:
-                $cFehler = __('errorLoginTemporaryNotPossible');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorLoginTemporaryNotPossible'),
+                    'errorLoginTemporaryNotPossible'
+                );
                 break;
 
             case \Backend\AdminLoginStatus::ERROR_LOGIN_EXPIRED:
-                $cFehler = __('errorLoginDataExpired');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLoginDataExpired'), 'errorLoginDataExpired');
                 break;
 
             case \Backend\AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED:
                 if (isset($_SESSION['AdminAccount']->TwoFA_expired)
                     && $_SESSION['AdminAccount']->TwoFA_expired === true
                 ) {
-                    $cFehler = __('errorTwoFactorExpired');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTwoFactorExpired'), 'errorTwoFactorExpired');
                 }
                 break;
 
             case \Backend\AdminLoginStatus::ERROR_NOT_AUTHORIZED:
-                $cFehler = __('errorNoPermission');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoPermission'), 'errorNoPermission');
                 break;
 
             case \Backend\AdminLoginStatus::LOGIN_OK:
@@ -78,7 +86,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
                 break;
         }
     } elseif ($csrfOK !== true) {
-        $cFehler = __('errorCSRF');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCSRF'), 'errorCSRF');
     }
 }
 $type          = '';
@@ -113,7 +121,8 @@ switch ($profilerState) {
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
        ->assign('pw_updated', isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true')
-       ->assign('cFehler', $cFehler)
+       ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
+       ->assign('alertList', $alertHelper)
        ->assign('updateMessage', $updateMessage ?? null);
 
 
@@ -189,12 +198,13 @@ if ($oAccount->getIsAuthenticated()) {
 } else {
     $oAccount->redirectOnUrl();
     if (isset($_GET['errCode']) && (int)$_GET['errCode'] === \Backend\AdminLoginStatus::ERROR_SESSION_INVALID) {
-        $cFehler = __('errorSessionExpired');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSessionExpired'), 'errorSessionExpired');
     }
     \Shop::Container()->getGetText()->loadAdminLocale('pages/login');
     $smarty->assign('uri', isset($_REQUEST['uri']) && mb_strlen(trim($_REQUEST['uri'])) > 0
         ? trim($_REQUEST['uri'])
         : '')
-           ->assign('cFehler', $cFehler)
+           ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
+           ->assign('alertList', $alertHelper)
            ->display('login.tpl');
 }

@@ -8,7 +8,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
-$cHinweis                   = '';
 $modifiedFilesError         = '';
 $orphanedFilesError         = '';
 $modifiedFiles              = [];
@@ -44,8 +43,7 @@ if ($validateOrphanedFilesState !== 1) {
             break;
     }
 }
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('modifiedFilesError', $modifiedFilesError)
+$smarty->assign('modifiedFilesError', $modifiedFilesError)
        ->assign('orphanedFilesError', $orphanedFilesError)
        ->assign('modifiedFiles', $modifiedFiles)
        ->assign('orphanedFiles', $orphanedFiles)

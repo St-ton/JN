@@ -11,10 +11,8 @@ $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-$cFehler  = '';
-$cHinweis = '';
-$cAction  = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
-
+$cAction     = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
+$alertHelper = Shop::Container()->getAlertService();
 if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && Form::validateToken()) {
     $cPlausi_arr = [];
     $oBanner     = new ImageMap();
@@ -103,15 +101,27 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 
         $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
         if ($kImageMap && $ins > 0) {
-            $cAction  = 'view';
-            $cHinweis = __('successSave');
+            $cAction = 'view';
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSave'), 'successSave');
         } else {
-            $cFehler = __('errorSave');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'errorSave');
         }
     } else {
-        $cFehler = __('errorFillRequired');
-        $smarty->assign('cPlausi_arr', $cPlausi_arr)
-               ->assign('cName', $_POST['cName'] ?? null)
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+
+        if (($cPlausi_arr['vDatum'] ?? 0) === 1) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDate'), 'errorDate');
+        }
+        if (($cPlausi_arr['bDatum'] ?? 0) === 1) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDate'), 'errorDate');
+        } elseif (($cPlausi_arr['bDatum'] ?? 0) === 2) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDateActiveToGreater'), 'errorDateActiveToGreater');
+        }
+        if (($cPlausi_arr['oFile'] ?? 0) === 1) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImageSizeTooLarge'), 'errorImageSizeTooLarge');
+        }
+
+        $smarty->assign('cName', $_POST['cName'] ?? null)
                ->assign('vDatum', $_POST['vDatum'] ?? null)
                ->assign('bDatum', $_POST['bDatum'] ?? null)
                ->assign('kSprache', $_POST['kSprache'] ?? null)
@@ -129,7 +139,7 @@ switch ($cAction) {
     case 'area':
         $oBanner = holeBanner((int)$_POST['id'], false);
         if (!is_object($oBanner)) {
-            $cFehler = __('errrorBannerNotFound');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
             $cAction = 'view';
             break;
         }
@@ -150,7 +160,7 @@ switch ($cAction) {
                ->assign('oBanner', $oBanner);
 
         if (!is_object($oBanner)) {
-            $cFehler = __('errrorBannerNotFound');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
             $cAction = 'view';
         }
         break;
@@ -166,9 +176,9 @@ switch ($cAction) {
 
     case 'delete':
         if (entferneBanner((int)$_POST['id'])) {
-            $cHinweis = __('successDeleted');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successDeleted'), 'successDeleted');
         } else {
-            $cFehler = __('errorDeleted');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDeleted'), 'errorDeleted');
         }
         break;
 
@@ -176,8 +186,6 @@ switch ($cAction) {
         break;
 }
 
-$smarty->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cAction', $cAction)
+$smarty->assign('cAction', $cAction)
        ->assign('oBanner_arr', holeAlleBanner())
        ->display('banner.tpl');

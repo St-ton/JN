@@ -18,12 +18,11 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-$cHinweis     = '';
-$cFehler      = '';
 $action       = '';
 $tab          = Kupon::TYPE_STANDARD;
 $oSprache_arr = Sprache::getAllLanguages();
 $oKupon       = null;
+$alertHelper  = Shop::Container()->getAlertService();
 $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
     if ($importType === 0 && $importDeleteDone === false) {
         Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', \DB\ReturnType::AFFECTED_ROWS);
@@ -67,11 +66,11 @@ $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDon
     return true;
 });
 
-if ($res > 0) {
-    $cFehler  = __('errorImportCSV');
-    $cFehler .= __('errorImportRow');
-} elseif ($res === 0) {
-    $cHinweis = __('successImportCSV');
+if ($res) {
+    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successImportCSV'), 'successImportCSV');
+} else {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV'), 'errorImportCSV');
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportRow'), 'errorImportRow');
 }
 
 // Aktion ausgeloest?
@@ -101,18 +100,19 @@ if ($action === 'bearbeiten') {
     }
 } elseif ($action === 'speichern') {
     // Kupon speichern
-    $oKupon      = createCouponFromInput();
-    $cFehler_arr = validateCoupon($oKupon);
-    if (count($cFehler_arr) > 0) {
+    $oKupon       = createCouponFromInput();
+    $couponErrors = validateCoupon($oKupon);
+    if (count($couponErrors) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
-        $cFehler = __('checkInput') . ':<ul>';
+        $errorMessage = __('checkInput') . ':<ul>';
 
-        foreach ($cFehler_arr as $fehler) {
-            $cFehler .= '<li>' . $fehler . '</li>';
+        foreach ($couponErrors as $couponError) {
+            $errorMessage .= '<li>' . $couponError . '</li>';
         }
 
-        $cFehler .= '</ul>';
-        $action   = 'bearbeiten';
+        $errorMessage .= '</ul>';
+        $action        = 'bearbeiten';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMessage, 'checkInput');
         augmentCoupon($oKupon);
     } elseif (saveCoupon($oKupon, $oSprache_arr) > 0) {// Validierung erfolgreich => Kupon speichern
         // erfolgreich gespeichert => evtl. Emails versenden
@@ -123,21 +123,21 @@ if ($action === 'bearbeiten') {
         ) {
             informCouponCustomers($oKupon);
         }
-        $cHinweis = __('successCouponSave');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCouponSave'), 'successCouponSave');
     } else {
-        $cFehler = __('errorCouponSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponSave'), 'errorCouponSave');
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
         $kKupon_arr = array_map('\intval', $_POST['kKupon_arr']);
         if (loescheKupons($kKupon_arr)) {
-            $cHinweis = __('successCouponDelete');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCouponDelete'), 'successCouponDelete');
         } else {
-            $cFehler = __('errorCouponDelete');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponDelete'), 'errorCouponDelete');
         }
     } else {
-        $cFehler = __('errorAtLeastOneCoupon');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCoupon'), 'errorAtLeastOneCoupon');
     }
 }
 
@@ -307,7 +307,5 @@ if ($action === 'bearbeiten') {
 }
 
 $smarty->assign('action', $action)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('couponTypes', Kupon::getCouponTypes())
        ->display('kupons.tpl');

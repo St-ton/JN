@@ -13,32 +13,31 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
 /** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_VIEW', true, true);
 
-$cHinweis        = '';
-$cFehler         = '';
 $step            = 'bestellungen_uebersicht';
 $cSuchFilter     = '';
 $nAnzahlProSeite = 15;
+$alertHelper     = Shop::Container()->getAlertService();
 
 // Bestellung Wawi Abholung zuruecksetzen
 if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $cHinweis = __('successOrderReset');
+                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successOrderReset'), 'successOrderReset');
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
-                $cFehler = __('errorAtLeastOneOrder');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
                 break;
         }
     } else {
-        $cFehler = __('errorAtLeastOneOrder');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
     }
 } elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
     $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
     if (mb_strlen($cSuche) > 0) {
         $cSuchFilter = $cSuche;
     } else {
-        $cFehler = __('errorMissingOrderNumber');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMissingOrderNumber'), 'errorMissingOrderNumber');
     }
 }
 
@@ -51,8 +50,6 @@ if ($step === 'bestellungen_uebersicht') {
            ->assign('oPagination', $oPagination);
 }
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cSuche', $cSuchFilter)
-       ->assign('cFehler', $cFehler)
+$smarty->assign('cSuche', $cSuchFilter)
        ->assign('step', $step)
        ->display('bestellungen.tpl');

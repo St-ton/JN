@@ -59,11 +59,10 @@ switch ($kSektion) {
 }
 
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
-$cHinweis         = '';
-$cFehler          = '';
 $section          = null;
 $step             = 'uebersicht';
 $oSections        = [];
+$alertHelper      = Shop::Container()->getAlertService();
 if ($kSektion > 0) {
     $step    = 'einstellungen bearbeiten';
     $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
@@ -150,7 +149,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
 
     $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-    $cHinweis    = __('successConfigSave');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
         $tagsToFlush[] = CACHING_GROUP_CORE;
@@ -275,7 +274,5 @@ $smarty->configLoad('german.conf', 'einstellungen')
        ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
        ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
        ->assign('step', $step)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('waehrung', $standardwaehrung->cName)
        ->display('einstellungen.tpl');

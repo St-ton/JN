@@ -17,9 +17,6 @@ $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 /** @global \Smarty\JTLSmarty $smarty */
 $mailTpl             = null;
-$hinweis             = '';
-$cHinweis            = '';
-$cFehler             = '';
 $nFehler             = 0;
 $continue            = true;
 $emailTemplate       = null;
@@ -35,6 +32,7 @@ $originalTableName   = 'temailvorlagespracheoriginal';
 $settingsTableName   = 'temailvorlageeinstellungen';
 $pluginSettingsTable = 'tpluginemailvorlageeinstellungen';
 $db                  = Shop::Container()->getDB();
+$alertHelper         = Shop::Container()->getAlertService();
 if (Request::verifyGPCDataInt('kPlugin') > 0) {
     $tableName          = 'tpluginemailvorlage';
     $localizedTableName = 'tpluginemailvorlagesprache';
@@ -43,9 +41,9 @@ if (Request::verifyGPCDataInt('kPlugin') > 0) {
 }
 if (isset($_GET['err'])) {
     setzeFehler($_GET['kEmailvorlage']);
-    $cFehler = __('errorTemplate');
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplate'), 'errorTemplate');
     if (is_array($_SESSION['last_error'])) {
-        $cFehler .= '<br />' . $_SESSION['last_error']['message'];
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $_SESSION['last_error']['message'], 'last_error');
         unset($_SESSION['last_error']);
     }
 }
@@ -134,7 +132,7 @@ if (isset($_POST['resetEmailvorlage'])
                 }
             }
         }
-        $cHinweis .= __('successTemplateReset') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateReset'), 'successTemplateReset');
     }
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
@@ -579,13 +577,17 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
                 $sendStatus = false;
             }
         } else {
-            $cHinweis .= __('errorTemplateMissing') . $lang->cNameDeutsch . '<br/>';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                __('errorTemplateMissing') . $lang->cNameDeutsch,
+                'errorTemplateMissing'
+            );
         }
     }
     if ($sendStatus === true) {
-        $cHinweis .= __('successEmailSend');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successEmailSend'), 'successEmailSend');
     } else {
-        $cFehler = __('errorEmailSend');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEmailSend'), 'errorEmailSend');
     }
 }
 if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
@@ -648,11 +650,15 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache];
                             unset($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]);
                         } else {
-                            $cFehler .= sprintf(
-                                __('errorFileName'),
-                                $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]
-                            ) . '<br />';
-                            $nFehler  = 1;
+                            $alertHelper->addAlert(
+                                Alert::TYPE_ERROR,
+                                sprintf(
+                                    __('errorFileName'),
+                                    $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]
+                                ),
+                                'errorFileName'
+                            );
+                            $nFehler = 1;
                             break;
                         }
                     } else {
@@ -680,21 +686,25 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                                 $_FILES['pdf_' . $i . '_' . $lang->kSprache]['tmp_name'],
                                 $cUploadDatei
                             )) {
-                                $cFehler .= __('errorFileSave') . '<br />';
-                                $nFehler  = 1;
+                                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileSave'), 'errorFileSave');
+                                $nFehler = 1;
                                 break;
                             }
                             $filenames[] = $_POST['dateiname_' . $i . '_' . $lang->kSprache];
                             $pdfFiles[]  = $localized->kEmailvorlage . '_' .
                                 $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
                         } else {
-                            $cFehler .= __('errorFileNameMissing') . '<br />';
-                            $nFehler  = 1;
+                            $alertHelper->addAlert(
+                                Alert::TYPE_ERROR,
+                                __('errorFileNameMissing'),
+                                'errorFileNameMissing'
+                            );
+                            $nFehler = 1;
                             break;
                         }
                     } else {
-                        $cFehler .= __('errorFileSizeType') . '<br />';
-                        $nFehler  = 1;
+                        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileSizeType'), 'errorFileSizeType');
+                        $nFehler = 1;
                         break;
                     }
                 } elseif (isset(
@@ -705,8 +715,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     && mb_strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) === 0
                 ) {
                     $attachmentErrors[$lang->kSprache][$i] = 1;
-                    $cFehler                              .= __('errorFileNamePdfMissing') . '<br />';
                     $nFehler                               = 1;
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileNamePdfMissing'), 'errorFileNamePdfMissing');
                     break;
                 }
             }
@@ -723,13 +733,13 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                     if (mb_strlen($regs[0]) === mb_strlen($_POST[$idx])) {
                         $filenames[] = $_POST[$idx];
                     } else {
-                        $cFehler .= __('errorFileName') . '<br />';
-                        $nFehler  = 1;
+                        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileName'), 'errorFileName');
+                        $nFehler = 1;
                         break;
                     }
                 } else {
-                    $cFehler .= __('errorFileNamePdfMissing') . '<br />';
-                    $nFehler  = 1;
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileNamePdfMissing'), 'errorFileNamePdfMissing');
+                    $nFehler = 1;
                     break;
                 }
             }
@@ -809,13 +819,17 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         $step = 'prebearbeiten';
     } elseif ($smartyError->nCode === 0) {
         setzeFehler((int)$_POST['kEmailvorlage'], false, true);
-        $cHinweis = __('successTemplateEdit');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateEdit'), 'successTemplateEdit');
         $step     = 'uebersicht';
         $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
     } else {
         $nFehler = 1;
         $step    = 'prebearbeiten';
-        $cFehler = __('errorTemplate') . '<br />' . $smartyError->cText;
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            __('errorTemplate') . '<br />' . $smartyError->cText,
+            'errorTemplate'
+        );
         setzeFehler($_POST['kEmailvorlage']);
     }
 }
@@ -866,7 +880,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
             ],
             $upd
         );
-        $cHinweis .= __('successFileAppendixDelete') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successFileAppendixDelete'), 'successFileAppendixDelete');
     }
 
     $step  = 'bearbeiten';
@@ -923,8 +937,6 @@ if ($step === 'bearbeiten') {
 $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
        ->assign('cFehlerAnhang_arr', $attachmentErrors)
        ->assign('step', $step)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('Einstellungen', $conf)
        ->display('emailvorlagen.tpl');
 

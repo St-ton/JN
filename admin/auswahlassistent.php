@@ -13,11 +13,10 @@ use Extensions\AuswahlAssistentGruppe;
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \Smarty\JTLSmarty $smarty */
 $oAccount->permission('EXTENSION_SELECTIONWIZARD_VIEW', true, true);
-$cFehler  = '';
-$cHinweis = '';
-$step     = '';
-$nice     = Nice::getInstance();
-$tab      = 'uebersicht';
+$step        = '';
+$nice        = Nice::getInstance();
+$tab         = 'uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
 \Shop::Container()->getGetText()->loadConfigLocales();
 
@@ -54,10 +53,10 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
 
             if ((!is_array($cPlausi_arr) && $cPlausi_arr) || count($cPlausi_arr) === 0) {
-                $cHinweis = __('successQuestionSaved');
-                $tab      = 'uebersicht';
+                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successQuestionSaved'), 'successQuestionSaved');
+                $tab = 'uebersicht';
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
-                $cFehler = __('errorFillRequired');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
                 $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentFrage', (int)($_POST['kAuswahlAssistentFrage'] ?? 0));
@@ -69,9 +68,9 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         && Form::validateToken()
     ) {
         if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
-            $cHinweis = __('successQuestionDeleted');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successQuestionDeleted'), 'successQuestionDeleted');
         } else {
-            $cFehler = __('errorQuestionDeleted');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('errorQuestionDeleted'), 'errorQuestionDeleted');
         }
     } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && Form::validateToken()) {
         $step = 'edit-question';
@@ -98,12 +97,12 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $cPlausi_arr = $group->saveGroup($_POST);
             }
             if ((!is_array($cPlausi_arr) && $cPlausi_arr) || count($cPlausi_arr) === 0) {
-                $step     = 'uebersicht';
-                $cHinweis = __('successGroupSaved');
-                $tab      = 'uebersicht';
+                $step = 'uebersicht';
+                $tab  = 'uebersicht';
+                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successGroupSaved'), 'successGroupSaved');
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
-                $step    = 'edit-group';
-                $cFehler = __('errorFillRequired');
+                $step = 'edit-group';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
                 $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentGruppe', (isset($_POST['kAuswahlAssistentGruppe'])
@@ -112,13 +111,17 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
         } elseif ($_POST['a'] === 'delGrp') {
             if (AuswahlAssistentGruppe::deleteGroup($_POST)) {
-                $cHinweis = __('successGroupDeleted');
+                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successGroupDeleted'), 'successGroupDeleted');
             } else {
-                $cFehler = __('errorGroupDeleted');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorGroupDeleted'), 'errorGroupDeleted');
             }
         } elseif ($_POST['a'] === 'saveSettings') {
-            $step      = 'uebersicht';
-            $cHinweis .= saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST);
+            $step = 'uebersicht';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST),
+                'saveSettings'
+            );
         }
     } elseif (isset($_GET['a'], $_GET['g'])
         && $_GET['a'] === 'editGrp'
@@ -161,8 +164,6 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $smarty->assign('noModule', true);
 }
 $smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('step', $step)
        ->assign('cTab', $tab)
        ->assign('AUSWAHLASSISTENT_ORT_STARTSEITE', AUSWAHLASSISTENT_ORT_STARTSEITE)

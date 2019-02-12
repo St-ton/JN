@@ -727,9 +727,10 @@ function benutzerverwaltungFinalize($step, \Smarty\JTLSmarty $smarty, array &$me
             break;
     }
 
-    $smarty->assign('hinweis', $messages['notice'])
-           ->assign('fehler', $messages['error'])
-           ->assign('action', $step)
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'userManagementNote');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'userManagementError');
+
+    $smarty->assign('action', $step)
            ->assign('cTab', StringHandler::filterXSS(Request::verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }

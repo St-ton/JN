@@ -15,12 +15,11 @@ $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
 
-$cHinweis     = '';
-$cFehler      = '';
 $kKampagne    = 0;
 $kKampagneDef = 0;
 $cStamp       = '';
 $step         = 'kampagne_uebersicht';
+$alertHelper  = Shop::Container()->getAlertService();
 
 // Zeitraum
 // 1 = Monat
@@ -92,9 +91,9 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $nReturnValue = speicherKampagne($oKampagne);
 
     if ($nReturnValue === 1) {
-        $cHinweis = __('successCampaignSave');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCampaignSave'), 'successCampaignSave');
     } else {
-        $cFehler = mappeFehlerCodeSpeichern($nReturnValue);
+        $alertHelper->addAlert(Alert::TYPE_ERROR, mappeFehlerCodeSpeichern($nReturnValue), 'campaignError');
         $smarty->assign('oKampagne', $oKampagne);
         $step = 'kampagne_erstellen';
     }
@@ -104,10 +103,10 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
 
         if ($nReturnValue == 1) {
-            $cHinweis = __('successCampaignDelete');
+            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCampaignDelete'), 'successCampaignDelete');
         }
     } else {
-        $cFehler = __('errorAtLeastOneCampaign');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCampaign'), 'errorAtLeastOneCampaign');
     }
 } elseif (Request::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
     $_SESSION['Kampagne']->nAnsicht = Request::verifyGPCDataInt('nAnsicht');
@@ -253,7 +252,5 @@ switch ((int)$_SESSION['Kampagne']->nAnsicht) {
 $smarty->assign('PFAD_ADMIN', PFAD_ADMIN)
        ->assign('PFAD_TEMPLATES', PFAD_TEMPLATES)
        ->assign('PFAD_GFX', PFAD_GFX)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('kampagne.tpl');

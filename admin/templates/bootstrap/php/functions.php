@@ -6,8 +6,6 @@
 
 require_once __DIR__ . '/Plugins.php';
 
-use Backend\Revision;
-
 $plugins = new \AdminTemplate\Plugins();
 $scc     = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
 $scc->registerComponents();

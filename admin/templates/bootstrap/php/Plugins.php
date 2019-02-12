@@ -6,6 +6,8 @@
 
 namespace AdminTemplate;
 
+use Backend\Revision;
+
 class Plugins
 {
     /**

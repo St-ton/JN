@@ -1763,7 +1763,10 @@ msgid "bewertungserinnerung_nutzen_value(Y)"
 msgstr "Ja"
 
 msgid "bewertungserinnerung_nutzen_value(N)"
-msgstr "Nein"
+msgstr "Nie"
+
+msgid "bewertungserinnerung_nutzen_value(B)"
+msgstr "An Newslettereinwilligung koppeln"
 
 msgid "bewertung_guthaben_nutzen_value(Y)"
 msgstr "Ja"

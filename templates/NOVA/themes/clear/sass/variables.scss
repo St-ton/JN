@@ -1,0 +1,91 @@
+/*
+$enable-caret:              true;
+$enable-rounded:            true;
+$enable-shadows:            false;
+$enable-gradients:          false;
+$enable-transitions:        true;
+$enable-grid-classes:       true;
+$enable-print-styles:       true;
+*/
+
+$grid-gutter-width:         32px;
+
+$gray-lighter:              #f5f7fa;
+$gray-light:                #9b9b9b;
+$gray:                      #707070;
+$gray-dark:                 #525252;
+
+$sand:                      #ebebeb;
+$white:                     #f8f8f8;
+
+$primary:                   #F8BF00;
+//$primary:         #5cbcf6; // Shop-blue
+$secondary:                 transparent;
+$success:                   #098B1B;
+$bg-success:                #CDE1D6;
+$info:                      #525252;
+$bg-info:                   #F5F7FA;
+$warning:                   #F39932;
+$bg-warning:                #F9F2DC;
+$danger:                    #B90000;
+$bg-danger:                 #E8CCD2;
+$dark:                      $gray-dark;
+
+$gray-100:                  $gray-lighter;
+$gray-500:                  $gray-light;
+$gray-600:                  $gray;
+$gray-700:                  $gray-dark;
+
+$font-family-sans-serif:    "Open Sans", Helvetica, Arial, sans-serif;
+$headings-font-family:      $font-family-sans-serif;
+$font-size-base:            0.875rem;
+$font-weight-semibold:      500;
+
+$h1-font-size:                $font-size-base * 1.4286;
+$h2-font-size:                $font-size-base * 1.1429;
+$h3-font-size:                $font-size-base;
+$h4-font-size:                $font-size-base;
+$h5-font-size:                $font-size-base;
+$h6-font-size:                $font-size-base;
+
+$highlight-border-size:     .375rem;
+
+$body-bg:                   $gray-100;
+$body-color:                $gray-600;
+
+$headings-color:            $gray-700;
+
+$text-muted:                $gray-500;
+
+$link-color:                $gray-700;
+$link-decoration:           underline;
+$link-hover-color:          $link-color;
+$link-hover-decoration:     none;
+
+
+$breadcrumb-divider:        "\f054";
+$breadcrumb-active-color:   $gray-dark;
+
+$border-radius:             .125rem !default;
+
+$card-bg:                   #fff;
+
+$searchcloud-font-size-scaling: 30%;
+$navbar-light-color:        $gray-dark;
+
+$input-bg:                  #fff;
+$list-group-bg:             #fff;
+$list-group-disabled-bg:    $white;
+
+$progress-bar-color:        $gray;
+
+$spacer: 1rem;
+$spacers: (
+        5:  ($spacer * 2),
+        6:  ($spacer * 3),
+        7:  ($spacer * 4),
+        8:  ($spacer * 5)
+);
+
+$url-0: url(../base/images/loading.gif);
+$url-1: url(../base/images/loading-sm.gif);

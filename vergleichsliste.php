@@ -17,21 +17,13 @@ $attrVar     = [[], []];
 $linkHelper  = Shop::Container()->getLinkService();
 $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
 $link        = $linkHelper->getPageLink($kLink);
-if (isset($_GET['vlph']) && (int)$_GET['vlph'] === 1) {
-    $kArtikel = Request::verifyGPCDataInt('a');
-    if ($kArtikel > 0) {
-        header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel);
-        exit();
-    }
-} else {
-    $compareList = new Vergleichsliste();
-    $attrVar     = Vergleichsliste::buildAttributeAndVariation($compareList);
-    Vergleichsliste::setComparison($compareList);
-    for ($i = 0; $i < 8; ++$i) {
-        $elem = Vergleichsliste::gibMaxPrioSpalteV($prioRows, $conf);
-        if (mb_strlen($elem) > 1) {
-            $prioRows[] = $elem;
-        }
+$compareList = new Vergleichsliste();
+$attrVar     = Vergleichsliste::buildAttributeAndVariation($compareList);
+Vergleichsliste::setComparison($compareList);
+for ($i = 0; $i < 8; ++$i) {
+    $elem = Vergleichsliste::gibMaxPrioSpalteV($prioRows, $conf);
+    if (mb_strlen($elem) > 1) {
+        $prioRows[] = $elem;
     }
 }
 $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)

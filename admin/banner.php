@@ -179,5 +179,6 @@ switch ($cAction) {
 $smarty->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $cAction)
+       ->assign('validPageTypes', (new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB()))->getMappedValidPageTypes())
        ->assign('oBanner_arr', holeAlleBanner())
        ->display('banner.tpl');

@@ -5689,7 +5689,7 @@ function optionaleRundung($gesamtsumme)
     if (isset($conf['kaufabwicklung']['bestellabschluss_runden5']) &&
         (int)$conf['kaufabwicklung']['bestellabschluss_runden5'] === 1
     ) {
-        $int          = (int)$gesamtsumme * 100;
+        $int          = (int)($gesamtsumme * 100);
         $letzteStelle = $int % 10;
         if ($letzteStelle < 3) {
             $int -= $letzteStelle;
@@ -6893,7 +6893,7 @@ function formatSize($size)
 
 /**
  * @param DateTime|string|int $date
- * @param int $weekdays
+ * @param int $weekdays 
  * @return DateTime
  */
 function dateAddWeekday($date, $weekdays)

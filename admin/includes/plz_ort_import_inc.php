@@ -568,9 +568,10 @@ function plzimportFinalize(\Smarty\JTLSmarty $smarty, array &$messages): void
         unset($_SESSION['plzimport.error']);
     }
 
-    $smarty->assign('hinweis', $messages['notice'])
-           ->assign('fehler', $messages['error'])
-           ->display('plz_ort_import.tpl');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'noticeZIPCity');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'errorZIPCity');
+
+    $smarty->display('plz_ort_import.tpl');
 }
 
 /**

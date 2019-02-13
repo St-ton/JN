@@ -16,8 +16,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
 $errorCount      = 0;
 $reload          = false;
-$cHinweis        = '';
-$cFehler         = '';
+$notice          = '';
+$errorMsg        = '';
 $step            = 'pluginverwaltung_uebersicht';
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
@@ -48,10 +48,10 @@ $pluginsErroneous = $pluginsAll->filter(function (\Plugin\Admin\ListingItem $ite
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
 if (isset($_SESSION['plugin_msg'])) {
-    $cHinweis = $_SESSION['plugin_msg'];
+    $notice = $_SESSION['plugin_msg'];
     unset($_SESSION['plugin_msg']);
 } elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
-    $cHinweis = StringHandler::filterXSS(base64_decode(Request::verifyGPDataString('h')));
+    $notice = StringHandler::filterXSS(base64_decode(Request::verifyGPDataString('h')));
 }
 if (!empty($_FILES['file_data'])) {
     $response                = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
@@ -115,16 +115,16 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $oPlugin->setState(\Plugin\State::ACTIVATED);
                 $oPlugin->getLicense()->setKey(StringHandler::filterXSS($_POST['cKey']));
                 $oPlugin->updateInDB();
-                $cHinweis = __('successPluginKeySave');
-                $step     = 'pluginverwaltung_uebersicht';
-                $reload   = true;
+                $notice = __('successPluginKeySave');
+                $step   = 'pluginverwaltung_uebersicht';
+                $reload = true;
                 // Lizenzpruefung bestanden => aktiviere alle Zahlungsarten (falls vorhanden)
                 \Plugin\Helper::updatePaymentMethodState($oPlugin, 1);
             } else {
-                $cFehler = __('errorPluginKeyInvalid');
+                $errorMsg = __('errorPluginKeyInvalid');
             }
         } else {
-            $cFehler = __('errorPluginNotFound');
+            $errorMsg = __('errorPluginNotFound');
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         $smarty->assign('kPlugin', $kPlugin)
@@ -136,40 +136,40 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $res = $stateChanger->activate($kPlugin);
                 switch ($res) {
                     case \Plugin\InstallCode::OK:
-                        if ($cHinweis !== __('successPluginActivate')) {
-                            $cHinweis .= __('successPluginActivate');
+                        if ($notice !== __('successPluginActivate')) {
+                            $notice .= __('successPluginActivate');
                         }
                         $reload = true;
                         break;
                     case \Plugin\InstallCode::WRONG_PARAM:
-                        $cFehler = __('errorAtLeastOnePlugin');
+                        $errorMsg = __('errorAtLeastOnePlugin');
                         break;
                     case \Plugin\InstallCode::NO_PLUGIN_FOUND:
-                        $cFehler = __('errorPluginNotFound');
+                        $errorMsg = __('errorPluginNotFound');
                         break;
                     default:
                         break;
                 }
 
                 if ($res > 3) {
-                    $mapper  = new \Mapper\PluginValidation();
-                    $cFehler = $mapper->map($res, null);
+                    $mapper   = new \Mapper\PluginValidation();
+                    $errorMsg = $mapper->map($res, null);
                 }
             } elseif (isset($_POST['deaktivieren'])) { // Deaktivieren
                 $res = $stateChanger->deactivate($kPlugin);
 
                 switch ($res) {
                     case \Plugin\InstallCode::OK: // Alles O.K. Plugin wurde deaktiviert
-                        if ($cHinweis !== __('successPluginDeactivate')) {
-                            $cHinweis .= __('successPluginDeactivate');
+                        if ($notice !== __('successPluginDeactivate')) {
+                            $notice .= __('successPluginDeactivate');
                         }
                         $reload = true;
                         break;
                     case \Plugin\InstallCode::WRONG_PARAM: // $kPlugin wurde nicht uebergeben
-                        $cFehler = __('errorAtLeastOnePlugin');
+                        $errorMsg = __('errorAtLeastOnePlugin');
                         break;
                     case \Plugin\InstallCode::NO_PLUGIN_FOUND: // SQL Fehler bzw. Plugin nicht gefunden
-                        $cFehler = __('errorPluginNotFound');
+                        $errorMsg = __('errorPluginNotFound');
                         break;
                 }
             } elseif (isset($_POST['deinstallieren'])) { // Deinstallieren
@@ -177,23 +177,23 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     switch ($uninstaller->uninstall($kPlugin)) {
                         case \Plugin\InstallCode::WRONG_PARAM:
-                            $cFehler = __('errorAtLeastOnePlugin');
+                            $errorMsg = __('errorAtLeastOnePlugin');
                             break;
                         // @todo: 3 is never returned
                         case \Plugin\InstallCode::SQL_ERROR:
-                            $cFehler = __('errorPluginDeleteSQL');
+                            $errorMsg = __('errorPluginDeleteSQL');
                             break;
                         case \Plugin\InstallCode::NO_PLUGIN_FOUND:
-                            $cFehler = __('errorPluginNotFound');
+                            $errorMsg = __('errorPluginNotFound');
                             break;
                         case \Plugin\InstallCode::OK:
                         default:
-                            $cHinweis = __('successPluginDelete');
-                            $reload   = true;
+                            $notice = __('successPluginDelete');
+                            $reload = true;
                             break;
                     }
                 } else {
-                    $cFehler = __('errorPluginNotFoundMultiple');
+                    $errorMsg = __('errorPluginNotFoundMultiple');
                 }
             } elseif (isset($_POST['reload'])) { // Reload
                 $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
@@ -204,13 +204,13 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     if ($res === \Plugin\InstallCode::OK
                         || $res === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
                     ) {
-                        $cHinweis = __('successPluginRefresh');
-                        $reload   = true;
+                        $notice = __('successPluginRefresh');
+                        $reload = true;
                     } else {
-                        $cFehler = __('errorPluginRefresh');
+                        $errorMsg = __('errorPluginRefresh');
                     }
                 } else {
-                    $cFehler = __('errorPluginNotFoundMultiple');
+                    $errorMsg = __('errorPluginNotFoundMultiple');
                 }
             }
         }
@@ -219,11 +219,11 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $kPlugin = Request::verifyGPCDataInt('kPlugin');
         $res     = $updater->update($kPlugin);
         if ($res === \Plugin\InstallCode::OK) {
-            $cHinweis .= __('successPlguinUpdate');
-            $reload    = true;
+            $notice .= __('successPlguinUpdate');
+            $reload  = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         } else {
-            $cFehler = __('errorPluginUpdate') . $res;
+            $errorMsg = __('errorPluginUpdate') . $res;
         }
     } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
         $step = 'pluginverwaltung_sprachvariablen';
@@ -234,17 +234,17 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $installer->setDir(basename($dir));
                 $res = $installer->prepare();
                 if ($res === \Plugin\InstallCode::OK || $res === \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
-                    $cHinweis = __('successPluginInstall');
-                    $reload   = true;
+                    $notice = __('successPluginInstall');
+                    $reload = true;
                 } elseif ($res > \Plugin\InstallCode::OK
                     && $res !== \Plugin\InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
-                    $cFehler = __('errorPluginInstall') . $res;
+                    $errorMsg = __('errorPluginInstall') . $res;
                 }
             }
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
     } else {
-        $cFehler = __('errorAtLeastOnePlugin');
+        $errorMsg = __('errorAtLeastOnePlugin');
     }
 } elseif (Request::verifyGPCDataInt('pluginverwaltung_sprachvariable') === 1 && Form::validateToken()) {
     $step = 'pluginverwaltung_sprachvariablen';
@@ -266,12 +266,12 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     [$kPlugin, $langVar->cName]
                 );
                 if ($nRow >= 0) {
-                    $cHinweis = __('successVariableRestore');
+                    $notice = __('successVariableRestore');
                 } else {
-                    $cFehler = __('errorLangVarNotFound');
+                    $errorMsg = __('errorLangVarNotFound');
                 }
             } else {
-                $cFehler = __('errorLangVarNotFound');
+                $errorMsg = __('errorLangVarNotFound');
             }
         } else { // Editieren
             $oSprache_arr = $db->query(
@@ -302,9 +302,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     $db->insert('tpluginsprachvariablecustomsprache', $customLang);
                 }
             }
-            $cHinweis = __('successChangesSave');
-            $step     = 'pluginverwaltung_uebersicht';
-            $reload   = true;
+            $notice = __('successChangesSave');
+            $step   = 'pluginverwaltung_uebersicht';
+            $reload = true;
         }
         $cache->flushTags([CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
     }
@@ -357,16 +357,17 @@ if ($step === 'pluginverwaltung_uebersicht') {
 }
 
 if ($reload === true) {
-    $_SESSION['plugin_msg'] = $cHinweis;
+    $_SESSION['plugin_msg'] = $notice;
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
 }
 
 $hasAuth = !!$db->query("SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL", 3);
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('hinweis64', base64_encode($cHinweis))
-       ->assign('fehler', $cFehler)
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
+
+$smarty->assign('hinweis64', base64_encode($notice))
        ->assign('step', $step)
        ->assign('mapper', new \Mapper\PluginState())
        ->assign('pluginsByState', $pluginsInstalledByState)

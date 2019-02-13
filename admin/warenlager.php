@@ -10,10 +10,9 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
-$cStep    = 'uebersicht';
-$cHinweis = '';
-$cFehler  = '';
-$cAction  = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
+$cStep       = 'uebersicht';
+$cAction     = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
+$alertHelper = Shop::Container()->getAlertService();
 
 if ($cAction === 'update') {
     Shop::Container()->getDB()->query('UPDATE twarenlager SET nAktiv = 0', \DB\ReturnType::AFFECTED_ROWS);
@@ -47,7 +46,7 @@ if ($cAction === 'update') {
         }
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $cHinweis = __('successStoreRefresh');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successStoreRefresh'), 'successStoreRefresh');
 }
 
 if ($cStep === 'uebersicht') {
@@ -56,6 +55,4 @@ if ($cStep === 'uebersicht') {
 }
 
 $smarty->assign('cStep', $cStep)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->display('warenlager.tpl');

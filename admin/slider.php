@@ -177,6 +177,7 @@ $smarty->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $action)
        ->assign('kSlider', $kSlider)
+       ->assign('validPageTypes', (new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB()))->getMappedValidPageTypes())
        ->assign('oSlider_arr', Shop::Container()->getDB()->query(
            'SELECT * FROM tslider',
            \DB\ReturnType::ARRAY_OF_OBJECTS

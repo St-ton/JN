@@ -208,7 +208,7 @@ $filterMapping = \Functional\map($filterMapping, function ($e) {
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('filterMapping', $filterMapping)
-       ->assign('validPageTypes', $boxAdmin->getValidPageTypes())
+       ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
        ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))
        ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])
        ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? [])

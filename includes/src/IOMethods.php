@@ -272,8 +272,6 @@ class IOMethods
         $_POST['a']               = $kArtikel;
 
         Cart::checkAdditions();
-        $error             = Shop::Smarty()->getTemplateVars('fehler');
-        $notice            = Shop::Smarty()->getTemplateVars('hinweis');
         $oResponse->nType  = 2;
         $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
         $oResponse->cTitle = Shop::Lang()->get('compare');
@@ -294,9 +292,12 @@ class IOMethods
                 'title' => Shop::Lang()->get('compare')
             ]);
         }
+        $alerts = Shop::Container()->getAlertService();
+        $content = $smarty->assign('alertList', Shop::Container()->getAlertService())
+                          ->fetch('snippets/alert_list.tpl');
 
-        $oResponse->cNotification = $smarty->assign('type', empty($error) ? 'info' : 'danger')
-                                           ->assign('body', empty($error) ? $notice : $error)
+        $oResponse->cNotification = $smarty->assign('type', $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info')
+                                           ->assign('body', $content)
                                            ->assign('buttons', $buttons)
                                            ->fetch('snippets/notification.tpl');
 

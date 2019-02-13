@@ -62,7 +62,12 @@ final class BoxAdmin
         \PAGE_NEWSLETTERARCHIV,
         \PAGE_EIGENE,
         \PAGE_AUSWAHLASSISTENT,
-        \PAGE_BESTELLABSCHLUSS
+        \PAGE_BESTELLABSCHLUSS,
+        \PAGE_404,
+        \PAGE_BESTELLSTATUS,
+        \PAGE_NEWSMONAT,
+        \PAGE_NEWSDETAIL,
+        \PAGE_NEWSKATEGORIE
     ];
 
     /**
@@ -136,10 +141,11 @@ final class BoxAdmin
                 FROM tboxensichtbar
                 LEFT JOIN tboxen
                     ON tboxensichtbar.kBox = tboxen.kBox
-                    WHERE tboxensichtbar.kSeite = :pageid
-                        AND tboxen.ePosition = :position
-                        AND tboxen.kContainer = :containerid
-                ORDER BY tboxensichtbar.nSort DESC LIMIT 1',
+                WHERE tboxensichtbar.kSeite = :pageid
+                    AND tboxen.ePosition = :position
+                    AND tboxen.kContainer = :containerid
+                ORDER BY tboxensichtbar.nSort DESC
+                LIMIT 1',
             [
                 'pageid'      => $pageID,
                 'position'    => $position,
@@ -217,13 +223,12 @@ final class BoxAdmin
 
         $boxID = $this->db->insert('tboxen', $oBox);
         if ($boxID) {
-            $cnt                = \count($validPageTypes);
             $oBoxSichtbar       = new \stdClass();
             $oBoxSichtbar->kBox = $boxID;
-            for ($i = 0; $i < $cnt; ++$i) {
+            foreach ($validPageTypes as $validPageType) {
                 $oBoxSichtbar->nSort  = $this->getLastSortID($pageID, $position, $containerID);
-                $oBoxSichtbar->kSeite = $i;
-                $oBoxSichtbar->bAktiv = ($pageID === $i || $pageID === 0) ? 1 : 0;
+                $oBoxSichtbar->kSeite = $validPageType;
+                $oBoxSichtbar->bAktiv = ($pageID === $validPageType || $pageID === 0) ? 1 : 0;
                 $this->db->insert('tboxensichtbar', $oBoxSichtbar);
             }
 
@@ -289,32 +294,39 @@ final class BoxAdmin
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
             $ok = true;
-            for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
-                $ok = $this->db->executeQueryPrepared(
-                    'REPLACE INTO tboxenanzeige 
-                        SET bAnzeigen = :show,
-                            nSeite = :page, 
-                            ePosition = :position',
+            foreach ($validPageTypes as $validPageType) {
+                if (!$ok) {
+                    break;
+                }
+                $ok = $this->db->queryPrepared(
+                    'INSERT INTO tboxenanzeige 
+                        SET bAnzeigen = :show, nSeite = :page, ePosition = :position
+                        ON DUPLICATE KEY UPDATE
+                          bAnzeigen = :show',
                     [
                         'show'     => $show,
-                        'page'     => $i,
+                        'page'     => $validPageType,
                         'position' => $position
                     ],
                     ReturnType::DEFAULT
-                ) && $ok;
+                );
             }
 
-            return $ok;
+            return $ok !== 0;
         }
 
-        return $this->db->executeQueryPrepared(
-            'REPLACE INTO tboxenanzeige 
-                SET bAnzeigen = :show, 
-                    nSeite = :page, 
-                    ePosition = :position',
-            ['show' => $show, 'page' => $pageID, 'position' => $position],
+        return $this->db->queryPrepared(
+            'INSERT INTO tboxenanzeige 
+                SET bAnzeigen = :show, nSeite = :page, ePosition = :position
+                ON DUPLICATE KEY UPDATE
+                  bAnzeigen = :show',
+            [
+                'show'     => $show,
+                'page'     => $pageID,
+                'position' => $position
+            ],
             ReturnType::DEFAULT
-        );
+        ) !== 0;
     }
 
     /**
@@ -331,38 +343,41 @@ final class BoxAdmin
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
             $ok = true;
-            for ($i = 0; $i < \count($validPageTypes) && $ok; $i++) {
-                $oBox = $this->db->select('tboxensichtbar', 'kBox', $boxID);
-                $ok   = !empty($oBox)
-                    ? ($this->db->query(
-                        'UPDATE tboxensichtbar 
-                            SET nSort = ' . $nSort . ',
-                                bAktiv = ' . $active . ' 
-                            WHERE kBox = ' . $boxID . ' 
-                                AND kSeite = ' . $i,
-                        ReturnType::DEFAULT
-                    ) !== false)
-                    : ($this->db->query(
-                        'INSERT INTO tboxensichtbar 
-                            SET kBox = ' . $boxID . ',
-                                kSeite = ' . $i . ', 
-                                nSort = ' . $nSort . ', 
-                                bAktiv = ' . $active,
-                        ReturnType::DEFAULT
-                    ) === true);
+            foreach ($validPageTypes as $validPageType) {
+                if (!$ok) {
+                    break;
+                }
+                $ok = $this->db->queryPrepared(
+                    'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
+                        VALUES (:boxID, :validPageType, :sort, :active)
+                        ON DUPLICATE KEY UPDATE
+                          nSort = :sort, bAktiv = :active',
+                    [
+                        'boxID'         => $boxID,
+                        'validPageType' => $validPageType,
+                        'sort'          => $nSort,
+                        'active'        => $active
+                    ],
+                    ReturnType::DEFAULT
+                );
             }
 
-            return $ok;
+            return $ok !== 0;
         }
 
-        return $this->db->query(
-            'REPLACE INTO tboxensichtbar 
-              SET kBox = ' . $boxID . ', 
-                  kSeite = ' . $pageID . ', 
-                  nSort = ' . $nSort . ', 
-                  bAktiv = ' . $active,
-            ReturnType::AFFECTED_ROWS
-        ) !== false;
+        return $this->db->queryPrepared(
+                'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
+                    VALUES (:boxID, :validPageType, :sort, :active)
+                    ON DUPLICATE KEY UPDATE
+                      nSort = :sort, bAktiv = :active',
+                [
+                    'boxID'         => $boxID,
+                    'validPageType' => $pageID,
+                    'sort'          => $nSort,
+                    'active'        => $active
+                ],
+                ReturnType::DEFAULT
+            ) !== 0;
     }
 
     /**
@@ -392,25 +407,25 @@ final class BoxAdmin
      */
     public function activate(int $boxID, int $pageID, $active = true): bool
     {
-        $active         = (int)$active;
+        $upd            = new \stdClass();
+        $upd->bAktiv    = (int)$active;
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
-            $ok  = true;
-            $upd = new \stdClass();
-            for ($i = 0; $i < \count($validPageTypes) && $ok; ++$i) {
-                $upd->bAktiv = $active;
-                $ok          = $this->db->update(
+            $ok = true;
+            foreach ($validPageTypes as $validPageType) {
+                if (!$ok) {
+                    break;
+                }
+                $ok = $this->db->update(
                     'tboxensichtbar',
                     ['kBox', 'kSeite'],
-                    [$boxID, $i],
+                    [$boxID, $validPageType],
                     $upd
-                ) >= 0;
+                );
             }
 
             return $ok;
         }
-        $upd         = new \stdClass();
-        $upd->bAktiv = $active;
 
         return $this->db->update('tboxensichtbar', ['kBox', 'kSeite'], [$boxID, 0], $upd) >= 0;
     }
@@ -528,5 +543,18 @@ final class BoxAdmin
                     OR (kContainer > 0  AND kContainer NOT IN (SELECT kBox FROM tboxen))',
             ReturnType::ARRAY_OF_OBJECTS
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function getMappedValidPageTypes(): array
+    {
+        return \Functional\map($this->getValidPageTypes(), function ($pageID) {
+            return [
+                'pageID'   => $pageID,
+                'pageName' => (new \Mapper\PageTypeToPageNiceName())->mapPageTypeToPageNiceName($pageID)
+            ];
+        });
     }
 }

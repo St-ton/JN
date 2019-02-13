@@ -181,6 +181,7 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
        ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
        ->assign('notifications', Notification::getInstance())
+       ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('favorites', $oAccount->favorites())
        ->assign('languages', Shop::Lang()->getInstalled())
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

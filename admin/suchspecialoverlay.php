@@ -28,7 +28,7 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
             $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('errorFillRequired'), 'errorFillRequired');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
     }
     if ($oID > 0) {

@@ -62,7 +62,7 @@ if (Form::validateToken()) {
             )) {
                 $alertHelper->addAlert(Alert::TYPE_NOTE, __('successRedirectSave'), 'successRedirectSave');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('errorCheckInput'), 'errorCheckInput');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
                 $smarty
                     ->assign('cTab', 'new_redirect')
                     ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))

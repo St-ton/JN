@@ -70,7 +70,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
             $alertHelper->addAlert(Alert::TYPE_NOTE, __('successQuestionDeleted'), 'successQuestionDeleted');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('errorQuestionDeleted'), 'errorQuestionDeleted');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorQuestionDeleted'), 'errorQuestionDeleted');
         }
     } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && Form::validateToken()) {
         $step = 'edit-question';
@@ -118,7 +118,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         } elseif ($_POST['a'] === 'saveSettings') {
             $step = 'uebersicht';
             $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
+                Alert::TYPE_NOTE,
                 saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST),
                 'saveSettings'
             );

@@ -25,7 +25,6 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         saveAdminSectionSettings(CONF_RSS, $_POST),
         'saveSettings'
     );
-    $cHinweis .= saveAdminSectionSettings(CONF_RSS, $_POST);
 }
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
     $alertHelper->addAlert(

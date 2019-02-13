@@ -19,7 +19,7 @@ $bOk         = false;
 $linkID      = Request::verifyGPCDataInt('linkID');
 $boxID       = Request::verifyGPCDataInt('item');
 $alertHelper = Shop::Container()->getAlertService();
-$alertHelper->addAlert(Alert::TYPE_NOTE,  __('successBoxDelete'), 'successBoxDelete');
+
 if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':

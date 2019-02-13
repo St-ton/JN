@@ -490,34 +490,34 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         $step = 'neue Versandart';
         if (!$Versandart->cName) {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_ERROR,
                 __('errorShippingMethodNameMissing'),
                 'errorShippingMethodNameMissing'
             );
         }
         if (count($_POST['land']) < 1) {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_ERROR,
                 __('errorShippingMethodCountryMissing'),
                 'errorShippingMethodCountryMissing'
             );
         }
         if (count($_POST['kZahlungsart']) < 1) {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_ERROR,
                 __('errorShippingMethodPaymentMissing'),
                 'errorShippingMethodPaymentMissing'
             );
         }
         if (!$staffelDa) {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_ERROR,
                 __('errorShippingMethodPriceMissing'),
                 'errorShippingMethodPriceMissing'
             );
         }
         if (!$bVersandkostenfreiGueltig) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('errorShippingFreeMax'), 'errorShippingFreeMax');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorShippingFreeMax'), 'errorShippingFreeMax');
         }
         if ((int)$_POST['kVersandart'] > 0) {
             $Versandart = $db->select('tversandart', 'kVersandart', (int)$_POST['kVersandart']);
@@ -692,7 +692,7 @@ if ($step === 'uebersicht') {
     if (!empty($missingShippingClassCombis)) {
         $errorMissingShippingClassCombis .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
                            ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
-        $alertHelper->addAlert(Alert::TYPE_NOTE, $errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
     }
 
     $smarty->assign('versandberechnungen', $versandberechnungen)

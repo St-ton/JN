@@ -224,7 +224,6 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
         saveAdminSettings($settingsIDs, $_POST),
         'saveSettings'
     );
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
 }
 if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetail') === 1) {
     $step             = 'detail';

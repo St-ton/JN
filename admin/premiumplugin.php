@@ -7,8 +7,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 /** @global \Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
 $step     = 'uebersicht';
 $pluginID = $_GET['plugin_id'] ?? 's360_amazon_lpa_shop4';
 $pp       = null;

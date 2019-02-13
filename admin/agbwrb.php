@@ -32,7 +32,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $smarty->assign('kKundengruppe', Request::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
-            $cFehler .= __('errorInvalidCustomerGroup') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorInvalidCustomerGroup'), 'errorInvalidCustomerGroup');
         }
     } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
         if (speicherAGBWRB(

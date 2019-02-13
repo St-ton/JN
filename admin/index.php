@@ -180,7 +180,6 @@ if ($oAccount->getIsAuthenticated()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
                 $_SESSION['AdminAccount']->TwoFA_valid   = true;
                 $_SESSION['loginIsValid']                = true;
-                $smarty->assign('cFehler', '');
                 openDashboard();
             }
         } else {

@@ -201,8 +201,10 @@ if (Form::validateToken()) {
             $newsletterTPL->oZeit = baueZeitAusDB($newsletterTPL->dStartZeit);
             $preview              = baueNewsletterVorschau($newsletterTPL);
         }
+        if (is_string($preview)) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $preview, 'errorNewsletterPreview');
+        }
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
-               ->assign('cFehler', is_string($preview) ? $preview : null)
                ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant());
     } elseif (Request::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
         $customerGroups    = $db->query(
@@ -548,7 +550,7 @@ if (Form::validateToken()) {
                 );
             }
             if ($result !== true) {
-                $smarty->assign('cFehler', $result);
+                $alertHelper->addAlert(Alert::TYPE_ERROR, $result, 'errorNewsletter');
             } else {
                 $alertHelper->addAlert(
                     Alert::TYPE_NOTE,

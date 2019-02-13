@@ -13,19 +13,16 @@ $oAccount->redirectOnFailure();
 
 use Helpers\Form;
 
-$cHinweis     = '';
-$cFehler      = '';
 $shopSettings = Shopsetting::getInstance();
+$alertHelper  = Shop::Container()->getAlertService();
 
 \Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
-    $cHinweis = saveAdminSectionSettings(CONF_FTP, $_POST);
+    $alertHelper->addAlert(Alert::TYPE_NOTE, saveAdminSectionSettings(CONF_FTP, $_POST), 'saveSettings');
     $shopSettings->reset();
 
     if (isset($_POST['test'])) {
-        unset($cHinweis);
-
         try {
             $fs = new Filesystem\FtpFilesystem([
                 'hostname' => $_POST['ftp_hostname'],
@@ -38,9 +35,13 @@ if (!empty($_POST) && Form::validateToken()) {
             ]);
 
             $isShopRoot = $fs->exists('includes/config.JTL-Shop.ini.php');
-            $smarty->assign('isShopRoot', $isShopRoot);
+            if ($isShopRoot) {
+                $alertHelper->addAlert(Alert::TYPE_INFO, __('ftpValidConnection'), 'ftpValidConnection');
+            } else {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('ftpInvalidShopRoot'), 'ftpInvalidShopRoot');
+            }
         } catch (\Exception $e) {
-            $cFehler = $e->getMessage();
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFTP');
         }
     }
 }
@@ -50,6 +51,4 @@ $oConfig_arr = getAdminSectionSettings(CONF_FTP);
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oConfig', Shop::getSettings([CONF_FTP])['ftp'])
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->display('ftp.tpl');

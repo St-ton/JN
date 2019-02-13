@@ -34,4 +34,5 @@ if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
     );
 }
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_RSS))
+       ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
        ->display('rss.tpl');

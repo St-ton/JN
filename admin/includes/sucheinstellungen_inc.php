@@ -15,8 +15,8 @@ function createSearchIndex($index, $create)
     require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
     $index    = mb_convert_case(StringHandler::xssClean($index), MB_CASE_LOWER);
-    $cHinweis = '';
-    $cFehler  = '';
+    $notice   = '';
+    $errorMsg = '';
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
         return new IOError('Ungültiger Index angegeben', 403);
@@ -83,7 +83,7 @@ function createSearchIndex($index, $create)
         }
 
         if ($res === 0) {
-            $cFehler      = __('errorIndexNotCreatable');
+            $errorMsg     = __('errorIndexNotCreatable');
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
@@ -100,13 +100,13 @@ function createSearchIndex($index, $create)
                 $shopSettings->reset();
             }
         } else {
-            $cHinweis = sprintf(__('successIndexCreate'), $index);
+            $notice = sprintf(__('successIndexCreate'), $index);
         }
     } else {
-        $cHinweis = sprintf(__('successIndexDelete'), $index);
+        $notice = sprintf(__('successIndexDelete'), $index);
     }
 
-    return $cFehler !== '' ? new IOError($cFehler) : ['hinweis' => $cHinweis];
+    return $errorMsg !== '' ? new IOError($errorMsg) : ['hinweis' => $notice];
 }
 
 /**

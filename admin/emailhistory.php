@@ -19,8 +19,8 @@ $alertHelper     = Shop::Container()->getAlertService();
 
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {
-        if (true !== $oEmailhistory->deleteAll()) {
-            $cFehler = __('errorHistoryDelete');
+        if ($oEmailhistory->deleteAll() !== true) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
         }
     } elseif (isset($_POST['kEmailhistory'])
         && is_array($_POST['kEmailhistory'])

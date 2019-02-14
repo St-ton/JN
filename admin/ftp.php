@@ -4,19 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * @global Smarty\JTLSmarty $smarty
- */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 $shopSettings = Shopsetting::getInstance();
 $alertHelper  = Shop::Container()->getAlertService();
 
-\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, saveAdminSectionSettings(CONF_FTP, $_POST), 'saveSettings');
@@ -47,7 +47,7 @@ if (!empty($_POST) && Form::validateToken()) {
 }
 
 $oConfig_arr = getAdminSectionSettings(CONF_FTP);
-\Shop::Container()->getGetText()->localizeConfigs($oConfig_arr);
+Shop::Container()->getGetText()->localizeConfigs($oConfig_arr);
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oConfig', Shop::getSettings([CONF_FTP])['ftp'])

@@ -6,6 +6,11 @@
  * @created Mon, 27 Aug 2018 09:11:16 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * Migration
  *
@@ -22,7 +27,7 @@
  */
 class Migration_20180827091116 extends Migration implements IMigration
 {
-    protected $author = 'msc';
+    protected $author      = 'msc';
     protected $description = 'Update admin bootstrap template in database';
 
     public function up()
@@ -38,7 +43,7 @@ class Migration_20180827091116 extends Migration implements IMigration
 `version` = '1.0.0',
 `preview` = 'preview.png'
 WHERE `cTemplate` = 'bootstrap' AND `eTyp` = 'admin'
-LIMIT 1;", \DB\ReturnType::DEFAULT);
+LIMIT 1;", ReturnType::DEFAULT);
     }
 
     public function down()

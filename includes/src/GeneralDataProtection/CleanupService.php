@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CleanupService
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  */
 class CleanupService extends Method implements MethodInterface
 {
@@ -111,7 +112,7 @@ class CleanupService extends Method implements MethodInterface
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
                     $dateCol = "FROM_UNIXTIME({$dateCol})";
                 }
-                \Shop::Container()->getDB()->query(
+                Shop::Container()->getDB()->query(
                     "DELETE {$from}
                         FROM {$table} {$join}
                         WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
@@ -122,7 +123,7 @@ class CleanupService extends Method implements MethodInterface
                 if ($tableData['cDateType'] === 'TIMESTAMP') {
                     $dateCol = "FROM_UNIXTIME({$dateCol})";
                 }
-                \Shop::Container()->getDB()->query(
+                Shop::Container()->getDB()->query(
                     "DELETE FROM {$table}
                         WHERE DATE_SUB('{$cObjectNow}', INTERVAL {$cInterval} DAY) >= {$dateCol}",
                     ReturnType::DEFAULT

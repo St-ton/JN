@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
 /**
  * Class GivenAnswer
- * @package Survey
+ * @package JTL\Survey
  */
 class GivenAnswer
 {

@@ -4,10 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
 $alertHelper = Shop::Container()->getAlertService();
@@ -28,7 +30,7 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
             cName = :cName,
             cPass = :cPass',
         ['cName' => $upd->cName, 'cPass' => $upd->cPass],
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
 
     $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');

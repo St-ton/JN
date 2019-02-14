@@ -4,10 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use DB\ReturnType;
-use Helpers\Category;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Category;
+use JTL\Helpers\Text;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\MagicCompatibilityTrait;
+use JTL\Catalog\Product\MerkmalWert;
+use JTL\Shop;
 use Tightenco\Collect\Support\Collection;
 use function Functional\group;
 use function Functional\map;
@@ -16,11 +23,11 @@ use function Functional\reindex;
 
 /**
  * Class Metadata
- * @package Filter
+ * @package JTL\Filter
  */
 class Metadata implements MetadataInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var ProductFilter
@@ -53,17 +60,17 @@ class Metadata implements MetadataInterface
     private $metaKeywords = '';
 
     /**
-     * @var \Kategorie
+     * @var Kategorie
      */
     private $category;
 
     /**
-     * @var \Hersteller
+     * @var Hersteller
      */
     private $manufacturer;
 
     /**
-     * @var \MerkmalWert
+     * @var MerkmalWert
      */
     private $attributeValue;
 
@@ -177,7 +184,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getCategory(): ?\Kategorie
+    public function getCategory(): ?Kategorie
     {
         return $this->category;
     }
@@ -185,7 +192,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function setCategory(\Kategorie $category): MetadataInterface
+    public function setCategory(Kategorie $category): MetadataInterface
     {
         $this->category = $category;
 
@@ -195,7 +202,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getManufacturer(): ?\Hersteller
+    public function getManufacturer(): ?Hersteller
     {
         return $this->manufacturer;
     }
@@ -203,7 +210,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function setManufacturer(\Hersteller $manufacturer): MetadataInterface
+    public function setManufacturer(Hersteller $manufacturer): MetadataInterface
     {
         $this->manufacturer = $manufacturer;
 
@@ -213,7 +220,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getAttributeValue(): ?\MerkmalWert
+    public function getAttributeValue(): ?MerkmalWert
     {
         return $this->attributeValue;
     }
@@ -221,7 +228,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function setAttributeValue(\MerkmalWert $attributeValue): MetadataInterface
+    public function setAttributeValue(MerkmalWert $attributeValue): MetadataInterface
     {
         $this->attributeValue = $attributeValue;
 
@@ -277,8 +284,8 @@ class Metadata implements MetadataInterface
      */
     public static function getGlobalMetaData(): array
     {
-        return \Shop::Container()->getCache()->get('jtl_glob_meta', function ($cache, $id, &$content, &$tags) {
-            $globalTmp = \Shop::Container()->getDB()->query(
+        return Shop::Container()->getCache()->get('jtl_glob_meta', function ($cache, $id, &$content, &$tags) {
+            $globalTmp = Shop::Container()->getDB()->query(
                 'SELECT cName, kSprache, cWertName 
                     FROM tglobalemetaangaben ORDER BY kSprache',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -303,8 +310,8 @@ class Metadata implements MetadataInterface
      */
     public static function getExcludes(): array
     {
-        return \Shop::Container()->getCache()->get('jtl_glob_excl', function ($cache, $id, &$content, &$tags) {
-            $keyWords = \Shop::Container()->getDB()->query(
+        return Shop::Container()->getCache()->get('jtl_glob_excl', function ($cache, $id, &$content, &$tags) {
+            $keyWords = Shop::Container()->getDB()->query(
                 'SELECT * 
                     FROM texcludekeywords 
                     ORDER BY cISOSprache',
@@ -335,7 +342,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $list = null): MetadataInterface
+    public function getNavigationInfo(Kategorie $category = null, KategorieListe $list = null): MetadataInterface
     {
         if ($category !== null && $this->productFilter->hasCategory()) {
             $this->category = $category;
@@ -348,7 +355,7 @@ class Metadata implements MetadataInterface
                 $this->imageURL = $category->getKategorieBild();
             }
         } elseif ($this->productFilter->hasManufacturer()) {
-            $this->manufacturer = new \Hersteller($this->productFilter->getManufacturer()->getValue());
+            $this->manufacturer = new Hersteller($this->productFilter->getManufacturer()->getValue());
             if ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
                 $this->name = $this->manufacturer->getName();
             } elseif ($this->conf['navigationsfilter']['hersteller_bild_anzeigen'] === 'BT') {
@@ -363,7 +370,7 @@ class Metadata implements MetadataInterface
                      ->setMetaKeywords($this->manufacturer->cMetaKeywords);
             }
         } elseif ($this->productFilter->hasAttributeValue()) {
-            $this->attributeValue = new \MerkmalWert($this->productFilter->getAttributeValue()->getValue());
+            $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
                 $this->setName($this->attributeValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
@@ -406,7 +413,7 @@ class Metadata implements MetadataInterface
         $catDescription = '';
         $languageID     = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaDescription)) {
                 // meta description via new method
                 return self::prepareMeta(
@@ -448,7 +455,7 @@ class Metadata implements MetadataInterface
 
             if (\mb_strlen($catDescription) > 1) {
                 $catDescription   = \str_replace('"', '', $catDescription);
-                $catDescription   = \StringHandler::htmlentitydecode($catDescription, \ENT_NOQUOTES);
+                $catDescription   = Text::htmlentitydecode($catDescription, \ENT_NOQUOTES);
                 $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
                     ? \trim(
                         \strip_tags($globalMeta[$languageID]->Meta_Description_Praefix) .
@@ -461,7 +468,7 @@ class Metadata implements MetadataInterface
                     && $searchResults->getOffsetEnd() > 0
                     && $searchResults->getPages()->getCurrentPage() > 1
                 ) {
-                    $cMetaDescription .= ', ' . \Shop::Lang()->get('products') . ' ' .
+                    $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
                         $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
                 }
 
@@ -480,7 +487,7 @@ class Metadata implements MetadataInterface
                     : $products[$i]->cName;
             }
             $productName = \str_replace('"', '', $productName);
-            $productName = \StringHandler::htmlentitydecode($productName, \ENT_NOQUOTES);
+            $productName = Text::htmlentitydecode($productName, \ENT_NOQUOTES);
 
             $cMetaDescription = !empty($globalMeta[$languageID]->Meta_Description_Praefix)
                 ? $this->getMetaStart($searchResults) .
@@ -493,7 +500,7 @@ class Metadata implements MetadataInterface
                 && $searchResults->getOffsetEnd() > 0
                 && $searchResults->getPages()->getCurrentPage() > 1
             ) {
-                $cMetaDescription .= ', ' . \Shop::Lang()->get('products') . ' ' .
+                $cMetaDescription .= ', ' . Shop::Lang()->get('products') . ' ' .
                     $searchResults->getOffsetStart() . ' - ' . $searchResults->getOffsetEnd();
             }
         }
@@ -504,7 +511,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function generateMetaKeywords($products, \Kategorie $category = null): string
+    public function generateMetaKeywords($products, Kategorie $category = null): string
     {
         \executeHook(\HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
         if (!empty($this->metaKeywords)) {
@@ -513,7 +520,7 @@ class Metadata implements MetadataInterface
         // Kategorieattribut?
         $catKeyWords = '';
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaKeywords)) {
                 // meta keywords via new method
                 return \strip_tags($category->cMetaKeywords);
@@ -590,13 +597,13 @@ class Metadata implements MetadataInterface
             return \strip_tags(\str_replace('"', '', $catKeyWords));
         }
 
-        return \strip_tags(\StringHandler::htmlentitydecode(\str_replace('"', '', $keywordsMeta), \ENT_NOQUOTES));
+        return \strip_tags(Text::htmlentitydecode(\str_replace('"', '', $keywordsMeta), \ENT_NOQUOTES));
     }
 
     /**
      * @inheritdoc
      */
-    public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string
+    public function generateMetaTitle($searchResults, $globalMeta, Kategorie $category = null): string
     {
         \executeHook(\HOOK_FILTER_INC_GIBNAVIMETATITLE);
         $languageID = $this->productFilter->getFilterConfig()->getLanguageID();
@@ -615,29 +622,29 @@ class Metadata implements MetadataInterface
         // Set Default Titles
         $metaTitle = $this->getMetaStart($searchResults);
         $metaTitle = \str_replace('"', "'", $metaTitle);
-        $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
+        $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
         if ($this->productFilter->hasCategory()) {
-            $category = $category ?? new \Kategorie($this->productFilter->getCategory()->getValue());
+            $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cTitleTag)) {
                 // meta title via new method
                 $metaTitle = \strip_tags($category->cTitleTag);
                 $metaTitle = \str_replace('"', "'", $metaTitle);
-                $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
+                $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             } elseif (!empty($category->categoryAttributes['meta_title']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
                 $metaTitle = \strip_tags($category->categoryAttributes['meta_title']->cWert);
                 $metaTitle = \str_replace('"', "'", $metaTitle);
-                $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
+                $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             } elseif (!empty($category->KategorieAttribute['meta_title'])) {
                 /** @deprecated since 4.05 - this is for compatibilty only! */
                 $metaTitle = \strip_tags($category->KategorieAttribute['meta_title']);
                 $metaTitle = \str_replace('"', "'", $metaTitle);
-                $metaTitle = \StringHandler::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
+                $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             }
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
         if ($searchResults->getPages()->getCurrentPage() > 1) {
-            $metaTitle .= ', ' . \Shop::Lang()->get('page') . ' ' .
+            $metaTitle .= ', ' . Shop::Lang()->get('page') . ' ' .
                 $searchResults->getPages()->getCurrentPage();
         }
         if ($append === true && !empty($globalMeta[$languageID]->Title)) {
@@ -702,27 +709,27 @@ class Metadata implements MetadataInterface
         if ($this->productFilter->hasSearchSpecialFilter()) {
             switch ($this->productFilter->getSearchSpecialFilter()->getValue()) {
                 case \SEARCHSPECIALS_BESTSELLER:
-                    $parts->push(\Shop::Lang()->get('bestsellers'));
+                    $parts->push(Shop::Lang()->get('bestsellers'));
                     break;
 
                 case \SEARCHSPECIALS_SPECIALOFFERS:
-                    $parts->push(\Shop::Lang()->get('specialOffers'));
+                    $parts->push(Shop::Lang()->get('specialOffers'));
                     break;
 
                 case \SEARCHSPECIALS_NEWPRODUCTS:
-                    $parts->push(\Shop::Lang()->get('newProducts'));
+                    $parts->push(Shop::Lang()->get('newProducts'));
                     break;
 
                 case \SEARCHSPECIALS_TOPOFFERS:
-                    $parts->push(\Shop::Lang()->get('topOffers'));
+                    $parts->push(Shop::Lang()->get('topOffers'));
                     break;
 
                 case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $parts->push(\Shop::Lang()->get('upcomingProducts'));
+                    $parts->push(Shop::Lang()->get('upcomingProducts'));
                     break;
 
                 case \SEARCHSPECIALS_TOPREVIEWS:
-                    $parts->push(\Shop::Lang()->get('topReviews'));
+                    $parts->push(Shop::Lang()->get('topReviews'));
                     break;
 
                 default:
@@ -766,17 +773,17 @@ class Metadata implements MetadataInterface
         if ($this->productFilter->hasManufacturer()) {
             $this->breadCrumb = $this->productFilter->getManufacturer()->getName();
 
-            return \Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
+            return Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasAttributeValue()) {
             $this->breadCrumb = $this->productFilter->getAttributeValue()->getName();
 
-            return \Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
+            return Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasTag()) {
             $this->breadCrumb = $this->productFilter->getTag()->getName();
 
-            return \Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->breadCrumb;
+            return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasSearchSpecial()) {
             $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
@@ -791,7 +798,7 @@ class Metadata implements MetadataInterface
         if (!empty($this->productFilter->getSearch()->getName())
             || !empty($this->productFilter->getSearchQuery()->getName())
         ) {
-            return \Shop::Lang()->get('for') . ' ' . $this->breadCrumb;
+            return Shop::Lang()->get('for') . ' ' . $this->breadCrumb;
         }
 
         return '';
@@ -810,7 +817,7 @@ class Metadata implements MetadataInterface
             $extendedView->nAnzahlArtikel = \ERWDARSTELLUNG_ANSICHT_ANZAHL_STD;
 
             if ($this->productFilter->hasCategory()) {
-                $category = new \Kategorie($this->productFilter->getCategory()->getValue());
+                $category = new Kategorie($this->productFilter->getCategory()->getValue());
                 if (!empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG])) {
                     $defaultViewType = (int)$category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG];
                 }
@@ -951,7 +958,7 @@ class Metadata implements MetadataInterface
      */
     public static function truncateMetaDescription(string $cDesc): string
     {
-        $conf      = \Shop::getSettings([\CONF_METAANGABEN]);
+        $conf      = Shop::getSettings([\CONF_METAANGABEN]);
         $maxLength = !empty($conf['metaangaben']['global_meta_maxlaenge_description'])
             ? (int)$conf['metaangaben']['global_meta_maxlaenge_description']
             : 0;
@@ -967,13 +974,13 @@ class Metadata implements MetadataInterface
      */
     public static function prepareMeta(string $metaProposal, string $metaSuffix = null, int $maxLength = null): string
     {
-        $metaProposal = \str_replace('"', '', \StringHandler::unhtmlentities($metaProposal));
+        $metaProposal = \str_replace('"', '', Text::unhtmlentities($metaProposal));
         $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
         if (!empty($maxLength) && $maxLength > 0) {
             $metaProposal = \mb_substr($metaProposal, 0, $maxLength);
         }
 
-        return \StringHandler::htmlentities(\trim(\preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
+        return Text::htmlentities(\trim(\preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
     }
 
     /**

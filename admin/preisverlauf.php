@@ -3,10 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Sprache;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     Shop::Container()->getAlertService()->addAlert(

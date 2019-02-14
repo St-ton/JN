@@ -4,15 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Date;
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Date;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Kampagne;
+use JTL\Shop;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
 
 $kKampagne    = 0;
@@ -192,7 +195,7 @@ if ($step === 'kampagne_uebersicht') {
                 ' . $cSQLWHERE . '
                     AND kKampagne = ' . (int)$kKampagne . '
                     AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         $oPagiDefDetail    = (new Pagination('defdetail'))

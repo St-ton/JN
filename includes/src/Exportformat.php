@@ -1,20 +1,35 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Cron\QueueEntry;
-use DB\DbInterface;
-use DB\ReturnType;
-use Helpers\Category;
-use Helpers\Request;
-use Helpers\ShippingMethod;
-use Helpers\Tax;
-use Smarty\SmartyResourceNiceDB;
+namespace JTL;
+
+use Exception;
+use JTL\Catalog\Currency;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Product\Artikel;
+use JTL\Cron\QueueEntry;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Category;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Text;
+use JTL\Helpers\Tax;
+use JTL\Session\Frontend;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\SmartyResourceNiceDB;
+use Psr\Log\LoggerInterface;
+use SmartyException;
+use stdClass;
 
 /**
  * Class Exportformat
+ * @package JTL
  */
 class Exportformat
 {
@@ -104,7 +119,7 @@ class Exportformat
     protected $nUseCache = 1;
 
     /**
-     * @var Smarty\JTLSmarty
+     * @var \JTL\Smarty\JTLSmarty
      */
     protected $smarty;
 
@@ -160,6 +175,7 @@ class Exportformat
 
     /**
      * Exportformat constructor.
+     *
      * @param int              $kExportformat
      * @param DbInterface|null $db
      */
@@ -188,9 +204,9 @@ class Exportformat
     }
 
     /**
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
-    public function setLogger(\Psr\Log\LoggerInterface $logger): void
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
@@ -202,7 +218,7 @@ class Exportformat
     private function log($msg, array $context = []): void
     {
         if ($this->logger !== null) {
-            $this->logger->log(JTLLOG_LEVEL_NOTICE, $msg, $context);
+            $this->logger->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
         }
     }
 
@@ -224,7 +240,7 @@ class Exportformat
             ReturnType::SINGLE_OBJECT
         );
         if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
-            foreach (get_object_vars($oObj) as $k => $v) {
+            foreach (\get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
             }
             $this->setConfig($kExportformat);
@@ -679,8 +695,8 @@ class Exportformat
         $ok = true;
         foreach ($config as $item) {
             $ins = new stdClass();
-            if (is_array($item) && count($item) > 0) {
-                foreach (array_keys($item) as $cMember) {
+            if (\is_array($item) && \count($item) > 0) {
+                foreach (\array_keys($item) as $cMember) {
                     $ins->$cMember = $item[$cMember];
                 }
                 $ins->kExportformat = $this->getExportformat();
@@ -705,7 +721,7 @@ class Exportformat
                 'exportformate_equot',
                 'exportformate_quot'
             ];
-            if (in_array($conf['cName'], $import, true)) {
+            if (\in_array($conf['cName'], $import, true)) {
                 $_upd        = new stdClass();
                 $_upd->cWert = $conf['cWert'];
                 $ok          = $ok && ($this->db->update(
@@ -726,16 +742,16 @@ class Exportformat
      */
     private function initSmarty(): self
     {
-        $this->smarty = (new \Smarty\JTLSmarty(true, \Smarty\ContextType::EXPORT))
+        $this->smarty = (new JTLSmarty(true, ContextType::EXPORT))
             ->setCaching(0)
-            ->setTemplateDir(PFAD_TEMPLATES)
-            ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
-            ->registerResource('db', new SmartyResourceNiceDB($this->db, \Smarty\ContextType::EXPORT))
+            ->setTemplateDir(\PFAD_TEMPLATES)
+            ->setCompileDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR)
+            ->registerResource('db', new SmartyResourceNiceDB($this->db, ContextType::EXPORT))
             ->assign('URL_SHOP', Shop::getURL())
-            ->assign('Waehrung', \Session\Frontend::getCurrency())
+            ->assign('Waehrung', Frontend::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
         // disable php execution in export format templates for security
-        if (EXPORTFORMAT_USE_SECURITY) {
+        if (\EXPORTFORMAT_USE_SECURITY) {
             $this->smarty->activateBackendSecurityMode();
         }
 
@@ -752,7 +768,7 @@ class Exportformat
             $this->oldSession->Kundengruppe = $_SESSION['Kundengruppe'];
             $this->oldSession->kSprache     = $_SESSION['kSprache'];
             $this->oldSession->cISO         = $_SESSION['cISOSprache'];
-            $this->oldSession->Waehrung     = \Session\Frontend::getCurrency();
+            $this->oldSession->Waehrung     = Frontend::getCurrency();
         }
         $this->currency = $this->kWaehrung > 0
             ? new Currency($this->kWaehrung)
@@ -838,7 +854,7 @@ class Exportformat
         }
 
         $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
-        $conf      = Shop::getSettings([CONF_GLOBAL]);
+        $conf      = Shop::getSettings([\CONF_GLOBAL]);
         if (isset($conf['global']['global_erscheinende_kaeuflich'])
             && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
         ) {
@@ -864,7 +880,7 @@ class Exportformat
         return 'SELECT ' . $select . "
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
-                AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
+                AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
             " . $join . '
             LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getKundengruppe() . '
@@ -925,18 +941,18 @@ class Exportformat
     private function writeHeader($handle): int
     {
         $header = $this->getKopfzeile();
-        if (mb_strlen($header) === 0) {
+        if (\mb_strlen($header) === 0) {
             return 0;
         }
         $encoding = $this->getKodierung();
         if ($encoding === 'UTF-8') {
-            fwrite($handle, "\xEF\xBB\xBF");
+             \fwrite($handle, "\xEF\xBB\xBF");
         }
         if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
-            $header = StringHandler::convertUTF8($header);
+            $header = Text::convertUTF8($header);
         }
 
-        return fwrite($handle, $header . "\n");
+        return  \fwrite($handle, $header . "\n");
     }
 
     /**
@@ -946,15 +962,15 @@ class Exportformat
     private function writeFooter($handle): int
     {
         $footer = $this->getFusszeile();
-        if (mb_strlen($footer) === 0) {
+        if (\mb_strlen($footer) === 0) {
             return 0;
         }
         $encoding = $this->getKodierung();
         if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
-            $footer = StringHandler::convertUTF8($footer);
+            $footer = Text::convertUTF8($footer);
         }
 
-        return fwrite($handle, $footer);
+        return  \fwrite($handle, $footer);
     }
 
     /**
@@ -962,45 +978,45 @@ class Exportformat
      */
     private function splitFile(): self
     {
-        if ((int)$this->nSplitgroesse <= 0 || !file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
+        if ((int)$this->nSplitgroesse <= 0 || !\file_exists(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
             return $this;
         }
-        $fileCounter       = 1;
-        $fileNameSplit_arr = [];
-        $nFileTypePos      = mb_strrpos($this->cDateiname, '.');
+        $fileCounter  = 1;
+        $splits       = [];
+        $nFileTypePos = \mb_strrpos($this->cDateiname, '.');
         // Dateiname splitten nach Name + Typ
         if ($nFileTypePos === false) {
-            $fileNameSplit_arr[0] = $this->cDateiname;
+            $splits[0] = $this->cDateiname;
         } else {
-            $fileNameSplit_arr[0] = mb_substr($this->cDateiname, 0, $nFileTypePos);
-            $fileNameSplit_arr[1] = mb_substr($this->cDateiname, $nFileTypePos);
+            $splits[0] = \mb_substr($this->cDateiname, 0, $nFileTypePos);
+            $splits[1] = \mb_substr($this->cDateiname, $nFileTypePos);
         }
         // Ist die angelegte Datei größer als die Einstellung im Exportformat?
-        clearstatcache();
-        if (filesize(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname) >= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
-            sleep(2);
-            $this->cleanupFiles($this->cDateiname, $fileNameSplit_arr[0]);
-            $handle     = fopen(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname, 'r');
+        \clearstatcache();
+        if (\filesize(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname) >= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
+            \sleep(2);
+            $this->cleanupFiles($this->cDateiname, $splits[0]);
+            $handle     = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname, 'r');
             $nZeile     = 1;
-            $new_handle = fopen($this->getFileName($fileNameSplit_arr, $fileCounter), 'w');
+            $new_handle = \fopen($this->getFileName($splits, $fileCounter), 'w');
             $nSizeDatei = 0;
-            while (($cContent = fgets($handle)) !== false) {
+            while (($cContent = \fgets($handle)) !== false) {
                 if ($nZeile > 1) {
-                    $nSizeZeile = mb_strlen($cContent) + 2;
+                    $nSizeZeile = \mb_strlen($cContent) + 2;
                     // Schwelle erreicht?
                     if ($nSizeDatei <= ($this->nSplitgroesse * 1024 * 1024 - 102400)) {
                         // Schreibe Content
-                        fwrite($new_handle, $cContent);
+                         \fwrite($new_handle, $cContent);
                         $nSizeDatei += $nSizeZeile;
                     } else {
                         // neue Datei
                         $this->writeFooter($new_handle);
-                        fclose($new_handle);
+                        \fclose($new_handle);
                         ++$fileCounter;
-                        $new_handle = fopen($this->getFileName($fileNameSplit_arr, $fileCounter), 'w');
+                        $new_handle = \fopen($this->getFileName($splits, $fileCounter), 'w');
                         $this->writeHeader($new_handle);
                         // Schreibe Content
-                        fwrite($new_handle, $cContent);
+                         \fwrite($new_handle, $cContent);
                         $nSizeDatei = $nSizeZeile;
                     }
                 } elseif ($nZeile === 1) {
@@ -1008,26 +1024,26 @@ class Exportformat
                 }
                 ++$nZeile;
             }
-            fclose($new_handle);
-            fclose($handle);
-            unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
+            \fclose($new_handle);
+            \fclose($handle);
+            \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname);
         }
 
         return $this;
     }
 
     /**
-     * @param array $fileNameSplit_arr
+     * @param array $splits
      * @param int   $fileCounter
      * @return string
      */
-    private function getFileName($fileNameSplit_arr, $fileCounter): string
+    private function getFileName($splits, $fileCounter): string
     {
-        $fn = (is_array($fileNameSplit_arr) && count($fileNameSplit_arr) > 1)
-            ? $fileNameSplit_arr[0] . $fileCounter . $fileNameSplit_arr[1]
-            : $fileNameSplit_arr[0] . $fileCounter;
+        $fn = (\is_array($splits) && \count($splits) > 1)
+            ? $splits[0] . $fileCounter . $splits[1]
+            : $splits[0] . $fileCounter;
 
-        return PFAD_ROOT . PFAD_EXPORT . $fn;
+        return \PFAD_ROOT . \PFAD_EXPORT . $fn;
     }
 
     /**
@@ -1037,13 +1053,13 @@ class Exportformat
      */
     private function cleanupFiles(string $fileName, string $fileNameSplit): self
     {
-        if (is_dir(PFAD_ROOT . PFAD_EXPORT) && ($dir = opendir(PFAD_ROOT . PFAD_EXPORT)) !== false) {
-            while (($cDatei = readdir($dir)) !== false) {
-                if ($cDatei !== $fileName && mb_strpos($cDatei, $fileNameSplit) !== false) {
-                    unlink(PFAD_ROOT . PFAD_EXPORT . $cDatei);
+        if (\is_dir(\PFAD_ROOT . \PFAD_EXPORT) && ($dir = \opendir(\PFAD_ROOT . \PFAD_EXPORT)) !== false) {
+            while (($fdir = \readdir($dir)) !== false) {
+                if ($fdir !== $fileName && \mb_strpos($fdir, $fileNameSplit) !== false) {
+                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $fdir);
                 }
             }
-            closedir($dir);
+            \closedir($dir);
         }
 
         return $this;
@@ -1071,13 +1087,13 @@ class Exportformat
         }
         $started = false;
         $this->setQueue($queueObject)->initSession()->initSmarty();
-        if ($this->getPlugin() > 0 && mb_strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($this->getPlugin() > 0 && \mb_strpos($this->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
                 '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
                     ? 'enabled'
                     : 'disabled'));
-            $loader  = \Plugin\Helper::getLoaderByPluginID($this->getPlugin());
+            $loader  = Plugin\Helper::getLoaderByPluginID($this->getPlugin());
             $oPlugin = $loader->init($this->getPlugin());
             if ($isCron === true) {
                 global $oJobQueue;
@@ -1111,13 +1127,13 @@ class Exportformat
             // needed for plugin exports
             $ExportEinstellungen = $this->getConfig();
             include $oPlugin->getPaths()->getExportPath() .
-                str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
+                \str_replace(\PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             if ($queueObject->jobQueueID > 0) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueObject->jobQueueID);
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
-                header('Location: exportformate.php?action=exported&token=' .
+                \header('Location: exportformate.php?action=exported&token=' .
                     $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->foreignKeyID);
                 exit;
             }
@@ -1125,15 +1141,15 @@ class Exportformat
 
             return true;
         }
-        $start        = microtime(true);
+        $start        = \microtime(true);
         $cacheHits    = 0;
         $cacheMisses  = 0;
         $cOutput      = '';
         $errorMessage = '';
-        if ((int)$this->queue->tasksExecuted === 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName)) {
-            unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
+        if ((int)$this->queue->tasksExecuted === 0 && \file_exists(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName)) {
+            \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
         }
-        $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
+        $datei = \fopen(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, 'a');
         if ($max === null) {
             $maxObj = $this->db->executeQuery(
                 $this->getExportSQL(true),
@@ -1142,7 +1158,7 @@ class Exportformat
             $max    = (int)$maxObj->nAnzahl;
         }
 
-        $this->log('Starting exportformat "' . StringHandler::convertUTF8($this->getName()) .
+        $this->log('Starting exportformat "' . Text::convertUTF8($this->getName()) .
             '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
                 ? 'enabled'
@@ -1153,7 +1169,7 @@ class Exportformat
             $this->writeHeader($datei);
         }
         $content          = $this->getContent();
-        $categoryFallback = (mb_strpos($content, '->oKategorie_arr') !== false);
+        $categoryFallback = (\mb_strpos($content, '->oKategorie_arr') !== false);
         $options          = Artikel::getExportOptions();
         $helper           = Category::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL          = Shop::getURL();
@@ -1214,115 +1230,116 @@ class Exportformat
                 $product->oKategorie_arr = $categories;
             }
 
-            if ($product->kArtikel > 0) {
-                $started = true;
-                ++$this->queue->tasksExecuted;
-                $this->queue->lastProductID = $product->kArtikel;
+            if ($product->kArtikel <= 0) {
+                continue;
+            }
+            $started = true;
+            ++$this->queue->tasksExecuted;
+            $this->queue->lastProductID = $product->kArtikel;
 
-                if ($product->cacheHit === true) {
-                    ++$cacheHits;
-                } else {
-                    ++$cacheMisses;
-                }
-                $product->cBeschreibungHTML     = StringHandler::removeWhitespace(
-                    str_replace(
-                        $findTwo,
-                        $replaceTwo,
-                        str_replace('"', '&quot;', $product->cBeschreibung)
+            if ($product->cacheHit === true) {
+                ++$cacheHits;
+            } else {
+                ++$cacheMisses;
+            }
+            $product->cBeschreibungHTML     = Text::removeWhitespace(
+                \str_replace(
+                    $findTwo,
+                    $replaceTwo,
+                    \str_replace('"', '&quot;', $product->cBeschreibung)
+                )
+            );
+            $product->cKurzBeschreibungHTML = Text::removeWhitespace(
+                \str_replace(
+                    $findTwo,
+                    $replaceTwo,
+                    \str_replace('"', '&quot;', $product->cKurzBeschreibung)
+                )
+            );
+            $product->cName                 = Text::removeWhitespace(
+                \str_replace(
+                    $findTwo,
+                    $replaceTwo,
+                    Text::unhtmlentities(\strip_tags(\str_replace($find, $replace, $product->cName)))
+                )
+            );
+            $product->cBeschreibung         = Text::removeWhitespace(
+                \str_replace(
+                    $findTwo,
+                    $replaceTwo,
+                    Text::unhtmlentities(\strip_tags(\str_replace($find, $replace, $product->cBeschreibung)))
+                )
+            );
+            $product->cKurzBeschreibung     = Text::removeWhitespace(
+                \str_replace(
+                    $findTwo,
+                    $replaceTwo,
+                    Text::unhtmlentities(
+                        \strip_tags(\str_replace($find, $replace, $product->cKurzBeschreibung))
                     )
-                );
-                $product->cKurzBeschreibungHTML = StringHandler::removeWhitespace(
-                    str_replace(
-                        $findTwo,
-                        $replaceTwo,
-                        str_replace('"', '&quot;', $product->cKurzBeschreibung)
-                    )
-                );
-                $product->cName                 = StringHandler::removeWhitespace(
-                    str_replace(
-                        $findTwo,
-                        $replaceTwo,
-                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $product->cName)))
-                    )
-                );
-                $product->cBeschreibung         = StringHandler::removeWhitespace(
-                    str_replace(
-                        $findTwo,
-                        $replaceTwo,
-                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $product->cBeschreibung)))
-                    )
-                );
-                $product->cKurzBeschreibung     = StringHandler::removeWhitespace(
-                    str_replace(
-                        $findTwo,
-                        $replaceTwo,
-                        StringHandler::unhtmlentities(
-                            strip_tags(str_replace($find, $replace, $product->cKurzBeschreibung))
-                        )
-                    )
-                );
-                $product->fUst                  = Tax::getSalesTax($product->kSteuerklasse);
-                $product->Preise->fVKBrutto     = Tax::getGross(
-                    $product->Preise->fVKNetto * $this->currency->getConversionFactor(),
-                    $product->fUst
-                );
-                $product->Preise->fVKNetto      = round($product->Preise->fVKNetto, 2);
-                $product->Kategorie             = new Kategorie(
-                    $productCategoryID,
-                    $this->kSprache,
-                    $this->kKundengruppe,
-                    !$this->useCache()
-                );
-                // calling gibKategoriepfad() should not be necessary
-                // since it has already been called in Kategorie::loadFromDB()
-                $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
-                $product->Versandkosten = ShippingMethod::getLowestShippingFees(
-                    $this->config['exportformate_lieferland'] ?? '',
-                    $product,
-                    0,
-                    $this->kKundengruppe
-                );
-                if ($product->Versandkosten !== -1) {
-                    $price = Currency::convertCurrency($product->Versandkosten, null, $this->kWaehrung);
-                    if ($price !== false) {
-                        $product->Versandkosten = $price;
-                    }
-                }
-                // Kampagne URL
-                if (!empty($this->campaignParameter)) {
-                    $cSep           = (mb_strpos($product->cURL, '.php') !== false) ? '&' : '?';
-                    $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
-                }
-
-                $product->cDeeplink    = $shopURL . '/' . $product->cURL;
-                $product->Artikelbild  = $product->Bilder[0]->cPfadGross
-                    ? $imageBaseURL . $product->Bilder[0]->cPfadGross
-                    : '';
-                $product->Lieferbar    = $product->fLagerbestand <= 0 ? 'N' : 'Y';
-                $product->Lieferbar_01 = $product->fLagerbestand <= 0 ? 0 : 1;
-
-                $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->getExportformat());
-                if (!empty($_out)) {
-                    $cOutput .= $_out . "\n";
-                }
-
-                executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
-                if (!$isAsync && ($queueObject->tasksExecuted % max(round($queueObject->taskLimit / 10), 10)) === 0) {
-                    //max. 10 status updates per run
-                    $this->log($queueObject->tasksExecuted . '/' . $max . ' products exported');
+                )
+            );
+            $product->fUst                  = Tax::getSalesTax($product->kSteuerklasse);
+            $product->Preise->fVKBrutto     = Tax::getGross(
+                $product->Preise->fVKNetto * $this->currency->getConversionFactor(),
+                $product->fUst
+            );
+            $product->Preise->fVKNetto      = \round($product->Preise->fVKNetto, 2);
+            $product->Kategorie             = new Kategorie(
+                $productCategoryID,
+                $this->kSprache,
+                $this->kKundengruppe,
+                !$this->useCache()
+            );
+            // calling gibKategoriepfad() should not be necessary
+            // since it has already been called in Kategorie::loadFromDB()
+            $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
+            $product->Versandkosten = ShippingMethod::getLowestShippingFees(
+                $this->config['exportformate_lieferland'] ?? '',
+                $product,
+                0,
+                $this->kKundengruppe
+            );
+            if ($product->Versandkosten !== -1) {
+                $price = Currency::convertCurrency($product->Versandkosten, null, $this->kWaehrung);
+                if ($price !== false) {
+                    $product->Versandkosten = $price;
                 }
             }
+            // Kampagne URL
+            if (!empty($this->campaignParameter)) {
+                $cSep           = (\mb_strpos($product->cURL, '.php') !== false) ? '&' : '?';
+                $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
+            }
+
+            $product->cDeeplink    = $shopURL . '/' . $product->cURL;
+            $product->Artikelbild  = $product->Bilder[0]->cPfadGross
+                ? $imageBaseURL . $product->Bilder[0]->cPfadGross
+                : '';
+            $product->Lieferbar    = $product->fLagerbestand <= 0 ? 'N' : 'Y';
+            $product->Lieferbar_01 = $product->fLagerbestand <= 0 ? 0 : 1;
+
+            $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->getExportformat());
+            if (!empty($_out)) {
+                $cOutput .= $_out . "\n";
+            }
+
+            \executeHook(\HOOK_DO_EXPORT_OUTPUT_FETCHED);
+            if (!$isAsync && ($queueObject->tasksExecuted % \max(\round($queueObject->taskLimit / 10), 10)) === 0) {
+                //max. 10 status updates per run
+                $this->log($queueObject->tasksExecuted . '/' . $max . ' products exported');
+            }
         }
-        if (mb_strlen($cOutput) > 0) {
-            fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
-                ? StringHandler::convertUTF8($cOutput)
+        if (\mb_strlen($cOutput) > 0) {
+             \fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
+                ? Text::convertUTF8($cOutput)
                 : $cOutput));
         }
 
         if ($isCron === false) {
             if ($started === true) {
                 // One or more products have been exported
-                fclose($datei);
+                \fclose($datei);
                 $this->db->queryPrepared(
                     'UPDATE texportqueue SET
                         nLimit_n       = nLimit_n + :nLimitM,
@@ -1335,7 +1352,7 @@ class Exportformat
                     ],
                     ReturnType::DEFAULT
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) === 'on')
+                $protocol = ((isset($_SERVER['HTTPS']) && \mb_convert_case($_SERVER['HTTPS'], \MB_CASE_LOWER) === 'on')
                     || Request::checkSSL() === 2)
                     ? 'https://'
                     : 'http://';
@@ -1351,12 +1368,12 @@ class Exportformat
                     $oCallback->cURL           = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
                     $oCallback->cacheMisses    = $cacheMisses;
                     $oCallback->cacheHits      = $cacheHits;
-                    echo json_encode($oCallback);
+                    echo \json_encode($oCallback);
                 } else {
                     $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
                         '?e=' . (int)$this->queue->jobQueueID .
                         '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
-                    header('Location: ' . $cURL);
+                    \header('Location: ' . $cURL);
                 }
             } else {
                 // There are no more articles to export
@@ -1369,12 +1386,12 @@ class Exportformat
                 $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
                 $this->writeFooter($datei);
-                fclose($datei);
-                if (copy(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
-                    unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
+                \fclose($datei);
+                if (\copy(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
                 } else {
                     $errorMessage = 'Konnte Export-Datei ' .
-                        PFAD_ROOT . PFAD_EXPORT . $this->cDateiname .
+                        \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname .
                         ' nicht erstellen. Fehlende Schreibrechte?';
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
@@ -1391,9 +1408,9 @@ class Exportformat
                         $oCallback->cacheHits      = $cacheHits;
                         $oCallback->errorMessage   = $errorMessage;
 
-                        echo json_encode($oCallback);
+                        echo \json_encode($oCallback);
                     } else {
-                        header(
+                        \header(
                             'Location: exportformate.php?action=exported&token=' .
                             $_SESSION['jtl_token'] .
                             '&kExportformat=' . $this->getExportformat() .
@@ -1413,20 +1430,20 @@ class Exportformat
                     (int)$queueObject->foreignKeyID,
                     (object)['dZuletztErstellt' => 'NOW()']
                 );
-                if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
-                    $this->log('Deleting old export file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
-                    unlink(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
+                if (\file_exists(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                    $this->log('Deleting old export file ' . \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname);
+                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname);
                 }
                 // Schreibe Fusszeile
                 $this->writeFooter($datei);
-                fclose($datei);
-                if (copy(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
-                    unlink(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName);
+                \fclose($datei);
+                if (\copy(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                    \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
             }
-            $this->log('Finished after ' . round(microtime(true) - $start, 4) .
+            $this->log('Finished after ' . \round(\microtime(true) - $start, 4) .
                 's. Product cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
         }
         $this->restoreSession();
@@ -1450,15 +1467,15 @@ class Exportformat
         } else {
             $this->setName($post['cName']);
         }
-        $pathinfo           = pathinfo(PFAD_ROOT . PFAD_EXPORT . $post['cDateiname']);
-        $extensionWhitelist = array_map('\strtolower', explode(',', EXPORTFORMAT_ALLOWED_FORMATS));
+        $pathinfo           = \pathinfo(\PFAD_ROOT . \PFAD_EXPORT . $post['cDateiname']);
+        $extensionWhitelist = \array_map('\strtolower', \explode(',', \EXPORTFORMAT_ALLOWED_FORMATS));
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
-        } elseif (mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
+        } elseif (\mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
-        } elseif (mb_strpos(realpath($pathinfo['dirname']), realpath(PFAD_ROOT)) === false) {
+        } elseif (\mb_strpos(\realpath($pathinfo['dirname']), \realpath(\PFAD_ROOT)) === false) {
             $validation['cDateiname'] = 3;
-        } elseif (!in_array(mb_convert_case($pathinfo['extension'], MB_CASE_LOWER), $extensionWhitelist, true)) {
+        } elseif (!\in_array(\mb_convert_case($pathinfo['extension'], \MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;
         } else {
             $this->setDateiname($post['cDateiname']);
@@ -1468,18 +1485,18 @@ class Exportformat
         }
         if (empty($post['cContent'])) {
             $validation['cContent'] = 1;
-        } elseif (!EXPORTFORMAT_ALLOW_PHP
+        } elseif (!\EXPORTFORMAT_ALLOW_PHP
             && (
-                mb_strpos($post['cContent'], '{php}') !== false
-                || mb_strpos($post['cContent'], '<?php') !== false
-                || mb_strpos($post['cContent'], '<%') !== false
-                || mb_strpos($post['cContent'], '<%=') !== false
-                || mb_strpos($post['cContent'], '<script language="php">') !== false
+                \mb_strpos($post['cContent'], '{php}') !== false
+                || \mb_strpos($post['cContent'], '<?php') !== false
+                || \mb_strpos($post['cContent'], '<%') !== false
+                || \mb_strpos($post['cContent'], '<%=') !== false
+                || \mb_strpos($post['cContent'], '<script language="php">') !== false
             )
         ) {
             $validation['cContent'] = 2;
         } else {
-            $this->setContent(str_replace('<tab>', "\t", $post['cContent']));
+            $this->setContent(\str_replace('<tab>', "\t", $post['cContent']));
         }
         if (!isset($post['kSprache']) || (int)$post['kSprache'] === 0) {
             $validation['kSprache'] = 1;
@@ -1496,7 +1513,7 @@ class Exportformat
         } else {
             $this->setKundengruppe($post['kKundengruppe']);
         }
-        if (count($validation) === 0) {
+        if (\count($validation) === 0) {
             $this->setCaching((int)$post['nUseCache'])
                  ->setVarKombiOption((int)$post['nVarKombiOption'])
                  ->setSplitgroesse((int)$post['nSplitgroesse'])
@@ -1506,10 +1523,10 @@ class Exportformat
                  ->setExportformat((int)($post['kExportformat'] ?? 0))
                  ->setKampagne((int)($post['kKampagne'] ?? 0));
             if (isset($post['cFusszeile'])) {
-                $this->setFusszeile(str_replace('<tab>', "\t", $post['cFusszeile']));
+                $this->setFusszeile(\str_replace('<tab>', "\t", $post['cFusszeile']));
             }
             if (isset($post['cKopfzeile'])) {
-                $this->setKopfzeile(str_replace('<tab>', "\t", $post['cKopfzeile']));
+                $this->setKopfzeile(\str_replace('<tab>', "\t", $post['cKopfzeile']));
             }
 
             return true;

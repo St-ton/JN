@@ -4,23 +4,26 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
 use DateTime;
-use DB\DbInterface;
-use DB\ReturnType;
 use Exception;
-use Helpers\Request;
-use Mapper\AdminLoginStatusMessageMapper;
-use Mapper\AdminLoginStatusToLogLevel;
-use Model\AuthLogEntry;
+use function Functional\map;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Mapper\AdminLoginStatusMessageMapper;
+use JTL\Mapper\AdminLoginStatusToLogLevel;
+use JTL\Model\AuthLogEntry;
+use JTL\Session\Backend;
+use JTL\Shop;
+use JTL\Sprache;
 use Psr\Log\LoggerInterface;
-use Session\Backend;
-use Shop;
+use stdClass;
 
 /**
  * Class AdminAccount
- * @package Backend
+ * @package JTL\Backend
  */
 class AdminAccount
 {
@@ -40,12 +43,12 @@ class AdminAccount
     private $authLogger;
 
     /**
-     * @var \Mapper\AdminLoginStatusToLogLevel
+     * @var AdminLoginStatusToLogLevel
      */
     private $levelMapper;
 
     /**
-     * @var \Mapper\AdminLoginStatusMessageMapper
+     * @var AdminLoginStatusMessageMapper
      */
     private $messageMapper;
 
@@ -55,7 +58,7 @@ class AdminAccount
     private $lockedMinutes = 0;
 
     /**
-     * @var \DB\DbInterface
+     * @var DbInterface
      */
     private $db;
 
@@ -87,8 +90,8 @@ class AdminAccount
     private function initDefaults(): void
     {
         if (!isset($_SESSION['AdminAccount'])) {
-            $default                   = \Sprache::getDefaultLanguage();
-            $adminAccount              = new \stdClass();
+            $default                   = Sprache::getDefaultLanguage();
+            $adminAccount              = new stdClass();
             $adminAccount->kSprache    = $default->kSprache;
             $adminAccount->cISO        = $default->cISO;
             $adminAccount->kAdminlogin = null;
@@ -167,10 +170,10 @@ class AdminAccount
         if ($res > 0) {
             require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
             $user                   = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
-            $obj                    = new \stdClass();
+            $obj                    = new stdClass();
             $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $mail;
             $obj->cHash             = $hash;
-            $obj->mail              = new \stdClass();
+            $obj->mail              = new stdClass();
             $obj->mail->toEmail     = $mail;
             $obj->mail->toName      = $user->cLogin;
             \sendeMail(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj);
@@ -250,7 +253,7 @@ class AdminAccount
                 return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
             }
             if (!isset($_SESSION['AdminAccount'])) {
-                $_SESSION['AdminAccount'] = new \stdClass();
+                $_SESSION['AdminAccount'] = new stdClass();
             }
             $_SESSION['AdminAccount']->cPass  = \md5($cPass);
             $_SESSION['AdminAccount']->cLogin = $cLogin;
@@ -368,7 +371,7 @@ class AdminAccount
     }
 
     /**
-     * @return bool|\stdClass
+     * @return bool|stdClass
      */
     public function account()
     {
@@ -435,7 +438,7 @@ class AdminAccount
             );
         }
 
-        return \Functional\map($links, function ($e) use ($keyPrefix) {
+        return map($links, function ($e) use ($keyPrefix) {
             $e->kAdminmenu        = (int)$e->kAdminmenu;
             $e->key               = $keyPrefix . '.' . $e->kAdminmenu;
             $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
@@ -516,14 +519,14 @@ class AdminAccount
     }
 
     /**
-     * @param \stdClass $admin
+     * @param stdClass $admin
      * @return $this
      */
     private function toSession($admin): self
     {
         $group = $this->getPermissionsByGroup($admin->kAdminlogingruppe);
         if (\is_object($group) || (int)$admin->kAdminlogingruppe === \ADMINGROUP) {
-            $_SESSION['AdminAccount']              = new \stdClass();
+            $_SESSION['AdminAccount']              = new stdClass();
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
             $_SESSION['AdminAccount']->kAdminlogin = (int)$admin->kAdminlogin;
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
@@ -533,7 +536,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cISO        = $admin->cISO;
 
             if (!\is_object($group)) {
-                $group                    = new \stdClass();
+                $group                    = new stdClass();
                 $group->kAdminlogingruppe = \ADMINGROUP;
             }
 

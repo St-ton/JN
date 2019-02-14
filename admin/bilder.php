@@ -3,10 +3,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Media\MediaImage;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $shopSettings = Shopsetting::getInstance();
 if (isset($_POST['speichern'])) {
     Shop::Container()->getAlertService()->addAlert(

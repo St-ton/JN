@@ -4,9 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Helpers\Tax;
-use Helpers\URL;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\Helpers\URL;
+use JTL\Catalog\Product\Artikel;
+use JTL\Media\Image;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Media\MediaImage;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 
 /**
  * @param string $nDatei
@@ -57,19 +67,19 @@ function baueSitemapIndex($nDatei, $bGZ)
     for ($i = 0; $i <= $nDatei; ++$i) {
         if ($bGZ) {
             $cIndex .= '<sitemap><loc>' .
-                StringHandler::htmlentities($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz') .
+                Text::htmlentities($shopURL . '/' . PFAD_EXPORT . 'sitemap_' . $i . '.xml.gz') .
                 '</loc>' .
                 ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
                     || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
-                    ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>') :
+                    ? ('<lastmod>' . Text::htmlentities(date('Y-m-d')) . '</lastmod>') :
                     '') .
                 '</sitemap>' . "\n";
         } else {
-            $cIndex .= '<sitemap><loc>' . StringHandler::htmlentities($shopURL . '/' .
+            $cIndex .= '<sitemap><loc>' . Text::htmlentities($shopURL . '/' .
                     PFAD_EXPORT . 'sitemap_' . $i . '.xml') . '</loc>' .
                 ((!isset($conf['sitemap']['sitemap_insert_lastmod'])
                     || $conf['sitemap']['sitemap_insert_lastmod'] === 'Y')
-                    ? ('<lastmod>' . StringHandler::htmlentities(date('Y-m-d')) . '</lastmod>')
+                    ? ('<lastmod>' . Text::htmlentities(date('Y-m-d')) . '</lastmod>')
                     : '') .
                 '</sitemap>' . "\n";
         }
@@ -100,22 +110,22 @@ function makeURL(
 ) {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $strRet = "  <url>\n" .
-        '     <loc>' . StringHandler::htmlentities(Shop::getURL($ssl)) . '/' .
-        StringHandler::htmlentities($strLoc) . "</loc>\n";
+        '     <loc>' . Text::htmlentities(Shop::getURL($ssl)) . '/' .
+        Text::htmlentities($strLoc) . "</loc>\n";
     if (mb_strlen($cGoogleImageURL) > 0) {
         $strRet .=
             "     <image:image>\n" .
-            '        <image:loc>' . StringHandler::htmlentities($cGoogleImageURL) . "</image:loc>\n" .
+            '        <image:loc>' . Text::htmlentities($cGoogleImageURL) . "</image:loc>\n" .
             "     </image:image>\n";
     }
     if ($strLastMod) {
-        $strRet .= '     <lastmod>' . StringHandler::htmlentities($strLastMod) . "</lastmod>\n";
+        $strRet .= '     <lastmod>' . Text::htmlentities($strLastMod) . "</lastmod>\n";
     }
     if ($strChangeFreq) {
-        $strRet .= '     <changefreq>' . StringHandler::htmlentities($strChangeFreq) . "</changefreq>\n";
+        $strRet .= '     <changefreq>' . Text::htmlentities($strChangeFreq) . "</changefreq>\n";
     }
     if ($strPriority) {
-        $strRet .= '     <priority>' . StringHandler::htmlentities($strPriority) . "</priority>\n";
+        $strRet .= '     <priority>' . Text::htmlentities($strPriority) . "</priority>\n";
     }
     $strRet .= "  </url>\n";
 
@@ -222,7 +232,7 @@ function generateSitemapXML()
         'artikelbild'      => 0,
         'artikelsprache'   => 0,
         'link'             => 0,
-        'kategorie'        => 0,
+        'lategorie'        => 0,
         'kategoriesprache' => 0,
         'tag'              => 0,
         'tagsprache'       => 0,
@@ -301,7 +311,7 @@ function generateSitemapXML()
             'kGrpID' => $defaultCustomerGroupID,
             'langID' => $defaultLangID
         ],
-        \DB\ReturnType::QUERYSINGLE
+        ReturnType::QUERYSINGLE
     );
     while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
         if ($nSitemap > $nSitemapLimit) {
@@ -371,7 +381,7 @@ function generateSitemapXML()
                 'kGrpID' => $defaultCustomerGroupID,
                 'langID' => $SpracheTMP->kSprache
             ],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($oArtikel = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if ($nSitemap > $nSitemapLimit) {
@@ -432,7 +442,7 @@ function generateSitemapXML()
                     OR FIND_IN_SET(:cGrpID, REPLACE(tlink.cKundengruppen, ';', ',')) > 0)
                 ORDER BY tlinksprache.kLink",
             ['cGrpID' => $defaultCustomerGroupID],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             if (spracheEnthalten($tlink->cISOSprache, $Sprachen)) {
@@ -446,7 +456,7 @@ function generateSitemapXML()
                         'linkID' => $tlink->kLink,
                         'langID' => $oSpracheAssoc_arr[$tlink->cISOSprache]
                     ],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
                 if (isset($oSeo->cSeo) && mb_strlen($oSeo->cSeo) > 0) {
                     $tlink->cSeo = $oSeo->cSeo;
@@ -504,7 +514,7 @@ function generateSitemapXML()
                 'langID' => $defaultLangID,
                 'cGrpID' => $defaultCustomerGroupID
             ],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -554,7 +564,7 @@ function generateSitemapXML()
                     'langID' => $SpracheTMP->kSprache,
                     'cGrpID' => $defaultCustomerGroupID
                 ],
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
             while (($tkategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -599,7 +609,7 @@ function generateSitemapXML()
                     AND ttag.nAktiv = 1
                 ORDER BY ttag.kTag",
             ['langID' => $defaultLangID],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -643,7 +653,7 @@ function generateSitemapXML()
                         AND ttag.nAktiv = 1
                     ORDER BY ttag.kTag",
                 ['langID' => $SpracheTMP->kSprache],
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
             while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -685,7 +695,7 @@ function generateSitemapXML()
                     AND tseo.kSprache = :langID
                 ORDER BY thersteller.kHersteller",
             ['langID' => $defaultLangID],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($oHersteller = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -727,7 +737,7 @@ function generateSitemapXML()
                     AND tsuchanfrage.nAktiv = 1
                 ORDER BY tsuchanfrage.kSuchanfrage",
             ['langID' => $defaultLangID],
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -771,7 +781,7 @@ function generateSitemapXML()
                         AND tsuchanfrage.nAktiv = 1
                     ORDER BY tsuchanfrage.kSuchanfrage",
                 ['langID' => $SpracheTMP->kSprache],
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
             while (($oSuchanfrage = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -819,7 +829,7 @@ function generateSitemapXML()
                 WHERE tmerkmal.nGlobal = 1
                 GROUP BY tmerkmalwert.kMerkmalWert
                 ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL_arr = baueExportURL(
@@ -874,7 +884,7 @@ function generateSitemapXML()
                     GROUP BY tmerkmalwert.kMerkmalWert
                     ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
                 ['langID' => $SpracheTMP->kSprache],
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
             while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
                 $cURL_arr = baueExportURL(
@@ -917,10 +927,10 @@ function generateSitemapXML()
                 WHERE tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= NOW()
                     AND (tnews.cKundengruppe LIKE '%;-1;%'
-                    OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID() .
+                    OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() .
                         "', REPLACE(tnews.cKundengruppe, ';',',')) > 0) 
                     ORDER BY tnews.dErstellt",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
         while (($oNews = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $cURL = makeURL(
@@ -955,7 +965,7 @@ function generateSitemapXML()
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
                     AND tseo.kSprache = t.languageID
                  WHERE tnewskategorie.nAktiv = 1",
-            \DB\ReturnType::QUERYSINGLE
+            ReturnType::QUERYSINGLE
         );
 
         while (($oNewsKategorie = $res->fetch(PDO::FETCH_OBJ)) !== false) {
@@ -1050,7 +1060,7 @@ function holeGoogleImage($artikel)
     if (isset($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK])
         && mb_strlen($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]) > 0
     ) {
-        $cArtNr = StringHandler::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
+        $cArtNr = Text::filterXSS($oArtikel->FunktionsAttribute[ART_ATTRIBUT_BILDLINK]);
         $oBild  = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikelpict.cPfad
                 FROM tartikelpict
@@ -1061,7 +1071,7 @@ function holeGoogleImage($artikel)
                 ORDER BY tartikelpict.nNr
                 LIMIT 1',
             ['artNr' => $cArtNr],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -1074,7 +1084,7 @@ function holeGoogleImage($artikel)
                 ORDER BY nNr 
                 LIMIT 1',
             ['articleID' => (int)$oArtikel->kArtikel],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
     }
 
@@ -1156,17 +1166,17 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $productsPerPage, $config = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $config   = $config ?? \Shopsetting::getInstance()->getAll();
+    $config   = $config ?? JTL\Shopsetting::getInstance()->getAll();
     $cURL_arr = [];
     $params   = [];
     Shop::setLanguage($langID);
-    $filterConfig = new \Filter\Config();
+    $filterConfig = new JTL\Filter\Config();
     $filterConfig->setLanguageID($langID);
     $filterConfig->setLanguages($languages);
     $filterConfig->setConfig($config);
-    $filterConfig->setCustomerGroupID(\Session\Frontend::getCustomerGroup()->getID());
+    $filterConfig->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
     $filterConfig->setBaseURL(Shop::getURL() . '/');
-    $naviFilter = new \Filter\ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
+    $naviFilter = new JTL\Filter\ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;
@@ -1188,7 +1198,7 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
                         WHERE kSuchanfrage = :ks
                         ORDER BY kSuchanfrage',
                     ['ks' => $kKey],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
                 if (!empty($oSuchanfrage->cSuche)) {
                     $naviFilter->getSearchQuery()->setID($kKey)->setName($oSuchanfrage->cSuche);

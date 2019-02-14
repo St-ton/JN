@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Boxes\Renderer\ContainerRenderer;
+use JTL\Boxes\Renderer\ContainerRenderer;
 
 /**
  * Class Container
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 class Container extends AbstractBox
 {

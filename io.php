@@ -4,7 +4,10 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\IO\IO;
+use JTL\IO\IOMethods;
+use JTL\Shop;
 
 ob_start();
 

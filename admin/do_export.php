@@ -4,7 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Exportformat;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
@@ -35,7 +37,7 @@ $queue->foreignKey    = 'kExportformat';
 $queue->foreignKeyID  = $queue->kExportformat;
 
 $ef->startExport(
-    new \Cron\QueueEntry($queue),
+    new \JTL\Cron\QueueEntry($queue),
     isset($_GET['ajax']),
     isset($_GET['back']) && $_GET['back'] === 'admin',
     false,

@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace VerificationVAT;
+namespace JTL\VerificationVAT;
 
 /**
  * Class VATCheckNonEU
- * @package VerificationVAT
+ * @package JTL\VerificationVAT
  */
 class VATCheckNonEU extends AbstractVATCheck
 {

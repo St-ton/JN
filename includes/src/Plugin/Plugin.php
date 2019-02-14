@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
 use JTL\XMLParser;
 
 /**
  * Class Plugin
- * @package Plugin
+ * @package JTL\Plugin
  */
 class Plugin extends AbstractPlugin
 {

@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use DateTime;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 /**
  * Class Queue
- * @package Cron
+ * @package JTL\Cron
  */
 class Queue
 {
@@ -75,7 +77,7 @@ class Queue
     public function enqueueCronJobs(array $jobs): void
     {
         foreach ($jobs as $job) {
-            $queueEntry                = new \stdClass();
+            $queueEntry                = new stdClass();
             $queueEntry->cronID        = $job->cronID;
             $queueEntry->foreignKeyID  = $job->foreignKeyID;
             $queueEntry->foreignKey    = $job->foreignKey;
@@ -104,7 +106,7 @@ class Queue
             $this->logger->notice('Got job (ID = ' . $job->getCronID() . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->isRunning = 0;
-            $queueEntry->lastStart = new \DateTime();
+            $queueEntry->lastStart = new DateTime();
             $this->db->update(
                 'tcron',
                 'cronID',

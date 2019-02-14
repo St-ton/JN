@@ -4,9 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Helpers\Tax;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Checkout\Versandart;
+use JTL\Checkout\ZipValidator;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -14,7 +20,7 @@ $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 Tax::setTaxRates();
 $db                 = Shop::Container()->getDB();
 $standardwaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
@@ -106,7 +112,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken())
               ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
             WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag',
         ['kVersandzuschlag' => $_GET['delzus']],
-        \DB\ReturnType::DEFAULT
+        ReturnType::DEFAULT
     );
     $db->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
@@ -115,7 +121,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken())
 // Zuschlagliste editieren
 if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
     $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
-    $cISO             = StringHandler::convertISO6392ISO(Request::verifyGPDataString('cISO'));
+    $cISO             = Text::convertISO6392ISO(Request::verifyGPDataString('cISO'));
     if ($kVersandzuschlag > 0 && (mb_strlen($cISO) > 0 && $cISO !== 'noISO')) {
         $step = 'Zuschlagsliste';
         $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
@@ -179,7 +185,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
             $plz_x = $db->queryPrepared(
@@ -197,7 +203,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         }
         // (string-)merge the possible resulting 'overlaps'
@@ -206,12 +212,12 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         foreach ($plz_x as $oResult) {
             if (!empty($oResult->cPLZ) && (0 < mb_strlen($szPLZ))) {
                 $szPLZ .= ', ' . $oResult->cPLZ;
-            } elseif (!empty($oResult->cPLZ) && (0 === mb_strlen($szPLZ))) {
+            } elseif (!empty($oResult->cPLZ) && (mb_strlen($szPLZ) === 0)) {
                 $szPLZ = $oResult->cPLZ;
             }
-            if (!empty($oResult->cPLZAb) && (0 < mb_strlen($szPLZRange))) {
+            if (!empty($oResult->cPLZAb) && 0 < mb_strlen($szPLZRange)) {
                 $szPLZRange .= ', ' . $oResult->cPLZAb . '-' . $oResult->cPLZBis;
-            } elseif (!empty($oResult->cPLZAb) && (0 === mb_strlen($szPLZRange))) {
+            } elseif (!empty($oResult->cPLZAb) && mb_strlen($szPLZRange) === 0) {
                 $szPLZRange = $oResult->cPLZAb . '-' . $oResult->cPLZBis;
             }
         }
@@ -532,7 +538,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
 if ($step === 'neue Versandart') {
     $versandlaender = $db->query(
         'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     if ($versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
         $smarty->assign('einheit', 'kg');
@@ -566,7 +572,7 @@ if ($step === 'neue Versandart') {
            ->assign('waehrung', $standardwaehrung->cName)
            ->assign('kundengruppen', $db->query(
                'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-               \DB\ReturnType::ARRAY_OF_OBJECTS
+               ReturnType::ARRAY_OF_OBJECTS
            ))
            ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($kVersandartTMP, $sprachen))
            ->assign('gesetzteVersandklassen', isset($Versandart->cVersandklassen)
@@ -580,15 +586,15 @@ if ($step === 'neue Versandart') {
 if ($step === 'uebersicht') {
     $oKundengruppen_arr  = $db->query(
         'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $versandberechnungen = $db->query(
         'SELECT * FROM tversandberechnung ORDER BY cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $versandarten        = $db->query(
         'SELECT * FROM tversandart ORDER BY nSort, cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($versandarten as $method) {
         $method->versandartzahlungsarten = $db->query(
@@ -598,7 +604,7 @@ if ($step === 'uebersicht') {
                     ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
                 WHERE tversandartzahlungsart.kVersandart = ' . (int)$method->kVersandart . '
                 ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         foreach ($method->versandartzahlungsarten as $smp) {
@@ -667,7 +673,7 @@ if ($step === 'uebersicht') {
             }
         }
         $method->cKundengruppenName_arr  = [];
-        $kKundengruppe_arr               = StringHandler::parseSSK($method->cKundengruppen);
+        $kKundengruppe_arr               = Text::parseSSK($method->cKundengruppen);
         $method->oVersandartSprachen_arr = $db->selectAll(
             'tversandartsprache',
             'kVersandart',

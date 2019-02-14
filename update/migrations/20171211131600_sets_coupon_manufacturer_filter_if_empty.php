@@ -1,6 +1,9 @@
 <?php
 /** missing migration for manufacturer filter. sets coupon manufacturer filter if empty*/
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,6 +29,5 @@ class Migration_20171211131600 extends Migration implements IMigration
 
     public function down()
     {
-
     }
 }

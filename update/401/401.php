@@ -1,4 +1,7 @@
 <?php
+
+use JTL\Shop;
+
 require_once '../../includes/config.JTL-Shop.ini.php';
 require_once PFAD_ROOT . 'includes/defines.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
@@ -16,7 +19,7 @@ $shop = Shop::getInstance();
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 // datenbankverbindung aufbauen
 try {
-    $GLOBALS['DB'] = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $GLOBALS['DB'] = new \JTL\DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 } catch (Exception $exc) {
     die($exc->getMessage());
 }
@@ -24,7 +27,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 //datenbankverbindung aufbauen
 $cache = Shop::Container()->getCache();
-$cache->setJtlCacheConfig();
+$cache->setJtlCacheConfig($GLOBALS['DB']->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 $options            = $cache->getOptions();
 $options['enabled'] = false;
 $cache->setOptions($options);
@@ -36,9 +39,9 @@ if (!isset($_SESSION['AdminAccount'])) {
     exit;
 }
 
-$oVersion = $GLOBALS['DB']->executeQuery("SELECT * FROM tversion", 1);
+$oVersion = $GLOBALS['DB']->executeQuery('SELECT * FROM tversion', 1);
 if ((int)$oVersion->nVersion > 401) {
-    header('Location: ' . URL_SHOP . "/" . PFAD_ADMIN . "index.php");
+    header('Location: ' . URL_SHOP . '/' . PFAD_ADMIN . 'index.php');
     exit;
 }
 
@@ -46,24 +49,24 @@ if ((int)$oVersion->nVersion > 401) {
 $nVersionAfter = 402;
 // Vorbereitung
 $nStartStamp = time();
-if (intval(ini_get('max_execution_time')) < 320) {
+if ((int)ini_get('max_execution_time') < 320) {
     @ini_set('max_execution_time', 320);
 }
-$nMaxLaufzeit = intval(ini_get('max_execution_time')) / 2;  // Maximale Laufzeit, die das Script laufen darf
+$nMaxLaufzeit = (int)ini_get('max_execution_time') / 2;  // Maximale Laufzeit, die das Script laufen darf
 $nEndeStamp   = $nStartStamp + $nMaxLaufzeit;
 $cSQLDatei    = 'update1.sql';
 $file_handle  = null;
 $nRow         = 1;
-if (intval($_GET['nFirstStart']) === 1) {
+if ((int)$_GET['nFirstStart'] === 1) {
     resetteUpdateDB();// Fuegt Spalten hinzu die vielleicht noch nicht vorhanden sind und setzt alle wichtigen Spalten auf 0
     updateZeilenBis($cSQLDatei);// Laeuft die Datei durch und zaehlt die Reihen. Danach wird die Anzahl in der DB hinterlegt.
 }
-define('UPDATER_LOGFILE', PFAD_LOGFILES . 'update_' . intval($oVersion->nVersion) . '.log');
+define('UPDATER_LOGFILE', PFAD_LOGFILES . 'update_' . (int)$oVersion->nVersion . '.log');
 if (!file_exists($cSQLDatei)) {
     header('Location: ' . URL_SHOP . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=1');
     exit();
 }
-Shop::Container()->getDB()->query("UPDATE tversion SET nInArbeit = 1", 4);
+Shop::Container()->getDB()->query('UPDATE tversion SET nInArbeit = 1', 4);
 switch ($oVersion->nTyp) {
     case 1:    // SQL
         $file_handle = fopen($cSQLDatei, 'r');
@@ -75,7 +78,7 @@ switch ($oVersion->nTyp) {
                     }
                     if ($nRow >= $oVersion->nZeileVon) {
                         // Wurde bei einem SQL 3x ein Fehler ausgegeben?
-                        if (intval($oVersion->nFehler) >= 3) {
+                        if ((int)$oVersion->nFehler >= 3) {
                             fclose($file_handle);
                             header('Location: ' . URL_SHOP . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=999');
                             exit();
@@ -84,9 +87,9 @@ switch ($oVersion->nTyp) {
                         Shop::Container()->getDB()->query($cData, 4);
                         $nErrno = Shop::Container()->getDB()->getErrorCode();
                         if (!$nErrno || $nErrno == 1062 || $nErrno == 1060 || $nErrno == 1267) {
-                            writeLog(UPDATER_LOGFILE, $nRow . ": " . $cData . " erfolgreich ausgefuehrt.", 1);
+                            writeLog(UPDATER_LOGFILE, $nRow . ': ' . $cData . ' erfolgreich ausgefuehrt.', 1);
                             $nRow++;
-                            Shop::Container()->getDB()->query("UPDATE tversion SET nZeileVon = " . $nRow . ", nFehler=0, cFehlerSQL=''", 4);
+                            Shop::Container()->getDB()->query('UPDATE tversion SET nZeileVon = ' . $nRow . ", nFehler=0, cFehlerSQL=''", 4);
                             if ($nRow > $oVersion->nZeileBis) {
                                 fclose($file_handle);
                                 updateFertig($nVersionAfter); // Fertig
@@ -94,13 +97,13 @@ switch ($oVersion->nTyp) {
                         } else {
                             if (strpos(strtolower($cData), 'alter table')) {
                                 // Alter Table darf nicht nochmal ausgefuehrt werden
-                                Shop::Container()->getDB()->query("UPDATE tversion SET nFehler=3, cFehlerSQL='Zeile " . $nRow . ": " . str_replace("'", "", Shop::Container()->getDB()->getErrorMessage()) . "'", 4);
+                                Shop::Container()->getDB()->query("UPDATE tversion SET nFehler=3, cFehlerSQL='Zeile " . $nRow . ': ' . str_replace("'", '', Shop::Container()->getDB()->getErrorMessage()) . "'", 4);
                             } else {
-                                Shop::Container()->getDB()->query("UPDATE tversion SET nFehler=nFehler+1, cFehlerSQL='Zeile " . $nRow . ": " . str_replace("'", "", Shop::Container()->getDB()->getErrorMessage()) . "'", 4);
+                                Shop::Container()->getDB()->query("UPDATE tversion SET nFehler=nFehler+1, cFehlerSQL='Zeile " . $nRow . ': ' . str_replace("'", '', Shop::Container()->getDB()->getErrorMessage()) . "'", 4);
                             }
-                            writeLog(UPDATER_LOGFILE, "Fehler in Zeile " . $nRow . ": " . str_replace("'", "", Shop::Container()->getDB()->getErrorMessage()), 1);
+                            writeLog(UPDATER_LOGFILE, 'Fehler in Zeile ' . $nRow . ': ' . str_replace("'", '', Shop::Container()->getDB()->getErrorMessage()), 1);
                             fclose($file_handle);
-                            Shop::Container()->getDB()->query("UPDATE tversion SET nInArbeit = 0", 4);
+                            Shop::Container()->getDB()->query('UPDATE tversion SET nInArbeit = 0', 4);
                             header('Location: ' . URL_SHOP . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=1');
                             exit();
                         }
@@ -122,7 +125,7 @@ switch ($oVersion->nTyp) {
         break;
 }
 // Abschluss
-Shop::Container()->getDB()->query("UPDATE tversion SET nInArbeit = 0", 4);
+Shop::Container()->getDB()->query('UPDATE tversion SET nInArbeit = 0', 4);
 if ($file_handle) {
     fclose($file_handle);
 }

@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
-use DB\DbInterface;
-use DB\ReturnType;
 use Exception;
-use Shop;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class TwoFAEmergency

@@ -4,23 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\ReturnType;
-use Kundengruppe;
-use Shop;
+use JTL\DB\ReturnType;
+use JTL\Customer\Kundengruppe;
+use JTL\Media\Image\Overlay;
+use JTL\Shop;
 use stdClass;
 
 /**
  * Class SearchSpecial
- * @package Helpers
+ * @package JTL\Helpers
  * @since 5.0.0
  */
 class SearchSpecial
 {
     /**
      * @param int $langID
-     * @return \Media\Image\Overlay[]
+     * @return Overlay[]
      * @former holeAlleSuchspecialOverlays()
      * @since 5.0.0
      */
@@ -36,12 +37,12 @@ class SearchSpecial
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($types as $type) {
-                $overlay = \Media\Image\Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
+                $overlay = Overlay::getInstance((int)$type->kSuchspecialOverlay, $langID);
                 if ($overlay->getActive() === 1) {
                     $overlays[] = $overlay;
                 }
             }
-            $overlays = \Functional\sort($overlays, function (\Media\Image\Overlay $left, \Media\Image\Overlay $right) {
+            $overlays = \Functional\sort($overlays, function (Overlay $left, Overlay $right) {
                 return $left->getPriority() > $right->getPriority();
             });
             Shop::Container()->getCache()->set($cacheID, $overlays, [\CACHING_GROUP_OPTION]);

@@ -4,9 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Debug\DataCollector\Smarty;
-use Helpers\PHPSettings;
+use JTL\Debug\DataCollector\Smarty;
+use JTL\Helpers\PHPSettings;
+use JTL\Profiler;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Template;
 use JTLShop\SemVer\Version;
+use JTL\Session\Frontend;
+use JTL\Plugin\Helper;
+use JTL\Filter\Metadata;
 
 $nStartzeit = microtime(true);
 
@@ -99,13 +106,13 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $pluginHooks    = \Plugin\Helper::getHookList();
+    $pluginHooks    = Helper::getHookList();
     $template       = Template::getInstance();
-    $globalMetaData = \Filter\Metadata::getGlobalMetaData();
+    $globalMetaData = Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)
-        ? \Session\Frontend::getInstance(true, true, 'JTLCRON')
-        : \Session\Frontend::getInstance();
+        ? Frontend::getInstance(true, true, 'JTLCRON')
+        : Frontend::getInstance();
     $bAdminWartungsmodus = false;
     if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';

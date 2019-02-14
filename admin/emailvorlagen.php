@@ -4,18 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\Revision;
-use Helpers\Date;
-use Helpers\Form;
-use Helpers\Request;
-use Helpers\ShippingMethod;
+use JTL\Backend\Revision;
+use JTL\Helpers\Date;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferschein;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Checkout\Versand;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $mailTpl             = null;
 $nFehler             = 0;
 $continue            = true;
@@ -76,14 +83,14 @@ if (isset($_POST['resetEmailvorlage'])
                     LEFT JOIN temailvorlagesprache
                         ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
                     WHERE temailvorlage.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             );
             $db->query(
                 'INSERT INTO temailvorlage
                     SELECT *
                     FROM temailvorlageoriginal
                     WHERE temailvorlageoriginal.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             );
         }
         $db->query(
@@ -91,7 +98,7 @@ if (isset($_POST['resetEmailvorlage'])
                 SELECT *
                 FROM ' . $originalTableName . '
                 WHERE ' . $originalTableName . '.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $languages = Sprache::getAllLanguages();
         if (Request::verifyGPCDataInt('kPlugin') === 0) {
@@ -117,12 +124,12 @@ if (isset($_POST['resetEmailvorlage'])
                     $text              = file_get_contents($filePlain);
                     $doDecodeHtml      = function_exists('mb_detect_encoding')
                         ? (mb_detect_encoding($html, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
-                        : (StringHandler::is_utf8($html) === 1);
+                        : (Text::is_utf8($html) === 1);
                     $doDecodeText      = function_exists('mb_detect_encoding')
                         ? (mb_detect_encoding($text, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
-                        : (StringHandler::is_utf8($text) === 1);
-                    $upd->cContentHtml = $doDecodeHtml === true ? StringHandler::convertUTF8($html) : $html;
-                    $upd->cContentText = $doDecodeText === true ? StringHandler::convertUTF8($text) : $text;
+                        : (Text::is_utf8($text) === 1);
+                    $upd->cContentHtml = $doDecodeHtml === true ? Text::convertUTF8($html) : $html;
+                    $upd->cContentText = $doDecodeText === true ? Text::convertUTF8($text) : $text;
                     $db->update(
                         $localizedTableName,
                         ['kEmailVorlage', 'kSprache'],
@@ -140,7 +147,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         'SELECT * 
             FROM tsprache 
             ORDER BY cShopStandard DESC, cNameDeutsch',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $mailTpl                 = $db->select(
         $tableName,
@@ -611,7 +618,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         'SELECT * 
             FROM tsprache 
             ORDER BY cShopStandard DESC, cNameDeutsch',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     if (!isset($localized) || is_array($localized)) {
         $localized = new stdClass();
@@ -774,8 +781,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                 ]
             );
             $db->insert($localizedTableName, $localized);
-            $mailSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
-            $mailSmarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
+            $mailSmarty = new \JTL\Smarty\JTLSmarty(true, \JTL\Smarty\ContextType::MAIL);
+            $mailSmarty->registerResource('db', new \JTL\Smarty\SmartyResourceNiceDB($db, \JTL\Smarty\ContextType::MAIL))
                        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)
                        ->setDebugging(Smarty::DEBUG_OFF)

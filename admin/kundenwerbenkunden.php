@@ -4,16 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'kwk_uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 
@@ -47,18 +51,18 @@ if ($step === 'kwk_uebersicht') {
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 0',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     $nonRegCount = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 1',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     $bonusCount  = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tkundenwerbenkundenbonus',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     $pagiNonReg  = (new Pagination('nichtreg'))
         ->setItemCount($regCount->nAnzahl)
@@ -80,7 +84,7 @@ if ($step === 'kwk_uebersicht') {
             WHERE tkundenwerbenkunden.nRegistriert = 0
             ORDER BY tkundenwerbenkunden.dErstellt DESC 
             LIMIT " . $pagiNonReg->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($nonRegistered as $item) {
         $cstmr                  = new Kunde((int)($item->kKundeBestand ?? 0));
@@ -96,7 +100,7 @@ if ($step === 'kwk_uebersicht') {
             WHERE tkundenwerbenkunden.nRegistriert = 1
             ORDER BY tkundenwerbenkunden.dErstellt DESC 
             LIMIT " . $pagiReg->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($registered as $customer) {
         $regCstmr = new Kunde($customer->kKunde ?? 0);
@@ -115,7 +119,7 @@ if ($step === 'kwk_uebersicht') {
                 ON tkunde.kKunde = tkundenwerbenkundenbonus.kKunde
             ORDER BY dErhalten DESC 
             LIMIT " . $pagiBonus->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($last100bonus as $item) {
         $cstmr                  = new Kunde((int)($item->kKundeBestand ?? 0));

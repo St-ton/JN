@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
 /**
  * Class JobHydrator
- * @package Cron
+ * @package JTL\Cron
  */
 final class JobHydrator
 {

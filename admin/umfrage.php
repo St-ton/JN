@@ -4,16 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
+use JTL\Nice;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
 $step        = 'umfrage_uebersicht';
@@ -45,9 +51,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         DATE_FORMAT(dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de
                         FROM tumfrage
                         WHERE kUmfrage = " . $kUmfrage,
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
-                $survey->kKundengruppe_arr = StringHandler::parseSSK($survey->cKundengruppe);
+                $survey->kKundengruppe_arr = Text::parseSSK($survey->cKundengruppe);
 
                 $smarty->assign('oUmfrage', $survey)
                        ->assign('s1', Request::verifyGPCDataInt('s1'));
@@ -68,7 +74,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
                                tumfragefrageantwort.kUmfrageFrageAntwort
                         WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
@@ -84,7 +90,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
                                tumfragematrixoption.kUmfrageMatrixOption
                         WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
@@ -159,9 +165,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $db->delete('tumfrage', 'kUmfrage', $kUmfrage);
                         $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     }
-                    $survey->cSeo = \JTL\SeoHelper::checkSeo(
-                        \JTL\SeoHelper::getSeo(mb_strlen($cSeo) > 0 ? $cSeo : $cName)
-                    );
+                    $survey->cSeo = Seo::checkSeo(Seo::getSeo(mb_strlen($cSeo) > 0 ? $cSeo : $cName));
                     if (isset($kUmfrage) && $kUmfrage > 0) {
                         $survey->kUmfrage = $kUmfrage;
                         $db->insert('tumfrage', $survey);
@@ -290,7 +294,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         'SELECT kUmfrageFrage
                             FROM tumfragefrage
                             WHERE kUmfrage = ' . $kUmfrage,
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                        ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oUmfrageFrage_arr as $question) {
                         loescheFrage($question->kUmfrageFrage);
@@ -305,7 +309,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                               ON tumfragedurchfuehrungantwort.kUmfrageDurchfuehrung = 
                                  tumfragedurchfuehrung.kUmfrageDurchfuehrung
                             WHERE tumfragedurchfuehrung.kUmfrage = ' . $kUmfrage,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
                 $alertHelper->addAlert(Alert::TYPE_NOTE, __('successPollDelete'), 'successPollDelete');
@@ -341,7 +345,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                                 ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
                                    tumfragefrageantwort.kUmfrageFrageAntwort
                             WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
                 $alertHelper->addAlert(Alert::TYPE_NOTE, __('successAnswerDelete'), 'successAnswerDelete');
@@ -360,7 +364,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                                 ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
                                    tumfragematrixoption.kUmfrageMatrixOption
                             WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
 
@@ -377,7 +381,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
                     WHERE kUmfrage = ' . $kUmfrageTMP,
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
             if (count($oUmfrageDurchfuehrung_arr) > 0) {
@@ -444,11 +448,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
                         FROM tumfrage
                         WHERE kUmfrage = " . $kUmfrage,
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
                 if ($survey->kUmfrage > 0) {
                     $survey->cKundengruppe_arr = [];
-                    foreach (StringHandler::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
+                    foreach (Text::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
                         if ($kKundengruppe == -1) {
                             $survey->cKundengruppe_arr[] = 'Alle';
                         } else {
@@ -513,7 +517,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             'SELECT COUNT(*) AS nAnzahl
                 FROM tumfrage
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         $pagination  = (new Pagination())
             ->setItemCount((int)$surveyCount->nAnzahl)
@@ -530,11 +534,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 GROUP BY tumfrage.kUmfrage
                 ORDER BY dGueltigVon DESC
                 LIMIT ' . $pagination->getLimitSQL(),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($surveys as $i => $survey) {
             $survey->cKundengruppe_arr = [];
-            foreach (StringHandler::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
+            foreach (Text::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
                 if ($kKundengruppe == -1) {
                     $surveys[$i]->cKundengruppe_arr[] = 'Alle';
                 } else {
@@ -542,7 +546,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         'SELECT cName
                             FROM tkundengruppe
                             WHERE kKundengruppe = ' . (int)$kKundengruppe,
-                        \DB\ReturnType::SINGLE_OBJECT
+                        ReturnType::SINGLE_OBJECT
                     );
                     if (!empty($oKundengruppe->cName)) {
                         $surveys[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
@@ -559,7 +563,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         'SELECT kKundengruppe, cName
             FROM tkundengruppe
             ORDER BY cStandard DESC',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $coupons        = $db->query(
         "SELECT tkupon.kKupon, tkuponsprache.cName
@@ -572,7 +576,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 AND tkupon.cAktiv = 'Y'
                 AND tkuponsprache.cISOSprache = '" . $oSpracheTMP->cISO . "'
             ORDER BY tkupon.cName",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oKundengruppe_arr', $customerGroups)

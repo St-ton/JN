@@ -4,7 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
+use JTL\Helpers\Product;
+use JTL\Catalog\Product\Artikel;
+use JTL\Shop;
 
 /**
  * @param int       $kArtikel
@@ -245,8 +247,8 @@ function buildConfig($kArtikel, $fAnzahl, $variations, $configGroups, $configGro
 }
 
 /**
- * @param int              $kKonfig
- * @param Smarty\JTLSmarty $smarty
+ * @param int                   $kKonfig
+ * @param \JTL\Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
 function holeKonfigBearbeitenModus($kKonfig, $smarty)

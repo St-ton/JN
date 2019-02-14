@@ -4,21 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\ProductFilter;
-use Session\Frontend;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\ProductFilter;
+use JTL\MagicCompatibilityTrait;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class BaseSearchSpecial
- * @package Filter\States
+ * @package JTL\Filter\States
  */
 class BaseSearchSpecial extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -74,27 +76,27 @@ class BaseSearchSpecial extends AbstractFilter
         }
         switch ($this->getValue()) {
             case \SEARCHSPECIALS_BESTSELLER:
-                $this->setName(\Shop::Lang()->get('bestsellers'));
+                $this->setName(Shop::Lang()->get('bestsellers'));
                 break;
             case \SEARCHSPECIALS_SPECIALOFFERS:
-                $this->setName(\Shop::Lang()->get('specialOffers'));
+                $this->setName(Shop::Lang()->get('specialOffers'));
                 break;
             case \SEARCHSPECIALS_NEWPRODUCTS:
-                $this->setName(\Shop::Lang()->get('newProducts'));
+                $this->setName(Shop::Lang()->get('newProducts'));
                 break;
             case \SEARCHSPECIALS_TOPOFFERS:
-                $this->setName(\Shop::Lang()->get('topOffers'));
+                $this->setName(Shop::Lang()->get('topOffers'));
                 break;
             case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                $this->setName(\Shop::Lang()->get('upcomingProducts'));
+                $this->setName(Shop::Lang()->get('upcomingProducts'));
                 break;
             case \SEARCHSPECIALS_TOPREVIEWS:
-                $this->setName(\Shop::Lang()->get('topReviews'));
+                $this->setName(Shop::Lang()->get('topReviews'));
                 break;
             default:
                 // invalid search special ID
-                \Shop::$is404        = true;
-                \Shop::$kSuchspecial = 0;
+                Shop::$is404        = true;
+                Shop::$kSuchspecial = 0;
                 break;
         }
 

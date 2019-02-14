@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 use function Functional\none;
 
 /**
  * Class ObjectValidationResult
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 class SetValidationResult implements SetValidationResultInterface
 {

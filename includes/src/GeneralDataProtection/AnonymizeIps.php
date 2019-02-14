@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class AnonymizeIps
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * anonymize IPs in various tables.
  *
@@ -143,7 +144,7 @@ class AnonymizeIps extends Method implements MethodInterface
             $sql .= " ORDER BY {$colData['ColCreated']} ASC
                 LIMIT {$this->workLimit}";
 
-            $res = \Shop::Container()->getDB()->query(
+            $res = Shop::Container()->getDB()->query(
                 $sql,
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -154,7 +155,7 @@ class AnonymizeIps extends Method implements MethodInterface
                     ($this->logger === null) ?: $this->logger->log(\JTLLOG_LEVEL_WARNING, $e->getMessage());
                 }
                 $szKeyColName = $colData['ColKey'];
-                \Shop::Container()->getDB()->update(
+                Shop::Container()->getDB()->update(
                     $tableName,
                     $colData['ColKey'],
                     (int)$row->$szKeyColName,

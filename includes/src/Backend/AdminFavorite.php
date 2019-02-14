@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
 use Exception;
-use Helpers\GeneralObject;
-use Helpers\URL;
-use Shop;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\URL;
+use JTL\Shop;
 
 /**
  * Class AdminFavorite
- * @package Backend
+ * @package JTL\Backend
  */
 class AdminFavorite
 {
@@ -43,8 +43,7 @@ class AdminFavorite
     public $nSort;
 
     /**
-     * Konstruktor
-     *
+     * AdminFavorite constructor.
      * @param int $kAdminfav
      */
     public function __construct(int $kAdminfav = 0)
@@ -70,8 +69,6 @@ class AdminFavorite
     }
 
     /**
-     * Fügt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
      * @return int
      */
     public function insertInDB(): int
@@ -83,8 +80,6 @@ class AdminFavorite
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
     public function updateInDB(): int

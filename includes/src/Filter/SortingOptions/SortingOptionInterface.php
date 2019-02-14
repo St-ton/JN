@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\Join;
+use JTL\Filter\Join;
 
 /**
  * Interface SortingOptionInterface
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 interface SortingOptionInterface
 {

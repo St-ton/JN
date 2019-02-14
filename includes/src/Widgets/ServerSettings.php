@@ -4,16 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\Helpers\PHPSettings;
 
 /**
  * Class ServerSettings
- * @package Widgets
+ * @package JTL\Widgets
  */
 class ServerSettings extends AbstractWidget
 {
     /**
-     * @var \Helpers\PHPSettings
+     * @var PHPSettings
      */
     private $helper;
 
@@ -22,7 +24,7 @@ class ServerSettings extends AbstractWidget
      */
     public function init()
     {
-        $this->helper = \Helpers\PHPSettings::getInstance();
+        $this->helper = PHPSettings::getInstance();
         $this->oSmarty->assign('maxExecutionTime', \ini_get('max_execution_time'))
                       ->assign('bMaxExecutionTime', $this->checkMaxExecutionTime())
                       ->assign('maxFilesize', \ini_get('upload_max_filesize'))

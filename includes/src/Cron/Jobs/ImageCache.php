@@ -4,16 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
-use MediaImage;
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
+use JTL\Media\Image;
+use JTL\Media\MediaImage;
 
 /**
  * Class ImageCache
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class ImageCache extends Job
 {
@@ -41,7 +42,7 @@ class ImageCache extends Job
      * @return bool
      * @throws \Exception
      */
-    private function generateImageCache(int $index, string $type = \Image::TYPE_PRODUCT): bool
+    private function generateImageCache(int $index, string $type = Image::TYPE_PRODUCT): bool
     {
         $rendered = 0;
         $total    = MediaImage::getUncachedProductImageCount();

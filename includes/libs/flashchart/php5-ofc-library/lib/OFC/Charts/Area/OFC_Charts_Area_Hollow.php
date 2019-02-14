@@ -26,16 +26,16 @@ class OFC_Charts_Area_Hollow extends OFC_Charts_Area
     {
         parent::__construct();
 
-        $this->type      = 'area_hollow';
+        $this->type = 'area_hollow';
 
         $this->{'fill-alpha'} = 0.35;
 
-        $this->values    = array();
+        $this->values = array();
     }
 
     public function set_width($w)
     {
-        $this->width     = $w;
+        $this->width = $w;
     }
 
     public function set_colour($colour)
@@ -55,7 +55,7 @@ class OFC_Charts_Area_Hollow extends OFC_Charts_Area
 
     public function set_key($text, $font_size)
     {
-        $this->text      = $text;
+        $this->text          = $text;
         $this->{'font-size'} = $font_size;
     }
 }

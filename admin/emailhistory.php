@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Pagination\Pagination;
+use JTL\Emailhistory;
+use JTL\Helpers\Form;
+use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step            = 'uebersicht';
 $nAnzahlProSeite = 30;
 $oEmailhistory   = new Emailhistory();

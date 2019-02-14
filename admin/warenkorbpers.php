@@ -4,15 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Cart\WarenkorbPers;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step              = 'uebersicht';
 $settingsIDs       = [540];
 $searchSQL         = new stdClass();
@@ -23,7 +28,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
+    $cSuche = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
     if (mb_strlen($cSuche) > 0) {
         $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
             OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
@@ -65,7 +70,7 @@ $customerCount = (int)Shop::Container()->getDB()->query(
             ' . $searchSQL->cWHERE . '
             GROUP BY tkunde.kKunde
         ) AS tAnzahl',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 )->count;
 
 $oPagiKunden = (new Pagination('kunden'))
@@ -85,7 +90,7 @@ $customers = Shop::Container()->getDB()->query(
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
         LIMIT ' . $oPagiKunden->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 foreach ($customers as $item) {
@@ -108,7 +113,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = ' . $kKunde,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 
     $oPagiWarenkorb = (new Pagination('warenkorb'))
@@ -126,7 +131,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $kKunde . '
             LIMIT ' . $oPagiWarenkorb->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
         $customer = new Kunde($cart->kKundeTMP);

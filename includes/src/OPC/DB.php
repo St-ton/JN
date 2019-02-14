@@ -4,28 +4,31 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use OPC\Portlets\MissingPortlet;
-use Plugin\Plugin;
-use Plugin\PluginLoader;
+use Exception;
+use InvalidArgumentException;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\OPC\Portlets\MissingPortlet;
+use JTL\Plugin\PluginLoader;
+use JTL\Shop;
 
 /**
  * Class DB
- * @package OPC
+ * @package JTL\OPC
  */
 class DB
 {
     /**
-     * @var null|DbInterface
+     * @var DbInterface
      */
     protected $shopDB;
 
     /**
      * DB constructor.
-     * @param \DB\DbInterface $shopDB
+     *
+     * @param DbInterface $shopDB
      */
     public function __construct(DbInterface $shopDB)
     {
@@ -76,14 +79,14 @@ class DB
 
     /**
      * @param Blueprint $blueprint
-     * @throws \Exception
+     * @throws Exception
      */
     public function loadBlueprint(Blueprint $blueprint): void
     {
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
 
         if (!\is_object($blueprintDB)) {
-            throw new \Exception("The OPC blueprint with the id '{$blueprint->getId()}' could not be found.");
+            throw new Exception("The OPC blueprint with the id '{$blueprint->getId()}' could not be found.");
         }
 
         $content = \json_decode($blueprintDB->cJson, true);
@@ -96,12 +99,12 @@ class DB
     /**
      * @param Blueprint $blueprint
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveBlueprint(Blueprint $blueprint): self
     {
         if ($blueprint->getName() === '') {
-            throw new \Exception('The OPC blueprint data to be saved is incomplete or invalid.');
+            throw new Exception('The OPC blueprint data to be saved is incomplete or invalid.');
         }
 
         $blueprintDB = (object)[
@@ -114,13 +117,13 @@ class DB
             $res = $this->shopDB->update('topcblueprint', 'kBlueprint', $blueprint->getId(), $blueprintDB);
 
             if ($res === -1) {
-                throw new \Exception('The OPC blueprint could not be updated in the DB.');
+                throw new Exception('The OPC blueprint could not be updated in the DB.');
             }
         } else {
             $key = $this->shopDB->insert('topcblueprint', $blueprintDB);
 
             if ($key === 0) {
-                throw new \Exception('The OPC blueprint could not be inserted into the DB.');
+                throw new Exception('The OPC blueprint could not be inserted into the DB.');
             }
 
             $blueprint->setId($key);
@@ -132,7 +135,7 @@ class DB
     /**
      * @param bool $withInactive
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletGroups(bool $withInactive = false): array
     {
@@ -152,7 +155,7 @@ class DB
      * @param string $groupName
      * @param bool   $withInactive
      * @return PortletGroup
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPortletGroup(string $groupName, bool $withInactive = false): PortletGroup
     {
@@ -176,7 +179,7 @@ class DB
 
     /**
      * @return Portlet[]
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAllPortlets(): array
     {
@@ -204,32 +207,31 @@ class DB
     /**
      * @param string $class
      * @return Portlet
-     * @throws \Exception
-     * @throws \InvalidArgumentException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function getPortlet(string $class): Portlet
     {
         if ($class === '') {
-            throw new \InvalidArgumentException("The OPC portlet class name '$class' is invalid.");
+            throw new InvalidArgumentException("The OPC portlet class name '$class' is invalid.");
         }
 
+        $plugin      = null;
         $portletDB   = $this->shopDB->select('topcportlet', 'cClass', $class);
         $isInstalled = \is_object($portletDB);
         $isActive    = $isInstalled && (int)$portletDB->bActive === 1;
         $fromPlugin  = $isInstalled && (int)$portletDB->kPlugin > 0;
 
         if ($fromPlugin) {
-            $loader  = new PluginLoader($this->shopDB, \Shop::Container()->getCache());
-            /** @var Plugin $plugin */
-            $plugin  = $loader->init((int)$portletDB->kPlugin);
-            $include = $plugin->getPaths()->getPortletsPath() . $portletDB->cClass . '/' . $portletDB->cClass
-                . '.php';
-            require_once $include;
+            $loader = new PluginLoader($this->shopDB, Shop::Container()->getCache());
+            $plugin = $loader->init((int)$portletDB->kPlugin);
+            $file   = $plugin->getPaths()->getPortletsPath() . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
+            require_once $file;
         }
 
         if ($isInstalled && $isActive) {
             /** @var Portlet $portlet */
-            $fullClass = "\\OPC\\Portlets\\$class";
+            $fullClass = "\\JTL\\OPC\\Portlets\\$class";
             $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
             return $portlet
                 ->setTitle($portletDB->cTitle)

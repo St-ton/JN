@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use DB\DbInterface;
-use Plugin\LegacyPlugin;
+use JTL\DB\DbInterface;
+use JTL\Plugin\LegacyPlugin;
+use stdClass;
 
 /**
  * Class AbstractItem
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 abstract class AbstractItem implements ItemInterface
 {
@@ -21,12 +22,12 @@ abstract class AbstractItem implements ItemInterface
     protected $db;
 
     /**
-     * @var \stdClass
+     * @var stdClass
      */
     protected $plugin;
 
     /**
-     * @var \stdClass|LegacyPlugin|null
+     * @var stdClass|LegacyPlugin|null
      */
     protected $oldPlugin;
 
@@ -70,23 +71,23 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    public function getPlugin(): \stdClass
+    public function getPlugin(): stdClass
     {
         return $this->plugin;
     }
 
     /**
-     * @param \stdClass $plugin
+     * @param stdClass $plugin
      */
-    public function setPlugin(\stdClass $plugin): void
+    public function setPlugin(stdClass $plugin): void
     {
         $this->plugin = $plugin;
     }
 
     /**
-     * @return LegacyPlugin|\stdClass|null
+     * @return LegacyPlugin|stdClass|null
      */
     public function getOldPlugin()
     {
@@ -94,7 +95,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @param LegacyPlugin|\stdClass|null $oldPlugin
+     * @param LegacyPlugin|stdClass|null $oldPlugin
      */
     public function setOldPlugin($oldPlugin): void
     {

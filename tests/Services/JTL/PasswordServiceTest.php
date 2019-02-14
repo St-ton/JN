@@ -6,6 +6,8 @@
 
 namespace Services\JTL;
 
+use JTL\Services\JTL\CryptoService;
+use JTL\Services\JTL\PasswordService;
 use PHPUnit\Framework\TestCase;
 
 /**

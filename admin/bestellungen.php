@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_VIEW', true, true);
 
 $step            = 'bestellungen_uebersicht';
@@ -33,7 +34,7 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
     }
 } elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
-    $cSuche = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
+    $cSuche = Text::filterXSS(Request::verifyGPDataString('cSuche'));
     if (mb_strlen($cSuche) > 0) {
         $cSuchFilter = $cSuche;
     } else {

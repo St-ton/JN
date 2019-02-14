@@ -11,7 +11,7 @@
                 {if $oPluginAdminMenu->kPluginAdminMenu !== $confItem->menuID}
                     {continue}
                 {/if}
-                {if $confItem->confType === Plugin\Data\Config::TYPE_NOT_CONFIGURABLE}
+                {if $confItem->confType === JTL\Plugin\Data\Config::TYPE_NOT_CONFIGURABLE}
                     {if $open > 0}
                         </div><!-- .panel-body -->
                         </div><!-- .panel -->
@@ -26,7 +26,7 @@
                     </div>
                     <div class="panel-body">
                     {assign var=open value=1}
-                {elseif $confItem->inputType === Plugin\Admin\InputType::NONE}
+                {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::NONE}
                     <!-- not showing {$confItem->valueID} -->
                 {else}
                     {if $open === 0 && $confItem@index === 0}
@@ -40,10 +40,10 @@
                             <label for="{$confItem->valueID}">{$confItem->niceName}</label>
                         </span>
                         <span class="input-group-wrap">
-                        {if $confItem->inputType === Plugin\Admin\InputType::SELECT}
-                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}" class="form-control combo"{if $confItem->confType === Plugin\ExtensionData\Config::TYPE_DYNAMIC} multiple{/if}>
+                        {if $confItem->inputType === JTL\Plugin\Admin\InputType::SELECT}
+                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}" class="form-control combo"{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC} multiple{/if}>
                                 {foreach $confItem->options as $option}
-                                    {if $confItem->confType === Plugin\Data\Config::TYPE_DYNAMIC && $confItem->value|is_array}
+                                    {if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC && $confItem->value|is_array}
                                         {assign var=selected value=($option->value|in_array:$confItem->value)}
                                     {else}
                                         {assign var=selected value=($confItem->value == $option->value)}
@@ -51,7 +51,7 @@
                                     <option value="{$option->value}"{if $selected} selected{/if}>{$option->niceName}</option>
                                 {/foreach}
                             </select>
-                        {elseif $confItem->inputType === Plugin\Admin\InputType::COLORPICKER}
+                        {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::COLORPICKER}
                             <div id="{$confItem->valueID}" style="display:inline-block">
                                 <div style="background-color: {$confItem->value}" class="colorSelector"></div>
                             </div>
@@ -73,17 +73,17 @@
                                     {rdelim}
                                 {rdelim});
                             </script>
-                        {elseif $confItem->inputType === Plugin\Admin\InputType::PASSWORD}
+                        {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::PASSWORD}
                             <input autocomplete="off" class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="password" value="{$confItem->value}" />
-                        {elseif $confItem->inputType === Plugin\Admin\InputType::TEXTAREA}
+                        {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::TEXTAREA}
                             <textarea class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}">{$confItem->value}</textarea>
-                        {elseif $confItem->inputType === Plugin\Admin\InputType::NUMBER || $confItem->inputType === 'zahl'}
+                        {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::NUMBER || $confItem->inputType === 'zahl'}
                             <input class="form-control" type="number" name="{$confItem->valueID}" id="{$confItem->valueID}" value="{$confItem->value}" />
-                        {elseif $confItem->inputType === Plugin\Admin\InputType::CHECKBOX}
+                        {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::CHECKBOX}
                             <div class="input-group-checkbox-wrap">
                                 <input class="form-control" id="{$confItem->valueID}" type="checkbox" name="{$confItem->valueID}"{if $confItem->value === 'on'} checked="checked"{/if}>
                             </div>
-                        {elseif $confItem->inputType === Plugin\Admin\InputType::RADIO}
+                        {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::RADIO}
                             <div class="input-group-checkbox-wrap">
                             {foreach $confItem->options as $option}
                                 <input id="opt-{$option->id}-{$option@iteration}"

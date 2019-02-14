@@ -4,10 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filesystem;
+namespace JTL\Filesystem;
 
-use Path;
+use JTL\Path;
 
+/**
+ * Class AbstractFilesystem
+ * @package JTL\Filesystem
+ */
 abstract class AbstractFilesystem implements IFilesystem
 {
     /**

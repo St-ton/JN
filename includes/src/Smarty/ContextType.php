@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Smarty;
+namespace JTL\Smarty;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class ContextType
- * @package Smarty
+ * @package JTL\Smarty
  */
 class ContextType extends Enum
 {

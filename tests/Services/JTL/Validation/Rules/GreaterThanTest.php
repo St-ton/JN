@@ -6,6 +6,7 @@
 
 namespace Services\JTL\Validation\Rules;
 
+use JTL\Services\JTL\Validation\Rules\GreaterThan;
 use PHPUnit\Framework\TestCase;
 
 /**

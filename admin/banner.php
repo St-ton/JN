@@ -4,11 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\ImageMap;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Boxes\Admin\BoxAdmin;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cAction     = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
@@ -187,5 +192,6 @@ switch ($cAction) {
 }
 
 $smarty->assign('cAction', $cAction)
+       ->assign('validPageTypes', (new BoxAdmin(Shop::Container()->getDB()))->getMappedValidPageTypes())
        ->assign('oBanner_arr', holeAlleBanner())
        ->display('banner.tpl');

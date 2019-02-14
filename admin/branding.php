@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Media\MediaImage;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'branding_uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 
@@ -62,7 +65,7 @@ function gibBranding(int $kBranding)
             WHERE tbranding.kBranding = :bid
             GROUP BY tbranding.kBranding',
         ['bid' => $kBranding],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 }
 

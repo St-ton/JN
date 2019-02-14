@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Catalog\Trennzeichen;
+
 /**
  * @param array $cPostAssoc_arr
  * @return bool

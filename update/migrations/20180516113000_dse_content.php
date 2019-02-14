@@ -6,6 +6,9 @@
  * @created Wed, 16 May 2018 11:30:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -30,16 +33,16 @@ class Migration_20180516113000 extends Migration implements IMigration
                 ADD COLUMN cDSEContentHtml TEXT DEFAULT ''"
         );
         $this->execute(
-            "ALTER TABLE temailvorlage 
-                ADD COLUMN nDSE TINYINT(3) UNSIGNED NOT NULL DEFAULT 0"
+            'ALTER TABLE temailvorlage 
+                ADD COLUMN nDSE TINYINT(3) UNSIGNED NOT NULL DEFAULT 0'
         );
         $this->execute(
-            "ALTER TABLE tpluginemailvorlage 
-                ADD COLUMN nDSE TINYINT(3) UNSIGNED NOT NULL DEFAULT 0"
+            'ALTER TABLE tpluginemailvorlage 
+                ADD COLUMN nDSE TINYINT(3) UNSIGNED NOT NULL DEFAULT 0'
         );
         $this->execute(
-            "ALTER TABLE temailvorlageoriginal 
-                ADD COLUMN nDSE TINYINT(3) UNSIGNED NOT NULL DEFAULT 0"
+            'ALTER TABLE temailvorlageoriginal 
+                ADD COLUMN nDSE TINYINT(3) UNSIGNED NOT NULL DEFAULT 0'
         );
         $this->setLocalization('ger', 'global', 'dse', 'Datenschutzerklärung');
         $this->setLocalization('eng', 'global', 'dse', 'Data privacy policy');

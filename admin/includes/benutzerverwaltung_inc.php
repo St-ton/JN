@@ -4,8 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\TwoFA;
-use Helpers\Request;
+use JTL\Backend\TwoFA;
+use JTL\Helpers\Request;
+use JTL\IO\IOResponse;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * @param int $kAdminlogin
@@ -26,7 +31,7 @@ function getAdminList(): array
             LEFT JOIN tadminlogingruppe
                 ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
          ORDER BY kAdminlogin',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -41,7 +46,7 @@ function getAdminGroups(): array
             LEFT JOIN tadminlogin
                 ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
             GROUP BY tadminlogingruppe.kAdminlogingruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -158,15 +163,15 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
         $handledKeys = [];
         $db          = Shop::Container()->getDB();
         foreach ($extAttribs as $key => $value) {
-            $key      = StringHandler::filterXSS($key);
+            $key      = Text::filterXSS($key);
             $longText = null;
             if (is_array($value) && count($value) > 0) {
-                $shortText = StringHandler::filterXSS($value[0]);
+                $shortText = Text::filterXSS($value[0]);
                 if (count($value) > 1) {
                     $longText = $value[1];
                 }
             } else {
-                $shortText = StringHandler::filterXSS($value);
+                $shortText = Text::filterXSS($value);
             }
             if ($db->queryPrepared(
                 'INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue, cAttribText)
@@ -180,7 +185,7 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
                     'attribVal'  => $shortText,
                     'attribText' => $longText ?? 'NULL'
                 ],
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             ) === 0) {
                 $messages['error'] .= $key . __('errorKeyChange');
             }
@@ -191,7 +196,7 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
             'DELETE FROM tadminloginattribut
                 WHERE kAdminlogin = ' . (int)$account->kAdminlogin . "
                     AND cName NOT IN ('" . implode("', '", $handledKeys) . "')",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
     }
 
@@ -230,7 +235,7 @@ function benutzerverwaltungActionAccountLock(array &$messages)
                 'messages' => &$messages,
                 'result'   => &$result,
             ]);
-            if (true === $result) {
+            if ($result === true) {
                 $messages['notice'] .= __('successLock');
             }
         }
@@ -259,7 +264,7 @@ function benutzerverwaltungActionAccountUnLock(array &$messages)
             'messages' => &$messages,
             'result'   => &$result,
         ]);
-        if (true === $result) {
+        if ($result === true) {
             $messages['notice'] .= __('successUnlocked');
         }
     } else {
@@ -270,11 +275,11 @@ function benutzerverwaltungActionAccountUnLock(array &$messages)
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
- * @param array             $messages
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  * @return string
  */
-function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages)
 {
     $_SESSION['AdminAccount']->TwoFA_valid = true;
 
@@ -282,11 +287,11 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
     $kAdminlogin    = (isset($_POST['id']) ? (int)$_POST['id'] : null);
     $szQRcodeString = '';
     $szKnownSecret  = '';
-    if (null !== $kAdminlogin) {
+    if ($kAdminlogin !== null) {
         $oTwoFA = new TwoFA($db);
         $oTwoFA->setUserByID($_POST['id']);
 
-        if (true === $oTwoFA->is2FAauthSecretExist()) {
+        if ($oTwoFA->is2FAauthSecretExist() === true) {
             $szQRcodeString = $oTwoFA->getQRcode();
             $szKnownSecret  = $oTwoFA->getSecret();
         }
@@ -349,7 +354,7 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
                 'SELECT COUNT(*) AS nCount
                     FROM tadminlogin
                     WHERE kAdminlogingruppe = 1',
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if ((int)$oOldAcc->kAdminlogingruppe === ADMINGROUP
                 && (int)$oTmpAcc->kAdminlogingruppe !== ADMINGROUP
@@ -396,7 +401,7 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
                     'messages' => &$messages,
                     'result'   => &$result,
                 ]);
-                if (true === $result) {
+                if ($result === true) {
                     $messages['notice'] .= __('successUserSave');
 
                     return 'index_redirect';
@@ -427,7 +432,7 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
                     'messages' => &$messages,
                     'result'   => &$result,
                 ]);
-                if (true === $result) {
+                if ($result === true) {
                     $messages['notice'] .= __('successUserAdd');
 
                     return 'index_redirect';
@@ -471,7 +476,7 @@ function benutzerverwaltungActionAccountEdit(\Smarty\JTLSmarty $smarty, array &$
         'SELECT COUNT(*) AS nCount
             FROM tadminlogin
             WHERE kAdminlogingruppe = 1',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     $smarty->assign('oAccount', $oAccount)
            ->assign('nAdminCount', $oCount->nCount)
@@ -491,7 +496,7 @@ function benutzerverwaltungActionAccountDelete(array &$messages)
         'SELECT COUNT(*) AS nCount
             FROM tadminlogin
             WHERE kAdminlogingruppe = 1',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     $oAccount    = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 
@@ -510,7 +515,7 @@ function benutzerverwaltungActionAccountDelete(array &$messages)
                 'messages' => &$messages,
                 'result'   => &$result,
             ]);
-            if (true === $result) {
+            if ($result === true) {
                 $messages['notice'] .= __('successUserDelete');
             }
         } else {
@@ -524,11 +529,11 @@ function benutzerverwaltungActionAccountDelete(array &$messages)
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  * @return string
  */
-function benutzerverwaltungActionGroupEdit(\Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
 {
     $db                = Shop::Container()->getDB();
     $bDebug            = isset($_POST['debug']);
@@ -631,7 +636,7 @@ function benutzerverwaltungActionGroupDelete(array &$messages)
         'SELECT COUNT(*) AS member_count
             FROM tadminlogin
             WHERE kAdminlogingruppe = ' . $kAdminlogingruppe,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     if ((int)$oResult->member_count !== 0) {
         $messages['error'] .= __('errorGroupDeleteCustomer');
@@ -651,10 +656,10 @@ function benutzerverwaltungActionGroupDelete(array &$messages)
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
- * @param array             $messages
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  */
-function benutzerverwaltungActionQuickChangeLanguage(\Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionQuickChangeLanguage(JTLSmarty $smarty, array &$messages)
 {
     $kSprache = Request::verifyGPCDataInt('kSprache');
     changeAdminUserLanguage($kSprache);
@@ -681,7 +686,7 @@ function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
 
     $urlParams = null;
     if (!empty($cTab)) {
-        $urlParams = ['tab' => StringHandler::filterXSS($cTab)];
+        $urlParams = ['tab' => Text::filterXSS($cTab)];
     }
 
     header('Location: benutzerverwaltung.php' . (is_array($urlParams)
@@ -691,12 +696,12 @@ function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param string            $step
- * @param \Smarty\JTLSmarty $smarty
- * @param array             $messages
+ * @param string    $step
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  * @throws SmartyException
  */
-function benutzerverwaltungFinalize($step, \Smarty\JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['benutzerverwaltung.notice'])) {
         $messages['notice'] = $_SESSION['benutzerverwaltung.notice'];
@@ -731,7 +736,7 @@ function benutzerverwaltungFinalize($step, \Smarty\JTLSmarty $smarty, array &$me
     Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'userManagementError');
 
     $smarty->assign('action', $step)
-           ->assign('cTab', StringHandler::filterXSS(Request::verifyGPDataString('tab')))
+           ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }
 

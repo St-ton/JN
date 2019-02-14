@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Network;
+namespace JTL\Network;
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Nice;
 use JTLShop\SemVer\Version;
 
 /**
  * Class JTLApi
- * @package Network
+ * @package JTL\Network
  */
 final class JTLApi
 {
@@ -25,16 +26,17 @@ final class JTLApi
     private $session;
 
     /**
-     * @var \Nice
+     * @var Nice
      */
     private $nice;
 
     /**
      * JTLApi constructor.
+     *
      * @param array $session
-     * @param \Nice $nice
+     * @param Nice  $nice
      */
-    public function __construct(array &$session, \Nice $nice)
+    public function __construct(array &$session, Nice $nice)
     {
         $this->session = &$session;
         $this->nice    = $nice;

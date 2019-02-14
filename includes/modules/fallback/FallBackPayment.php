@@ -35,6 +35,7 @@ class FallBackPayment extends PaymentMethod
     }
 
     /**
+     * @param array $vArgs
      * @return bool
      */
     public function isValidIntern($vArgs = [])

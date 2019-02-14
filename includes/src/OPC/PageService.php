@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use Backend\AdminIO;
+use JTL\Backend\AdminIO;
+use JTL\Shop;
 
 /**
  * Class PageService
- * @package OPC
+ * @package JTL\OPC
  */
 class PageService
 {
@@ -156,7 +157,7 @@ class PageService
             } elseif ($isEditMode && $editedPageKey > 0) {
                 $this->curPage = $this->getDraft($editedPageKey);
             } else {
-                $curPageUrl    = '/' . \ltrim(\Shop::getRequestUri(), '/');
+                $curPageUrl    = '/' . \ltrim(Shop::getRequestUri(), '/');
                 $curPageId     = $this->createCurrentPageId();
                 $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
                 $this->curPage->setId($curPageId);
@@ -182,8 +183,8 @@ class PageService
     public function createCurrentPageId(): string
     {
         $res              = '';
-        $params           = (object)\Shop::getParameters();
-        $params->kSprache = \Shop::getLanguage();
+        $params           = (object)Shop::getParameters();
+        $params->kSprache = Shop::getLanguage();
 
         if ($params->kKategorie > 0) {
             $res .= 'category:' . $params->kKategorie;

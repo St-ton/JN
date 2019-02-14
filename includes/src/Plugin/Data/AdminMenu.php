@@ -4,18 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Data;
+namespace JTL\Plugin\Data;
 
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AdminMenu
- * @package Plugin\Data
+ * @package JTL\Plugin\Data
  */
 class AdminMenu
 {
+    /**
+     * @var Collection
+     */
     private $items;
 
+    /**
+     * AdminMenu constructor.
+     */
     public function __construct()
     {
         $this->items = new Collection();

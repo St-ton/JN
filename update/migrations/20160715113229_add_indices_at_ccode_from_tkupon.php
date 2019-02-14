@@ -6,6 +6,9 @@
  * @created Fri, 15 Jul 2016 11:32:29 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,11 +29,11 @@ class Migration_20160715113229 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tkupon` ADD INDEX(`cCode`)");
+        $this->execute('ALTER TABLE `tkupon` ADD INDEX(`cCode`)');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE tkupon DROP INDEX cCode");
+        $this->execute('ALTER TABLE tkupon DROP INDEX cCode');
     }
 }

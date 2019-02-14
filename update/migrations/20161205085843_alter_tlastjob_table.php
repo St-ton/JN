@@ -6,6 +6,9 @@
  * @created Mon, 05 Dec 2016 08:58:43 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -42,8 +45,8 @@ class Migration_20161205085843 extends Migration implements IMigration
                 nFinished = 1"
         );
         $this->execute(
-            "ALTER TABLE tlastjob
-                ADD UNIQUE KEY idx_uq_nJob (nJob)"
+            'ALTER TABLE tlastjob
+                ADD UNIQUE KEY idx_uq_nJob (nJob)'
         );
     }
 
@@ -53,14 +56,14 @@ class Migration_20161205085843 extends Migration implements IMigration
             "DELETE FROM tlastjob WHERE cType = 'STD'"
         );
         $this->execute(
-            "ALTER TABLE tlastjob
+            'ALTER TABLE tlastjob
                 CHANGE COLUMN kJob kJob INT(10) UNSIGNED NOT NULL,
                 DROP COLUMN cType,
                 DROP COLUMN nJob,
                 DROP COLUMN cJobName,
                 DROP COLUMN nCounter,
                 DROP COLUMN nFinished,
-                DROP KEY idx_uq_nJob"
+                DROP KEY idx_uq_nJob'
         );
     }
 }

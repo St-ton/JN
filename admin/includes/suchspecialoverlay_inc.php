@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * @return array
  */
@@ -13,10 +16,10 @@ function gibAlleSuchspecialOverlays()
     $searchspecialOverlayTypes = Shop::Container()->getDB()->query(
         'SELECT kSuchspecialOverlay
             FROM tsuchspecialoverlay',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($searchspecialOverlayTypes as $searchspecialOverlayType) {
-        $overlays[] = Media\Image\Overlay::getInstance(
+        $overlays[] = JTL\Media\Image\Overlay::getInstance(
             $searchspecialOverlayType->kSuchspecialOverlay,
             (int)$_SESSION['kSprache']
         );
@@ -27,11 +30,11 @@ function gibAlleSuchspecialOverlays()
 
 /**
  * @param int $overlayID
- * @return Media\Image\Overlay
+ * @return JTL\Media\Image\Overlay
  */
 function gibSuchspecialOverlay(int $overlayID)
 {
-    return Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
+    return JTL\Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
 }
 
 /**
@@ -49,7 +52,7 @@ function speicherEinstellung(
     int $lang = null,
     string $template = null
 ): bool {
-    $overlay = Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
+    $overlay = JTL\Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
     if ($overlay->getType() <= 0) {
         return false;
@@ -63,7 +66,7 @@ function speicherEinstellung(
     if (mb_strlen($files['name']) > 0) {
         loescheBild($overlay);
         $overlay->setImageName(
-            Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
+            JTL\Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
             mappeFileTyp($files['type'])
         );
         speicherBild($files, $overlay);
@@ -301,10 +304,10 @@ function erstelleFixedOverlay(string $image, int $size, int $transparency, strin
 
 /**
  * @param array $files
- * @param \Media\Image\Overlay $overlay
+ * @param JTL\Media\Image\Overlay $overlay
  * @return bool
  */
-function speicherBild(array $files, Media\Image\Overlay $overlay): bool
+function speicherBild(array $files, JTL\Media\Image\Overlay $overlay): bool
 {
     if ($files['type'] === 'image/jpeg'
         || $files['type'] === 'image/pjpeg'
@@ -346,9 +349,9 @@ function speicherBild(array $files, Media\Image\Overlay $overlay): bool
 }
 
 /**
- * @param \Media\Image\Overlay $overlay
+ * @param JTL\Media\Image\Overlay $overlay
  */
-function loescheBild(Media\Image\Overlay $overlay): void
+function loescheBild(JTL\Media\Image\Overlay $overlay): void
 {
     foreach ($overlay->getPathSizes() as $path) {
         $path = PFAD_ROOT . $path . $overlay->getImageName();

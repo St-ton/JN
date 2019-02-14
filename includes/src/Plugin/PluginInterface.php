@@ -4,24 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Plugin\Data\AdminMenu;
-use Plugin\Data\Cache;
-use Plugin\Data\Config;
-use Plugin\Data\Hook;
-use Plugin\Data\License;
-use Plugin\Data\Links;
-use Plugin\Data\Localization;
-use Plugin\Data\MailTemplates;
-use Plugin\Data\Meta;
-use Plugin\Data\Paths;
-use Plugin\Data\PaymentMethods;
-use Plugin\Data\Widget;
+use JTL\Plugin\Data\AdminMenu;
+use JTL\Plugin\Data\Cache;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Data\Hook;
+use JTL\Plugin\Data\License;
+use JTL\Plugin\Data\Links;
+use JTL\Plugin\Data\Localization;
+use JTL\Plugin\Data\MailTemplates;
+use JTL\Plugin\Data\Meta;
+use JTL\Plugin\Data\Paths;
+use JTL\Plugin\Data\PaymentMethods;
+use JTL\Plugin\Data\Widget;
 
 /**
  * Interface PluginInterface
- * @package Plugin
+ * @package JTL\Plugin
  */
 interface PluginInterface
 {

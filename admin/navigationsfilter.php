@@ -4,11 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
 
 /**
- * @global \Smarty\JTLSmarty     $smarty
- * @global \Backend\AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
@@ -26,7 +29,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         && count($_POST['nVon']) > 0
         && count($_POST['nBis']) > 0
     ) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
         foreach ($_POST['nVon'] as $i => $nVon) {
             $nVon = (float)$nVon;
             $nBis = (float)$_POST['nBis'][$i];
@@ -39,7 +42,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 
 $priceRangeFilters = Shop::Container()->getDB()->query(
     'SELECT * FROM tpreisspannenfilter',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))

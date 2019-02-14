@@ -4,12 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -48,7 +52,7 @@ if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
 $smarty->assign('sprachen', Sprache::getAllLanguages())
        ->assign('kundengruppen', Shop::Container()->getDB()->query(
            'SELECT * FROM tkundengruppe ORDER BY cName',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
        ->display('newsletterimport.tpl');
 
@@ -80,7 +84,7 @@ function pruefeNLEBlacklist($cMail)
     $oNEB = Shop::Container()->getDB()->select(
         'tnewsletterempfaengerblacklist',
         'cMail',
-        StringHandler::filterXSS(strip_tags($cMail))
+        Text::filterXSS(strip_tags($cMail))
     );
 
     return !empty($oNEB->cMail);
@@ -163,7 +167,7 @@ function processImport($fmt, $data)
         }
     }
 
-    if (StringHandler::filterEmailAddress($recipient->cEmail) === false) {
+    if (Text::filterEmailAddress($recipient->cEmail) === false) {
         return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
     if (pruefeNLEBlacklist($recipient->cEmail)) {

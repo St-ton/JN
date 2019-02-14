@@ -4,7 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Cart\Warenkorb;
+use JTL\Checkout\ZahlungsLog;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 
 /**
  * Class PaymentMethod
@@ -111,7 +118,7 @@ class PaymentMethod
         $orderId = isset($order->kBestellung)
             ? Shop::Container()->getDB()->query(
                 'SELECT cId FROM tbestellid WHERE kBestellung = ' . (int)$order->kBestellung,
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             )
             : null;
 
@@ -137,7 +144,7 @@ class PaymentMethod
                 'SELECT cId
                     FROM tbestellid
                     WHERE kBestellung = ' . (int)$order->kBestellung,
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (is_object($oZahlungsID)) {
                 return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
@@ -297,7 +304,7 @@ class PaymentMethod
             'cZahlungsanbieter' => empty($order->cZahlungsartName) ? $this->name : $order->cZahlungsartName,
             'fBetrag'           => 0,
             'fZahlungsgebuehr'  => 0,
-            'cISO'              => \Session\Frontend::getCurrency()->getCode(),
+            'cISO'              => Frontend::getCurrency()->getCode(),
             'cEmpfaenger'       => '',
             'cZahler'           => '',
             'dZeit'             => 'NOW()',
@@ -401,7 +408,7 @@ class PaymentMethod
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
                         AND kKunde = " . (int)$kKunde,
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oBestellung->nAnzahl) && count($oBestellung->nAnzahl) > 0) {
@@ -454,7 +461,7 @@ class PaymentMethod
                         'stp' => BESTELLUNG_STATUS_BEZAHLT,
                         'sts' => BESTELLUNG_STATUS_VERSANDT
                     ],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
                 $count = (int)$res->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
@@ -729,9 +736,9 @@ class PaymentMethod
         global $oPlugin;
         $oTmpPlugin    = $oPlugin;
         $paymentMethod = null;
-        $pluginID      = \Plugin\Helper::getIDByModuleID($moduleId);
+        $pluginID      = \JTL\Plugin\Helper::getIDByModuleID($moduleId);
         if ($pluginID > 0) {
-            $loader = \Plugin\Helper::getLoaderByPluginID($pluginID);
+            $loader = \JTL\Plugin\Helper::getLoaderByPluginID($pluginID);
             try {
                 $oPlugin = $loader->init($pluginID);
             } catch (InvalidArgumentException $e) {

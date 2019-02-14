@@ -3,10 +3,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Plugin\PremiumPlugin;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step     = 'uebersicht';
 $pluginID = $_GET['plugin_id'] ?? 's360_amazon_lpa_shop4';
 $pp       = null;

@@ -4,16 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\CheckBox;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $alertHelper     = Shop::Container()->getAlertService();
 $cStep           = 'uebersicht';
 $nAnzahlProSeite = 15;
@@ -52,7 +57,7 @@ if (isset($_POST['erstellenShowButton'])) {
         $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCheckboxCreate'), 'successCheckboxCreate');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
-        $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+        $smarty->assign('cPost_arr', Text::filterXSS($_POST))
                ->assign('cPlausi_arr', $cPlausi_arr);
         if ($kCheckBox > 0) {
             $smarty->assign('kCheckBox', $kCheckBox);
@@ -79,13 +84,13 @@ $smarty->assign('oCheckBox_arr', $oCheckBox_arr)
            'SELECT * 
                 FROM tkundengruppe 
                 ORDER BY cName',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oLink_arr', Shop::Container()->getDB()->query(
            'SELECT * 
               FROM tlink 
               ORDER BY cName',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oCheckBoxFunktion_arr', $oCheckBox->getCheckBoxFunctions())
        ->assign('step', $cStep)

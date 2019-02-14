@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\Nice;
 
 /**
  * Class ExtensionViewer
- * @package Widgets
+ * @package JTL\Widgets
  */
 class ExtensionViewer extends AbstractWidget
 {
@@ -17,7 +19,7 @@ class ExtensionViewer extends AbstractWidget
      */
     public function init()
     {
-        $nice    = \Nice::getInstance();
+        $nice    = Nice::getInstance();
         $modules = $nice->gibAlleMoeglichenModule();
         foreach ($modules as $module) {
             $module->bActive = $nice->checkErweiterung($module->kModulId);

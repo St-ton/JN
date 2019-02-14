@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 /**
  * Class ValidationResult
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 class RuleResult implements RuleResultInterface
 {

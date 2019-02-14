@@ -4,9 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -15,7 +19,7 @@ $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $conf        = Shop::getSettings([CONF_BEWERTUNG]);
 $step        = 'bewertung_uebersicht';
 $cTab        = 'freischalten';
@@ -105,9 +109,9 @@ if (Form::validateToken()) {
                     'lang'   => (int)$_SESSION['kSprache'],
                     'cartnr' => '%' . $_POST['cArtNr'] . '%'
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            $smarty->assign('cArtNr', StringHandler::filterXSS($_POST['cArtNr']));
+            $smarty->assign('cArtNr', Text::filterXSS($_POST['cArtNr']));
         }
         // Bewertungen loeschen
         if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
@@ -150,14 +154,14 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 0',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
     $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 1',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 
     $oPagiInaktiv = (new Pagination('inactive'))
@@ -176,7 +180,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
             LIMIT ' . $oPagiInaktiv->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $last50ratings = Shop::Container()->getDB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
@@ -187,7 +191,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC
             LIMIT ' . $oPageAktiv->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)

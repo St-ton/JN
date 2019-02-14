@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace dbeS;
+namespace JTL\dbeS;
 
-use Extensions\Upload;
-use Extensions\UploadDatei;
+use JTL\Extensions\Upload;
+use JTL\Extensions\UploadDatei;
 
 /**
  * Class Uploader
- * @package dbeS
+ * @package JTL\dbeS
  */
 class Uploader extends NetSyncHandler
 {

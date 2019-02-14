@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
 /**
  * Interface LicenseInterface
- * @package Plugin
+ * @package JTL\Plugin
  */
 interface LicenseInterface
 {

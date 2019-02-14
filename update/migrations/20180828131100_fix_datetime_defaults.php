@@ -6,29 +6,32 @@
  * @created Tue, 28 Aug 2018 13:11:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180828131100
  */
 class Migration_20180828131100 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Fix datetime defaults';
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tlieferscheinposinfo` CHANGE COLUMN `dMHD` `dMHD` DATETIME DEFAULT NULL");
-        $this->execute("ALTER TABLE `tjtllog` CHANGE COLUMN `cLog` `cLog` LONGTEXT NOT NULL");
-        $this->execute("ALTER TABLE `tartikelwarenlager` CHANGE COLUMN `dZulaufDatum` `dZulaufDatum` DATETIME DEFAULT NULL");
-        $this->execute("ALTER TABLE `tartikel` CHANGE COLUMN `dErscheinungsdatum` `dErscheinungsdatum` DATE DEFAULT NULL");
-        $this->execute("ALTER TABLE `tartikel` CHANGE COLUMN `dErstellt` `dErstellt` DATE DEFAULT NULL");
-        $this->execute("ALTER TABLE `tkunde` CHANGE COLUMN `dGeburtstag` `dGeburtstag` DATE DEFAULT NULL");
-        $this->execute("ALTER TABLE `tkunde` CHANGE COLUMN `dErstellt` `dErstellt` DATE DEFAULT NULL");
-        $this->execute("ALTER TABLE `tumfrage` CHANGE COLUMN `dGueltigBis` `dGueltigBis` DATETIME DEFAULT NULL");
-        $this->execute("ALTER TABLE `tcron` CHANGE COLUMN `dLetzterStart` `dLetzterStart` DATETIME DEFAULT NULL");
-        $this->execute("ALTER TABLE `tjobqueue` CHANGE COLUMN `dZuletztGelaufen` `dZuletztGelaufen` DATETIME DEFAULT NULL");
-        $this->execute("ALTER TABLE `tlastjob` CHANGE COLUMN `dErstellt` `dErstellt` DATETIME DEFAULT NULL");
-        $this->execute("ALTER TABLE `tnewsletterempfaenger` CHANGE COLUMN `dLetzterNewsletter` `dLetzterNewsletter` DATETIME DEFAULT NULL");
-        $this->execute("ALTER TABLE `tnummern` CHANGE COLUMN `dAktualisiert` `dAktualisiert` DATETIME DEFAULT NULL");
+        $this->execute('ALTER TABLE `tlieferscheinposinfo` CHANGE COLUMN `dMHD` `dMHD` DATETIME DEFAULT NULL');
+        $this->execute('ALTER TABLE `tjtllog` CHANGE COLUMN `cLog` `cLog` LONGTEXT NOT NULL');
+        $this->execute('ALTER TABLE `tartikelwarenlager` CHANGE COLUMN `dZulaufDatum` `dZulaufDatum` DATETIME DEFAULT NULL');
+        $this->execute('ALTER TABLE `tartikel` CHANGE COLUMN `dErscheinungsdatum` `dErscheinungsdatum` DATE DEFAULT NULL');
+        $this->execute('ALTER TABLE `tartikel` CHANGE COLUMN `dErstellt` `dErstellt` DATE DEFAULT NULL');
+        $this->execute('ALTER TABLE `tkunde` CHANGE COLUMN `dGeburtstag` `dGeburtstag` DATE DEFAULT NULL');
+        $this->execute('ALTER TABLE `tkunde` CHANGE COLUMN `dErstellt` `dErstellt` DATE DEFAULT NULL');
+        $this->execute('ALTER TABLE `tumfrage` CHANGE COLUMN `dGueltigBis` `dGueltigBis` DATETIME DEFAULT NULL');
+        $this->execute('ALTER TABLE `tcron` CHANGE COLUMN `dLetzterStart` `dLetzterStart` DATETIME DEFAULT NULL');
+        $this->execute('ALTER TABLE `tjobqueue` CHANGE COLUMN `dZuletztGelaufen` `dZuletztGelaufen` DATETIME DEFAULT NULL');
+        $this->execute('ALTER TABLE `tlastjob` CHANGE COLUMN `dErstellt` `dErstellt` DATETIME DEFAULT NULL');
+        $this->execute('ALTER TABLE `tnewsletterempfaenger` CHANGE COLUMN `dLetzterNewsletter` `dLetzterNewsletter` DATETIME DEFAULT NULL');
+        $this->execute('ALTER TABLE `tnummern` CHANGE COLUMN `dAktualisiert` `dAktualisiert` DATETIME DEFAULT NULL');
         $this->execute("UPDATE `tzahlungsession` SET `dZeitBezahlt` = NOW() WHERE `dZeitBezahlt` = '0000-00-00 00:00:00'");
         $this->execute("UPDATE `tlieferscheinposinfo` SET `dMHD` = NULL WHERE `dMHD` = '0000-00-00 00:00:00'");
         $this->execute("UPDATE `tkupon` SET `dGueltigBis` = NULL WHERE `dGueltigBis` = '0000-00-00 00:00:00'");

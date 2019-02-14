@@ -4,9 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Checkout\ZahlungsLog;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -15,12 +19,12 @@ $oAccount->permission('ORDER_BILLPAY_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'billpay_inc.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
-\Shop::Container()->getGetText()->loadConfigLocales();
+JTL\Shop::Container()->getGetText()->loadConfigLocales();
 
 $cStep       = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
@@ -121,7 +125,7 @@ $Conf = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-\Shop::Container()->getGetText()->localizeConfigs($Conf);
+JTL\Shop::Container()->getGetText()->localizeConfigs($Conf);
 
 if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
     foreach ($Conf as $i => $oConfig) {
@@ -154,7 +158,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && Form::validateToken()) {
             Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
         }
     }
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
     $smarty->assign('saved', true);
@@ -171,7 +175,7 @@ for ($i = 0; $i < $configCount; $i++) {
             'nSort'
         );
 
-        \Shop::Container()->getGetText()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
+        JTL\Shop::Container()->getGetText()->localizeConfigValues($Conf[$i], $Conf[$i]->ConfWerte);
     }
     $setValue                = Shop::Container()->getDB()->select(
         'teinstellungen',
@@ -180,7 +184,7 @@ for ($i = 0; $i < $configCount; $i++) {
         'cName',
         $Conf[$i]->cWertName
     );
-    $Conf[$i]->gesetzterWert = isset($setValue->cWert) ? StringHandler::htmlentities($setValue->cWert) : null;
+    $Conf[$i]->gesetzterWert = isset($setValue->cWert) ? Text::htmlentities($setValue->cWert) : null;
 }
 
 $smarty->assign('Conf', $Conf)

@@ -3,12 +3,20 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Boxes\Items\AbstractBox;
+use JTL\Session\Frontend;
+use JTL\Filter\SearchResults;
+
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 /**
  * @param object $FilterSQL
  * @param object $NaviFilter
- * @return \Filter\SearchResultsInterface
+ * @return \JTL\Filter\SearchResultsInterface
  * @deprecated since 5.0.0
  */
 function buildSearchResults($FilterSQL, $NaviFilter)
@@ -29,7 +37,7 @@ function buildSearchResultPage()
  * @param object   $FilterSQL
  * @param int      $nArtikelProSeite
  * @param object   $NaviFilter
- * @return \Filter\SearchResultsInterface
+ * @return \JTL\Filter\SearchResultsInterface
  * @deprecated since 5.0.0
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter)
@@ -39,8 +47,8 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter)
 }
 
 /**
- * @param stdClass|\Filter\ProductFilter $NaviFilter
- * @return \Filter\ProductFilter
+ * @param stdClass|JTL\Filter\ProductFilter $NaviFilter
+ * @return JTL\Filter\ProductFilter
  */
 function updateNaviFilter($NaviFilter)
 {
@@ -214,10 +222,10 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $searchFilters = gibSuchFilterOptionen($FilterSQL, $NaviFilter); // cURL
     foreach ($searchFilters as $key => $sf) {
-        $searchFilters[$key]->cURL = StringHandler::htmlentitydecode($sf->cURL);
+        $searchFilters[$key]->cURL = Text::htmlentitydecode($sf->cURL);
     }
 
-    return \Boxes\Items\AbstractBox::getJSONString($searchFilters);
+    return AbstractBox::getJSONString($searchFilters);
 }
 
 /**
@@ -231,9 +239,9 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $tags = gibTagFilterOptionen($FilterSQL, $NaviFilter);
     foreach ($tags as $key => $oTags) {
-        $tags[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
+        $tags[$key]->cURL = Text::htmlentitydecode($oTags->cURL);
     }
-    return \Boxes\Items\AbstractBox::getJSONString($tags);
+    return AbstractBox::getJSONString($tags);
 }
 
 /**
@@ -398,7 +406,7 @@ function gibArtikelsortierung($NaviFilter)
 function mappeUsersortierung($nUsersortierung)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $mapper = new \Mapper\SortingType();
+    $mapper = new \JTL\Mapper\SortingType();
     return $mapper->mapUserSorting($nUsersortierung);
 }
 
@@ -427,7 +435,7 @@ function berechnePreisspannenSQL($oPreis, $priceRangeFilter = null)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::getProductFilter()
                ->getPriceRangeFilter()
-               ->getPriceRangeSQL($oPreis, \Session\Frontend::getCurrency(), $priceRangeFilter);
+               ->getPriceRangeSQL($oPreis, Frontend::getCurrency(), $priceRangeFilter);
 }
 
 /**
@@ -472,10 +480,10 @@ function gibHeaderAnzeige()
 function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sr = new \Filter\SearchResults();
+    $sr = new SearchResults();
     $sr->convert($oSuchergebnisse);
     Shop::getProductFilter()->getFilterURL()->createUnsetFilterURLs(
-        new stdClass(),
+        new \JTL\Filter\NavigationURLs(),
         $sr
     );
 }
@@ -489,7 +497,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 function truncateMetaTitle($cTitle)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return (new \Filter\Metadata(Shop::getProductFilter()))->truncateMetaTitle($cTitle);
+    return (new JTL\Filter\Metadata(Shop::getProductFilter()))->truncateMetaTitle($cTitle);
 }
 
 /**
@@ -502,10 +510,10 @@ function truncateMetaTitle($cTitle)
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sr = new \Filter\SearchResults();
+    $sr = new SearchResults();
     $sr->convert($oSuchergebnisse);
 
-    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
+    return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaTitle(
         $sr,
         $globalMeta
     );
@@ -522,10 +530,10 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sr = new \Filter\SearchResults();
+    $sr = new SearchResults();
     $sr->convert($oSuchergebnisse);
 
-    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
+    return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
         $articles,
         $sr,
         $globalMeta
@@ -541,7 +549,7 @@ function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globa
 function gibNaviMetaKeywords($articles, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return (new \Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
+    return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
 }
 
 /**
@@ -556,9 +564,9 @@ function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $pf = updateNaviFilter($NaviFilter);
-    $sr = new \Filter\SearchResults();
+    $sr = new SearchResults();
     $sr->convert($oSuchergebnisse);
-    return (new \Filter\Metadata($pf))->getMetaStart($sr);
+    return (new JTL\Filter\Metadata($pf))->getMetaStart($sr);
 }
 
 /**
@@ -611,7 +619,7 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $productFilter = updateNaviFilter($NaviFilter);
     if (is_a($pages, 'stdClass')) {
-        $p = new \Filter\Pagination\Info();
+        $p = new JTL\Filter\Pagination\Info();
         $p->setMaxPage($pages->maxSeite);
         $p->setMinPage($pages->minSeite);
         $p->setTotalPages($pages->maxSeiten);
@@ -824,7 +832,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_name';
         $obj->value           = SEARCH_SORT_NAME_ASC;
-        $obj->angezeigterName = \Shop::Lang()->get('sortNameAsc');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortNameAsc');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_name'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_name_ab']
@@ -833,7 +841,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_name_ab';
         $obj->value           = SEARCH_SORT_NAME_DESC;
-        $obj->angezeigterName = \Shop::Lang()->get('sortNameDesc');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortNameDesc');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_name_ab'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_preis']
@@ -842,7 +850,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_preis';
         $obj->value           = SEARCH_SORT_PRICE_ASC;
-        $obj->angezeigterName = \Shop::Lang()->get('sortPriceAsc');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortPriceAsc');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_preis'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_preis_ab']
@@ -851,7 +859,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_preis_ab';
         $obj->value           = SEARCH_SORT_PRICE_DESC;
-        $obj->angezeigterName = \Shop::Lang()->get('sortPriceDesc');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortPriceDesc');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_preis_ab'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_ean']
@@ -860,7 +868,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_ean';
         $obj->value           = SEARCH_SORT_EAN;
-        $obj->angezeigterName = \Shop::Lang()->get('sortEan');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortEan');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_ean'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_erstelldatum']
@@ -869,7 +877,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_erstelldatum';
         $obj->value           = SEARCH_SORT_NEWEST_FIRST;
-        $obj->angezeigterName = \Shop::Lang()->get('sortNewestFirst');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortNewestFirst');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_erstelldatum'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_artikelnummer']
@@ -878,7 +886,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_artikelnummer';
         $obj->value           = SEARCH_SORT_PRODUCTNO;
-        $obj->angezeigterName = \Shop::Lang()->get('sortProductno');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortProductno');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_artikelnummer'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_lagerbestand']
@@ -887,7 +895,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_lagerbestand';
         $obj->value           = SEARCH_SORT_AVAILABILITY;
-        $obj->angezeigterName = \Shop::Lang()->get('sortAvailability');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortAvailability');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_lagerbestand'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_gewicht']
@@ -896,7 +904,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_gewicht';
         $obj->value           = SEARCH_SORT_WEIGHT;
-        $obj->angezeigterName = \Shop::Lang()->get('sortWeight');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortWeight');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_gewicht'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum']
@@ -905,7 +913,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_erscheinungsdatum';
         $obj->value           = SEARCH_SORT_DATEOFISSUE;
-        $obj->angezeigterName = \Shop::Lang()->get('sortDateofissue');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('sortDateofissue');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_erscheinungsdatum'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_bestseller']
@@ -914,7 +922,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_bestseller';
         $obj->value           = SEARCH_SORT_BESTSELLER;
-        $obj->angezeigterName = \Shop::Lang()->get('bestseller');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('bestseller');
         $max                  = $conf['artikeluebersicht']['suche_sortierprio_bestseller'];
     }
     if ($max < $conf['artikeluebersicht']['suche_sortierprio_bewertung']
@@ -923,7 +931,7 @@ function gibNextSortPrio($search, $conf = null)
         $obj                  = new stdClass();
         $obj->name            = 'suche_sortierprio_bewertung';
         $obj->value           = SEARCH_SORT_RATING;
-        $obj->angezeigterName = \Shop::Lang()->get('rating');
+        $obj->angezeigterName = JTL\Shop::Lang()->get('rating');
     }
 
     return $obj;
@@ -987,7 +995,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
                 ($FilterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
             ' LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = ' . \Session\Frontend::getCustomerGroup()->getID() . '
+                AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0 ' .
                 gibLagerfilter() . ' ' .
@@ -1002,7 +1010,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
                 ' GROUP BY tartikel.kArtikel ' .
                 ($FilterSQL->oMerkmalFilterSQL->cHaving ?? '') .
                 ') AS tAnzahl',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     executeHook(HOOK_FILTER_INC_BAUEARTIKELANZAHL, [
         'oAnzahl'          => &$oAnzahl,
@@ -1035,6 +1043,6 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
     if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
         $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
     }
-    $sr              = new \Filter\SearchResults();
+    $sr              = new SearchResults();
     $oSuchergebnisse = $sr->convert($oSuchergebnisse);
 }

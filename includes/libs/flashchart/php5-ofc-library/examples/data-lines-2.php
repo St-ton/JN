@@ -21,12 +21,12 @@
 require_once('OFC/OFC_Chart.php');
 
 // generate some random data
-srand((double)microtime()*1000000);
+srand((double)microtime() * 1000000);
 
 $data_1 = array();
 $data_2 = array();
 $data_3 = array();
-for ($i=0; $i<9; $i++) {
+for ($i = 0; $i < 9; $i++) {
     $data_1[] = rand(1, 6);
     $data_2[] = rand(7, 13);
     $data_3[] = rand(14, 19);

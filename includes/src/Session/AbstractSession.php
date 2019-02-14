@@ -4,13 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session;
+namespace JTL\Session;
 
-use Session\Handler\JTLHandlerInterface;
+use JTL\Session\Handler\JTLHandlerInterface;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class AbstractSession
- * @package Session
+ * @package JTL\Session
  */
 abstract class AbstractSession
 {
@@ -34,7 +36,7 @@ abstract class AbstractSession
         self::$sessionName = $sessionName;
         \session_name(self::$sessionName);
         self::$handler = (new Storage())->getHandler();
-        $this->initCookie(\Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+        $this->initCookie(Shop::getSettings([\CONF_GLOBAL])['global'], $start);
         self::$handler->setSessionData($_SESSION);
     }
 
@@ -70,7 +72,7 @@ abstract class AbstractSession
         if (!empty($conf['global_cookie_path'])) {
             $path = $conf['global_cookie_path'];
         }
-        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \mb_strpos(URL_SHOP, 'https://') === 0);
+        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \mb_strpos(\URL_SHOP, 'https://') === 0);
         if ($start) {
             \session_start([
                 'use_cookies'     => '1',
@@ -103,7 +105,7 @@ abstract class AbstractSession
         if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
             return $domain;
         }
-        foreach (\Sprache::getAllLanguages() as $Sprache) {
+        foreach (Sprache::getAllLanguages() as $Sprache) {
             if (!\defined('URL_SHOP_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER))) {
                 continue;
             }

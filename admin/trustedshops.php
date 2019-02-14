@@ -4,19 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\PHPSettings;
+use JTL\Helpers\Form;
+use JTL\Helpers\PHPSettings;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\TrustedShops;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 define('PARTNER_PACKAGE', 'JTL');
 define('SHOP_SOFTWARE', 'JTL');
 
 $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'uebersicht';
 $conf        = Shop::getSettings([CONF_TRUSTEDSHOPS]);
 $alertHelper = Shop::Container()->getAlertService();
@@ -37,7 +42,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                     'DELETE FROM teinstellungen
                         WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                             AND cName = 'trustedshops_nutzen'",
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
                 $aktWert                        = new stdClass();
                 $aktWert->cWert                 = 'N';
@@ -60,7 +65,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                     AND cConf = 'Y'
                     AND cWertName != 'trustedshops_kundenbewertung_anzeigen'
                 ORDER BY nSort",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $configCount = count($confData);
         for ($i = 0; $i < $configCount; $i++) {
@@ -102,12 +107,12 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)
         ) {
             $cert              = new stdClass();
-            $cert->cTSID       = StringHandler::htmlentities(StringHandler::filterXSS(trim($_POST['tsId'])));
-            $cert->cWSUser     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsUser']));
-            $cert->cWSPasswort = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsPassword']));
+            $cert->cTSID       = Text::htmlentities(Text::filterXSS(trim($_POST['tsId'])));
+            $cert->cWSUser     = Text::htmlentities(Text::filterXSS($_POST['wsUser']));
+            $cert->cWSPasswort = Text::htmlentities(Text::filterXSS($_POST['wsPassword']));
             $cert->cISOSprache = $_SESSION['TrustedShops']->oSprache->cISOSprache;
             $cert->nAktiv      = 0;
-            $cert->eType       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['eType']));
+            $cert->eType       = Text::htmlentities(Text::filterXSS($_POST['eType']));
             $cert->dErstellt   = 'NOW()';
 
             $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
@@ -258,11 +263,11 @@ if ($step === 'uebersicht') {
             FROM teinstellungenconf
             WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . '
             ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($confData);
     for ($i = 0; $i < $configCount; $i++) {
-        \Shop::Container()->getGetText()->localizeConfig($confData[$i]);
+        Shop::Container()->getGetText()->localizeConfig($confData[$i]);
 
         if ($confData[$i]->cInputTyp === 'selectbox') {
             $confData[$i]->ConfWerte = Shop::Container()->getDB()->query(
@@ -270,15 +275,15 @@ if ($step === 'uebersicht') {
                     FROM teinstellungenconfwerte
                     WHERE kEinstellungenConf = ' . (int)$confData[$i]->kEinstellungenConf . '
                     ORDER BY nSort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getGetText()->localizeConfigValues($confData[$i], $confData[$i]->ConfWerte);
+            Shop::Container()->getGetText()->localizeConfigValues($confData[$i], $confData[$i]->ConfWerte);
         } elseif ($confData[$i]->cInputTyp === 'listbox') {
             $confData[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 'SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -288,7 +293,7 @@ if ($step === 'uebersicht') {
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $confData[$i]->cWertName . "'",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $confData[$i]->gesetzterWert = $oSetValue;
         } else {
@@ -297,7 +302,7 @@ if ($step === 'uebersicht') {
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $confData[$i]->cWertName . "'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             $confData[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }

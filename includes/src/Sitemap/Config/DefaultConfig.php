@@ -4,23 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Config;
+namespace JTL\Sitemap\Config;
 
-use DB\DbInterface;
-use Sitemap\Factories\Attribute;
-use Sitemap\Factories\Base;
-use Sitemap\Factories\Category;
-use Sitemap\Factories\LiveSearch;
-use Sitemap\Factories\Manufacturer;
-use Sitemap\Factories\NewsCategory;
-use Sitemap\Factories\NewsItem;
-use Sitemap\Factories\Page;
-use Sitemap\Factories\Product;
-use Sitemap\Factories\Tag;
+use JTL\DB\DbInterface;
+use JTL\Sitemap\Factories\Attribute;
+use JTL\Sitemap\Factories\Base;
+use JTL\Sitemap\Factories\Category;
+use JTL\Sitemap\Factories\LiveSearch;
+use JTL\Sitemap\Factories\Manufacturer;
+use JTL\Sitemap\Factories\NewsCategory;
+use JTL\Sitemap\Factories\NewsItem;
+use JTL\Sitemap\Factories\Page;
+use JTL\Sitemap\Factories\Product;
+use JTL\Sitemap\Factories\Tag;
 
 /**
  * Class DefaultConfig
- * @package Sitemap\Config
+ * @package JTL\Sitemap\Config
  */
 final class DefaultConfig implements ConfigInterface
 {

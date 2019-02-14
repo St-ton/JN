@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-function open_flash_chart_object_str($width, $height, $url, $use_swfobject=true, $base='')
+function open_flash_chart_object_str($width, $height, $url, $use_swfobject = true, $base = '')
 {
     //
     // return the HTML as a string
@@ -26,7 +26,7 @@ function open_flash_chart_object_str($width, $height, $url, $use_swfobject=true,
     return _ofc($width, $height, $url, $use_swfobject, $base);
 }
 
-function open_flash_chart_object($width, $height, $url, $use_swfobject=true, $base='')
+function open_flash_chart_object($width, $height, $url, $use_swfobject = true, $base = '')
 {
     //
     // stream the HTML into the page
@@ -70,17 +70,17 @@ function _ofc($width, $height, $url, $use_swfobject, $base)
     // page, give each a different ID
     //
     global $open_flash_chart_seqno;
-    $obj_id = 'chart';
+    $obj_id   = 'chart';
     $div_name = 'flashcontent';
 
     //$out[] = '<script type="text/javascript" src="'. $base .'js/ofc.js"></script>';
 
     if (!isset($open_flash_chart_seqno)) {
         $open_flash_chart_seqno = 1;
-        $out[] = '<script type="text/javascript" src="'. $base .'js/swfobject.js"></script>';
+        $out[]                  = '<script type="text/javascript" src="'. $base .'js/swfobject.js"></script>';
     } else {
         $open_flash_chart_seqno++;
-        $obj_id .= '_'. $open_flash_chart_seqno;
+        $obj_id   .= '_'. $open_flash_chart_seqno;
         $div_name .= '_'. $open_flash_chart_seqno;
     }
 

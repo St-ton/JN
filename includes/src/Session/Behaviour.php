@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session;
+namespace JTL\Session;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Behaviour
- * @package Session
+ * @package JTL\Session
  */
 class Behaviour extends Enum
 {

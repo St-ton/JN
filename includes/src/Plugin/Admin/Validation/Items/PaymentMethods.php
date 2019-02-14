@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\Admin\InputType;
-use Plugin\InstallCode;
+use JTL\Plugin\Admin\InputType;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class PaymentMethods
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class PaymentMethods extends AbstractItem
 {

@@ -6,6 +6,9 @@
  * @created Wed, 08 Jun 2016 11:29:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,11 +29,11 @@ class Migration_20160608112900 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tlink` DROP PRIMARY KEY, ADD PRIMARY KEY (`kLink`, `kLinkgruppe`);");
+        $this->execute('ALTER TABLE `tlink` DROP PRIMARY KEY, ADD PRIMARY KEY (`kLink`, `kLinkgruppe`);');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tlink` DROP PRIMARY KEY, ADD PRIMARY KEY (`kLink`);");
+        $this->execute('ALTER TABLE `tlink` DROP PRIMARY KEY, ADD PRIMARY KEY (`kLink`);');
     }
 }

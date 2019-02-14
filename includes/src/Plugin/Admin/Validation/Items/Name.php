@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Name
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Name extends AbstractItem
 {

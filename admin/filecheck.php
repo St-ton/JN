@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $modifiedFilesError         = '';
 $orphanedFilesError         = '';
 $modifiedFiles              = [];

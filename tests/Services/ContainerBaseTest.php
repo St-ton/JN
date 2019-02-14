@@ -6,9 +6,13 @@
 
 namespace Services;
 
-use Exceptions\CircularReferenceException;
-use Exceptions\ServiceNotFoundException;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Services\ContainerBase;
+use JTL\Services\ContainerInterface;
 use PHPUnit\Framework\TestCase;
+use \Exception;
+use \InvalidArgumentException;
 
 require_once __DIR__ . '/../bootstrap.php';
 
@@ -32,14 +36,14 @@ class ContainerBaseTest extends TestCase
     public function test_setSingleton_passIntegerInsteadOfCallableOrObject_throwsInvalidArgumentException()
     {
         $container = new ContainerBase();
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $container->setSingleton(ContainerInterface::class, 10);
     }
 
     public function test_setSingleton_passInvalidInterface_throwsInvalidArgumentException()
     {
         $container = new ContainerBase();
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $container->setSingleton(10, function () {
         });
     }
@@ -68,7 +72,7 @@ class ContainerBaseTest extends TestCase
     public function test_setFactory_invalidInterface_throwsInvalidArgumentException()
     {
         $container = new ContainerBase();
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $container->setFactory(10, function () {
 
         });
@@ -77,7 +81,7 @@ class ContainerBaseTest extends TestCase
     public function test_setFactory_invalidCallable_throwsInvalidArgumentException()
     {
         $container = new ContainerBase();
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $container->setFactory(ContainerInterface::class, 10);
     }
 
@@ -160,7 +164,7 @@ class ContainerBaseTest extends TestCase
             return new ContainerBase();
         });
         $container->get('id');
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $container->setSingleton('id', function() {
             return new ContainerBase();
         });
@@ -174,7 +178,7 @@ class ContainerBaseTest extends TestCase
         $container->setFactory('id', function(){
             return new ContainerBase();
         });
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $container->setSingleton('id', function(){
             return new ContainerBase();
         });
@@ -186,7 +190,7 @@ class ContainerBaseTest extends TestCase
         $container->setSingleton('id', function(){
             return new ContainerBase();
         });
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $container->setFactory('id', function(){
             return new ContainerBase();
         });

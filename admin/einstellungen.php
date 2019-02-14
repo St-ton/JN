@@ -4,13 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\Settings\Manager;
-use Helpers\Form;
+use JTL\Backend\Settings\Manager;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
-/** @global \Smarty\JTLSmarty     $smarty */
-/** @global \Backend\AdminAccount $oAccount */
+/** @global \JTL\Smarty\JTLSmarty     $smarty */
+/** @global \JTL\Backend\AdminAccount $oAccount */
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 $db       = Shop::Container()->getDB();
@@ -105,7 +109,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
                     AND nModul = 0
                     AND nStandardanzeigen = 1 " . $oSQL->cWHERE . '
                 ORDER BY nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
     $settingSection = new Manager($db, $smarty);
@@ -148,7 +152,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
         }
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
     $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
@@ -167,7 +171,7 @@ if ($step === 'uebersicht') {
         'SELECT * 
             FROM teinstellungensektion 
             ORDER BY kEinstellungenSektion',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
@@ -179,7 +183,7 @@ if ($step === 'uebersicht') {
                     AND nStandardAnzeigen = 1
                     AND nModul = 0",
             ['sid' => (int)$sections[$i]->kEinstellungenSektion],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         $sections[$i]->anz = $anz_einstellunen->anz;
@@ -210,7 +214,7 @@ if ($step === 'einstellungen bearbeiten') {
                     AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
                 $oSQL->cWHERE . '
                 ORDER BY nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
     $settingSection = new Manager($db, $smarty);
@@ -229,7 +233,7 @@ if ($step === 'einstellungen bearbeiten') {
                 'SELECT kKundengruppe AS cWert, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         } elseif (in_array($config->cInputTyp, ['selectbox', 'listbox'], true)) {
             $config->ConfWerte = $db->selectAll(
@@ -258,7 +262,7 @@ if ($step === 'einstellungen bearbeiten') {
                 $config->cWertName
             );
             $config->gesetzterWert = isset($setValue->cWert)
-                ? StringHandler::htmlentities($setValue->cWert)
+                ? Text::htmlentities($setValue->cWert)
                 : null;
         }
         $sectionItem->setValue($config, $setValue);

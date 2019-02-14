@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Class Page
- * @package OPC
+ * @package JTL\OPC
  */
 class Page implements \JsonSerializable
 {

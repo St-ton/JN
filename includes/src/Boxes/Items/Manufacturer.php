@@ -4,11 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Helpers\Manufacturer as ManufacturerHelper;
 
 /**
  * Class Manufacturer
- * @package Boxes\Items
+ *
+ * @package JTL\Boxes\Items
  */
 final class Manufacturer extends AbstractBox
 {
@@ -25,7 +28,7 @@ final class Manufacturer extends AbstractBox
     {
         parent::__construct($config);
         $this->addMapping('manufacturers', 'Manufacturers');
-        $this->setManufacturers(\Helpers\Manufacturer::getInstance()->getManufacturers());
+        $this->setManufacturers(ManufacturerHelper::getInstance()->getManufacturers());
         $this->setShow(\count($this->manufacturerList) > 0);
     }
 

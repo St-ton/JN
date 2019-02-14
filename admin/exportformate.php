@@ -4,16 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\Revision;
-use Helpers\Form;
+use JTL\Backend\Revision;
+use JTL\Helpers\Form;
+use JTL\Exportformat;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
-\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+JTL\Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
@@ -72,7 +77,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
             '*',
             'nSort'
         );
-        \Shop::Container()->getGetText()->localizeConfigs($Conf);
+        JTL\Shop::Container()->getGetText()->localizeConfigs($Conf);
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -104,7 +109,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
         $smarty->assign('cPlausiValue_arr', $checkResult)
-               ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
+               ->assign('cPostVar_arr', Text::filterXSS($_POST));
         $step = 'neuer Export';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
     }
@@ -168,7 +173,7 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
                    WHERE texportformat.kExportformat = " . $kExportformat,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
 
             if ($bDeleted > 0) {
@@ -215,7 +220,7 @@ if ($step === 'uebersicht') {
         'SELECT * 
             FROM texportformat 
             ORDER BY cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $eCount        = count($exportformate);
     for ($i = 0; $i < $eCount; $i++) {
@@ -250,13 +255,13 @@ if ($step === 'neuer Export') {
                'SELECT * 
                     FROM tkundengruppe 
                     ORDER BY cName',
-               \DB\ReturnType::ARRAY_OF_OBJECTS
+               ReturnType::ARRAY_OF_OBJECTS
            ))
            ->assign('waehrungen', $db->query(
                'SELECT * 
                     FROM twaehrung 
                     ORDER BY cStandard DESC',
-               \DB\ReturnType::ARRAY_OF_OBJECTS
+               ReturnType::ARRAY_OF_OBJECTS
            ))
            ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
 
@@ -277,7 +282,7 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
-    $gettext = \Shop::Container()->getGetText();
+    $gettext = JTL\Shop::Container()->getGetText();
     $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
     $gettext->localizeConfigs($configs);
 

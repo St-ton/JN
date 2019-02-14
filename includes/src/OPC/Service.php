@@ -4,21 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use Backend\AdminIO;
-use Filter\AbstractFilter;
-use Filter\Config;
-use Filter\Items\Attribute;
-use Filter\Items\PriceRange;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\Type;
-use OPC\Portlets\MissingPortlet;
+use JTL\Backend\AdminIO;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\Config;
+use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\PriceRange;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\Type;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\OPC\Portlets\MissingPortlet;
+use JTL\Shop;
 
 /**
  * Class Service
- * @package OPC
+ * @package JTL\OPC
  */
 class Service
 {
@@ -93,7 +96,7 @@ class Service
      */
     public function getAdminSessionToken(): ?string
     {
-        return \Shop::getAdminSessionToken();
+        return Shop::getAdminSessionToken();
     }
 
     /**
@@ -218,6 +221,7 @@ class Service
 
     /**
      * @param string $portletClass
+     * @param string $missingClass
      * @param array $props
      * @return string
      * @throws \Exception
@@ -236,7 +240,7 @@ class Service
      */
     public function isEditMode(): bool
     {
-        return \Helpers\Request::verifyGPDataString('opcEditMode') === 'yes';
+        return Request::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -252,7 +256,7 @@ class Service
      */
     public function getEditedPageKey(): int
     {
-        return \Helpers\Request::verifyGPCDataInt('opcEditedPageKey');
+        return Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
@@ -261,12 +265,12 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        \Helpers\Tax::setTaxRates();
+        Tax::setTaxRates();
 
         $productFilter    = new ProductFilter(
             Config::getDefault(),
-            \Shop::Container()->getDB(),
-            \Shop::Container()->getCache()
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache()
         );
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];

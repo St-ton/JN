@@ -4,11 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
+
+use DateTime;
 
 /**
  * Interface ItemInterface
- * @package News
+ * @package JTL\News
  */
 interface ItemInterface
 {
@@ -309,19 +311,19 @@ interface ItemInterface
     public function setPreviewImage(string $previewImage, int $idx = null): void;
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateCreated(): \DateTime;
+    public function getDateCreated(): DateTime;
 
     /**
-     * @param \DateTime $dateCreated
+     * @param DateTime $dateCreated
      */
-    public function setDateCreated(\DateTime $dateCreated): void;
+    public function setDateCreated(DateTime $dateCreated): void;
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateValidFrom(): \DateTime;
+    public function getDateValidFrom(): DateTime;
 
     /**
      * @return int
@@ -329,19 +331,19 @@ interface ItemInterface
     public function getDateValidFromNumeric(): int;
 
     /**
-     * @param \DateTime $dateValidFrom
+     * @param DateTime $dateValidFrom
      */
-    public function setDateValidFrom(\DateTime $dateValidFrom): void;
+    public function setDateValidFrom(DateTime $dateValidFrom): void;
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDate(): \DateTime;
+    public function getDate(): DateTime;
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      */
-    public function setDate(\DateTime $date): void;
+    public function setDate(DateTime $date): void;
 
     /**
      * @return bool

@@ -4,6 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Plugin\Admin\StateChanger;
+use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
+use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Plugin\Admin\Installation\Installer;
+use JTL\Plugin\Admin\Updater;
+use JTL\Plugin\Admin\Installation\Uninstaller;
+use JTL\Plugin\Helper;
+use JTL\XMLParser;
+
 /**
  * @param int    $kPlugin
  * @param string $dir
@@ -13,7 +23,7 @@
 function pluginPlausi(int $kPlugin, $dir = '')
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $validator = new \Plugin\Admin\Validation\LegacyPluginValidator(Shop::Container()->getDB(), new \JTL\XMLParser());
+    $validator = new LegacyPluginValidator(Shop::Container()->getDB(), new XMLParser());
     $validator->setDir($dir);
 
     return $validator->validateByPluginID($kPlugin);
@@ -28,7 +38,7 @@ function pluginPlausi(int $kPlugin, $dir = '')
 function pluginPlausiIntern($xml, $dir)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $validator = new \Plugin\Admin\Validation\LegacyPluginValidator(Shop::Container()->getDB(), new \JTL\XMLParser());
+    $validator = new LegacyPluginValidator(Shop::Container()->getDB(), new XMLParser());
     $validator->setDir($dir);
 
     return $validator->pluginPlausiIntern($xml, false);
@@ -46,12 +56,12 @@ function updatePlugin(int $kPlugin)
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db              = Shop::Container()->getDB();
     $cache           = Shop::Container()->getCache();
-    $parser          = new \JTL\XMLParser();
-    $uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
-    $validator       = new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser);
-    $modernValidator = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
-    $installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
-    $updater         = new \Plugin\Admin\Updater($db, $installer);
+    $parser          = new XMLParser();
+    $uninstaller     = new Uninstaller($db, $cache);
+    $validator       = new LegacyPluginValidator($db, $parser);
+    $modernValidator = new PluginValidator($db, $parser);
+    $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
+    $updater         = new Updater($db, $installer);
 
     return $updater->update($kPlugin);
 }
@@ -69,11 +79,11 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db              = Shop::Container()->getDB();
     $cache           = Shop::Container()->getCache();
-    $parser          = new \JTL\XMLParser();
-    $uninstaller     = new \Plugin\Admin\Installation\Uninstaller($db, $cache);
-    $validator       = new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser);
-    $modernValidator = new \Plugin\Admin\Validation\PluginValidator($db, $parser);
-    $installer       = new \Plugin\Admin\Installation\Installer($db, $uninstaller, $validator, $modernValidator);
+    $parser          = new XMLParser();
+    $uninstaller     = new Uninstaller($db, $cache);
+    $validator       = new LegacyPluginValidator($db, $parser);
+    $modernValidator = new PluginValidator($db, $parser);
+    $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
     $installer->setDir($dir);
     if ($oldPlugin !== 0) {
         $installer->setPlugin($oldPlugin);
@@ -86,8 +96,8 @@ function installierePluginVorbereitung($dir, $oldPlugin = 0)
 /**
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
- * @param \Plugin\LegacyPlugin $oPlugin
- * @param bool                 $forceReload
+ * @param \JTL\Plugin\LegacyPlugin $oPlugin
+ * @param bool                     $forceReload
  * @return int
  * @throws Exception
  * @deprecated since 5.0.0
@@ -98,12 +108,12 @@ function reloadPlugin($oPlugin, $forceReload = false)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db           = Shop::Container()->getDB();
-    $parser       = new \JTL\XMLParser();
-    $stateChanger = new \Plugin\Admin\StateChanger(
+    $parser       = new XMLParser();
+    $stateChanger = new StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser),
-        new \Plugin\Admin\Validation\PluginValidator($db, $parser)
+        new LegacyPluginValidator($db, $parser),
+        new PluginValidator($db, $parser)
     );
 
     return $stateChanger->reload($oPlugin, $forceReload);
@@ -120,12 +130,12 @@ function aktivierePlugin(int $kPlugin): int
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db           = Shop::Container()->getDB();
-    $parser       = new \JTL\XMLParser();
-    $stateChanger = new \Plugin\Admin\StateChanger(
+    $parser       = new XMLParser();
+    $stateChanger = new StateChanger(
         $db,
         Shop::Container()->getCache(),
-        new \Plugin\Admin\Validation\LegacyPluginValidator($db, $parser),
-        new \Plugin\Admin\Validation\PluginValidator($db, $parser)
+        new LegacyPluginValidator($db, $parser),
+        new PluginValidator($db, $parser)
     );
 
     return $stateChanger->activate($kPlugin);
@@ -141,7 +151,7 @@ function aktivierePlugin(int $kPlugin): int
 function deaktivierePlugin(int $kPlugin): int
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $stateChanger = new \Plugin\Admin\StateChanger(Shop::Container()->getDB(), Shop::Container()->getCache());
+    $stateChanger = new StateChanger(Shop::Container()->getDB(), Shop::Container()->getCache());
 
     return $stateChanger->deactivate($kPlugin);
 }
@@ -156,5 +166,5 @@ function deaktivierePlugin(int $kPlugin): int
 function gibSprachVariablen(int $kPlugin): array
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::getLanguageVariables($kPlugin);
+    return Helper::getLanguageVariables($kPlugin);
 }

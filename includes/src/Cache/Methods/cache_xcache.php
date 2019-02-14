@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache\Methods;
+namespace JTL\Cache\Methods;
 
 /**
  * Class cache_xcache
@@ -12,7 +12,7 @@ namespace Cache\Methods;
  *
  * @warning Untested
  * @warning Does not support caching groups
- * @package Cache\Methods
+ * @package JTL\Cache\Methods
  * @deprecated since 5.0.0
  */
 class cache_xcache extends cache_null

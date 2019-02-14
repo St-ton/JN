@@ -4,15 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
+
+use JTL\MagicCompatibilityTrait;
+use JTL\Sprache;
 
 /**
  * Class AbstractLink
- * @package Link
+ * @package JTL\Link
  */
 abstract class AbstractLink implements LinkInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -147,7 +150,7 @@ abstract class AbstractLink implements LinkInterface
     public function getNamesCompat(): array
     {
         $byCode    = [];
-        $languages = \Sprache::getAllLanguages(1);
+        $languages = Sprache::getAllLanguages(1);
         foreach ($this->getNames() as $langID => $name) {
             $byCode[$languages[$langID]->cISO] = $name;
         }

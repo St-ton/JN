@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
-use Helpers\SearchSpecial;
-use Session\Frontend;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\DB\ReturnType;
+use JTL\Helpers\SearchSpecial;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class BestsellingProducts
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class BestsellingProducts extends AbstractBox
 {
@@ -29,11 +31,11 @@ final class BestsellingProducts extends AbstractBox
             $res            = [];
             $cached         = true;
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
-            $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $count          = (int)$this->config['boxen']['box_bestseller_anzahl_anzeige'];
             $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
-            if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
+            if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached   = false;
                 $minCount = ((int)$this->config['global']['global_bestseller_minanzahl'] > 0)
                     ? (int)$this->config['global']['global_bestseller_minanzahl']
@@ -42,7 +44,7 @@ final class BestsellingProducts extends AbstractBox
                 if ($limit < 1) {
                     $limit = 10;
                 }
-                $productIDs = \Shop::Container()->getDB()->query(
+                $productIDs = Shop::Container()->getDB()->query(
                     'SELECT tartikel.kArtikel
                         FROM tbestseller, tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -55,7 +57,7 @@ final class BestsellingProducts extends AbstractBox
                         ORDER BY fAnzahl DESC LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+                Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
             if (\count($productIDs) > 0) {
                 $rndkeys = \array_rand($productIDs, \min($count, \count($productIDs)));
@@ -74,7 +76,7 @@ final class BestsellingProducts extends AbstractBox
 
             if (\count($res) > 0) {
                 $this->setShow(true);
-                $products = new \ArtikelListe();
+                $products = new ArtikelListe();
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
                 $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));

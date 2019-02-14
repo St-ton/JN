@@ -4,19 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\ReturnType;
-use Kategorie;
-use KategorieListe;
-use Session\Frontend;
-use Shop;
-use Sprache;
-use StringHandler;
+use JTL\DB\ReturnType;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class Category
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Category
 {
@@ -110,7 +109,7 @@ class Category
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
-        if (false === ($fullCats = Shop::Container()->getCache()->get(self::$cacheID))) {
+        if (($fullCats = Shop::Container()->getCache()->get(self::$cacheID)) === false) {
             if (!empty($_SESSION['oKategorie_arr_new'])) {
                 self::$fullCategories = $_SESSION['oKategorie_arr_new'];
 
@@ -265,7 +264,7 @@ class Category
                 /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
                 $cat->KategorieAttribute = &$cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
-                $cat->cBeschreibung    = StringHandler::parseNewsText($cat->cBeschreibung);
+                $cat->cBeschreibung    = Text::parseNewsText($cat->cBeschreibung);
                 $cat->bUnterKategorien = 0;
                 $cat->Unterkategorien  = [];
                 // Kurzbezeichnung
@@ -473,7 +472,7 @@ class Category
             /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
             $cat->KategorieAttribute = &$cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
-            $cat->cBeschreibung    = StringHandler::parseNewsText($cat->cBeschreibung);
+            $cat->cBeschreibung    = Text::parseNewsText($cat->cBeschreibung);
             $cat->bUnterKategorien = 0;
             $cat->Unterkategorien  = [];
             $fullCats[]            = $cat;

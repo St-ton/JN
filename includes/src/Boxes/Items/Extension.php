@@ -4,11 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
 /**
  * Class Extension
- * @package Boxes\Items
+ *
+ * @package JTL\Boxes\Items
  */
 class Extension extends AbstractBox
 {

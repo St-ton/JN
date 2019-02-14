@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Helpers\Category;
-use Session\Frontend;
+use JTL\Helpers\Category;
+use JTL\Session\Frontend;
 
 /**
  * Class ProductCategories
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class ProductCategories extends AbstractBox
 {

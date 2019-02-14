@@ -21,10 +21,10 @@
 // Pretty print some JSON
 function json_format($json)
 {
-    $tab = "  ";
-    $new_json = "";
+    $tab          = '  ';
+    $new_json     = '';
     $indent_level = 0;
-    $in_string = false;
+    $in_string    = false;
 
 /*
  commented out by monk.e.boy 22nd May '08
@@ -46,7 +46,7 @@ function json_format($json)
             case '{':
             case '[':
                 if (!$in_string) {
-                    $new_json .= $char . "\n" . str_repeat($tab, $indent_level+1);
+                    $new_json .= $char . "\n" . str_repeat($tab, $indent_level + 1);
                     $indent_level++;
                 } else {
                     $new_json .= $char;
@@ -70,13 +70,13 @@ function json_format($json)
                 break;
             case ':':
                 if (!$in_string) {
-                    $new_json .= ": ";
+                    $new_json .= ': ';
                 } else {
                     $new_json .= $char;
                 }
                 break;
             case '"':
-                if ($c > 0 && $json[$c-1] != '\\') {
+                if ($c > 0 && $json[$c - 1] != '\\') {
                     $in_string = !$in_string;
                 }
             default:

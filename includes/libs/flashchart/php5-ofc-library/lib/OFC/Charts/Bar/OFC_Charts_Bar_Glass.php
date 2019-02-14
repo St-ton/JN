@@ -25,7 +25,7 @@ class bar_glass_value
     public function __construct($top)
     {
         $this->top = $top;
-//		$this->bottom = $bottom;
+//      $this->bottom = $bottom;
     }
 
     public function set_colour($colour)
@@ -45,6 +45,6 @@ class OFC_Charts_Bar_Glass extends OFC_Charts_Bar
     {
         parent::__construct();
 
-        $this->type      = 'bar_glass';
+        $this->type = 'bar_glass';
     }
 }

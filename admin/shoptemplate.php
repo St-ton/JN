@@ -4,13 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Overlay;
-use Helpers\Request;
-use Helpers\Template as TemplateHelper;
+use JTL\Helpers\Form;
+use JTL\Helpers\Overlay;
+use JTL\Helpers\Request;
+use JTL\Helpers\Template as TemplateHelper;
+use JTL\LessParser;
+use JTL\SimpleCSS;
+use JTL\Shop;
+use JTL\Template;
+use JTL\DB\ReturnType;
 
 /**
- * @global \Smarty\JTLSmarty $smarty
+ * @global \JTL\Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
@@ -148,7 +153,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         $overlayHelper->loadOverlaysFromTemplateFolder($_POST['ordner']);
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
     // re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
@@ -178,7 +183,7 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         } else {
             $cFehler = __('errorTemplateSave');
         }
-        $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+        $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
         // re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
@@ -257,7 +262,7 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         $cFehler = __('errorTemplateSave');
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())

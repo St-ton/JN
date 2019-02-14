@@ -4,14 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache\Methods;
+namespace JTL\Cache\Methods;
 
-use Cache\ICachingMethod;
-use Cache\JTLCacheTrait;
+use JTL\Cache\ICachingMethod;
+use JTL\Cache\JTLCacheTrait;
+use JTL\Shop;
+use Redis;
+use RedisCluster;
+use RedisClusterException;
 
 /**
  * Class cache_redisCluster
- * @package Cache\Methods
+ * @package JTL\Cache\Methods
  * Implements caching via phpredis in cluster mode
  *
  * @see https://github.com/nicolasff/phpredis
@@ -26,7 +30,7 @@ class cache_redisCluster implements ICachingMethod
     public static $instance;
 
     /**
-     * @var \RedisCluster
+     * @var RedisCluster
      */
     private $redis;
 
@@ -62,31 +66,31 @@ class cache_redisCluster implements ICachingMethod
     private function setRedisCluster($hosts = null, $persist = false, $strategy = 0): bool
     {
         try {
-            $redis = new \RedisCluster(null, \explode(',', $hosts), 1.5, 1.5, $persist);
-            $redis->setOption(\Redis::OPT_PREFIX, $this->options['prefix']);
+            $redis = new RedisCluster(null, \explode(',', $hosts), 1.5, 1.5, $persist);
+            $redis->setOption(Redis::OPT_PREFIX, $this->options['prefix']);
             // set php serializer for objects and arrays
-            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+            $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
             switch ($strategy) {
                 case 4:
-                    $redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_DISTRIBUTE_SLAVES);
+                    $redis->setOption(RedisCluster::OPT_SLAVE_FAILOVER, RedisCluster::FAILOVER_DISTRIBUTE_SLAVES);
                     break;
                 case 3:
-                    $redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_DISTRIBUTE);
+                    $redis->setOption(RedisCluster::OPT_SLAVE_FAILOVER, RedisCluster::FAILOVER_DISTRIBUTE);
                     break;
                 case 2:
-                    $redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_ERROR);
+                    $redis->setOption(RedisCluster::OPT_SLAVE_FAILOVER, RedisCluster::FAILOVER_ERROR);
                     break;
                 case 1:
                 default:
-                    $redis->setOption(\RedisCluster::OPT_SLAVE_FAILOVER, \RedisCluster::FAILOVER_NONE);
+                    $redis->setOption(RedisCluster::OPT_SLAVE_FAILOVER, RedisCluster::FAILOVER_NONE);
                     break;
             }
             $this->masters = $redis->_masters();
 
             $this->redis = $redis;
-        } catch (\RedisClusterException $e) {
+        } catch (RedisClusterException $e) {
             $this->setError($e->getMessage());
-            \Shop::Container()->getLogService()->critical('\RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->critical('RedisClusterException: ' . $e->getMessage());
         }
 
         return \count($this->masters) > 0;
@@ -101,8 +105,8 @@ class cache_redisCluster implements ICachingMethod
             $exp = $expiration ?? $this->options['lifetime'];
 
             return $this->redis->set($cacheID, $content, $cacheID !== $this->journalID && $exp > -1 ? $exp : null);
-        } catch (\RedisClusterException $e) {
-            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
+        } catch (RedisClusterException $e) {
+            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
 
             return false;
         }
@@ -122,8 +126,8 @@ class cache_redisCluster implements ICachingMethod
             }
 
             return $res;
-        } catch (\RedisClusterException $e) {
-            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
+        } catch (RedisClusterException $e) {
+            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
 
             return false;
         }
@@ -136,8 +140,8 @@ class cache_redisCluster implements ICachingMethod
     {
         try {
             return $this->redis->get($cacheID);
-        } catch (\RedisClusterException $e) {
-            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
+        } catch (RedisClusterException $e) {
+            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
 
             return false;
         }
@@ -234,7 +238,7 @@ class cache_redisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
+            : \array_map('JTL\Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);
@@ -243,7 +247,7 @@ class cache_redisCluster implements ICachingMethod
                 // phpredis will throw an exception when unserializing unserialized data
                 try {
                     $_cid = $this->redis->_unserialize($_cid);
-                } catch (\RedisClusterException $e) {
+                } catch (RedisClusterException $e) {
                     // we know we don't have to continue unserializing when there was an exception
                     break;
                 }
@@ -283,8 +287,8 @@ class cache_redisCluster implements ICachingMethod
                     ? $this->redis->slowlog($master, 'get', 25)
                     : [];
             }
-        } catch (\RedisClusterException $e) {
-            \Shop::Container()->getLogService()->error('\RedisClusterException: ' . $e->getMessage());
+        } catch (RedisClusterException $e) {
+            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
 
             return [];
         }

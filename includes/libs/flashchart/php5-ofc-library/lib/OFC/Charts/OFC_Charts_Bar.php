@@ -22,7 +22,7 @@ require_once('OFC/Charts/OFC_Charts_Base.php');
 
 class OFC_Charts_Bar_Value
 {
-    public function __construct($top, $bottom=null)
+    public function __construct($top, $bottom = null)
     {
         $this->top = $top;
         
@@ -48,12 +48,12 @@ class OFC_Charts_Bar extends OFC_Charts_Base
     {
         parent::__construct();
 
-        $this->type      = 'bar';
+        $this->type = 'bar';
     }
 
     public function set_key($text, $size)
     {
-        $this->text = $text;
+        $this->text          = $text;
         $this->{'font-size'} = $size;
     }
 

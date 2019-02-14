@@ -4,10 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+namespace JTL;
+
+use DateTime;
+use JTL\DB\ReturnType;
+use JTL\GeneralDataProtection\IpAnonymizer;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Session\Frontend;
+use stdClass;
 
 /**
  * Class Visitor
+ * @package JTL
  * @since 5.0.0
  */
 class Visitor
@@ -23,7 +32,7 @@ class Visitor
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tbesucherbot SET dZeit = NOW() WHERE kBesucherBot = :_kBesucherBot',
                 ['_kBesucherBot' => $botID],
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
         }
         self::archive();
@@ -40,7 +49,7 @@ class Visitor
             // allways increment the visitor-counter (if no bot)
             Shop::Container()->getDB()->query(
                 'UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1',
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
         } else {
             $visitor->kBesucher    = (int)$visitor->kBesucher;
@@ -63,8 +72,9 @@ class Visitor
 
     /**
      * Besucher nach 3 Std in Besucherarchiv verschieben
+     *
      * @former archiviereBesucher()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function archive(): void
     {
@@ -78,13 +88,13 @@ class Visitor
               FROM tbesucher
               WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
             ['interval' => $interval],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tbesucher
                 WHERE dLetzteAktivitaet <= DATE_SUB(NOW(), INTERVAL :interval HOUR)',
             ['interval' => $interval],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -93,12 +103,12 @@ class Visitor
      * @param string $ip
      * @return stdClass|null
      * @former dbLookupVisitor()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function dbLookup($userAgent, $ip): ?stdClass
     {
-        $visitor = Shop::Container()->getDB()->select('tbesucher', 'cSessID', session_id())
-            ?? Shop::Container()->getDB()->select('tbesucher', 'cID', md5($userAgent . $ip));
+        $visitor = Shop::Container()->getDB()->select('tbesucher', 'cSessID', \session_id())
+            ?? Shop::Container()->getDB()->select('tbesucher', 'cID', \md5($userAgent . $ip));
 
         return $visitor;
     }
@@ -114,13 +124,13 @@ class Visitor
     public static function updateVisitorObject($vis, int $visitorID, $userAgent, int $botID)
     {
         $vis->kBesucher         = $visitorID;
-        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize();
-        $vis->cSessID           = session_id();
-        $vis->cID               = md5($userAgent . Request::getRealIP());
-        $vis->kKunde            = \Session\Frontend::getCustomer()->getID();
+        $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();
+        $vis->cSessID           = \session_id();
+        $vis->cID               = \md5($userAgent . Request::getRealIP());
+        $vis->kKunde            = Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cReferer          = self::getReferer();
-        $vis->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
+        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
         $vis->cBrowser          = self::getBrowser();
         $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
         $vis->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
@@ -139,14 +149,14 @@ class Visitor
     {
         $vis                    = new stdClass();
         $vis->kBesucher         = 0;
-        $vis->cIP               = (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize();
-        $vis->cSessID           = session_id();
-        $vis->cID               = md5($userAgent . Request::getRealIP());
-        $vis->kKunde            = \Session\Frontend::getCustomer()->getID();
+        $vis->cIP               = (new IpAnonymizer(Request::getRealIP()))->anonymize();
+        $vis->cSessID           = \session_id();
+        $vis->cID               = \md5($userAgent . Request::getRealIP());
+        $vis->kKunde            = Frontend::getCustomer()->getID();
         $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
         $vis->cEinstiegsseite   = $_SERVER['REQUEST_URI'];
         $vis->cReferer          = self::getReferer();
-        $vis->cUserAgent        = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
+        $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
         $vis->cBrowser          = self::getBrowser();
         $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
         $vis->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
@@ -194,7 +204,7 @@ class Visitor
                 WHERE `kKunde` = :cid
                 ORDER BY `dErstellt` DESC LIMIT 1',
             ['cid' => $customerID],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)($oOrder->kBestellung ?? 0);
@@ -203,40 +213,40 @@ class Visitor
     /**
      * @return string
      * @former gibBrowser()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function getBrowser(): string
     {
-        $agent  = mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', MB_CASE_LOWER);
+        $agent  = \mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', \MB_CASE_LOWER);
         $mobile = '';
-        if (mb_stripos($agent, 'iphone') !== false
-            || mb_stripos($agent, 'ipad') !== false
-            || mb_stripos($agent, 'ipod') !== false
-            || mb_stripos($agent, 'android') !== false
-            || mb_stripos($agent, 'opera mobi') !== false
-            || mb_stripos($agent, 'blackberry') !== false
-            || mb_stripos($agent, 'playbook') !== false
-            || mb_stripos($agent, 'kindle') !== false
-            || mb_stripos($agent, 'windows phone') !== false
+        if (\mb_stripos($agent, 'iphone') !== false
+            || \mb_stripos($agent, 'ipad') !== false
+            || \mb_stripos($agent, 'ipod') !== false
+            || \mb_stripos($agent, 'android') !== false
+            || \mb_stripos($agent, 'opera mobi') !== false
+            || \mb_stripos($agent, 'blackberry') !== false
+            || \mb_stripos($agent, 'playbook') !== false
+            || \mb_stripos($agent, 'kindle') !== false
+            || \mb_stripos($agent, 'windows phone') !== false
         ) {
             $mobile = '/Mobile';
         }
-        if (mb_strpos($agent, 'msie') !== false) {
-            return 'Internet Explorer ' . (int)mb_substr($agent, mb_strpos($agent, 'msie') + 4) . $mobile;
+        if (\mb_strpos($agent, 'msie') !== false) {
+            return 'Internet Explorer ' . (int)\mb_substr($agent, \mb_strpos($agent, 'msie') + 4) . $mobile;
         }
-        if (mb_strpos($agent, 'opera') !== false || mb_stripos($agent, 'opr') !== false) {
+        if (\mb_strpos($agent, 'opera') !== false || \mb_stripos($agent, 'opr') !== false) {
             return 'Opera' . $mobile;
         }
-        if (mb_stripos($agent, 'vivaldi') !== false) {
+        if (\mb_stripos($agent, 'vivaldi') !== false) {
             return 'Vivaldi' . $mobile;
         }
-        if (mb_strpos($agent, 'safari') !== false) {
+        if (\mb_strpos($agent, 'safari') !== false) {
             return 'Safari' . $mobile;
         }
-        if (mb_strpos($agent, 'firefox') !== false) {
+        if (\mb_strpos($agent, 'firefox') !== false) {
             return 'Firefox' . $mobile;
         }
-        if (mb_strpos($agent, 'chrome') !== false) {
+        if (\mb_strpos($agent, 'chrome') !== false) {
             return 'Chrome' . $mobile;
         }
 
@@ -254,45 +264,45 @@ class Visitor
             return '';
         }
 
-        return StringHandler::filterXSS(mb_convert_case(explode('/', $_SERVER['HTTP_REFERER'])[2], MB_CASE_LOWER));
+        return Text::filterXSS(\mb_convert_case(\explode('/', $_SERVER['HTTP_REFERER'])[2], \MB_CASE_LOWER));
     }
 
     /**
      * @return string
      * @former gibBot()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function getBot(): string
     {
-        $agent = mb_convert_case($_SERVER['HTTP_USER_AGENT'], MB_CASE_LOWER);
-        if (mb_strpos($agent, 'googlebot') !== false) {
+        $agent = \mb_convert_case($_SERVER['HTTP_USER_AGENT'], \MB_CASE_LOWER);
+        if (\mb_strpos($agent, 'googlebot') !== false) {
             return 'Google';
         }
-        if (mb_strpos($agent, 'bingbot') !== false) {
+        if (\mb_strpos($agent, 'bingbot') !== false) {
             return 'Bing';
         }
-        if (mb_strpos($agent, 'inktomi.com') !== false) {
+        if (\mb_strpos($agent, 'inktomi.com') !== false) {
             return 'Inktomi';
         }
-        if (mb_strpos($agent, 'yahoo! slurp') !== false) {
+        if (\mb_strpos($agent, 'yahoo! slurp') !== false) {
             return 'Yahoo!';
         }
-        if (mb_strpos($agent, 'msnbot') !== false) {
+        if (\mb_strpos($agent, 'msnbot') !== false) {
             return 'MSN';
         }
-        if (mb_strpos($agent, 'teoma') !== false) {
+        if (\mb_strpos($agent, 'teoma') !== false) {
             return 'Teoma';
         }
-        if (mb_strpos($agent, 'crawler') !== false) {
+        if (\mb_strpos($agent, 'crawler') !== false) {
             return 'Crawler';
         }
-        if (mb_strpos($agent, 'scooter') !== false) {
+        if (\mb_strpos($agent, 'scooter') !== false) {
             return 'Scooter';
         }
-        if (mb_strpos($agent, 'fireball') !== false) {
+        if (\mb_strpos($agent, 'fireball') !== false) {
             return 'Fireball';
         }
-        if (mb_strpos($agent, 'ask jeeves') !== false) {
+        if (\mb_strpos($agent, 'ask jeeves') !== false) {
             return 'Ask';
         }
 
@@ -303,38 +313,38 @@ class Visitor
      * @param int    $visitorID
      * @param string $referer
      * @former werteRefererAus()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function analyzeReferer(int $visitorID, $referer): void
     {
         $ref             = $_SERVER['HTTP_REFERER'] ?? '';
         $term            = new stdClass();
         $term->kBesucher = $visitorID;
-        $term->cRohdaten = StringHandler::filterXSS($_SERVER['HTTP_REFERER']);
+        $term->cRohdaten = Text::filterXSS($_SERVER['HTTP_REFERER']);
         $param           = '';
-        if (mb_strpos($referer, '.google.') !== false
-            || mb_strpos($referer, 'suche.t-online.') !== false
-            || mb_strpos($referer, 'search.live.') !== false
-            || mb_strpos($referer, '.aol.') !== false
-            || mb_strpos($referer, '.aolsvc.') !== false
-            || mb_strpos($referer, '.ask.') !== false
-            || mb_strpos($referer, 'search.icq.') !== false
-            || mb_strpos($referer, 'search.msn.') !== false
-            || mb_strpos($referer, '.exalead.') !== false
+        if (\mb_strpos($referer, '.google.') !== false
+            || \mb_strpos($referer, 'suche.t-online.') !== false
+            || \mb_strpos($referer, 'search.live.') !== false
+            || \mb_strpos($referer, '.aol.') !== false
+            || \mb_strpos($referer, '.aolsvc.') !== false
+            || \mb_strpos($referer, '.ask.') !== false
+            || \mb_strpos($referer, 'search.icq.') !== false
+            || \mb_strpos($referer, 'search.msn.') !== false
+            || \mb_strpos($referer, '.exalead.') !== false
         ) {
             $param = 'q';
-        } elseif (mb_strpos($referer, 'suche.web') !== false) {
+        } elseif (\mb_strpos($referer, 'suche.web') !== false) {
             $param = 'su';
-        } elseif (mb_strpos($referer, 'suche.aolsvc') !== false) {
+        } elseif (\mb_strpos($referer, 'suche.aolsvc') !== false) {
             $param = 'query';
-        } elseif (mb_strpos($referer, 'search.yahoo') !== false) {
+        } elseif (\mb_strpos($referer, 'search.yahoo') !== false) {
             $param = 'p';
-        } elseif (mb_strpos($referer, 'search.ebay') !== false) {
+        } elseif (\mb_strpos($referer, 'search.ebay') !== false) {
             $param = 'satitle';
         }
         if ($param !== '') {
-            preg_match("/(\?$param|&$param)=[^&]+/i", $ref, $treffer);
-            $term->cSuchanfrage = isset($treffer[0]) ? urldecode(mb_substr($treffer[0], 3)) : null;
+            \preg_match("/(\?$param|&$param)=[^&]+/i", $ref, $treffer);
+            $term->cSuchanfrage = isset($treffer[0]) ? \urldecode(\mb_substr($treffer[0], 3)) : null;
             if ($term->cSuchanfrage) {
                 Shop::Container()->getDB()->insert('tbesuchersuchausdruecke', $term);
             }
@@ -345,24 +355,24 @@ class Visitor
      * @param string $referer
      * @return int
      * @former istSuchmaschine()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function isSearchEngine($referer): int
     {
         if (!$referer) {
             return 0;
         }
-        if (mb_strpos($referer, '.google.') !== false
-            || mb_strpos($referer, '.bing.') !== false
-            || mb_strpos($referer, 'suche.') !== false
-            || mb_strpos($referer, 'search.') !== false
-            || mb_strpos($referer, '.yahoo.') !== false
-            || mb_strpos($referer, '.fireball.') !== false
-            || mb_strpos($referer, '.seekport.') !== false
-            || mb_strpos($referer, '.keywordspy.') !== false
-            || mb_strpos($referer, '.hotfrog.') !== false
-            || mb_strpos($referer, '.altavista.') !== false
-            || mb_strpos($referer, '.ask.') !== false
+        if (\mb_strpos($referer, '.google.') !== false
+            || \mb_strpos($referer, '.bing.') !== false
+            || \mb_strpos($referer, 'suche.') !== false
+            || \mb_strpos($referer, 'search.') !== false
+            || \mb_strpos($referer, '.yahoo.') !== false
+            || \mb_strpos($referer, '.fireball.') !== false
+            || \mb_strpos($referer, '.seekport.') !== false
+            || \mb_strpos($referer, '.keywordspy.') !== false
+            || \mb_strpos($referer, '.hotfrog.') !== false
+            || \mb_strpos($referer, '.altavista.') !== false
+            || \mb_strpos($referer, '.ask.') !== false
         ) {
             return 1;
         }
@@ -374,13 +384,13 @@ class Visitor
      * @param string $userAgent
      * @return int
      * @former istSpider()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function isSpider($userAgent): int
     {
         $bot = null;
-        foreach (array_keys(self::getSpiders()) as $botUserAgent) {
-            if (mb_strpos($userAgent, $botUserAgent) !== false) {
+        foreach (\array_keys(self::getSpiders()) as $botUserAgent) {
+            if (\mb_strpos($userAgent, $botUserAgent) !== false) {
                 $bot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $botUserAgent);
                 break;
             }
@@ -900,36 +910,36 @@ class Visitor
      */
     private static function isMobile($userAgent)
     {
-        return preg_match(
+        return \preg_match(
             '/android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile' .
-            '|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker' .
-            '|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',
+                '|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker' .
+                '|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',
             $userAgent,
             $matches
         )
-        || preg_match(
-            '/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)' .
-            '|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )' .
-            '|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa' .
-            '|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob' .
-            '|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)' .
-            '|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)' .
-            '|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)' .
-            '|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)' .
-            '|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])' .
-            '|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)' .
-            '|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)' .
-            '|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1' .
-            '|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio' .
-            '|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa' .
-            '(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)' .
-            '|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)' .
-            '|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)' .
-            '|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)' .
-            '|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i',
-            mb_substr($userAgent, 0, 4),
-            $matches
-        );
+            || \preg_match(
+                '/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)' .
+                '|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )' .
+                '|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa' .
+                '|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob' .
+                '|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)' .
+                '|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)' .
+                '|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)' .
+                '|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)' .
+                '|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])' .
+                '|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)' .
+                '|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)' .
+                '|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1' .
+                '|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio' .
+                '|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa' .
+                '(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)' .
+                '|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)' .
+                '|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)' .
+                '|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)' .
+                '|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i',
+                \mb_substr($userAgent, 0, 4),
+                $matches
+            );
     }
 
     /**
@@ -939,36 +949,36 @@ class Visitor
      */
     private static function getBrowserData(stdClass $browser, $userAgent): stdClass
     {
-        if (preg_match('/MSIE/i', $userAgent) && !preg_match('/Opera/i', $userAgent)) {
-            $browser->nType    = BROWSER_MSIE;
+        if (\preg_match('/MSIE/i', $userAgent) && !\preg_match('/Opera/i', $userAgent)) {
+            $browser->nType    = \BROWSER_MSIE;
             $browser->cName    = 'Internet Explorer';
             $browser->cBrowser = 'msie';
-        } elseif (preg_match('/Firefox/i', $userAgent)) {
-            $browser->nType    = BROWSER_FIREFOX;
+        } elseif (\preg_match('/Firefox/i', $userAgent)) {
+            $browser->nType    = \BROWSER_FIREFOX;
             $browser->cName    = 'Mozilla Firefox';
             $browser->cBrowser = 'firefox';
-        } elseif (preg_match('/Chrome/i', $userAgent)) {
-            $browser->nType    = BROWSER_CHROME;
+        } elseif (\preg_match('/Chrome/i', $userAgent)) {
+            $browser->nType    = \BROWSER_CHROME;
             $browser->cName    = 'Google Chrome';
             $browser->cBrowser = 'chrome';
-        } elseif (preg_match('/Safari/i', $userAgent)) {
-            $browser->nType = BROWSER_SAFARI;
-            if (preg_match('/iPhone/i', $userAgent)) {
+        } elseif (\preg_match('/Safari/i', $userAgent)) {
+            $browser->nType = \BROWSER_SAFARI;
+            if (\preg_match('/iPhone/i', $userAgent)) {
                 $browser->cName    = 'Apple iPhone';
                 $browser->cBrowser = 'iphone';
-            } elseif (preg_match('/iPad/i', $userAgent)) {
+            } elseif (\preg_match('/iPad/i', $userAgent)) {
                 $browser->cName    = 'Apple iPad';
                 $browser->cBrowser = 'ipad';
-            } elseif (preg_match('/iPod/i', $userAgent)) {
+            } elseif (\preg_match('/iPod/i', $userAgent)) {
                 $browser->cName    = 'Apple iPod';
                 $browser->cBrowser = 'ipod';
             } else {
                 $browser->cName    = 'Apple Safari';
                 $browser->cBrowser = 'safari';
             }
-        } elseif (preg_match('/Opera/i', $userAgent)) {
-            $browser->nType = BROWSER_OPERA;
-            if (preg_match('/Opera Mini/i', $userAgent)) {
+        } elseif (\preg_match('/Opera/i', $userAgent)) {
+            $browser->nType = \BROWSER_OPERA;
+            if (\preg_match('/Opera Mini/i', $userAgent)) {
                 $browser->cName    = 'Opera Mini';
                 $browser->cBrowser = 'opera_mini';
             } else {
@@ -996,23 +1006,23 @@ class Visitor
         $browser->cVersion  = '0';
         $browser->cAgent    = $userAgent;
         $browser->bMobile   = self::isMobile($browser->cAgent);
-        if (preg_match('/linux/i', $userAgent)) {
+        if (\preg_match('/linux/i', $userAgent)) {
             $browser->cPlatform = 'linux';
-        } elseif (preg_match('/macintosh|mac os x/i', $userAgent)) {
+        } elseif (\preg_match('/macintosh|mac os x/i', $userAgent)) {
             $browser->cPlatform = 'mac';
-        } elseif (preg_match('/windows|win32/i', $userAgent)) {
-            $browser->cPlatform = preg_match('/windows mobile|wce/i', $userAgent)
+        } elseif (\preg_match('/windows|win32/i', $userAgent)) {
+            $browser->cPlatform = \preg_match('/windows mobile|wce/i', $userAgent)
                 ? 'mobile'
                 : 'windows';
         }
         $browser = self::getBrowserData($browser, $userAgent);
         $known   = ['version', 'other', 'mobile', $browser->cBrowser];
-        $pattern = '/(?<browser>' . implode('|', $known) . ')[\/ ]+(?<version>[0-9.|a-zA-Z.]*)/i';
-        preg_match_all($pattern, $userAgent, $browserMatches);
-        if (count($browserMatches['browser']) !== 1) {
+        $pattern = '/(?<browser>' . \implode('|', $known) . ')[\/ ]+(?<version>[0-9.|a-zA-Z.]*)/i';
+        \preg_match_all($pattern, $userAgent, $browserMatches);
+        if (\count($browserMatches['browser']) !== 1) {
             $browser->cVersion = '0';
             if (isset($browserMatches['version'][0])
-                && mb_strripos($userAgent, 'Version') < mb_strripos($userAgent, $browser->cBrowser)
+                && \mb_strripos($userAgent, 'Version') < \mb_strripos($userAgent, $browser->cBrowser)
             ) {
                 $browser->cVersion = $browserMatches['version'][0];
             } elseif (isset($browserMatches['version'][1])) {
@@ -1021,7 +1031,7 @@ class Visitor
         } else {
             $browser->cVersion = $browserMatches['version'][0];
         }
-        if (mb_strlen($browser->cVersion) === 0) {
+        if (\mb_strlen($browser->cVersion) === 0) {
             $browser->cVersion = '0';
         }
 

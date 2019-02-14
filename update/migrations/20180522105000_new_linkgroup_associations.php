@@ -6,6 +6,12 @@
  * @created Thu, 22 May 2018 10:50:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
+
 /**
  * Migration
  *
@@ -26,8 +32,8 @@ class Migration_20180522105000 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` INT UNSIGNED NOT NULL AUTO_INCREMENT, ENGINE=InnoDB;");
-        $this->execute("ALTER TABLE `tlink` CHANGE COLUMN `kLink` `kLink` INT UNSIGNED NOT NULL AUTO_INCREMENT, ENGINE=InnoDB;");
+        $this->execute('ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` INT UNSIGNED NOT NULL AUTO_INCREMENT, ENGINE=InnoDB;');
+        $this->execute('ALTER TABLE `tlink` CHANGE COLUMN `kLink` `kLink` INT UNSIGNED NOT NULL AUTO_INCREMENT, ENGINE=InnoDB;');
         $missingLanguageEntries = Shop::Container()->getDB()->query(
             "SELECT tlink.*, tseo.* 
                 FROM tlink
@@ -35,7 +41,7 @@ class Migration_20180522105000 extends Migration implements IMigration
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = tlink.kLink
                 WHERE kLink NOT IN (SELECT kLink FROM tlinksprache)",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $missingLanguageEntries = \Functional\group($missingLanguageEntries, function ($e) {
             return $e->kLink;
@@ -51,17 +57,17 @@ class Migration_20180522105000 extends Migration implements IMigration
                 });
                 if ($match === null) {
                     // no seo entry exists for this language ID
-                    $linkSprache->cName       = $linkData->cName;
-                    $linkSprache->cSeo        = $linkData->cName;
+                    $linkSprache->cName = $linkData->cName;
+                    $linkSprache->cSeo  = $linkData->cName;
                 } else {
-                    $linkSprache->cSeo        = $match->cSeo;
-                    $linkSprache->cName       = $match->cName;
+                    $linkSprache->cSeo  = $match->cSeo;
+                    $linkSprache->cName = $match->cName;
                 }
                 $linkSprache->cISOSprache = $sprache->cISO;
                 $linkSprache->cTitle      = '';
                 $linkSprache->cContent    = '';
                 $linkSprache->cMetaTitle  = '';
-                $linkSprache->cSeo        = \JTL\SeoHelper::getSeo($linkSprache->cSeo);
+                $linkSprache->cSeo        = \JTL\Helpers\Seo::getSeo($linkSprache->cSeo);
                 Shop::Container()->getDB()->insert('tlinksprache', $linkSprache);
             }
         }
@@ -76,23 +82,23 @@ class Migration_20180522105000 extends Migration implements IMigration
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlink.kLink 
                 WHERE tseo.cSeo IS NULL",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($missingSeo as $item) {
             $oSeo           = new stdClass();
-            $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($item->cSeo);
+            $oSeo->cSeo     = \JTL\Helpers\Seo::checkSeo($item->cSeo);
             $oSeo->kKey     = $item->kLink;
             $oSeo->cKey     = 'kLink';
             $oSeo->kSprache = $item->kSprache;
             Shop::Container()->getDB()->insert('tseo', $oSeo);
         }
         $missingLinkGroupLanguages = Shop::Container()->getDB()->query(
-            "SELECT tlinkgruppe.* 
+            'SELECT tlinkgruppe.* 
                 FROM tlinkgruppe
                 LEFT JOIN tlinkgruppesprache
                     ON tlinkgruppe.kLinkGruppe = tlinkgruppesprache.kLinkgruppe
-                WHERE tlinkgruppesprache.kLinkgruppe IS NULL",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                WHERE tlinkgruppesprache.kLinkgruppe IS NULL',
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($missingLinkGroupLanguages as $missingLinkGroupLanguage) {
             foreach ($sprachen as $sprache) {
@@ -103,7 +109,7 @@ class Migration_20180522105000 extends Migration implements IMigration
                 Shop::Container()->getDB()->insert('tlinkgruppesprache', $lang);
             }
         }
-        $this->execute("CREATE TABLE `tlinkgroupassociations` (
+        $this->execute('CREATE TABLE `tlinkgroupassociations` (
               `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
               `linkID` INT UNSIGNED NOT NULL,
               `linkGroupID` INT UNSIGNED NOT NULL,
@@ -119,14 +125,13 @@ class Migration_20180522105000 extends Migration implements IMigration
                   REFERENCES `tlink` (`kLink`)
                   ON DELETE CASCADE
                   ON UPDATE CASCADE
-              ) ENGINE=InnoDB COLLATE utf8_unicode_ci"
-        );
+              ) ENGINE=InnoDB COLLATE utf8_unicode_ci');
         $duplicates = Shop::Container()->getDB()->query(
-            "SELECT *
+            'SELECT *
                 FROM tlink
                 GROUP BY klink
-                HAVING COUNT(*) > 1",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                HAVING COUNT(*) > 1',
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $oldIDs     = [];
         foreach ($duplicates as $duplicate) {
@@ -138,26 +143,26 @@ class Migration_20180522105000 extends Migration implements IMigration
             Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tlink SET kVaterLink = :parent WHERE kVaterLink = :oldParent',
                 ['parent' => $newID, 'oldParent' => $oldParent],
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::DEFAULT
             );
         }
         foreach ($oldIDs as $oldID => $newID) {
-            $res = Shop::Container()->getDB()->queryPrepared(
+            Shop::Container()->getDB()->queryPrepared(
                 'UPDATE tlink SET kVaterLink = :parent WHERE kVaterLink = :oldParent',
                 ['parent' => $newID, 'oldParent' => $oldID],
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::DEFAULT
             );
         }
-        $this->execute("INSERT INTO tlinkgroupassociations (`linkID`, `linkGroupID`) 
+        $this->execute('INSERT INTO tlinkgroupassociations (`linkID`, `linkGroupID`) 
             (SELECT tlink.kLink, tlink.kLinkgruppe 
                 FROM tlink 
                 JOIN tlinkgruppe
-                    ON tlinkgruppe.kLinkgruppe = tlink.kLinkgruppe)");
+                    ON tlinkgruppe.kLinkgruppe = tlink.kLinkgruppe)');
         $externalLinks = Shop::Container()->getDB()->query(
             "SELECT * FROM tlink
                 WHERE tlink.cURL IS NOT NULL 
                   AND tlink.cURL != ''",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($externalLinks as $externalLink) {
             Shop::Container()->getDB()->update(
@@ -167,22 +172,21 @@ class Migration_20180522105000 extends Migration implements IMigration
                 (object)['cSeo' => $externalLink->cURL]
             );
         }
-        $this->execute("ALTER TABLE `tlink` 
+        $this->execute('ALTER TABLE `tlink` 
             DROP COLUMN `kLinkgruppe`,
             DROP COLUMN `cURL`,
             DROP PRIMARY KEY,
-            ADD PRIMARY KEY (`kLink`)"
-        );
+            ADD PRIMARY KEY (`kLink`)');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tlink` ADD COLUMN `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL;");
-        $this->execute("ALTER TABLE `tlink` ADD COLUMN `cURL` VARCHAR(255) DEFAULT NULL;");
+        $this->execute('ALTER TABLE `tlink` ADD COLUMN `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL;');
+        $this->execute('ALTER TABLE `tlink` ADD COLUMN `cURL` VARCHAR(255) DEFAULT NULL;');
         $assoc = Shop::Container()->getDB()->query(
-            "SELECT linkID, linkGroupID 
-                FROM tlinkgroupassociations",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            'SELECT linkID, linkGroupID 
+                FROM tlinkgroupassociations',
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($assoc as $item) {
             Shop::Container()->getDB()->update(
@@ -193,13 +197,13 @@ class Migration_20180522105000 extends Migration implements IMigration
             );
         }
         $external = Shop::Container()->getDB()->query(
-            "SELECT tlink.kLink, tlinksprache.cSeo
+            'SELECT tlink.kLink, tlinksprache.cSeo
                 FROM tlink 
                 JOIN tlinksprache
                     ON tlink.kLink = tlinksprache.kLink
                 WHERE tlink.nLinkart = 2
-                GROUP BY tlink.kLink",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                GROUP BY tlink.kLink',
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($external as $item) {
             Shop::Container()->getDB()->update(
@@ -209,12 +213,12 @@ class Migration_20180522105000 extends Migration implements IMigration
                 (object)['cURL' => $item->cSeo]
             );
         }
-        $this->execute("DROP TABLE tlinkgroupassociations");
-        $this->execute("ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT");
-        $this->execute("ALTER TABLE tlink ADD INDEX `kLinkgruppe` (`kLinkgruppe`)");
-        $this->execute("ALTER TABLE tlink CHANGE COLUMN `kLink` `kLink` INT NOT NULL");
-        $this->execute("ALTER TABLE tlink DROP PRIMARY KEY");
-        $this->execute("ALTER TABLE tlink ADD PRIMARY KEY (`kLink`,`kLinkgruppe`)");
-        $this->execute("ALTER TABLE tlink CHANGE COLUMN `kLink` `kLink` INT NOT NULL AUTO_INCREMENT");
+        $this->execute('DROP TABLE tlinkgroupassociations');
+        $this->execute('ALTER TABLE `tlinkgruppe` CHANGE COLUMN `kLinkgruppe` `kLinkgruppe` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT');
+        $this->execute('ALTER TABLE tlink ADD INDEX `kLinkgruppe` (`kLinkgruppe`)');
+        $this->execute('ALTER TABLE tlink CHANGE COLUMN `kLink` `kLink` INT NOT NULL');
+        $this->execute('ALTER TABLE tlink DROP PRIMARY KEY');
+        $this->execute('ALTER TABLE tlink ADD PRIMARY KEY (`kLink`,`kLinkgruppe`)');
+        $this->execute('ALTER TABLE tlink CHANGE COLUMN `kLink` `kLink` INT NOT NULL AUTO_INCREMENT');
     }
 }

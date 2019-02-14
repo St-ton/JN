@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session\Handler;
+namespace JTL\Session\Handler;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 
 /**
  * Class DB
- * @package Session\Handler
+ * @package JTL\Session\Handler
  */
 class DB extends JTLDefault
 {

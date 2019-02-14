@@ -1,6 +1,6 @@
 <ul id="{$eContainer}" class="dashboard-col col-md-4 col-sm-6 col-xs-12">
     {foreach $oActiveWidget_arr as $oWidget}
-        {if $oWidget->eContainer == $eContainer}
+        {if $oWidget->eContainer === $eContainer}
             <li id="widget-{$oWidget->cNiceTitle}" class="widget panel panel-default" ref="{$oWidget->kWidget}">
                 <div class="widget-head panel-heading">
                     <h4>{$oWidget->cTitle}</h4>

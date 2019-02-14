@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Pagination\Pagination;
+use JTL\Emailhistory;
+use JTL\Helpers\Form;
+use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis        = '';
 $cFehler         = '';
 $step            = 'uebersicht';
@@ -20,7 +21,7 @@ $cAction         = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] :
 
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {
-        if (true !== $oEmailhistory->deleteAll()) {
+        if ($oEmailhistory->deleteAll() !== true) {
             $cFehler = __('errorHistoryDelete');
         }
     } elseif (isset($_POST['kEmailhistory'])

@@ -4,23 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use Filter\Items\Attribute;
-use Filter\Items\Category;
-use Filter\Items\Manufacturer;
-use Filter\Items\PriceRange;
-use Filter\Items\Rating;
-use Filter\Items\Search;
-use Filter\Items\SearchSpecial;
-use Filter\Items\Tag;
-use Filter\States\BaseSearchQuery;
-use Session\Frontend;
+use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\Category;
+use JTL\Filter\Items\Manufacturer;
+use JTL\Filter\Items\PriceRange;
+use JTL\Filter\Items\Rating;
+use JTL\Filter\Items\Search;
+use JTL\Filter\Items\SearchSpecial;
+use JTL\Filter\Items\Tag;
+use JTL\Filter\States\BaseSearchQuery;
+use JTL\Session\Frontend;
+use JTL\Shop;
 use function Functional\first;
 
 /**
  * Class ProductFilterURL
- * @package Filter
+ * @package JTL\Filter
  */
 class ProductFilterURL
 {
@@ -201,7 +202,7 @@ class ProductFilterURL
                 }
             }
         }
-        if (empty($seoFilterParams) && $languageID !== \Shop::getLanguageID()) {
+        if (empty($seoFilterParams) && $languageID !== Shop::getLanguageID()) {
             $language = first(Frontend::getLanguages(), function ($l) use ($languageID) {
                 return $l->kSprache === $languageID;
             });

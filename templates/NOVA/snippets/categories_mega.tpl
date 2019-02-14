@@ -153,8 +153,8 @@
         && $smarty.session.Kunde->kKunde != 0)}
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
-        {assign var='linkKeyHersteller' value=Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
-        {assign var='linkSEOHersteller' value=Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
+        {assign var='linkKeyHersteller' value=JTL\Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
+        {assign var='linkSEOHersteller' value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
         {navitemdropdown text="{if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}" data=["tab"=>"manufacturer"]}
             {container}
                 <div class="manufacturer">

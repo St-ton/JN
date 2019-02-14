@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Pagination;
+namespace JTL\Filter\Pagination;
+
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Item
- * @package Filter\Pagination
+ * @package JTL\Filter\Pagination
  */
 class Item
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int

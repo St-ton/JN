@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace L10n;
+namespace JTL\L10n;
 
 use Gettext\Translations;
 use Gettext\Translator;
-use Plugin\PluginInterface;
-use Plugin\Admin\ListingItem;
+use JTL\Plugin\Admin\ListingItem;
+use JTL\Plugin\PluginInterface;
+use JTL\Shop;
 
 /**
  * Class GetText
- * @package L10n
+ * @package JTL\L10n
  */
 class GetText
 {
@@ -42,7 +43,7 @@ class GetText
      */
     public function __construct()
     {
-        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? \Shop::getLanguageCode() ?? 'ger')
+        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? Shop::getLanguageCode() ?? 'ger')
              ->loadAdminLocale();
     }
 

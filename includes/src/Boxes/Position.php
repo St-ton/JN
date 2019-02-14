@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes;
+namespace JTL\Boxes;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Position
  *
- * @package Boxes
+ * @package JTL\Boxes
  * @method Position LEFT()
  * @method Position RIGHT()
  * @method Position BOTTOM()

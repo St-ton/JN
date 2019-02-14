@@ -6,6 +6,9 @@
  * @created Tue, 09 Feb 2016 14:56:31 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20160209145631
  */
@@ -26,6 +29,6 @@ class Migration_20160209145631 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DELETE FROM `temailvorlagespracheoriginal` WHERE kEmailvorlage=29;");
+        $this->execute('DELETE FROM `temailvorlagespracheoriginal` WHERE kEmailvorlage=29;');
     }
 }

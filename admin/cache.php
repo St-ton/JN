@@ -4,12 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\DirManager;
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Backend\DirManager;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Template;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
@@ -333,7 +336,7 @@ $advancedSettings = $db->query(
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
             AND kEinstellungenSektion = ' . CONF_CACHING . '
         ORDER BY nSort',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 $getText->localizeConfigs($advancedSettings);
 $settingsCount = count($advancedSettings);

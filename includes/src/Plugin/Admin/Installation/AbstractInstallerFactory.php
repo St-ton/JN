@@ -4,33 +4,33 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
 
-use DB\DbInterface;
-use Plugin\Admin\Installation\Items\AdminMenu;
-use Plugin\Admin\Installation\Items\Blueprints;
-use Plugin\Admin\Installation\Items\Boxes;
-use Plugin\Admin\Installation\Items\Checkboxes;
-use Plugin\Admin\Installation\Items\CSS;
-use Plugin\Admin\Installation\Items\Exports;
-use Plugin\Admin\Installation\Items\FrontendLinks;
-use Plugin\Admin\Installation\Items\Hooks;
-use Plugin\Admin\Installation\Items\ItemInterface;
-use Plugin\Admin\Installation\Items\JS;
-use Plugin\Admin\Installation\Items\LanguageVariables;
-use Plugin\Admin\Installation\Items\MailTemplates;
-use Plugin\Admin\Installation\Items\PaymentMethods;
-use Plugin\Admin\Installation\Items\Portlets;
-use Plugin\Admin\Installation\Items\SettingsLinks;
-use Plugin\Admin\Installation\Items\Templates;
-use Plugin\Admin\Installation\Items\Uninstall;
-use Plugin\Admin\Installation\Items\Widgets;
-use Plugin\InstallCode;
+use JTL\DB\DbInterface;
+use JTL\Plugin\Admin\Installation\Items\AdminMenu;
+use JTL\Plugin\Admin\Installation\Items\Blueprints;
+use JTL\Plugin\Admin\Installation\Items\Boxes;
+use JTL\Plugin\Admin\Installation\Items\Checkboxes;
+use JTL\Plugin\Admin\Installation\Items\CSS;
+use JTL\Plugin\Admin\Installation\Items\Exports;
+use JTL\Plugin\Admin\Installation\Items\FrontendLinks;
+use JTL\Plugin\Admin\Installation\Items\Hooks;
+use JTL\Plugin\Admin\Installation\Items\ItemInterface;
+use JTL\Plugin\Admin\Installation\Items\JS;
+use JTL\Plugin\Admin\Installation\Items\LanguageVariables;
+use JTL\Plugin\Admin\Installation\Items\MailTemplates;
+use JTL\Plugin\Admin\Installation\Items\PaymentMethods;
+use JTL\Plugin\Admin\Installation\Items\Portlets;
+use JTL\Plugin\Admin\Installation\Items\SettingsLinks;
+use JTL\Plugin\Admin\Installation\Items\Templates;
+use JTL\Plugin\Admin\Installation\Items\Uninstall;
+use JTL\Plugin\Admin\Installation\Items\Widgets;
+use JTL\Plugin\InstallCode;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AbstractInstallerFactory
- * @package Plugin\Admin\Installation
+ * @package JTL\Plugin\Admin\Installation
  */
 abstract class AbstractInstallerFactory
 {

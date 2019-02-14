@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
 
 $kKonfigPos            = Request::verifyGPCDataInt('ek');
 $kKategorie            = Request::verifyGPCDataInt('k');

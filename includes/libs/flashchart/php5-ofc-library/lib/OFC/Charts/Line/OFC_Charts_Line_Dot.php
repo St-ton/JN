@@ -26,6 +26,6 @@ class OFC_Charts_Line_Dot extends OFC_Charts_Line
     {
         parent::__construct();
 
-        $this->type      = 'line_dot';
+        $this->type = 'line_dot';
     }
 }

@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Data;
+namespace JTL\Plugin\Data;
 
 /**
  * Class Paths
- * @package Plugin
+ * @package JTL\Plugin\Data
  */
 class Paths
 {

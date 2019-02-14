@@ -4,35 +4,36 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Artikel;
-use Currency;
-use DB\ReturnType;
-use EigenschaftWert;
-use Kampagne;
-use Extensions\Konfigitem;
-use Extensions\Konfigurator;
-use Kunde;
-use Kupon;
-use Lieferadresse;
-use Preise;
-use Rechnungsadresse;
-use Session\Frontend;
-use Shop;
+use function Functional\filter;
+use function Functional\map;
+use JTL\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\Cart\Warenkorb;
+use JTL\Cart\WarenkorbPers;
+use JTL\Cart\WarenkorbPos;
+use JTL\Catalog\Currency;
+use JTL\DB\ReturnType;
+use JTL\Catalog\Product\EigenschaftWert;
+use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Upload;
+use JTL\Kampagne;
+use JTL\Customer\Kunde;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferadresse;
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Rechnungsadresse;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Catalog\Vergleichsliste;
+use JTL\Catalog\Wishlist\Wunschliste;
 use stdClass;
-use StringHandler;
-use Extensions\Upload;
-use Vergleichsliste;
-use Warenkorb;
-use WarenkorbPers;
-use WarenkorbPos;
-use Wunschliste;
-use Alert;
 
 /**
  * Class Cart
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Cart
 {
@@ -197,7 +198,7 @@ class Cart
     }
 
     /**
-     * @return Warenkorb
+     * @return Warenkorb|null
      */
     public function getObject()
     {
@@ -546,8 +547,8 @@ class Cart
         }
 
         $nKonfigitem_arr = [];
-        foreach ($configGroups as $nTmpKonfigitem_arr) {
-            $nKonfigitem_arr = \array_merge($nKonfigitem_arr, $nTmpKonfigitem_arr);
+        foreach ($configGroups as $item) {
+            $nKonfigitem_arr = \array_merge($nKonfigitem_arr, $item);
         }
         Shop::Smarty()->assign('fAnzahl', $count)
             ->assign('nKonfigitem_arr', $nKonfigitem_arr)
@@ -1253,7 +1254,7 @@ class Cart
         int $kArtikel,
         bool $bIstVater,
         bool $bExtern = false
-    ) {
+    ): void {
         if (!\is_array($variBoxCounts) || \count($variBoxCounts) === 0) {
             return;
         }
@@ -1272,7 +1273,7 @@ class Cart
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
                 $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
-                $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
+                $oVariKombi->cVariation0                    = Text::filterXSS($cVariation0);
                 $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                 $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
                 $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
@@ -1296,8 +1297,8 @@ class Cart
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
                 $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
-                $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
-                $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
+                $oVariKombi->cVariation0                    = Text::filterXSS($cVariation0);
+                $oVariKombi->cVariation1                    = Text::filterXSS($cVariation1);
                 $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                 $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
                 $oVariKombi->kEigenschaft1                  = (int)$kEigenschaft1;
@@ -1675,7 +1676,7 @@ class Cart
 
                         if (!$gueltig) {
                             $msg = Shop::Lang()->get('quantityNotAvailable', 'messages');
-                            if (!isset($cartNotices) || !in_array($msg, $cartNotices)) {
+                            if (!isset($cartNotices) || !\in_array($msg, $cartNotices)) {
                                 $cartNotices[] = $msg;
                             }
                             $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl =
@@ -1819,18 +1820,18 @@ class Cart
             return $msg;
         }
         $msg = Shop::Lang()->get('eanNotExist') . ' ' .
-            StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']));
+            Text::htmlentities(Text::filterXSS($_POST['ean']));
         //gibts artikel mit dieser artnr?
         $product = Shop::Container()->getDB()->select(
             'tartikel',
             'cArtNr',
-            StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']))
+            Text::htmlentities(Text::filterXSS($_POST['ean']))
         );
         if (empty($product->kArtikel)) {
             $product = Shop::Container()->getDB()->select(
                 'tartikel',
                 'cBarcode',
-                StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']))
+                Text::htmlentities(Text::filterXSS($_POST['ean']))
             );
         }
         if (isset($product->kArtikel) && $product->kArtikel > 0) {
@@ -1896,8 +1897,8 @@ class Cart
         ) {
             return $xSelling;
         }
-        $productIDs = \Functional\map(
-            \Functional\filter($cartPositions, function ($p) {
+        $productIDs = map(
+            filter($cartPositions, function ($p) {
                 return isset($p->Artikel->kArtikel);
             }),
             function ($p) {

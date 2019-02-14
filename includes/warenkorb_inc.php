@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Cart;
+use JTL\Helpers\Cart;
 
 /**
  * @param array $nPos_arr

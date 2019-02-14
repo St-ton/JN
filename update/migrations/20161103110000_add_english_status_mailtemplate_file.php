@@ -6,6 +6,10 @@
  * @created Thu, 03 Nov 2016 11:00:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+
 /**
  * Migration
  *
@@ -66,13 +70,13 @@ class Migration_20161103110000 extends Migration implements IMigration
             $this->execute("
                 DELETE FROM temailvorlagesprache
                     WHERE kEmailvorlage = (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail')
-                        AND kSprache = " . (int)$oSpracheEng->kSprache . "
-            ");
+                        AND kSprache = " . (int)$oSpracheEng->kSprache . '
+            ');
             $this->execute("
                 DELETE FROM temailvorlagespracheoriginal
                     WHERE kEmailvorlage = (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail')
-                        AND kSprache = " . (int)$oSpracheEng->kSprache . "
-            ");
+                        AND kSprache = " . (int)$oSpracheEng->kSprache . '
+            ');
         }
     }
 }

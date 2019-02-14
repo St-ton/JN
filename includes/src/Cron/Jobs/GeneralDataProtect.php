@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
-use GeneralDataProtection\TableCleaner;
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
+use JTL\GeneralDataProtection\TableCleaner;
 
 /**
  * Class GeneralDataProtect
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class GeneralDataProtect extends Job
 {

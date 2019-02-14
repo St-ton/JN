@@ -4,15 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Filter;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Checkout\Kupon;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Pagination\Filter;
+use JTL\Pagination\Pagination;
+use JTL\Pagination\Operation;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
@@ -26,8 +32,8 @@ $oSprache_arr = Sprache::getAllLanguages();
 $oKupon       = null;
 $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
     if ($importType === 0 && $importDeleteDone === false) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', \DB\ReturnType::AFFECTED_ROWS);
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tkuponsprache', \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tkuponsprache', ReturnType::AFFECTED_ROWS);
         $importDeleteDone = true;
     }
 
@@ -146,16 +152,16 @@ if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
     $oSteuerklasse_arr = Shop::Container()->getDB()->query(
         'SELECT kSteuerklasse, cName FROM tsteuerklasse',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $oKundengruppe_arr = Shop::Container()->getDB()->query(
         'SELECT kKundengruppe, cName FROM tkundengruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $kKunde_arr        = array_filter(
-        StringHandler::parseSSK($oKupon->cKunden),
+        Text::parseSSK($oKupon->cKunden),
         function ($kKunde) {
             return (int)$kKunde > 0;
         }
@@ -195,26 +201,26 @@ if ($action === 'bearbeiten') {
     $filterStandard->addTextfield('Name', 'cName');
     $filterStandard->addTextfield('Code', 'cCode');
     $activeSelection = $filterStandard->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '', \Pagination\Operation::CUSTOM);
-    $activeSelection->addSelectOption('aktiv', 'Y', \Pagination\Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', \Pagination\Operation::EQUALS);
+    $activeSelection->addSelectOption('alle', '', Operation::CUSTOM);
+    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
     $filterStandard->assemble();
 
     $filterVersand = new Filter(Kupon::TYPE_SHIPPING);
     $filterVersand->addTextfield('Name', 'cName');
     $filterVersand->addTextfield('Code', 'cCode');
     $activeSelection = $filterVersand->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '', \Pagination\Operation::CUSTOM);
-    $activeSelection->addSelectOption('aktiv', 'Y', \Pagination\Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', \Pagination\Operation::EQUALS);
+    $activeSelection->addSelectOption('alle', '', Operation::CUSTOM);
+    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
     $filterVersand->assemble();
 
     $filterNeukunden = new Filter(Kupon::TYPE_NEWCUSTOMER);
     $filterNeukunden->addTextfield('Name', 'cName');
     $activeSelection = $filterNeukunden->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '', \Pagination\Operation::CUSTOM);
-    $activeSelection->addSelectOption('aktiv', 'Y', \Pagination\Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', \Pagination\Operation::EQUALS);
+    $activeSelection->addSelectOption('alle', '', Operation::CUSTOM);
+    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
     $filterNeukunden->assemble();
 
     $sortByOptions = [

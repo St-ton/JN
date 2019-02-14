@@ -4,16 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Filter;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Redirect;
+use JTL\Shop;
+use JTL\Pagination\Filter;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+use JTL\Pagination\Operation;
+use JTL\Pagination\DataType;
 
 /**
- * @global \Smarty\JTLSmarty     $smarty
- * @global \Backend\AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
-
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('REDIRECT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
@@ -87,13 +91,13 @@ if (Form::validateToken()) {
 }
 
 $filter = new Filter();
-$filter->addTextfield('URL', 'cFromUrl', \Pagination\Operation::CONTAINS);
-$filter->addTextfield('Ziel-URL', 'cToUrl', \Pagination\Operation::CONTAINS);
+$filter->addTextfield('URL', 'cFromUrl', Operation::CONTAINS);
+$filter->addTextfield('Ziel-URL', 'cToUrl', Operation::CONTAINS);
 $select = $filter->addSelectfield('Umleitung', 'cToUrl');
 $select->addSelectOption('alle', '');
-$select->addSelectOption('vorhanden', '', \Pagination\Operation::NOT_EQUAL);
-$select->addSelectOption('fehlend', '', \Pagination\Operation::EQUALS);
-$filter->addTextfield('Aufrufe', 'nCount', \Pagination\Operation::CUSTOM, \Pagination\DataType::NUMBER);
+$select->addSelectOption('vorhanden', '', Operation::NOT_EQUAL);
+$select->addSelectOption('fehlend', '', Operation::EQUALS);
+$filter->addTextfield('Aufrufe', 'nCount', Operation::CUSTOM, DataType::NUMBER);
 $filter->assemble();
 
 $redirectCount = Redirect::getRedirectCount($filter->getWhereSQL());
@@ -129,7 +133,7 @@ handleCsvExportAction(
                     ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
                     ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
                     ' LIMIT ' . $i . ', 1000',
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
 
             foreach ($oRedirectIter as $oRedirect) {
@@ -139,11 +143,10 @@ handleCsvExportAction(
     }
 );
 
-$smarty
-    ->assign('cHinweis', $cHinweis)
-    ->assign('cFehler', $cFehler)
-    ->assign('oFilter', $filter)
-    ->assign('oPagination', $pagination)
-    ->assign('oRedirect_arr', $oRedirect_arr)
-    ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
-    ->display('redirect.tpl');
+$smarty->assign('cHinweis', $cHinweis)
+       ->assign('cFehler', $cFehler)
+       ->assign('oFilter', $filter)
+       ->assign('oPagination', $pagination)
+       ->assign('oRedirect_arr', $oRedirect_arr)
+       ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
+       ->display('redirect.tpl');

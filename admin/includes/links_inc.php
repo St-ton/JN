@@ -4,9 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
- * @param \Link\LinkGroupInterface $linkGroup
- * @param int                      $kVaterLink
+ * @param \JTL\Link\LinkGroupInterface $linkGroup
+ * @param int                          $kVaterLink
  * @return \Tightenco\Collect\Support\Collection
  */
 function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
@@ -16,7 +19,7 @@ function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
     $lh         = Shop::Container()->getLinkService();
     foreach ($linkGroup->getLinks() as $link) {
         $link->setLevel(count($lh->getParentIDs($link->getID())));
-        /** @var \Link\Link $link */
+        /** @var \JTL\Link\Link $link */
         if ($link->getParent() !== $kVaterLink) {
             continue;
         }
@@ -33,18 +36,18 @@ function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
  */
 function gibLetzteBildNummer($kLink)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $cBild_arr          = [];
-    if (is_dir($cUploadVerzeichnis . $kLink)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kLink);
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $cBild_arr[] = $Datei;
+    $uploadDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
+    $images    = [];
+    if (is_dir($uploadDir . $kLink)) {
+        $handle = opendir($uploadDir . $kLink);
+        while (($file = readdir($handle)) !== false) {
+            if ($file !== '.' && $file !== '..') {
+                $images[] = $file;
             }
         }
     }
     $nMax = 0;
-    foreach ($cBild_arr as $image) {
+    foreach ($images as $image) {
         $cNummer = mb_substr($image, 4, (mb_strlen($image) - mb_strpos($image, '.')) - 3);
         if ($cNummer > $nMax) {
             $nMax = $cNummer;
@@ -66,7 +69,7 @@ function parseText($cText, $kLink)
     $nSort_arr          = [];
     if (is_dir($cUploadVerzeichnis . $kLink)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
-        while (false !== ($Datei = readdir($DirHandle))) {
+        while (($Datei = readdir($DirHandle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
                 $nBild             = (int)mb_substr(
                     str_replace('Bild', '', $Datei),
@@ -151,7 +154,7 @@ function removeLink($kLink, $kLinkgruppe = 0)
                 AND tseo.kKey = :lid
             WHERE tlink.kLink = :lid",
         ['lid' => $kLink],
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
 }
 
@@ -180,7 +183,7 @@ function getLinkVar($kLink, $var)
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE tlinksprache.kLink = " . $kLink,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
         $links = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $kLink);
@@ -199,7 +202,7 @@ function getLinkVar($kLink, $var)
 function getGesetzteKundengruppen($link)
 {
     $ret = [];
-    if ($link instanceof \Link\LinkInterface) {
+    if ($link instanceof \JTL\Link\LinkInterface) {
         $cGroups = $link->getCustomerGroups();
         if (count($cGroups) === 0) {
             $ret[0] = true;
@@ -261,6 +264,6 @@ function holeSpezialseiten()
         'SELECT *
             FROM tspezialseite
             ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 }

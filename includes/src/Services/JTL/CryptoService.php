@@ -4,11 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 /**
  * Class CryptoService
- * @package Services\JTL
+ *
+ * @package JTL\Services\JTL
  */
 class CryptoService implements CryptoServiceInterface
 {

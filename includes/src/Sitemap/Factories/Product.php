@@ -4,25 +4,29 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\ReturnType;
+use Generator;
+use JTL\DB\ReturnType;
+use JTL\Sprache;
+use JTL\Sitemap\Items\Product as Item;
+use PDO;
 use function Functional\first;
 use function Functional\map;
 
 /**
  * Class Product
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class Product extends AbstractFactory
 {
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
         $defaultCustomerGroupID  = first($customerGroups);
-        $defaultLang             = \Sprache::getDefaultLanguage();
+        $defaultLang             = Sprache::getDefaultLanguage();
         $defaultLangID           = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
@@ -59,10 +63,10 @@ final class Product extends AbstractFactory
             ReturnType::QUERYSINGLE
         );
 
-        while (($product = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+        while (($product = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $product->langID   = (int)$product->langID;
             $product->kArtikel = (int)$product->kArtikel;
-            $item              = new \Sitemap\Items\Product($this->config, $this->baseURL, $this->baseImageURL);
+            $item              = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($product, $languages);
             yield $item;
         }

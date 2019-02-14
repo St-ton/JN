@@ -4,11 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Smarty;
+namespace JTL\Smarty;
+
+use JTL\Sprache;
 
 /**
  * Class PluginCollection
- * @package Smarty
+ * @package JTL\Smarty
  */
 class PluginCollection
 {
@@ -18,16 +20,17 @@ class PluginCollection
     private $config;
 
     /**
-     * @var \Sprache
+     * @var Sprache
      */
     private $lang;
 
     /**
      * PluginCollection constructor.
-     * @param array    $config
-     * @param \Sprache $lang
+     *
+     * @param array   $config
+     * @param Sprache $lang
      */
-    public function __construct(array $config, \Sprache $lang)
+    public function __construct(array $config, Sprache $lang)
     {
         $this->config = $config;
         $this->lang   = $lang;

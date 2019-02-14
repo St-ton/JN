@@ -4,11 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\Linechart;
+use JTL\Catalog\Product\Preise;
 
 /**
  * Class SalesVolume
- * @package Widgets
+ * @package JTL\Widgets
  */
 class SalesVolume extends AbstractWidget
 {
@@ -42,16 +45,16 @@ class SalesVolume extends AbstractWidget
             $interval
         );
         foreach ($stats as $stat) {
-            $stat->cLocalized = \Preise::getLocalizedPriceString($stat->nCount, $this->oWaehrung);
+            $stat->cLocalized = Preise::getLocalizedPriceString($stat->nCount, $this->oWaehrung);
         }
 
         return $stats;
     }
 
     /**
-     * @return \Linechart
+     * @return Linechart
      */
-    public function getJSON(): \Linechart
+    public function getJSON(): Linechart
     {
         $dateLastMonth = new \DateTime();
         $dateLastMonth->modify('-1 month');

@@ -4,13 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Session\Frontend;
+use JTL\Catalog\Product\Merkmal;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class GlobalAttributes
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class GlobalAttributes extends AbstractBox
 {
@@ -34,16 +36,16 @@ final class GlobalAttributes extends AbstractBox
      */
     private function getGlobalAttributes(): array
     {
-        $cacheID = 'glb_attr_' . \Shop::getLanguageID();
-        if (($cached = \Shop::Container()->getCache()->get($cacheID)) !== false) {
+        $cacheID = 'glb_attr_' . Shop::getLanguageID();
+        if (($cached = Shop::Container()->getCache()->get($cacheID)) !== false) {
             return $cached;
         }
-        $attributeIDs = \Shop::Container()->getDB()->selectAll('tmerkmal', 'nGlobal', 1, 'kMerkmal', 'nSort');
+        $attributeIDs = Shop::Container()->getDB()->selectAll('tmerkmal', 'nGlobal', 1, 'kMerkmal', 'nSort');
         $attributes   = [];
         foreach ($attributeIDs as $attributeID) {
-            $attributes[] = new \Merkmal((int)$attributeID->kMerkmal, true);
+            $attributes[] = new Merkmal((int)$attributeID->kMerkmal, true);
         }
-        \Shop::Container()->getCache()->set($cacheID, $attributes, [\CACHING_GROUP_ATTRIBUTE]);
+        Shop::Container()->getCache()->set($cacheID, $attributes, [\CACHING_GROUP_ATTRIBUTE]);
 
         return $attributes;
     }

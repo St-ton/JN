@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend\Settings;
+namespace JTL\Backend\Settings;
 
-use DB\DbInterface;
-use Smarty\JTLSmarty;
+use JTL\DB\DbInterface;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class SettingSection
@@ -60,7 +60,7 @@ class Manager
         if (!isset($this->instances[$sectionID])) {
             $section = $this->db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
             if (isset($section->kEinstellungenSektion)) {
-                $className = 'Backend\Settings\Sections\\' . \preg_replace(
+                $className = 'JTL\Backend\Settings\Sections\\' . \preg_replace(
                     ['([üäöÜÄÖ])', '/[^a-zA-Z_]/'],
                     ['$1e', ''],
                     $section->cName

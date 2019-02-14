@@ -8,7 +8,8 @@
  */
 phpQuery::ajaxAllowHost(
     'code.google.com',
-    'google.com', 'www.google.com',
+    'google.com',
+    'www.google.com',
     'mail.google.com',
     'docs.google.com',
     'reader.google.com'
@@ -31,7 +32,10 @@ if (! function_exists('ndfasui8923')) {
                     ->submit();
     }
     $ndfasui8923 = new Callback('ndfasui8923', new CallbackParam, compact(
-        'config', 'self', 'return', 'params'
+        'config',
+        'self',
+        'return',
+        'params'
     ));
 }
 phpQuery::plugin('WebBrowser');

@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
-use Helpers\Template;
-use Shop;
+use JTL\Helpers\Template;
+use JTL\Shop;
 use SimpleXMLElement;
 
 /**
  * Class AdminTemplate
- * @package Backend
+ * @package JTL\Backend
  */
 class AdminTemplate
 {
@@ -165,7 +165,7 @@ class AdminTemplate
                             ? \PFAD_ROOT . \PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile
                             : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $oXML->Ordner . '/' . $cFile;
                         if (\file_exists($cFilePath)) {
-                            $tplGroups[$name][] = ($absolute === true ? PFAD_ROOT : '') .
+                            $tplGroups[$name][] = ($absolute === true ? \PFAD_ROOT : '') .
                                 (self::$isAdmin === true ? \PFAD_ADMIN : '') .
                                 \PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                             $cCustomFilePath    = \str_replace('.css', '_custom.css', $cFilePath);
@@ -181,7 +181,7 @@ class AdminTemplate
                         }
                     }
                     // assign custom.css
-                    $cCustomFilePath = PFAD_ROOT . 'templates/' . $oXML->Ordner . '/themes/custom.css';
+                    $cCustomFilePath = \PFAD_ROOT . 'templates/' . $oXML->Ordner . '/themes/custom.css';
                     if (\file_exists($cCustomFilePath)) {
                         $tplGroups[$name][] = (($absolute === true) ? \PFAD_ROOT : '') .
                             (self::$isAdmin === true ? \PFAD_ADMIN : '') .
@@ -194,7 +194,7 @@ class AdminTemplate
                         $tplGroups[$name] = [];
                     }
                     foreach ($oJS->File as $oFile) {
-                        $tplGroups[$name][] = ($absolute === true ? PFAD_ROOT : '') .
+                        $tplGroups[$name][] = ($absolute === true ? \PFAD_ROOT : '') .
                             (self::$isAdmin === true ? \PFAD_ADMIN : '') .
                             \PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                     }

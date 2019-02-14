@@ -4,19 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\Revision;
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Backend\Revision;
+use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Template;
+use JTL\DB\ReturnType;
+use JTL\Link\LinkGroupInterface;
+use JTL\Boxes\Type;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $cHinweis   = '';
 $cFehler    = '';
 $pageID     = Request::verifyGPCDataInt('page');
 $boxService = Shop::Container()->getBoxService();
-$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
+$boxAdmin   = new BoxAdmin(Shop::Container()->getDB());
 $bOk        = false;
 $linkID     = Request::verifyGPCDataInt('linkID');
 $boxID      = Request::verifyGPCDataInt('item');
@@ -73,7 +79,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 $revisionData[$lang->cISO] = $lang;
             }
             $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
-                function (\Link\LinkGroupInterface $e) {
+                function (LinkGroupInterface $e) {
                     return $e->isSpecial() === false;
                 }
             );
@@ -101,7 +107,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                         }
                     }
                 }
-            } elseif (($eTyp === \Boxes\Type::LINK && $linkID > 0) || $eTyp === \Boxes\Type::CATBOX) {
+            } elseif (($eTyp === Type::LINK && $linkID > 0) || $eTyp === Type::CATBOX) {
                 $bOk = $boxAdmin->update($boxID, $cTitel, $linkID);
                 if ($bOk) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
@@ -171,7 +177,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             break;
     }
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
 $oBoxen_arr      = $boxService->buildList($pageID, false, true);
 $oVorlagen_arr   = $boxAdmin->getTemplates($pageID);
@@ -180,22 +186,22 @@ $filterMapping   = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kKategorie AS id, cName AS name FROM tkategorie',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 } elseif ($pageID === PAGE_ARTIKEL) { //map article name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kArtikel AS id, cName AS name FROM tartikel',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 } elseif ($pageID === PAGE_HERSTELLER) { //map manufacturer name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kHersteller AS id, cName AS name FROM thersteller',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 } elseif ($pageID === PAGE_EIGENE) { //map page name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kLink AS id, cName AS name FROM tlink',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 }
 

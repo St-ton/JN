@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
  * Class Option
  *
- * @package Filter
+ * @package JTL\Filter
  *
  * @property $kHersteller
  * @property $nAnzahlTagging

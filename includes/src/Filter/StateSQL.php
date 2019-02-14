@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 use function Functional\reduce_left;
 
 /**
  * Class StateSQL
- * @package Filter
+ * @package JTL\Filter
  */
 class StateSQL implements StateSQLInterface
 {

@@ -6,6 +6,9 @@
  * @created Thu, 24 May 2018 12:38:41 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180524123841 extends Migration implements IMigration
 {
-    protected $author = 'Clemens Rudolph';
+    protected $author      = 'Clemens Rudolph';
     protected $description = 'remove unused setting-values';
 
     public function up()

@@ -4,6 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Update\DBMigrationHelper;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Template;
+use JTL\DB\ReturnType;
+use JTL\Session\Backend;
+use JTL\Backend\DirManager;
+
 /**
  * @param bool $extended
  * @param bool $clearCache
@@ -25,8 +33,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if (Shop::Container()->getCache()->isActive()) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE . '_getDBStruct']);
         } else {
-            \Session\Backend::set('getDBStruct_extended', false);
-            \Session\Backend::set('getDBStruct_normal', false);
+            Backend::set('getDBStruct_extended', false);
+            Backend::set('getDBStruct_normal', false);
         }
         $dbStruct['extended'] = null;
         $dbStruct['normal']   = null;
@@ -37,7 +45,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if ($dbStruct['extended'] === null) {
             $dbStruct['extended'] = Shop::Container()->getCache()->isActive()
                 ? Shop::Container()->getCache()->get($cacheID)
-                : \Session\Backend::get($cacheID, false);
+                : Backend::get($cacheID, false);
         }
         $cDBStruct_arr =& $dbStruct['extended'];
 
@@ -46,7 +54,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 'SHOW OPEN TABLES
                     WHERE `Database` LIKE :schema',
                 ['schema' => $database],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             if ($dbStatus) {
                 foreach ($dbStatus as $oStatus) {
@@ -61,7 +69,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         if ($dbStruct['normal'] === null) {
             $dbStruct['normal'] = Shop::Container()->getCache()->isActive()
                 ? Shop::Container()->getCache()->get($cacheID)
-                : \Session\Backend::get($cacheID);
+                : Backend::get($cacheID);
         }
         $cDBStruct_arr =& $dbStruct['normal'];
     }
@@ -83,7 +91,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH`
                 ORDER BY t.`TABLE_NAME`",
             ['schema' => $database],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         foreach ($oData_arr as $oData) {
@@ -113,7 +121,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                     'schema' => $database,
                     'table'  => $cTable
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             if ($oCol_arr !== false) {
                 foreach ($oCol_arr as $oCol) {
@@ -135,7 +143,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']
             );
         } else {
-            \Session\Backend::set($cacheID, $cDBStruct_arr);
+            Backend::set($cacheID, $cDBStruct_arr);
         }
     } elseif ($extended) {
         foreach (array_keys($cDBStruct_arr) as $cTable) {
@@ -251,7 +259,7 @@ function doDBMaintenance(string $action, array $tables)
     }
 
     return count($tables) > 0
-        ? Shop::Container()->getDB()->query($cmd . $tableString, \DB\ReturnType::ARRAY_OF_OBJECTS)
+        ? Shop::Container()->getDB()->query($cmd . $tableString, ReturnType::ARRAY_OF_OBJECTS)
         : false;
 }
 
@@ -384,15 +392,15 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
  * @param int $step
  * @param array $exclude
  * @return stdClass
- * @throws \Exceptions\CircularReferenceException
- * @throws \Exceptions\ServiceNotFoundException
+ * @throws \JTL\Exceptions\CircularReferenceException
+ * @throws \JTL\Exceptions\ServiceNotFoundException
  */
 function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', int $step = 1, array $exclude = [])
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
 
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
-    $table        = StringHandler::filterXSS($table);
+    $table        = Text::filterXSS($table);
     $result       = new stdClass();
     $db           = Shop::Container()->getDB();
 
@@ -430,7 +438,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                             // and delete all fulltext indexes because these are not supported
                             $db->executeQuery(
                                 DBMigrationHelper::sqlAddLockInfo($oTable),
-                                \DB\ReturnType::QUERYSINGLE
+                                ReturnType::QUERYSINGLE
                             );
                             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
 
@@ -439,7 +447,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                                     $db->executeQuery(
                                         "ALTER TABLE `{$oTable->TABLE_NAME}` 
                                             DROP KEY `{$fulltextIndex->INDEX_NAME}`",
-                                        \DB\ReturnType::QUERYSINGLE
+                                        ReturnType::QUERYSINGLE
                                     );
                                 }
                             }
@@ -447,7 +455,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                         if ((($migration & DBMigrationHelper::MIGRATE_TABLE) === 0)
                             || $db->executeQuery(
                                 DBMigrationHelper::sqlMoveToInnoDB($oTable),
-                                \DB\ReturnType::QUERYSINGLE
+                                ReturnType::QUERYSINGLE
                             )
                         ) {
                             $result->nextTable = $table;
@@ -459,7 +467,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                         if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
                             $db->executeQuery(
                                 DBMigrationHelper::sqlClearLockInfo($oTable),
-                                \DB\ReturnType::QUERYSINGLE
+                                ReturnType::QUERYSINGLE
                             );
                         }
                     } else {
@@ -477,7 +485,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     $sql    = DBMigrationHelper::sqlConvertUTF8($oTable);
 
                     if (!empty($sql)) {
-                        if ($db->executeQuery($sql, \DB\ReturnType::QUERYSINGLE)) {
+                        if ($db->executeQuery($sql, ReturnType::QUERYSINGLE)) {
                             // Get next table for migration...
                             $result = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                         } else {
@@ -515,7 +523,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
             };
             $template    = Template::getInstance();
             $templateDir = $template->getDir();
-            $dirMan      = new \Backend\DirManager();
+            $dirMan      = new DirManager();
             $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $templateDir, $callback);
             $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback);
             // Clear special category session array
@@ -526,7 +534,7 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     "UPDATE `teinstellungen` 
                         SET `cWert` = 'N' 
                         WHERE `cName` = 'suche_fulltext'",
-                    \DB\ReturnType::QUERYSINGLE
+                    ReturnType::QUERYSINGLE
                 );
             }
             $result->nextTable = '';

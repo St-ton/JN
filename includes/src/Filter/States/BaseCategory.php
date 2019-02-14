@@ -4,22 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Items\Category;
-use Filter\Join;
-use Filter\ProductFilter;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Items\Category;
+use JTL\Filter\Join;
+use JTL\Filter\ProductFilter;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class BaseCategory
- * @package Filter\States
+ * @package JTL\Filter\States
  */
 class BaseCategory extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -106,7 +108,7 @@ class BaseCategory extends AbstractFilter
                 }
             }
             foreach ($seoData as $item) {
-                if ((int)$item->kSprache === \Shop::getLanguage()) {
+                if ((int)$item->kSprache === Shop::getLanguage()) {
                     if (!empty($item->cName)) {
                         $this->setName($item->cName);
                     } elseif (!empty($item->cKatName)) {

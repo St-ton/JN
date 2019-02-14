@@ -1,14 +1,20 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Date;
-use Helpers\Request;
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use JTL\Helpers\Date;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use stdClass;
 
 /**
  * Class Kampagne
+ * @package JTL
  */
 class Kampagne
 {
@@ -53,9 +59,8 @@ class Kampagne
     public $dErstellt_DE;
 
     /**
-     * Konstruktor
-     *
-     * @param int $kKampagne - Falls angegeben, wird die Kampagne mit kKampagne aus der DB geholt
+     * Kampagne constructor.
+     * @param int $kKampagne
      */
     public function __construct(int $kKampagne = 0)
     {
@@ -65,9 +70,7 @@ class Kampagne
     }
 
     /**
-     * Setzt Kampagne mit Daten aus der DB mit spezifiziertem Primary Key
-     *
-     * @param int $kKampagne - Primary Key
+     * @param int $kKampagne
      * @return $this
      */
     public function loadFromDB(int $kKampagne): self
@@ -76,11 +79,11 @@ class Kampagne
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
                 WHERE tkampagne.kKampagne = " . $kKampagne,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
-            foreach (array_keys(get_object_vars($campaign)) as $member) {
+            foreach (\array_keys(\get_object_vars($campaign)) as $member) {
                 $this->$member = $campaign->$member;
             }
         }
@@ -89,8 +92,6 @@ class Kampagne
     }
 
     /**
-     * Fuegt Datensatz in DB ein. Primary Key wird in this gesetzt.
-     *
      * @return int
      */
     public function insertInDB(): int
@@ -111,8 +112,6 @@ class Kampagne
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
     public function updateInDB(): int
@@ -148,7 +147,7 @@ class Kampagne
                 LEFT JOIN tkampagnevorgang 
                     ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
                 WHERE tkampagne.kKampagne = ' . (int)$this->kKampagne,
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         return true;
@@ -167,11 +166,11 @@ class Kampagne
                 1,
                 '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
             );
-            $setRes    = Shop::Container()->getCache()->set($cacheID, $campaigns, [CACHING_GROUP_CORE]);
+            $setRes    = Shop::Container()->getCache()->set($cacheID, $campaigns, [\CACHING_GROUP_CORE]);
             if ($setRes === false) {
                 // could not save to cache - use session instead
                 $campaigns = [];
-                if (is_array($campaigns) && count($campaigns) > 0) {
+                if (\is_array($campaigns) && \count($campaigns) > 0) {
                     // save to session
                     foreach ($campaigns as $oKampagne) {
                         $campaigns[] = $oKampagne;
@@ -192,19 +191,19 @@ class Kampagne
     public static function checkCampaignParameters(): void
     {
         $campaigns = self::getAvailable();
-        if (empty($_SESSION['oBesucher']->kBesucher) || count($campaigns) === 0) {
+        if (empty($_SESSION['oBesucher']->kBesucher) || \count($campaigns) === 0) {
             return;
         }
         $bKampagnenHit = false;
         foreach ($campaigns as $oKampagne) {
             // Wurde für die aktuelle Kampagne der Parameter via GET oder POST uebergeben?
-            if (mb_strlen(Request::verifyGPDataString($oKampagne->cParameter)) > 0
+            if (\mb_strlen(Request::verifyGPDataString($oKampagne->cParameter)) > 0
                 && isset($oKampagne->nDynamisch)
                 && ((int)$oKampagne->nDynamisch === 1
                     || ((int)$oKampagne->nDynamisch === 0
                         && isset($oKampagne->cWert)
-                        && mb_convert_case($oKampagne->cWert, MB_CASE_LOWER) ===
-                        mb_convert_case(Request::verifyGPDataString($oKampagne->cParameter), MB_CASE_LOWER))
+                        && \mb_convert_case($oKampagne->cWert, \MB_CASE_LOWER) ===
+                        \mb_convert_case(Request::verifyGPDataString($oKampagne->cParameter), \MB_CASE_LOWER))
                 )
             ) {
                 $referrer = Visitor::getReferer();
@@ -213,21 +212,21 @@ class Kampagne
                     'tkampagnevorgang',
                     ['kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'],
                     [
-                        KAMPAGNE_DEF_HIT,
+                        \KAMPAGNE_DEF_HIT,
                         (int)$oKampagne->kKampagne,
                         (int)$_SESSION['oBesucher']->kBesucher,
-                        StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer
+                        Text::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer
                     ]
                 );
 
                 if (!isset($oVorgang->kKampagneVorgang)) {
                     $event               = new stdClass();
                     $event->kKampagne    = $oKampagne->kKampagne;
-                    $event->kKampagneDef = KAMPAGNE_DEF_HIT;
+                    $event->kKampagneDef = \KAMPAGNE_DEF_HIT;
                     $event->kKey         = $_SESSION['oBesucher']->kBesucher;
                     $event->fWert        = 1.0;
                     $event->cParamWert   = Request::verifyGPDataString($oKampagne->cParameter);
-                    $event->cCustomData  = StringHandler::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
+                    $event->cCustomData  = Text::filterXSS($_SERVER['REQUEST_URI']) . ';' . $referrer;
                     if ((int)$oKampagne->nDynamisch === 0) {
                         $event->cParamWert = $oKampagne->cWert;
                     }
@@ -243,20 +242,20 @@ class Kampagne
 
             if (!$bKampagnenHit
                 && isset($_SERVER['HTTP_REFERER'])
-                && mb_strpos($_SERVER['HTTP_REFERER'], '.google.') !== false
+                && \mb_strpos($_SERVER['HTTP_REFERER'], '.google.') !== false
             ) {
                 // Besucher kommt von Google und hat vorher keine Kampagne getroffen
                 $oVorgang = Shop::Container()->getDB()->select(
                     'tkampagnevorgang',
                     ['kKampagneDef', 'kKampagne', 'kKey'],
-                    [KAMPAGNE_DEF_HIT, KAMPAGNE_INTERN_GOOGLE, (int)$_SESSION['oBesucher']->kBesucher]
+                    [\KAMPAGNE_DEF_HIT, \KAMPAGNE_INTERN_GOOGLE, (int)$_SESSION['oBesucher']->kBesucher]
                 );
 
                 if (!isset($oVorgang->kKampagneVorgang)) {
-                    $oKampagne           = new Kampagne(KAMPAGNE_INTERN_GOOGLE);
+                    $oKampagne           = new Kampagne(\KAMPAGNE_INTERN_GOOGLE);
                     $event               = new stdClass();
-                    $event->kKampagne    = KAMPAGNE_INTERN_GOOGLE;
-                    $event->kKampagneDef = KAMPAGNE_DEF_HIT;
+                    $event->kKampagne    = \KAMPAGNE_INTERN_GOOGLE;
+                    $event->kKampagneDef = \KAMPAGNE_DEF_HIT;
                     $event->kKey         = $_SESSION['oBesucher']->kBesucher;
                     $event->fWert        = 1.0;
                     $event->cParamWert   = $oKampagne->cWert;
@@ -294,8 +293,8 @@ class Kampagne
             $oKampagnenVorgang->dErstellt    = 'NOW()';
 
             if ($customData !== null) {
-                $oKampagnenVorgang->cCustomData = mb_strlen($customData) > 255
-                    ? mb_substr($customData, 0, 255)
+                $oKampagnenVorgang->cCustomData = \mb_strlen($customData) > 255
+                    ? \mb_substr($customData, 0, 255)
                     : $customData;
             }
 

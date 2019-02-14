@@ -4,16 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Plugin\State;
+use InvalidArgumentException;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Plugin\State;
+use JTL\Shop;
+use stdClass;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class Link
- * @package Link
+ * @package JTL\Link
  */
 final class Link extends AbstractLink
 {
@@ -235,7 +239,7 @@ final class Link extends AbstractLink
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($link) === 0) {
-            throw new \InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
+            throw new InvalidArgumentException('Provided link id ' . $this->id . ' not found.');
         }
 
         return $this->map($link);
@@ -249,7 +253,7 @@ final class Link extends AbstractLink
         $res = [];
         foreach ($this->getLanguageIDs() as $languageID) {
             $languageCode          = $this->getLanguageCode($languageID);
-            $data                  = new \stdClass();
+            $data                  = new stdClass();
             $data->content         = $this->getContent($languageID);
             $data->url             = $this->getURL($languageID);
             $data->languageID      = $languageID;
@@ -271,7 +275,7 @@ final class Link extends AbstractLink
      */
     public function map(array $localizedLinks): LinkInterface
     {
-        $baseURL = \Shop::getURL(true) . '/';
+        $baseURL = Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
             $link = $this->sanitizeLinkData($link);
             $this->setIdentifier($link->cIdentifier ?? '');
@@ -291,7 +295,7 @@ final class Link extends AbstractLink
             $this->setIsEnabled((bool)$link->bIsActive);
             $this->setFileName($link->cDateiname ?? '');
             $this->setLanguageCode($link->cISOSprache, $link->languageID);
-            $this->setContent(\StringHandler::parseNewsText($link->content ?? ''), $link->languageID);
+            $this->setContent(Text::parseNewsText($link->content ?? ''), $link->languageID);
             $this->setMetaDescription($link->metaDescription ?? '', $link->languageID);
             $this->setMetaTitle($link->metaTitle ?? '', $link->languageID);
             $this->setMetaKeyword($link->metaKeywords ?? '', $link->languageID);
@@ -316,10 +320,10 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @param \stdClass $link
-     * @return \stdClass
+     * @param stdClass $link
+     * @return stdClass
      */
-    private function sanitizeLinkData(\stdClass $link): \stdClass
+    private function sanitizeLinkData(stdClass $link): stdClass
     {
         $link->languageID = (int)$link->languageID;
         $link->kVaterLink = (int)$link->kVaterLink;
@@ -329,16 +333,16 @@ final class Link extends AbstractLink
         $link->nSort      = (int)$link->nSort;
         $link->enabled    = $link->pluginState === null || (int)$link->pluginState === State::ACTIVATED;
         if ($link->languageID === 0) {
-            $link->languageID = \Shop::getLanguageID();
+            $link->languageID = Shop::getLanguageID();
         }
         if ($link->languageID === 0) {
-            $link->languageID = \Shop::getLanguageID();
+            $link->languageID = Shop::getLanguageID();
         }
         if ($link->bSSL === 2) {
             $link->bSSL = 1;
         }
         if (!isset($link->cISOSprache)) {
-            $link->cISOSprache = \Shop::getLanguageCode();
+            $link->cISOSprache = Shop::getLanguageCode();
         }
 
         return $link;
@@ -458,7 +462,7 @@ final class Link extends AbstractLink
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->names[$idx] ?? '';
     }
@@ -476,7 +480,7 @@ final class Link extends AbstractLink
      */
     public function setName(string $name, int $idx = null): void
     {
-        $this->names[$idx ?? \Shop::getLanguageID()] = $name;
+        $this->names[$idx ?? Shop::getLanguageID()] = $name;
     }
 
     /**
@@ -500,7 +504,7 @@ final class Link extends AbstractLink
      */
     public function getSEO(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->seo[$idx] ?? '';
     }
@@ -518,7 +522,7 @@ final class Link extends AbstractLink
      */
     public function setSEO(string $url, int $idx = null): void
     {
-        $this->seo[$idx ?? \Shop::getLanguageID()] = $url;
+        $this->seo[$idx ?? Shop::getLanguageID()] = $url;
     }
 
     /**
@@ -526,7 +530,7 @@ final class Link extends AbstractLink
      */
     public function getURL(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->urls[$idx] ?? '/?s=' . $this->getID();
     }
@@ -544,7 +548,7 @@ final class Link extends AbstractLink
      */
     public function setURL(string $url, int $idx = null): void
     {
-        $this->urls[$idx ?? \Shop::getLanguageID()] = $url;
+        $this->urls[$idx ?? Shop::getLanguageID()] = $url;
     }
 
     /**
@@ -560,7 +564,7 @@ final class Link extends AbstractLink
      */
     public function getTitle(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->titles[$idx] ?? '';
     }
@@ -578,7 +582,7 @@ final class Link extends AbstractLink
      */
     public function setTitle(string $title, int $idx = null): void
     {
-        $this->titles[$idx ?? \Shop::getLanguageID()] = $title;
+        $this->titles[$idx ?? Shop::getLanguageID()] = $title;
     }
 
     /**
@@ -610,7 +614,7 @@ final class Link extends AbstractLink
      */
     public function getLanguageCode(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->languageCodes[$idx] ?? '';
     }
@@ -628,7 +632,7 @@ final class Link extends AbstractLink
      */
     public function setLanguageCode(string $languageCode, int $idx = null): void
     {
-        $this->languageCodes[$idx ?? \Shop::getLanguageID()] = $languageCode;
+        $this->languageCodes[$idx ?? Shop::getLanguageID()] = $languageCode;
     }
 
     /**
@@ -764,7 +768,7 @@ final class Link extends AbstractLink
      */
     public function getLanguageID(int $idx = null): int
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->languageIDs[$idx] ?? 0;
     }
@@ -774,7 +778,7 @@ final class Link extends AbstractLink
      */
     public function setLanguageID(int $languageID, int $idx = null): void
     {
-        $this->languageIDs[$idx ?? \Shop::getLanguageID()] = $languageID;
+        $this->languageIDs[$idx ?? Shop::getLanguageID()] = $languageID;
     }
 
     /**
@@ -913,7 +917,7 @@ final class Link extends AbstractLink
      */
     public function getContent(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->contents[$idx] ?? '';
     }
@@ -923,7 +927,7 @@ final class Link extends AbstractLink
      */
     public function setContent(string $content, int $idx = null): void
     {
-        $this->contents[$idx ?? \Shop::getLanguageID()] = $content;
+        $this->contents[$idx ?? Shop::getLanguageID()] = $content;
     }
 
     /**
@@ -947,7 +951,7 @@ final class Link extends AbstractLink
      */
     public function getMetaTitle(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaTitles[$idx] ?? '';
     }
@@ -957,7 +961,7 @@ final class Link extends AbstractLink
      */
     public function setMetaTitle(string $metaTitle, int $idx = null): void
     {
-        $this->metaTitles[$idx ?? \Shop::getLanguageID()] = $metaTitle;
+        $this->metaTitles[$idx ?? Shop::getLanguageID()] = $metaTitle;
     }
 
     /**
@@ -973,7 +977,7 @@ final class Link extends AbstractLink
      */
     public function getMetaKeyword(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaKeywords[$idx] ?? '';
     }
@@ -991,7 +995,7 @@ final class Link extends AbstractLink
      */
     public function setMetaKeyword(string $metaKeyword, int $idx = null): void
     {
-        $this->metaKeywords[$idx ?? \Shop::getLanguageID()] = $metaKeyword;
+        $this->metaKeywords[$idx ?? Shop::getLanguageID()] = $metaKeyword;
     }
 
     /**
@@ -1007,7 +1011,7 @@ final class Link extends AbstractLink
      */
     public function getMetaDescription(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaDescriptions[$idx] ?? '';
     }
@@ -1025,7 +1029,7 @@ final class Link extends AbstractLink
      */
     public function setMetaDescription(string $metaDescription, int $idx = null): void
     {
-        $this->metaDescriptions[$idx ?? \Shop::getLanguageID()] = $metaDescription;
+        $this->metaDescriptions[$idx ?? Shop::getLanguageID()] = $metaDescription;
     }
 
     /**

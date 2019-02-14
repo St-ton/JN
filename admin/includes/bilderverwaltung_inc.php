@@ -4,7 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\URL;
+use JTL\Helpers\URL;
+use JTL\Media\Image;
+use JTL\IO\IOError;
+use JTL\Shop;
+use JTL\Media\MediaImage;
 
 /**
  * @param bool $filesize

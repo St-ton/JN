@@ -4,11 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Catalog\Product\Artikel;
+use JTL\Helpers\Text;
+use JTL\Services\JTL\LinkService;
+use JTL\Shop;
 
 /**
  * Class CompareList
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class CompareList extends AbstractBox
 {
@@ -35,12 +40,12 @@ final class CompareList extends AbstractBox
                     $extra .= '&' . $param . '=' . $_REQUEST[$param];
                 }
             }
-            $extra          = \StringHandler::filterXSS($extra);
-            $requestURI     = \Shop::getRequestUri();
-            $defaultOptions = \Artikel::getDefaultOptions();
+            $extra          = Text::filterXSS($extra);
+            $requestURI     = Shop::getRequestUri();
+            $defaultOptions = Artikel::getDefaultOptions();
             if ($requestURI === 'io.php') {
                 // render via ajax call
-                $requestURI = \LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
+                $requestURI = LinkService::getInstance()->getStaticRoute('vergleichsliste.php');
             }
             foreach ($productList as $_prod) {
                 $nPosAnd   = \mb_strrpos($requestURI, '&');
@@ -60,7 +65,7 @@ final class CompareList extends AbstractBox
                 } elseif ($nPosQuest === \mb_strlen($requestURI) - 1) {
                     $del = 'vlplo=';
                 }
-                $product = new \Artikel();
+                $product = new Artikel();
                 $product->fuelleArtikel($_prod->kArtikel, $defaultOptions);
                 $product->cURLDEL = $requestURI . $del . $_prod->kArtikel . $extra;
                 if (isset($_prod->oVariationen_arr) && \count($_prod->oVariationen_arr) > 0) {

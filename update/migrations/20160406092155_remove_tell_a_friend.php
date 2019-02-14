@@ -6,6 +6,9 @@
  * @created Wed, 06 Apr 2016 09:21:55 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -24,12 +27,12 @@ class Migration_20160406092155 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("DROP TABLE IF EXISTS `tartikelweiterempfehlenhistory`;");
+        $this->execute('DROP TABLE IF EXISTS `tartikelweiterempfehlenhistory`;');
     }
 
     public function down()
     {
-        $this->execute("CREATE TABLE `tartikelweiterempfehlenhistory` (
+        $this->execute('CREATE TABLE `tartikelweiterempfehlenhistory` (
                       `kArtikelWeiterempfehlenHistory` int(10) unsigned NOT NULL AUTO_INCREMENT,
                       `kArtikel` int(10) unsigned NOT NULL,
                       `kSprache` int(10) unsigned NOT NULL,
@@ -40,6 +43,6 @@ class Migration_20160406092155 extends Migration implements IMigration
                       `dErstellt` datetime NOT NULL,
                       PRIMARY KEY (`kArtikelWeiterempfehlenHistory`),
                       KEY `kArtikel` (`kArtikel`,`kSprache`,`cIP`)
-                    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+                    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;');
     }
 }

@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Interface ItemListInterface
- * @package News
+ * @package JTL\News
  */
 interface ItemListInterface
 {

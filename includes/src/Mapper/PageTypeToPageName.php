@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
 /**
  * Class PageTypeToPageName
- * @package Mapper
+ * @package JTL\Mapper
  */
 class PageTypeToPageName
 {
@@ -38,7 +38,7 @@ class PageTypeToPageName
             case \PAGE_REGISTRIERUNG:
                 return 'REGISTRIEREN';
             case \PAGE_WARENKORB:
-                return 'WARENKORB';
+                return 'Warenkorb';
             case \PAGE_PASSWORTVERGESSEN:
                 return 'PASSWORT VERGESSEN';
             case \PAGE_KONTAKT:
@@ -47,7 +47,7 @@ class PageTypeToPageName
             case \PAGE_NEWSLETTERARCHIV:
                 return 'NEWSLETTER';
             case \PAGE_NEWS:
-                return 'NEWS';
+                return 'News';
             case \PAGE_NEWSMONAT:
                 return 'NEWSMONAT';
             case \PAGE_NEWSKATEGORIE:
@@ -64,13 +64,13 @@ class PageTypeToPageName
             case \PAGE_BESTELLABSCHLUSS:
                 return 'BESTELLVORGANG';
             case \PAGE_WUNSCHLISTE:
-                return 'WUNSCHLISTE';
+                return 'Wunschliste';
             case \PAGE_VERGLEICHSLISTE:
                 return 'VERGLEICHSLISTE';
             case \PAGE_ARTIKEL:
-                return 'ARTIKEL';
+                return 'Artikel';
             case \PAGE_ARTIKELLISTE:
-                return 'ARTIKEL';
+                return 'Artikel';
             default:
                 return '';
         }

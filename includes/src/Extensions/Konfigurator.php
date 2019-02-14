@@ -4,15 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use DB\ReturnType;
-use Helpers\Cart;
+use JTL\Catalog\Product\Artikel;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Cart;
+use JTL\Nice;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
 
 /**
  * Class Konfigurator
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class Konfigurator
 {
@@ -26,7 +29,7 @@ class Konfigurator
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
     }
 
     /**
@@ -42,7 +45,7 @@ class Konfigurator
             //#7482
             return self::$groups[$kArtikel];
         }
-        $groups = \Shop::Container()->getDB()->selectAll(
+        $groups = Shop::Container()->getDB()->selectAll(
             'tartikelkonfiggruppe',
             'kArtikel',
             $kArtikel,
@@ -53,7 +56,7 @@ class Konfigurator
             return [];
         }
         if (!$kSprache) {
-            $kSprache = \Shop::getLanguageID();
+            $kSprache = Shop::getLanguageID();
         }
         foreach ($groups as &$group) {
             $group = new Konfiggruppe((int)$group->kKonfigGruppe, $kSprache);
@@ -74,7 +77,7 @@ class Konfigurator
         if (!self::checkLicense()) {
             return false;
         }
-        $groups = \Shop::Container()->getDB()->query(
+        $groups = Shop::Container()->getDB()->query(
             'SELECT kArtikel, kKonfigGruppe
                  FROM tartikelkonfiggruppe
                  WHERE tartikelkonfiggruppe.kArtikel = ' . $kArtikel . '
@@ -133,7 +136,7 @@ class Konfigurator
                     }
                 }
                 if ($deleted) {
-                    \Shop::Container()->getLogService()->error(
+                    Shop::Container()->getLogService()->error(
                         'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
                         $position->cName[$_SESSION['cISOSprache']] . '(' . $position->kArtikel . ')'
                     );
@@ -151,7 +154,7 @@ class Konfigurator
     public static function validateBasket(int $kArtikel, $configItems)
     {
         if ($kArtikel === 0 || !\is_array($configItems)) {
-            \Shop::Container()->getLogService()->error(
+            Shop::Container()->getLogService()->error(
                 'Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'
             );
 
@@ -160,8 +163,8 @@ class Konfigurator
         // Gesamtpreis
         $fFinalPrice = 0.0;
         // Hauptartikel
-        $oArtikel = new \Artikel();
-        $oArtikel->fuelleArtikel($kArtikel, \Artikel::getDefaultOptions());
+        $oArtikel = new Artikel();
+        $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         // Grundpreis
         if ($oArtikel && (int)$oArtikel->kArtikel > 0) {
             $fFinalPrice += $oArtikel->Preise->fVKNetto;
@@ -186,20 +189,20 @@ class Konfigurator
             if ($itemCount < $group->getMin() && $group->getMin() > 0) {
                 if ($group->getMin() == $group->getMax()) {
                     $errors[$kKonfiggruppe] =
-                        \Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin());
+                        Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin());
                 } else {
                     $errors[$kKonfiggruppe] =
-                        \Shop::Lang()->get('configChooseMinComponents', 'productDetails', $group->getMin());
+                        Shop::Lang()->get('configChooseMinComponents', 'productDetails', $group->getMin());
                 }
                 $errors[$kKonfiggruppe] .= self::langComponent($group->getMin() > 1);
             } elseif ($itemCount > $group->getMax() && $group->getMax() > 0) {
                 if ($group->getMin() == $group->getMax()) {
                     $errors[$kKonfiggruppe] =
-                        \Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin()) .
+                        Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin()) .
                         self::langComponent($group->getMin() > 1);
                 } else {
                     $errors[$kKonfiggruppe] =
-                        \Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $group->getMax()) .
+                        Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $group->getMax()) .
                         self::langComponent($group->getMax() > 1);
                 }
             }
@@ -210,9 +213,9 @@ class Konfigurator
                 "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang abgebrochen",
                 $oArtikel->cName,
                 $oArtikel->cArtNr,
-                \Preise::getLocalizedPriceString($fFinalPrice)
+                Preise::getLocalizedPriceString($fFinalPrice)
             );
-            \Shop::Container()->getLogService()->error($cError);
+            Shop::Container()->getLogService()->error($cError);
 
             return false;
         }
@@ -229,6 +232,6 @@ class Konfigurator
     {
         $component = $bSpace ? ' ' : '';
 
-        return $component . \Shop::Lang()->get($bPlural ? 'configComponents' : 'configComponent', 'productDetails');
+        return $component . Shop::Lang()->get($bPlural ? 'configComponents' : 'configComponent', 'productDetails');
     }
 }

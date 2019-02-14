@@ -147,20 +147,17 @@
                         {col id="shop-nav" md=4 order=3 order-md=3 class=""}
                             {block name='header-branding-shop-nav'}
                                 <div class="d-flex float-right">
-                                    {*{include file='layout/header_nav_search.tpl'}*}
                                     {include file='layout/header_nav_icons.tpl'}
                                 </div>
                             {/block}
                         {/col}
 
-                        {col cols=12 md=6 order=4 order-md=4 offset-md=6}
-                            {*account*}
+                        {*{col cols=12 md=6 order=4 order-md=4 offset-md=6}
+                            *}{*account*}{*
                             {include file='layout/header_shop_nav_account.tpl'}
-                            {*basket*}
-                            {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2"}
-                                {include file='basket/cart_dropdown.tpl'}
-                            {/collapse}
-                        {/col}
+                            *}{*basket*}{*
+                            {include file='basket/cart_dropdown_label.tpl'}
+                        {/col}*}
 
                         {col md=12 order=1 order-md=5 class="no-flex-grow"}
                             {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}{/navbartoggle}

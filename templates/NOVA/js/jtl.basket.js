@@ -23,7 +23,7 @@
                 loading: 'io-loading'
             },
             cart: {
-                container: '*[data-target="#nav-cart-collapse"]'
+                container: '.cart-icon-dropdown'
             }
         }
     };

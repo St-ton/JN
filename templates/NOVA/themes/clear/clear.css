@@ -10677,6 +10677,61 @@ header,
 #evo-main-nav-wrapper .badge {
   word-break: initial;
 }
+@media (max-width: 991.98px) {
+  #evo-main-nav-wrapper #nav-cart-collapse,
+#evo-main-nav-wrapper #nav-account-collapse,
+#evo-main-nav-wrapper #nav-search-collapse {
+    position: fixed;
+    top: 60px;
+    left: 0px;
+    clear: both;
+    background: white;
+    padding: 15px;
+    width: 100%;
+    -webkit-box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.tt-dropdown-menu, .tt-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1022 !important;
+  min-width: 160px;
+  width: 100%;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 0.875rem;
+  background-color: #f8f8f8;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.125rem;
+  -webkit-box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
+  background-clip: padding-box;
+}
+.tt-dropdown-menu .tt-suggestion, .tt-menu .tt-suggestion {
+  display: block;
+  padding: 3px 12px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.5;
+  color: #212529;
+}
+.tt-dropdown-menu .tt-suggestion.tt-cursor, .tt-dropdown-menu .tt-suggestion:hover, .tt-menu .tt-suggestion.tt-cursor, .tt-menu .tt-suggestion:hover {
+  cursor: pointer;
+  text-decoration: none;
+  outline: 0;
+  background-color: #f5f7fa;
+  color: #16181b;
+}
+.tt-dropdown-menu .tt-suggestion.tt-cursor a, .tt-dropdown-menu .tt-suggestion:hover a, .tt-menu .tt-suggestion.tt-cursor a, .tt-menu .tt-suggestion:hover a {
+  color: #16181b;
+}
+.tt-dropdown-menu .tt-suggestion p, .tt-menu .tt-suggestion p {
+  margin: 0;
+}
 
 .word-break {
   word-break: break-all;

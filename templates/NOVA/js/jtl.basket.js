@@ -23,7 +23,7 @@
                 loading: 'io-loading'
             },
             cart: {
-                container: '*[data-toggle="basket-items"]'
+                container: '*[data-target="#nav-cart-collapse"]'
             }
         }
     };

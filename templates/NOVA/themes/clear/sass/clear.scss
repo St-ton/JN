@@ -6,6 +6,7 @@
 @import "../../base/slick/slick.scss";
 @import "../../base/fileinput/fileinput.min.scss";
 @import "../base/wow/animate.css";
+@import "../base/slider/slider.css";
 
 @mixin font($font-family, $font-file, $font-weight) {
   @font-face {
@@ -1765,7 +1766,7 @@ footer {
 }
 
 // nivo
-.slider-wrapper {
+.container-fluid .slider-wrapper {
   margin: 0 -($grid-gutter-width/2);
 }
 

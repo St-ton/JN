@@ -4,21 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Admin;
+namespace JTL\Cron\Admin;
 
-use Cron\JobHydrator;
-use Cron\JobInterface;
-use Cron\Type;
-use DB\DbInterface;
-use DB\ReturnType;
-use Events\Dispatcher;
-use Events\Event;
-use Mapper\JobTypeToJob;
+use DateTime;
+use InvalidArgumentException;
+use JTL\Cron\JobHydrator;
+use JTL\Cron\JobInterface;
+use JTL\Cron\Type;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Events\Dispatcher;
+use JTL\Events\Event;
+use JTL\Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 /**
  * Class Controller
- * @package Cron\Admin
+ * @package JTL\Cron\Admin
  */
 final class Controller
 {
@@ -87,11 +90,11 @@ final class Controller
         $mapper = new JobTypeToJob();
         try {
             $mapper->map($post['type']);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return -1;
         }
-        $date           = new \DateTime($post['date']);
-        $ins            = new \stdClass();
+        $date           = new DateTime($post['date']);
+        $ins            = new stdClass();
         $ins->frequency = (int)$post['frequency'];
         $ins->jobType   = $post['type'];
         $ins->name      = 'manuell@' . \date('Y-m-d H:i:s');
@@ -144,7 +147,7 @@ final class Controller
                 $job   = new $class($this->db, $this->logger, $this->hydrator);
                 /** @var JobInterface $job */
                 $jobs[] = $job->hydrate($cron);
-            } catch (\InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 $this->logger->info('Invalid cron job found: ' . $cron->jobType);
             }
         }

@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Nice;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class DownloadHistory
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class DownloadHistory
 {
@@ -55,7 +57,7 @@ class DownloadHistory
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_DOWNLOADS);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_DOWNLOADS);
     }
 
     /**
@@ -63,7 +65,7 @@ class DownloadHistory
      */
     private function loadFromDB(int $kDownloadHistory): void
     {
-        $history = \Shop::Container()->getDB()->select(
+        $history = Shop::Container()->getDB()->select(
             'tdownloadhistory',
             'kDownloadHistory',
             $kDownloadHistory
@@ -102,7 +104,7 @@ class DownloadHistory
     {
         $history = [];
         if ($kDownload > 0) {
-            $data = \Shop::Container()->getDB()->selectAll(
+            $data = Shop::Container()->getDB()->selectAll(
                 'tdownloadhistory',
                 'kDownload',
                 $kDownload,
@@ -131,7 +133,7 @@ class DownloadHistory
                 $cSQLWhere .= ' AND kKunde = ' . $kKunde;
             }
 
-            $data = \Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->query(
                 'SELECT kDownload, kDownloadHistory
                      FROM tdownloadhistory
                      WHERE ' . $cSQLWhere . '
@@ -160,7 +162,7 @@ class DownloadHistory
         $ins = $this->kopiereMembers();
         unset($ins->kDownloadHistory);
 
-        $kDownloadHistory = \Shop::Container()->getDB()->insert('tdownloadhistory', $ins);
+        $kDownloadHistory = Shop::Container()->getDB()->insert('tdownloadhistory', $ins);
         if ($kDownloadHistory > 0) {
             return $bPrimary ? $kDownloadHistory : true;
         }
@@ -173,13 +175,13 @@ class DownloadHistory
      */
     public function update(): int
     {
-        $upd              = new \stdClass();
+        $upd              = new stdClass();
         $upd->kDownload   = $this->kDownload;
         $upd->kKunde      = $this->kKunde;
         $upd->kBestellung = $this->kBestellung;
         $upd->dErstellt   = $this->dErstellt;
 
-        return \Shop::Container()->getDB()->update(
+        return Shop::Container()->getDB()->update(
             'tdownloadhistory',
             'kDownloadHistory',
             (int)$this->kDownloadHistory,
@@ -283,11 +285,11 @@ class DownloadHistory
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function kopiereMembers(): \stdClass
+    private function kopiereMembers(): stdClass
     {
-        $obj     = new \stdClass();
+        $obj     = new stdClass();
         $members = \array_keys(\get_object_vars($this));
         if (\is_array($members) && \count($members) > 0) {
             foreach ($members as $member) {

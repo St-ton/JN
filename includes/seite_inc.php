@@ -4,7 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Category;
+use JTL\Helpers\Category;
+use JTL\Helpers\CMS;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Shop;
+use JTL\Sitemap\Sitemap;
+use JTL\Link\LinkInterface;
 
 /**
  * @return array
@@ -13,7 +18,7 @@ use Helpers\Category;
 function gibStartBoxen()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getHomeBoxes();
+    return CMS::getHomeBoxes();
 }
 
 /**
@@ -24,7 +29,7 @@ function gibStartBoxen()
 function gibNews($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getHomeNews($conf);
+    return CMS::getHomeNews($conf);
 }
 
 /**
@@ -45,7 +50,7 @@ function gibNextBoxPrio()
 function gibLivesucheTop($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getLiveSearchTop($conf);
+    return CMS::getLiveSearchTop($conf);
 }
 
 /**
@@ -56,7 +61,7 @@ function gibLivesucheTop($conf)
 function gibLivesucheLast($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getLiveSearchLast($conf);
+    return CMS::getLiveSearchLast($conf);
 }
 
 /**
@@ -67,7 +72,7 @@ function gibLivesucheLast($conf)
 function gibTagging($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getTagging($conf);
+    return CMS::getTagging($conf);
 }
 
 /**
@@ -77,7 +82,7 @@ function gibTagging($conf)
 function gibNewsletterHistory()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getNewsletterHistory();
+    return CMS::getNewsletterHistory();
 }
 
 /**
@@ -88,7 +93,7 @@ function gibNewsletterHistory()
 function gibGratisGeschenkArtikel($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMSHelper::getFreeGifts($conf);
+    return CMS::getFreeGifts($conf);
 }
 
 /**
@@ -121,7 +126,7 @@ function gibSitemapKategorien()
 function gibSitemapGlobaleMerkmale()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
+    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
 
     return $sm->getGlobalAttributes();
 }
@@ -159,7 +164,7 @@ function gibBoxNews()
 function gibSitemapNews()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_NEWS]));
+    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_NEWS]));
 
     return $sm->getNews();
 }
@@ -171,21 +176,21 @@ function gibSitemapNews()
 function gibNewsKategorie()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
+    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
 
     return $sm->getNewsCategories();
 }
 
 /**
- * @param array            $conf
- * @param Smarty\JTLSmarty $smarty
+ * @param array                 $conf
+ * @param \JTL\Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
 function gibSeiteSitemap($conf, $smarty)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     Shop::setPageType(PAGE_SITEMAP);
-    $sm = new \JTL\Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
+    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), $conf);
     $sm->assignData($smarty);
 }
 
@@ -198,10 +203,10 @@ function pruefeSpezialseite(int $nLinkart)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $specialPages = Shop::Container()->getLinkService()->getLinkGroupByName('specialpages');
     if ($nLinkart > 0 && $specialPages !== null) {
-        $res = $specialPages->getLinks()->first(function (\Link\LinkInterface $l) use ($nLinkart) {
+        $res = $specialPages->getLinks()->first(function (LinkInterface $l) use ($nLinkart) {
             return $l->getLinkType() === $nLinkart;
         });
-        /** @var \Link\LinkInterface $res */
+        /** @var LinkInterface $res */
         if ($res !== null && $res->getFileName() !== '') {
             header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute($res->getFileName()));
             exit();

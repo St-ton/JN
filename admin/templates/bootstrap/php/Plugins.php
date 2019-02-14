@@ -6,7 +6,9 @@
 
 namespace AdminTemplate;
 
-use Backend\Revision;
+use JTL\Backend\Revision;
+use JTL\Catalog\Currency;
+use JTL\Shop;
 
 class Plugins
 {
@@ -139,7 +141,7 @@ class Plugins
     public function SmartyConvertDate(array $params, $smarty)
     {
         if (isset($params['date']) && mb_strlen($params['date']) > 0) {
-            $oDateTime = new DateTime($params['date']);
+            $oDateTime = new \DateTime($params['date']);
             if (isset($params['format']) && mb_strlen($params['format']) > 1) {
                 $cDate = $oDateTime->format($params['format']);
             } else {

@@ -10,7 +10,9 @@
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\DB\ReturnType;
 
 $action = $_POST['action'] ?? null;
 
@@ -32,7 +34,7 @@ switch ($action) {
             $db->executeQuery('TRUNCATE TABLE tstoreauth', 3);
 
             $code = $_SESSION['jtl_token'];
-            $url  = Shop::getUrl(true).$_SERVER['SCRIPT_NAME'].'?action=code';
+            $url  = Shop::getURL(true).$_SERVER['SCRIPT_NAME'].'?action=code';
 
             $db->insertRow(
                 'tstoreauth',
@@ -75,7 +77,10 @@ switch ($action) {
         exit;
 }
 
-$hasAuth = !!$db->query('SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL', 3);
+$hasAuth = !!$db->query(
+    'SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL',
+    ReturnType::AFFECTED_ROWS
+);
 
 $smarty->assign('hasAuth', $hasAuth)
-    ->display('store.tpl');
+       ->display('store.tpl');

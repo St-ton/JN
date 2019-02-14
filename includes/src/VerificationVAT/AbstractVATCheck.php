@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace VerificationVAT;
+namespace JTL\VerificationVAT;
 
 use Psr\Log\LoggerInterface;
 
 /**
  * Class AbstractVATCheck
- * @package VerificationVAT
+ * @package JTL\VerificationVAT
  */
 abstract class AbstractVATCheck implements VATCheckInterface
 {

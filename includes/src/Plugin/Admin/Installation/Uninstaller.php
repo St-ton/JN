@@ -4,21 +4,21 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
-use Plugin\AbstractPlugin;
-use Plugin\PluginInterface;
-use Plugin\PluginLoader;
-use Plugin\Helper;
-use Plugin\InstallCode;
-use Plugin\LegacyPluginLoader;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\PluginLoader;
+use JTL\Sprache;
 
 /**
  * Class Uninstaller
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin\Installation
  */
 final class Uninstaller
 {
@@ -235,7 +235,7 @@ final class Uninstaller
         }
         if (\count($links) === 2) {
             $oldLocalization = $this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink);
-            $languages       = \Sprache::getAllLanguages(2);
+            $languages       = Sprache::getAllLanguages(2);
             foreach ($oldLocalization as $item) {
                 $this->db->update(
                     'tlinksprache',

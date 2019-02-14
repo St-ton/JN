@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation;
+namespace JTL\Plugin\Admin\Validation;
 
+use JTL\Plugin\InstallCode;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
-use Plugin\InstallCode;
 
 /**
  * Class LegacyPluginValidator
- * @package Plugin\Admin\Validation
+ * @package JTL\Plugin\Admin\Validation
  */
 final class LegacyPluginValidator extends AbstractValidator
 {

@@ -4,17 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
-use DB\DbInterface;
-use Psr\Log\LoggerInterface;
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
 
 /**
  * Class Store
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class Store extends Job
 {
@@ -25,7 +23,7 @@ class Store extends Job
     {
         parent::start($queueEntry);
 
-        if ($data = $this->getJobData() !== null) {
+        if ($this->getJobData() !== null) {
             $this->setFinished(true);
         }
 

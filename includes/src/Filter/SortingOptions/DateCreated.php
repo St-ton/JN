@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class DateCreated
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class DateCreated extends AbstractSortingOption
 {
@@ -22,7 +23,7 @@ class DateCreated extends AbstractSortingOption
     {
         parent::__construct($productFilter);
         $this->setOrderBy('tartikel.dErstellt DESC, tartikel.cName');
-        $this->setName(\Shop::Lang()->get('sortNewestFirst'));
+        $this->setName(Shop::Lang()->get('sortNewestFirst'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_erstelldatum']);
         $this->setValue(\SEARCH_SORT_NEWEST_FIRST);
     }

@@ -4,21 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
+use stdClass;
 use Tightenco\Collect\Support\Collection;
 use function Functional\first;
 use function Functional\map;
 
 /**
  * Class SurveyQuestion
- * @package Survey
+ * @package JTL\Survey
  */
 class SurveyQuestion
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -108,10 +110,10 @@ class SurveyQuestion
     }
 
     /**
-     * @param \stdClass $data
+     * @param stdClass $data
      * @return $this
      */
-    public function map(\stdClass $data): self
+    public function map(stdClass $data): self
     {
         foreach (\get_object_vars($data) as $var => $value) {
             if (($mapping = self::getMapping($var)) !== null) {

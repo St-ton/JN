@@ -4,15 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Evo;
+namespace Nova;
 
-use Filter\Config;
-use Filter\ProductFilter;
-use Helpers\Category;
-use Helpers\Manufacturer;
-use Helpers\Tax;
-use Session\Frontend;
-use Shop;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\CheckBox;
+use JTL\Filter\Config;
+use JTL\Filter\ProductFilter;
+use JTL\Helpers\Category;
+use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Tax;
+use JTL\Link\Link;
+use JTL\Link\LinkGroupInterface;
+use JTL\Media\Image;
+use JTL\Media\MediaImage;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Staat;
+use JTL\TrustedShops;
 use Tightenco\Collect\Support\Collection;
 
 /**
@@ -71,8 +82,8 @@ class Plugins
                 $params['kArtikel'] = [$params['kArtikel']];
             }
             foreach ($params['kArtikel'] as $kArtikel) {
-                $product    = new \Artikel();
-                $products[] = $product->fuelleArtikel($kArtikel, \Artikel::getDefaultOptions());
+                $product    = new Artikel();
+                $products[] = $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
             }
         } else {
             $products = (new ProductFilter(
@@ -168,7 +179,7 @@ class Plugins
             $categories = Category::getInstance();
             $list       = $categories->combinedGetAll();
         } else {
-            $categories = new \KategorieListe();
+            $categories = new KategorieListe();
             $list       = $categories->getAllCategoriesOnLevel($id);
         }
 
@@ -202,7 +213,7 @@ class Plugins
     {
         $id         = isset($params['categoryId']) ? (int)$params['categoryId'] : 0;
         $categories = new \KategorieListe();
-        $list       = $categories->getOpenCategories(new \Kategorie($id));
+        $list       = $categories->getOpenCategories(new Kategorie($id));
 
         \array_shift($list);
         $list = \array_reverse($list);
@@ -294,20 +305,20 @@ class Plugins
                 : 2;
 
             if ((int)$params['nNettoPreise'] === 1) {
-                $oAufpreis->cAufpreisLocalized = \Preise::getLocalizedPriceString($fAufpreisNetto);
-                $oAufpreis->cPreisInklAufpreis = \Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
+                $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString($fAufpreisNetto);
+                $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
                 $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
                     ? ('+ ' . $oAufpreis->cAufpreisLocalized)
                     : \str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
 
                 if ($fVPEWert > 0) {
-                    $oAufpreis->cPreisVPEWertAufpreis     = \Preise::getLocalizedPriceString(
+                    $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         $fAufpreisNetto / $fVPEWert,
                         Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                    $oAufpreis->cPreisVPEWertInklAufpreis = \Preise::getLocalizedPriceString(
+                    $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                         Frontend::getCurrency()->getCode(),
                         true,
@@ -320,10 +331,10 @@ class Plugins
                         $oAufpreis->cPreisVPEWertInklAufpreis;
                 }
             } else {
-                $oAufpreis->cAufpreisLocalized = \Preise::getLocalizedPriceString(
+                $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString(
                     Tax::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
                 );
-                $oAufpreis->cPreisInklAufpreis = \Preise::getLocalizedPriceString(
+                $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString(
                     Tax::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
                 );
                 $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
@@ -331,13 +342,13 @@ class Plugins
                     : \str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
 
                 if ($fVPEWert > 0) {
-                    $oAufpreis->cPreisVPEWertAufpreis     = \Preise::getLocalizedPriceString(
+                    $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
                         Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                    $oAufpreis->cPreisVPEWertInklAufpreis = \Preise::getLocalizedPriceString(
+                    $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         Tax::getGross(
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
@@ -368,7 +379,7 @@ class Plugins
     {
         $smarty->assign(
             $params['bReturn'],
-            \count((new \CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true)) > 0
+            \count((new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true)) > 0
         );
     }
 
@@ -382,7 +393,7 @@ class Plugins
         $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
         $oCheckBox_arr = Shop::has($cid)
             ? Shop::get($cid)
-            : (new \CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
+            : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
         if (\count($oCheckBox_arr) > 0) {
             foreach ($oCheckBox_arr as $oCheckBox) {
                 $cLinkURL                 = $oCheckBox->kLink > 0
@@ -467,8 +478,8 @@ class Plugins
     }
 
     /**
-     * @param \Link\LinkGroupInterface $linkGroup
-     * @param int                      $kVaterLink
+     * @param LinkGroupInterface $linkGroup
+     * @param int                $kVaterLink
      * @return \Tightenco\Collect\Support\Collection
      */
     public function buildNavigationSubs($linkGroup, $kVaterLink = 0)
@@ -479,7 +490,7 @@ class Plugins
             return $oNew_arr;
         }
         foreach ($linkGroup->getLinks() as $link) {
-            /** @var \Link\Link $link */
+            /** @var Link $link */
             if ($link->getParent() !== $kVaterLink) {
                 continue;
             }
@@ -497,7 +508,7 @@ class Plugins
      */
     public function getTrustedShopsData($params, $smarty)
     {
-        $oTrustedShops = new \TrustedShops(-1, \StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
+        $oTrustedShops = new TrustedShops(-1, \StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
         $smarty->assign($params['assign'], [
             'tsId'   => $oTrustedShops->tsId,
             'nAktiv' => $oTrustedShops->nAktiv
@@ -551,13 +562,13 @@ class Plugins
             ? PFAD_ROOT . $image
             : $image;
         if (!\file_exists($path)) {
-            $req = \MediaImage::toRequest($path);
+            $req = MediaImage::toRequest($path);
 
             if (!\is_object($req)) {
                 return null;
             }
 
-            $settings = \Image::getSettings();
+            $settings = Image::getSettings();
             $refImage = $req->getRaw();
             if ($refImage === null) {
                 return null;
@@ -718,7 +729,7 @@ class Plugins
      */
     public function getStates($params, $smarty)
     {
-        $oStates = \Staat::getRegions($params['cIso']);
+        $oStates = Staat::getRegions($params['cIso']);
         if (isset($params['assign'])) {
             $smarty->assign($params['assign'], $oStates);
 

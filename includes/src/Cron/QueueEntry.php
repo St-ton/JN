@@ -4,11 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
+
+use DateTime;
+use stdClass;
 
 /**
  * Class QueueEntry
- * @package Cron
+ * @package JTL\Cron
  */
 class QueueEntry
 {
@@ -93,9 +96,9 @@ class QueueEntry
 
     /**
      * QueueEntry constructor.
-     * @param \stdClass $data
+     * @param stdClass $data
      */
-    public function __construct(\stdClass $data)
+    public function __construct(stdClass $data)
     {
         $this->jobQueueID    = (int)$data->jobQueueID;
         $this->cronID        = (int)$data->cronID;
@@ -109,8 +112,8 @@ class QueueEntry
         $this->jobType       = $data->jobType;
         $this->tableName     = $data->tableName;
         $this->foreignKey    = $data->foreignKey;
-        $this->startTime     = new \DateTime($data->startTime ?? '');
-        $this->lastStart     = new \DateTime($data->lastStart ?? '');
-        $this->lastFinish    = new \DateTime($data->lastFinish ?? '');
+        $this->startTime     = new DateTime($data->startTime ?? '');
+        $this->lastStart     = new DateTime($data->lastStart ?? '');
+        $this->lastFinish    = new DateTime($data->lastFinish ?? '');
     }
 }

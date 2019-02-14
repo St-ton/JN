@@ -4,10 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Helpers\ShippingMethod;
-use Helpers\Cart;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Cart;
+use JTL\Alert;
+use JTL\Checkout\Kupon;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Cart\Warenkorb;
+use JTL\Cart\WarenkorbPers;
+use JTL\Session\Frontend;
+use JTL\Extensions\Upload;
+use JTL\Extensions\Download;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -20,7 +29,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $conf        = Shopsetting::getInstance()->getAll();
 $step        = 'accountwahl';
-$cart        = \Session\Frontend::getCart();
+$cart        = Frontend::getCart();
 $alertHelper = Shop::Container()->getAlertService();
 unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
@@ -36,10 +45,10 @@ if (Request::verifyGPCDataInt('basket2Pers') === 1) {
 if ($cart->istBestellungMoeglich() !== 10) {
     pruefeBestellungMoeglich();
 }
-if (!\Extensions\Upload::pruefeWarenkorbUploads($cart)) {
-    \Extensions\Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
+if (!Upload::pruefeWarenkorbUploads($cart)) {
+    Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
 }
-if (\Extensions\Download::hasDownloads($cart)) {
+if (Download::hasDownloads($cart)) {
     // Nur registrierte Benutzer
     $conf['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
@@ -47,10 +56,7 @@ if (\Extensions\Download::hasDownloads($cart)) {
 if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
-    $kKunde = 0;
-    if (isset($_SESSION['Kunde']->kKunde)) {
-        $kKunde = $_SESSION['Kunde']->kKunde;
-    }
+    $kKunde         = $_SESSION['Kunde']->kKunde ?? 0;
     $oWarenkorbPers = new WarenkorbPers($kKunde);
     if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
         && $conf['global']['warenkorbpers_nutzen'] === 'Y'
@@ -114,7 +120,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
         $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
+        $kKundengruppe = Frontend::getCustomerGroup()->getID();
 
         $shippingMethods  = ShippingMethod::getPossibleShippingMethods(
             $land,
@@ -130,7 +136,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
     }
 }
-if (empty($_SESSION['Kunde']->cPasswort) && \Extensions\Download::hasDownloads($cart)) {
+if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step = 'accountwahl';
 
@@ -212,12 +218,12 @@ if ($step === 'Bestaetigung'
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
 
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
-        || (isset($postData['guthabenVerrechnen']) && (int)$postData['guthabenVerrechnen'] === 1)
+        || (isset($_POST['guthabenVerrechnen']) && (int)$_POST['guthabenVerrechnen'] === 1)
     ) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             $_SESSION['Kunde']->fGuthaben,
-            \Session\Frontend::getCart()->gibGesamtsummeWaren(true, false)
+            Frontend::getCart()->gibGesamtsummeWaren(true, false)
         );
     }
     Warenkorb::refreshChecksum($cart);
@@ -231,7 +237,7 @@ Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguageID(),
-        \Session\Frontend::getCustomerGroup()->getID()
+        Frontend::getCustomerGroup()->getID()
     )
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))

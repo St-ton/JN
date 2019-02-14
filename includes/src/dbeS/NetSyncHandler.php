@@ -4,11 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace dbeS;
+namespace JTL\dbeS;
+
+use Exception;
+use stdClass;
 
 /**
  * Class NetSyncHandler
- * @package dbeS
+ *
+ * @package JTL\dbeS
  */
 class NetSyncHandler
 {
@@ -18,12 +22,12 @@ class NetSyncHandler
     private static $instance;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
         if (self::$instance !== null) {
-            throw new \Exception('Class ' . __CLASS__ . ' already created');
+            throw new Exception('Class ' . __CLASS__ . ' already created');
         }
         self::$instance = $this;
         $this->init();
@@ -72,7 +76,7 @@ class NetSyncHandler
      */
     protected static function throwResponse($nCode, $oData = null)
     {
-        $oResponse         = new \stdClass();
+        $oResponse         = new stdClass();
         $oResponse->nCode  = $nCode;
         $oResponse->cToken = '';
         $oResponse->oData  = null;
@@ -92,7 +96,7 @@ class NetSyncHandler
     }
 
     /**
-     * @param \Exception $oException
+     * @param Exception $oException
      */
     public static function exception($oException)
     {

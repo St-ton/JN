@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\Admin\Validation\ValidationItemInterface;
-use Plugin\InstallCode;
+use JTL\Plugin\Admin\Validation\ValidationItemInterface;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class AbstractItem
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class AbstractItem implements ValidationItemInterface
 {

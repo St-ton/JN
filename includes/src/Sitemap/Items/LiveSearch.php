@@ -4,11 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
+
+use JTL\Helpers\URL;
 
 /**
  * Class LiveSearch
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 final class LiveSearch extends AbstractItem
 {
@@ -17,7 +19,7 @@ final class LiveSearch extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\Helpers\URL::buildURL($this->data, \URLART_SEITE, true));
+        $this->setLocation(URL::buildURL($this->data, \URLART_SEITE, true));
     }
 
     /**

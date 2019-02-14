@@ -4,22 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\ReturnType;
+use Generator;
+use JTL\DB\ReturnType;
+use PDO;
+use JTL\Sitemap\Items\NewsItem as Item;
 use function Functional\first;
 use function Functional\map;
 
 /**
  * Class NewsItem
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class NewsItem extends AbstractFactory
 {
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
@@ -42,10 +45,10 @@ final class NewsItem extends AbstractFactory
                     ORDER BY tnews.dErstellt",
             ReturnType::QUERYSINGLE
         );
-        while (($ni = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+        while (($ni = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $ni->langID = (int)$ni->langID;
             $ni->kNews  = (int)$ni->kNews;
-            $item       = new \Sitemap\Items\NewsItem($this->config, $this->baseURL, $this->baseImageURL);
+            $item       = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($ni, $languages);
             yield $item;
         }

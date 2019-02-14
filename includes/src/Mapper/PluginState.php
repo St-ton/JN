@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
-use Plugin\State;
+use JTL\Plugin\State;
 
 /**
  * Class PluginState
- * @package Mapper
+ * @package JTL\Mapper
  */
 class PluginState
 {

@@ -38,7 +38,7 @@
                                 </td>
                                 <td class="tcenter plugin-status">
                                     <h4 class="label-wrap text-nowrap">
-                                        <span class="label {if $plugin->getState() === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() == 1}success label-info{elseif $plugin->getState() == 3}success label-default{elseif $plugin->getState() == 4 || $plugin->getState() == 5}info label-info{elseif $plugin->getState() == 6}danger label-danger{/if}">
+                                        <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() == 6}danger label-danger{/if}">
                                             {$mapper->map($plugin->getState())}
                                         </span>
                                         {foreach $allPluginItems as $p}

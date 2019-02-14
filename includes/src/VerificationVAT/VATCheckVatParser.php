@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace VerificationVAT;
+namespace JTL\VerificationVAT;
 
 /**
  * class VATCheckVatParser

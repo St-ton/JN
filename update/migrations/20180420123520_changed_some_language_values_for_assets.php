@@ -6,6 +6,9 @@
  * @created Fri, 20 Apr 2018 12:35:20 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180420123520 extends Migration implements IMigration
 {
-    protected $author = 'Clemens Rudolph';
+    protected $author      = 'Clemens Rudolph';
     protected $description = 'changed language-values for assets';
 
     public function up()

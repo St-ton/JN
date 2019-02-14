@@ -4,8 +4,8 @@
  *}
 {assign var=ssf value=$NaviFilter->getSearchSpecialFilter()}
 {if $bBoxenFilterNach
-    && $ssf->getVisibility() !== \Filter\Visibility::SHOW_NEVER
-    && $ssf->getVisibility() !== \Filter\Visibility::SHOW_CONTENT
+    && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
+    && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_CONTENT
     && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())}
     <section class="panel panel-default box box-filter-special" id="sidebox{$oBox->getID()}">
         <div class="panel-heading">

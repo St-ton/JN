@@ -74,7 +74,7 @@ class Zend_Validate_Identical extends Zend_Validate_Abstract
      */
     public function setToken($token)
     {
-        $this->_token = (string) $token;
+        $this->_token = (string)$token;
         return $this;
     }
 

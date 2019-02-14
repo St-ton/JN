@@ -4,22 +4,26 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\Notification;
-use Backend\NotificationEntry;
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Backend\Notification;
+use JTL\Backend\NotificationEntry;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $kSektion         = CONF_ARTIKELUEBERSICHT;
 $conf             = Shop::getSettings([$kSektion]);
 $standardwaehrung = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
 $mysqlVersion     = Shop::Container()->getDB()->query(
     "SHOW VARIABLES LIKE 'innodb_version'",
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 )->Value;
 $step             = 'einstellungen bearbeiten';
 $cHinweis         = '';
@@ -27,7 +31,7 @@ $cFehler          = '';
 $Conf             = [];
 $createIndex      = false;
 
-\Shop::Container()->getGetText()->loadAdminLocale('pages/einstellungen');
+Shop::Container()->getGetText()->loadAdminLocale('pages/einstellungen');
 
 if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -36,7 +40,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     header('Pragma: no-cache');
     header('Content-type: application/json');
 
-    $index = mb_convert_case(StringHandler::xssClean($_GET['index']), MB_CASE_LOWER);
+    $index = mb_convert_case(Text::xssClean($_GET['index']), MB_CASE_LOWER);
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
         header(Request::makeHTTPHeader(403), true);
@@ -47,11 +51,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     try {
         if (Shop::Container()->getDB()->query(
             "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )) {
             Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
         }
     } catch (Exception $e) {
@@ -61,7 +65,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     if ($_GET['create'] === 'Y') {
         $searchCols = array_map(function ($item) {
             return explode('.', $item, 2)[1];
-        }, \Filter\States\BaseSearchQuery::getSearchRows());
+        }, JTL\Filter\States\BaseSearchQuery::getSearchRows());
 
         switch ($index) {
             case 'tartikel':
@@ -89,12 +93,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         try {
             Shop::Container()->getDB()->executeQuery(
                 'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;
@@ -145,7 +149,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
             $oValue                     = Shop::Container()->getDB()->query(
                 'SELECT @@ft_min_word_len AS ft_min_word_len',
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             $_POST['suche_min_zeichen'] = $oValue ? $oValue->ft_min_word_len : $_POST['suche_min_zeichen'];
         }
@@ -194,11 +198,11 @@ $section = Shop::Container()->getDB()->select('teinstellungensektion', 'kEinstel
 if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
     && (!Shop::Container()->getDB()->query(
         "SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'",
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )
     || !Shop::Container()->getDB()->query(
         "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     ))) {
     $cFehler = __('errorCreateTime') .
         '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';

@@ -4,16 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';
@@ -44,7 +47,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
                 )
                 AND cConf = 'Y'
             ORDER BY nSort",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
@@ -84,7 +87,7 @@ $oConfig_arr = Shop::Container()->getDB()->query(
                 OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
                )
         ORDER BY nSort',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
@@ -96,7 +99,7 @@ for ($i = 0; $i < $configCount; $i++) {
             '*',
             'nSort'
         );
-        \Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
+        Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
     }
     $oSetValue                      = Shop::Container()->getDB()->select(
         'teinstellungen',
@@ -106,13 +109,13 @@ for ($i = 0; $i < $configCount; $i++) {
         $oConfig_arr[$i]->cWertName
     );
     $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    \Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
+    Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
 }
 
 $oVergleichAnzahl = Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tvergleichsliste',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oPagination      = (new Pagination())
     ->setItemCount($oVergleichAnzahl->nAnzahl)
@@ -122,7 +125,7 @@ $last20           = Shop::Container()->getDB()->query(
         FROM tvergleichsliste
         ORDER BY dDate DESC
         LIMIT " . $oPagination->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 if (is_array($last20) && count($last20) > 0) {
@@ -148,7 +151,7 @@ $topComparisons = Shop::Container()->getDB()->query(
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
         LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl,
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 if (is_array($topComparisons) && count($topComparisons) > 0) {
     erstelleDiagrammTopVergleiche($topComparisons);
@@ -191,7 +194,7 @@ function erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr)
         if (count($nYmax_arr) > 0) {
             $fMax = (float)max($nYmax_arr);
             if ($fMax > 10) {
-                $temp  = pow(10, floor(log10($fMax)));
+                $temp  = 10 ** floor(log10($fMax));
                 $nYmax = ceil($fMax / $temp) * $temp;
             } else {
                 $nYmax = 10;

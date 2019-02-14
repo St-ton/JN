@@ -6,6 +6,9 @@
  * @created Fri, 10 Mar 2017 15:38:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170310153800 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Remove partial https encryption option';
 
     public function up()

@@ -10,7 +10,7 @@
     {if $opcPageService->getCurPage()->isReplace()}
         {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
     {else}
-        {if Shop::$AktuelleSeite === 'NEWSDETAIL'}
+        {if JTL\Shop::$AktuelleSeite === 'NEWSDETAIL'}
             {include file='blog/details.tpl'}
         {else}
             {include file='blog/overview.tpl'}

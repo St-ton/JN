@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
 
 /**
  * @return array

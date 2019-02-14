@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
-use DB\ReturnType;
-use Shop;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class JSONAPI
- * @package Backend
+ * @package JTL\Backend
  */
 class JSONAPI
 {

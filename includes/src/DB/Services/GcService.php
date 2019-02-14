@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace DB\Services;
+namespace JTL\DB\Services;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 
 /**
  * Class GcService
- * @package DB\Services
+ * @package JTL\DB\Services
  */
 class GcService implements GcServiceInterface
 {

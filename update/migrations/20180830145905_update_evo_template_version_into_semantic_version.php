@@ -6,6 +6,9 @@
  * @created Thu, 30 Aug 2018 14:59:05 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180830145905 extends Migration implements IMigration
 {
-    protected $author = 'msc';
+    protected $author      = 'msc';
     protected $description = 'Update evo template version into semantic version';
 
     public function up()

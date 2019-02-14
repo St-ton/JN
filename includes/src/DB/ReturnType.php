@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace DB;
+namespace JTL\DB;
 
 /**
  * Class ReturnType
- * @package DB
+ * @package JTL\DB
  */
 abstract class ReturnType
 {

@@ -22,7 +22,7 @@ require_once('OFC/Elements/OFC_Elements_Base.php');
 
 class OFC_Elements_Legend_X extends OFC_Elements_Base
 {
-    public function __construct($text='')
+    public function __construct($text = '')
     {
         parent::__construct();
 

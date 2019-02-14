@@ -54,7 +54,7 @@ class OFC_Elements_Axis_X extends OFC_Elements_Axis
         $this->labels = $x_axis_labels;
     }
 
-    public function set_range($min, $max, $steps=1)
+    public function set_range($min, $max, $steps = 1)
     {
         $this->min = $min;
         $this->max = $max;

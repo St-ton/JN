@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Vergleichsliste;
+
 /**
  * @param Vergleichsliste $oVergleichsliste
  * @return array

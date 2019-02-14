@@ -6,6 +6,9 @@
  * @created Mon, 10 Sep 2018 12:16:47 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180910121647 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Correct lang var productAvailable';
 
     public function up()

@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\DbInterface;
+use JTL\DB\DbInterface;
 
 /**
  * Class AbstractFactory
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 abstract class AbstractFactory implements FactoryInterface
 {

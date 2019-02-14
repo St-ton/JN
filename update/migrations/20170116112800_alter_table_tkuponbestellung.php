@@ -6,6 +6,9 @@
  * @created Thue, 16 Jan 2017 11:28:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170116112800 extends Migration implements IMigration
 {
-    protected $author = 'msc';
+    protected $author      = 'msc';
     protected $description = 'Alter table tkuponbestellung';
 
     public function up()
@@ -119,6 +122,6 @@ class Migration_20170116112800 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tkuponbestellung` DROP `kKunde`, DROP `cBestellNr`, DROP `fGesamtsummeBrutto`, DROP `fKuponwertBrutto`, DROP `cKuponTyp`, DROP `dErstellt`");
+        $this->execute('ALTER TABLE `tkuponbestellung` DROP `kKunde`, DROP `cBestellNr`, DROP `fGesamtsummeBrutto`, DROP `fKuponwertBrutto`, DROP `cKuponTyp`, DROP `dErstellt`');
     }
 }

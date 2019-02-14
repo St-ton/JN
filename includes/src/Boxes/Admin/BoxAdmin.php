@@ -4,11 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Admin;
+namespace JTL\Boxes\Admin;
 
-use Boxes\Type;
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\Boxes\Type;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Template;
+use JTL\Mapper\PageTypeToPageNiceName;
+use stdClass;
+use function Functional\filter;
 use function Functional\map;
 
 /**
@@ -119,10 +123,10 @@ final class BoxAdmin
 
     /**
      * @param int $baseType
-     * @return \stdClass|null
+     * @return stdClass|null
      * @former holeVorlage()
      */
-    private function getTemplate(int $baseType): ?\stdClass
+    private function getTemplate(int $baseType): ?stdClass
     {
         return $this->db->select('tboxvorlage', 'kBoxvorlage', $baseType);
     }
@@ -172,9 +176,9 @@ final class BoxAdmin
 
     /**
      * @param int $boxID
-     * @return \stdClass
+     * @return stdClass
      */
-    public function getByID(int $boxID): \stdClass
+    public function getByID(int $boxID): stdClass
     {
         $oBox = $this->db->queryPrepared(
             'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
@@ -209,7 +213,7 @@ final class BoxAdmin
     public function create(int $baseID, int $pageID, string $position = 'left', int $containerID = 0): bool
     {
         $validPageTypes    = $this->getValidPageTypes();
-        $oBox              = new \stdClass();
+        $oBox              = new stdClass();
         $template          = $this->getTemplate($baseID);
         $oBox->cTitel      = $template === null
             ? ''
@@ -223,7 +227,7 @@ final class BoxAdmin
 
         $boxID = $this->db->insert('tboxen', $oBox);
         if ($boxID) {
-            $oBoxSichtbar       = new \stdClass();
+            $oBoxSichtbar       = new stdClass();
             $oBoxSichtbar->kBox = $boxID;
             foreach ($validPageTypes as $validPageType) {
                 $oBoxSichtbar->nSort  = $this->getLastSortID($pageID, $position, $containerID);
@@ -247,7 +251,7 @@ final class BoxAdmin
      */
     public function update(int $boxID, $title, int $customID = 0): bool
     {
-        $oBox            = new \stdClass();
+        $oBox            = new stdClass();
         $oBox->cTitel    = $title;
         $oBox->kCustomID = $customID;
 
@@ -266,13 +270,13 @@ final class BoxAdmin
     {
         $oBox = $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode);
         if (isset($oBox->kBox)) {
-            $upd          = new \stdClass();
+            $upd          = new stdClass();
             $upd->cTitel  = $title;
             $upd->cInhalt = $content;
 
             return $this->db->update('tboxsprache', ['kBox', 'cISO'], [$boxID, $isoCode], $upd) >= 0;
         }
-        $_ins          = new \stdClass();
+        $_ins          = new stdClass();
         $_ins->kBox    = $boxID;
         $_ins->cISO    = $isoCode;
         $_ins->cTitel  = $title;
@@ -392,7 +396,7 @@ final class BoxAdmin
             $cFilter = \array_unique($cFilter);
             $cFilter = \implode(',', $cFilter);
         }
-        $upd          = new \stdClass();
+        $upd          = new stdClass();
         $upd->cFilter = $cFilter;
 
         return $this->db->update('tboxensichtbar', ['kBox', 'kSeite'], [$boxID, $kSeite], $upd);
@@ -468,7 +472,7 @@ final class BoxAdmin
             }
 
             if (!isset($templates[$id])) {
-                $templates[$id]               = new \stdClass();
+                $templates[$id]               = new stdClass();
                 $templates[$id]->oVorlage_arr = [];
             }
 
@@ -527,10 +531,10 @@ final class BoxAdmin
      */
     public function getInvisibleBoxes(): array
     {
-        $unavailabe = \Functional\filter(\Template::getInstance()->getBoxLayoutXML(), function ($e) {
+        $unavailabe = filter(Template::getInstance()->getBoxLayoutXML(), function ($e) {
             return $e === false;
         });
-        $mapped     = \Functional\map($unavailabe, function ($e, $key) {
+        $mapped     = map($unavailabe, function ($e, $key) {
             return "'" . $key . "'";
         });
 
@@ -550,10 +554,10 @@ final class BoxAdmin
      */
     public function getMappedValidPageTypes(): array
     {
-        return \Functional\map($this->getValidPageTypes(), function ($pageID) {
+        return map($this->getValidPageTypes(), function ($pageID) {
             return [
                 'pageID'   => $pageID,
-                'pageName' => (new \Mapper\PageTypeToPageNiceName())->mapPageTypeToPageNiceName($pageID)
+                'pageName' => (new PageTypeToPageNiceName())->mapPageTypeToPageNiceName($pageID)
             ];
         });
     }

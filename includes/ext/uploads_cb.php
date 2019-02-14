@@ -4,7 +4,8 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
 
 require_once __DIR__ . '/../globalinclude.php';
 
@@ -17,7 +18,7 @@ function retCode($bOk)
 {
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
-$session = \Session\Frontend::getInstance();
+$session = \JTL\Session\Frontend::getInstance();
 if (!Form::validateToken()) {
     retCode(0);
 }
@@ -91,7 +92,7 @@ if (!empty($_REQUEST['action'])) {
             break;
 
         case 'preview':
-            $oUpload   = new \Extensions\UploadDatei();
+            $oUpload   = new \JTL\Extensions\UploadDatei();
             $kKunde    = (int)$_SESSION['Kunde']->kKunde;
             $cFilePath = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
             $kUpload   = (int)Shop::Container()->getCryptoService()->decryptXTEA(rawurldecode($_REQUEST['secret']));

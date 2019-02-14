@@ -4,24 +4,27 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\ReturnType;
-use Link\Link;
-use Link\LinkList;
+use Generator;
+use JTL\DB\ReturnType;
+use JTL\Link\Link;
+use JTL\Link\LinkList;
+use JTL\Sitemap\Items\Page as Item;
+use stdClass;
 use function Functional\first;
 use function Functional\map;
 
 /**
  * Class Page
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class Page extends AbstractFactory
 {
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
         $customerGroup = first($customerGroups);
         $languageCodes = map($languages, function ($e) {
@@ -62,13 +65,13 @@ final class Page extends AbstractFactory
             /** @var Link $link */
             $linkType = $link->getLinkType();
             foreach ($link->getURLs() as $i => $url) {
-                $data           = new \stdClass();
+                $data           = new stdClass();
                 $data->kLink    = $link->getID();
                 $data->cSEO     = $url;
                 $data->nLinkart = $linkType;
                 $data->langID   = $link->getLanguageID($i);
                 $data->langCode = $link->getLanguageCode($i);
-                $item           = new \Sitemap\Items\Page($this->config, $this->baseURL, $this->baseImageURL);
+                $item           = new Item($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($data, $languages);
                 yield $item;
             }

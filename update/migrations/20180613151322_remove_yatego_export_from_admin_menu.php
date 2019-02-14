@@ -6,6 +6,9 @@
  * @created Wed, 13 Jun 2018 15:13:22 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180613151322 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Removes Yatego Export from admin menu';
 
     public function up()

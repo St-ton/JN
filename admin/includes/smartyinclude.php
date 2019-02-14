@@ -4,14 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\AdminTemplate;
-use Backend\Notification;
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Backend\AdminTemplate;
+use JTL\Backend\Notification;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\ContextType;
+use JTL\Plugin\State;
 
 require_once __DIR__ . '/admin_menu.php';
 
-$smarty             = \Smarty\JTLSmarty::getInstance(false, \Smarty\ContextType::BACKEND);
+$smarty             = JTLSmarty::getInstance(false, ContextType::BACKEND);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
@@ -36,7 +41,7 @@ $oPluginSearch = $db->query(
     "SELECT kPlugin, cName
         FROM tplugin
         WHERE cPluginID = 'jtl_search'",
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 
 $curScriptFileName  = basename($_SERVER['PHP_SELF']);
@@ -70,8 +75,8 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                         ON p.kPlugin = pam.kPlugin
                     WHERE p.nStatus = :state
                     ORDER BY p.nPrio, p.cName',
-                ['state' => \Plugin\State::ACTIVATED],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ['state' => State::ACTIVATED],
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
             foreach ($pluginLinks as $pluginLink) {

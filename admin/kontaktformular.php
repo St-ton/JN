@@ -4,12 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';
@@ -121,7 +124,7 @@ if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
 if ($step === 'uebersicht') {
     $neuerBetreffs = Shop::Container()->getDB()->query(
         'SELECT * FROM tkontaktbetreff ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $nCount        = count($neuerBetreffs);
     for ($i = 0; $i < $nCount; $i++) {
@@ -169,7 +172,7 @@ if ($step === 'betreff') {
 
     $kundengruppen = Shop::Container()->getDB()->query(
         'SELECT * FROM tkundengruppe ORDER BY cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $smarty->assign('Betreff', $neuerBetreff)
            ->assign('kundengruppen', $kundengruppen)

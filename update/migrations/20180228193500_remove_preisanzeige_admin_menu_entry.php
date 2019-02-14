@@ -6,6 +6,9 @@
  * @created Wed, 28 Feb 2018 19:35:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,14 +25,14 @@
  */
 class Migration_20180228193500 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Remove preisanzeige admin menu entry';
 
     public function up()
     {
         $this->execute("DELETE FROM tadminmenu WHERE cURL = 'preisanzeige.php'");
         $this->execute("DELETE FROM tadminrecht WHERE cRecht = 'DISPLAY_PRICECHART_VIEW'");
-        $this->execute("DELETE FROM teinstellungen WHERE kEinstellungenSektion = 118");
+        $this->execute('DELETE FROM teinstellungen WHERE kEinstellungenSektion = 118');
     }
 
     public function down()

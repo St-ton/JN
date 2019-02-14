@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Shop;
 
 /**
  * Trait PortletHtml
- * @package OPC
+ * @package JTL\OPC
  */
 trait PortletHtml
 {
@@ -61,7 +63,7 @@ trait PortletHtml
             return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
         }
 
-        return PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
+        return \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
     }
 
     /**
@@ -84,8 +86,7 @@ trait PortletHtml
      */
     final protected function getFinalHtmlFromTpl($instance): string
     {
-
-        return \Shop::Smarty()
+        return Shop::Smarty()
             ->assign('portlet', $this)
             ->assign('instance', $instance)
             ->fetch($this->getTemplatePath() . 'final.tpl');
@@ -98,7 +99,7 @@ trait PortletHtml
      */
     final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
-        return \Shop::Smarty()
+        return Shop::Smarty()
             ->assign('portlet', $this)
             ->assign('instance', $instance)
             ->fetch($this->getTemplatePath() . 'configpanel.tpl');
@@ -113,7 +114,7 @@ trait PortletHtml
      */
     final protected function getConfigPanelSnippet(PortletInstance $instance, $id, $extraAssigns = []): string
     {
-        $smarty = \Shop::Smarty();
+        $smarty = Shop::Smarty();
 
         foreach ($extraAssigns as $name => $val) {
             $smarty->assign($name, $val);
@@ -321,7 +322,7 @@ trait PortletHtml
                 break;
             case 'image':
                 $res .= $this->getConfigPanelSnippet($instance, 'image', [
-                    'previewImgUrl' => empty($prop) ? \Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
+                    'previewImgUrl' => empty($prop) ? Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
@@ -374,7 +375,7 @@ trait PortletHtml
                 break;
             case 'video':
                 $res .= $this->getConfigPanelSnippet($instance, 'video', [
-                    'previewVidUrl' => empty($prop) ? \Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
+                    'previewVidUrl' => empty($prop) ? Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
@@ -436,6 +437,6 @@ trait PortletHtml
      */
     final protected function getDefaultIconSvgUrl(): string
     {
-        return \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
+        return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
     }
 }

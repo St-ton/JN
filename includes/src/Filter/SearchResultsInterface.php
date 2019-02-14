@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use Filter\Pagination\Info;
+use JTL\Filter\Pagination\Info;
+use JTL\Catalog\Category\Kategorie;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Interface SearchResultsInterface
- * @package Filter
+ * @package JTL\Filter
  */
 interface SearchResultsInterface
 {
@@ -43,12 +44,12 @@ interface SearchResultsInterface
     public function setProductKeys(Collection $keys): SearchResultsInterface;
 
     /**
-     * @return \Tightenco\Collect\Support\Collection()
+     * @return Collection
      */
     public function getProducts(): Collection;
 
     /**
-     * @param \Tightenco\Collect\Support\Collection() $products
+     * @param Collection $products
      * @return $this
      */
     public function setProducts($products): SearchResultsInterface;
@@ -301,9 +302,9 @@ interface SearchResultsInterface
     public function getAllFilterOptions(): array;
 
     /**
-     * @param ProductFilter   $productFilter
-     * @param null|\Kategorie $currentCategory
-     * @param bool            $selectionWizard
+     * @param ProductFilter  $productFilter
+     * @param null|Kategorie $currentCategory
+     * @param bool           $selectionWizard
      * @return $this
      */
     public function setFilterOptions(

@@ -4,11 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\DB\ReturnType;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\Visitor;
 
 /**
  * Class VisitorsOnline
- * @package Widgets
+ * @package JTL\Widgets
  */
 class VisitorsOnline extends AbstractWidget
 {
@@ -17,7 +22,7 @@ class VisitorsOnline extends AbstractWidget
      */
     public function init()
     {
-        \Visitor::archive();
+        Visitor::archive();
     }
 
     /**
@@ -55,13 +60,13 @@ class VisitorsOnline extends AbstractWidget
                     ON `tbesucher`.`kKunde` = `tkunde`.`kKunde`
             WHERE `tbesucher`.`kBesucherBot` = 0
                 AND `tbesucher`.`kKunde` = 0',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        $cryptoService = \Shop::Container()->getCryptoService();
+        $cryptoService = Shop::Container()->getCryptoService();
         foreach ($visitors as $visitor) {
             $visitor->cNachname = \trim($cryptoService->decryptXTEA($visitor->cNachname ?? ''));
             if ($visitor->kBestellung > 0) {
-                $visitor->fGesamtsumme = \Preise::getLocalizedPriceString($visitor->fGesamtsumme);
+                $visitor->fGesamtsumme = Preise::getLocalizedPriceString($visitor->fGesamtsumme);
             }
         }
 

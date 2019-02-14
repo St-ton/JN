@@ -4,6 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Template;
+
 /**
  * @param string $cOrdner
  * @param string $eTyp

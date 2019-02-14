@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace dbeS;
+namespace JTL\dbeS;
 
 /**
  * Class CronjobHistory
- * @package dbeS
+ * @package JTL\dbeS
  */
 class CronjobHistory
 {

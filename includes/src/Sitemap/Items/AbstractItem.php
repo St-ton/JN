@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
 
 use function Functional\first;
 
 /**
  * Class AbstractItem
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 abstract class AbstractItem implements ItemInterface
 {

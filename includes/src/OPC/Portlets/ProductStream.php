@@ -4,19 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use Filter\Config;
-use Filter\ProductFilter;
-use Filter\Type;
-use OPC\PortletInstance;
+use JTL\Catalog\Product\Artikel;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\Config;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\Type;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
+use JTL\Shop;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class ProductStream
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class ProductStream extends \OPC\Portlet
+class ProductStream extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -113,12 +117,12 @@ class ProductStream extends \OPC\Portlet
         $enabledFilters = $instance->getProperty('filters');
         $productFilter  = new ProductFilter(
             Config::getDefault(),
-            \Shop::Container()->getDB(),
-            \Shop::Container()->getCache()
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache()
         );
 
         foreach ($enabledFilters as $enabledFilter) {
-            /** @var \Filter\AbstractFilter $newFilter * */
+            /** @var AbstractFilter $newFilter * */
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND);
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
@@ -129,14 +133,14 @@ class ProductStream extends \OPC\Portlet
 
     /**
      * @param PortletInstance $instance
-     * @return \Artikel[]
+     * @return Artikel[]
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {
         $products = [];
-        $options  = \Artikel::getDefaultOptions();
+        $options  = Artikel::getDefaultOptions();
         foreach ($this->getFilteredProductIds($instance) as $kArtikel) {
-            $product = new \Artikel();
+            $product = new Artikel();
             $product->fuelleArtikel($kArtikel, $options);
             $products[] = $product;
         }

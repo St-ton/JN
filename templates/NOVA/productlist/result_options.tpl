@@ -61,7 +61,7 @@
                         {if count($filter->getFilterCollection()) > 0}
                             {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                 {foreach $filter->getOptions() as $subFilter}
-                                    {if $subFilter->getVisibility() !== \Filter\Visibility::SHOW_NEVER && $subFilter->getVisibility() !== \Filter\Visibility::SHOW_BOX}
+                                    {if $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX}
                                         {dropdown text="{$subFilter->getFrontendName()}" variant="light" class="btn-group mb-2 mr-2"}
                                             {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
                                         {/dropdown}
@@ -70,16 +70,16 @@
                             {/block}
                         {else}
                             {block name='productlist-result-options-'|cat:$filter->getNiceName()}
-                                {if $filter->getInputType() === \Filter\InputType::SELECT}
+                                {if $filter->getInputType() === \JTL\Filter\InputType::SELECT}
                                     {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
                                     {assign var=innerClass value='dropdown-menu'}
                                     {assign var=itemClass value=''}
                                     {dropdown class="{$outerClass}" text="{$filter->getFrontendName()}" variant="light" class="btn-group mb-2 mr-2"}
-                                        {if $filter->getInputType() === \Filter\InputType::SELECT}
+                                        {if $filter->getInputType() === \JTL\Filter\InputType::SELECT}
                                             {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
                                         {/if}
                                     {/dropdown}
-                                {elseif $filter->getInputType() === \Filter\InputType::BUTTON}
+                                {elseif $filter->getInputType() === \JTL\Filter\InputType::BUTTON}
                                     {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
                                     {assign var=innerClass value='no-dropdown'}
                                     {assign var=itemClass value='btn btn-light'}

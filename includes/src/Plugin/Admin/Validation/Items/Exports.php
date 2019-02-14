@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Exports
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Exports extends AbstractItem
 {
@@ -21,17 +21,17 @@ class Exports extends AbstractItem
     {
         $node = $this->getInstallNode();
         $dir  = $this->getDir();
-        if (!isset($node['ExportFormat']) || !\is_array($node['ExportFormat'])) {
+        if (!isset($node['Exportformat']) || !\is_array($node['Exportformat'])) {
             return InstallCode::OK;
         }
-        if (!isset($node['ExportFormat'][0]['Format'])
-            || !\is_array($node['ExportFormat'][0]['Format'])
-            || \count($node['ExportFormat'][0]['Format']) === 0
+        if (!isset($node['Exportformat'][0]['Format'])
+            || !\is_array($node['Exportformat'][0]['Format'])
+            || \count($node['Exportformat'][0]['Format']) === 0
         ) {
             return InstallCode::MISSING_FORMATS;
         }
         $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT;
-        foreach ($node['ExportFormat'][0]['Format'] as $i => $export) {
+        foreach ($node['Exportformat'][0]['Format'] as $i => $export) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {

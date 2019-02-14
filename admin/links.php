@@ -4,8 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\PlausiCMS;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
+use JTL\Link\Link;
+use JTL\Link\LinkInterface;
+use JTL\Link\Admin\LinkAdmin;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -13,7 +20,7 @@ $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $hinweis            = '';
 $fehler             = '';
 $step               = 'uebersicht';
@@ -23,10 +30,10 @@ $clearCache         = false;
 $continue           = true;
 $db                 = Shop::Container()->getDB();
 $cache              = Shop::Container()->getCache();
-$linkAdmin          = new \Link\Admin\LinkAdmin($db, $cache);
+$linkAdmin          = new LinkAdmin($db, $cache);
 if (isset($_POST['addlink']) && (int)$_POST['addlink'] > 0) {
     $step = 'neuer Link';
-    $link = new \Link\Link($db);
+    $link = new Link($db);
     $link->setLinkGroupID((int)$_POST['addlink']);
     $link->setLinkGroups([(int)$_POST['addlink']]);
 }
@@ -151,7 +158,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
         }
     } else {
         $step = 'neuer Link';
-        $link = new \Link\Link($db);
+        $link = new Link($db);
         $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
         $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
         $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
@@ -175,7 +182,7 @@ if ($continue
     && Form::validateToken()
 ) {
     $step = 'neuer Link';
-    $link = (new \Link\Link($db))->load(Request::verifyGPCDataInt('kLink'));
+    $link = (new Link($db))->load(Request::verifyGPCDataInt('kLink'));
     $smarty->assign('Link', $link);
     // Bild loeschen?
     if (Request::verifyGPCDataInt('delpic') === 1) {
@@ -185,7 +192,7 @@ if ($continue
     if (is_dir($cUploadVerzeichnis . $link->getID())) {
         $DirHandle = opendir($cUploadVerzeichnis . $link->getID());
         $shopURL   = Shop::getURL() . '/';
-        while (false !== ($Datei = readdir($DirHandle))) {
+        while (($Datei = readdir($DirHandle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
                 $nImageGroesse_arr = calcRatio(
                     PFAD_ROOT . '/' . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $Datei,
@@ -255,13 +262,13 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
             (int)$_POST['kLinkgruppeAlt'],
             (int)$_POST['kLinkgruppe']
         );
-        if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
+        if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
             $fehler .= __('errorLinkMoveDuplicate');
-        } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_NOT_FOUND) {
+        } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
             $fehler .= __('errorLinkKeyNotFound');
-        } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
+        } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
             $fehler .= __('errorLinkGroupKeyNotFound');
-        } elseif ($res instanceof \Link\LinkInterface) {
+        } elseif ($res instanceof LinkInterface) {
             $hinweis   .= sprintf(__('successLinkMove'), $link->getDisplayName());
             $step       = 'uebersicht';
             $clearCache = true;
@@ -278,13 +285,13 @@ if (isset($_POST['kopiere_in_linkgruppe'])
     && Form::validateToken()
 ) {
     $res = $linkAdmin->copyLinkToLinkGroup((int)$_POST['kLink'], (int)$_POST['kLinkgruppe']);
-    if ($res === \Link\Admin\LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
+    if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
         $fehler .= __('errorLinkCopyDuplicate');
-    } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_NOT_FOUND) {
+    } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
         $fehler .= __('errorLinkKeyNotFound');
-    } elseif ($res === \Link\Admin\LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
+    } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
         $fehler .= __('errorLinkGroupKeyNotFound');
-    } elseif ($res instanceof \Link\LinkInterface) {
+    } elseif ($res instanceof LinkInterface) {
         $hinweis   .= sprintf(__('successLinkCopy'), $link->getDisplayName());
         $step       = 'uebersicht';
         $clearCache = true;
@@ -315,7 +322,7 @@ if ($step === 'uebersicht') {
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }
 if ($step === 'neuer Link') {
-    $kundengruppen = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $kundengruppen = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
     $smarty->assign('Link', $link)
            ->assign('oSpezialseite_arr', holeSpezialseiten())
            ->assign('sprachen', Sprache::getAllLanguages())

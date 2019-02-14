@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
-use Mapper\JobTypeToJob;
+use JTL\DB\DbInterface;
+use JTL\Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class JobFactory
- * @package Cron
+ * @package JTL\Cron
  */
 class JobFactory
 {

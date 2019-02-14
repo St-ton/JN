@@ -4,16 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Shop;
 
 /**
  * Class LinkGroup
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class LinkGroup extends AbstractBox
 {
     /**
-     * @var LinkGroup|null
+     * @var \JTL\Link\LinkGroup|null
      */
     private $linkGroup;
 
@@ -40,7 +42,7 @@ final class LinkGroup extends AbstractBox
     {
         parent::map($boxData);
         $this->setShow(false);
-        $this->linkGroup = \Shop::Container()->getLinkService()->getLinkGroupByID($this->getCustomID());
+        $this->linkGroup = Shop::Container()->getLinkService()->getLinkGroupByID($this->getCustomID());
         if ($this->linkGroup !== null) {
             $this->setShow($this->linkGroup->getLinks()->count() > 0);
             $this->setLinkGroupTemplate($this->linkGroup->getTemplate());
@@ -50,9 +52,9 @@ final class LinkGroup extends AbstractBox
     }
 
     /**
-     * @return LinkGroup|null
+     * @return \JTL\Link\LinkGroup|null
      */
-    public function getLinkGroup(): ?LinkGroup
+    public function getLinkGroup(): ?\JTL\Link\LinkGroup
     {
         return $this->linkGroup;
     }

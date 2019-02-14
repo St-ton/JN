@@ -4,10 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\AdminFavorite;
-use Backend\Notification;
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Backend\AdminFavorite;
+use JTL\Backend\Notification;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Catalog\Currency;
+use JTL\IO\IOError;
+use JTL\IO\IOResponse;
+use JTL\Kampagne;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\XMLParser;
 
 /**
  * @param int|array $configSectionID
@@ -15,7 +23,7 @@ use Helpers\Request;
  */
 function getAdminSectionSettings($configSectionID)
 {
-    \Shop::Container()->getGetText()->loadConfigLocales();
+    Shop::Container()->getGetText()->loadConfigLocales();
 
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
@@ -24,7 +32,7 @@ function getAdminSectionSettings($configSectionID)
                 FROM teinstellungenconf
                 WHERE kEinstellungenConf IN (' . implode(',', $configSectionID) . ')
                 ORDER BY nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     } else {
         $confData = $db->selectAll(
@@ -42,7 +50,7 @@ function getAdminSectionSettings($configSectionID)
         $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
         $conf->nModul                = (int)$conf->nModul;
 
-        \Shop::Container()->getGetText()->localizeConfig($conf);
+        Shop::Container()->getGetText()->localizeConfig($conf);
 
         if ($conf->cInputTyp === 'listbox') {
             $conf->ConfWerte = $db->selectAll(
@@ -57,7 +65,7 @@ function getAdminSectionSettings($configSectionID)
                 'SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
             $conf->ConfWerte = $db->selectAll(
@@ -68,7 +76,7 @@ function getAdminSectionSettings($configSectionID)
                 'nSort'
             );
 
-            \Shop::Container()->getGetText()->localizeConfigValues($conf, $conf->ConfWerte);
+            Shop::Container()->getGetText()->localizeConfigValues($conf, $conf->ConfWerte);
         }
 
         if ($conf->cInputTyp === 'listbox') {
@@ -116,7 +124,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
             FROM teinstellungenconf
             WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
             ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($confData) === 0) {
         return __('errorConfigSave');
@@ -278,7 +286,7 @@ function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen 
             ' . $cAktivSQL . '
             ' . $cInternSQL . '
             ORDER BY kKampagne',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oKampagneTMP_arr as $oKampagneTMP) {
         $oKampagne = new Kampagne($oKampagneTMP->kKampagne);
@@ -299,7 +307,7 @@ function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen 
 function getArrangedArray($oXML_arr, int $nLevel = 1)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $parser = new \JTL\XMLParser();
+    $parser = new XMLParser();
     return $parser->getArrangedArray($oXML_arr, $nLevel);
 }
 
@@ -360,9 +368,9 @@ function setzeSpracheTrustedShops()
     // setze explizit ausgewählte Sprache
     if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1 && mb_strlen($_POST['cISOSprache']) > 0) {
         $_SESSION['TrustedShops']->oSprache->cISOSprache  =
-            StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']));
+            Text::htmlentities(Text::filterXSS($_POST['cISOSprache']));
         $_SESSION['TrustedShops']->oSprache->cNameSprache =
-            $cISOSprache_arr[StringHandler::htmlentities(StringHandler::filterXSS($_POST['cISOSprache']))];
+            $cISOSprache_arr[Text::htmlentities(Text::filterXSS($_POST['cISOSprache']))];
     }
 }
 
@@ -414,7 +422,7 @@ function ermittleDatumWoche(string $cDatum)
     if (mb_strlen($cDatum) < 0) {
         return [];
     }
-    list($cJahr, $cMonat, $cTag) = explode('-', $cDatum);
+    [$cJahr, $cMonat, $cTag] = explode('-', $cDatum);
     // So = 0, SA = 6
     $nWochentag = (int)date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr));
     // Woche soll Montag starten - also So = 6, Mo = 0
@@ -467,7 +475,7 @@ function getJTLVersionDB(bool $bDate = false)
     $ret         = 0;
     $versionData = Shop::Container()->getDB()->query(
         'SELECT nVersion, dAktualisiert FROM tversion',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     if (isset($versionData->nVersion)) {
         $ret = $versionData->nVersion;
@@ -605,14 +613,14 @@ function getCsvDelimiter(string $filename)
 }
 
 /**
- * @return \Smarty\JTLSmarty
+ * @return \JTL\Smarty\JTLSmarty
  */
 function getFrontendSmarty()
 {
     static $frontendSmarty = null;
 
     if ($frontendSmarty === null) {
-        $frontendSmarty = new \Smarty\JTLSmarty();
+        $frontendSmarty = new \JTL\Smarty\JTLSmarty();
     }
 
     return $frontendSmarty;

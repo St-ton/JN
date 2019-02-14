@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Shop;
+use JTL\GeneralDataProtection\IpAnonymizer;
+use JTL\Shop;
 
 /**
  * Class Request
- * @package Helpers
+ * @package JTL\Helpers
  * @since 5.0.0
  */
 class Request
@@ -85,7 +86,7 @@ class Request
 
         // if the given IP is not valid, we return placeholders (note: placeholders are the "legacy way")
         if (!\filter_var($ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 | \FILTER_FLAG_IPV6)) {
-            return (new \GeneralDataProtection\IpAnonymizer($ip))->getPlaceholder();
+            return (new IpAnonymizer($ip))->getPlaceholder();
         }
 
         return $ip;

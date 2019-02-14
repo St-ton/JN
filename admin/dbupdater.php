@@ -4,11 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Update\MigrationManager;
+use JTL\Shop;
+use JTL\Template;
+use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 
 /**
- * @global \Smarty\JTLSmarty     $smarty
- * @global \Backend\AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -16,7 +20,7 @@ $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $updater  = new Updater();
 $template = Template::getInstance();
-$feSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::FRONTEND);
+$feSmarty = new \JTL\Smarty\JTLSmarty(true, \JTL\Smarty\ContextType::FRONTEND);
 $feSmarty->clearCompiledTemplate();
 $smarty->clearCompiledTemplate();
 Shop::Container()->getCache()->flushAll();

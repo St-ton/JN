@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Redirect;
+use JTL\Shop;
+
 /**
  * Update and return the availability of a redirect
  *

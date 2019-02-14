@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\SchemaRenderers;
+namespace JTL\Sitemap\SchemaRenderers;
 
 /**
  * Class DefaultSchemaRenderer
- * @package Sitemap\SchemaRenderers
+ * @package JTL\Sitemap\SchemaRenderers
  */
 final class DefaultSchemaRenderer extends AbstractSchemaRenderer
 {

@@ -8,7 +8,7 @@ $('body').on('click', '.option li', function (e) {
 });
 
 // prevent multiple form submit on client side
-$("body").on("submit", "form", function() {
+$('.submit_once').closest('form').on('submit', function() {
     $(this).on('submit', function() {
         return false;
     });

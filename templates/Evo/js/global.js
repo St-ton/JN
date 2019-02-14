@@ -7,6 +7,14 @@ $('body').on('click', '.option li', function (e) {
     $('#' + i + ' .selected').attr('id', o).text(v);
 });
 
+// prevent multiple form submit on client side
+$('.submit_once').closest('form').on('submit', function() {
+    $(this).on('submit', function() {
+        return false;
+    });
+    return true;
+});
+
 /**
  *  Format file size
  */

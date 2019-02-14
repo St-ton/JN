@@ -27,12 +27,17 @@
                 <hr>
                 <div class="form-group">
                     <select name="nSterne" id="stars" class="form-control" required>
-                        <option value="" disabled>{lang key='starPlural' section='product rating'}</option>
-                        <option value="5">5 {lang key='starPlural' section='product rating'}</option>
-                        <option value="4">4 {lang key='starPlural' section='product rating'}</option>
-                        <option value="3">3 {lang key='starPlural' section='product rating'}</option>
-                        <option value="2">2 {lang key='starPlural' section='product rating'}</option>
-                        <option value="1">1 {lang key='starSingular' section='product rating'}</option>
+                        {$ratings = [5,4,3,2,1]}
+                        {foreach $ratings as $rating}
+                            <option value="{$rating}"{if isset($oBewertung->nSterne) && (int)$oBewertung->nSterne === $rating} selected{/if}>
+                                {$rating}
+                                {if (int)$rating === 1}
+                                    {lang key='starSingular' section='product rating'}
+                                {else}
+                                    {lang key='starPlural' section='product rating'}
+                                {/if}
+                            </option>
+                        {/foreach}
                     </select>
                 </div>
                 <div class="form-group">

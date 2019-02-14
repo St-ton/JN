@@ -210,7 +210,7 @@
                         <div class="mb-7">
                             {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
                         </div>
-                        {button type="submit" variant="primary" id="complete-order-button" class="btn submit float-right ml-3"}
+                        {button type="submit" variant="primary" id="complete-order-button" class="btn submit submit_once float-right ml-3"}
                             {lang key='orderLiableToPay' section='checkout'}
                         {/button}
                         {link href="{get_static_route id='warenkorb.php'}" class="btn btn-light float-right"}

@@ -6,6 +6,9 @@
  * @created Wed, 25 Jul 2018 09:02:28 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180725090228 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'New table tgratisgeschenk';
 
     public function up()
@@ -41,6 +44,6 @@ class Migration_20180725090228 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DROP TABLE `tgratisgeschenk`");
+        $this->execute('DROP TABLE `tgratisgeschenk`');
     }
 }

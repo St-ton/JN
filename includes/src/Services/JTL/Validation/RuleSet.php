@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 use Eloquent\Pathogen\Exception\InvalidPathStateException;
 use Eloquent\Pathogen\Path;
-use Services\JTL\Validation\Rules;
+use JTL\Services\JTL\Validation\Rules;
 
 /**
  * Class RuleSet
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  *
  * RuleSet is a collection of rules. The rules are applied in the order, they are added to the RuleSet.
  * A Rule can:

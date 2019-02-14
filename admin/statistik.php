@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Pagination\Filter;
-use Pagination\Pagination;
+use JTL\Helpers\Request;
+use JTL\Pagination\Filter;
+use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
@@ -33,7 +33,7 @@ switch ($statsType) {
         $oAccount->redirectOnFailure();
         break;
 }
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $nAnzeigeIntervall = 0;
@@ -56,9 +56,9 @@ if ($statsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
     || $statsType === STATS_ADMIN_TYPE_SUCHMASCHINE
     || $statsType === STATS_ADMIN_TYPE_EINSTIEGSSEITEN
 ) {
-    $smarty->assign('piechart', preparePieChartStats($stats, $statsTypeName, $axisNames));
+    $smarty->assign('Piechart', preparePieChartStats($stats, $statsTypeName, $axisNames));
 } else {
-    $smarty->assign('linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames));
+    $smarty->assign('Linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames));
     $member_arr = gibMappingDaten($statsType);
     $smarty->assign('ylabel', $member_arr['nCount']);
 }

@@ -4,19 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use Plugin\Data\Config;
-use Plugin\Data\Hook;
-use Plugin\Data\Links;
-use Plugin\Data\Paths;
-use Plugin\Data\Widget;
+use InvalidArgumentException;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Data\Hook;
+use JTL\Plugin\Data\Links;
+use JTL\Plugin\Data\Paths;
+use JTL\Plugin\Data\Widget;
+use JTL\Shop;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class LegacyPluginLoader
- * @package Plugin
+ * @package JTL\Plugin
  */
 class LegacyPluginLoader extends AbstractLoader
 {
@@ -57,10 +61,10 @@ class LegacyPluginLoader extends AbstractLoader
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
-        if (($languageID = $languageID ?? \Shop::getLanguageID()) === 0) {
-            $languageID = \Shop::Lang()::getDefaultLanguage()->kSprache;
+        if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
+            $languageID = Shop::Lang()::getDefaultLanguage()->kSprache;
         }
-        $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
+        $languageCode  = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($this->plugin === null) {
             $this->plugin = new LegacyPlugin();
@@ -76,7 +80,7 @@ class LegacyPluginLoader extends AbstractLoader
         }
         $obj = $this->db->select('tplugin', 'kPlugin', $id);
         if ($obj === null) {
-            throw new \InvalidArgumentException('Cannot find plugin with ID ' . $id);
+            throw new InvalidArgumentException('Cannot find plugin with ID ' . $id);
         }
 
         return $this->loadFromObject($obj, $languageCode);
@@ -106,8 +110,8 @@ class LegacyPluginLoader extends AbstractLoader
     public function loadFromObject($obj, string $currentLanguageCode): LegacyPlugin
     {
         $currentLanguageCode = $currentLanguageCode
-            ?? \Shop::getLanguageCode()
-            ?? \Sprache::getDefaultLanguage()->cISO;
+            ?? Shop::getLanguageCode()
+            ?? Sprache::getDefaultLanguage()->cISO;
 
         $this->plugin->setID((int)$obj->kPlugin);
         $this->plugin->setPluginID($obj->cPluginID);
@@ -215,13 +219,13 @@ class LegacyPluginLoader extends AbstractLoader
         foreach ($config->getOptions()->toArray() as $option) {
             $assocCompat[$option->valueID] = $option->value;
 
-            $configCompatItem          = new \stdClass();
+            $configCompatItem          = new stdClass();
             $configCompatItem->kPlugin = $id;
             $configCompatItem->cName   = $option->valueID;
             $configCompatItem->cWert   = $option->value;
             $configCompat[]            = $configCompatItem;
 
-            $confCompatItem                                    = new \stdClass();
+            $confCompatItem                                    = new stdClass();
             $confCompatItem->kPluginEinstellungenConf          = $option->id;
             $confCompatItem->kPlugin                           = $id;
             $confCompatItem->kPluginAdminMenu                  = $option->menuID;

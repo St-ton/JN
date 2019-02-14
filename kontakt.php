@@ -4,8 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Alert;
+use JTL\CheckBox;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
@@ -26,14 +31,14 @@ if (Form::checkSubject()) {
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
         $fehlendeAngaben = Form::getMissingContactFormData();
-        $kKundengruppe   = \Session\Frontend::getCustomerGroup()->getID();
+        $kKundengruppe   = Frontend::getCustomerGroup()->getID();
         $oCheckBox       = new CheckBox();
         $fehlendeAngaben = array_merge(
             $fehlendeAngaben,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
         );
         $nReturnValue    = Form::eingabenKorrekt($fehlendeAngaben);
-        $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
+        $smarty->assign('cPost_arr', Text::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
         if ($nReturnValue) {
@@ -66,10 +71,10 @@ if (Form::checkSubject()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0 
-            OR FIND_IN_SET('" . \Session\Frontend::getCustomerGroup()->getID()
+            OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
         . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
             ORDER BY nSort",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($subjects as $subject) {
         if ($subject->kKontaktBetreff > 0) {

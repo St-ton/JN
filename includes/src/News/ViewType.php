@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class ViewType
- * @package News
+ * @package JTL\News
  */
 class ViewType extends Enum
 {

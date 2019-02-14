@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache\Methods;
+namespace JTL\Cache\Methods;
 
-use Cache\ICachingMethod;
-use Cache\JTLCacheTrait;
+use JTL\Cache\ICachingMethod;
+use JTL\Cache\JTLCacheTrait;
 
 /**
  * Class cache_apc
  *
  * implements the APC Opcode Cache
- * @package Cache\Methods
+ * @package JTL\Cache\Methods
  */
 class cache_apc implements ICachingMethod
 {

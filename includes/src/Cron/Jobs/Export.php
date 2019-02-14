@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
+use JTL\Exportformat;
+use stdClass;
 
 /**
  * Class Export
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class Export extends Job
 {
@@ -38,7 +40,7 @@ class Export extends Job
         if ($queueEntry->jobQueueID > 0) {
             $this->db->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$queueEntry->jobQueueID);
 
-            $ins                   = new \stdClass();
+            $ins                   = new stdClass();
             $ins->kJobQueue        = $queueEntry->jobQueueID;
             $ins->kExportformat    = $queueEntry->foreignKeyID;
             $ins->nLimitN          = $queueEntry->taskLimit;
@@ -61,7 +63,7 @@ class Export extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $ef = new \Exportformat($this->getForeignKeyID(), $this->db);
+        $ef = new Exportformat($this->getForeignKeyID(), $this->db);
         $ef->setLogger($this->logger);
         $finished = $ef->startExport($queueEntry, false, false, true);
         $this->updateExportformatQueueBearbeitet($queueEntry);

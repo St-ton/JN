@@ -6,12 +6,15 @@
  * @created Fri, 22 Jun 2018 12:29:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180622122900
  */
 class Migration_20180622122900 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Remove EOS payment method';
 
     public function up()

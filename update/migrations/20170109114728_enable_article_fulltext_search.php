@@ -6,6 +6,9 @@
  * @created Mon, 09 Jan 2017 11:47:28 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170109114728 extends Migration implements IMigration
 {
-    protected $author = 'fp';
+    protected $author      = 'fp';
     protected $description = 'Enable article fulltext search';
 
     public function up()

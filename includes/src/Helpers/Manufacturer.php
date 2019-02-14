@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\ReturnType;
-use Hersteller;
-use Kundengruppe;
-use Shop;
-use Sprache;
+use JTL\DB\ReturnType;
+use JTL\Catalog\Hersteller;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class Manufacturer
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Manufacturer
 {

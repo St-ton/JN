@@ -6,6 +6,9 @@
  * @created Tue, 07 Jun 2016 14:01:40 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *

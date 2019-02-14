@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
 
 /**
  * Class AbstractSortingOption
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 abstract class AbstractSortingOption extends Option implements SortingOptionInterface
 {

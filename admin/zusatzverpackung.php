@@ -4,16 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
@@ -69,7 +72,7 @@ if ($action === 'save') {
                     LEFT JOIN tverpackungsprache 
                         ON tverpackungsprache.kVerpackung = tverpackung.kVerpackung
                     WHERE tverpackung.kVerpackung = ' . $kVerpackung,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             $oVerpackung->kVerpackung = $kVerpackung;
             Shop::Container()->getDB()->insert('tverpackung', $oVerpackung);
@@ -142,17 +145,17 @@ if ($action === 'save') {
 
 $oKundengruppe_arr = Shop::Container()->getDB()->query(
     'SELECT kKundengruppe, cName FROM tkundengruppe',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 $oSteuerklasse_arr = Shop::Container()->getDB()->query(
     'SELECT * FROM tsteuerklasse',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 $oVerpackungCount = Shop::Container()->getDB()->query(
     'SELECT count(kVerpackung) AS count
             FROM tverpackung',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $itemsPerPage     = 10;
 $oPagination      = (new Pagination('standard'))
@@ -163,7 +166,7 @@ $oVerpackung_arr  = Shop::Container()->getDB()->query(
     'SELECT * FROM tverpackung 
        ORDER BY cName' .
     ($oPagination->getLimitSQL() !== '' ? ' LIMIT ' . $oPagination->getLimitSQL() : ''),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 foreach ($oVerpackung_arr as $i => $oVerpackung) {
@@ -197,7 +200,7 @@ function gibKundengruppeObj($cKundengruppe)
         // Kundengruppen holen
         $oKundengruppe_arr = Shop::Container()->getDB()->query(
             'SELECT kKundengruppe, cName FROM tkundengruppe',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $kKundengruppe_arr = explode(';', $cKundengruppe);
         if (!in_array('-1', $kKundengruppe_arr)) {

@@ -4,7 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Update\IMigration;
+use JTL\IO\IOError;
+use JTL\IO\IOFile;
+use JTL\Update\MigrationManager;
+use JTL\Shop;
+use JTL\Template;
+use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
+use JTL\DB\ReturnType;
 
 /**
  * Stellt alle Werte die fuer das Update in der DB wichtig sind zurueck
@@ -14,7 +22,7 @@ use JTLShop\SemVer\Version;
 function resetteUpdateDB()
 {
     $db      = Shop::Container()->getDB();
-    $columns = $db->query('SHOW COLUMNS FROM tversion', \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $columns = $db->query('SHOW COLUMNS FROM tversion', ReturnType::ARRAY_OF_OBJECTS);
     if (is_array($columns) && count($columns) > 0) {
         $colNames = [];
         foreach ($columns as $col) {
@@ -24,37 +32,37 @@ function resetteUpdateDB()
             if (!in_array('nZeileVon', $colNames, true)) {
                 $db->query(
                     'ALTER TABLE tversion ADD nZeileVon INT UNSIGNED NOT NULL AFTER nVersion',
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
             }
             if (!in_array('nZeileBis', $colNames, true)) {
                 $db->query(
                     'ALTER TABLE tversion ADD nZeileBis INT UNSIGNED NOT NULL AFTER nZeileVon',
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
             }
             if (!in_array('nInArbeit', $colNames, true)) {
                 $db->query(
                     'ALTER TABLE tversion ADD nInArbeit TINYINT NOT NULL AFTER nZeileBis',
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
             }
             if (!in_array('nFehler', $colNames, true)) {
                 $db->query(
                     'ALTER TABLE tversion ADD nFehler TINYINT UNSIGNED NOT NULL AFTER nInArbeit',
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
             }
             if (!in_array('nTyp', $colNames, true)) {
                 $db->query(
                     'ALTER TABLE tversion ADD nTyp TINYINT UNSIGNED NOT NULL AFTER nFehler',
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
             }
             if (!in_array('cFehlerSQL', $colNames, true)) {
                 $db->query(
                     'ALTER TABLE tversion ADD cFehlerSQL VARCHAR(255) NOT NULL AFTER nTyp',
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
             }
         }
@@ -66,7 +74,7 @@ function resetteUpdateDB()
                 nInArbeit = 0,
                 nTyp = 1,
                 cFehlerSQL = ''",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
     }
     loescheVerzeichnisUpdater(PFAD_ROOT . PFAD_COMPILEDIR);
@@ -137,7 +145,7 @@ function updateZeilenBis($cDatei)
         while ($cData = fgets($dir_handle)) {
             $nRow++;
         }
-        Shop::Container()->getDB()->query('UPDATE tversion SET nZeileBis = ' . $nRow, \DB\ReturnType::DEFAULT);
+        Shop::Container()->getDB()->query('UPDATE tversion SET nZeileBis = ' . $nRow, ReturnType::DEFAULT);
 
         if (!Shop::Container()->getDB()->getErrorCode()) {
             return true;
@@ -162,7 +170,7 @@ function updateFertig(int $nVersion)
             nTyp = 1,
             cFehlerSQL = '',
             dAktualisiert = NOW()",
-        \DB\ReturnType::DEFAULT
+        ReturnType::DEFAULT
     );
     Shop::Container()->getCache()->flushAll();
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'dbupdater.php?nErrorCode=100');

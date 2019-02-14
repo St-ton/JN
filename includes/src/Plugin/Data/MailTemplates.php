@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Data;
+namespace JTL\Plugin\Data;
 
 use function Functional\first;
 use function Functional\group;
@@ -12,7 +12,7 @@ use function Functional\reindex;
 
 /**
  * Class MailTemplates
- * @package Plugin\Data
+ * @package JTL\Plugin\Data
  */
 class MailTemplates
 {

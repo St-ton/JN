@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class LessParser
+ * @package JTL
  */
 class LessParser
 {
@@ -20,11 +23,11 @@ class LessParser
      */
     public function read($file): self
     {
-        $lines = file($file, FILE_SKIP_EMPTY_LINES);
+        $lines = \file($file, \FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
-            if (preg_match('/@([\d\w\-]+)\s*:\s*([^;]+)/', $line, $matches)) {
-                list(, $key, $value) = $matches;
-                $this->stack[$key]   = $value;
+            if (\preg_match('/@([\d\w\-]+)\s*:\s*([^;]+)/', $line, $matches)) {
+                [, $key, $value]   = $matches;
+                $this->stack[$key] = $value;
             }
         }
 
@@ -39,10 +42,10 @@ class LessParser
     {
         $content = '';
         foreach ($this->stack as $key => $value) {
-            $content .= "@{$key}: {$value};\r\n";
+            $content .= '@' . $key . ': ' . $value . ";\r\n";
         }
 
-        return file_put_contents($file, $content);
+        return \file_put_contents($file, $content);
     }
 
     /**
@@ -109,23 +112,23 @@ class LessParser
     {
         $matches = [];
 
-        switch (mb_convert_case($type, MB_CASE_LOWER)) {
+        switch (\mb_convert_case($type, \MB_CASE_LOWER)) {
             case 'color':
                 // rgb(255,255,255)
-                if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
+                if (\preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
                     return $this->rgb2html((int)$matches[2], (int)$matches[3], (int)$matches[4]);
                 } // #fff or #ffffff
-                if (preg_match('/#([\w\d]+)/', $value, $matches)) {
-                    return trim($matches[0]);
+                if (\preg_match('/#([\w\d]+)/', $value, $matches)) {
+                    return \trim($matches[0]);
                 }
                 break;
 
             case 'size':
                 // 1.2em 15% '12 px'
-                if (preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
+                if (\preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
                     $pair = [
                         'numeric' => (float)$matches[1],
-                        'unit'    => trim($matches[2])
+                        'unit'    => \trim($matches[2])
                     ];
 
                     return $pair['numeric'];
@@ -147,7 +150,7 @@ class LessParser
      */
     protected function rgb2html($r, $g, $b): string
     {
-        if (is_array($r) && count($r) === 3) {
+        if (\is_array($r) && \count($r) === 3) {
             [$r, $g, $b] = $r;
         }
 
@@ -155,13 +158,13 @@ class LessParser
         $g = (int)$g;
         $b = (int)$b;
 
-        $r = dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
-        $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
-        $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
+        $r = \dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
+        $g = \dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
+        $b = \dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color  = (mb_strlen($r) < 2 ? '0' : '') . $r;
-        $color .= (mb_strlen($g) < 2 ? '0' : '') . $g;
-        $color .= (mb_strlen($b) < 2 ? '0' : '') . $b;
+        $color  = (\mb_strlen($r) < 2 ? '0' : '') . $r;
+        $color .= (\mb_strlen($g) < 2 ? '0' : '') . $g;
+        $color .= (\mb_strlen($b) < 2 ? '0' : '') . $b;
 
         return '#' . $color;
     }

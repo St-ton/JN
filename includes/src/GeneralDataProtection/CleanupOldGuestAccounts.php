@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CleanupOldGuestAccounts
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * Remove guest accounts fetched by JTL Wawi and older than x days
  * (interval former "interval_delete_guest_accounts" = 365 days)
@@ -34,7 +35,7 @@ class CleanupOldGuestAccounts extends Method implements MethodInterface
      */
     private function cleanupCustomers(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             "DELETE FROM tkunde
             WHERE
                 nRegistriert = 0

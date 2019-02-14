@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class PlausiCMS
+ * @package JTL
  */
 class PlausiCMS extends Plausi
 {
@@ -16,18 +19,18 @@ class PlausiCMS extends Plausi
      */
     public function doPlausi($cType = null, bool $update = false): bool
     {
-        if (count($this->xPostVar_arr) === 0 || mb_strlen($cType) === 0) {
+        if (\count($this->xPostVar_arr) === 0 || \mb_strlen($cType) === 0) {
             return false;
         }
         switch ($cType) {
             case 'lnk':
                 // cName
-                if (!isset($this->xPostVar_arr['cName']) || mb_strlen($this->xPostVar_arr['cName']) === 0) {
+                if (!isset($this->xPostVar_arr['cName']) || \mb_strlen($this->xPostVar_arr['cName']) === 0) {
                     $this->xPlausiVar_arr['cName'] = 1;
                 }
                 // cKundengruppen
-                if (!is_array($this->xPostVar_arr['cKundengruppen'])
-                    || count($this->xPostVar_arr['cKundengruppen']) === 0
+                if (!\is_array($this->xPostVar_arr['cKundengruppen'])
+                    || \count($this->xPostVar_arr['cKundengruppen']) === 0
                 ) {
                     $this->xPlausiVar_arr['cKundengruppen'] = 1;
                 }
@@ -44,13 +47,13 @@ class PlausiCMS extends Plausi
 
             case 'grp':
                 // cName
-                if (!isset($this->xPostVar_arr['cName']) || mb_strlen($this->xPostVar_arr['cName']) === 0) {
+                if (!isset($this->xPostVar_arr['cName']) || \mb_strlen($this->xPostVar_arr['cName']) === 0) {
                     $this->xPlausiVar_arr['cName'] = 1;
                 }
 
                 // cTempaltename
                 if (!isset($this->xPostVar_arr['cTemplatename'])
-                    || mb_strlen($this->xPostVar_arr['cTemplatename']) === 0
+                    || \mb_strlen($this->xPostVar_arr['cTemplatename']) === 0
                 ) {
                     $this->xPlausiVar_arr['cTemplatename'] = 1;
                 }

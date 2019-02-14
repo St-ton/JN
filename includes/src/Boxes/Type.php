@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes;
+namespace JTL\Boxes;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Type
  *
- * @package Boxes
+ * @package JTL\Boxes
  * @method Type DEFAULT()
  * @method Type PLUGIN()
  * @method Type TEXT()

@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis    = '';
 $settingsIDs = [442, 443, 440, 439, 445, 446, 1460];
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -29,19 +32,19 @@ $oWunschlistePos     = Shop::Container()->getDB()->query(
                 ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
             GROUP BY twunschliste.kWunschliste
         ) AS tWunsch',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteArtikel = Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM twunschlistepos',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteFreunde = Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oPagiPos            = (new Pagination('pos'))
     ->setItemCount($oWunschlistePos->nAnzahl)
@@ -63,7 +66,7 @@ $sentWishLists       = Shop::Container()->getDB()->query(
             ON twunschliste.kKunde = tkunde.kKunde
         ORDER BY twunschlisteversand.dZeit DESC
         LIMIT " . $oPagiFreunde->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 foreach ($sentWishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -83,7 +86,7 @@ $wishLists = Shop::Container()->getDB()->query(
         GROUP BY twunschliste.kWunschliste
         ORDER BY twunschliste.dErstellt DESC
         LIMIT " . $oPagiPos->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 foreach ($wishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -98,7 +101,7 @@ $wishListPositions = Shop::Container()->getDB()->query(
         GROUP BY kArtikel
         ORDER BY Anzahl DESC
         LIMIT " . $oPagiArtikel->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))

@@ -6,6 +6,8 @@
 
 namespace Services\JTL\Validation;
 
+use JTL\Services\JTL\Validation\RuleSet;
+use JTL\Services\JTL\Validation\ValidationService;
 use PHPUnit\Framework\TestCase;
 
 /**

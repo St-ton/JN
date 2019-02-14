@@ -6,7 +6,7 @@
 
 require_once __DIR__ . '/Plugins.php';
 
-$plugins = new \Evo\Plugins();
+$plugins = new \Nova\Plugins();
 $scc     = new \scc\DefaultComponentRegistrator(new \scc\Renderer($smarty));
 $scc->registerComponents();
 

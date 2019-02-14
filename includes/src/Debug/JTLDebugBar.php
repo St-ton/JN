@@ -4,9 +4,8 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Debug;
+namespace JTL\Debug;
 
-use Debug\DataCollector\DummyTimeDataCollector;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\ExceptionsCollector;
 use DebugBar\DataCollector\MemoryCollector;
@@ -18,10 +17,11 @@ use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\DebugBar;
 use DebugBar\JavascriptRenderer;
+use JTL\Debug\DataCollector\DummyTimeDataCollector;
 
 /**
  * Class JTLDebugBar
- * @package Debug
+ * @package JTL\Debug
  */
 class JTLDebugBar extends DebugBar
 {

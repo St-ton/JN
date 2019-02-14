@@ -12,7 +12,7 @@
 function getSeo($cSeo)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\SeoHelper::getSeo($cSeo);
+    return \JTL\Helpers\Seo::getSeo($cSeo);
 }
 
 /**
@@ -23,7 +23,7 @@ function getSeo($cSeo)
 function checkSeo($cSeo)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\SeoHelper::checkSeo($cSeo);
+    return \JTL\Helpers\Seo::checkSeo($cSeo);
 }
 
 /**
@@ -34,7 +34,7 @@ function checkSeo($cSeo)
 function iso2ascii($str)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\SeoHelper::iso2ascii($str);
+    return \JTL\Helpers\Seo::iso2ascii($str);
 }
 
 /**
@@ -47,5 +47,5 @@ function iso2ascii($str)
 function getFlatSeoPath($cSeoPath)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\SeoHelper::getFlatSeoPath($cSeoPath);
+    return \JTL\Helpers\Seo::getFlatSeoPath($cSeoPath);
 }

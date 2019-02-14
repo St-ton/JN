@@ -4,24 +4,29 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\StateSQL;
-use Session\Frontend;
+use JTL\Catalog\Currency;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\MagicCompatibilityTrait;
+use JTL\Catalog\Product\Preise;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class PriceRange
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class PriceRange extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var float
@@ -44,7 +49,7 @@ class PriceRange extends AbstractFilter
     private $offsetEndLocalized;
 
     /**
-     * @var \stdClass
+     * @var stdClass
      */
     private $oFilter;
 
@@ -72,7 +77,7 @@ class PriceRange extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('pf')
              ->setVisibility($this->getConfig('navigationsfilter')['preisspannenfilter_benutzen'])
-             ->setFrontendName(\Shop::Lang()->get('rangeOfPrices'));
+             ->setFrontendName(Shop::Lang()->get('rangeOfPrices'));
     }
 
     /**
@@ -171,14 +176,14 @@ class PriceRange extends AbstractFilter
         $this->offsetStart = (float)$start;
         $this->offsetEnd   = (float)$end;
         $this->setValue($id === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
-        $this->offsetStartLocalized = \Preise::getLocalizedPriceWithoutFactor($this->offsetStart);
-        $this->offsetEndLocalized   = \Preise::getLocalizedPriceWithoutFactor($this->offsetEnd);
+        $this->offsetStartLocalized = Preise::getLocalizedPriceWithoutFactor($this->offsetStart);
+        $this->offsetEndLocalized   = Preise::getLocalizedPriceWithoutFactor($this->offsetEnd);
         $this->setName(\html_entity_decode($this->offsetStartLocalized . ' - ' . $this->offsetEndLocalized));
         $this->isInitialized = true;
         $conversionFactor    = Frontend::getCurrency()->getConversionFactor();
         $customerGroupID     = Frontend::getCustomerGroup()->getID();
 
-        $oFilter         = new \stdClass();
+        $oFilter         = new stdClass();
         $oFilter->cJoin  = 'JOIN tpreise 
                 ON tartikel.kArtikel = tpreise.kArtikel 
                 AND tpreise.kKundengruppe = ' . $customerGroupID . '
@@ -300,9 +305,9 @@ class PriceRange extends AbstractFilter
     }
 
     /**
-     * @param \stdClass $oPreis
-     * @param \Currency $currency
-     * @param array     $ranges
+     * @param stdClass $oPreis
+     * @param Currency $currency
+     * @param array    $ranges
      * @return string
      */
     public function getPriceRangeSQL($oPreis, $currency, array $ranges = []): string
@@ -316,7 +321,7 @@ class PriceRange extends AbstractFilter
             $nStep     = $oPreis->fStep;
             $ranges    = [];
             for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
-                $fakePriceRange       = new \stdClass();
+                $fakePriceRange       = new stdClass();
                 $fakePriceRange->nBis = $nPreisMin + ($i + 1) * $nStep;
                 $ranges[$i]           = $fakePriceRange;
             }
@@ -513,8 +518,8 @@ class PriceRange extends AbstractFilter
                         }
                         $nBis = $nPreisMax;
                     }
-                    $cVonLocalized     = \Preise::getLocalizedPriceWithoutFactor($nVon, $currency);
-                    $cBisLocalized     = \Preise::getLocalizedPriceWithoutFactor($nBis, $currency);
+                    $cVonLocalized     = Preise::getLocalizedPriceWithoutFactor($nVon, $currency);
+                    $cBisLocalized     = Preise::getLocalizedPriceWithoutFactor($nBis, $currency);
                     $fo->nVon          = $nVon;
                     $fo->nBis          = $nBis;
                     $fo->cVonLocalized = $cVonLocalized;
@@ -589,8 +594,8 @@ class PriceRange extends AbstractFilter
                     $fo                = new Option();
                     $fo->nVon          = $range->nVon;
                     $fo->nBis          = $range->nBis;
-                    $fo->cVonLocalized = \Preise::getLocalizedPriceWithoutFactor($fo->nVon, $currency);
-                    $fo->cBisLocalized = \Preise::getLocalizedPriceWithoutFactor($fo->nBis, $currency);
+                    $fo->cVonLocalized = Preise::getLocalizedPriceWithoutFactor($fo->nVon, $currency);
+                    $fo->cBisLocalized = Preise::getLocalizedPriceWithoutFactor($fo->nBis, $currency);
                     $options[]         = $fo->setParam($this->getUrlParam())
                                             ->setURL($this->productFilter->getFilterURL()->getURL(
                                                 $additionalFilter->init($fo->nVon . '_' . $fo->nBis)
@@ -629,10 +634,10 @@ class PriceRange extends AbstractFilter
      *
      * @param float $fMax
      * @param float $fMin
-     * @return \stdClass
+     * @return stdClass
      * @former berechneMaxMinStep
      */
-    public function calculateSteps($fMax, $fMin): \stdClass
+    public function calculateSteps($fMax, $fMin): stdClass
     {
         static $steps = [
             0.001,
@@ -710,7 +715,7 @@ class PriceRange extends AbstractFilter
         $diff      = $fMaxPreis - $fMinPreis;
         $stepCount = \round($diff / $value);
 
-        $oObject                 = new \stdClass();
+        $oObject                 = new stdClass();
         $oObject->fMaxPreis      = $fMaxPreis / 1000;
         $oObject->fMinPreis      = $fMinPreis / 1000;
         $oObject->fStep          = $steps[$step];

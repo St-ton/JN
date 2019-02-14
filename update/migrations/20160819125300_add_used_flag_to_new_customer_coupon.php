@@ -6,6 +6,9 @@
  * @created Fri, 19 Aug 2016 12:53:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -29,6 +32,6 @@ class Migration_20160819125300 extends Migration implements IMigration
 
     public function down()
     {
-        $this->dropColumn("tkuponneukunde", "cVerwendet");
+        $this->dropColumn('tkuponneukunde', 'cVerwendet');
     }
 }

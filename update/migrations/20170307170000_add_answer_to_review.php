@@ -6,6 +6,9 @@
  * @created Tue, 07 Mar 2017 17:00:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -27,8 +30,8 @@ class Migration_20170307170000 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE tbewertung ADD COLUMN cAntwort TEXT AFTER dDatum");
-        $this->execute("ALTER TABLE tbewertung ADD COLUMN dAntwortDatum DATE AFTER cAntwort");
+        $this->execute('ALTER TABLE tbewertung ADD COLUMN cAntwort TEXT AFTER dDatum');
+        $this->execute('ALTER TABLE tbewertung ADD COLUMN dAntwortDatum DATE AFTER cAntwort');
     }
 
     public function down()

@@ -4,14 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\InstallCode;
-use Session\Frontend;
+use JTL\Customer\Kundengruppe;
+use JTL\Plugin\InstallCode;
+use JTL\Session\Frontend;
+use JTL\Sprache;
 
 /**
  * Class Exports
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class Exports extends AbstractItem
 {
@@ -31,8 +33,8 @@ class Exports extends AbstractItem
      */
     public function install(): int
     {
-        $defaultCustomerGroupID = \Kundengruppe::getDefaultGroupID();
-        $language               = \Sprache::getDefaultLanguage();
+        $defaultCustomerGroupID = Kundengruppe::getDefaultGroupID();
+        $language               = Sprache::getDefaultLanguage();
         $defaultLanguageID      = $language->kSprache;
         $defaultCurrencyID      = Frontend::getCurrency()->getID();
         foreach ($this->getNode() as $i => $data) {

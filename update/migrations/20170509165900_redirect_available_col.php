@@ -6,6 +6,9 @@
  * @created Tue, 09 May 2017 17:00:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -36,8 +39,8 @@ class Migration_20170509165900 extends Migration implements IMigration
     public function down()
     {
         $this->execute(
-            "ALTER TABLE tredirect
-                DROP COLUMN bAvailable"
+            'ALTER TABLE tredirect
+                DROP COLUMN bAvailable'
         );
     }
 }

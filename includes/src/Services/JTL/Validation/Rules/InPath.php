@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
 use Eloquent\Pathogen\Exception\InvalidPathStateException;
 use Eloquent\Pathogen\Path;
 use Eloquent\Pathogen\RelativePath;
-use Services\JTL\Validation\RuleInterface;
-use Services\JTL\Validation\RuleResult;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class NoPathTraversal
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates that there is no path traversal in the specified path
  *
@@ -29,7 +29,7 @@ class InPath implements RuleInterface
 
     /**
      * InPath constructor.
-     * @param string|\Path $path
+     * @param string|\JTL\Path $path
      * @throws InvalidPathStateException
      */
     public function __construct($path)

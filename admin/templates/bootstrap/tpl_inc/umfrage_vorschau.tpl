@@ -60,7 +60,7 @@
                         <strong>{$oUmfrageFrage->cTypMapped}: </strong>
                         {$oUmfrageFrage->cBeschreibung}
 
-                        {if $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_STATIC && $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_PAGE_CHANGE && $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_SMALL && $oUmfrageFrage->cTyp !== \Survey\QuestionType::TEXT_BIG}
+                        {if $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_STATIC && $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_PAGE_CHANGE && $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_SMALL && $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_BIG}
                             <hr/>
                             <div class="row">
                                 <div class="col-md-{if $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}4{else}8{/if} col-md-offset-1">

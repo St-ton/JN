@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Filter\Visibility;
+use JTL\Filter\Visibility;
+use JTL\Shop;
 
 /**
  * Class FilterSearch
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class FilterSearch extends AbstractBox
 {
@@ -21,11 +22,11 @@ final class FilterSearch extends AbstractBox
     public function __construct(array $config)
     {
         parent::__construct($config);
-        $filter = \Shop::getProductFilter()->searchFilterCompat;
+        $filter = Shop::getProductFilter()->searchFilterCompat;
         $show   = $filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && \count($filter->getOptions()) > 0
-            && empty(\Shop::getProductFilter()->getSearch()->getValue());
+            && empty(Shop::getProductFilter()->getSearch()->getValue());
         $this->setShow($show);
         $this->setTitle($filter->getFrontendName());
     }

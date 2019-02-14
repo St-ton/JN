@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+
 /**
  * @param string $cBetreff
  * @param string $cText
@@ -71,22 +73,21 @@ function convertDate($string)
  */
 function gibLetzteBildNummer($kNews)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
-
-    $cBild_arr = [];
-    if (is_dir($cUploadVerzeichnis . $kNews)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $cBild_arr[] = $Datei;
+    $uploadDir = PFAD_ROOT . PFAD_NEWSBILDER;
+    $images    = [];
+    if (is_dir($uploadDir . $kNews)) {
+        $handle = opendir($uploadDir . $kNews);
+        while (($file = readdir($handle)) !== false) {
+            if ($file !== '.' && $file !== '..') {
+                $images[] = $file;
             }
         }
     }
     $nMax       = 0;
-    $imageCount = count($cBild_arr);
+    $imageCount = count($images);
     if ($imageCount > 0) {
         for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = mb_substr($cBild_arr[$i], 4, (mb_strlen($cBild_arr[$i]) - mb_strpos($cBild_arr[$i], '.')) - 3);
+            $cNummer = mb_substr($images[$i], 4, (mb_strlen($images[$i]) - mb_strpos($images[$i], '.')) - 3);
 
             if ($cNummer > $nMax) {
                 $nMax = $cNummer;
@@ -241,19 +242,19 @@ function holeNewsKategorieBilder($kNewsKategorie, $cUploadVerzeichnis)
 
 /**
  * @param int    $kNews
- * @param string $cUploadVerzeichnis
+ * @param string $uploadDir
  * @return bool
  */
-function loescheNewsBilderDir($kNews, $cUploadVerzeichnis)
+function loescheNewsBilderDir($kNews, $uploadDir)
 {
-    if (is_dir($cUploadVerzeichnis . $kNews)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-        while (false !== ($Datei = readdir($DirHandle))) {
+    if (is_dir($uploadDir . $kNews)) {
+        $handle = opendir($uploadDir . $kNews);
+        while (($Datei = readdir($handle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
-                unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
+                unlink($uploadDir . $kNews . '/' . $Datei);
             }
         }
-        rmdir($cUploadVerzeichnis . $kNews);
+        rmdir($uploadDir . $kNews);
 
         return true;
     }

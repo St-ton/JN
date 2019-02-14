@@ -6,6 +6,9 @@
  * @created Mon, 12 Mar 2018 15:41:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,16 +25,16 @@
  */
 class Migration_20180312154100 extends Migration implements IMigration
 {
-    protected $author = 'Felix Moche';
+    protected $author      = 'Felix Moche';
     protected $description = 'Update tjtllog.nLevel to INT';
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tjtllog` CHANGE COLUMN `nLevel` `nLevel` INT UNSIGNED NOT NULL");
+        $this->execute('ALTER TABLE `tjtllog` CHANGE COLUMN `nLevel` `nLevel` INT UNSIGNED NOT NULL');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tjtllog` CHANGE COLUMN `nLevel` `nLevel` TINYINT UNSIGNED NOT NULL");
+        $this->execute('ALTER TABLE `tjtllog` CHANGE COLUMN `nLevel` `nLevel` TINYINT UNSIGNED NOT NULL');
     }
 }

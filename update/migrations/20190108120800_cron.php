@@ -5,6 +5,9 @@
  * @author fm
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20190108120800
  */
@@ -26,8 +29,7 @@ class Migration_20190108120800 extends Migration implements IMigration
             CHANGE COLUMN `dStart` `startDate` DATETIME NULL DEFAULT NULL,
             CHANGE COLUMN `dStartZeit` `startTime` TIME NULL DEFAULT NULL,
             CHANGE COLUMN `dLetzterStart` `lastStart` DATETIME NULL DEFAULT NULL,
-            ADD COLUMN `lastFinish` VARCHAR(45) NULL AFTER `lastStart`;"
-        );
+            ADD COLUMN `lastFinish` VARCHAR(45) NULL AFTER `lastStart`;");
         $this->execute("ALTER TABLE `tjobqueue` 
             CHANGE COLUMN `kJobQueue` `jobQueueID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             CHANGE COLUMN `kCron` `cronID` INT(10) UNSIGNED NOT NULL,
@@ -41,8 +43,7 @@ class Migration_20190108120800 extends Migration implements IMigration
             CHANGE COLUMN `nInArbeit` `isRunning` INT(10) UNSIGNED NOT NULL DEFAULT 0,
             CHANGE COLUMN `dStartZeit` `startTime` DATETIME NULL DEFAULT NULL,
             CHANGE COLUMN `dZuletztGelaufen` `lastStart` DATETIME NULL DEFAULT NULL,
-            ADD COLUMN `lastFinish` DATETIME NULL DEFAULT NULL;"
-        );
+            ADD COLUMN `lastFinish` DATETIME NULL DEFAULT NULL;");
     }
 
     public function down()
@@ -58,8 +59,7 @@ class Migration_20190108120800 extends Migration implements IMigration
             CHANGE COLUMN `startDate` `dStart` DATETIME NULL DEFAULT NULL,
             CHANGE COLUMN `startTime` `dStartZeit` TIME NULL DEFAULT NULL,
             CHANGE COLUMN `lastStart` `dLetzterStart` DATETIME NULL DEFAULT NULL,
-            DROP COLUMN `lastFinish`;"
-        );
+            DROP COLUMN `lastFinish`;");
         $this->execute("ALTER TABLE `tjobqueue` 
             CHANGE COLUMN `jobQueueID` `kJobQueue` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
             CHANGE COLUMN `cronID` `kCron` INT(10) UNSIGNED NOT NULL,
@@ -73,7 +73,6 @@ class Migration_20190108120800 extends Migration implements IMigration
             CHANGE COLUMN `isRunning` `nInArbeit` INT(10) UNSIGNED NOT NULL DEFAULT '0',
             CHANGE COLUMN `startTime` `dStartZeit` DATETIME NULL DEFAULT NULL,
             CHANGE COLUMN `lastStart` `dZuletztGelaufen` DATETIME NULL DEFAULT NULL,
-            DROP COLUMN `lastFinish`;"
-        );
+            DROP COLUMN `lastFinish`;");
     }
 }

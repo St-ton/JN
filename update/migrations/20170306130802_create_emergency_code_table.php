@@ -6,6 +6,9 @@
  * @created Mon, 06 Mar 2017 13:08:02 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170306130802 extends Migration implements IMigration
 {
-    protected $author = 'cr';
+    protected $author      = 'cr';
     protected $description = 'Create a new table to hold the emergency-codes for the 2FA.';
 
     public function up()

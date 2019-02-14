@@ -72,7 +72,7 @@ class Zend_Loader
                 if ($dir == '.') {
                     $dirs[$key] = $dirPath;
                 } else {
-                    $dir = rtrim($dir, '\\/');
+                    $dir        = rtrim($dir, '\\/');
                     $dirs[$key] = $dir . DIRECTORY_SEPARATOR . $dirPath;
                 }
             }
@@ -203,7 +203,7 @@ class Zend_Loader
 
         self::loadClass($class);
         $methods = get_class_methods($class);
-        if (!in_array('autoload', (array) $methods)) {
+        if (!in_array('autoload', (array)$methods)) {
             require_once 'Zend/Exception.php';
             throw new Zend_Exception("The class \"$class\" does not have an autoload() method");
         }
@@ -252,7 +252,7 @@ class Zend_Loader
         if ($once) {
             return include_once $filespec;
         } else {
-            return include $filespec ;
+            return include $filespec;
         }
     }
 }

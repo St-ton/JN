@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
-use Helpers\URL;
+use JTL\DB\ReturnType;
+use JTL\Helpers\URL;
+use JTL\Shop;
 
 /**
  * Class TagCloud
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class TagCloud extends AbstractBox
 {
@@ -27,12 +28,12 @@ final class TagCloud extends AbstractBox
         $limitSQL  = ($limit > 0) ? ' LIMIT ' . $limit : '';
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
         $cached    = true;
-        $langID    = \Shop::getLanguageID();
+        $langID    = Shop::getLanguageID();
         $cacheID   = 'bx_tgcld_' . $langID . '_' . $limit;
-        if (($tagCloud = \Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($tagCloud = Shop::Container()->getCache()->get($cacheID)) === false) {
             $tagCloud = [];
             $cached   = false;
-            $tags     = \Shop::Container()->getDB()->queryPrepared(
+            $tags     = Shop::Container()->getDB()->queryPrepared(
                 "SELECT ttag.kTag,ttag.cName, tseo.cSeo,sum(ttagartikel.nAnzahlTagging) AS Anzahl 
                     FROM ttag
                     JOIN ttagartikel 
@@ -62,7 +63,7 @@ final class TagCloud extends AbstractBox
                     }
                 }
             }
-            \Shop::Container()->getCache()->set($cacheID, $tagCloud, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $tagCloud, $cacheTags);
         }
 
         if (\count($tagCloud) > 0) {

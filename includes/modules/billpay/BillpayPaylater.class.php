@@ -4,7 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Session\Frontend;
 
 include_once __DIR__ . '/Billpay.class.php';
 
@@ -69,7 +72,7 @@ class BillpayPaylater extends Billpay
 
             unset($_SESSION['za_billpay_jtl']['oOrderEx']);
 
-            $session = \Session\Frontend::getInstance();
+            $session = Frontend::getInstance();
             $session->cleanUp();
         }
 

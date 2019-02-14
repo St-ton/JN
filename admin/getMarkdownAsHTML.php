@@ -11,7 +11,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -27,7 +28,7 @@ if (isset($_POST['path']) && Form::validateToken()) {
         if (mb_convert_case($info['extension'], MB_CASE_LOWER) === 'md') {
             $oParseDown       = new Parsedown();
             $szLicenseContent = mb_convert_encoding(
-                $oParseDown->text(StringHandler::convertUTF8(file_get_contents($path))),
+                $oParseDown->text(Text::convertUTF8(file_get_contents($path))),
                 'HTML-ENTITIES'
             );
             echo '<div class="markdown">' . $szLicenseContent . '</div>';

@@ -4,18 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache\Methods;
+namespace JTL\Cache\Methods;
 
-use Cache\ICachingMethod;
-use Cache\JTLCacheTrait;
+use JTL\Cache\ICachingMethod;
+use JTL\Cache\JTLCacheTrait;
+use Memcached;
 
 /**
  * Class cache_memcached
  * Implements the Memcached memory object caching system - notice the "d" at the end
  *
- * @package Cache\Methods
+ * @package JTL\Cache\Methods
  * @warning Untested
- * @package Cache\Methods
+ * @package JTL\Cache\Methods
  */
 class cache_memcached implements ICachingMethod
 {
@@ -27,7 +28,7 @@ class cache_memcached implements ICachingMethod
     public static $instance;
 
     /**
-     * @var \Memcached
+     * @var Memcached
      */
     private $memcached;
 
@@ -38,7 +39,7 @@ class cache_memcached implements ICachingMethod
     {
         if (!empty($options['memcache_host']) && !empty($options['memcache_port']) && $this->isAvailable()) {
             $this->setMemcached($options['memcache_host'], $options['memcache_port']);
-            $this->memcached->setOption(\Memcached::OPT_PREFIX_KEY, $options['prefix']);
+            $this->memcached->setOption(Memcached::OPT_PREFIX_KEY, $options['prefix']);
             $this->isInitialized = true;
             $test                = $this->test();
             $this->setError($test === true ? '' : $this->memcached->getResultMessage());
@@ -60,7 +61,7 @@ class cache_memcached implements ICachingMethod
         if ($this->memcached !== null) {
             $this->memcached->quit();
         }
-        $this->memcached = new \Memcached();
+        $this->memcached = new Memcached();
         $this->memcached->addServer($host, (int)$port);
 
         return $this;
@@ -137,7 +138,7 @@ class cache_memcached implements ICachingMethod
     {
         $res = $this->memcached->get($cacheID);
 
-        return ($res !== false || $this->memcached->getResultCode() === \Memcached::RES_SUCCESS);
+        return ($res !== false || $this->memcached->getResultCode() === Memcached::RES_SUCCESS);
     }
 
     /**

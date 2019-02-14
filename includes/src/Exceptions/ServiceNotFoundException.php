@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Exceptions;
+namespace JTL\Exceptions;
 
 use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Class ServiceNotFoundException
- * @package Exceptions
+ * @package JTL\Exceptions
  */
 class ServiceNotFoundException extends \Exception implements NotFoundExceptionInterface
 {

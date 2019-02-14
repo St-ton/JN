@@ -4,8 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filesystem;
+namespace JTL\Filesystem;
 
+/**
+ * Interface IFilesystem
+ * @package JTL\Filesystem
+ */
 interface IFilesystem
 {
     /**

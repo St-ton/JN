@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace VerificationVAT;
+namespace JTL\VerificationVAT;
 
 use Psr\Log\LoggerInterface;
 
 /**
  * Interface VATCheckInterface
- * @package VerificationVAT
+ * @package JTL\VerificationVAT
  */
 interface VATCheckInterface
 {

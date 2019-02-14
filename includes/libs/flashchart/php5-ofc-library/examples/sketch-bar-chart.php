@@ -20,7 +20,7 @@
 
 require_once('OFC/OFC_Chart.php');
 
-$title = new OFC_Elements_Title(date("D M d Y"));
+$title = new OFC_Elements_Title(date('D M d Y'));
 $title->set_style('{color: #567300; font-size: 14px}');
 
 $bar = new OFC_Charts_Bar_Sketch('#81AC00', '#567300', 5);

@@ -4,16 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace VerificationVAT;
+namespace JTL\VerificationVAT;
+
+use JTL\Shop;
 
 /**
  * Class VATCheckEU
- *
- * @package VerificationVAT
+ * @package JTL\VerificationVAT
  * External documentation
- *
  * @link http://ec.europa.eu/taxation_customs/vies/faq.html
- *
  * European Commission
  * VIES (VAT Information Exchange System)
  * @link https://ec.europa.eu/taxation_customs/business/vat/eu-vat-rules-topic/vies-vat-information-exchange-system-enquiries_en
@@ -78,7 +77,7 @@ class VATCheckEU extends AbstractVATCheck
             try {
                 $result = $soap->checkVat(['countryCode' => $countryCode, 'vatNumber' => $vatNumber]);
             } catch (\Exception $e) {
-                \Shop::Container()->getLogService()->warn('VAT ID problem: ' . $e->getMessage());
+                Shop::Container()->getLogService()->warn('VAT ID problem: ' . $e->getMessage());
             }
 
             if ($result !== null && $result->valid === true) {

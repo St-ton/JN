@@ -4,9 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\ItemRenderers;
+namespace JTL\Sitemap\ItemRenderers;
 
-use Sitemap\Items\ItemInterface;
+use JTL\Sitemap\Items\ItemInterface;
 
 /**
  * Interface RendererInterface

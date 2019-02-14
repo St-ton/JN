@@ -4,28 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
-use Backend\AdminAccount;
-use Boxes\FactoryInterface;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\Services\GcServiceInterface;
-use Debug\JTLDebugBar;
-use L10n\GetText;
+use JTL\Backend\AdminAccount;
+use JTL\Boxes\FactoryInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\Services\GcServiceInterface;
+use JTL\Debug\JTLDebugBar;
+use JTL\L10n\GetText;
+use JTL\OPC\DB;
+use JTL\OPC\Locker;
+use JTL\OPC\PageDB;
+use JTL\OPC\PageService;
+use JTL\OPC\Service;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Services\JTL\BoxServiceInterface;
+use JTL\Services\JTL\CaptchaServiceInterface;
+use JTL\Services\JTL\CryptoServiceInterface;
+use JTL\Services\JTL\LinkServiceInterface;
+use JTL\Services\JTL\NewsServiceInterface;
+use JTL\Services\JTL\PasswordServiceInterface;
 use Monolog\Logger;
-use OPC\DB;
-use OPC\Locker;
-use OPC\PageDB;
-use OPC\PageService;
-use OPC\Service;
-use Services\JTL\BoxServiceInterface;
-use Services\JTL\CaptchaServiceInterface;
-use Services\JTL\CryptoServiceInterface;
-use Services\JTL\LinkServiceInterface;
-use Services\JTL\NewsServiceInterface;
-use Services\JTL\PasswordServiceInterface;
-use Services\JTL\AlertServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -34,7 +34,7 @@ use Psr\Log\LoggerInterface;
  * This class provides default services, that are provided by JTL-Shop core. Those Services are provided though a
  * separate interface for improving IntelliSense support for external and internal developers
  *
- * @package Services
+ * @package JTL\Services
  */
 class Container extends ContainerBase implements DefaultServicesInterface
 {

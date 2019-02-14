@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
 use Tightenco\Collect\Support\Collection;
 
@@ -14,7 +14,7 @@ use Tightenco\Collect\Support\Collection;
  * this allows calls like LinkService::getLinkgroups()->Fuss to access a link group by its template name
  * for compatability reasons only
  *
- * @package Link
+ * @package JTL\Link
  */
 final class LinkGroupCollection extends Collection
 {

@@ -4,7 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-// Anzahl Antworten die komplett angezeigt werden, der Rest wird unter "Sonstige" zusammengefasst
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Survey\QuestionType;
+
 define('UMFRAGE_MAXANZAHLANZEIGEN', 20);
 
 /**
@@ -70,7 +74,7 @@ function updateAntwortUndOption(
     $res->nAnzahlOptionen  = count($matrixOptions);
 
     $db = Shop::Container()->getDB();
-    if ($cTyp !== \Survey\QuestionType::TEXT_SMALL & $cTyp !== \Survey\QuestionType::TEXT_BIG) {
+    if ($cTyp !== QuestionType::TEXT_SMALL & $cTyp !== QuestionType::TEXT_BIG) {
         if (is_array($answers) && count($answers) > 0) {
             foreach ($answers as $i => $kUmfrageFrageAntwort) {
                 $_upd        = new stdClass();
@@ -84,7 +88,7 @@ function updateAntwortUndOption(
                 );
             }
         }
-        if ($cTyp === \Survey\QuestionType::MATRIX_SINGLE || $cTyp === \Survey\QuestionType::MATRIX_MULTI) {
+        if ($cTyp === QuestionType::MATRIX_SINGLE || $cTyp === QuestionType::MATRIX_MULTI) {
             if (is_array($matrixOptions) && count($matrixOptions) > 0) {
                 foreach ($matrixOptions as $j => $kUmfrageMatrixOption) {
                     $_upd        = new stdClass();
@@ -123,7 +127,7 @@ function speicherAntwortZuFrage(
     $data
 ) {
     switch ($type) {
-        case \Survey\QuestionType::MULTI_SINGLE:
+        case QuestionType::MULTI_SINGLE:
             if (is_array($answerName) && count($answerName) > 0) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
@@ -137,7 +141,7 @@ function speicherAntwortZuFrage(
                 }
             }
             break;
-        case \Survey\QuestionType::MULTI:
+        case QuestionType::MULTI:
             if (is_array($answerName) && count($answerName) > 0) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
@@ -151,7 +155,7 @@ function speicherAntwortZuFrage(
                 }
             }
             break;
-        case \Survey\QuestionType::SELECT_SINGLE:
+        case QuestionType::SELECT_SINGLE:
             if (is_array($answerName) && count($answerName) > 0) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
@@ -165,7 +169,7 @@ function speicherAntwortZuFrage(
                 }
             }
             break;
-        case \Survey\QuestionType::SELECT_MULTI:
+        case QuestionType::SELECT_MULTI:
             if (is_array($answerName) && count($answerName) > 0) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
@@ -179,7 +183,7 @@ function speicherAntwortZuFrage(
                 }
             }
             break;
-        case \Survey\QuestionType::MATRIX_SINGLE:
+        case QuestionType::MATRIX_SINGLE:
             if (is_array($answerName) && is_array($optionName) && count($answerName) > 0 && count($optionName) > 0) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
@@ -203,7 +207,7 @@ function speicherAntwortZuFrage(
                 }
             }
             break;
-        case \Survey\QuestionType::MATRIX_MULTI:
+        case QuestionType::MATRIX_MULTI:
             if (is_array($answerName) && is_array($optionName) && count($answerName) > 0 && count($optionName) > 0) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
@@ -242,7 +246,7 @@ function loescheFrage(int $questionID)
                 LEFT JOIN tumfragedurchfuehrungantwort 
                     ON tumfragedurchfuehrungantwort.kUmfrageFrage = tumfragefrage.kUmfrageFrage
                 WHERE tumfragefrage.kUmfrageFrage = ' . $questionID,
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->delete('tumfragefrageantwort', 'kUmfrageFrage', $questionID);
         Shop::Container()->getDB()->delete('tumfragematrixoption', 'kUmfrageFrage', $questionID);
@@ -274,7 +278,7 @@ function holeUmfrageStatistik(int $surveyID)
             DATE_FORMAT(dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de
             FROM tumfrage
             WHERE kUmfrage = " . $surveyID,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     // Wenn es eine Umfrage gibt
     if ($stats === null) {
@@ -287,7 +291,7 @@ function holeUmfrageStatistik(int $surveyID)
             FROM tumfragefrage
             WHERE kUmfrage = ' . (int)$stats->kUmfrage . '
             ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     // Mappe Fragentyp
     foreach ($surveys as $i => $question) {
@@ -299,21 +303,21 @@ function holeUmfrageStatistik(int $surveyID)
         'SELECT kUmfrageDurchfuehrung
             FROM tumfragedurchfuehrung
             WHERE kUmfrage = ' . (int)$stats->kUmfrage,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $stats->nAnzahlDurchfuehrung = count($executions);
     // Laufe alle Fragen der Umfrage durch und berechne die Statistik
     foreach ($surveys as $i => $question) {
-        if ($question->cTyp === \Survey\QuestionType::TEXT_PAGE_CHANGE
-            || $question->cTyp === \Survey\QuestionType::TEXT_STATIC
+        if ($question->cTyp === QuestionType::TEXT_PAGE_CHANGE
+            || $question->cTyp === QuestionType::TEXT_STATIC
         ) {
             continue;
         }
         $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = [];
 
         // Matrix
-        if ($question->cTyp === \Survey\QuestionType::MATRIX_SINGLE
-            || $question->cTyp === \Survey\QuestionType::MATRIX_MULTI
+        if ($question->cTyp === QuestionType::MATRIX_SINGLE
+            || $question->cTyp === QuestionType::MATRIX_MULTI
         ) {
             $answers       = [];
             $matrixOptions = [];
@@ -324,7 +328,7 @@ function holeUmfrageStatistik(int $surveyID)
                     FROM tumfragefrageantwort
                     WHERE kUmfrageFrage = ' . (int)$question->kUmfrageFrage . '
                     ORDER BY nSort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($answerData as $oUmfrageFrageAntwortTMP) {
                 $answer                       = new stdClass();
@@ -341,7 +345,7 @@ function holeUmfrageStatistik(int $surveyID)
                     WHERE tumfragematrixoption.kUmfrageFrage = ' . (int)$question->kUmfrageFrage . '
                     GROUP BY tumfragematrixoption.kUmfrageMatrixOption
                     ORDER BY tumfragematrixoption.nSort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($matrixOptTMP_arr as $matrixOptTMP) {
                 unset($opt);
@@ -374,7 +378,7 @@ function holeUmfrageStatistik(int $surveyID)
                         WHERE kUmfrageMatrixOption = ' . (int)$opt->kUmfrageMatrixOption . '
                             AND kUmfrageFrage = ' . (int)$question->kUmfrageFrage . '
                         GROUP BY kUmfrageFrageAntwort ',
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
                 //setze jeder Antwort den entsprechenden Matrixeintrag
                 foreach ($matrixOptAnzahlSpalte_arr as $col) {
@@ -412,8 +416,8 @@ function holeUmfrageStatistik(int $surveyID)
             }
             //Ergebnismatrix für die Frage setzen
             $stats->oUmfrageFrage_arr[$i]->oErgebnisMatrix_arr = $resMatrix;
-        } elseif ($question->cTyp === \Survey\QuestionType::TEXT_SMALL
-            || $question->cTyp === \Survey\QuestionType::TEXT_BIG
+        } elseif ($question->cTyp === QuestionType::TEXT_SMALL
+            || $question->cTyp === QuestionType::TEXT_BIG
         ) {
             $answers = $db->query(
                 'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
@@ -423,7 +427,7 @@ function holeUmfrageStatistik(int $surveyID)
                     GROUP BY cText
                     ORDER BY nAnzahlAntwort DESC
                     LIMIT " . UMFRAGE_MAXANZAHLANZEIGEN,
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             // Anzahl Antworten
             foreach ($answers as $j => $answer) {
@@ -444,7 +448,7 @@ function holeUmfrageStatistik(int $surveyID)
                             ORDER BY nAnzahlAntwort DESC
                             LIMIT ' . UMFRAGE_MAXANZAHLANZEIGEN . ', ' . count($answers) . '
                      ) AS b',
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort > 0) {
                 $stats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += (int)$oUmfrageFrageAntwortTMP->nAnzahlAntwort;
@@ -485,14 +489,14 @@ function holeUmfrageStatistik(int $surveyID)
                     WHERE tumfragefrageantwort.kUmfrageFrage = ' . (int)$question->kUmfrageFrage . '
                     GROUP BY tumfragefrageantwort.kUmfrageFrageAntwort
                     ORDER BY nAnzahlAntwort DESC, tumfragefrageantwort.kUmfrageFrageAntwort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $oAnzahl         = $db->query(
                 'SELECT COUNT(*) AS nAnzahl
                     FROM tumfragedurchfuehrungantwort
                     WHERE kUmfrageFrage = ' . (int)$question->kUmfrageFrage . '
                         AND kUmfrageFrageAntwort != 0',
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             $freeTextAnswers = [];
             if ($stats->oUmfrageFrage_arr[$i]->nFreifeld == 1) {
@@ -505,7 +509,7 @@ function holeUmfrageStatistik(int $surveyID)
                             AND TRIM(cText) !=''
                         GROUP BY cText
                         ORDER BY nAnzahlAntwort DESC",
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
             }
             $stats->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = array_merge($answers, $freeTextAnswers);
@@ -528,7 +532,7 @@ function holeUmfrageStatistik(int $surveyID)
         }
     }
     $stats->cKundengruppe_arr = [];
-    $customerGroups           = StringHandler::parseSSK($stats->cKundengruppe);
+    $customerGroups           = Text::parseSSK($stats->cKundengruppe);
     foreach ($customerGroups as $kKundengruppe) {
         if ($kKundengruppe == -1) {
             $stats->cKundengruppe_arr[] = 'Alle';
@@ -561,7 +565,7 @@ function holeSonstigeTextAntworten(int $surveyID, int $maxAnswers, int $limit)
         'SELECT kUmfrage, cName, cTyp
             FROM tumfragefrage
             WHERE kUmfrageFrage = ' . $surveyID,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     $answers                 = Shop::Container()->getDB()->query(
         'SELECT cText AS cName, COUNT(cText) AS nAnzahlAntwort
@@ -570,7 +574,7 @@ function holeSonstigeTextAntworten(int $surveyID, int $maxAnswers, int $limit)
             GROUP BY cText
             ORDER BY nAnzahlAntwort DESC
             LIMIT ' . UMFRAGE_MAXANZAHLANZEIGEN . ', ' . $limit,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $question->nMaxAntworten = $maxAnswers;
     if (is_array($answers) && count($answers) > 0) {
@@ -590,34 +594,34 @@ function holeSonstigeTextAntworten(int $surveyID, int $maxAnswers, int $limit)
 function mappeFragenTyp(string $cTyp): string
 {
     switch ($cTyp) {
-        case \Survey\QuestionType::MULTI_SINGLE:
+        case QuestionType::MULTI_SINGLE:
             return __('questionTypeMultipleChoice');
 
-        case \Survey\QuestionType::MULTI:
+        case QuestionType::MULTI:
             return __('questionTypeMultipleChoiceMany');
 
-        case \Survey\QuestionType::SELECT_SINGLE:
+        case QuestionType::SELECT_SINGLE:
             return __('questionTypeSelectboxOne');
 
-        case \Survey\QuestionType::SELECT_MULTI:
+        case QuestionType::SELECT_MULTI:
             return __('questionTypeSelectboxMany');
 
-        case \Survey\QuestionType::TEXT_SMALL:
+        case QuestionType::TEXT_SMALL:
             return __('questionTypeTextSmall');
 
-        case \Survey\QuestionType::TEXT_BIG:
+        case QuestionType::TEXT_BIG:
             return __('questionTypeTextBig');
 
-        case \Survey\QuestionType::MATRIX_SINGLE:
+        case QuestionType::MATRIX_SINGLE:
             return __('questionTypeMatrixOne');
 
-        case \Survey\QuestionType::MATRIX_MULTI:
+        case QuestionType::MATRIX_MULTI:
             return __('questionTypeMatrixMany');
 
-        case \Survey\QuestionType::TEXT_STATIC:
+        case QuestionType::TEXT_STATIC:
             return __('questionTypeDivider');
 
-        case \Survey\QuestionType::TEXT_PAGE_CHANGE:
+        case QuestionType::TEXT_PAGE_CHANGE:
             return __('questionTypeDividerNewPage');
 
         default:

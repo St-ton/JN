@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
+use DateTime;
+use JTL\DB\DbInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Job
- * @package Cron
+ * Interface JobInterface
+ * @package JTL\Cron
  */
 interface JobInterface
 {
@@ -76,19 +77,19 @@ interface JobInterface
     public function setID(int $id): void;
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getDateLastStarted(): ?\DateTime;
+    public function getDateLastStarted(): ?DateTime;
 
     /**
-     * @param \DateTime|string|null $date
+     * @param DateTime|string|null $date
      */
     public function setDateLastStarted($date): void;
 
     /**
      * @inheritdoc
      */
-    public function getDateLastFinished(): ?\DateTime;
+    public function getDateLastFinished(): ?DateTime;
 
     /**
      * @inheritdoc
@@ -101,22 +102,22 @@ interface JobInterface
     public function setLastStarted(?string $date): void;
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getStartTime(): ?\DateTime;
+    public function getStartTime(): ?DateTime;
 
     /**
-     * @param \DateTime|string|null $startTime
+     * @param DateTime|string|null $startTime
      */
     public function setStartTime($startTime): void;
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getStartDate(): \DateTime;
+    public function getStartDate(): DateTime;
 
     /**
-     * @param \DateTime|string $date
+     * @param DateTime|string $date
      */
     public function setStartDate($date): void;
 

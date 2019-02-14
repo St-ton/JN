@@ -20,7 +20,7 @@ class phpQueryObjectPlugin_WebBrowser
      */
     public static function WebBrowser($self, $callback = null, $location = null)
     {
-        $self = $self->_clone()->toRoot();
+        $self     = $self->_clone()->toRoot();
         $location = $location
             ? $location
             // TODO use document.location
@@ -90,8 +90,8 @@ class phpQueryObjectPlugin_WebBrowser
     public static function location($self, $url = null)
     {
         // TODO if ! $url return actual location ???
-        $xhr = $self->document->xhr ?? null;
-        $xhr = phpQuery::ajax([
+        $xhr    = $self->document->xhr ?? null;
+        $xhr    = phpQuery::ajax([
             'url' => $url
         ], $xhr);
         $return = false;
@@ -127,7 +127,7 @@ class phpQueryPlugin_WebBrowser
     {
         phpQuery::debug("[WebBrowser] GET: $url");
         self::authorizeHost($url);
-        $xhr = phpQuery::ajax(array(
+        $xhr            = phpQuery::ajax(array(
             'type' => 'GET',
             'url' => $url,
             'dataType' => 'html',
@@ -138,7 +138,8 @@ class phpQueryPlugin_WebBrowser
             $paramStructure = array_slice($paramStructure, 2);
         }
         if ($xhr->getLastResponse()->isSuccessful()) {
-            phpQuery::callbackRun($callback,
+            phpQuery::callbackRun(
+                $callback,
                 array(self::browserReceive($xhr)->WebBrowser()),
                 $paramStructure
             );
@@ -158,11 +159,16 @@ class phpQueryPlugin_WebBrowser
      * @param $param3
      * @return Zend_Http_Client
      */
-    public static function browserPost($url, $data, $callback,
-        $param1 = null, $param2 = null, $param3 = null)
-    {
+    public static function browserPost(
+        $url,
+        $data,
+        $callback,
+        $param1 = null,
+        $param2 = null,
+        $param3 = null
+    ) {
         self::authorizeHost($url);
-        $xhr = phpQuery::ajax(array(
+        $xhr            = phpQuery::ajax(array(
             'type' => 'POST',
             'url' => $url,
             'dataType' => 'html',
@@ -174,7 +180,8 @@ class phpQueryPlugin_WebBrowser
             $paramStructure = array_slice($paramStructure, 3);
         }
         if ($xhr->getLastResponse()->isSuccessful()) {
-            phpQuery::callbackRun($callback,
+            phpQuery::callbackRun(
+                $callback,
                 array(self::browserReceive($xhr)->WebBrowser()),
                 $paramStructure
             );
@@ -192,11 +199,15 @@ class phpQueryPlugin_WebBrowser
      * @param $param3
      * @return Zend_Http_Client
      */
-    public static function browser($ajaxSettings, $callback,
-        $param1 = null, $param2 = null, $param3 = null)
-    {
+    public static function browser(
+        $ajaxSettings,
+        $callback,
+        $param1 = null,
+        $param2 = null,
+        $param3 = null
+    ) {
         self::authorizeHost($ajaxSettings['url']);
-        $xhr = phpQuery::ajax(
+        $xhr            = phpQuery::ajax(
             self::ajaxSettingsPrepare($ajaxSettings)
         );
         $paramStructure = null;
@@ -205,7 +216,8 @@ class phpQueryPlugin_WebBrowser
             $paramStructure = array_slice($paramStructure, 2);
         }
         if ($xhr->getLastResponse()->isSuccessful()) {
-            phpQuery::callbackRun($callback,
+            phpQuery::callbackRun(
+                $callback,
                 array(self::browserReceive($xhr)->WebBrowser()),
                 $paramStructure
             );
@@ -243,7 +255,7 @@ class phpQueryPlugin_WebBrowser
      */
     public static function browserReceive($xhr)
     {
-        phpQuery::debug("[WebBrowser] Received from ".$xhr->getUri(true));
+        phpQuery::debug('[WebBrowser] Received from '.$xhr->getUri(true));
         // TODO handle meta redirects
         $body = $xhr->getLastResponse()->getBody();
         if (strpos($body, '<!doctype html>') !== false) {
@@ -251,15 +263,15 @@ class phpQueryPlugin_WebBrowser
                 .str_replace('<!doctype html>', '', $body)
                 .'</html>';
         }
-        $pq = phpQuery::newDocument($body);
-        $pq->document->xhr = $xhr;
+        $pq                     = phpQuery::newDocument($body);
+        $pq->document->xhr      = $xhr;
         $pq->document->location = $xhr->getUri(true);
-        $refresh = $pq->find('meta[http-equiv=refresh]')->add('meta[http-equiv=Refresh]');
+        $refresh                = $pq->find('meta[http-equiv=refresh]')->add('meta[http-equiv=Refresh]');
         if ($refresh->size()) {
             phpQuery::debug("Meta redirect... '{$refresh->attr('content')}'\n");
             // there is a refresh, so get the new url
-            $content = $refresh->attr('content');
-            $urlRefresh = substr($content, strpos($content, '=')+1);
+            $content    = $refresh->attr('content');
+            $urlRefresh = substr($content, strpos($content, '=') + 1);
             $urlRefresh = trim($urlRefresh, '\'"');
             // XXX not secure ?!
             phpQuery::ajaxAllowURL($urlRefresh);
@@ -272,7 +284,8 @@ class phpQueryPlugin_WebBrowser
             if ($xhr->getLastResponse()->isSuccessful()) {
                 // if all is ok, repeat this method...
                 return call_user_func_array(
-                    array('phpQueryPlugin_WebBrowser', 'browserReceive'), array($xhr)
+                    array('phpQueryPlugin_WebBrowser', 'browserReceive'),
+                    array($xhr)
                 );
             }
         } else {
@@ -320,13 +333,13 @@ class phpQueryPlugin_WebBrowser
             return;
         }
         // TODO document.location
-        $xhr = isset($node->document->xhr)
+        $xhr    = isset($node->document->xhr)
             ? $node->document->xhr
             : null;
         $submit = pq($e->relatedTarget)->is(':submit')
             ? $e->relatedTarget
             : $node->find('*:submit:first')->get(0);
-        $data = array();
+        $data   = array();
         foreach ($node->serializeArray($submit) as $r) {// XXXt.c maybe $node->not(':submit')->add($sumit) would be better ?
             $data[ $r['name'] ] = $r['value'];
         }
@@ -365,7 +378,7 @@ function glue_url($parsed)
     if (!is_array($parsed)) {
         return false;
     }
-    $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) == 'mailto') ? '' : '//') : '';
+    $uri  = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) == 'mailto') ? '' : '//') : '';
     $uri .= isset($parsed['user']) ? $parsed['user'] . ($parsed['pass'] ? ':' . $parsed['pass'] : '') . '@' : '';
     $uri .= $parsed['host'] ?? '';
     $uri .= isset($parsed['port']) ? ':' . $parsed['port'] : '';
@@ -397,20 +410,20 @@ function resolve_url($base, $url)
         return $url;
     }
     $base = parse_url($base);
-    if ($url{0} == "#") {
+    if ($url{0} == '#') {
         // Step 2 (fragment)
         $base['fragment'] = substr($url, 1);
         return unparse_url($base);
     }
     unset($base['fragment']);
     unset($base['query']);
-    if (substr($url, 0, 2) == "//") {
+    if (substr($url, 0, 2) == '//') {
         // Step 4
         return unparse_url(array(
             'scheme' => $base['scheme'],
             'path' => substr($url, 2),
         ));
-    } elseif ($url{0} == "/") {
+    } elseif ($url{0} == '/') {
         // Step 5
         $base['path'] = $url;
     } else {

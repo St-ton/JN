@@ -4,14 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Model;
+namespace JTL\Model;
 
-use Backend\AdminLoginStatus;
+use JTL\Backend\AdminLoginStatus;
 
 /**
  * Class AuthLogEntry
- *
- * @package Model
+ * @package JTL\Model
  */
 class AuthLogEntry
 {

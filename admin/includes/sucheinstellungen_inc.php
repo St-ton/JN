@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\IO\IOError;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+
 /**
  * @param string $index
  * @param string $create
@@ -14,7 +20,7 @@ function createSearchIndex($index, $create)
     Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
     require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
-    $index    = mb_convert_case(StringHandler::xssClean($index), MB_CASE_LOWER);
+    $index    = mb_convert_case(Text::xssClean($index), MB_CASE_LOWER);
     $cHinweis = '';
     $cFehler  = '';
 
@@ -25,11 +31,11 @@ function createSearchIndex($index, $create)
     try {
         if (Shop::Container()->getDB()->query(
             "SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'",
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )) {
             Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index DROP KEY idx_{$index}_fulltext",
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
         }
     } catch (Exception $e) {
@@ -41,7 +47,7 @@ function createSearchIndex($index, $create)
             $item_arr = explode('.', $item, 2);
 
             return $item_arr[1];
-        }, \Filter\States\BaseSearchQuery::getSearchRows());
+        }, JTL\Filter\States\BaseSearchQuery::getSearchRows());
 
         switch ($index) {
             case 'tartikel':
@@ -71,12 +77,12 @@ function createSearchIndex($index, $create)
         try {
             Shop::Container()->getDB()->executeQuery(
                 'UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)',
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
             $res = Shop::Container()->getDB()->executeQuery(
                 "ALTER TABLE $index
                     ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')',
-                \DB\ReturnType::QUERYSINGLE
+                ReturnType::QUERYSINGLE
             );
         } catch (Exception $e) {
             $res = 0;
@@ -114,8 +120,8 @@ function createSearchIndex($index, $create)
  */
 function clearSearchCache()
 {
-    Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer', \DB\ReturnType::AFFECTED_ROWS);
-    Shop::Container()->getDB()->query('DELETE FROM tsuchcache', \DB\ReturnType::AFFECTED_ROWS);
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcachetreffer', ReturnType::AFFECTED_ROWS);
+    Shop::Container()->getDB()->query('DELETE FROM tsuchcache', ReturnType::AFFECTED_ROWS);
     Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
 
     return ['hinweis' => __('successSearchCacheDelete')];

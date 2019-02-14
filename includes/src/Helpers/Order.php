@@ -4,18 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Bestellung;
-use Kunde;
-use Lieferadresse;
-use Rechnungsadresse;
-use Shop;
+use JTL\Checkout\Bestellung;
+use JTL\Catalog\Currency;
+use JTL\Customer\Kunde;
+use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Rechnungsadresse;
+use JTL\Shop;
 use stdClass;
 
 /**
  * Class Order
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Order extends Cart
 {
@@ -188,9 +189,9 @@ class Order extends Cart
     }
 
     /**
-     * @return \Currency
+     * @return Currency
      */
-    public function getCurrency(): \Currency
+    public function getCurrency(): Currency
     {
         return $this->object->Waehrung;
     }

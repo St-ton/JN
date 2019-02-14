@@ -7,6 +7,9 @@
  * @created Wed, 27 Jul 2016 14:14:07 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -30,7 +33,7 @@ class Migration_20160727141407 extends Migration implements IMigration
 
     public function down()
     {
-        $this->dropColumn("tadminlogin", "b2FAauth");
-        $this->dropColumn("tadminlogin", "c2FAauthSecret");
+        $this->dropColumn('tadminlogin', 'b2FAauth');
+        $this->dropColumn('tadminlogin', 'c2FAauthSecret');
     }
 }

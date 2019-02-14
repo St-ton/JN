@@ -4,15 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Events;
+namespace JTL\Events;
+
+use JTL\SingletonTrait;
 
 /**
  * Class Dispatcher
- * @package Events
+ * @package JTL\Events
  */
 final class Dispatcher
 {
-    use \SingletonTrait;
+    use SingletonTrait;
 
     /**
      * The registered event listeners.

@@ -6,6 +6,9 @@
  * @created Mon, 24 Sep 2018 09:28:13 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180924092813 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Add lang var wrongBic';
 
     public function up()

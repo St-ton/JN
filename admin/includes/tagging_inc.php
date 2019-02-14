@@ -4,7 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\URL;
+use JTL\Helpers\URL;
+use JTL\Shop;
+use JTL\DB\ReturnType;
 
 /**
  * @param int $kTag
@@ -21,7 +23,7 @@ function holeTagDetailAnzahl($kTag, $kSprache)
                     ON ttag.kTag = ttagartikel.kTag
                     AND ttag.kSprache = ' . (int)$kSprache . '
                 WHERE ttagartikel.kTag = ' . (int)$kTag,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->nAnzahl;
     }
 
@@ -58,7 +60,7 @@ function holeTagDetail(int $kTag, int $kSprache, $cLimit)
                 GROUP BY tartikel.kArtikel
                 ORDER BY tartikel.cName" . $cLimit,
             ['lid' => $kSprache, 'tid' => $kTag],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oTagArtikel_arr as $i => $oTagArtikel) {
             $oTagArtikel_arr[$i]->cURL = URL::buildURL($oTagArtikel, URLART_ARTIKEL, true);
@@ -92,7 +94,7 @@ function loescheTagsVomArtikel($productIDs, int $kTag)
                             ON tseo.cKey = 'kTag'
                             AND tseo.kKey = ttag.kTag
                         WHERE ttag.kTag = " . $kTag,
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
             }
             Shop::Container()->getCache()->flushTags(['CACHING_GROUP_ARTICLE_' . $productID]);
@@ -115,7 +117,7 @@ function flushAffectedArticleCache(array $tagIDs)
         'SELECT DISTINCT kArtikel
             FROM ttagartikel
             WHERE kTag IN (' . implode(', ', $tagIDs) . ')',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     if (count($affected) > 0) {
         $articleCacheIDs = [];

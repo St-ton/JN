@@ -4,15 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use DateTime;
+use InvalidArgumentException;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use stdClass;
 use function Functional\map;
 
 /**
  * Class Item
- * @package News
+ * @package JTL\News
  */
 class Item extends AbstractItem
 {
@@ -87,17 +92,17 @@ class Item extends AbstractItem
     protected $isActive = true;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $dateCreated;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $dateValidFrom;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $date;
 
@@ -117,7 +122,7 @@ class Item extends AbstractItem
     protected $commentCount = 0;
 
     /**
-     * @var \stdClass|null
+     * @var stdClass|null
      */
     protected $author;
 
@@ -174,7 +179,7 @@ class Item extends AbstractItem
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($item) === 0) {
-            throw new \InvalidArgumentException('Provided new item id ' . $this->id . ' not found.');
+            throw new InvalidArgumentException('Provided new item id ' . $this->id . ' not found.');
         }
 
         return $this->map($item);
@@ -188,7 +193,7 @@ class Item extends AbstractItem
         $res = [];
         foreach ($this->getLanguageIDs() as $languageID) {
             $languageCode          = $this->getLanguageCode($languageID);
-            $data                  = new \stdClass();
+            $data                  = new stdClass();
             $data->content         = $this->getContent($languageID);
             $data->url             = $this->getURL($languageID);
             $data->languageID      = $languageID;
@@ -210,15 +215,15 @@ class Item extends AbstractItem
      */
     public function map(array $localizedItems): ItemInterface
     {
-        $baseURL = \Shop::getURL(true) . '/';
+        $baseURL = Shop::getURL(true) . '/';
         foreach ($localizedItems as $item) {
             $languageID = (int)$item->languageID;
             if ($languageID === 0) {
-                $languageID = \Shop::getLanguageID();
+                $languageID = Shop::getLanguageID();
             }
             $this->setCustomerGroups(self::parseSSKAdvanced($item->cKundengruppe));
-            $this->setLanguageCode($item->languageCode ?? \Shop::getLanguageCode(), $languageID);
-            $this->setContent(\StringHandler::parseNewsText($item->content ?? ''), $languageID);
+            $this->setLanguageCode($item->languageCode ?? Shop::getLanguageCode(), $languageID);
+            $this->setContent(Text::parseNewsText($item->content ?? ''), $languageID);
             $this->setMetaDescription($item->metaDescription ?? '', $languageID);
             $this->setMetaTitle($item->metaTitle ?? '', $languageID);
             $this->setMetaKeyword($item->metaKeywords ?? '', $languageID);
@@ -284,10 +289,10 @@ class Item extends AbstractItem
         $images = [];
         if ($this->id > 0 && \is_dir($uploadDirName . $this->id)) {
             $handle       = \opendir($uploadDirName . $this->id);
-            $imageBaseURL = \Shop::getURL() . '/';
-            while (false !== ($file = \readdir($handle))) {
+            $imageBaseURL = Shop::getURL() . '/';
+            while (($file = \readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
-                    $image           = new \stdClass();
+                    $image           = new stdClass();
                     $image->cName    = \mb_substr($file, 0, \mb_strpos($file, '.'));
                     $image->cURL     = \PFAD_NEWSBILDER . $this->id . '/' . $file;
                     $image->cURLFull = $imageBaseURL . \PFAD_NEWSBILDER . $this->id . '/' . $file;
@@ -348,7 +353,7 @@ class Item extends AbstractItem
      */
     public function getSEO(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->seo[$idx] ?? '';
     }
@@ -366,7 +371,7 @@ class Item extends AbstractItem
      */
     public function setSEO(string $url, int $idx = null): void
     {
-        $this->seo[$idx ?? \Shop::getLanguageID()] = $url;
+        $this->seo[$idx ?? Shop::getLanguageID()] = $url;
     }
 
     /**
@@ -374,7 +379,7 @@ class Item extends AbstractItem
      */
     public function getURL(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->urls[$idx] ?? '/?n=' . $this->getID();
     }
@@ -392,7 +397,7 @@ class Item extends AbstractItem
      */
     public function setURL(string $url, int $idx = null): void
     {
-        $this->urls[$idx ?? \Shop::getLanguageID()] = $url;
+        $this->urls[$idx ?? Shop::getLanguageID()] = $url;
     }
 
     /**
@@ -408,7 +413,7 @@ class Item extends AbstractItem
      */
     public function getTitle(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->titles[$idx] ?? '';
     }
@@ -418,7 +423,7 @@ class Item extends AbstractItem
      */
     public function getTitleUppercase(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return \mb_convert_case($this->titles[$idx] ?? '', \MB_CASE_UPPER);
     }
@@ -436,7 +441,7 @@ class Item extends AbstractItem
      */
     public function setTitle(string $title, int $idx = null): void
     {
-        $this->titles[$idx ?? \Shop::getLanguageID()] = $title;
+        $this->titles[$idx ?? Shop::getLanguageID()] = $title;
     }
 
     /**
@@ -468,7 +473,7 @@ class Item extends AbstractItem
      */
     public function getLanguageCode(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->languageCodes[$idx] ?? '';
     }
@@ -486,7 +491,7 @@ class Item extends AbstractItem
      */
     public function setLanguageCode(string $languageCode, int $idx = null): void
     {
-        $this->languageCodes[$idx ?? \Shop::getLanguageID()] = $languageCode;
+        $this->languageCodes[$idx ?? Shop::getLanguageID()] = $languageCode;
     }
 
     /**
@@ -518,7 +523,7 @@ class Item extends AbstractItem
      */
     public function getLanguageID(int $idx = null): int
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->languageIDs[$idx] ?? 0;
     }
@@ -528,7 +533,7 @@ class Item extends AbstractItem
      */
     public function setLanguageID(int $languageID, int $idx = null): void
     {
-        $this->languageIDs[$idx ?? \Shop::getLanguageID()] = $languageID;
+        $this->languageIDs[$idx ?? Shop::getLanguageID()] = $languageID;
     }
 
     /**
@@ -560,7 +565,7 @@ class Item extends AbstractItem
      */
     public function getContent(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->contents[$idx] ?? '';
     }
@@ -570,7 +575,7 @@ class Item extends AbstractItem
      */
     public function setContent(string $content, int $idx = null): void
     {
-        $this->contents[$idx ?? \Shop::getLanguageID()] = $content;
+        $this->contents[$idx ?? Shop::getLanguageID()] = $content;
     }
 
     /**
@@ -594,7 +599,7 @@ class Item extends AbstractItem
      */
     public function getMetaTitle(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaTitles[$idx] ?? '';
     }
@@ -604,7 +609,7 @@ class Item extends AbstractItem
      */
     public function setMetaTitle(string $metaTitle, int $idx = null): void
     {
-        $this->metaTitles[$idx ?? \Shop::getLanguageID()] = $metaTitle;
+        $this->metaTitles[$idx ?? Shop::getLanguageID()] = $metaTitle;
     }
 
     /**
@@ -620,7 +625,7 @@ class Item extends AbstractItem
      */
     public function getMetaKeyword(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaKeywords[$idx] ?? '';
     }
@@ -638,7 +643,7 @@ class Item extends AbstractItem
      */
     public function setMetaKeyword(string $metaKeyword, int $idx = null): void
     {
-        $this->metaKeywords[$idx ?? \Shop::getLanguageID()] = $metaKeyword;
+        $this->metaKeywords[$idx ?? Shop::getLanguageID()] = $metaKeyword;
     }
 
     /**
@@ -654,7 +659,7 @@ class Item extends AbstractItem
      */
     public function getMetaDescription(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaDescriptions[$idx] ?? '';
     }
@@ -672,7 +677,7 @@ class Item extends AbstractItem
      */
     public function setMetaDescription(string $metaDescription, int $idx = null): void
     {
-        $this->metaDescriptions[$idx ?? \Shop::getLanguageID()] = $metaDescription;
+        $this->metaDescriptions[$idx ?? Shop::getLanguageID()] = $metaDescription;
     }
 
     /**
@@ -688,7 +693,7 @@ class Item extends AbstractItem
      */
     public function getPreview(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->previews[$idx] ?? '';
     }
@@ -714,7 +719,7 @@ class Item extends AbstractItem
      */
     public function setPreview(string $preview, int $idx = null): void
     {
-        $this->previews[$idx ?? \Shop::getLanguageID()] = $preview;
+        $this->previews[$idx ?? Shop::getLanguageID()] = $preview;
     }
 
     /**
@@ -722,7 +727,7 @@ class Item extends AbstractItem
      */
     public function getPreviewImage(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->previewImages[$idx] ?? '';
     }
@@ -748,13 +753,13 @@ class Item extends AbstractItem
      */
     public function setPreviewImage(string $previewImage, int $idx = null): void
     {
-        $this->previewImages[$idx ?? \Shop::getLanguageID()] = $previewImage;
+        $this->previewImages[$idx ?? Shop::getLanguageID()] = $previewImage;
     }
 
     /**
      * @inheritdoc
      */
-    public function getDateCreated(): \DateTime
+    public function getDateCreated(): DateTime
     {
         return $this->dateCreated;
     }
@@ -762,7 +767,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setDateCreated(\DateTime $dateCreated): void
+    public function setDateCreated(DateTime $dateCreated): void
     {
         $this->dateCreated = $dateCreated;
     }
@@ -770,7 +775,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getDateValidFrom(): \DateTime
+    public function getDateValidFrom(): DateTime
     {
         return $this->dateValidFrom;
     }
@@ -786,7 +791,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setDateValidFrom(\DateTime $dateValidFrom): void
+    public function setDateValidFrom(DateTime $dateValidFrom): void
     {
         $this->dateValidFrom = $dateValidFrom;
     }
@@ -794,7 +799,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function getDate(): \DateTime
+    public function getDate(): DateTime
     {
         return $this->date;
     }
@@ -802,7 +807,7 @@ class Item extends AbstractItem
     /**
      * @inheritdoc
      */
-    public function setDate(\DateTime $date): void
+    public function setDate(DateTime $date): void
     {
         $this->date = $date;
     }
@@ -857,17 +862,17 @@ class Item extends AbstractItem
     }
 
     /**
-     * @return null|\stdClass
+     * @return null|stdClass
      */
-    public function getAuthor(): ?\stdClass
+    public function getAuthor(): ?stdClass
     {
         return $this->author;
     }
 
     /**
-     * @param null|\stdClass $author
+     * @param null|stdClass $author
      */
-    public function setAuthor(?\stdClass $author): void
+    public function setAuthor(?stdClass $author): void
     {
         $this->author = $author;
     }

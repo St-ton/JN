@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace VerificationVAT;
+namespace JTL\VerificationVAT;
+
+use JTL\Shop;
 
 /**
  * Class VATCheck
- * @package VerificationVAT
+ * @package JTL\VerificationVAT
  */
 class VATCheck
 {
@@ -29,7 +31,7 @@ class VATCheck
     public function __construct(string $ustID = '')
     {
         $slots       = new VATCheckDownSlots();
-        $logger      = \Shop::Container()->getLogService();
+        $logger      = Shop::Container()->getLogService();
         $this->ustID = $ustID;
         if ($this->startsWith($this->ustID, 'CHE')) {
             $this->location = new VATCheckNonEU($slots, $logger);

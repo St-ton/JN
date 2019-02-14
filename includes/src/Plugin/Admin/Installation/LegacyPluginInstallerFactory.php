@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
 
 /**
  * Class LegacyPluginInstallerFactory
- * @package Plugin\Admin\Installation
+ * @package JTL\Plugin\Admin\Installation
  */
 class LegacyPluginInstallerFactory extends AbstractInstallerFactory
 {

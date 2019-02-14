@@ -6,6 +6,9 @@
  * @created Wed, 19 Sep 2018 13:05:19 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180919130519 extends Migration implements IMigration
 {
-    protected $author = 'fp';
+    protected $author      = 'fp';
     protected $description = 'Create indices for or-filtered attributes';
 
     public function up()

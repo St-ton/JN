@@ -91,7 +91,7 @@ class XTEA
     //Entschluesseln
     public function decrypt($text)
     {
-        $plain  = array();
+        $plain  = [];
         $cipher = $this->_str2long(base64_decode($text));
 
         if ($this->cbc == 1) {
@@ -107,7 +107,7 @@ class XTEA
             //Xor Verknuepfung von $return und Geheimtext aus von den letzten beiden Bloecken
             //XORed $return with the previous ciphertext
             if ($this->cbc == 1) {
-                $plain[] = array($return[0] ^ $cipher[$i - 2], $return[1] ^ $cipher[$i - 1]);
+                $plain[] = [$return[0] ^ $cipher[$i - 2], $return[1] ^ $cipher[$i - 1]];
             } else {//EBC Mode
                 $plain[] = $return;
             }
@@ -130,7 +130,7 @@ class XTEA
         } elseif (isset($key) && !empty($key)) {
             $this->key = $this->_str2long(str_pad($key, 16, $key));
         } else {
-            $this->key = array(0, 0, 0, 0);
+            $this->key = [0, 0, 0, 0];
         }
     }
 
@@ -142,12 +142,12 @@ class XTEA
 
         //Key-Setup
         $start1 = time() + (double)microtime();
-        $xtea   = new XTEA('key');
+        $xtea   = new self('key');
         $end1   = time() + (double)microtime();
 
         //Encryption
         $start2 = time() + (double)microtime();
-        $xtea->Encrypt($string);
+        $xtea->encrypt($string);
         $end2 = time() + (double)microtime();
 
         echo 'Encrypting ' . $length . ' bytes: ' . round(
@@ -160,19 +160,18 @@ class XTEA
     public function check_implementation()
     {
         $xtea    = new XTEA('');
-        $vectors = array(
-            array(
-                array(0x00000000, 0x00000000, 0x00000000, 0x00000000),
-                array(0x41414141, 0x41414141),
-                array(0xed23375a, 0x821a8c2d)
-            ),
-            array(
-                array(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f),
-                array(0x41424344, 0x45464748),
-                array(0x497df3d0, 0x72612cb5)
-            ),
-
-        );
+        $vectors = [
+            [
+                [0x00000000, 0x00000000, 0x00000000, 0x00000000],
+                [0x41414141, 0x41414141],
+                [0xed23375a, 0x821a8c2d]
+            ],
+            [
+                [0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f],
+                [0x41424344, 0x45464748],
+                [0x497df3d0, 0x72612cb5]
+            ]
+        ];
 
         //Correct implementation?
         $correct = true;
@@ -222,7 +221,7 @@ class XTEA
         $v[0] = $y;
         $v[1] = $z;
 
-        return array($y, $z);
+        return [$y, $z];
     }
 
     public function block_decrypt($y, $z)
@@ -247,7 +246,7 @@ class XTEA
         }
         /* end cycle */
 
-        return array($y, $z);
+        return [$y, $z];
     }
 
     public function _rshift($integer, $n)
@@ -311,7 +310,7 @@ class XTEA
     {
         $n         = strlen($data);
         $tmp       = unpack('N*', $data);
-        $data_long = array();
+        $data_long = [];
         $j         = 0;
 
         foreach ($tmp as $value) {

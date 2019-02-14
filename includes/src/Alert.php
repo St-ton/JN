@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class Alert
+ * @package JTL
  */
 class Alert
 {
@@ -98,7 +101,7 @@ class Alert
     {
         $propertiesToSave = ['type', 'message', 'key'];
         if ($this->getOptions() !== null) {
-            $propertiesToSave = array_merge($propertiesToSave, array_keys($this->options));
+            $propertiesToSave = \array_merge($propertiesToSave, \array_keys($this->options));
         }
 
         return $propertiesToSave;
@@ -113,9 +116,9 @@ class Alert
     }
 
     /**
-     * @param string $message
-     * @param string $type
-     * @param string $key
+     * @param string     $message
+     * @param string     $type
+     * @param string     $key
      * @param array|null $options
      * constructor
      */
@@ -159,8 +162,8 @@ class Alert
         if (!$initFromUnserialize) {
             if ($this->getOptions() !== null) {
                 foreach ($this->getOptions() as $optionKey => $optionValue) {
-                    $methodName = 'set' . ucfirst($optionKey);
-                    if (is_callable([$this, $methodName])) {
+                    $methodName = 'set' . \ucfirst($optionKey);
+                    if (\is_callable([$this, $methodName])) {
                         $this->$methodName($optionValue);
                     }
                 }
@@ -420,7 +423,7 @@ class Alert
         if (!isset($_SESSION['alerts'])) {
             $_SESSION['alerts'] = [];
         }
-        $_SESSION['alerts'][$this->getKey()] = serialize($this);
+        $_SESSION['alerts'][$this->getKey()] = \serialize($this);
     }
 
     /**

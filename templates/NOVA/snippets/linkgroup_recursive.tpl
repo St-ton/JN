@@ -15,12 +15,12 @@
             {if isset($Link) && $Link->getID() > 0}
                 {assign var='activeId' value=$Link->getID()}
             {elseif Shop::$kLink > 0}
-                {assign var='activeId' value=Shop::$kLink}
-                {assign var='Link' value=Shop::Container()->getLinkService()->getLinkByID($activeId)}
+                {assign var='activeId' value=JTL\Shop::$kLink}
+                {assign var='Link' value=JTL\Shop::Container()->getLinkService()->getLinkByID($activeId)}
             {/if}
         {/if}
         {if !isset($activeParents)}
-            {assign var='activeParents' value=Shop::Container()->getLinkService()->getParentIDs($activeId)}
+            {assign var='activeParents' value=JTL\Shop::Container()->getLinkService()->getParentIDs($activeId)}
         {/if}
         {if !isset($links)}
             {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}

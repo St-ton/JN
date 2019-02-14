@@ -2,11 +2,14 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- * @global \Backend\AdminAccount $oAccount
- * @global \Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Update\DBMigrationHelper;
+use JTL\Shop;
+use JTL\Helpers\Text;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -22,7 +25,7 @@ $maintenanceResult = null;
 $engineUpdate      = null;
 $fulltextIndizes   = null;
 
-if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 'script' && Form::validateToken()) {
+if (isset($_POST['update']) && Text::filterXSS($_POST['update']) === 'script' && Form::validateToken()) {
     $scriptName = 'innodb_and_utf8_update_'
         . str_replace('.', '_', Shop::Container()->getDB()->getConfig()['host']) . '_'
         . Shop::Container()->getDB()->getConfig()['database'] . '_'
@@ -71,7 +74,7 @@ $smarty->assign('cFehler', $cFehler)
        ->assign('cDBError_arr', $dbErrors)
        ->assign('maintenanceResult', $maintenanceResult)
        ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
-       ->assign('tab', isset($_REQUEST['tab']) ? StringHandler::filterXSS($_REQUEST['tab']) : '')
+       ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
        ->assign('Einstellungen', $conf)
        ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
        ->assign('FulltextIndizes', $fulltextIndizes)

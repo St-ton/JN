@@ -34,8 +34,8 @@
                 <h3>{__('umfrageQ')}:</h3>
                 {foreach $oUmfrageStats->oUmfrageFrage_arr as $oUmfrageFrage}
                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
-                        {if $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE
-                        || $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}
+                        {if $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE
+                        || $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}

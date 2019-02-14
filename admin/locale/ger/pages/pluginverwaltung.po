@@ -181,3 +181,30 @@ msgstr "Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können dahe
 
 msgid "licensePlugin"
 msgstr "Plugin Lizenz"
+
+msgid "storeNotLinkedDesc"
+msgstr "Um auf JTL-Store Inhalte zugreifen zu k&ouml;nnen, müssen Sie zun&auml;chst Ihr JTL-Konto verkn&uuml;pfen."
+
+msgid "storeLink"
+msgstr "Konto verknüpfen"
+
+msgid "storeRevoke"
+msgstr "Verknüpfung aufheben"
+
+msgid "storeUpdatesAvailable"
+msgstr "Updates verfügbar"
+
+msgid "storeListUpdates"
+msgstr "Updates anzeigen"
+
+msgid "storePlugins"
+msgstr "lizenzierte Plug-Ins"
+
+msgid "storeListAll"
+msgstr "Alle anzeigen"
+
+msgid "storeLastUpdate"
+msgstr "zuletzt aktualisiert"
+
+msgid "storeUpdateNow"
+msgstr "Aktualisieren"

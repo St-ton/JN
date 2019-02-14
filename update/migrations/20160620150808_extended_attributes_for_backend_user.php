@@ -6,6 +6,9 @@
  * @created Mon, 20 Jun 2016 15:08:08 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -37,14 +40,14 @@ class Migration_20160620150808 extends Migration implements IMigration
         );
 
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `tcontentauthor` (
+            'CREATE TABLE IF NOT EXISTS `tcontentauthor` (
                 `kContentAuthor`  INT          NOT NULL AUTO_INCREMENT,
                 `cRealm`          VARCHAR(45)  NOT NULL,
                 `kAdminlogin`     INT          NOT NULL,
                 `kContentId`      INT          NOT NULL,
                 PRIMARY KEY (`kContentAuthor`),
                 UNIQUE INDEX `cRealm_UNIQUE` (`cRealm`, `kContentId`)) 
-                ENGINE = MyISAM  DEFAULT CHARSET=latin1"
+                ENGINE = MyISAM  DEFAULT CHARSET=latin1'
         );
     }
 

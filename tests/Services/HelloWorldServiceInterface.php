@@ -15,5 +15,5 @@ interface HelloWorldServiceInterface
     /**
      * @return string
      */
-    public function getHelloWorldString();
+    public function getHelloWorldString(): string;
 }

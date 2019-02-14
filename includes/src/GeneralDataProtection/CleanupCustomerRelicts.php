@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CleanupCustomerRelicts
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * clean up multiple tables at each run
  * (normaly one times a day)
@@ -50,7 +51,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupVisitorArchive(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tbesucherarchiv
             WHERE
                 kKunde > 0
@@ -67,7 +68,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupCustomerRecruitings()
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE k, b
             FROM
                 tkundenwerbenkunden k
@@ -86,7 +87,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupCustomerAttributes(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundenattribut
             WHERE
                 NOT EXISTS (SELECT kKunde FROM tkunde WHERE tkunde.kKunde = tkundenattribut.kKunde)
@@ -102,7 +103,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupPaymentInformation(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tzahlungsinfo
             WHERE
                 kKunde > 0
@@ -119,7 +120,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupCustomerAccountData(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundenkontodaten
             WHERE
                 kKunde > 0
@@ -138,7 +139,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupDeliveryAddresses(): void
     {
-        \Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE k
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
@@ -157,7 +158,7 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     private function cleanupBillingAddresses(): void
     {
-        \Shop::Container()->getDB()->query(
+        Shop::Container()->getDB()->query(
             "DELETE k
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde

@@ -6,6 +6,9 @@
  * @created Tue, 01 Aug 2017 13:10:13 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170801131013 extends Migration implements IMigration
 {
-    protected $author = 'msc';
+    protected $author      = 'msc';
     protected $description = 'Add language variable one-off';
 
     public function up()

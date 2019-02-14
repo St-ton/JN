@@ -4,17 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use DB\ReturnType;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\States\BaseAttribute;
-use Filter\StateSQL;
-use Filter\StateSQLInterface;
-use Filter\Type;
+use JTL\DB\ReturnType;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\States\BaseAttribute;
+use JTL\Filter\StateSQL;
+use JTL\Filter\StateSQLInterface;
+use JTL\Filter\Type;
+use JTL\Catalog\Category\Kategorie;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
+use JTL\Sprache;
+use stdClass;
 use function Functional\every;
 use function Functional\first;
 use function Functional\group;
@@ -22,11 +27,11 @@ use function Functional\map;
 
 /**
  * Class Attribute
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Attribute extends BaseAttribute
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -250,10 +255,10 @@ class Attribute extends BaseAttribute
     }
 
     /**
-     * @param \Kategorie|null $category
+     * @param Kategorie|null $category
      * @return StateSQLInterface
      */
-    protected function getState(\Kategorie $category = null): StateSQLInterface
+    protected function getState(Kategorie $category = null): StateSQLInterface
     {
         $base  = $this->productFilter->getCurrentStateData(self::class);
         $state = (new StateSQL())->from($base);
@@ -284,7 +289,7 @@ class Attribute extends BaseAttribute
             ->setOrigin(__CLASS__));
 
         $langID           = $this->getLanguageID();
-        $kStandardSprache = \Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
         if ($langID !== $kStandardSprache) {
             $state->setSelect([
                 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName',
@@ -461,14 +466,14 @@ class Attribute extends BaseAttribute
         });
         foreach ($attributeFilterCollection as $attributeID => $attributeValues) {
             $first                                   = first($attributeValues);
-            $attribute                               = new \stdClass();
+            $attribute                               = new stdClass();
             $attribute->kMerkmal                     = (int)$first->kMerkmal;
             $attribute->nMehrfachauswahl             = (int)$first->nMehrfachauswahl;
             $attribute->cName                        = $first->cName;
             $attribute->cMMBildPfad                  = $first->cMMBildPfad;
             $attribute->cTyp                         = $first->cTyp;
             $attribute->attributeValues              = map($attributeValues, function ($e) {
-                $av               = new \stdClass();
+                $av               = new stdClass();
                 $av->kMerkmal     = (int)$e->kMerkmal;
                 $av->kMerkmalWert = (int)$e->kMerkmalWert;
                 $av->cMMWBildPfad = $e->cMMWBildPfad;
@@ -479,7 +484,7 @@ class Attribute extends BaseAttribute
             });
             $attributeFilterCollection[$attributeID] = $attribute;
         }
-        $imageBaseURL       = \Shop::getImageBaseURL();
+        $imageBaseURL       = Shop::getImageBaseURL();
         $filterURLGenerator = $this->productFilter->getFilterURL();
         $i                  = 0;
         foreach ($attributeFilterCollection as $attributeFilter) {

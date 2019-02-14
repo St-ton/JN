@@ -6,6 +6,11 @@
  * @created Tue, 09 Jan 2018 10:46:08 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+use JTL\Helpers\Text;
+
 /**
  * Migration
  *
@@ -43,8 +48,8 @@ class Migration_20180109104608 extends Migration implements IMigration
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
                     $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
-                    if (!StringHandler::is_utf8($dataObj->$propName)) {
-                        $dataObj->$propName = StringHandler::convertUTF8($dataObj->$propName);
+                    if (!Text::is_utf8($dataObj->$propName)) {
+                        $dataObj->$propName = Text::convertUTF8($dataObj->$propName);
                     }
                     $dataObj->$propName = $cryptoService->encryptXTEA($dataObj->$propName);
                 }
@@ -67,8 +72,8 @@ class Migration_20180109104608 extends Migration implements IMigration
             foreach ($dataSet as $dataObj) {
                 foreach ($propNames as $propName) {
                     $dataObj->$propName = $cryptoService->decryptXTEA($dataObj->$propName);
-                    if (StringHandler::is_utf8($dataObj->$propName)) {
-                        $dataObj->$propName = StringHandler::convertISO($dataObj->$propName);
+                    if (Text::is_utf8($dataObj->$propName)) {
+                        $dataObj->$propName = Text::convertISO($dataObj->$propName);
                     }
                     $dataObj->$propName = $cryptoService->encryptXTEA($dataObj->$propName);
                 }

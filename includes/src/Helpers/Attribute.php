@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Merkmal;
-use Shop;
+use JTL\Catalog\Product\Merkmal;
+use JTL\Shop;
 
 /**
  * Class Attribute
- * @package Helpers
+ * @package JTL\Helpers
  * @since 5.0.0
  */
 class Attribute

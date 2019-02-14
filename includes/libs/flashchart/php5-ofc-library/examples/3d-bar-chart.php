@@ -1,16 +1,16 @@
 <?php
 
-srand((double)microtime()*1000000);
+srand((double)microtime() * 1000000);
 $data = array();
 
 // add random height bars:
-for ($i=0; $i<10; $i++) {
+for ($i = 0; $i < 10; $i++) {
     $data[] = rand(2, 9);
 }
 
 require_once('OFC/OFC_Chart.php');
 
-$title = new OFC_Elements_Title(date("D M d Y"));
+$title = new OFC_Elements_Title(date('D M d Y'));
 
 $bar = new OFC_Charts_Bar_3d();
 $bar->set_values($data);

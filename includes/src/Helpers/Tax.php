@@ -4,19 +4,22 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\ReturnType;
-use Link\Link;
-use Preise;
-use Session\Frontend;
-use Shop;
-use Sprache;
+use function Functional\map;
+use JTL\Alert;
+use JTL\Cart\Warenkorb;
+use JTL\DB\ReturnType;
+use JTL\Link\Link;
+use JTL\Catalog\Product\Preise;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
 use stdClass;
-use Warenkorb;
 
 /**
  * Class Tax
+ * @package JTL\Helpers
  * @since since 5.0.0
  */
 class Tax
@@ -123,7 +126,7 @@ class Tax
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
                 Shop::Container()->getAlertService()->addAlert(
-                    \Alert::TYPE_ERROR,
+                    Alert::TYPE_ERROR,
                     Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingTaxZoneForDeliveryCountry'
                 );
@@ -135,7 +138,7 @@ class Tax
 
             if ($redirURL === $urlHelper->normalize()) {
                 Shop::Container()->getAlertService()->addAlert(
-                    \Alert::TYPE_ERROR,
+                    Alert::TYPE_ERROR,
                     Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
                     . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingParamShippingDetermination'
@@ -151,7 +154,7 @@ class Tax
             'SELECT * FROM tsteuerklasse',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $zones         = \Functional\map($steuerzonen, function ($e) {
+        $zones         = map($steuerzonen, function ($e) {
             return (int)$e->kSteuerzone;
         });
         $qry           = \count($zones) > 0

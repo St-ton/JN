@@ -87,7 +87,7 @@ class Zend_Validate_Regex extends Zend_Validate_Abstract
      */
     public function setPattern($pattern)
     {
-        $this->_pattern = (string) $pattern;
+        $this->_pattern = (string)$pattern;
         return $this;
     }
 
@@ -102,7 +102,7 @@ class Zend_Validate_Regex extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        $valueString = (string) $value;
+        $valueString = (string)$value;
 
         $this->_setValue($valueString);
 

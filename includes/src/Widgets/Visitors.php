@@ -4,11 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\Linechart;
+use JTL\Statistik;
 
 /**
  * Class Visitors
- * @package Widgets
+ * @package JTL\Widgets
  */
 class Visitors extends AbstractWidget
 {
@@ -24,7 +27,7 @@ class Visitors extends AbstractWidget
      */
     public function getVisitorsOfCurrentMonth(): array
     {
-        $oStatistik = new \Statistik(\firstDayOfMonth(), \time());
+        $oStatistik = new Statistik(\firstDayOfMonth(), \time());
 
         return $oStatistik->holeBesucherStats(2);
     }
@@ -40,15 +43,15 @@ class Visitors extends AbstractWidget
             $month = 12;
             $year  = \date('Y') - 1;
         }
-        $oStatistik = new \Statistik(\firstDayOfMonth($month, $year), \lastDayOfMonth($month, $year));
+        $oStatistik = new Statistik(\firstDayOfMonth($month, $year), \lastDayOfMonth($month, $year));
 
         return $oStatistik->holeBesucherStats(2);
     }
 
     /**
-     * @return \Linechart
+     * @return Linechart
      */
-    public function getJSON(): \Linechart
+    public function getJSON(): Linechart
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $currentMonth = $this->getVisitorsOfCurrentMonth();

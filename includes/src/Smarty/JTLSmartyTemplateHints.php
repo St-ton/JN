@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Smarty;
+namespace JTL\Smarty;
 
 /**
  * Class JTLSmartyTemplateHints
- * @package Smarty
+ * @package JTL\Smarty
  */
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {

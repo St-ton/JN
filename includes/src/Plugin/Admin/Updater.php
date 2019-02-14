@@ -4,16 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace JTL\Plugin\Admin;
 
-use DB\DbInterface;
-use Plugin\Admin\Installation\Installer;
-use Plugin\Helper;
-use Plugin\InstallCode;
+use JTL\DB\DbInterface;
+use JTL\Plugin\Admin\Installation\Installer;
+use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Updater
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin
  */
 class Updater
 {

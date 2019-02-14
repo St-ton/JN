@@ -22,7 +22,7 @@ require_once('OFC/Charts/OFC_Charts_Bar.php');
 
 class OFC_Charts_Bar_Value
 {
-    public function OFC_Charts_Bar_Value($top, $bottom=null)
+    public function OFC_Charts_Bar_Value($top, $bottom = null)
     {
         $this->top = $top;
 

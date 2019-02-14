@@ -1,14 +1,15 @@
 <?php
 /**
  * Refactor data types
- *
- * @author fp
+ * @author  fp
  * @created Mon, 20 Aug 2018 11:26:05 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
- *
  * Available methods:
  * execute            - returns affected rows
  * fetchOne           - single fetched object
@@ -22,7 +23,7 @@
  */
 class Migration_20180820112605 extends Migration implements IMigration
 {
-    protected $author = 'fp';
+    protected $author      = 'fp';
     protected $description = 'Refactor data types for kKundengruppe';
 
     public function up()
@@ -36,13 +37,15 @@ class Migration_20180820112605 extends Migration implements IMigration
                     AND TABLE_NAME NOT LIKE 'xplugin_%'"
         );
         foreach ($columns as $column) {
-            $alterSQL = /** @lang text */
+            $sql = /** @lang text */
                 'ALTER TABLE `' . DB_NAME . '`.`' . $column->TABLE_NAME . '` CHANGE `kKundengruppe` `kKundengruppe` INT'
-                .(strpos($column->COLUMN_TYPE, 'unsigned') !== false ? ' UNSIGNED' : '')
-                .($column->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
-                .($column->COLUMN_DEFAULT === null || $column->COLUMN_DEFAULT === 'NULL' ? ($column->IS_NULLABLE === 'YES' ? ' DEFAULT NULL' : '') : ' DEFAULT \'' . $column->COLUMN_DEFAULT . '\'');
+                . (strpos($column->COLUMN_TYPE, 'unsigned') !== false ? ' UNSIGNED' : '')
+                . ($column->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
+                . ($column->COLUMN_DEFAULT === null || $column->COLUMN_DEFAULT === 'NULL'
+                    ? ($column->IS_NULLABLE === 'YES' ? ' DEFAULT NULL' : '')
+                    : ' DEFAULT \'' . $column->COLUMN_DEFAULT . '\'');
 
-            $this->execute($alterSQL);
+            $this->execute($sql);
         }
     }
 

@@ -6,6 +6,9 @@
  * @created Mon, 26 Mar 2018 11:18:43 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -38,10 +41,10 @@ class Migration_20180326111843 extends Migration implements IMigration
     public function down()
     {
         $this->execute(
-            "ALTER TABLE twarenkorbpos DROP COLUMN cResponsibility"
+            'ALTER TABLE twarenkorbpos DROP COLUMN cResponsibility'
         );
         $this->execute(
-            "ALTER TABLE twarenkorbperspos DROP COLUMN cResponsibility"
+            'ALTER TABLE twarenkorbperspos DROP COLUMN cResponsibility'
         );
     }
 }

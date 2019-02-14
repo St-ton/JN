@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use DB\DbInterface;
-use Plugin\LegacyPlugin;
+use JTL\DB\DbInterface;
+use JTL\Plugin\LegacyPlugin;
 
 /**
  * Interface ItemInterface
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 interface ItemInterface
 {

@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class InputType
  *
- * @package Filter
+ * @package JTL\Filter
  * @method static InputType SELECT()
  * @method static InputType CHECKBOX()
  * @method static InputType BUTTON()

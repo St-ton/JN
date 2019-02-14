@@ -4,11 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
+
+use stdClass;
 
 /**
  * Class Extractor
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin\Installation
  */
 class Extractor
 {
@@ -39,11 +41,11 @@ class Extractor
 
     /**
      * @param string $zipFile
-     * @return \stdClass
+     * @return stdClass
      */
-    public function extractPlugin($zipFile): \stdClass
+    public function extractPlugin($zipFile): stdClass
     {
-        $response                 = new \stdClass();
+        $response                 = new stdClass();
         $response->status         = 'OK';
         $response->error          = null;
         $response->files_unpacked = [];
@@ -57,10 +59,10 @@ class Extractor
 
     /**
      * @param string    $zipFile
-     * @param \stdClass $response
-     * @return \stdClass
+     * @param stdClass $response
+     * @return stdClass
      */
-    private function unzip(string $zipFile, \stdClass $response): \stdClass
+    private function unzip(string $zipFile, stdClass $response): stdClass
     {
         $zip = new \ZipArchive();
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
@@ -94,10 +96,10 @@ class Extractor
 
     /**
      * @param string    $zipFile
-     * @param \stdClass $response
-     * @return \stdClass
+     * @param stdClass $response
+     * @return stdClass
      */
-    private function unPclZip(string $zipFile, \stdClass $response): \stdClass
+    private function unPclZip(string $zipFile, stdClass $response): stdClass
     {
         $zip     = new \PclZip($zipFile);
         $content = $zip->listContent();

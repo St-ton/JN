@@ -4,13 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Filter\FilterInterface;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\Filter\FilterInterface;
+use JTL\Plugin\PluginInterface;
 
 /**
  * Interface BoxInterface
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 interface BoxInterface
 {
@@ -72,24 +75,24 @@ interface BoxInterface
     public function setTemplateFile(string $templateFile): void;
 
     /**
-     * @return null|\Plugin\LegacyPlugin
+     * @return null|PluginInterface
      */
-    public function getPlugin(): ?\Plugin\LegacyPlugin;
+    public function getPlugin(): ?PluginInterface;
 
     /**
-     * @param null|\Plugin\LegacyPlugin $plugin
+     * @param null|PluginInterface $plugin
      */
-    public function setPlugin(?\Plugin\LegacyPlugin $plugin): void;
+    public function setPlugin(?PluginInterface $plugin): void;
 
     /**
-     * @return null|\Plugin\Plugin
+     * @return null|PluginInterface
      */
-    public function getExtension(): ?\Plugin\Plugin;
+    public function getExtension(): ?PluginInterface;
 
     /**
-     * @param null|\Plugin\Plugin $extension
+     * @param null|PluginInterface $extension
      */
-    public function setExtension(?\Plugin\Plugin $extension): void;
+    public function setExtension(?PluginInterface $extension): void;
 
     /**
      * @return int
@@ -204,12 +207,12 @@ interface BoxInterface
     public function setIsActive(bool $isActive): void;
 
     /**
-     * @return array|\Artikel[]|\ArtikelListe
+     * @return array|Artikel[]|ArtikelListe
      */
     public function getProducts();
 
     /**
-     * @param array|\ArtikelListe $products
+     * @param array|ArtikelListe $products
      */
     public function setProducts($products): void;
 

@@ -4,17 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use Tightenco\Collect\Support\Collection;
 use function Functional\group;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkList
- * @package Link
+ * @package JTL\Link
  */
 final class LinkList implements LinkListInterface
 {

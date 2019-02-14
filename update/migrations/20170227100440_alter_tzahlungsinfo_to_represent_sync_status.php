@@ -6,6 +6,9 @@
  * @created Mon, 27 Feb 2017 10:04:40 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170227100440 extends Migration implements IMigration
 {
-    protected $author = 'fp';
+    protected $author      = 'fp';
     protected $description = 'Alter tzahlungsinfo to represent sync status';
 
     public function up()
@@ -36,8 +39,8 @@ class Migration_20170227100440 extends Migration implements IMigration
     public function down()
     {
         $this->execute(
-            "ALTER TABLE tzahlungsinfo
-                DROP COLUMN cAbgeholt"
+            'ALTER TABLE tzahlungsinfo
+                DROP COLUMN cAbgeholt'
         );
     }
 }

@@ -3,6 +3,9 @@
  * Add language variables for product rating
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *

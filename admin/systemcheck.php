@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
 $phpInfo = '';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 if (isset($_GET['phpinfo'])) {
     if (in_array('phpinfo', explode(',', ini_get('disable_functions')), true)) {
         return;

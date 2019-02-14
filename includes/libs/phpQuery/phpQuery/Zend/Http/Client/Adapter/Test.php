@@ -80,7 +80,8 @@ class Zend_Http_Client_Adapter_Test implements Zend_Http_Client_Adapter_Interfac
         if (! is_array($config)) {
             require_once 'Zend/Http/Client/Adapter/Exception.php';
             throw new Zend_Http_Client_Adapter_Exception(
-                '$config expects an array, ' . gettype($config) . ' recieved.');
+                '$config expects an array, ' . gettype($config) . ' recieved.'
+            );
         }
 
         foreach ($config as $k => $v) {
@@ -167,7 +168,7 @@ class Zend_Http_Client_Adapter_Test implements Zend_Http_Client_Adapter_Interfac
             $response = $response->asString();
         }
 
-        $this->responses = (array)$response;
+        $this->responses     = (array)$response;
         $this->responseIndex = 0;
     }
 
@@ -192,7 +193,8 @@ class Zend_Http_Client_Adapter_Test implements Zend_Http_Client_Adapter_Interfac
         if ($index < 0 || $index >= count($this->responses)) {
             require_once 'Zend/Http/Client/Adapter/Exception.php';
             throw new Zend_Http_Client_Adapter_Exception(
-                'Index out of range of response buffer size');
+                'Index out of range of response buffer size'
+            );
         }
         $this->responseIndex = $index;
     }

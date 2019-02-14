@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Helpers\Text;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -75,13 +80,13 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         );
     }
     $step = 'confirm';
-    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
+    Shop::Smarty()->assign('fpwh', Text::filterXSS($_POST['fpwh']));
 } elseif (isset($_GET['fpwh'])) {
     $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
     if ($resetItem) {
         $dateExpires = new DateTime($resetItem->dExpires);
         if ($dateExpires >= new DateTime()) {
-            Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
+            Shop::Smarty()->assign('fpwh', Text::filterXSS($_GET['fpwh']));
         } else {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,

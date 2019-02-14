@@ -4,9 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -14,7 +18,7 @@ $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis    = '';
@@ -45,14 +49,14 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                 "DELETE FROM tseo
                     WHERE cKey = 'kTag'
                         AND kKey" . $cSQLDel,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             // Deaktivierten Tag in ttag updaten
             $db->query(
                 "UPDATE ttag
                     SET cSeo = ''
                     WHERE kTag" . $cSQLDel,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             // nAktiv Reihe updaten
             if (is_array($_POST['nAktiv'])) {
@@ -65,7 +69,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                     );
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = isset($oTag->cName)
-                        ? \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oTag->cName))
+                        ? Seo::checkSeo(Seo::getSeo($oTag->cName))
                         : '';
                     $oSeo->cKey     = 'kTag';
                     $oSeo->kKey     = $nAktiv;
@@ -89,7 +93,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                 WHERE ttag.kSprache = ' . (int)$_SESSION['kSprache'] . ' 
                 GROUP BY ttag.cName
                 ORDER BY Anzahl DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($tags as $tag) {
             if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
@@ -116,7 +120,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                                 SET nAnzahlTagging = nAnzahlTagging + ' . $tagmapping->nAnzahlTagging . '
                                 WHERE kTag = ' . (int)$Neuertag->kTag . ' 
                                     AND kArtikel = ' . (int)$tagmapping->kArtikel,
-                                \DB\ReturnType::AFFECTED_ROWS
+                                ReturnType::AFFECTED_ROWS
                             ) > 0) {
                                 $db->delete(
                                     'ttagartikel',
@@ -163,7 +167,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                                 ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
                             WHERE ttag.kTag = " . $kTag,
-                        \DB\ReturnType::DEFAULT
+                        ReturnType::DEFAULT
                     );
                     // also delete possible mappings TO this tag
                     $db->delete('ttagmapping', 'cNameNeu', $oTag->cName);
@@ -229,13 +233,13 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
         'SELECT COUNT(*) AS count
             FROM ttag
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->count;
     $tagMappingCount = (int)$db->query(
         'SELECT COUNT(*) AS count
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->count;
 
     $oPagiTags        = (new Pagination('tags'))
@@ -255,14 +259,14 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
             GROUP BY ttag.cName
             ORDER BY Anzahl DESC
             LIMIT ' . $oPagiTags->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $mapping   = $db->query(
         'SELECT *
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
             LIMIT ' . $oPagiTagMappings->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))

@@ -4,13 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Exceptions;
+namespace JTL\Exceptions;
+
+use Exception;
 
 /**
  * Class EmptyResultSetException
- * @package Exceptions
+ * @package JTL\Exceptions
  */
-class EmptyResultSetException extends \Exception
+class EmptyResultSetException extends Exception
 {
     /**
      * EmptyResultSetException constructor.
@@ -18,6 +20,6 @@ class EmptyResultSetException extends \Exception
      */
     public function __construct($message)
     {
-        parent::__construct($this->file.': '.$message);
+        parent::__construct($this->file . ': ' . $message);
     }
 }

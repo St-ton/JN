@@ -2,7 +2,7 @@
 
 require_once('OFC/OFC_Chart.php');
 
-$title = new OFC_Elements_Title(date("D M d Y"));
+$title = new OFC_Elements_Title(date('D M d Y'));
 
 $bar_stack = new OFC_Charts_Bar_Stack();
 $bar_stack->append_stack(array( 2.5, 5 ));

@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
+use DateTime;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Interface CategoryInterface
- * @package News
+ * @package JTL\News
  */
 interface CategoryInterface
 {
@@ -244,14 +245,14 @@ interface CategoryInterface
     public function setIsActive(bool $isActive): void;
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateLastModified(): \DateTime;
+    public function getDateLastModified(): DateTime;
 
     /**
-     * @param \DateTime $dateLastModified
+     * @param DateTime $dateLastModified
      */
-    public function setDateLastModified(\DateTime $dateLastModified): void;
+    public function setDateLastModified(DateTime $dateLastModified): void;
 
     /**
      * @return int

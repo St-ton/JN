@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
+
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class MatrixOption
- * @package Survey
+ * @package JTL\Survey
  */
 class MatrixOption
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int

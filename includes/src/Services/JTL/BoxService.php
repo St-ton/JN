@@ -4,28 +4,34 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Boxes\FactoryInterface;
-use Boxes\Items\BoxInterface;
-use Boxes\Items\Extension;
-use Boxes\Items\Plugin;
-use Boxes\Renderer\RendererInterface;
-use Boxes\Type;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
-use Filter\ProductFilter;
-use Filter\Visibility;
-use Plugin\PluginLoader;
-use Plugin\State;
-use Session\Frontend;
-use Smarty\JTLSmarty;
+use function Functional\first;
+use function Functional\group;
+use function Functional\map;
+use JTL\Boxes\Factory;
+use JTL\Boxes\FactoryInterface;
+use JTL\Boxes\Items\BoxInterface;
+use JTL\Boxes\Renderer\RendererInterface;
+use JTL\Boxes\Type;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\Visibility;
+use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\Plugin;
+use JTL\Plugin\PluginLoader;
+use JTL\Plugin\State;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
+use JTL\Template;
 use function Functional\tail;
 
 /**
  * Class BoxService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class BoxService implements BoxServiceInterface
 {
@@ -52,7 +58,7 @@ class BoxService implements BoxServiceInterface
     public $visibility;
 
     /**
-     * @var \Boxes\Factory
+     * @var Factory
      */
     private $factory;
 
@@ -266,13 +272,13 @@ class BoxService implements BoxServiceInterface
     {
         $pageID = 0;
         if ($pageType === \PAGE_ARTIKELLISTE) {
-            $pageID = (int)\Shop::$kKategorie;
+            $pageID = (int)Shop::$kKategorie;
         } elseif ($pageType === \PAGE_ARTIKEL) {
-            $pageID = (int)\Shop::$kArtikel;
+            $pageID = (int)Shop::$kArtikel;
         } elseif ($pageType === \PAGE_EIGENE) {
-            $pageID = (int)\Shop::$kLink;
+            $pageID = (int)Shop::$kLink;
         } elseif ($pageType === \PAGE_HERSTELLER) {
-            $pageID = (int)\Shop::$kHersteller;
+            $pageID = (int)Shop::$kHersteller;
         }
 
         return $pageID;
@@ -296,7 +302,7 @@ class BoxService implements BoxServiceInterface
             'left'   => null
         ];
         $this->smarty->assign('BoxenEinstellungen', $this->config)
-                     ->assign('bBoxenFilterNach', $this->showBoxes(\Shop::getProductFilter()))
+                     ->assign('bBoxenFilterNach', $this->showBoxes(Shop::getProductFilter()))
                      ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
         foreach ($positionedBoxes as $_position => $boxes) {
             if (!\is_array($boxes)) {
@@ -340,10 +346,10 @@ class BoxService implements BoxServiceInterface
         $cacheID           = 'bx_' . $pageType .
             '_' . (int)$active .
             '_' . (int)$visible .
-            '_' . \Shop::getLanguageID();
+            '_' . Shop::getLanguageID();
         $visiblePositions  = [];
         $this->visibility  = $this->getVisibility($pageType);
-        $templatePositions = \Template::getInstance()->getBoxLayoutXML();
+        $templatePositions = Template::getInstance()->getBoxLayoutXML();
         foreach ($this->visibility as $position => $isVisible) {
             if (isset($templatePositions[$position])) {
                 $isVisible = $isVisible && $templatePositions[$position];
@@ -355,7 +361,7 @@ class BoxService implements BoxServiceInterface
         if ($active === true && \count($visiblePositions) === 0) {
             return [];
         }
-        $visiblePositions = \Functional\map($visiblePositions, function ($e) {
+        $visiblePositions = map($visiblePositions, function ($e) {
             return "'" . $e . "'";
         });
         $activeSQL        = $active
@@ -391,7 +397,7 @@ class BoxService implements BoxServiceInterface
                     ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $grouped = \Functional\group($boxData, function ($e) {
+            $grouped = group($boxData, function ($e) {
                 return (int)$e->kBox;
             });
             $this->cache->set($cacheID, $grouped, [\CACHING_GROUP_OBJECT, \CACHING_GROUP_BOX, 'boxes']);
@@ -409,7 +415,7 @@ class BoxService implements BoxServiceInterface
         $children = [];
         $result   = [];
         foreach ($grouped as $i => $boxes) {
-            $first = \Functional\first($boxes);
+            $first = first($boxes);
             if ((int)$first->kContainer > 0) {
                 $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
                 $box->map($boxes);
@@ -421,33 +427,32 @@ class BoxService implements BoxServiceInterface
             }
         }
         foreach ($grouped as $boxes) {
-            $first = \Functional\first($boxes);
+            $first = first($boxes);
             $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
             $box->map($boxes);
             $class = \get_class($box);
-            if ($class === Plugin::class) {
-                $plugin = new \Plugin\LegacyPlugin($box->getCustomID());
+            if ($class === LegacyPlugin::class) {
+                $plugin = new LegacyPlugin($box->getCustomID());
                 $box->setTemplateFile(
                     $plugin->getPaths()->getFrontendPath() .
                     \PFAD_PLUGIN_BOXEN .
                     $box->getTemplateFile()
                 );
                 $box->setPlugin($plugin);
-            } elseif ($class === Extension::class) {
-                $loader    = new PluginLoader($this->db, $this->cache);
-                $extension = $loader->init($box->getCustomID());
-
+            } elseif ($class === Plugin::class) {
+                $loader = new PluginLoader($this->db, $this->cache);
+                $plugin = $loader->init($box->getCustomID());
                 $box->setTemplateFile(
-                    $extension->getPaths()->getFrontendPath() .
+                    $plugin->getPaths()->getFrontendPath() .
                     $box->getTemplateFile()
                 );
-                $box->setExtension($extension);
+                $box->setExtension($plugin);
             } elseif ($box->getType() === Type::CONTAINER) {
                 $box->setChildren($children);
             }
             $result[] = $box;
         }
-        $this->boxes = \Functional\group($result, function (BoxInterface $e) {
+        $this->boxes = group($result, function (BoxInterface $e) {
             return $e->getPosition();
         });
 

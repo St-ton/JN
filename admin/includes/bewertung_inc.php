@@ -4,7 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Shop;
 
 /**
  * @param int $kBewertung

@@ -6,6 +6,9 @@
  * @created Fri, 20 May 2016 14:21:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,11 +29,11 @@ class Migration_20160520142100 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tplugineinstellungenconf` ADD COLUMN `cSourceFile` VARCHAR(255) NULL DEFAULT NULL");
+        $this->execute('ALTER TABLE `tplugineinstellungenconf` ADD COLUMN `cSourceFile` VARCHAR(255) NULL DEFAULT NULL');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tplugineinstellungenconf` DROP COLUMN `cSourceFile`");
+        $this->execute('ALTER TABLE `tplugineinstellungenconf` DROP COLUMN `cSourceFile`');
     }
 }

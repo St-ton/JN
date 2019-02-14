@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace JTL\Plugin\Admin;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class InputType
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin
  */
 class InputType extends Enum
 {

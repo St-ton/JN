@@ -4,24 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Items\Manufacturer;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\StateSQL;
-use Filter\Type;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Items\Manufacturer;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\Filter\Type;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class BaseManufacturer
+ * @package JTL\Filter\States
  */
 class BaseManufacturer extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -85,8 +88,8 @@ class BaseManufacturer extends AbstractFilter
                 $this->setName($seoData[0]->cName);
             } else {
                 // invalid manufacturer ID
-                \Shop::$kHersteller = 0;
-                \Shop::$is404       = true;
+                Shop::$kHersteller = 0;
+                Shop::$is404       = true;
             }
         }
 

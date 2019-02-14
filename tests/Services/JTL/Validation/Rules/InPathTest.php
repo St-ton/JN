@@ -8,6 +8,7 @@ namespace Services\JTL\Validation\Rules;
 
 
 use Eloquent\Pathogen\Path;
+use JTL\Services\JTL\Validation\Rules\InPath;
 use PHPUnit\Framework\TestCase;
 
 /**

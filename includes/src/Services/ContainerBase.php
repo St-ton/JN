@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
-use Exceptions\CircularReferenceException;
-use Exceptions\ServiceNotFoundException;
+use Exception;
+use InvalidArgumentException;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 
 /**
  * Class ContainerBase
- * @package Services
+ * @package JTL\Services
  */
 class ContainerBase implements ContainerInterface
 {
@@ -26,7 +28,7 @@ class ContainerBase implements ContainerInterface
     public function setSingleton($id, $factory): void
     {
         if (!\is_string($id) || !\is_callable($factory)) {
-            throw new \InvalidArgumentException('Invalid id or factory not callable');
+            throw new InvalidArgumentException('Invalid id or factory not callable');
         }
         $this->checkUninitialized($id);
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_SINGLETON);
@@ -39,7 +41,7 @@ class ContainerBase implements ContainerInterface
     public function setFactory($id, $factory): void
     {
         if (!\is_string($id) || !\is_callable($factory)) {
-            throw new \InvalidArgumentException('Invalid id or factory not callable');
+            throw new InvalidArgumentException('Invalid id or factory not callable');
         }
         $this->checkOverrideMatchingType($id, ContainerEntry::TYPE_FACTORY);
         $this->entries[$id] = new ContainerEntry($factory, ContainerEntry::TYPE_FACTORY);
@@ -105,25 +107,26 @@ class ContainerBase implements ContainerInterface
 
     /**
      * @param string $id
-     * @throws \Exception
+     * @throws Exception
      */
     protected function checkUninitialized($id): void
     {
         if (isset($this->entries[$id]) && $this->entries[$id]->hasInstance()) {
-            throw new \Exception('Singleton Service already used');
+            throw new Exception('Singleton Service already used');
         }
     }
 
     /**
      * @param string $id
      * @param int    $type
-     * @throws \Exception
+     * @throws Exception
      */
     protected function checkOverrideMatchingType($id, $type): void
     {
         if ($this->has($id) && $this->entries[$id]->getType() !== $type) {
             $actual = $this->entries[$id]->getType();
-            throw new \Exception("Overriding type $actual with $type is not allowed. (component-id: $id)");
+            throw new Exception('Overriding type ' . $actual .
+                ' with ' . $type . ' is not allowed. (component-id: ' . $id . ')');
         }
     }
 }

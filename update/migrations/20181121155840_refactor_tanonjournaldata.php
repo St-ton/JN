@@ -6,12 +6,15 @@
  * @created Wed, 21 Nov 2018 15:58:40 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20181121155840
  */
 class Migration_20181121155840 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Refactor tanonjournaldata';
 
     public function up()

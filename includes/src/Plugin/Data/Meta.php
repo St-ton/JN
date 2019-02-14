@@ -4,11 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Data;
+namespace JTL\Plugin\Data;
+
+use DateTime;
+use stdClass;
 
 /**
- * Class MetaData
- * @package Plugin
+ * Class Meta
+ * @package JTL\Plugin\Data
  */
 class Meta
 {
@@ -53,12 +56,12 @@ class Meta
     private $changelogMD;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateLastUpdate;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateInstalled;
 
@@ -78,18 +81,18 @@ class Meta
     private $error;
 
     /**
-     * @param \stdClass $data
+     * @param stdClass $data
      * @return $this
      */
-    public function loadDBMapping(\stdClass $data): self
+    public function loadDBMapping(stdClass $data): self
     {
         $this->author         = $data->cAutor;
         $this->description    = $data->cBeschreibung;
         $this->name           = $data->cName;
         $this->url            = $data->cURL;
         $this->icon           = $data->cIcon;
-        $this->dateInstalled  = new \DateTime($data->dInstalliert);
-        $this->dateLastUpdate = new \DateTime($data->dZuletztAktualisiert);
+        $this->dateInstalled  = new DateTime($data->dInstalliert);
+        $this->dateLastUpdate = new DateTime($data->dZuletztAktualisiert);
         $this->version        = $data->nVersion;
 
         return $this;
@@ -224,33 +227,33 @@ class Meta
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateLastUpdate(): \DateTime
+    public function getDateLastUpdate(): DateTime
     {
         return $this->dateLastUpdate;
     }
 
     /**
-     * @param \DateTime $dateLastUpdate
+     * @param DateTime $dateLastUpdate
      */
-    public function setDateLastUpdate(\DateTime $dateLastUpdate): void
+    public function setDateLastUpdate(DateTime $dateLastUpdate): void
     {
         $this->dateLastUpdate = $dateLastUpdate;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateInstalled(): \DateTime
+    public function getDateInstalled(): DateTime
     {
         return $this->dateInstalled;
     }
 
     /**
-     * @param \DateTime $dateInstalled
+     * @param DateTime $dateInstalled
      */
-    public function setDateInstalled(\DateTime $dateInstalled): void
+    public function setDateInstalled(DateTime $dateInstalled): void
     {
         $this->dateInstalled = $dateInstalled;
     }

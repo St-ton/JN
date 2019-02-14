@@ -6,6 +6,9 @@
  * @created Mon, 01 Nov 2016 08:26:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,11 +29,11 @@ class Migration_20161101082600 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE tkupon MODIFY cArtikel MEDIUMTEXT NOT NULL");
+        $this->execute('ALTER TABLE tkupon MODIFY cArtikel MEDIUMTEXT NOT NULL');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE tkupon MODIFY cArtikel TEXT NOT NULL");
+        $this->execute('ALTER TABLE tkupon MODIFY cArtikel TEXT NOT NULL');
     }
 }

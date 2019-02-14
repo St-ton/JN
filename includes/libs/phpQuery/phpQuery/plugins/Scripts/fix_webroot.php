@@ -1,6 +1,6 @@
 <?php
 $selector = 'img[src], link[href], script[src]';
-$filter = ':not([href^=<?php])'
+$filter   = ':not([href^=<?php])'
         .':not([src^=<?php])'
         .':not([href^=http://])'
         .':not([src^=http://])'

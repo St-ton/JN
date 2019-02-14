@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes;
+namespace JTL\Boxes;
 
-use Boxes\Items\BoxInterface;
+use JTL\Boxes\Items\BoxInterface;
 
 /**
  * Interface FactoryInterface
- * @package Boxes
+ * @package JTL\Boxes
  */
 interface FactoryInterface
 {

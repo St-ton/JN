@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+
 /**
  * update lft/rght values for categories in the nested set model
  *

@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use SingletonTrait;
+use JTL\SingletonTrait;
 
 /**
  * Class PHPSettings
- * @package Helpers
+ * @package JTL\Helpers
  */
 class PHPSettings
 {

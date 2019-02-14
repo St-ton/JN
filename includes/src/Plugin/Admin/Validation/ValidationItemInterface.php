@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation;
+namespace JTL\Plugin\Admin\Validation;
 
 /**
  * Interface ValidationItemInterface
- * @package Plugin\Admin\Validation
+ * @package JTL\Plugin\Admin\Validation
  */
 interface ValidationItemInterface
 {

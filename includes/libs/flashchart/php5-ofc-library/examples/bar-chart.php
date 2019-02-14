@@ -20,7 +20,7 @@
 
 require_once('OFC/OFC_Chart.php');
 
-$title = new OFC_Elements_Title(date("D M d Y"));
+$title = new OFC_Elements_Title(date('D M d Y'));
 
 $bar = new OFC_Charts_Bar();
 $bar->set_values(array(9, 8, 7, 6, 5, 4, 3, 2, 1));

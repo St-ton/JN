@@ -4,14 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use Helpers\PHPSettings;
+use JTL\Cart\Warenkorb;
+use JTL\Helpers\PHPSettings;
+use JTL\Nice;
+use JTL\Services\JTL\LinkService;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class Upload
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 final class Upload
 {
@@ -20,7 +24,7 @@ final class Upload
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
     }
 
     /**
@@ -70,10 +74,10 @@ final class Upload
     }
 
     /**
-     * @param \Warenkorb $cart
-     * @return \stdClass[]
+     * @param Warenkorb $cart
+     * @return stdClass[]
      */
-    public static function gibWarenkorbUploads(\Warenkorb $cart): array
+    public static function gibWarenkorbUploads(Warenkorb $cart): array
     {
         $uploads = [];
         foreach ($cart->PositionenArr as $position) {
@@ -88,7 +92,7 @@ final class Upload
                         : \reset($eigenschaft->cEigenschaftWertName);
                 }
             }
-            $upload        = new \stdClass();
+            $upload        = new stdClass();
             $upload->cName = $position->Artikel->cName;
             if (!empty($position->WarenkorbPosEigenschaftArr)) {
                 $upload->WarenkorbPosEigenschaftArr = $position->WarenkorbPosEigenschaftArr;
@@ -112,14 +116,14 @@ final class Upload
     }
 
     /**
-     * @param \Warenkorb $cart
+     * @param Warenkorb $cart
      * @return bool
      */
-    public static function pruefeWarenkorbUploads(\Warenkorb $cart): bool
+    public static function pruefeWarenkorbUploads(Warenkorb $cart): bool
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
-            foreach ($scheme->oUpload_arr as $oUpload) {
-                if ($oUpload->nPflicht && !$oUpload->bVorhanden) {
+            foreach ($scheme->oUpload_arr as $upload) {
+                if ($upload->nPflicht && !$upload->bVorhanden) {
                     return false;
                 }
             }
@@ -134,15 +138,15 @@ final class Upload
     public static function redirectWarenkorb(int $nErrorCode): void
     {
         \header('Location: ' .
-            \LinkHelper::getInstance()->getStaticRoute('warenkorb.php') .
+            LinkService::getInstance()->getStaticRoute('warenkorb.php') .
             '?fillOut=' . $nErrorCode, true, 303);
     }
 
     /**
-     * @param \Warenkorb $cart
+     * @param Warenkorb $cart
      * @param int       $kBestellung
      */
-    public static function speicherUploadDateien(\Warenkorb $cart, int $kBestellung): void
+    public static function speicherUploadDateien(Warenkorb $cart, int $kBestellung): void
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {
@@ -173,7 +177,7 @@ final class Upload
      */
     public static function setzeUploadDatei(int $kCustomID, int $nTyp, $cName, $cPfad, int $nBytes): void
     {
-        $file            = new \stdClass();
+        $file            = new stdClass();
         $file->kCustomID = $kCustomID;
         $file->nTyp      = $nTyp;
         $file->cName     = $cName;
@@ -181,7 +185,7 @@ final class Upload
         $file->nBytes    = $nBytes;
         $file->dErstellt = 'NOW()';
 
-        \Shop::Container()->getDB()->insert('tuploaddatei', $file);
+        Shop::Container()->getDB()->insert('tuploaddatei', $file);
     }
 
     /**
@@ -190,11 +194,11 @@ final class Upload
      */
     public static function setzeUploadQueue(int $kBestellung, int $kCustomID): void
     {
-        $queue              = new \stdClass();
+        $queue              = new stdClass();
         $queue->kBestellung = $kBestellung;
         $queue->kArtikel    = $kCustomID;
 
-        \Shop::Container()->getDB()->insert('tuploadqueue', $queue);
+        Shop::Container()->getDB()->insert('tuploadqueue', $queue);
     }
 
     /**

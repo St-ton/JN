@@ -4,16 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use DB\ReturnType;
+use JsonSerializable;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Nice;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class Konfiggruppe
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
-class Konfiggruppe implements \JsonSerializable
+class Konfiggruppe implements JsonSerializable
 {
     /**
      * @var int
@@ -84,7 +88,7 @@ class Konfiggruppe implements \JsonSerializable
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
     }
 
     /**
@@ -112,7 +116,7 @@ class Konfiggruppe implements \JsonSerializable
         ];
         $result   = \array_merge(\get_object_vars($this), $override);
 
-        return \StringHandler::utf8_convert_recursive($result);
+        return Text::utf8_convert_recursive($result);
     }
 
     /**
@@ -124,13 +128,13 @@ class Konfiggruppe implements \JsonSerializable
      */
     private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): self
     {
-        $oObj = \Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $kKonfiggruppe);
+        $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $kKonfiggruppe);
         if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
             foreach (\array_keys(\get_object_vars($oObj)) as $member) {
                 $this->$member = $oObj->$member;
             }
             if (!$kSprache) {
-                $kSprache = \Shop::getLanguageID();
+                $kSprache = Shop::getLanguageID();
             }
             $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
             $this->nMin          = (int)$this->nMin;
@@ -150,7 +154,7 @@ class Konfiggruppe implements \JsonSerializable
      */
     public function save(bool $bPrim = true)
     {
-        $ins             = new \stdClass();
+        $ins             = new stdClass();
         $ins->cBildPfad  = $this->cBildPfad;
         $ins->nMin       = $this->nMin;
         $ins->nMax       = $this->nMax;
@@ -158,7 +162,7 @@ class Konfiggruppe implements \JsonSerializable
         $ins->nSort      = $this->nSort;
         $ins->cKommentar = $this->cKommentar;
 
-        $kPrim = \Shop::Container()->getDB()->insert('tkonfiggruppe', $ins);
+        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppe', $ins);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -171,7 +175,7 @@ class Konfiggruppe implements \JsonSerializable
      */
     public function update(): int
     {
-        $upd             = new \stdClass();
+        $upd             = new stdClass();
         $upd->cBildPfad  = $this->cBildPfad;
         $upd->nMin       = $this->nMin;
         $upd->nMax       = $this->nMax;
@@ -179,7 +183,7 @@ class Konfiggruppe implements \JsonSerializable
         $upd->nSort      = $this->nSort;
         $upd->cKommentar = $this->cKommentar;
 
-        return \Shop::Container()->getDB()->update(
+        return Shop::Container()->getDB()->update(
             'tkonfiggruppe',
             'kKonfiggruppe',
             (int)$this->kKonfiggruppe,
@@ -192,7 +196,7 @@ class Konfiggruppe implements \JsonSerializable
      */
     public function delete(): int
     {
-        return \Shop::Container()->getDB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe);
+        return Shop::Container()->getDB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe);
     }
 
     /**
@@ -212,7 +216,7 @@ class Konfiggruppe implements \JsonSerializable
      */
     public function setBildPfad($cBildPfad): self
     {
-        $this->cBildPfad = \Shop::Container()->getDB()->escape($cBildPfad);
+        $this->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
 
         return $this;
     }
@@ -318,7 +322,7 @@ class Konfiggruppe implements \JsonSerializable
      */
     public function getItemCount(): int
     {
-        return (int)\Shop::Container()->getDB()->query(
+        return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nCount 
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = ' . (int)$this->kKonfiggruppe,

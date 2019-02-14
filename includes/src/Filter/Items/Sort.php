@@ -4,21 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use Filter\AbstractFilter;
-use Filter\Option;
-use Filter\FilterInterface;
-use Filter\ProductFilter;
-use Filter\SortingOptions\Factory;
-use Filter\SortingOptions\SortDefault;
-use Filter\SortingOptions\SortingOptionInterface;
-use Mapper\SortingType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\SortingOptions\Factory;
+use JTL\Filter\SortingOptions\SortDefault;
+use JTL\Filter\SortingOptions\SortingOptionInterface;
+use JTL\Mapper\SortingType;
+use JTL\Shop;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class Sort
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Sort extends AbstractFilter
 {
@@ -52,7 +53,7 @@ class Sort extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('Sortierung')
-             ->setFrontendName(\Shop::Lang()->get('sorting', 'productOverview'));
+             ->setFrontendName(Shop::Lang()->get('sorting', 'productOverview'));
         $this->activeSortingType = (int)$this->getConfig('artikeluebersicht')['artikeluebersicht_artikelsortierung'];
         if (isset($_SESSION['Usersortierung'])) {
             $mapper                  = new SortingType();

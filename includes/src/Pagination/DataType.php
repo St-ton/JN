@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Pagination;
+namespace JTL\Pagination;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class DataType
- * @package Pagination
+ * @package JTL\Pagination
  */
 class DataType extends Enum
 {

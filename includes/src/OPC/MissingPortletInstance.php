@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use OPC\Portlets\MissingPortlet;
+use JTL\OPC\Portlets\MissingPortlet;
 
 /**
  * Class MissingPortletInstance
- * @package OPC
+ * @package JTL\OPC
  */
 class MissingPortletInstance extends PortletInstance
 {

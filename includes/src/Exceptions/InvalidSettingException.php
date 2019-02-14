@@ -4,13 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Exceptions;
+namespace JTL\Exceptions;
+
+use Exception;
 
 /**
  * Class InvalidSettingException
- * @package Exceptions
+ * @package JTL\Exceptions
  */
-class InvalidSettingException extends \Exception
+class InvalidSettingException extends Exception
 {
     /**
      * InvalidSettingException constructor.

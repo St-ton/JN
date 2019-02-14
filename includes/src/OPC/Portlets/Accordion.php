@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Accordion
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Accordion extends Portlet
 {

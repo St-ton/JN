@@ -6,6 +6,9 @@
  * @created Wed, 07 Sep 2016 12:11:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -42,6 +45,6 @@ class Migration_20160907142800 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DROP TABLE IF EXISTS `trevisions`");
+        $this->execute('DROP TABLE IF EXISTS `trevisions`');
     }
 }

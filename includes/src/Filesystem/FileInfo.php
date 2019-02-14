@@ -4,24 +4,28 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filesystem;
+namespace JTL\Filesystem;
 
+/**
+ * Class FileInfo
+ * @package JTL\Filesystem
+ */
 class FileInfo
 {
-    protected $type = null;
+    protected $type;
 
-    protected $path     = null;
-    protected $filename = null;
+    protected $path;
+    protected $filename;
 
-    protected $aTime = null;
-    protected $mTime = null;
-    protected $cTime = null;
+    protected $aTime;
+    protected $mTime;
+    protected $cTime;
 
     protected $size  = 0;
     protected $perms = 0;
 
-    protected $owner = null;
-    protected $group = null;
+    protected $owner;
+    protected $group;
 
     protected $readable   = false;
     protected $writable   = false;
@@ -35,7 +39,7 @@ class FileInfo
     public function __construct(array $options)
     {
         foreach ($options as $key => $value) {
-            if (property_exists($this, $key)) {
+            if (\property_exists($this, $key)) {
                 $this->{$key} = $value;
             }
         }
@@ -79,7 +83,7 @@ class FileInfo
      */
     public function getExtension()
     {
-        return pathinfo($this->filename, PATHINFO_EXTENSION);
+        return \pathinfo($this->filename, \PATHINFO_EXTENSION);
     }
 
     /**
@@ -93,7 +97,7 @@ class FileInfo
      */
     public function getBasename($suffix = null)
     {
-        return basename($this->filename, $suffix);
+        return \basename($this->filename, $suffix);
     }
 
     /**

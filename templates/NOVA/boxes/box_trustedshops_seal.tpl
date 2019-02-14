@@ -5,7 +5,7 @@
 {card
     class="box box-trustedshops-seal mb-7"
     id="sidebox{$oBox->getID()}"
-    title="{if $oBox->getPosition() !== \Boxes\Position::BOTTOM}{lang key='safety'}{/if}"
+    title="{if $oBox->getPosition() !== JTL\Boxes\Position::BOTTOM}{lang key='safety'}{/if}"
 }
     <hr class="mt-0 mb-4">
     <div class="box-body text-center">

@@ -1,11 +1,21 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Helpers\Tax;
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\Alert;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Cart\Warenkorb;
+use JTL\Checkout\ZahlungsInfo;
+use JTL\Checkout\ZahlungsLog;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayData.class.php';
@@ -227,7 +237,7 @@ class Billpay extends PaymentMethod
                                 $oPDFAttach->cType        = FILE_TYPE_PDF;
                                 $oMail->oAttachment_arr[] = $oPDFAttach;
                             } else {
-                                $this->log('PDF-Datei konnte nicht erstellt werden', LOGLEVEL_ERROR);
+                                $this->log('PDF-Datei konnte nicht erstellt werden');
                             }
                             if (is_object($oPDFInfo)) {
                                 $oPDFInfo->cName          = 'Standardinformationen_' .
@@ -235,7 +245,7 @@ class Billpay extends PaymentMethod
                                 $oPDFInfo->cType          = FILE_TYPE_PDF;
                                 $oMail->oAttachment_arr[] = $oPDFInfo;
                             } else {
-                                $this->log('PDF-Datei konnte nicht erstellt werden', LOGLEVEL_ERROR);
+                                $this->log('PDF-Datei konnte nicht erstellt werden');
                             }
 
                             /*
@@ -286,7 +296,7 @@ class Billpay extends PaymentMethod
                         ->assign('abschlussseite', 1);
 
                     // clear session
-                    $session = \Session\Frontend::getInstance();
+                    $session = Frontend::getInstance();
                     $session->cleanUp();
                 } else {
                     $this->assignMessage($oCapture->get_customer_error_message(), 'error');
@@ -556,18 +566,18 @@ class Billpay extends PaymentMethod
         }
 
         $widgetOptions = [
-            'checkout' => [],
-            'type'     => BPHelper::getPaymentType($this->nPaymentType),
-            'shop'     => [
+            'checkout'   => [],
+            'type'       => BPHelper::getPaymentType($this->nPaymentType),
+            'shop'       => [
                 'apiKey' => $this->getCoreSetting('publicapicode'),
                 'live'   => $this->getCoreSetting('mode') === 'live'
             ],
-            'order' => [
+            'order'      => [
                 'cartAmount'  => $oBasketInfo->fArticle[AMT_GROSS] - $oBasketInfo->fRebate[AMT_GROSS],
                 'orderAmount' => $oBasketInfo->fTotal[AMT_GROSS],
                 'currency'    => $oBasketInfo->cCurrency->getCode()
             ],
-            'customer' => [
+            'customer'   => [
                 'customerGroup'  => $oData->cKundengruppe,
                 'salutation'     => BPHelper::mapSalutation($oCustomer->cAnrede),
                 'firstName'      => BPHelper::strEncode($oCustomer->cVorname, 50),
@@ -590,12 +600,12 @@ class Billpay extends PaymentMethod
                 'accountHolder'  => BPHelper::strEncode($oData->cAccountholder, 50)
             ],
             'inputNames' => [
-                'order' => [
+                'order'          => [
                     'cartAmount'  => 'billpay[cart_amount]',
                     'orderAmount' => 'billpay[order_amount]',
                     'currency'    => 'billpay[currency]'
-                    ],
-                'customer' => [
+                ],
+                'customer'       => [
                     'salutation'     => 'billpay[customer_salutation]',
                     'phoneNumber'    => 'billpay[customer_phone_number]',
                     'dayOfBirth'     => 'billpay[customer_day_of_birth]',
@@ -609,14 +619,14 @@ class Billpay extends PaymentMethod
                         'iban' => 'billpay[customer_iban]',
                         'bic'  => 'billpay[customer_bic]'
                     ],
-                    'accountHolder' => 'billpay[account_holder]'
+                    'accountHolder'  => 'billpay[account_holder]'
                 ],
                 'paymentMethods' => [
-                    'invoice' => [
+                    'invoice'           => [
                         'customerGroup'  => 'billpay[invoice_customer_group]',
                         'termsOfService' => 'billpay[invoice_toc]'
                     ],
-                    'directDebit' => [
+                    'directDebit'       => [
                         'customerGroup'  => 'billpay[direct_debit_customer_group]',
                         'termsOfService' => 'billpay[direct_debit_toc]'
                     ],
@@ -633,7 +643,7 @@ class Billpay extends PaymentMethod
                         'annualPercentageRate'  => 'billpay[transaction_credit_annual_percentage_rate]',
                         'termsOfService'        => 'billpay[transaction_credit_toc]'
                     ],
-                    'paylater' => [
+                    'paylater'          => [
                         'customerGroup'    => 'billpay[paylater_customer_group]',
                         'duration'         => 'billpay[paylater_duration]',
                         'instalmentsCount' => 'billpay[paylater_instalments_count]',
@@ -858,7 +868,7 @@ class Billpay extends PaymentMethod
             ),                                                             // shippingpricegross
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_NET], true),      // carttotalprice
             BPHelper::fmtAmount($oBasketInfo->fTotal[AMT_GROSS], true),    // carttotalpricegross
-            BPHelper::strEncode(\Session\Frontend::getCurrency()->getCode(), 3),        // currency
+            BPHelper::strEncode(Frontend::getCurrency()->getCode(), 3),        // currency
             $cReference                                                    // reference
         );
 
@@ -1086,7 +1096,7 @@ class Billpay extends PaymentMethod
                             $oInv->cInfo  = 'Vielen Dank, dass Sie sich f&uuml;r die Zahlung per Lastschrift ' .
                                 "mit Billpay entschieden haben.\r\n";
                             $oInv->cInfo .= 'Wir buchen den f&auml;lligen Betrag in den n&auml;chsten Tagen von ' .
-                             'dem bei der Bestellung angegebenen Konto ab.';
+                                'dem bei der Bestellung angegebenen Konto ab.';
                             break;
 
                         case 'za_billpay_rate_payment_jtl':
@@ -1204,7 +1214,7 @@ class Billpay extends PaymentMethod
         $oBasketInfo->fRebate    = [0, 0];// rabatt
         $oBasketInfo->fSurcharge = [0, 0];// zuschlag
         $oBasketInfo->fTotal     = [0, 0];// warenkorb
-        $oBasketInfo->cCurrency  = \Session\Frontend::getCurrency();
+        $oBasketInfo->cCurrency  = Frontend::getCurrency();
 
         foreach ($oBasket->PositionenArr as $oPosition) {
             $fPreisEinzelNetto = $oPosition->fPreisEinzelNetto;
@@ -1411,9 +1421,16 @@ class Billpay extends PaymentMethod
      * @param bool   $bGross
      * @param string $cNotice
      */
-    public function addSpecialPosition($cName, $fQuantity, $fAmount, $nType, $bDelSamePosType, $bGross = true, $cNotice = '')
-    {
-        $cart          = \Session\Frontend::getCart();
+    public function addSpecialPosition(
+        $cName,
+        $fQuantity,
+        $fAmount,
+        $nType,
+        $bDelSamePosType,
+        $bGross = true,
+        $cNotice = ''
+    ) {
+        $cart          = Frontend::getCart();
         $kSteuerklasse = $cart->gibVersandkostenSteuerklasse('');
         $cart->erstelleSpezialPos(
             $cName,
@@ -1475,7 +1492,7 @@ class Billpay extends PaymentMethod
     /**
      * @param string $cMessage
      * @param string $oObject
-     * @param int $nLevel
+     * @param int    $nLevel
      */
     public function logEx($cMessage, $oObject, $nLevel = LOGLEVEL_ERROR)
     {
@@ -1551,7 +1568,12 @@ class BPHelper
             $cAmount *= 100;
         }
         if ($bFmt) {
-            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Frontend::getCurrency()->getCode(), true, 2);
+            $cAmount = Preise::getLocalizedPriceString(
+                $cAmount,
+                Frontend::getCurrency()->getCode(),
+                true,
+                2
+            );
         }
 
         return $cAmount;
@@ -1568,7 +1590,12 @@ class BPHelper
         $fAmount = round($fAmount, 2);
         $cAmount = number_format($fAmount / 100, 2, '.', '');
         if ($bFmt) {
-            $cAmount = Preise::getLocalizedPriceString($cAmount, \Session\Frontend::getCurrency()->getCode(), $bHTML, 2);
+            $cAmount = Preise::getLocalizedPriceString(
+                $cAmount,
+                Frontend::getCurrency()->getCode(),
+                $bHTML,
+                2
+            );
         }
 
         return $cAmount;
@@ -1603,7 +1630,7 @@ class BPHelper
      */
     public static function toISO6391($cStr)
     {
-        $cStr = strtolower(StringHandler::convertISO2ISO639($cStr));
+        $cStr = strtolower(Text::convertISO2ISO639($cStr));
         if (!strlen($cStr)) {
             $cStr = 'de';
         }
@@ -1617,7 +1644,7 @@ class BPHelper
      */
     public static function toISO6392($cStr)
     {
-        $cStr = strtolower(StringHandler::convertISO6392ISO($cStr));
+        $cStr = strtolower(Text::convertISO6392ISO($cStr));
         if (!strlen($cStr)) {
             $cStr = 'deu';
         }
@@ -1627,7 +1654,7 @@ class BPHelper
 
     /**
      * @param string $cStr
-     * @param bool  $from
+     * @param bool   $from
      * @return string
      */
     public static function mapSalutation($cStr, $from = false)
@@ -1657,7 +1684,7 @@ class BPHelper
         } else {
             $oSprache = Shop::Container()->getDB()->query(
                 "SELECT kSprache, cISO FROM tsprache WHERE cShopStandard = 'Y'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if ($oSprache->kSprache > 0) {
                 $cISOSprache = $oSprache->cISO;
@@ -1669,7 +1696,6 @@ class BPHelper
 
     /**
      * https://techdocs.billpay.de/en/For_decision_makers/Possible_Country_and_Payment_Method_Combinations.html
-     *
      * @param int    $nPaymentType
      * @param string $cISO
      * @return bool
@@ -1764,38 +1790,38 @@ class BPHelper
      */
     public static function removeHTML(&$oCustomer, &$oShipAddr)
     {
-        $oCustomer->cAnrede       = StringHandler::unhtmlentities($oCustomer->cAnrede);
-        $oCustomer->cVorname      = StringHandler::unhtmlentities($oCustomer->cVorname);
-        $oCustomer->cNachname     = StringHandler::unhtmlentities($oCustomer->cNachname);
-        $oCustomer->cStrasse      = StringHandler::unhtmlentities($oCustomer->cStrasse);
-        $oCustomer->cPLZ          = StringHandler::unhtmlentities($oCustomer->cPLZ);
-        $oCustomer->cOrt          = StringHandler::unhtmlentities($oCustomer->cOrt);
-        $oCustomer->cLand         = StringHandler::unhtmlentities($oCustomer->cLand);
-        $oCustomer->cMail         = StringHandler::unhtmlentities($oCustomer->cMail);
-        $oCustomer->cTel          = StringHandler::unhtmlentities($oCustomer->cTel);
-        $oCustomer->cFax          = StringHandler::unhtmlentities($oCustomer->cFax);
-        $oCustomer->cFirma        = StringHandler::unhtmlentities($oCustomer->cFirma);
-        $oCustomer->cTitel        = StringHandler::unhtmlentities($oCustomer->cTitel);
-        $oCustomer->cAdressZusatz = StringHandler::unhtmlentities($oCustomer->cAdressZusatz);
-        $oCustomer->cMobil        = StringHandler::unhtmlentities($oCustomer->cMobil);
-        $oCustomer->cWWW          = StringHandler::unhtmlentities($oCustomer->cWWW);
-        $oCustomer->cUSTID        = StringHandler::unhtmlentities($oCustomer->cUSTID);
-        $oCustomer->dGeburtstag   = StringHandler::unhtmlentities($oCustomer->dGeburtstag);
-        $oCustomer->cBundesland   = StringHandler::unhtmlentities($oCustomer->cBundesland);
-        $oShipAddr->cVorname      = StringHandler::unhtmlentities($oShipAddr->cVorname);
-        $oShipAddr->cNachname     = StringHandler::unhtmlentities($oShipAddr->cNachname);
-        $oShipAddr->cFirma        = StringHandler::unhtmlentities($oShipAddr->cFirma);
-        $oShipAddr->cStrasse      = StringHandler::unhtmlentities($oShipAddr->cStrasse);
-        $oShipAddr->cPLZ          = StringHandler::unhtmlentities($oShipAddr->cPLZ);
-        $oShipAddr->cOrt          = StringHandler::unhtmlentities($oShipAddr->cOrt);
-        $oShipAddr->cLand         = StringHandler::unhtmlentities($oShipAddr->cLand);
-        $oShipAddr->cAnrede       = StringHandler::unhtmlentities($oShipAddr->cAnrede);
-        $oShipAddr->cMail         = StringHandler::unhtmlentities($oShipAddr->cMail);
-        $oShipAddr->cBundesland   = StringHandler::unhtmlentities($oShipAddr->cBundesland);
-        $oShipAddr->cTel          = StringHandler::unhtmlentities($oShipAddr->cTel);
-        $oShipAddr->cFax          = StringHandler::unhtmlentities($oShipAddr->cFax);
-        $oShipAddr->cTitel        = StringHandler::unhtmlentities($oShipAddr->cTitel);
-        $oShipAddr->cAdressZusatz = StringHandler::unhtmlentities($oShipAddr->cAdressZusatz);
-        $oShipAddr->cMobil        = StringHandler::unhtmlentities($oShipAddr->cMobil);
+        $oCustomer->cAnrede       = Text::unhtmlentities($oCustomer->cAnrede);
+        $oCustomer->cVorname      = Text::unhtmlentities($oCustomer->cVorname);
+        $oCustomer->cNachname     = Text::unhtmlentities($oCustomer->cNachname);
+        $oCustomer->cStrasse      = Text::unhtmlentities($oCustomer->cStrasse);
+        $oCustomer->cPLZ          = Text::unhtmlentities($oCustomer->cPLZ);
+        $oCustomer->cOrt          = Text::unhtmlentities($oCustomer->cOrt);
+        $oCustomer->cLand         = Text::unhtmlentities($oCustomer->cLand);
+        $oCustomer->cMail         = Text::unhtmlentities($oCustomer->cMail);
+        $oCustomer->cTel          = Text::unhtmlentities($oCustomer->cTel);
+        $oCustomer->cFax          = Text::unhtmlentities($oCustomer->cFax);
+        $oCustomer->cFirma        = Text::unhtmlentities($oCustomer->cFirma);
+        $oCustomer->cTitel        = Text::unhtmlentities($oCustomer->cTitel);
+        $oCustomer->cAdressZusatz = Text::unhtmlentities($oCustomer->cAdressZusatz);
+        $oCustomer->cMobil        = Text::unhtmlentities($oCustomer->cMobil);
+        $oCustomer->cWWW          = Text::unhtmlentities($oCustomer->cWWW);
+        $oCustomer->cUSTID        = Text::unhtmlentities($oCustomer->cUSTID);
+        $oCustomer->dGeburtstag   = Text::unhtmlentities($oCustomer->dGeburtstag);
+        $oCustomer->cBundesland   = Text::unhtmlentities($oCustomer->cBundesland);
+        $oShipAddr->cVorname      = Text::unhtmlentities($oShipAddr->cVorname);
+        $oShipAddr->cNachname     = Text::unhtmlentities($oShipAddr->cNachname);
+        $oShipAddr->cFirma        = Text::unhtmlentities($oShipAddr->cFirma);
+        $oShipAddr->cStrasse      = Text::unhtmlentities($oShipAddr->cStrasse);
+        $oShipAddr->cPLZ          = Text::unhtmlentities($oShipAddr->cPLZ);
+        $oShipAddr->cOrt          = Text::unhtmlentities($oShipAddr->cOrt);
+        $oShipAddr->cLand         = Text::unhtmlentities($oShipAddr->cLand);
+        $oShipAddr->cAnrede       = Text::unhtmlentities($oShipAddr->cAnrede);
+        $oShipAddr->cMail         = Text::unhtmlentities($oShipAddr->cMail);
+        $oShipAddr->cBundesland   = Text::unhtmlentities($oShipAddr->cBundesland);
+        $oShipAddr->cTel          = Text::unhtmlentities($oShipAddr->cTel);
+        $oShipAddr->cFax          = Text::unhtmlentities($oShipAddr->cFax);
+        $oShipAddr->cTitel        = Text::unhtmlentities($oShipAddr->cTitel);
+        $oShipAddr->cAdressZusatz = Text::unhtmlentities($oShipAddr->cAdressZusatz);
+        $oShipAddr->cMobil        = Text::unhtmlentities($oShipAddr->cMobil);
     }
 }

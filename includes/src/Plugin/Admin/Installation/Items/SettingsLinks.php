@@ -4,15 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\Admin\InputType;
-use Plugin\Data\Config;
-use Plugin\InstallCode;
+use JTL\Plugin\Admin\InputType;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class SettingsLinks
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class SettingsLinks extends AbstractItem
 {
@@ -48,7 +49,7 @@ class SettingsLinks extends AbstractItem
             if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                 $sort = (int)$settingsLinks['sort'];
             } elseif (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
-                $menuItem             = new \stdClass();
+                $menuItem             = new stdClass();
                 $menuItem->kPlugin    = $pluginID;
                 $menuItem->cName      = $settingsLinks['Name'];
                 $menuItem->cDateiname = '';
@@ -79,7 +80,7 @@ class SettingsLinks extends AbstractItem
                         $sort         = $setting['sort'];
                         $cConf        = $setting['conf'];
                     } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
-                        $plgnConf          = new \stdClass();
+                        $plgnConf          = new stdClass();
                         $plgnConf->kPlugin = $pluginID;
                         $plgnConf->cName   = \is_array($setting['ValueName'])
                             ? $setting['ValueName']['0']
@@ -101,7 +102,7 @@ class SettingsLinks extends AbstractItem
                         } else {
                             $this->db->insert('tplugineinstellungen', $plgnConf);
                         }
-                        $plgnConf                   = new \stdClass();
+                        $plgnConf                   = new stdClass();
                         $plgnConf->kPlugin          = $pluginID;
                         $plgnConf->kPluginAdminMenu = $menuID;
                         $plgnConf->cName            = $setting['Name'];
@@ -165,7 +166,7 @@ class SettingsLinks extends AbstractItem
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $optNode['Option'][$yx];
 
-                                        $plgnConfValues                           = new \stdClass();
+                                        $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
                                         $plgnConfValues->cName                    = $cName;
                                         $plgnConfValues->cWert                    = $cWert;
@@ -175,7 +176,7 @@ class SettingsLinks extends AbstractItem
                                     }
                                 }
                             } elseif (\count($optNode) === 2) { // Es gibt nur eine Option
-                                $plgnConfValues                           = new \stdClass();
+                                $plgnConfValues                           = new stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $confID;
                                 $plgnConfValues->cName                    = $optNode['Option'];
                                 $plgnConfValues->cWert                    = $optNode['Option attr']['value'];
@@ -197,7 +198,7 @@ class SettingsLinks extends AbstractItem
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $optNode['Option'][$yx];
 
-                                        $plgnConfValues                           = new \stdClass();
+                                        $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
                                         $plgnConfValues->cName                    = $cName;
                                         $plgnConfValues->cWert                    = $cWert;
@@ -210,7 +211,7 @@ class SettingsLinks extends AbstractItem
                                     }
                                 }
                             } elseif (\count($optNode) === 2) { // Es gibt nur eine Option
-                                $plgnConfValues                           = new \stdClass();
+                                $plgnConfValues                           = new stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $confID;
                                 $plgnConfValues->cName                    = $optNode['Option'];
                                 $plgnConfValues->cWert                    = $optNode['Option attr']['value'];

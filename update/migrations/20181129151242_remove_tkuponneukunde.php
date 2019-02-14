@@ -6,6 +6,9 @@
  * @created Thu, 29 Nov 2018 15:12:42 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20181129151242 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Remove tkuponneukunde, add tkuponflag';
 
     public function up()

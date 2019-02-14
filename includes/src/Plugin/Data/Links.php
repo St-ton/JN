@@ -4,14 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Data;
+namespace JTL\Plugin\Data;
 
-use Link\LinkList;
+use JTL\Link\LinkList;
+use JTL\Shop;
 use Tightenco\Collect\Support\Collection;
+use function Functional\map;
 
 /**
  * Class Links
- * @package Plugin\Data
+ * @package JTL\Plugin\Data
  */
 class Links
 {
@@ -34,10 +36,10 @@ class Links
      */
     public function load($data): self
     {
-        $data        = \Functional\map($data, function ($e) {
+        $data        = map($data, function ($e) {
             return (int)$e->kLink;
         });
-        $links       = new LinkList(\Shop::Container()->getDB());
+        $links       = new LinkList(Shop::Container()->getDB());
         $this->links = $links->createLinks($data);
 
         return $this;

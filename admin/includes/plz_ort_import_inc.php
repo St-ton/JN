@@ -4,7 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
 
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
@@ -30,7 +34,7 @@ function plzimportGetPLZOrt(): array
             ) AS backup ON backup.cLandISO = tplz.cLandISO
             GROUP BY tplz.cLandISO, tland.cDeutsch, tland.cKontinent
             ORDER BY tplz.cLandISO',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     foreach ($plzOrt_arr as $key => $oPLZOrt) {
@@ -122,7 +126,7 @@ function plzimportDoImport($target, array $sessData, $result): void
                                     'params' => [$target, 'import', $sessData['step']]
                                 ]
                             )
-                        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
+                        ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
                     header('Location: ' . $cRedirectUrl);
                     exit;
                 }
@@ -137,7 +141,7 @@ function plzimportDoImport($target, array $sessData, $result): void
         $db->queryPrepared(
             'INSERT INTO tplz_backup SELECT * FROM tplz WHERE cLandISO = :isoCode',
             ['isoCode' => $isoLand],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         $db->delete('tplz', 'cLandISO', $isoLand);
 
@@ -260,16 +264,16 @@ function plzimportDoDownload($target, array $sessData, $result): void
                     'params' => [$target, 'import', $sessData['step']]
                 ]
             )
-        ) . '&token=' . StringHandler::filterXSS($_SESSION['jtl_token']);
+        ) . '&token=' . Text::filterXSS($_SESSION['jtl_token']);
     header('Location: ' . $cRedirectUrl);
     exit;
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
- * @param array             $messages
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  */
-function plzimportActionIndex(\Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportActionIndex(JTLSmarty $smarty, array &$messages): void
 {
     $status = plzimportActionCheckStatus();
     if (isset($status->running) && $status->running) {
@@ -299,8 +303,8 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
 
-    $target = StringHandler::filterXSS($target);
-    $part   = StringHandler::filterXSS($part);
+    $target = Text::filterXSS($target);
+    $part   = Text::filterXSS($part);
     $step   = (int)$step;
 
     session_write_close();
@@ -358,8 +362,8 @@ function plzimportActionResetImport($type = 'success', $message = 'Import wurde 
 
     $step   = 100;
     $result = (object)[
-        'type'    => StringHandler::filterXSS($type),
-        'message' => StringHandler::filterXSS($message),
+        'type'    => Text::filterXSS($type),
+        'message' => Text::filterXSS($message),
     ];
 
     $sessData         = plzimportReadSession('Import');
@@ -407,7 +411,7 @@ function plzimportActionCheckStatus(): stdClass
             "SELECT COUNT(*) AS nAnzahl
                 FROM tplz
                 WHERE cLandISO = 'IMP'",
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         $result = (object)[
@@ -471,7 +475,7 @@ function plzimportActionLoadAvailableDownloads(): array
                     FROM tland
                     WHERE cISO IN (' . implode(', ', $quotedHits) . ')
                     ORDER BY cISO',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
             foreach ($oLand_arr as $key => $oLand) {
@@ -534,14 +538,14 @@ function countriesPreventXss($countries)
  */
 function plzimportActionRestoreBackup($target = ''): stdClass
 {
-    $target = StringHandler::filterXSS($target);
+    $target = Text::filterXSS($target);
 
     if (!empty($target)) {
         Shop::Container()->getDB()->delete('tplz', 'cLandISO', $target);
         Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tplz SELECT * FROM tplz_backup WHERE cLandISO = :target',
             ['target' => $target],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->delete('tplz_backup', 'cLandISO', $target);
 
@@ -554,10 +558,10 @@ function plzimportActionRestoreBackup($target = ''): stdClass
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
- * @param array             $messages
+ * @param JTLSmarty $smarty
+ * @param array                 $messages
  */
-function plzimportFinalize(\Smarty\JTLSmarty $smarty, array &$messages): void
+function plzimportFinalize(JTLSmarty $smarty, array &$messages): void
 {
     if (isset($_SESSION['plzimport.notice'])) {
         $messages['notice'] = $_SESSION['plzimport.notice'];
@@ -588,7 +592,7 @@ function plzimportOpenSession($sessID): bool
                 ON DUPLICATE KEY UPDATE
                 nSessionExpires = " . (time() + 2 * 60) . ",
                 cSessionData    = ''",
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         return true;

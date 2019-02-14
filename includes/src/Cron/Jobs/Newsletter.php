@@ -4,16 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
-use DB\ReturnType;
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
+use JTL\DB\ReturnType;
+use JTL\Kampagne;
+use JTL\Customer\Kunde;
+use JTL\Shop;
 
 /**
  * Class Newsletter
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class Newsletter extends Job
 {
@@ -44,13 +47,13 @@ class Newsletter extends Job
         $oNewsletter->kSprache    = (int)$oNewsletter->kSprache;
         $oNewsletter->kKampagne   = (int)$oNewsletter->kKampagne;
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'newsletter_inc.php';
-        $conf            = \Shop::getSettings([\CONF_NEWSLETTER]);
+        $conf            = Shop::getSettings([\CONF_NEWSLETTER]);
         $smarty          = \bereiteNewsletterVor($conf);
         $productIDs      = \gibAHKKeys($oNewsletter->cArtikel, true);
         $manufacturerIDs = \gibAHKKeys($oNewsletter->cHersteller);
         $categoryIDs     = \gibAHKKeys($oNewsletter->cKategorie);
         $customerGroups  = \gibAHKKeys($oNewsletter->cKundengruppe);
-        $campaign        = new \Kampagne($oNewsletter->kKampagne);
+        $campaign        = new Kampagne($oNewsletter->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
             $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
@@ -85,12 +88,12 @@ class Newsletter extends Job
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($recipients) > 0) {
-            $shopURL = \Shop::getURL();
+            $shopURL = Shop::getURL();
             foreach ($recipients as $recipient) {
                 $recipient->cLoeschURL = $shopURL . '/newsletter.php?lang=' .
                     $recipient->cISO . '&lc=' . $recipient->cLoeschCode;
                 $customer              = $recipient->kKunde > 0
-                    ? new \Kunde($recipient->kKunde)
+                    ? new Kunde($recipient->kKunde)
                     : null;
                 $cgID                  = (int)$recipient->kKundengruppe > 0
                     ? (int)$recipient->kKundengruppe

@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class AnonymizeDeletedCustomer
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  */
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
@@ -30,7 +31,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anonymizeRatings(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             "UPDATE tbewertung b
             SET
                 b.cName  = 'Anonym',
@@ -55,7 +56,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anonymizeReceivedPayments(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             "UPDATE tzahlungseingang z
             SET
                 z.cZahler = '-'
@@ -86,7 +87,7 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      */
     private function anonymizeNewsComments(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             "UPDATE tnewskommentar n
             SET
                 n.cName = 'Anonym',

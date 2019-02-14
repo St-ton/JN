@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Pagination;
+namespace JTL\Pagination;
 
-use Shop;
+use JTL\Shop;
 
 /**
  * Class FilterTextField
- * @package Pagination
+ * @package JTL\Pagination
  */
 class FilterTextField extends FilterField
 {

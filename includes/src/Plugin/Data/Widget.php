@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Data;
+namespace JTL\Plugin\Data;
 
+use stdClass;
 use Tightenco\Collect\Support\Collection;
 use function Functional\reindex;
 
 /**
  * Class Widget
- * @package Plugin\Data
+ * @package JTL\Plugin\Data
  */
 class Widget
 {
@@ -44,7 +45,7 @@ class Widget
             $widget->kPlugin     = (int)$widget->kPlugin;
             $widget->isExtension = true;
             $widget->classFile   = $adminPath . \PFAD_PLUGIN_WIDGET . $widget->cClass . '.php';
-            $widget->className   = $widget->namespace . $widget->cClass;
+            $widget->className   = '\Plugin' . $widget->namespace . $widget->cClass;
             $this->widgets->push($widget);
         }
 
@@ -53,9 +54,9 @@ class Widget
 
     /**
      * @param int $id
-     * @return \stdClass|null
+     * @return stdClass|null
      */
-    public function getWidgetByID(int $id): ?\stdClass
+    public function getWidgetByID(int $id): ?stdClass
     {
         return $this->widgets->firstWhere('id', $id);
     }
@@ -87,10 +88,10 @@ class Widget
     }
 
     /**
-     * @param \stdClass $widget
+     * @param stdClass $widget
      * @return Collection
      */
-    public function addWidget(\stdClass $widget): Collection
+    public function addWidget(stdClass $widget): Collection
     {
         $this->widgets[] = $widget;
 

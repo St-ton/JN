@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
 /**
  * Interface ContainerInterface
- * @package Services
+ * @package JTL\Services
  */
 interface ContainerInterface extends \Psr\Container\ContainerInterface
 {

@@ -6,6 +6,9 @@
  * @created Wed, 12 Sep 2018 11:26:14 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180912112614 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Change check city description';
 
     public function up()

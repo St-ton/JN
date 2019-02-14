@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+
 /**
  * @deprecated since 4.05
  * @param array $splits
@@ -147,7 +151,7 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
             }
             fwrite($dateiHandle, $cKopfzeile . "\n");
         } else {
-            fwrite($dateiHandle, StringHandler::convertISO($cKopfzeile . "\n"));
+            fwrite($dateiHandle, Text::convertISO($cKopfzeile . "\n"));
         }
     }
 }
@@ -164,7 +168,7 @@ function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
         if ($cKodierung === 'UTF-8' || $cKodierung === 'UTF-8noBOM') {
             fwrite($dateiHandle, $cFusszeile);
         } else {
-            fwrite($dateiHandle, StringHandler::convertISO($cFusszeile));
+            fwrite($dateiHandle, Text::convertISO($cFusszeile));
         }
     }
 }
@@ -299,7 +303,7 @@ function holeMaxExportArtikelAnzahl(&$export)
             ' . $data['Join'] . '
             WHERE tartikelattribut.kArtikelAttribut IS NULL' . $data['Where'] . '
                 AND tartikelsichtbarkeit.kArtikel IS NULL ' . $sql,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     Shop::Container()->getCache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
 

@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+
 /**
  * @param float $fPreis
  * @param float $fSteuersatz
@@ -115,7 +119,7 @@ function gibGesetzteVersandklassen($cVersandklassen)
             FROM tversandklasse
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')  
             ORDER BY kVersandklasse',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     ));
     foreach ($PVersandklassen as $vk) {
         $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
@@ -148,7 +152,7 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
             FROM tversandklasse 
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')
             ORDER BY kVersandklasse',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     ));
     foreach ($PVersandklassen as $vk) {
         if (in_array($vk->kVersandklasse, $cVKarr, true)) {
@@ -166,12 +170,12 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
 function gibGesetzteKundengruppen($customerGroupsString)
 {
     $activeGroups = [];
-    $groups       = StringHandler::parseSSK($customerGroupsString);
+    $groups       = Text::parseSSK($customerGroupsString);
     $groupData    = Shop::Container()->getDB()->query(
         'SELECT kKundengruppe
             FROM tkundengruppe
             ORDER BY kKundengruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($groupData as $group) {
         $activeGroups[(int)$group->kKundengruppe] = in_array($group->kKundengruppe, $groups);
@@ -250,7 +254,7 @@ function getShippingByName(string $cSearch)
                     WHERE va.cName LIKE :search
                     OR vs.cName LIKE :search',
                 ['search' => '%' . $cSearchPos . '%'],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {

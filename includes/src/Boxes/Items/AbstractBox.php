@@ -4,20 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Boxes\Renderer\DefaultRenderer;
-use Boxes\Type;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\Boxes\Renderer\DefaultRenderer;
+use JTL\Boxes\Type;
+use JTL\MagicCompatibilityTrait;
+use JTL\Plugin\PluginInterface;
+use JTL\Shop;
 use function Functional\false;
 use function Functional\first;
 
 /**
  * Class AbstractBox
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 abstract class AbstractBox implements BoxInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -113,12 +118,12 @@ abstract class AbstractBox implements BoxInterface
     protected $templateFile = '';
 
     /**
-     * @var \Plugin\LegacyPlugin|null
+     * @var PluginInterface|null
      */
     protected $plugin;
 
     /**
-     * @var \Plugin\Plugin|null
+     * @var PluginInterface|null
      */
     protected $extension;
 
@@ -168,7 +173,7 @@ abstract class AbstractBox implements BoxInterface
     protected $isActive = true;
 
     /**
-     * @var \Artikel[]
+     * @var Artikel[]
      */
     protected $products;
 
@@ -257,7 +262,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setSort((int)$data->nSort);
         $this->setIsActive(true);
         if ($this->products === null) {
-            $this->products = new \ArtikelListe();
+            $this->products = new ArtikelListe();
         }
         if (!empty($data->kSprache)) {
             $this->setTitle([]);
@@ -421,33 +426,33 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @return null|\Plugin\LegacyPlugin
+     * @return null|PluginInterface
      */
-    public function getPlugin(): ?\Plugin\LegacyPlugin
+    public function getPlugin(): ?PluginInterface
     {
         return $this->plugin;
     }
 
     /**
-     * @param null|\Plugin\LegacyPlugin $plugin
+     * @param null|PluginInterface $plugin
      */
-    public function setPlugin(?\Plugin\LegacyPlugin $plugin): void
+    public function setPlugin(?PluginInterface $plugin): void
     {
         $this->plugin = $plugin;
     }
 
     /**
-     * @return null|\Plugin\Plugin
+     * @return null|PluginInterface
      */
-    public function getExtension(): ?\Plugin\Plugin
+    public function getExtension(): ?PluginInterface
     {
         return $this->extension;
     }
 
     /**
-     * @param null|\Plugin\Plugin $extension
+     * @param null|PluginInterface $extension
      */
-    public function setExtension(?\Plugin\Plugin $extension): void
+    public function setExtension(?PluginInterface $extension): void
     {
         $this->extension = $extension;
     }
@@ -492,7 +497,7 @@ abstract class AbstractBox implements BoxInterface
         if (\is_string($this->title)) {
             return $this->title;
         }
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->title[$idx] ?? '';
     }
@@ -513,7 +518,7 @@ abstract class AbstractBox implements BoxInterface
         if (\is_string($this->content)) {
             return $this->content;
         }
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->content[$idx] ?? '';
     }

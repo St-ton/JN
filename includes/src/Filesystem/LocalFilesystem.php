@@ -4,10 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filesystem;
+namespace JTL\Filesystem;
 
 use SplFileInfo;
+use FilesystemIterator;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 
+/**
+ * Class LocalFilesystem
+ * @package JTL\Filesystem
+ */
 class LocalFilesystem extends AbstractFilesystem
 {
     /**
@@ -27,8 +34,8 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        if (file_exists($location)) {
-            return file_get_contents($location);
+        if (\file_exists($location)) {
+            return \file_get_contents($location);
         }
 
         return null;
@@ -41,7 +48,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        if (file_put_contents($location, $contents) === false) {
+        if (\file_put_contents($location, $contents) === false) {
             return false;
         }
 
@@ -57,7 +64,7 @@ class LocalFilesystem extends AbstractFilesystem
      */
     public function cwd()
     {
-        return @getcwd();
+        return @\getcwd();
     }
 
     /**
@@ -67,7 +74,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        return @chdir($location);
+        return @\chdir($location);
     }
 
     /**
@@ -77,7 +84,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        return @chgrp($location, $group);
+        return @\chgrp($location, $group);
     }
 
     /**
@@ -88,10 +95,10 @@ class LocalFilesystem extends AbstractFilesystem
         $location = $this->applyPathPrefix($path);
 
         if ($mode) {
-            return @chmod($location, $mode);
+            return @\chmod($location, $mode);
         }
 
-        return substr(sprintf('%o', fileperms($location)), -4);
+        return \substr(\sprintf('%o', \fileperms($location)), -4);
     }
 
     /**
@@ -101,7 +108,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        return @chown($location, $owner);
+        return @\chown($location, $owner);
     }
 
     /**
@@ -111,7 +118,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        return @rename($location, $target);
+        return @\rename($location, $target);
     }
 
     /**
@@ -121,7 +128,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        return @copy($location, $target);
+        return @\copy($location, $target);
     }
 
     /**
@@ -131,7 +138,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        return @unlink($location);
+        return @\unlink($location);
     }
 
     /**
@@ -141,7 +148,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        return @file_exists($location);
+        return @\file_exists($location);
     }
 
     /**
@@ -151,8 +158,8 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($path);
 
-        if (!is_dir($location)) {
-            return @mkdir($location, $mode, $recursive);
+        if (!\is_dir($location)) {
+            return @\mkdir($location, $mode, $recursive);
         }
 
         return true;
@@ -166,7 +173,7 @@ class LocalFilesystem extends AbstractFilesystem
         $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
 
-        if ($overwrite && is_dir($destination)) {
+        if ($overwrite && \is_dir($destination)) {
             if (!$this->deleteDirectory($destination)) {
                 return false;
             }
@@ -183,11 +190,11 @@ class LocalFilesystem extends AbstractFilesystem
         $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
 
-        if (!is_dir($location)) {
+        if (!\is_dir($location)) {
             return false;
         }
 
-        if (!is_dir($destination)) {
+        if (!\is_dir($destination)) {
             $this->makeDirectory($destination, $mode, true);
         }
 
@@ -202,10 +209,8 @@ class LocalFilesystem extends AbstractFilesystem
                 if (!$this->copyDirectory($path, $target, $mode)) {
                     return false;
                 }
-            } else {
-                if (!$this->copy($item->getPathname(), $target)) {
-                    return false;
-                }
+            } elseif (!$this->copy($item->getPathname(), $target)) {
+                return false;
             }
         }
 
@@ -219,7 +224,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($directory);
 
-        if (!is_dir($location)) {
+        if (!\is_dir($location)) {
             return false;
         }
 
@@ -234,7 +239,7 @@ class LocalFilesystem extends AbstractFilesystem
         }
 
         if (!$preserve) {
-            @rmdir($location);
+            @\rmdir($location);
         }
 
         return true;
@@ -247,7 +252,7 @@ class LocalFilesystem extends AbstractFilesystem
     {
         $location = $this->applyPathPrefix($directory);
 
-        if (!is_dir($location)) {
+        if (!\is_dir($location)) {
             return;
         }
 
@@ -290,7 +295,7 @@ class LocalFilesystem extends AbstractFilesystem
         ];
 
         if ($file->isDir() || $file->isFile() || $file->isLink()) {
-            $options = array_merge(
+            $options = \array_merge(
                 $options,
                 [
                     'type' => $file->getType(),
@@ -336,8 +341,6 @@ class LocalFilesystem extends AbstractFilesystem
      */
     protected function getDirectoryIterator($path)
     {
-        $iterator = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
-
-        return $iterator;
+        return new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
     }
 }

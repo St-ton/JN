@@ -4,11 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Category;
-use Helpers\Form;
-use Helpers\Manufacturer;
-use Helpers\Request;
-use Helpers\ShippingMethod;
+use JTL\Helpers\Category;
+use JTL\Helpers\Form;
+use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\ExtensionPoint;
+use JTL\Firma;
+use JTL\Kampagne;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\Template;
+use JTL\Visitor;
+use JTL\Cart\Warenkorb;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
 
 $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
@@ -35,9 +51,9 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
 $debugbarRenderer   = $debugbar->getJavascriptRenderer();
-$customerGroupID    = ($id = \Session\Frontend::getCustomer()->kKundengruppe) > 0
+$customerGroupID    = ($id = Frontend::getCustomer()->kKundengruppe) > 0
     ? $id
-    : \Session\Frontend::getCustomerGroup()->getID();
+    : Frontend::getCustomerGroup()->getID();
 $globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
 $pagetType          = Shop::getPageType();
 $specialPageTypes   = [
@@ -50,7 +66,7 @@ $specialPageTypes   = [
     PAGE_LOGIN
 ];
 if (in_array($pagetType, $specialPageTypes, true)) {
-    $mapper           = new \Mapper\PageTypeToLinkType();
+    $mapper           = new \JTL\Mapper\PageTypeToLinkType();
     $metaData         = $linkHelper->buildSpecialPageMeta($mapper->map($pagetType));
     $cMetaTitle       = $metaData->cTitle;
     $cMetaDescription = $metaData->cDesc;
@@ -99,7 +115,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('ShopURL', $shopURL)
        ->assign('imageBaseURL', Shop::getImageBaseURL())
        ->assign('ShopURLSSL', Shop::getURL(true))
-       ->assign('NettoPreise', \Session\Frontend::getCustomerGroup()->getIsMerchant())
+       ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
        ->assign('cShopName', $conf['global']['global_shopname'])
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
        ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
@@ -126,7 +142,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('meta_keywords', $cMetaKeywords ?? '')
        ->assign('meta_publisher', $conf['metaangaben']['global_meta_publisher'])
        ->assign('meta_copyright', $conf['metaangaben']['global_meta_copyright'])
-       ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']))
+       ->assign('meta_language', Text::convertISO2ISO639($_SESSION['cISOSprache']))
        ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
        ->assign('bAjaxRequest', Request::isAjaxRequest())
@@ -149,24 +165,24 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \Filter\SearchResults())
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \JTL\Filter\SearchResults())
        ->assign('cSessionID', session_id())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL());
 
-$nav = new \JTL\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
+$nav = new \JTL\Catalog\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
 $nav->setProductFilter($NaviFilter);
 $nav->setCategoryList($expandedCategories);
 if (isset($AktuellerArtikel) && $AktuellerArtikel instanceof Artikel) {
     $nav->setProduct($AktuellerArtikel);
 }
-if (isset($link) && $link instanceof \Link\Link) {
+if (isset($link) && $link instanceof \JTL\Link\Link) {
     $nav->setLink($link);
 }
 if (isset($breadCrumbName, $breadCrumbURL)) {
-    $breadCrumbEntry = new \JTL\NavigationEntry();
+    $breadCrumbEntry = new \JTL\Catalog\NavigationEntry();
     $breadCrumbEntry->setURL($breadCrumbURL);
     $breadCrumbEntry->setName($breadCrumbName);
     $breadCrumbEntry->setURLFull($breadCrumbURL);
@@ -190,7 +206,7 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
 $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
     ? (int)Shop::Container()->getDB()->query(
         'SELECT nZaehler FROM tbesucherzaehler',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nZaehler
     : 0;
 $debugbar->getTimer()->stopMeasure('init');

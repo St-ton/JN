@@ -4,27 +4,29 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
-use Plugin\Data\AdminMenu;
-use Plugin\Data\Cache;
-use Plugin\Data\Config;
-use Plugin\Data\License;
-use Plugin\Data\Links;
-use Plugin\Data\Localization;
-use Plugin\Data\MailTemplates;
-use Plugin\Data\Meta;
-use Plugin\Data\Paths;
-use Plugin\Data\PaymentMethods;
-use Plugin\Data\Widget;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Plugin\Data\AdminMenu;
+use JTL\Plugin\Data\Cache;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Data\License;
+use JTL\Plugin\Data\Links;
+use JTL\Plugin\Data\Localization;
+use JTL\Plugin\Data\MailTemplates;
+use JTL\Plugin\Data\Meta;
+use JTL\Plugin\Data\Paths;
+use JTL\Plugin\Data\PaymentMethods;
+use JTL\Plugin\Data\Widget;
+use JTL\Shop;
+use stdClass;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AbstractLoader
- * @package Plugin
+ * @package JTL\Plugin
  */
 abstract class AbstractLoader implements LoaderInterface
 {
@@ -126,10 +128,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param \stdClass $obj
+     * @param stdClass $obj
      * @return Meta
      */
-    protected function loadMetaData(\stdClass $obj): Meta
+    protected function loadMetaData(stdClass $obj): Meta
     {
         $metaData = new Meta();
 
@@ -171,7 +173,7 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadPaths(string $pluginDir): Paths
     {
-        $shopURL  = \Shop::getURL(true) . '/';
+        $shopURL  = Shop::getURL(true) . '/';
         $basePath = \PFAD_ROOT . \PLUGIN_DIR . $pluginDir . \DIRECTORY_SEPARATOR;
         $baseURL  = $shopURL . \PLUGIN_DIR . $pluginDir . '/';
 
@@ -193,7 +195,7 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param \stdClass $data
+     * @param stdClass $data
      * @return License
      */
     protected function loadLicense($data): License
@@ -266,7 +268,7 @@ abstract class AbstractLoader implements LoaderInterface
         $lastIdx  = $lastItem->idx ?? -1;
         if (!empty($meta->getReadmeMD())) {
             ++$lastIdx;
-            $menu                   = new \stdClass();
+            $menu                   = new stdClass();
             $menu->kPluginAdminMenu = -1;
             $menu->id               = 'md-' . $lastIdx;
             $menu->kPlugin          = $extension->getID();
@@ -287,7 +289,7 @@ abstract class AbstractLoader implements LoaderInterface
         }
         if (!empty($meta->getLicenseMD())) {
             ++$lastIdx;
-            $menu                   = new \stdClass();
+            $menu                   = new stdClass();
             $menu->kPluginAdminMenu = -1;
             $menu->id               = 'md-' . $lastIdx;
             $menu->kPlugin          = $extension->getID();
@@ -308,7 +310,7 @@ abstract class AbstractLoader implements LoaderInterface
         }
         if (!empty($meta->getChangelogMD())) {
             ++$lastIdx;
-            $menu                   = new \stdClass();
+            $menu                   = new stdClass();
             $menu->kPluginAdminMenu = -1;
             $menu->id               = 'md-' . $lastIdx;
             $menu->kPlugin          = $extension->getID();

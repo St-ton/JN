@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache;
+namespace JTL\Cache;
 
 /**
  * Trait JTLCacheTrait
@@ -113,7 +113,7 @@ trait JTLCacheTrait
             return false;
         }
         $data = \trim($data);
-        if ('N;' === $data) {
+        if ($data === 'N;') {
             return true;
         }
         if (!\preg_match('/^([adObis]):/', $data, $badions)) {

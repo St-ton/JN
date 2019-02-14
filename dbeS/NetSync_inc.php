@@ -4,12 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Sprache;
+use JTL\dbeS\SystemFolder;
+use JTL\dbeS\SystemFile;
+
 ob_start();
 
 require_once __DIR__ . '/syncinclude.php';
 require_once __DIR__ . '/../includes/config.JTL-Shop.ini.php';
 require_once __DIR__ . '/../includes/defines.php';
 require_once PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_queue_inc.php';
 error_reporting(SYNC_LOG_LEVEL);
 $oSprache = Sprache::getInstance();
 
@@ -28,7 +35,7 @@ function getFolderStruct(string $baseDir): array
         }
         $pathName = $baseDir . DIRECTORY_SEPARATOR . $folder;
         if (is_dir($pathName)) {
-            $systemFolder              = new \dbeS\SystemFolder($folder, $pathName);
+            $systemFolder              = new SystemFolder($folder, $pathName);
             $systemFolder->oSubFolders = getFolderStruct($pathName);
             $folders[]                 = $systemFolder;
         }
@@ -54,7 +61,7 @@ function getFilesStruct(string $baseDir, $preview = false): array
         $pathName = $baseDir . DIRECTORY_SEPARATOR . $file;
         if (is_file($pathName)) {
             $pathinfo = pathinfo($pathName);
-            $files[]  = new \dbeS\SystemFile(
+            $files[]  = new SystemFile(
                 $index++,
                 $pathName,
                 substr($pathName, strlen($preview ? PFAD_DOWNLOADS_PREVIEW : PFAD_DOWNLOADS)),

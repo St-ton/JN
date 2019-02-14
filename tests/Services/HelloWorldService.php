@@ -15,8 +15,8 @@ class HelloWorldService implements HelloWorldServiceInterface
     /**
      * @return string
      */
-    public function getHelloWorldString()
+    public function getHelloWorldString(): string
     {
-        return " Hello World ";
+        return ' Hello World ';
     }
 }

@@ -4,17 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
-use DB\DbInterface;
+use JTL\DB\DbInterface;
+use JTL\Shop;
 use PHPGangsta_GoogleAuthenticator;
-use qrcodegenerator\QRCode\QRCode;
 use qrcodegenerator\QRCode\Output\QRString;
-use Shop;
+use qrcodegenerator\QRCode\QRCode;
+use stdClass;
 
 /**
  * Class TwoFA
- * @package Backend
+ * @package JTL\Backend
  */
 class TwoFA
 {
@@ -28,7 +29,7 @@ class TwoFA
     /**
      * user-account data
      *
-     * @var \stdClass
+     * @var stdClass
      */
     private $oUserTuple;
 
@@ -51,7 +52,7 @@ class TwoFA
     public function __construct(DbInterface $db)
     {
         $this->db                         = $db;
-        $this->oUserTuple                 = new \stdClass();
+        $this->oUserTuple                 = new stdClass();
         $this->oUserTuple->kAdminlogin    = 0;
         $this->oUserTuple->cLogin         = '';
         $this->oUserTuple->b2FAauth       = false;
@@ -91,7 +92,7 @@ class TwoFA
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
         if ($this->oUserTuple === null) {
-            $this->oUserTuple = new \stdClass();
+            $this->oUserTuple = new stdClass();
         }
         $this->oUserTuple->c2FAauthSecret = $this->oGA->createSecret();
 
@@ -229,7 +230,7 @@ class TwoFA
      */
     public function __toString()
     {
-        return print_r($this->oUserTuple, true);
+        return \print_r($this->oUserTuple, true);
     }
 
     /**
@@ -241,7 +242,7 @@ class TwoFA
         $twoFA = new self(Shop::Container()->getDB());
         $twoFA->setUserByName($userName);
 
-        $userData           = new \stdClass();
+        $userData           = new stdClass();
         $userData->szSecret = $twoFA->createNewSecret()->getSecret();
         $userData->szQRcode = $twoFA->getQRcode();
 
@@ -250,15 +251,15 @@ class TwoFA
 
     /**
      * @param string $userName
-     * @return \stdClass
+     * @return stdClass
      */
-    public static function genTwoFAEmergencyCodes(string $userName): \stdClass
+    public static function genTwoFAEmergencyCodes(string $userName): stdClass
     {
         $db    = Shop::Container()->getDB();
         $twoFA = new self($db);
         $twoFA->setUserByName($userName);
 
-        $data            = new \stdClass();
+        $data            = new stdClass();
         $data->loginName = $twoFA->getUserTuple()->cLogin;
         $data->shopName  = $twoFA->getShopName();
 

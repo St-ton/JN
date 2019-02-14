@@ -4,7 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Cart;
+use JTL\Helpers\Cart;
+use JTL\Shop;
 
 require __DIR__ . '/includes/globalinclude.php';
 

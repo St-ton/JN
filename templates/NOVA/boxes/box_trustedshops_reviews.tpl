@@ -5,7 +5,7 @@
 {card
     class="box box-trustedshops-reviews mb-7"
     id="sidebox{$oBox->getID()}"
-    titel="{if $oBox->getPosition() !== \Boxes\Position::BOTTOM}{lang key='trustedshopsRating'}{/if}"
+    titel="{if $oBox->getPosition() !== JTL\Boxes\Position::BOTTOM}{lang key='trustedshopsRating'}{/if}"
 }
     <hr class="mt-0 mb-4">
     <div class="sidebox_content text-center">

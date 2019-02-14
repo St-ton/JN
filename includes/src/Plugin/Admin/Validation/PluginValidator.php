@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation;
+namespace JTL\Plugin\Admin\Validation;
 
+use JTL\Plugin\InstallCode;
 use JTLShop\SemVer\Version;
-use Plugin\InstallCode;
 
 /**
  * Class PluginValidator
- * @package Plugin\Admin\Validation
+ * @package JTL\Plugin\Admin\Validation
  */
 final class PluginValidator extends AbstractValidator
 {

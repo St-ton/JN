@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace JTL;
+
 /**
- * Class SingletonTrait
+ * Trait SingletonTrait
+ * @package JTL
  */
 trait SingletonTrait
 {

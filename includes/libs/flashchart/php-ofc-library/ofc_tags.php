@@ -4,8 +4,8 @@ class ofc_tags
 {
     public function __construct()
     {
-        $this->type      = "tags";
-        $this->values    = array();
+        $this->type   = 'tags';
+        $this->values = array();
     }
     
     public function colour($colour)
@@ -20,7 +20,7 @@ class ofc_tags
      */
     public function font($font, $size)
     {
-        $this->font = $font;
+        $this->font          = $font;
         $this->{'font-size'} = $size;
         return $this;
     }
@@ -31,8 +31,8 @@ class ofc_tags
      */
     public function padding($x, $y)
     {
-        $this->{"pad-x"} = $x;
-        $this->{"pad-y"} = $y;
+        $this->{'pad-x'} = $x;
+        $this->{'pad-y'} = $y;
         return $this;
     }
     
@@ -44,37 +44,37 @@ class ofc_tags
     
     public function align_x_center()
     {
-        $this->{"align-x"} = "center";
+        $this->{'align-x'} = 'center';
         return $this;
     }
     
     public function align_x_left()
     {
-        $this->{"align-x"} = "left";
+        $this->{'align-x'} = 'left';
         return $this;
     }
     
     public function align_x_right()
     {
-        $this->{"align-x"} = "right";
+        $this->{'align-x'} = 'right';
         return $this;
     }
     
     public function align_y_above()
     {
-        $this->{"align-y"} = "above";
+        $this->{'align-y'} = 'above';
         return $this;
     }
     
     public function align_y_below()
     {
-        $this->{"align-y"} = "below";
+        $this->{'align-y'} = 'below';
         return $this;
     }
     
     public function align_y_center()
     {
-        $this->{"align-y"} = "center";
+        $this->{'align-y'} = 'center';
         return $this;
     }
     
@@ -107,10 +107,10 @@ class ofc_tags
      */
     public function style($bold, $underline, $border, $alpha)
     {
-        $this->bold = $bold;
-        $this->border = $underline;
+        $this->bold      = $bold;
+        $this->border    = $underline;
         $this->underline = $border;
-        $this->alpha = $alpha;
+        $this->alpha     = $alpha;
         return $this;
     }
     

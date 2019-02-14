@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache;
+namespace JTL\Cache;
 
 /**
  * Interface ICachingMethod
- * @package Cache
+ * @package JTL\Cache
  */
 interface ICachingMethod
 {

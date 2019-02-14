@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 
@@ -41,7 +43,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             'DELETE
                 FROM tsitemaptracker
                 WHERE kSitemapTracker IN (' . implode(',', $trackers) . ')',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -55,7 +57,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             'DELETE
                 FROM tsitemapreport
                 WHERE kSitemapReport IN (' . implode(',', $reports) . ')',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -69,7 +71,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemaptracker
             WHERE YEAR(tsitemaptracker.dErstellt) = ' . $nYearDownloads,
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
     $cHinweis       = sprintf(__('successSitemapDLDeleteByYear'), $nYearDownloads);
     $nYearDownloads = 0;
@@ -79,7 +81,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && For
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemapreport
             WHERE YEAR(tsitemapreport.dErstellt) = ' . $nYearReports,
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
     $cHinweis     = sprintf(__('successSitemapReportDeleteByYear'), $nYearReports);
     $nYearReports = 0;
@@ -90,7 +92,7 @@ $oSitemapDownloadYears_arr = Shop::Container()->getDB()->query(
         FROM tsitemaptracker
         GROUP BY 1
         ORDER BY 1 DESC',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapDownloadYears_arr) || count($oSitemapDownloadYears_arr) === 0) {
     $oSitemapDownloadYears_arr[] = (object)[
@@ -116,7 +118,7 @@ $oSitemapDownload_arr       = Shop::Container()->getDB()->query(
         WHERE YEAR(tsitemaptracker.dErstellt) = " . $nYearDownloads . '
         ORDER BY tsitemaptracker.dErstellt DESC
         LIMIT ' . $oSitemapDownloadPagination->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 // Sitemap Reports
@@ -125,7 +127,7 @@ $oSitemapReportYears_arr = Shop::Container()->getDB()->query(
         FROM tsitemapreport
         GROUP BY 1
         ORDER BY 1 DESC',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 if (!isset($oSitemapReportYears_arr) || count($oSitemapReportYears_arr) === 0) {
     $oSitemapReportYears_arr[] = (object)[
@@ -147,7 +149,7 @@ $oSitemapReport_arr       = Shop::Container()->getDB()->query(
         WHERE YEAR(tsitemapreport.dErstellt) = " . $nYearReports . '
         ORDER BY tsitemapreport.dErstellt DESC
         LIMIT ' . $oSitemapReportPagination->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 foreach ($oSitemapReport_arr as $i => $oSitemapReport) {
     if (isset($oSitemapReport->kSitemapReport) && $oSitemapReport->kSitemapReport > 0) {

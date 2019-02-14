@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
 /**
  * Class Migration
- * @package Plugin
+ * @package JTL\Plugin
  */
-class Migration extends \Migration
+class Migration extends \JTL\Update\Migration
 {
     /**
      * @return int|null

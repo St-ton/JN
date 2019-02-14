@@ -210,7 +210,7 @@
                 {container fluid=$isFluidTemplate}
                     {block name='footer-copyright'}
                         {row}
-                            {assign var=isBrandFree value=Shop::isBrandfree()}
+                            {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
                             {col cols=12 md=3}
                                 {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
                                 {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key='counter'}: {$Besucherzaehler}{/if}

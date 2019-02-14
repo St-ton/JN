@@ -3,6 +3,9 @@
  * Add product filter config
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180109100600
  */
@@ -24,7 +27,7 @@ class Migration_20180109100600 extends Migration implements IMigration
             'Typ des Tagfilters',
             'selectbox',
             176,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',
@@ -39,7 +42,7 @@ class Migration_20180109100600 extends Migration implements IMigration
             'Typ des Kategoriefilters',
             'selectbox',
             148,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',
@@ -54,7 +57,7 @@ class Migration_20180109100600 extends Migration implements IMigration
             'Typ des Herstellerfilters',
             'selectbox',
             121,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',
@@ -69,7 +72,7 @@ class Migration_20180109100600 extends Migration implements IMigration
             'Typ des Suchspezialfilters',
             'selectbox',
             141,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Erlaubt Verorderung oder Verundung der Filterwerte',
                 'inputOptions'  => [
                     'A' => 'Verundung',

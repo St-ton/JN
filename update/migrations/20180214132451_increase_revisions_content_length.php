@@ -6,6 +6,9 @@
  * @created Wed, 14 Feb 2018 13:24:51 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,16 +25,16 @@
  */
 class Migration_20180214132451 extends Migration implements IMigration
 {
-    protected $author = 'Martin Schophaus';
+    protected $author      = 'Martin Schophaus';
     protected $description = 'Increase revisions content length';
 
     public function up()
     {
-        $this->execute("ALTER TABLE trevisions MODIFY content LONGTEXT");
+        $this->execute('ALTER TABLE trevisions MODIFY content LONGTEXT');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE trevisions MODIFY content TEXT");
+        $this->execute('ALTER TABLE trevisions MODIFY content TEXT');
     }
 }

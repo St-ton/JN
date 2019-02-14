@@ -4,12 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
+
+use JTL\Nice;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class UploadDatei
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class UploadDatei
 {
@@ -64,7 +67,7 @@ class UploadDatei
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
     }
 
     /**
@@ -73,7 +76,7 @@ class UploadDatei
      */
     public function loadFromDB(int $kUpload): bool
     {
-        $upload = \Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', $kUpload);
+        $upload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', $kUpload);
         if ($this->licenseOK && isset($upload->kUpload) && (int)$upload->kUpload > 0) {
             self::copyMembers($upload, $this);
 
@@ -88,7 +91,7 @@ class UploadDatei
      */
     public function save(): int
     {
-        return \Shop::Container()->getDB()->insert('tuploaddatei', self::copyMembers($this));
+        return Shop::Container()->getDB()->insert('tuploaddatei', self::copyMembers($this));
     }
 
     /**
@@ -96,7 +99,7 @@ class UploadDatei
      */
     public function update(): int
     {
-        return \Shop::Container()->getDB()->update(
+        return Shop::Container()->getDB()->update(
             'tuploaddatei',
             'kUpload',
             (int)$this->kUpload,
@@ -109,7 +112,7 @@ class UploadDatei
      */
     public function delete(): int
     {
-        return \Shop::Container()->getDB()->delete('tuploaddatei', 'kUpload', (int)$this->kUpload);
+        return Shop::Container()->getDB()->delete('tuploaddatei', 'kUpload', (int)$this->kUpload);
     }
 
     /**
@@ -122,7 +125,7 @@ class UploadDatei
         if (!self::checkLicense()) {
             return [];
         }
-        $files = \Shop::Container()->getDB()->selectAll(
+        $files = Shop::Container()->getDB()->selectAll(
             'tuploaddatei',
             ['kCustomID', 'nTyp'],
             [$kCustomID, $nTyp]
@@ -133,9 +136,9 @@ class UploadDatei
             $upload->bVorschau  = Upload::vorschauTyp($upload->cName);
             $upload->cBildpfad  = \sprintf(
                 '%s/%s?action=preview&secret=%s&sid=%s',
-                \Shop::getURL(),
+                Shop::getURL(),
                 \PFAD_UPLOAD_CALLBACK,
-                \rawurlencode(\Shop::Container()->getCryptoService()->encryptXTEA($upload->kUpload)),
+                \rawurlencode(Shop::Container()->getCryptoService()->encryptXTEA($upload->kUpload)),
                 \session_id()
             );
         }
@@ -151,7 +154,7 @@ class UploadDatei
     private static function copyMembers($objFrom, &$objTo = null)
     {
         if (!\is_object($objTo)) {
-            $objTo = new \stdClass();
+            $objTo = new stdClass();
         }
         foreach (\array_keys(\get_object_vars($objFrom)) as $member) {
             $objTo->$member = $objFrom->$member;

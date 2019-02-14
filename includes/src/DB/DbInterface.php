@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace DB;
+namespace JTL\DB;
 
 /**
  * Interface DbInterface
- * @package DB
+ * @package JTL\DB
  */
 interface DbInterface extends \Serializable
 {

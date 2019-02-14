@@ -4,14 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
+use DateTime;
+use JTL\DB\DbInterface;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 /**
  * Class Job
- * @package Cron
+ * @package JTL\Cron
  */
 abstract class Job implements JobInterface
 {
@@ -56,22 +58,22 @@ abstract class Job implements JobInterface
     private $foreignKey = '';
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateLastStarted;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $dateLastFinished;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $startTime;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $startDate;
 
@@ -125,7 +127,7 @@ abstract class Job implements JobInterface
      */
     public function insert(): int
     {
-        $ins               = new \stdClass();
+        $ins               = new stdClass();
         $ins->foreignKeyID = $this->getForeignKeyID() ?? '_DBNULL_';
         $ins->foreignKey   = $this->getForeignKey() ?? '_DBNULL_';
         $ins->tableName    = $this->getTableName() ?? '_DBNULL_';
@@ -164,7 +166,7 @@ abstract class Job implements JobInterface
      */
     public function saveProgress(QueueEntry $queueEntry): bool
     {
-        $upd                = new \stdClass();
+        $upd                = new stdClass();
         $upd->taskLimit     = $queueEntry->taskLimit;
         $upd->tasksExecuted = $queueEntry->tasksExecuted;
         $upd->lastProductID = $queueEntry->lastProductID;
@@ -183,9 +185,9 @@ abstract class Job implements JobInterface
     }
 
     /**
-     * @return \stdClass|null
+     * @return stdClass|null
      */
-    protected function getJobData(): ?\stdClass
+    protected function getJobData(): ?stdClass
     {
         return $this->getForeignKeyID() > 0 && $this->getForeignKey() !== '' && $this->getTableName() !== ''
             ? $this->db->select(
@@ -263,7 +265,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function getDateLastStarted(): ?\DateTime
+    public function getDateLastStarted(): ?DateTime
     {
         return $this->dateLastStarted;
     }
@@ -274,14 +276,14 @@ abstract class Job implements JobInterface
     public function setDateLastStarted($date): void
     {
         $this->dateLastStarted = \is_string($date)
-            ? new \DateTime($date)
+            ? new DateTime($date)
             : $date;
     }
 
     /**
      * @inheritdoc
      */
-    public function getDateLastFinished(): ?\DateTime
+    public function getDateLastFinished(): ?DateTime
     {
         return $this->dateLastFinished;
     }
@@ -292,7 +294,7 @@ abstract class Job implements JobInterface
     public function setDateLastFinished($date): void
     {
         $this->dateLastFinished = \is_string($date)
-            ? new \DateTime($date)
+            ? new DateTime($date)
             : $date;
     }
 
@@ -301,13 +303,13 @@ abstract class Job implements JobInterface
      */
     public function setLastStarted(?string $date): void
     {
-        $this->dateLastStarted = $date === null ? null : new \DateTime($date);
+        $this->dateLastStarted = $date === null ? null : new DateTime($date);
     }
 
     /**
      * @inheritdoc
      */
-    public function getStartTime(): ?\DateTime
+    public function getStartTime(): ?DateTime
     {
         return $this->startTime;
     }
@@ -318,14 +320,14 @@ abstract class Job implements JobInterface
     public function setStartTime($startTime): void
     {
         $this->startTime = \is_string($startTime)
-            ? new \DateTime($startTime)
+            ? new DateTime($startTime)
             : $startTime;
     }
 
     /**
      * @inheritdoc
      */
-    public function getStartDate(): \DateTime
+    public function getStartDate(): DateTime
     {
         return $this->startDate;
     }
@@ -336,7 +338,7 @@ abstract class Job implements JobInterface
     public function setStartDate($date): void
     {
         $this->startDate = \is_string($date)
-            ? new \DateTime($date)
+            ? new DateTime($date)
             : $date;
     }
 
@@ -393,7 +395,7 @@ abstract class Job implements JobInterface
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        $this->setDateLastStarted(new \DateTime());
+        $this->setDateLastStarted(new DateTime());
         $this->db->update(
             'tjobqueue',
             'jobQueueID',

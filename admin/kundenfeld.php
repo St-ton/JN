@@ -4,14 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\CustomerFields;
+use JTL\PlausiKundenfeld;
+use JTL\Sprache;
+use JTL\Helpers\Text;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cf       = CustomerFields::getInstance((int)$_SESSION['kSprache']);
 $cHinweis = '';
 $cFehler  = '';
@@ -56,12 +60,12 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $customerField = (object)[
             'kKundenfeld' => (int)($_POST['kKundenfeld'] ?? 0),
             'kSprache'    => (int)$_SESSION['kSprache'],
-            'cName'       => StringHandler::htmlspecialchars(
-                StringHandler::filterXSS($_POST['cName']),
+            'cName'       => Text::htmlspecialchars(
+                Text::filterXSS($_POST['cName']),
                 ENT_COMPAT | ENT_HTML401
             ),
-            'cWawi'       => StringHandler::filterXSS(str_replace(['"',"'"], '', $_POST['cWawi'])),
-            'cTyp'        => StringHandler::filterXSS($_POST['cTyp']),
+            'cWawi'       => Text::filterXSS(str_replace(['"', "'"], '', $_POST['cWawi'])),
+            'cTyp'        => Text::filterXSS($_POST['cTyp']),
             'nSort'       => (int)$_POST['nSort'],
             'nPflicht'    => (int)$_POST['nPflicht'],
             'nEditierbar' => (int)$_POST['nEdit'],
@@ -80,7 +84,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             }
         } else {
             $erroneousFields = $check->getPlausiVar();
-            if (isset($erroneousFields['cName']) && 2 === $erroneousFields['cName']) {
+            if (isset($erroneousFields['cName']) && $erroneousFields['cName'] === 2) {
                 $cFehler = __('errorCustomerFieldNameExists');
             } else {
                 $cFehler = __('errorFillRequired');

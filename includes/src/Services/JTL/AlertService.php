@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Alert;
+use JTL\Alert;
 use Tightenco\Collect\Support\Collection;
 
 /**
  * Class AlertService
+ * @package JTL\Services\JTL
  */
 class AlertService implements AlertServiceInterface
 {
@@ -37,7 +38,7 @@ class AlertService implements AlertServiceInterface
 
         if (!empty($alerts)) {
             foreach ($alerts as $alertSerialized) {
-                $alert = \unserialize($alertSerialized, ['allowed_classes', 'Alert']);
+                $alert = \unserialize($alertSerialized, ['allowed_classes', Alert::class]);
                 if ($alert !== false) {
                     $this->pushAlert($alert);
                 }

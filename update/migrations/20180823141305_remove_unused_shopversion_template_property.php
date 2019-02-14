@@ -6,6 +6,11 @@
  * @created Thu, 23 Aug 2018 14:13:05 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * Migration
  *
@@ -22,7 +27,7 @@
  */
 class Migration_20180823141305 extends Migration implements IMigration
 {
-    protected $author = 'msc';
+    protected $author      = 'msc';
     protected $description = "Remove unused template property 'shopversion'";
 
     public function up()
@@ -33,6 +38,6 @@ class Migration_20180823141305 extends Migration implements IMigration
     public function down()
     {
         $db = Shop::Container()->getDB();
-        $db->query('ALTER TABLE `ttemplate` ADD `shopversion` int(11) DEFAULT NULL AFTER `version`', \DB\ReturnType::DEFAULT);
+        $db->query('ALTER TABLE `ttemplate` ADD `shopversion` int(11) DEFAULT NULL AFTER `version`', ReturnType::DEFAULT);
     }
 }

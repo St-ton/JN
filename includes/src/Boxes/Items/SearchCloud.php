@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
-use Helpers\URL;
+use JTL\DB\ReturnType;
+use JTL\Helpers\URL;
+use JTL\Shop;
 
 /**
  * Class SearchCloud
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class SearchCloud extends AbstractBox
 {
@@ -25,14 +26,14 @@ final class SearchCloud extends AbstractBox
         $this->addMapping('Suchbegriffe', 'Items');
         $this->addMapping('SuchbegriffeJSON', 'JSON');
         $this->setShow(false);
-        $langID    = \Shop::getLanguageID();
+        $langID    = Shop::getLanguageID();
         $limit     = (int)$config['boxen']['boxen_livesuche_count'];
         $cacheID   = 'bx_stgs_' . $langID . '_' . $limit;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
         $cached    = true;
-        if (($items = \Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached = false;
-            $items  = \Shop::Container()->getDB()->queryPrepared(
+            $items  = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, 
                     tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer, tsuchanfrage.nAnzahlGesuche, 
                     tsuchanfrage.dZuletztGesucht, tseo.cSeo
@@ -50,7 +51,7 @@ final class SearchCloud extends AbstractBox
                 ['lid' => $langID, 'lmt' => $limit],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
         }
         if (($count = \count($items)) > 0) {
             $prio_step = ($items[0]->nAnzahlGesuche - $items[$count - 1]->nAnzahlGesuche) / 9;

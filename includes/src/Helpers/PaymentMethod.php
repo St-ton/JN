@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Session\Frontend;
-use Shop;
-use Zahlungsart;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Checkout\Zahlungsart;
 
 /**
  * Class PaymentMethod
- * @package Helpers
+ * @package JTL\Helpers
  */
 class PaymentMethod
 {

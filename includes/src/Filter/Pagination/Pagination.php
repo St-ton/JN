@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Pagination;
+namespace JTL\Filter\Pagination;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
 
 /**
  * Class Pagination
- * @package Filter\Pagination
+ * @package JTL\Filter\Pagination
  */
 class Pagination
 {

@@ -6,11 +6,11 @@
 
 /**
  * @deprecated since 4.05
- * @param string           $cKey
- * @param int              $kKey
- * @param int              $_lid
- * @param Smarty\JTLSmarty $smarty
- * @param array            $_conf
+ * @param string                $cKey
+ * @param int                   $kKey
+ * @param int                   $_lid
+ * @param \JTL\Smarty\JTLSmarty $smarty
+ * @param array                 $_conf
  * @return bool
  */
 function starteAuswahlAssistent($cKey, $kKey, $_lid, $smarty, $_conf)

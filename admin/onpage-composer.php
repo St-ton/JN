@@ -45,7 +45,6 @@ if ($opc->isOPCInstalled() === false) {
 } elseif ($action === 'edit') {
     // Enter OPC to edit a page
     try {
-        Shop::dbg($pageKey, true);
         $page = $opcPage->getDraft($pageKey);
     } catch (Exception $e) {
         $error = $e->getMessage();

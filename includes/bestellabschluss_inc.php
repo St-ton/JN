@@ -302,8 +302,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
 
     $kBestellung = $Bestellung->insertInDB();
 
-    if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
-        Jtllog::writeLog('Bestellung gespeichert: ' . print_r($Bestellung, true), JTLLOG_LEVEL_NOTICE, false, 'kBestellung', $kBestellung);
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+        Jtllog::writeLog('Bestellung gespeichert: ' . print_r($Bestellung, true), JTLLOG_LEVEL_DEBUG, false, 'kBestellung', $kBestellung);
     }
     // TrustedShops buchen
     if (isset($_SESSION['TrustedShops']->cKaeuferschutzProdukt) &&

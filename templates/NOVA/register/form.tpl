@@ -16,5 +16,5 @@
     {input type="hidden" name="checkout" value="{if isset($checkout)}{$checkout}{/if}"}
     {input type="hidden" name="form" value="1"}
     {input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}"}
-    {input type="submit" class="btn btn-primary btn-lg float-right submit" value="{lang key='sendCustomerData' section='account data'}"}
+    {input type="submit" class="btn btn-primary btn-lg float-right submit submit_once" value="{lang key='sendCustomerData' section='account data'}"}
 {/form}

@@ -49,7 +49,7 @@
                             <div class="h3 panel-title">Anzahlung</div>
                             {$oPaymentEx->cCampaignText}
                             <p>Sehen Sie hier die angepassten {link href="{$oPaymentEx->cRateUrl}"}Zahlungsdetails{/link} nach erfolgreicher Anzahlung.</p>
-                            {link href="{$oPaymentEx->cRedirectUrl}" class="btn btn-primary btn-lg float-right submit"}Weiter zu giropay{/link}
+                            {link href="{$oPaymentEx->cRedirectUrl}" class="btn btn-primary btn-lg float-right submit_once submit"}Weiter zu giropay{/link}
                         {/card}
                     {/col}
                 {/row}

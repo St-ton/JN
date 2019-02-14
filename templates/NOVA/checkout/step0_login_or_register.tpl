@@ -46,7 +46,7 @@
                 {input type="hidden" name="checkout" value="1"}
                 {input type="hidden" name="form" value="1"}
                 {input type="hidden" name="editRechnungsadresse" value="0"}
-                {button type="submit" variant="primary" class="btn submit"}
+                {button type="submit" variant="primary" class="btn submit submit_once"}
                     {lang key='sendCustomerData' section='account data'}
                 {/button}
             </div>

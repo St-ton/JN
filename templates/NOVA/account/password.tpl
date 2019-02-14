@@ -31,7 +31,7 @@
                                   {input type="hidden" name="exclusive_content" value="1"}
                                 {/if}
                                 {input type="hidden" name="passwort_vergessen" value="1"}
-                                {input type="submit" class="btn btn-primary btn-block submit" value="{lang key='createNewPassword' section='forgot password'}"}
+                                {input type="submit" class="btn btn-primary btn-block submit submit_once" value="{lang key='createNewPassword' section='forgot password'}"}
                             {/formgroup}
                         </fieldset>
                     {/form}
@@ -67,7 +67,7 @@
                                         {input type="hidden" name="exclusive_content" value="1"}
                                     {/if}
                                     {input type="hidden" name="fpwh" value="{$fpwh}"}
-                                    {input type="submit" class="btn btn-primary btn-block submit" value="{lang key='createNewPassword' section='forgot password'}"}
+                                    {input type="submit" class="btn btn-primary btn-block submit submit_once" value="{lang key='createNewPassword' section='forgot password'}"}
                                 {/formgroup}
                             </fieldset>
                         {/form}

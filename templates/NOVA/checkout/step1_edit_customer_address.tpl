@@ -24,7 +24,7 @@
                         <div class="text-right">
                             {input type="hidden" name="unreg_form" value="{$unreg_form}"}
                             {input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}"}
-                            {button variant="primary" type="submit" class="submit"}
+                            {button variant="primary" type="submit" class="submit submit_once"}
                                 {lang key='sendCustomerData' section='account data'}
                             {/button}
                         </div>

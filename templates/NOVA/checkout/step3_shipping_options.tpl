@@ -110,7 +110,7 @@
                 <div class="text-right">
                     {input type="hidden" name="versandartwahl" value="1"}
                     {input type="hidden" name="zahlungsartwahl" value="1"}
-                    {button type="submit" variant="primary" class="submit submit-once d-none"}
+                    {button type="submit" variant="primary" class="submit submit_once d-none"}
                         {lang key='continueOrder' section='account data'}
                     {/button}
                 </div>

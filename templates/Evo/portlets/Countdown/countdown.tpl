@@ -1,4 +1,7 @@
-<div id="{$instance->getProperty('uid')}" {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
+<div id="{$instance->getProperty('uid')}"
+     {$instance->getAttributeString()}
+     {if $isPreview}{$instance->getDataAttributeString()}{/if}
+>
     <div class="opc-area" {if $isPreview}data-area-id="cntdwn-title"{/if}>
         {if $isPreview}
             {$instance->getSubareaPreviewHtml('cntdwn-title')}
@@ -6,25 +9,27 @@
             {$instance->getSubareaFinalHtml('cntdwn-title')}
         {/if}
     </div>
-    <div class="row text-center">
-        <div class="days col-xs-3">
+    {row class='text-center'}
+        {col cols=3 class='days'}
             <div class="cntdwn-item"></div>
             <div class="cntdwn-unit">Tage</div>
-        </div>
-        <div class="hours col-xs-3">
+        {/col}
+        {col cols=3 class='hours'}
             <div class="cntdwn-item"></div>
             <div class="cntdwn-unit">Stunden</div>
-        </div>
-        <div class="minutes col-xs-3">
+        {/col}
+        {col cols=3 class='minutes'}
             <div class="cntdwn-item"></div>
             <div class="cntdwn-unit">Minuten</div>
-        </div>
-        <div class="seconds col-xs-3">
+        {/col}
+        {col cols=3 class='seconds'}
             <div class="cntdwn-item"></div>
             <div class="cntdwn-unit">Sekunden</div>
-        </div>
-        <div class="expired col-xs-12">{$instance->getProperty('expired-text')}</div>
-    </div>
+        {/col}
+        {col cols=12 class='expired'}
+            {$instance->getProperty('expired-text')}
+        {/col}
+    {/row}
     <div class="opc-area" {if $isPreview}data-area-id="cntdwn-footer"{/if}>
         {if $isPreview}
             {$instance->getSubareaPreviewHtml('cntdwn-footer')}

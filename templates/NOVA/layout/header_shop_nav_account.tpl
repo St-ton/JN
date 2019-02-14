@@ -1,5 +1,5 @@
 {if empty($smarty.session.Kunde->kKunde)}
-    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2 pt-2 pb-0"}
+    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2 pt-2"}
         {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 py-3"}
         {$jtl_token}
             <fieldset id="quick-login">

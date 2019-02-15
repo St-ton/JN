@@ -95,6 +95,14 @@
     {/if}
     {block name="head-resources-jquery"}
         <script src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
+        {*Prevent auto-execution of scripts when no explicit dataType was provided (See gh-2432)*}
+        <script>
+            jQuery.ajaxPrefilter( function( s ) {
+                if ( s.crossDomain ) {
+                    s.contents.script = false;
+                }
+            } );
+        </script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
 </head>

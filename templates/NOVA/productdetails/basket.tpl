@@ -25,7 +25,7 @@
                             min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
                             required="{$Artikel->fAbnahmeintervall > 0}"
                             step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
-                            id="quantity" class="quantity form-control text-right" name="anzahl"
+                            id="quantity" class="quantity text-right" name="anzahl"
                             aria=["label"=>"{lang key='quantity'}"]
                             value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
                             data=["decimals"=>"{if $Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]

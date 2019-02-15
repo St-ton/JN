@@ -12,7 +12,6 @@
 
 {if $oUmfrage->getQuestionCount() > 0}
     {form method="post" action="{if empty($oUmfrage->getURL())}{get_static_route id='umfrage.php'}{else}{$ShopURL}/{$oUmfrage->getURL()}{/if}" class="evo-validate"}
-        {$jtl_token}
         {input name="u" type="hidden" value="{$oUmfrage->getID()}"}
         {foreach $oUmfrage->getQuestions() as $question}
             {assign var=questionID value=$question->getID()}
@@ -176,7 +175,7 @@
                                        size="sm"
                                        value="-1"
                                        checked="{if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == -1} true{/if}{/foreach}{/if}"}
-                                {input name="sq{$questionID}[]" type="text" class="form-control" value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(1) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(1)}{/if}"}
+                                {input name="sq{$questionID}[]" type="text" value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(1) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(1)}{/if}"}
                             {else}
                                 {input name="sq{$questionID}[]"
                                        type="text"
@@ -210,7 +209,9 @@
         {/row}
         {input name="s" type="hidden" value="{$nAktuelleSeite}"}
         {if $nAktuelleSeite == $nAnzahlSeiten}
-            {input name="end" type="submit" value="{lang key='umfrageSubmit' section='umfrage'}" class="btn btn-primary submit mt-3"}
+            {button type="submit" name="end" value="1" variant="primary" class="submit mt-3"}
+                {lang key='umfrageSubmit' section='umfrage'}
+            {/button}
         {/if}
     {/form}
 {/if}

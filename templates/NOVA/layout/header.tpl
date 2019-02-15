@@ -94,6 +94,7 @@
         <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
+    {$dbgBarHead}
 </head>
 {/block}
 

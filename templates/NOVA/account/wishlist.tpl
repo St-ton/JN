@@ -3,7 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste"}
-    {$jtl_token}
     {block name='wishlist'}
     {input type="hidden" name="wla" value="1"}
     {input type="hidden" name="wl" value="{$CWunschliste->kWunschliste}"}
@@ -19,7 +18,7 @@
                     <strong>{lang key='name' section='global'}</strong>
                 {/inputgrouptext}
             {/inputgroupaddon}
-            {input id="wishlist-name" type="text" class="form-control" placeholder="name" name="WunschlisteName" value="{$CWunschliste->cName}" autofocus=true}
+            {input id="wishlist-name" type="text" placeholder="name" name="WunschlisteName" value="{$CWunschliste->cName}" autofocus=true}
             {inputgroupaddon append=true}
                 {button type="submit"}{lang key='edit' section='global'}{/button}
             {/inputgroupaddon}
@@ -69,7 +68,7 @@
                     </td>
                     <td>
                         <div class="text-content">
-                            {textarea class="form-control" rows="2" name="Kommentar_{$CWunschlistePos->kWunschlistePos}"}{$CWunschlistePos->cKommentar}{/textarea}
+                            {textarea rows="2" name="Kommentar_{$CWunschlistePos->kWunschlistePos}"}{$CWunschlistePos->cKommentar}{/textarea}
                         </div>
                     </td>
                     {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
@@ -81,7 +80,7 @@
                         </td>
                     {else}
                         <td>
-                            {input name="Anzahl_{$CWunschlistePos->kWunschlistePos}" class="wunschliste_anzahl form-control" type="text" size="1" value="{$CWunschlistePos->fAnzahl|replace_delim}"}
+                            {input name="Anzahl_{$CWunschlistePos->kWunschlistePos}" class="wunschliste_anzahl" type="text" size="1" value="{$CWunschlistePos->fAnzahl|replace_delim}"}
                             <br />{$CWunschlistePos->Artikel->cEinheit}
                         </td>
                         <td class="text-right">

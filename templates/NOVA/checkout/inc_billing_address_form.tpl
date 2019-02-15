@@ -183,7 +183,7 @@
                 label-for="country"
                 label="{lang key='country' section='account data'}"
             }
-                {select name="land" id="country" class="country-input form-control" required=true autocomplete="billing country"}
+                {select name="land" id="country" class="country-input" required=true autocomplete="billing country"}
                     <option value="" disabled>{lang key='country' section='account data'}</option>
                     {foreach $laender as $land}
                         <option value="{$land->cISO}" {if $cIso === $land->cISO}selected="selected"{/if}>{$land->cName}</option>
@@ -215,7 +215,7 @@
                         title="{lang key=pleaseChoose}"
                         name="bundesland"
                         id="state"
-                        class="form-control state-input"
+                        class="state-input"
                         autocomplete="billing address-level1"
                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')}
                             <option value="" selected disabled>{lang key='pleaseChoose'}</option>
@@ -230,7 +230,6 @@
                         name="bundesland"
                         value="{$cState}"
                         id="state"
-                        class="form-control"
                         placeholder="{lang key='state' section='account data'}"
                         autocomplete="billing address-level1"
                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
@@ -259,7 +258,7 @@
                 name="plz"
                 value="{if isset($cPost_var['plz'])}{$cPost_var['plz']}{elseif isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}"
                 id="postcode"
-                class="postcode_input form-control"
+                class="postcode_input"
                 placeholder="{lang key='plz' section='account data'}"
                 required=true
                 autocomplete="billing postal-code"
@@ -286,7 +285,7 @@
                 name="ort"
                 value="{if isset($cPost_var['ort'])}{$cPost_var['ort']}{elseif isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}"
                 id="city"
-                class="city_input form-control typeahead"
+                class="city_input typeahead"
                 placeholder="{lang key='city' section='account data'}"
                 required=true
                 autocomplete="billing address-level2"
@@ -317,7 +316,6 @@
                 name="ustid"
                 value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
                 id="ustid"
-                class="form-control"
                 placeholder="{lang key='ustid' section='account data'}"
                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
                 }
@@ -477,7 +475,6 @@
                             name="custom_{$kKundenfeld}"
                             id="custom_{$kKundenfeld}"
                             value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
-                            class="form-control"
                             placeholder="{$oKundenfeld->cName}"
                             required=(($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)))
                             data-toggle="floatLabel"

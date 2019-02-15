@@ -12,7 +12,6 @@
         {row}
             {col md=5 lg=4}
                 {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="evo-validate"}
-                    {$jtl_token}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
                             'password', 'currentPassword', 'altesPasswort', null,
@@ -32,7 +31,9 @@
                         ]
                     }
                     {input type="hidden" name="pass_aendern" value="1"}
-                    {input type="submit" value="{lang key='changePassword' section='login'}" class="btn btn-primary w-auto"}
+                    {button type="submit" value="1" class="w-auto" variant="primary"}
+                        {lang key='changePassword' section='login'}
+                    {/button}
                 {/form}
             {/col}
         {/row}

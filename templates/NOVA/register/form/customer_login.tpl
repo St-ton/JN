@@ -24,7 +24,7 @@
         {input type="hidden" name="r" value="{$oRedirect->nRedirect}"}
         {input type="hidden" name="cURL" value="{$oRedirect->cURL}"}
     {/if}
-    {button type="submit" variant="primary" class="btn {if !isset($withSidebar) || $withSidebar === 0}btn-block{/if} submit"}
+    {button type="submit" variant="primary" class="{if !isset($withSidebar) || $withSidebar === 0}btn-block{/if} submit"}
         {lang key='login' section='checkout'}
     {/button}
     {link class="small" href="{get_static_route id='pass.php'}" class="ml-3"}

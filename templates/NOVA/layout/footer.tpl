@@ -42,7 +42,6 @@
                                 </p>
                             {/col}
                             {form methopd="post" action="{get_static_route id='newsletter.php'}" class="col-12 col-md-4"}
-                                {$jtl_token}
                                 {input type="hidden" name="abonnieren" value="2"}
                                 {formgroup label-for="newsletter_email" label="{lang key='emailadress'}" class="mb-0"}
                                     {inputgroup}

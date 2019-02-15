@@ -11,7 +11,6 @@
                 <h3>{block name='wishlist-email-form-title'}{$CWunschliste->cName}{/block}</h3>
                 {block name='wishlist-email-form-body'}
                 {form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste"}
-                    {$jtl_token}
                     {input type="hidden" name="wlvm" value="1"}
                     {input type="hidden" name="wl" value="{$CWunschliste->kWunschliste}"}
                     {input type="hidden" name="send" value="1"}

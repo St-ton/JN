@@ -12,7 +12,6 @@
             right=true
         }
             {form enctype="multipart/form-data" method="POST" action="{get_static_route id=$id}{if isset($checkout)}?checkout={$checkout}{/if}" class="dropdown-item-text"}
-                {$jtl_token}
                 <fieldset>
                     {*{inputfile class="file-loading mb-2 custom-file-input" required=true accept="text/vcard" name="vcard"}*}
                     <div class="custom-file mb-3">

@@ -10,7 +10,6 @@
     {col}
     {get_static_route id='news.php' assign=routeURL}
         {form id="frm_filter" name="frm_filter" action="{$cCanonicalURL|default:$routeURL}" method="post" class="form-inline mb-4"}
-            {$jtl_token}
             {formgroup}
                 {select name="nSort" class="onchangeSubmit mb-2" aria=["label"=>"{lang key='newsSort' section='news'}"]}
                     <option value="-1"{if $nSort === -1} selected{/if}>{lang key='newsSort' section='news'}</option>

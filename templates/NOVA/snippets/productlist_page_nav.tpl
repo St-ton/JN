@@ -25,7 +25,6 @@
         {/col}
         {*{col cols=6 md=4 lg=3 class="text-right"}
             {form action="{$ShopURL}/" method="get" class="form-inline pagination"}
-                {$jtl_token}
                 {if $NaviFilter->hasCategory()}
                     {input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}"}
                 {/if}

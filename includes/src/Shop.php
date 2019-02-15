@@ -56,6 +56,8 @@ use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
+use JTL\Cron\Admin\Controller as CronController;
+use Psr\Log\LoggerInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -1913,34 +1915,28 @@ final class Shop
     {
         $container         = new Services\Container();
         static::$container = $container;
-        // BASE
-        $container->setSingleton(DbInterface::class, function () {
+
+        $container->singleton(DbInterface::class, function () {
             return new NiceDB(\DB_HOST, \DB_USER, \DB_PASS, \DB_NAME);
         });
-        $container->setSingleton(JTLCacheInterface::class, function () {
-            return new JTLCache();
-        });
-        $container->setSingleton(Services\JTL\LinkServiceInterface::class, function (Container $container) {
-            return new Services\JTL\LinkService($container->getDB(), $container->getCache());
-        });
-        $container->setSingleton(Services\JTL\AlertServiceInterface::class, function () {
-            return new Services\JTL\AlertService();
-        });
-        $container->setSingleton(Services\JTL\NewsServiceInterface::class, function (Container $container) {
-            return new Services\JTL\NewsService($container->getDB(), $container->getCache());
-        });
-        // SECURITY
-        $container->setSingleton(Services\JTL\CryptoServiceInterface::class, function () {
-            return new Services\JTL\CryptoService();
-        });
 
-        $container->setSingleton(Services\JTL\PasswordServiceInterface::class, function (Container $container) {
-            return new Services\JTL\PasswordService($container->getCryptoService());
-        });
-        $container->setSingleton(Debug\JTLDebugBar::class, function (Container $container) {
+        $container->singleton(JTLCacheInterface::class, JTLCache::class);
+
+        $container->singleton(Services\JTL\LinkServiceInterface::class, Services\JTL\LinkService::class);
+
+        $container->singleton(Services\JTL\AlertServiceInterface::class, Services\JTL\AlertService::class);
+
+        $container->singleton(Services\JTL\NewsServiceInterface::class, Services\JTL\NewsService::class);
+
+        $container->singleton(Services\JTL\CryptoServiceInterface::class, Services\JTL\CryptoService::class);
+
+        $container->singleton(Services\JTL\PasswordServiceInterface::class, Services\JTL\PasswordService::class);
+
+        $container->singleton(Debug\JTLDebugBar::class, function (Container $container) {
             return new Debug\JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
         });
-        $container->setSingleton('BackendAuthLogger', function (Container $container) {
+
+        $container->singleton('BackendAuthLogger', function (Container $container) {
             $loggingConf = self::getConfig([\CONF_GLOBAL])['global']['admin_login_logger_mode'] ?? [];
             $handlers    = [];
             foreach ($loggingConf as $value) {
@@ -1955,56 +1951,45 @@ final class Shop
 
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
-        $container->setSingleton('Logger', function (Container $container) {
+
+        $container->singleton(LoggerInterface::class, function (Container $container) {
             $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(\CONF_GLOBAL, 'systemlog_flag')))
                 ->setFormatter(new LineFormatter('%message%', null, false, true));
 
             return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
         });
-        $container->setSingleton(ValidationServiceInterface::class, function () {
+
+        $container->alias(LoggerInterface::class, 'Logger');
+
+        $container->singleton(ValidationServiceInterface::class, function () {
             $vs = new ValidationService($_GET, $_POST, $_COOKIE);
             $vs->setRuleSet('identity', (new RuleSet())->integer()->gt(0));
 
             return $vs;
         });
-        // NETWORK & API
-        $container->setFactory(JTLApi::class, function () {
+
+        $container->bind(JTLApi::class, function (Container $container) {
+            // return new JTLApi($_SESSION, $container->make(Nice::class));
             return new JTLApi($_SESSION, Nice::getInstance());
         });
-        // DB SERVICES
-        $container->setSingleton(GcServiceInterface::class, function (Container $container) {
-            return new GcService($container->getDB());
-        });
 
-        // ONPAGE COMPOSER
-        $container->setSingleton(OPC\Service::class, function (Container $container) {
-            return new OPC\Service($container->getOPCDB());
-        });
+        $container->singleton(GcServiceInterface::class, GcService::class);
 
-        // ONPAGE COMPOSER PAGE SERVICE
-        $container->setSingleton(OPC\PageService::class, function (Container $container) {
-            return new OPC\PageService($container->getOPC(), $container->getOPCPageDB(), $container->getOPCLocker());
-        });
+        $container->singleton(OPC\Service::class);
 
-        // ONPAGE COMPOSER DATABASE
-        $container->setSingleton(OPC\DB::class, function (Container $container) {
-            return new OPC\DB($container->getDB());
-        });
+        $container->singleton(OPC\PageService::class);
 
-        // ONPAGE COMPOSER PAGE DATABASE
-        $container->setSingleton(OPC\PageDB::class, function (Container $container) {
-            return new OPC\PageDB($container->getDB());
-        });
+        $container->singleton(OPC\DB::class);
 
-        // ONPAGE COMPOSER LOCKER
-        $container->setSingleton(OPC\Locker::class, function (Container $container) {
-            return new OPC\Locker($container->getOPCPageDB());
-        });
+        $container->singleton(OPC\PageDB::class);
 
-        $container->setFactory(Boxes\FactoryInterface::class, function () {
+        $container->singleton(OPC\Locker::class);
+
+        $container->bind(Boxes\FactoryInterface::class, function () {
             return new Boxes\Factory(Shopsetting::getInstance()->getAll());
         });
-        $container->setSingleton(Services\JTL\BoxServiceInterface::class, function (Container $container) {
+
+        $container->singleton(Services\JTL\BoxServiceInterface::class, function (Container $container) {
             $smarty = self::Smarty();
 
             return new Services\JTL\BoxService(
@@ -2016,19 +2001,18 @@ final class Shop
                 new DefaultRenderer($smarty)
             );
         });
-        // Captcha
-        $container->setSingleton(CaptchaServiceInterface::class, function () {
+
+        $container->singleton(CaptchaServiceInterface::class, function () {
             return new CaptchaService(new SimpleCaptchaService(
                 !(Frontend::get('bAnti_spam_already_checked', false)
                     || Frontend::getCustomer()->isLoggedIn()
                 )
             ));
         });
-        // GetText
-        $container->setSingleton(GetText::class, function () {
-            return new GetText();
-        });
-        $container->setSingleton(AdminAccount::class, function (Container $container) {
+
+        $container->singleton(GetText::class);
+
+        $container->singleton(AdminAccount::class, function (Container $container) {
             return new AdminAccount(
                 $container->getDB(),
                 $container->getBackendLogService(),
@@ -2036,6 +2020,8 @@ final class Shop
                 new AdminLoginStatusToLogLevel()
             );
         });
+
+        $container->bind(CronController::class);
     }
 
     /**

@@ -25,7 +25,7 @@ class ContainerBaseTest extends TestCase
     public function test_singleton_happyPath()
     {
         $container = new ContainerBase();
-        $container->setSingleton(ContainerInterface::class, function ($locator) {
+        $container->singleton(ContainerInterface::class, function ($locator) {
             $this->assertInstanceOf(ContainerInterface::class, $locator);
 
             return new ContainerBase();
@@ -37,14 +37,14 @@ class ContainerBaseTest extends TestCase
     {
         $container = new ContainerBase();
         $this->expectException(InvalidArgumentException::class);
-        $container->setSingleton(ContainerInterface::class, 10);
+        $container->singleton(ContainerInterface::class, 10);
     }
 
     public function test_setSingleton_passInvalidInterface_throwsInvalidArgumentException()
     {
         $container = new ContainerBase();
         $this->expectException(InvalidArgumentException::class);
-        $container->setSingleton(10, function () {
+        $container->singleton(10, function () {
         });
     }
 
@@ -58,7 +58,7 @@ class ContainerBaseTest extends TestCase
     public function test_factory_happyPath()
     {
         $container = new ContainerBase();
-        $container->setFactory(ContainerInterface::class, function ($locator) {
+        $container->bind(ContainerInterface::class, function ($locator) {
             $this->assertInstanceOf(ContainerInterface::class, $locator);
 
             return new ContainerBase();
@@ -73,7 +73,7 @@ class ContainerBaseTest extends TestCase
     {
         $container = new ContainerBase();
         $this->expectException(InvalidArgumentException::class);
-        $container->setFactory(10, function () {
+        $container->bind(10, function () {
 
         });
     }
@@ -82,7 +82,7 @@ class ContainerBaseTest extends TestCase
     {
         $container = new ContainerBase();
         $this->expectException(InvalidArgumentException::class);
-        $container->setFactory(ContainerInterface::class, 10);
+        $container->bind(ContainerInterface::class, 10);
     }
 
     public function test_getNew_missingDeclaration_throwsServiceNotFoundException()
@@ -102,11 +102,11 @@ class ContainerBaseTest extends TestCase
         require_once 'HelloWorldTrimmingServiceDecorator.php';
 
         $container = new ContainerBase();
-        $container->setSingleton(HelloWorldServiceInterface::class, function () {
+        $container->singleton(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
         $inner = $container->getFactoryMethod(HelloWorldServiceInterface::class);
-        $container->setSingleton(HelloWorldServiceInterface::class, function () use ($inner) {
+        $container->singleton(HelloWorldServiceInterface::class, function () use ($inner) {
             return new HelloWorldTrimmingServiceDecorator($inner());
         });
         /** @var HelloWorldServiceInterface $service */
@@ -121,11 +121,11 @@ class ContainerBaseTest extends TestCase
         require_once 'HelloWorldTrimmingServiceDecorator.php';
 
         $container = new ContainerBase();
-        $container->setFactory(HelloWorldServiceInterface::class, function () {
+        $container->bind(HelloWorldServiceInterface::class, function () {
             return new HelloWorldService();
         });
         $factory = $container->getFactoryMethod(HelloWorldServiceInterface::class);
-        $container->setFactory(HelloWorldServiceInterface::class, function () use ($factory) {
+        $container->bind(HelloWorldServiceInterface::class, function () use ($factory) {
             return new HelloWorldTrimmingServiceDecorator($factory());
         });
         /** @var HelloWorldServiceInterface $service */
@@ -140,12 +140,12 @@ class ContainerBaseTest extends TestCase
     public function test_detectCircularReferences()
     {
         $container = new ContainerBase();
-        $container->setFactory('id1', function (\Psr\Container\ContainerInterface $container) {
+        $container->bind('id1', function (\Psr\Container\ContainerInterface $container) {
             $container->get('id2');
 
             return new \stdClass();
         });
-        $container->setFactory('id2', function (\Psr\Container\ContainerInterface $container) {
+        $container->bind('id2', function (\Psr\Container\ContainerInterface $container) {
             $container->get('id1');
 
             return new \stdClass();
@@ -160,12 +160,12 @@ class ContainerBaseTest extends TestCase
     public function test_setSingleton_setAlreadyUsed_throws()
     {
         $container = new ContainerBase();
-        $container->setSingleton('id', function () {
+        $container->singleton('id', function () {
             return new ContainerBase();
         });
         $container->get('id');
         $this->expectException(Exception::class);
-        $container->setSingleton('id', function() {
+        $container->singleton('id', function() {
             return new ContainerBase();
         });
     }
@@ -175,11 +175,11 @@ class ContainerBaseTest extends TestCase
     public function test_overrideFactoryWithSingleton_throwsException()
     {
         $container = new ContainerBase();
-        $container->setFactory('id', function(){
+        $container->bind('id', function(){
             return new ContainerBase();
         });
         $this->expectException(Exception::class);
-        $container->setSingleton('id', function(){
+        $container->singleton('id', function(){
             return new ContainerBase();
         });
     }
@@ -187,11 +187,11 @@ class ContainerBaseTest extends TestCase
     public function test_ovverrideSingletonWithFactory_throwsException()
     {
         $container = new ContainerBase();
-        $container->setSingleton('id', function(){
+        $container->singleton('id', function(){
             return new ContainerBase();
         });
         $this->expectException(Exception::class);
-        $container->setFactory('id', function(){
+        $container->bind('id', function(){
             return new ContainerBase();
         });
     }

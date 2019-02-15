@@ -15,7 +15,7 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\MagicCompatibilityTrait;
 use JTL\Catalog\Product\MerkmalWert;
 use JTL\Shop;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;

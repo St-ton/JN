@@ -13,7 +13,7 @@ use JTL\Shop;
 use PDO;
 use PDOException;
 use PDOStatement;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class NiceDB

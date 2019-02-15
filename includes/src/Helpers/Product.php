@@ -27,7 +27,7 @@ use JTL\Catalog\Tag;
 use JTL\Catalog\TagArticle;
 use JTL\Catalog\UnitsOfMeasure;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Product

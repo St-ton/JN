@@ -14,7 +14,7 @@ use JTL\Filter\Type;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 use JTL\Shop;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class ProductStream

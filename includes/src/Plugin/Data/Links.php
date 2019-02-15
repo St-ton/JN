@@ -8,7 +8,7 @@ namespace JTL\Plugin\Data;
 
 use JTL\Link\LinkList;
 use JTL\Shop;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\map;
 
 /**

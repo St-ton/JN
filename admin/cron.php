@@ -14,11 +14,17 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-$admin    = new Controller(
-    Shop::Container()->getDB(),
-    Shop::Container()->getLogService(),
-    new JobHydrator()
-);
+if (0) {
+    $admin = new Controller(
+        Shop::Container()->getDB(),
+        Shop::Container()->getLogService(),
+        new JobHydrator()
+    );
+}
+else {
+    $admin = Shop::Container()->get(Controller::class);
+}
+
 $deleted  = 0;
 $updated  = 0;
 $inserted = 0;

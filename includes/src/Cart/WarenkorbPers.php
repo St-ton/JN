@@ -84,6 +84,7 @@ class WarenkorbPers
         $exists    = false;
         $nPosition = 0;
         foreach ($this->oWarenkorbPersPos_arr as $i => $position) {
+            /** @var WarenkorbPersPos $position */
             $position->kArtikel = (int)$position->kArtikel;
             if ($exists) {
                 break;
@@ -96,7 +97,7 @@ class WarenkorbPers
                 $nPosition = $i;
                 $exists    = true;
                 foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
-                    //kEigenschaftsWert is not set when using free text variations
+                    // kEigenschaftsWert is not set when using free text variations
                     if (!$position->istEigenschaftEnthalten(
                         $oEigenschaftwerte->kEigenschaft,
                         $oEigenschaftwerte->kEigenschaftWert ?? null,

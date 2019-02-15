@@ -13,7 +13,7 @@
                         </span>
                     {/checkbox}
 
-                    {select name="cKaeuferschutzProdukt" class="form-control"}
+                    {select name="cKaeuferschutzProdukt"}
                         {foreach $oTrustedShops->oKaeuferschutzProdukte->item as $oItem}
                             <option value="{$oItem->tsProductID}"{if $oTrustedShops->cVorausgewaehltesProdukt == $oItem->tsProductID} selected{/if}>{lang key='trustedShopsBuyerProtection'} {lang key='trustedShopsTo'} {$oItem->protectedAmountDecimalLocalized}
                                 ({$oItem->grossFeeLocalized} {$oItem->cFeeTxt})

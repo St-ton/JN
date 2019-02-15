@@ -12,7 +12,6 @@
     {/if}
 {/if}
 {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}index.php{/if}" method="post" id="article_question" class="evo-validate"}
-    {$jtl_token}
     <fieldset>
         <legend>{lang key='contact'}</legend>
         {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
@@ -162,5 +161,7 @@
 
     {input type="hidden" name="a" value="{$Artikel->kArtikel}"}
     {input type="hidden" name="show" value="1"}
-    {input type="submit" value="{lang key='sendQuestion' section='productDetails'}" class="btn btn-primary w-auto"}
+    {button type="submit" value="1" variant="primary" class="w-auto"}
+        {lang key='sendQuestion' section='productDetails'}
+    {/button}
 {/form}

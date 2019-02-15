@@ -16,7 +16,7 @@
                 {col cols=12 md=8}
                     <div class="form-row">
                         <div class="col">
-                            {select name="land" id="country" class="form-control" placeholder=""}
+                            {select name="land" id="country" placeholder=""}
                                 {foreach $laender as $land}
                                     <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
                                 {/foreach}

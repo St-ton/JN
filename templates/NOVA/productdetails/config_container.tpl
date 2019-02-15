@@ -227,18 +227,18 @@
                                             <label for="quantity{$kKonfiggruppe}">{lang key='quantity'}:</label>
 
                                             <div class="input-group">
-                                                <input class="form-control" size="2" type="number"
+                                                {input size="2" type="number"
                                                        id="quantity{$kKonfiggruppe}"
                                                        name="quantity[{$kKonfiggruppe}]"
                                                        value="{$quantity}" autocomplete="off"
-                                                       min="{$oGruppe->getMin()}" max="{$oGruppe->getMax()}" />
+                                                       min="{$oGruppe->getMin()}" max="{$oGruppe->getMax()}"}
                                             </div>
                                         </div>
                                     {else}
                                         <div class="quantity">
-                                            <input type="hidden" id="quantity{$kKonfiggruppe}"
+                                            {input type="hidden" id="quantity{$kKonfiggruppe}"
                                                    name="quantity[{$kKonfiggruppe}]"
-                                                   value="{$quantity}" />
+                                                   value="{$quantity}"}
                                         </div>
                                     {/if}
                                 {/if}

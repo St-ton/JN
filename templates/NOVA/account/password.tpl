@@ -18,7 +18,6 @@
                 {card}
                     {block name='password-reset-form-body'}
                     {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate"}
-                        {$jtl_token}
                         <fieldset>
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
@@ -31,7 +30,9 @@
                                   {input type="hidden" name="exclusive_content" value="1"}
                                 {/if}
                                 {input type="hidden" name="passwort_vergessen" value="1"}
-                                {input type="submit" class="btn btn-primary btn-block submit submit_once" value="{lang key='createNewPassword' section='forgot password'}"}
+                                {button type="submit" value="1" class="btn-block submit submit_once" variant="primary"}
+                                    {lang key='createNewPassword' section='forgot password'}
+                                {/button}
                             {/formgroup}
                         </fieldset>
                     {/form}
@@ -48,7 +49,6 @@
                         <div class="h3">{block name='password-reset-confirm-title'}{lang key='customerInformation' section='global'}{/block}</div>
                         {block name='password-reset-confirm-body'}
                         {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate"}
-                            {$jtl_token}
                             <fieldset>
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
@@ -67,7 +67,9 @@
                                         {input type="hidden" name="exclusive_content" value="1"}
                                     {/if}
                                     {input type="hidden" name="fpwh" value="{$fpwh}"}
-                                    {input type="submit" class="btn btn-primary btn-block submit submit_once" value="{lang key='createNewPassword' section='forgot password'}"}
+                                    {button type="submit" value="1" class="btn-block submit submit_once" variant="primary"}
+                                        {lang key='createNewPassword' section='forgot password'}
+                                    {/button}
                                 {/formgroup}
                             </fieldset>
                         {/form}

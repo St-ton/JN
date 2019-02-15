@@ -60,7 +60,6 @@
         {/col}
         {col cols=12 md=6  order=0 order-md=1}
             {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating"}
-                {$jtl_token}
                 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
                     <p>{lang key='firstReview'}: </p>
                 {else}
@@ -91,7 +90,6 @@
                 {lang key='theMostUsefulRating' section='product rating'}
             {/cardheader}
             {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes"}
-                {$jtl_token}
                 {block name='productdetails-review-most-helpful'}
                     {input type="hidden" name="bhjn" value="1"}
                     {input type="hidden" name="a" value="{$Artikel->kArtikel}"}

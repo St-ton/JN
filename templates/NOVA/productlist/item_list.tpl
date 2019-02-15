@@ -254,7 +254,7 @@
                                                             step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
                                                             size="2"
                                                             id="quantity{$Artikel->kArtikel}"
-                                                            class="quantity form-control text-right"
+                                                            class="quantity text-right"
                                                             name="anzahl"
                                                             autocomplete="off"
                                                             value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"

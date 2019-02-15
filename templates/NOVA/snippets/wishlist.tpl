@@ -20,7 +20,6 @@
                         <div class="h3">{block name='wishlist-email-form-title'}{$CWunschliste->cName}{/block}</div>
                         {block name='wishlist-email-form-body'}
                             {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
-                                {$jtl_token}
                                 {input type="hidden" name="wlvm" value="1"}
                                 {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
                                 {input type="hidden" name="send" value="1"}
@@ -52,7 +51,6 @@
                     name="WunschlisteSuche"
                     class="form-inline"
                 }
-                    {$jtl_token}
                     {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
                         {input type="hidden" name="wlid" value="{$cURLID}"}
                     {else}
@@ -82,7 +80,6 @@
             name="Wunschliste"
             class="basket_wrapper{if $hasItems === true} mt-3{/if}"
         }
-            {$jtl_token}
             {block name='wishlist'}
                 {input type="hidden" name="wla" value="1"}
                 {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
@@ -99,7 +96,7 @@
                                         {lang key='name' section='global'}
                                     {/inputgrouptext}
                                 {/inputgroupaddon}
-                                {input id="wishlist-name" type="text" class="form-control" placeholder="name" name="wishlistName" value="{$CWunschliste->cName}"}
+                                {input id="wishlist-name" type="text"placeholder="name" name="wishlistName" value="{$CWunschliste->cName}"}
                             {/inputgroup}
                         </div>
                     {/if}
@@ -163,7 +160,7 @@
                                         {input
                                             readonly=($isCurrenctCustomer !== true)
                                             name="Anzahl_{$wlPosition->kWunschlistePos}"
-                                            class="wunschliste_anzahl form-control" type="text"
+                                            class="wunschliste_anzahl" type="text"
                                             size="1"
                                             value="{$wlPosition->fAnzahl|replace_delim}"
                                         }
@@ -233,7 +230,6 @@
                 {block name='wishlist-body'}
                     {if $CWunschliste->nOeffentlich == 1}
                         {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                            {$jtl_token}
                             {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
                             {inputgroup}
                                 {input
@@ -290,7 +286,6 @@
                                             <td>{if $Wunschliste->nStandard == 1}{lang key='active' section='global'}{/if} {if $Wunschliste->nStandard == 0}{lang key='inactive' section='global'}{/if}</td>
                                             <td class="text-right">
                                                 {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                                                    {$jtl_token}
                                                     {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
                                                     {input type="hidden" name="kWunschlisteTarget" value="{$Wunschliste->kWunschliste}"}
                                                     {buttongroup size="sm"}
@@ -299,7 +294,7 @@
                                                                 <i class="fa fa-check"></i> <span class="d-none d-sm-inline-block">{lang key='wishlistStandard' section='login'}</span>
                                                             {/button}
                                                         {else}
-                                                            {button class="btn btn-success disabled" name="action" value="setAsDefault"}
+                                                            {button variant="success" class="disabled" name="action" value="setAsDefault"}
                                                                 <i class="fa fa-check"></i> <span class="d-none d-sm-inline-block">{lang key='wishlistStandard' section='login'}</span>
                                                             {/button}
                                                         {/if}
@@ -331,12 +326,11 @@
                             {/if}
                             {form method="post" action="{get_static_route id='wunschliste.php'}" class="form-inline"}
                                 {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
-                                {$jtl_token}
                                 {inputgroup}
-                                    {input name="cWunschlisteName" type="text" class="form-control input-sm" placeholder="{lang key='wishlistAddNew' section='login'}" size="25"}
+                                    {input name="cWunschlisteName" type="text" class="input-sm" placeholder="{lang key='wishlistAddNew' section='login'}" size="25"}
                                     {inputgroupaddon append=true}
-                                        {button type="submit" class="btn btn-default btn-sm" name="action" value="createNew"}
-                                                <i class="fa fa-save"></i> {lang key='wishlistSaveNew' section='login'}
+                                        {button type="submit" variant="default" size="sm" name="action" value="createNew"}
+                                            <i class="fa fa-save"></i> {lang key='wishlistSaveNew' section='login'}
                                         {/button}
                                     {/inputgroupaddon}
                                 {/inputgroup}

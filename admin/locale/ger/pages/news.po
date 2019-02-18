@@ -157,6 +157,3 @@ msgstr "Newskategorie erfolgreich eingetragen."
 
 msgid "successNewsCommentDelete"
 msgstr "Ihre markierten Kommentare wurden erfolgreich gelöscht."
-
-msgid "errorAtLeastOneNewsComment"
-msgstr "Fehler: Sie müssen mindestens einen Kommentar markieren."

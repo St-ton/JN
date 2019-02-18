@@ -6,6 +6,6 @@
 
 <div class="widget-custom-data widget-patch">
     <div id="patch_data_wrapper">
-        <p class="ajax_preloader">Wird geladen...</p>
+        <p class="ajax_preloader">{__('loading')}</p>
     </div>
 </div>

@@ -338,7 +338,7 @@ msgstr "Passwörter stimmen nicht überein."
 msgid "action"
 msgstr "Aktion"
 
-msgid "available"
+msgid "existing"
 msgstr "Vorhanden"
 
 msgid "html"
@@ -1567,3 +1567,36 @@ msgstr "Ausnahme"
 
 msgid "errorDirCreate"
 msgstr "Verzeichnis konnte nicht erstellt werden: "
+
+msgid "unknown"
+msgstr "Unbekannt"
+
+msgid "userAgent"
+msgstr "User-Agent"
+
+msgid "host"
+msgstr "Host"
+
+msgid "warning"
+msgstr "Warnung"
+
+msgid "moreInfo"
+msgstr "Mehr Informationen"
+
+msgid "available"
+msgstr "verfügbar"
+
+msgid "info"
+msgstr "Info"
+
+msgid "guests"
+msgstr "Gäste"
+
+msgid "overall"
+msgstr "Insgesamt"
+
+msgid "entryPage"
+msgstr "Einstiegsseite"
+
+msgid "origin"
+msgstr "Herkunft"

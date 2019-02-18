@@ -13,7 +13,6 @@
 {include file='snippets/opc_mount_point.tpl' id='opc_article_content_prepend'}
 
 {form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate"}
-{$jtl_token}
     {row id="product-offer"}
         {col cols=12 md=6 class="product-gallery"}
             {include file='productdetails/image.tpl'}

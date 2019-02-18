@@ -3,11 +3,11 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if !empty($Products)}
-    <form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate">
+    {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate"}
         <div class="panel panel-default">
-            <input type="hidden" name="a" value="{$ProductMain->kArtikel}" />
-            <input type="hidden" name="addproductbundle" value="1" />
-            <input type="hidden" name="aBundle" value="{$ProductKey}" />
+            {input type="hidden" name="a" value="{$ProductMain->kArtikel}"}
+            {input type="hidden" name="addproductbundle" value="1"}
+            {input type="hidden" name="aBundle" value="{$ProductKey}"}
             {block name='productdetails-bundle'}{* for additional hidden inputs use block prepend *}
             <div class="panel-heading">
                 <h5 class="panel-title">{lang key='buyProductBundle' section='productDetails'}</h5>
@@ -71,5 +71,5 @@
             </div>
             {/block}
         </div>
-    </form>
+    {/form}
 {/if}

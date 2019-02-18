@@ -22,7 +22,6 @@
             {block name='checkout-login'}
                 {block name='checkout-login-body'}
                     <fieldset>
-                        {$jtl_token}
                         <legend>{block name='checkout-login-title'}{lang key='alreadyCustomer' section='global'}{/block}</legend>
                         {include file='register/form/customer_login.tpl' withSidebar=$withSidebar}
                     </fieldset>
@@ -36,7 +35,6 @@
         {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate" id="form-register"}
             {block name='checkout-register'}
                 {block name='checkout-register-body'}
-                    {$jtl_token}
                     {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
                     <hr/>
                     {include file='checkout/inc_shipping_address.tpl'}
@@ -46,7 +44,7 @@
                 {input type="hidden" name="checkout" value="1"}
                 {input type="hidden" name="form" value="1"}
                 {input type="hidden" name="editRechnungsadresse" value="0"}
-                {button type="submit" variant="primary" class="btn submit"}
+                {button type="submit" variant="primary" class="btn submit submit_once"}
                     {lang key='sendCustomerData' section='account data'}
                 {/button}
             </div>

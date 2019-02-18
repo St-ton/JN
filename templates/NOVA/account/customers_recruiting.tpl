@@ -7,7 +7,6 @@
     {row}
         {col md=6}
             {form id="kwk" action="{get_static_route id='jtl.php'}" method="post" class="evo-validate"}
-                {$jtl_token}
                 {include file='snippets/form_group_simple.tpl'
                 options=[
                 'text', 'kwkFirstName', 'cVorname', null,

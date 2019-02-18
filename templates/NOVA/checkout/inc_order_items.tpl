@@ -224,7 +224,7 @@
                                             min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
                                             required="{$oPosition->Artikel->fAbnahmeintervall > 0}"
                                             step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
-                                            id="quantity[{$oPosition@index}]" class="quantity form-control text-right" name="anzahl[{$oPosition@index}]"
+                                            id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
                                             aria=["label"=>"{lang key='quantity'}"]
                                             value="{$oPosition->nAnzahl}"
                                             data=["decimals"=>"{if $oPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
@@ -243,7 +243,7 @@
                             {if $oPosition->istKonfigVater()}
                                 <div class="qty-wrapper">
                                     {buttongroup vertical=true id="quantity-grp{$oPosition@index}"}
-                                        {input name="anzahl[{$oPosition@index}]" type="text" class="form-control text-center" value="{$oPosition->nAnzahl}" readonly=true}
+                                        {input name="anzahl[{$oPosition@index}]" type="text" class="text-center" value="{$oPosition->nAnzahl}" readonly=true}
                                         {link class="btn btn-light configurepos ml-3"
                                             href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
                                             <span class="d-none d-sm-block d-md-none"><i class="fa fa-cogs"></i></span>
@@ -285,7 +285,7 @@
             {if $tplscope === 'cart'}
                 {col cols=2 class="delitem-col text-right"}
                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                    {button type="submit" variant="light" size="sm" class="btn droppos" name="dropPos" value="{$oPosition@index}" title="{lang key='delete'}"}<span class="fa fa-trash"></span>{/button}
+                    {button type="submit" variant="light" size="sm" class="droppos" name="dropPos" value="{$oPosition@index}" title="{lang key='delete'}"}<span class="fa fa-trash"></span>{/button}
                 {/if}
                 {/col}
             {/if}

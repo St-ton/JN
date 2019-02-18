@@ -97,7 +97,7 @@ class ImageMap implements IExtensionPoint
         $imageMap->cBild     = \mb_substr($parsed['path'], \mb_strrpos($parsed['path'], '/') + 1);
         $defaultOptions      = Artikel::getDefaultOptions();
 
-        [$imageMap->fWidth, $imageMap->fHeight] = \getimagesize(\PFAD_ROOT . \PFAD_IMAGEMAP . $imageMap->cBildPfad);
+        [$imageMap->fWidth, $imageMap->fHeight] = \getimagesize(\PFAD_ROOT . \PFAD_IMAGEMAP . $imageMap->cBild);
         foreach ($imageMap->oArea_arr as &$area) {
             $area->oCoords = new stdClass();
             $aMap          = \explode(',', $area->cCoords);

@@ -83,7 +83,6 @@
                         {/if}
 
                         {formgroup}
-                            {$jtl_token}
                             {input type="hidden" name="abonnieren" value="1"}
                             {button type="submit" variant="primary" class="submit"}
                                 <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
@@ -116,7 +115,6 @@
                                 true, $oFehlendeAngaben->cUnsubscribeEmail|default:null, 'email'
                             ]
                         }
-                        {$jtl_token}
                         {input type="hidden" name="abmelden" value="1"}
                         {button type="submit" class="submit"}
                             <span>{lang key='newsletterSendUnsubscribe' section='newsletter'}</span>

@@ -26,7 +26,6 @@
         {block name='login-form'}
         {card}
             {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="evo-validate"}
-                {$jtl_token}
                 <fieldset>
                     <legend>{lang key='loginForRegisteredCustomers' section='checkout'}</legend>
                     {include file='snippets/form_group_simple.tpl'
@@ -58,7 +57,9 @@
                             {input type="hidden" name="r" value="{$oRedirect->nRedirect}"}
                             {input type="hidden" name="cURL" value="{$oRedirect->cURL}"}
                         {/if}
-                        {input type="submit" value="{lang key='login' section='checkout'}" class="btn btn-primary btn-block submit"}
+                        {button type="submit" value="1" class="btn-block submit" variant="primary"}
+                            {lang key='login' section='checkout'}
+                        {/button}
                     {/formgroup}
 
                     <div class="register-or-resetpw top15">

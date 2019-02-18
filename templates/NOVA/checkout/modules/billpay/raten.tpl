@@ -2,7 +2,7 @@
    <div id="billpay_rate_selection">
       {input type="hidden" name="billpay_rate_total" value="{$oRate->fBase}"}
       <div class="input-group">
-         {select class="form-control" name="billpay_rate"}
+         {select name="billpay_rate"}
             {foreach $nRate_arr as $nRate}
                <option value="{$nRate}" {if $oRate->nRate == $nRate}selected="selected"{/if}>{$nRate} Raten</option>
             {/foreach}

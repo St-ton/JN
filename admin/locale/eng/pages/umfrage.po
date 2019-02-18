@@ -180,7 +180,7 @@ msgid "addAnswer"
 msgstr "Antwort hinzufügen"
 
 msgid "addOption"
-msgstr "Option hinzufügen'"
+msgstr "Option hinzufügen"
 
 msgid "activePolls"
 msgstr "Aktive Umfragen"

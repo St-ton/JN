@@ -192,7 +192,9 @@
                     <div class="delivery-status">
                         {block name='delivery-status'}
                             {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
-                            {if $Artikel->nErscheinendesProdukt}
+                            {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
+                                <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
+                            {elseif $Artikel->nErscheinendesProdukt}
                                 <div class="availablefrom">
                                     <small>{lang key='productAvailableFrom'}: {$Artikel->Erscheinungsdatum_de}</small>
                                 </div>
@@ -252,7 +254,7 @@
                                                             step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
                                                             size="2"
                                                             id="quantity{$Artikel->kArtikel}"
-                                                            class="quantity form-control text-right"
+                                                            class="quantity text-right"
                                                             name="anzahl"
                                                             autocomplete="off"
                                                             value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"

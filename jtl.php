@@ -570,8 +570,8 @@ if ($customerID > 0) {
     if (Request::verifyGPCDataInt('bewertungen') > 0) {
         $step = 'bewertungen';
     }
-    if (Request::verifyGPCDataInt('Bestellung') > 0) {
-        $bestellung = new Bestellung(Request::verifyGPCDataInt('Bestellung'), true);
+    if (Request::verifyGPCDataInt('bestellung') > 0) {
+        $bestellung = new Bestellung(Request::verifyGPCDataInt('bestellung'), true);
         if ($bestellung->kKunde !== null
             && (int)$bestellung->kKunde > 0
             && (int)$bestellung->kKunde === Frontend::getCustomer()->getID()
@@ -590,7 +590,7 @@ if ($customerID > 0) {
                     );
                 }
             }
-            $step                               = 'Bestellung';
+            $step                               = 'bestellung';
             $_SESSION['Kunde']->angezeigtesLand = Sprache::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
             $smarty->assign('Bestellung', $bestellung)
                    ->assign('billingAddress', $bestellung->oRechnungsadresse)
@@ -798,7 +798,6 @@ $alertNote = $alertHelper->alertTypeExists(Alert::TYPE_NOTE);
 if (!$alertNote && $step === 'mein Konto' && Frontend::getCustomer()->isLoggedIn()) {
     $alertHelper->addAlert(Alert::TYPE_INFO, Shop::Lang()->get('myAccountDesc', 'login'), 'myAccountDesc');
 }
-
 $cCanonicalURL = $linkHelper->getStaticRoute('jtl.php', true);
 $link          = $linkHelper->getPageLink($kLink);
 $smarty->assign('bewertungen', $ratings)

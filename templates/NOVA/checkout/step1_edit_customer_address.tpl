@@ -18,13 +18,12 @@
             <div id="order-proceed-as-guest">
                 {block name='checkout-proceed-as-guest-body'}
                     {form id="neukunde" method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate"}
-                        {$jtl_token}
                         {include file='checkout/inc_billing_address_form.tpl' step=$unreg_step}
                         {include file='checkout/inc_shipping_address.tpl'}
                         <div class="text-right">
                             {input type="hidden" name="unreg_form" value="{$unreg_form}"}
                             {input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}"}
-                            {button variant="primary" type="submit" class="submit"}
+                            {button variant="primary" type="submit" class="submit submit_once"}
                                 {lang key='sendCustomerData' section='account data'}
                             {/button}
                         </div>

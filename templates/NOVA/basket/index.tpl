@@ -22,7 +22,6 @@
             <div class="basket_wrapper">
                 {block name='basket-items'}
                     {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="evo-validate"}
-                        {$jtl_token}
                         {input type="hidden" name="wka" value="1"}
                         <div class="mb-7">
                             {include file='checkout/inc_order_items.tpl' tplscope='cart'}
@@ -32,7 +31,6 @@
 
                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                         {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}"}
-                        {$jtl_token}
                             {include file='snippets/shipping_calculator.tpl' checkout=true}
                         {/form}
                     {/if}
@@ -45,11 +43,10 @@
                             {/col}
                             {col cols=12 md=8}
                                 {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
-                                    {$jtl_token}
                                     {block name='basket-coupon'}
                                         {formgroup class="{if !empty($invalidCouponCode)} has-error{/if}"}
                                             {inputgroup}
-                                                {input aria=["label"=>"{lang key='couponCode' section='account data'}"] class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
+                                                {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
                                                 {input class="btn btn-secondary" type="submit" value="{lang key='useCoupon' section='checkout'}"}
                                             {/inputgroup}
                                         {/formgroup}
@@ -78,7 +75,6 @@
                                 {block name='basket-freegift-body'}
                                     {col cols=12}
                                         {form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}" class="text-center"}
-                                            {$jtl_token}
                                             {row}
                                                 {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
                                                     {col cols=6 md=4}

@@ -1,5 +1,4 @@
 {form action="" method="post" class="product-actions d-none d-md-flex" data=["toggle" => "product-actions"]}
-    {$jtl_token}
     {buttongroup class="actions btn-group-justified d-flex" size="sm" aria=["label" => "..."] role="group"}
         {block name='product-actions'}
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}

@@ -28,7 +28,7 @@
         {* slide captions outside of .nivoSlider *}
         {foreach $oSlider->getSlides() as $oSlide}
             {if !empty($oSlide->getText())}
-                <div id="slide_caption_{$oSlide->getID()}" class="htmlcaption hidden">
+                <div id="slide_caption_{$oSlide->getID()}" class="htmlcaption d-none">
                     {if isset($oSlide->getTitle())}<strong class="title">{$oSlide->getTitle()}</strong>{/if}
                     <p class="desc">{$oSlide->getText()}</p>
                 </div>

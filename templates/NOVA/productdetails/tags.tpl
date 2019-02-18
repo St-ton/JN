@@ -3,7 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {form method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}"}
-    {$jtl_token}
     {if $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'}
         {input type="hidden" name="a" value="{$Artikel->kArtikel}"}
         {input type="hidden" name="produktTag" value="1"}
@@ -17,7 +16,9 @@
                     {inputgroup}
                         {input type="text" id="add-tag" name="tag" placeholder="{lang key='addTag' section='productDetails'}"}
                         {inputgroupaddon}
-                            {input type="submit" name="submit" value="{lang key='addYourTag' section='productDetails'}" class="btn btn-primary"}
+                            {button type="submit" name="submit" value="1" variant="primary" class="w-auto"}
+                                {lang key='addYourTag' section='productDetails'}
+                            {/button}
                         {/inputgroupaddon}
                     {/inputgroup}
                 {/col}

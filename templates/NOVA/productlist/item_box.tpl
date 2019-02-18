@@ -53,11 +53,12 @@
     </div>{* /caption *}
     {/block}
     {form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}/" method="post" class="form form-basket evo-validate d-none d-md-block" data=["toggle" => "basket-add"]}
-        {$jtl_token}
         {block name='productlist-delivery-status'}
             <div class="delivery-status my-3">
                 {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
-                {if $Artikel->nErscheinendesProdukt}
+                {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
+                    <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
+                {elseif $Artikel->nErscheinendesProdukt}
                     <div class="availablefrom">
                         <small>{lang key='productAvailableFrom'}: {$Artikel->Erscheinungsdatum_de}</small>
                     </div>

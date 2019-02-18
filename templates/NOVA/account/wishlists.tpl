@@ -23,7 +23,6 @@
                         {col md=6 class="text-right"}
                             {form method="post" action="{get_static_route id='jtl.php'}?wllist=1"}
                                 {input type="hidden" name="wl" value="{$Wunschliste->kWunschliste}"}
-                                {$jtl_token}
                                 {buttongroup}
                                     {if $Wunschliste->nStandard != 1}
                                         {button size="sm" type="submit" name="wls" value="{$Wunschliste->kWunschliste}" title="{lang key='wishlistStandard' section='login'}"}
@@ -51,7 +50,6 @@
             {/if}
             <hr>
             {form method="post" action="{get_static_route id='jtl.php'}?wllist=1" class="form form-inline"}
-                {$jtl_token}
                 {input name="wlh" type="hidden" value="1"}
                 {inputgroup}
                     {input name="cWunschlisteName" type="text" placeholder="{lang key='wishlistAddNew' section='login'}" aria=["label"=>"{lang key='wishlistAddNew' section='login'}"]}

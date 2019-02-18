@@ -87,7 +87,6 @@
                         {card}
                             <div class="h4">{lang key='newsCommentAdd' section='news'}</div>
                             {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment"}
-                                {$jtl_token}
                                 {input type="hidden" name="kNews" value="{$oNewsArchiv->getID()}"}
                                 {input type="hidden" name="kommentar_einfuegen" value="1"}
                                 {input type="hidden" name="n" value="{$oNewsArchiv->getID()}"}
@@ -140,8 +139,9 @@
                                                 {captchaMarkup getBody=true}
                                             </div>
                                         {/if}
-
-                                        {input class="btn btn-primary" name="speichern" type="submit" value="{lang key='newsCommentSave' section='news'}"}
+                                        {button type="submit" name="speichern" value="1" variant="primary"}
+                                            {lang key='newsCommentSave' section='news'}
+                                        {/button}
                                     {elseif $Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)}
                                         {formgroup
                                             id="commentText"
@@ -150,7 +150,7 @@
                                             label-for="comment-text"
                                             label-class="commentForm"
                                         }
-                                            {textarea id="comment-text" class="form-control" name="cKommentar" required=true}{/textarea}
+                                            {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
                                             {if $nPlausiValue_arr.cKommentar > 0}
                                                 <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
                                                     {lang key='fillOut' section='global'}

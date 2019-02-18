@@ -12,7 +12,7 @@ msgid "Save"
 msgstr "Speichern"
 
 msgid "Wrong XSRF token."
-msgstr "Falsches XSRF token."
+msgstr "Falsches XSRF-Token."
 
 msgid "dashboard"
 msgstr "Dashboard"
@@ -48,7 +48,7 @@ msgid "showedName"
 msgstr "Angezeigter Name"
 
 msgid "multipleChoice"
-msgstr "Mehrfachauswahl möglich mit gedrückter STRG/SHIFT-Taste"
+msgstr "Mehrfachauswahl möglich mit gedrückter Strg- / Umschalttaste"
 
 msgid "save"
 msgstr "Speichern"
@@ -72,7 +72,7 @@ msgid "allCustomerGroups"
 msgstr "Alle Kundengruppen"
 
 msgid "goShop"
-msgstr "Zum Shop"
+msgstr "Zum Onlineshop"
 
 msgid "help"
 msgstr "Hilfe"
@@ -147,7 +147,7 @@ msgid "noSearchResult"
 msgstr "Leider wurde zu Ihrem Suchbegriff keine Einstellung gefunden."
 
 msgid "NotAvailable"
-msgstr "n.v."
+msgstr "nicht verfügbar"
 
 msgid "page"
 msgstr "Seite"
@@ -156,25 +156,25 @@ msgid "FillOut"
 msgstr "Bitte ausfüllen"
 
 msgid "nofopenError"
-msgstr "Leider steht die PHP Stream Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv. Bitte wenden Sie sich an den Serveradministrator und setzen Sie diese auf 1."
+msgstr "Leider steht die PHP-Stream-Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv. Bitte wenden Sie sich an den Serveradministrator und setzen Sie diese auf 1."
 
 msgid "noCURLError"
 msgstr "Leider steht das Programm \"<b>CURL (curl_init)</b>\" nicht zur Verfügung. Bitte wenden Sie sich an den Serveradministrator und installieren dieses."
 
 msgid "noCURLAndFopenError"
-msgstr "Leider steht weder die PHP Stream Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv noch existiert das Programm \"<b>CURL (curl_init)</b>\". Bitte wenden Sie sich an den Serveradministrator und aktivieren mindestens eins der Beiden."
+msgstr "Leider ist weder die PHP-Stream-Konfigurationsoption \"<b>allow_url_fopen</b>\" aktiv, noch existiert das Programm \"<b>CURL (curl_init)</b>\". Bitte wenden Sie sich an den Serveradministrator und aktivieren mindestens eins der beiden."
 
 msgid "noSOAPError"
-msgstr "Leider steht das Netzwerkprotokoll \"<b>SOAP</b>\" nicht auf zur Verfügung. Bitte wenden Sie sich an den Serveradministrator, damit dieses nachgerüstet wird."
+msgstr "Leider steht das Netzwerkprotokoll \"<b>SOAP</b>\" nicht zur Verfügung. Bitte wenden Sie sich an den Serveradministrator, damit dieses zur Verfügung gestellt wird."
 
 msgid "noModuleAvailable"
-msgstr "Es wurde keine gültige Lizenz für dieses Modul gefunden. Eine passende Lizenz können Sie unter <a href=\"https://www.jtl-software.de/JTL-Shop-Onlineshop-und-Erweiterungen\">jtl-software.de erwerben</a>."
+msgstr "Es wurde keine gültige Lizenz für dieses Modul gefunden. Eine passende Lizenz können Sie unter <a href=\"https://www.jtl-software.de/JTL-Shop-Onlineshop-und-Erweiterungen\">jtl-software.de</a> erwerben."
 
 msgid "pageBack"
-msgstr "zurück"
+msgstr "Zurück"
 
 msgid "submit"
-msgstr "absenden"
+msgstr "Absenden"
 
 msgid "cancel"
 msgstr "Abbrechen"
@@ -225,7 +225,7 @@ msgid "reloadCaptcha"
 msgstr "Captcha neu laden"
 
 msgid "invalidToken"
-msgstr "Ungültiger Sicherheitscode übermittelt"
+msgstr "Es wurde ein ungültiger Sicherheitscode übermittelt."
 
 msgid "allPages"
 msgstr "Alle Seiten"
@@ -234,10 +234,10 @@ msgid "errorFillRequired"
 msgstr "Fehler: Bitte füllen Sie alle Pflichtfelder korrekt aus."
 
 msgid "successConfigSave"
-msgstr "Ihre Einstellung(en) wurde erfolgreich gespeichert."
+msgstr "Ihre Einstellungen wurde erfolgreich gespeichert."
 
 msgid "errorConfigSave"
-msgstr "Fehler beim Speichern Ihrer Einstellungen."
+msgstr "Fehler beim Speichern der Einstellungen."
 
 msgid "errorIsNoDir"
 msgstr " ist kein Verzeichnis"
@@ -249,7 +249,7 @@ msgid "errorUnknown"
 msgstr "Unbekannter Fehler"
 
 msgid "errorUnknownLong"
-msgstr "Fehler: Es ist ein unbekannter Fehler aufgetreten"
+msgstr "Fehler: Es ist ein unbekannter Fehler aufgetreten."
 
 msgid "year"
 msgstr " Jahr"
@@ -279,34 +279,34 @@ msgid "errorEnterValidDate"
 msgstr "Fehler: Bitte geben Sie ein gültiges Datum ein."
 
 msgid "smartySyntaxError"
-msgstr "Smarty-Syntax Fehler."
+msgstr "Smarty-Syntax Fehler"
 
 msgid "errorCheckInput"
 msgstr "Fehler: Bitte überprüfen Sie Ihre Eingaben."
 
 msgid "lockForMinutes"
-msgstr "Gesperrt für %s Minuten."
+msgstr "Gesperrt für %s Minuten"
 
 msgid "errorWrongPasswordUser"
-msgstr "Benutzername oder Passwort falsch."
+msgstr "Benutzername oder Passwort falsch"
 
 msgid "errorTwoFactorExpired"
-msgstr "2-Faktor-Authentifizierungs-Code abgelaufen."
+msgstr "2-Faktor-Authentifizierungs-Code abgelaufen"
 
 msgid "errorNoPermission"
-msgstr "Keine Berechtigungen vorhanden."
+msgstr "Keine Berechtigungen vorhanden"
 
 msgid "errorCSRF"
 msgstr "Cross site request forgery! Sind Cookies aktiviert?"
 
 msgid "errorSessionExpired"
-msgstr "Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich neu an."
+msgstr "Ihre Sitzung wurde zurückgesetzt. Bitte melden Sie sich neu an."
 
 msgid "row"
 msgstr "Zeile"
 
 msgid "errorLangVarNotFound"
-msgstr "Fehler: Ihre ausgewählte Sprachvariable wurde nicht gefunden."
+msgstr "Fehler: Die ausgewählte Sprachvariable wurde nicht gefunden."
 
 msgid "successChangesSave"
 msgstr "Ihre Änderungen wurden erfolgreich übernommen."
@@ -315,13 +315,13 @@ msgid "errorChooseOption"
 msgstr "Bitte wählen Sie mindestens eine Option aus."
 
 msgid "all"
-msgstr "alle"
+msgstr "Alle"
 
 msgid "both"
-msgstr "beide"
+msgstr "Beide"
 
 msgid "successEmailSend"
-msgstr "Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse gesendet, sofern vorhanden."
+msgstr "Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse, sofern vorhanden, gesendet."
 
 msgid "successPasswordChange"
 msgstr "Passwort wurde erfolgreich geändert."
@@ -330,7 +330,7 @@ msgid "errorPasswordChange"
 msgstr "Passwort konnte nicht geändert werden."
 
 msgid "errorHashInvalid"
-msgstr "Ungültiger Hash übergeben."
+msgstr "Es wurde ein ungültiger Hash übergeben."
 
 msgid "errorPasswordMismatch"
 msgstr "Passwörter stimmen nicht überein."
@@ -342,7 +342,7 @@ msgid "available"
 msgstr "Vorhanden"
 
 msgid "html"
-msgstr "Html"
+msgstr "HTML"
 
 msgid "text"
 msgstr "Text"
@@ -438,10 +438,10 @@ msgid "description"
 msgstr "Beschreibung"
 
 msgid "url"
-msgstr "Url"
+msgstr "URL"
 
 msgid "cssClass"
-msgstr "Css-Klasse"
+msgstr "CSS-Klasse"
 
 msgid "new"
 msgstr "neu"
@@ -453,7 +453,7 @@ msgid "inactive"
 msgstr "Inaktiv"
 
 msgid "emailAddress"
-msgstr "E-Mail Adresse"
+msgstr "E-Mail-Adresse"
 
 msgid "preSurName"
 msgstr "Vor- und Nachname"
@@ -486,10 +486,10 @@ msgid "userGroup"
 msgstr "Benutzergruppe"
 
 msgid "noPermissionForPage"
-msgstr "Sie haben keine Berechtigung, diese Seite zu betreten."
+msgstr "Sie haben keine Berechtigung, diese Seite anzuzeigen."
 
 msgid "contactAdminForPermission"
-msgstr "Falls Sie Zugang zu diesem Bereich benötigen, kontaktieren Sie den Administrator, damit er Ihnen die entsprechenden Rechte zuweist."
+msgstr "Falls Sie Zugang zu diesem Bereich benötigen, kontaktieren Sie bitte den Administrator, damit er Ihnen die entsprechenden Rechte zuweist."
 
 msgid "imageSizes"
 msgstr "Bildgrößen"
@@ -498,7 +498,7 @@ msgid "variations"
 msgstr "Variationen"
 
 msgid "configGroup"
-msgstr "Konfig-Gruppe"
+msgstr "Konfigurationsgruppe"
 
 msgid "type"
 msgstr "Typ"
@@ -513,7 +513,7 @@ msgid "md"
 msgstr "Normal"
 
 msgid "lg"
-msgstr "Gross"
+msgstr "Groß"
 
 msgid "widthXHeight"
 msgstr "(Breite x Höhe)"
@@ -534,7 +534,7 @@ msgid "email"
 msgstr "E-Mail"
 
 msgid "customerNumberShort"
-msgstr "Knr."
+msgstr "Kundennummer"
 
 msgid "minOrderValue"
 msgstr "Mindestbestellwert"
@@ -666,7 +666,7 @@ msgid "danger"
 msgstr "Achtung"
 
 msgid "ok"
-msgstr "Ok"
+msgstr "OK"
 
 msgid "placeholder"
 msgstr "Platzhalter"
@@ -696,7 +696,7 @@ msgid "lastNameStub"
 msgstr "Mustermann"
 
 msgid "companyStub"
-msgstr "Muster Gmbh"
+msgstr "Muster GmbH"
 
 msgid "faulty"
 msgstr "fehlerhaft"
@@ -735,10 +735,10 @@ msgid "firstSteps"
 msgstr "Erste Schritte"
 
 msgid "jtlGuide"
-msgstr "JTL Guide"
+msgstr "JTL-Guide"
 
 msgid "jtlForum"
-msgstr "JTL Forum"
+msgstr "JTL-Forum"
 
 msgid "training"
 msgstr "Training"
@@ -801,7 +801,7 @@ msgid "earlier"
 msgstr "Früher"
 
 msgid "later"
-msgstr "später"
+msgstr "Später"
 
 msgid "value"
 msgstr "Wert"
@@ -819,7 +819,7 @@ msgid "addValue"
 msgstr "Wert hinzufügen."
 
 msgid "sortShort"
-msgstr "Sort"
+msgstr "Sort."
 
 msgid "remove"
 msgstr "Entfernen"
@@ -846,7 +846,7 @@ msgid "standard"
 msgstr "Standard"
 
 msgid "forced"
-msgstr "erwzungen"
+msgstr "erzwungen"
 
 msgid "images"
 msgstr "Bilder"
@@ -864,7 +864,7 @@ msgid "forgotPassword"
 msgstr "Passwort vergessen?"
 
 msgid "metaSeo"
-msgstr "Meta/Seo"
+msgstr "Meta/SEO"
 
 msgid "id"
 msgstr "ID"
@@ -891,7 +891,7 @@ msgid "chooseCatgeory"
 msgstr "Kategorie wählen"
 
 msgid "entriesPerPage"
-msgstr "Einträge/Seite"
+msgstr "Einträge pro Seite"
 
 msgid "sorting"
 msgstr "Sortierung"
@@ -966,13 +966,13 @@ msgid "revisions"
 msgstr "Revisionen"
 
 msgid "noRevisions"
-msgstr "Keine Revision vorhanden."
+msgstr "Keine Revision vorhanden"
 
 msgid "revisionDelete"
-msgstr "Revision löschen."
+msgstr "Revision löschen"
 
 msgid "revisionRestore"
-msgstr "Revision wiederherstellen."
+msgstr "Revision wiederherstellen"
 
 msgid "hook"
 msgstr "Hook"
@@ -1095,13 +1095,13 @@ msgid "cache"
 msgstr "Cache"
 
 msgid "settingNumberShort"
-msgstr "Einstellungsnr."
+msgstr "Einstellungsnummer"
 
 msgid "shippingTypesOverview"
-msgstr "Versandartenübersicht."
+msgstr "Versandartenübersicht"
 
 msgid "paymentTypesOverview"
-msgstr "Zahlungsartenübersicht."
+msgstr "Zahlungsartenübersicht"
 
 msgid "yourSystem"
 msgstr "Ihr System"
@@ -1155,13 +1155,13 @@ msgid "noMoreWidgets"
 msgstr "Keine weiteren Widgets vorhanden."
 
 msgid "note"
-msgstr "hinweis"
+msgstr "Hinweis"
 
 msgid "level"
 msgstr "Level"
 
 msgid "orderNumberShort"
-msgstr "Bestell-Nr."
+msgstr "Bestellnummer"
 
 msgid "currency"
 msgstr "Währung"
@@ -1248,7 +1248,7 @@ msgid "transparency"
 msgstr "Transparenz"
 
 msgid "size"
-msgstr "Grösse"
+msgstr "Größe"
 
 msgid "position"
 msgstr "Position"
@@ -1275,7 +1275,7 @@ msgid "subject"
 msgstr "Betreff"
 
 msgid "subjects"
-msgstr "Betreffs"
+msgstr "Betreffe"
 
 msgid "filename"
 msgstr "Dateiname"
@@ -1293,7 +1293,7 @@ msgid "header"
 msgstr "Kopfzeile"
 
 msgid "footer"
-msgstr "Fusszeile"
+msgstr "Fußzeile"
 
 msgid "firstName"
 msgstr "Vorname"
@@ -1311,7 +1311,7 @@ msgid "productName"
 msgstr "Artikelname"
 
 msgid "back"
-msgstr "zurück"
+msgstr "Zurück"
 
 msgid "annual"
 msgstr "Jährlich"
@@ -1326,7 +1326,7 @@ msgid "daily"
 msgstr "Täglich"
 
 msgid "contents"
-msgstr "inhalte"
+msgstr "Inhalte"
 
 msgid "format"
 msgstr "Format"
@@ -1347,10 +1347,10 @@ msgid "optional"
 msgstr "optional"
 
 msgid "coupon"
-msgstr "Kupon"
+msgstr "Coupon"
 
 msgid "coupons"
-msgstr "Kupons"
+msgstr "Coupons"
 
 msgid "orderValue"
 msgstr "Bestellwert"
@@ -1443,7 +1443,7 @@ msgid "favorites"
 msgstr "Favoriten"
 
 msgid "manageFavorites"
-msgstr "Verwalten Sie Ihre Favoriten"
+msgstr "Verwalten Sie Ihre Favoriten."
 
 msgid "account"
 msgstr "Konto"

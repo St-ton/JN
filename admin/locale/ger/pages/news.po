@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "news"
-msgstr "News-/Blogsystem"
+msgstr "News- / Blogsystem"
 
 msgid "newsURL"
 msgstr "https://jtl-url.de/2ek6o"
 
 msgid "newsDesc"
-msgstr "Dieses Modul kann als News bzw. Blogsystem genutzt werden."
+msgstr "Sie können mit dem News- bzw. Blogsystem von JTL-Shop Ihre Kunden auf dem Laufenden halten. Hier erstellen Sie neue Beiträge und legen fest, wie die News-Beiträge dargestellt werden."
 
 msgid "newAdd"
 msgstr "Neuen Beitrag erstellen"
@@ -33,16 +33,16 @@ msgid "newsArchiveLast"
 msgstr "Archivierte Beiträge"
 
 msgid "newsPicAdd"
-msgstr "weiteres Bild"
+msgstr "Weiteres Bild"
 
 msgid "newsPics"
 msgstr "Verfügbare Bilder"
 
 msgid "newsActivate"
-msgstr "freischalten"
+msgstr "Freischalten"
 
 msgid "newsCommentActivate"
-msgstr "Nicht aktive Beitragskommentare"
+msgstr "Nicht freigeschaltete Kommentare"
 
 msgid "newsComments"
 msgstr "Kommentare"
@@ -60,7 +60,7 @@ msgid "newsCatNew"
 msgstr "Kategorie bearbeiten"
 
 msgid "newsCatSort"
-msgstr "Kategorie Sortierung"
+msgstr "Kategoriesortierung"
 
 msgid "newsCatParent"
 msgstr "Oberkategorie"
@@ -78,7 +78,7 @@ msgid "newsInfinite"
 msgstr "immer"
 
 msgid "newsCommentEdit"
-msgstr "Kommentar editieren"
+msgstr "Kommentar bearbeiten"
 
 msgid "newsMetaTitle"
 msgstr "Meta Title"
@@ -108,37 +108,37 @@ msgid "newsDeleteComment"
 msgstr "Kommentar löschen"
 
 msgid "errorNewsCatFirst"
-msgstr "Fehler: Bitte legen Sie zuerst eine Newskategorie an."
+msgstr "Fehler: Bitte legen Sie zuerst eine News-Kategorie an."
 
 msgid "successNewsCommmentEdit"
-msgstr "Der Newskommentar wurde erfolgreich editiert."
+msgstr "Der News-Kommentar wurde erfolgreich bearbeitet."
 
 msgid "successNewsDelete"
-msgstr "Ihre markierten News wurden erfolgreich gelöscht."
+msgstr "Die markierten News wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNews"
 msgstr "Fehler: Sie müssen mindestens eine News ausgewählt haben."
 
 msgid "successNewsCatDelete"
-msgstr "Ihre markierten Newskategorien wurden erfolgreich gelöscht."
+msgstr "Die markierten News-Kategorien wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsCat"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Newskategorie."
+msgstr "Fehler: Bitte markieren Sie mindestens eine News-Kategorie."
 
 msgid "successNewsImageDelete"
-msgstr "Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht."
+msgstr "Das ausgewählte News-Bild wurde erfolgreich gelöscht."
 
 msgid "errorNewsImageDelete"
-msgstr "Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden."
+msgstr "Fehler: Das ausgewählte News-Bild konnte nicht gelöscht werden."
 
 msgid "errorNewsCatNotFound"
-msgstr "Fehler: Die Newskategorie mit der ID %d konnte nicht gefunden werden."
+msgstr "Fehler: Die News-Kategorie mit der ID %d konnte nicht gefunden werden."
 
 msgid "successNewsCommentUnlock"
-msgstr "Ihre markierten Newskommentare wurden erfolgreich freigeschaltet."
+msgstr "Die markierten News-Kommentare wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newskommentar."
+msgstr "Fehler: Bitte markieren Sie mindestens einen News-Kommentar."
 
 msgid "goOnEdit"
 msgstr " und weiter bearbeiten"
@@ -147,4 +147,4 @@ msgid "mainCategory"
 msgstr "Hauptkategorie"
 
 msgid "deleteComment"
-msgstr "Kommentare löschen?"
+msgstr "Möchten Sie die Kommentare löschen?"

@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "tagging"
-msgstr "Produkttags"
+msgstr "Artikel-Tags"
 
 msgid "taggingURL"
 msgstr "https://jtl-url.de/0jlfk"
 
 msgid "taggingDesc"
-msgstr "Shop-Besucher können Artikel im Shop mit Schlagworten versehen (\"taggen\"). Nach Freischaltung der Tag-Begriffe sind diese im Shop öffentlich und können zur Navigation und Filterung genutzt werden. Bitte beachten Sie, dass Produkttags pro Sprache verwaltet werden. Einstellungen zu Produkttags finden Sie unter Einstellungen -> Artikeldetails"
+msgstr "Shop-Besucher können Artikel mit Schlagworten, sogenannten Tags, versehen. Tags können zur Navigation und Filterung verwendet werden. Sie können pro Sprache gepflegt werden. In der Registerkarte \"Einstellungen\" legen Sie fest, wer Tags erstellen kann."
 
 msgid "tags"
 msgstr "Aktive Tags"
@@ -18,28 +18,28 @@ msgid "tagnew"
 msgstr "Ziel-Tag"
 
 msgid "mapping"
-msgstr "Aktive Tag-Mappings"
+msgstr "Aktive Tag-Verknüpfungen"
 
 msgid "tagcount"
-msgstr "Taganzahl"
+msgstr "Tag-Anzahl"
 
 msgid "taggingdetail"
-msgstr "Produkttagging Detailansicht"
+msgstr "Artikel-Tagging-Detailansicht"
 
 msgid "taggingdetailDesc"
 msgstr " "
 
 msgid "taggingProduct"
-msgstr "Produkt"
+msgstr "Artikel"
 
 msgid "taggingdelete"
 msgstr "Markierte löschen"
 
 msgid "taggingdetailTag"
-msgstr "Artikel zum Produkttag:"
+msgstr "Artikel zum Tag:"
 
 msgid "errorTagMapSelf"
-msgstr "Der Tag %s kann nicht auf den gleichen Tagbegriff gemappt werden."
+msgstr "Der Tag %s kann nicht mit dem gleichen Tag-Begriff verknüpft werden."
 
 msgid "successTagRefresh"
 msgstr "Die Tags wurden erfolgreich aktualisiert."
@@ -48,25 +48,25 @@ msgid "successTagDelete"
 msgstr "Der Tag %s wurde erfolgreich gelöscht."
 
 msgid "successTagMap"
-msgstr "Der Tag %s wurde erfolgreich auf %s gemappt.."
+msgstr "Der Tag %s wurde erfolgreich mit %s verknüpft."
 
 msgid "errorTagNotFound"
 msgstr "Es wurde kein Tag mit der ID %s gefunden."
 
 msgid "errorMapNotFound"
-msgstr "Es wurde kein Mapping mit der ID %s gefunden."
+msgstr "Es wurde keine Verknüpfung mit der ID %s gefunden."
 
 msgid "errorAtLeastOneTag"
 msgstr "Bitte wählen Sie mindestens einen Tag aus."
 
 msgid "errorAtLeastOneMap"
-msgstr "Bitte wählen Sie mindestens ein Mapping aus."
+msgstr "Bitte wählen Sie mindestens eine Verknüpfung aus."
 
 msgid "successMapDelete"
-msgstr "Das Mapping %s wurde erfolgreich gelöscht."
+msgstr "Die Verknüpfung %s wurde erfolgreich gelöscht."
 
 msgid "successTagDeleteProduct"
-msgstr "Der Tag wurde erfolgreich bei Ihren markierten Artikeln gelöscht."
+msgstr "Der Tag wurde erfolgreich für die markierten Artikel gelöscht."
 
 msgid "errorProductTagDelete"
-msgstr "Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gelöscht werden."
+msgstr "Fehler: Der Tag konnte für die markierten Artikel nicht gelöscht werden."

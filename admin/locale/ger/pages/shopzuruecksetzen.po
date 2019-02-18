@@ -9,19 +9,19 @@ msgid "shopResetURL"
 msgstr "https://jtl-url.de/3wfz8"
 
 msgid "shopResetDesc"
-msgstr "Hier können Sie die Daten aus einzelnen Bereichen Ihres JTL-Shops löschen. Bitte beachten Sie, dass diese Daten komplett entfernt werden und nach dem Löschen nur noch durch ein Backup wiederhergestellt werden können."
+msgstr "Hier können Sie aus einzelnen Bereichen Ihres JTL-Shops Daten löschen, die sie individuell verändert haben, und den Werkszustand wiederherstellen. Bitte beachten Sie, dass Ihre persönlichen Daten aus diesen Bereichen komplett entfernt werden und nach dem Löschen nur noch durch ein Backup wiederhergestellt werden können."
 
 msgid "successShopReturn"
-msgstr "Der Shop wurde mit Ihren gewählten Optionen zurückgesetzt."
+msgstr ""
 
 msgid "dangerStrong"
-msgstr "!!! ACHTUNG !!!"
+msgstr "ACHTUNG"
 
 msgid "warningDeleteNotRestoreableData"
-msgstr "Es wurden Daten zur Löschung ausgewählt die NICHT durch einen Abgleich mit der JTL-Wawi wiederhergestellt werden können. Es wird daher dringend empfohlen ein Backup der Shop-Datenbank zu erstellen!"
+msgstr "Es wurden Daten zur Löschung ausgewählt, die NICHT durch einen Abgleich mit JTL-Wawi wiederhergestellt werden können. Es wird daher dringend empfohlen ein Backup der Shop-Datenbank zu erstellen."
 
 msgid "shopContent"
-msgstr "Shopinhalte"
+msgstr "Shop-Inhalte"
 
 msgid "deleteNews"
 msgstr "News löschen"

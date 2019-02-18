@@ -216,10 +216,13 @@ class Updater
             throw new Exception("Sql file in path '{$sqlFile}' not found");
         }
 
-        $lines = file($sqlFile);
+        $tversion = Shop::DB()->selectSingleRow('tversion', 'nVersion', $targetVersion);
+        $lines    = file($sqlFile);
+
         foreach ($lines as $i => $line) {
             $line = trim($line);
-            if (strpos($line, '--') === 0 || strpos($line, '#') === 0) {
+            if (strpos($line, '--') === 0 || strpos($line, '#') === 0
+                || (int)$tversion->nFehler > 0 && $i < (int)$tversion->nZeileBis) {
                 unset($lines[$i]);
             }
         }
@@ -269,37 +272,34 @@ class Updater
      */
     protected function updateBySqlFile($currentVersion, $targetVersion)
     {
-        $currentLine = 0;
-        $sqls        = $this->getSqlUpdates($currentVersion);
+        $sqls = $this->getSqlUpdates($currentVersion);
 
-        try {
-            Shop::DB()->beginTransaction();
-
-            foreach ($sqls as $i => $sql) {
-                $currentLine = $i;
+        foreach ($sqls as $i => $sql) {
+            $currentLine = $i;
+            try {
+                Shop::DB()->beginTransaction();
                 Shop::DB()->executeQuery($sql, 3);
-            }
-        } catch (\PDOException $e) {
-            $code  = (int)$e->errorInfo[1];
-            $error = Shop::DB()->escape($e->errorInfo[2]);
+            } catch (\PDOException $e) {
+                $code  = (int)$e->errorInfo[1];
+                $error = Shop::DB()->escape($e->errorInfo[2]);
 
-            if (!in_array($code, [1062, 1060, 1267], true)) {
-                Shop::DB()->rollback();
+                if (!in_array($code, [1062, 1060, 1267], true)) {
+                    $errorCountForLine = 1;
+                    $version           = $this->getVersion();
 
-                $errorCountForLine = 1;
-                $version           = $this->getVersion();
+                    if ((int)$version->nZeileBis === $currentLine) {
+                        $errorCountForLine = $version->nFehler + 1;
+                    }
 
-                if ((int)$version->nZeileBis === $currentLine) {
-                    $errorCountForLine = $version->nFehler + 1;
+                    Shop::DB()->executeQuery(
+                        "UPDATE tversion SET
+                        nZeileVon = 1, nZeileBis = {$currentLine}, nFehler = {$errorCountForLine},
+                        nTyp = {$code}, cFehlerSQL = '{$error}', dAktualisiert = now()", 3
+                    );
+
+                    throw new PDOException($e->getMessage()."<br />Datei: '".$this->getSqlUpdatePath($targetVersion)
+                        ."' Zeile: '".($currentLine+1)."'.", $e->getCode(), $e->getPrevious());
                 }
-
-                Shop::DB()->executeQuery(
-                    "UPDATE tversion SET
-                     nZeileVon = 1, nZeileBis = {$currentLine}, nFehler = {$errorCountForLine},
-                     nTyp = {$code}, cFehlerSQL = '{$error}', dAktualisiert = now()", 3
-                );
-
-                throw $e;
             }
         }
 

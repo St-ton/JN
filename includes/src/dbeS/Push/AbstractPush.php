@@ -21,6 +21,8 @@ use ZipArchive;
  */
 abstract class AbstractPush
 {
+    protected const XML_FILE = 'data.xml';
+
     /**
      * @var DbInterface
      */
@@ -88,14 +90,14 @@ abstract class AbstractPush
      */
     public function zipRedirect($zip, $xml): void
     {
-        $xmlfile = \fopen(\PFAD_SYNC_TMP . \FILENAME_XML, 'w');
+        $xmlfile = \fopen(\PFAD_SYNC_TMP . self::XML_FILE, 'w');
         \fwrite($xmlfile, strtr(Text::convertISO(XML::serialize($xml)), "\0", ' '));
         \fclose($xmlfile);
-        if (\file_exists(\PFAD_SYNC_TMP . \FILENAME_XML)) {
+        if (\file_exists(\PFAD_SYNC_TMP . self::XML_FILE)) {
             if (\class_exists('ZipArchive')) {
                 $archive = new ZipArchive();
                 if ($archive->open(\PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
-                    && $archive->addFile(\PFAD_SYNC_TMP . \FILENAME_XML)
+                    && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE)
                 ) {
                     $archive->close();
                     \readfile(\PFAD_SYNC_TMP . $zip);
@@ -105,7 +107,7 @@ abstract class AbstractPush
                 \syncException($archive->getStatusString());
             } else {
                 $archive = new PclZip(\PFAD_SYNC_TMP . $zip);
-                if ($archive->create(\PFAD_SYNC_TMP . \FILENAME_XML, \PCLZIP_OPT_REMOVE_ALL_PATH)) {
+                if ($archive->create(\PFAD_SYNC_TMP . self::XML_FILE, \PCLZIP_OPT_REMOVE_ALL_PATH)) {
                     \readfile(\PFAD_SYNC_TMP . $zip);
                     exit;
                 }

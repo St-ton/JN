@@ -14,6 +14,10 @@ use JTL\DB\ReturnType;
  */
 final class Data extends AbstractPush
 {
+    private const LIMIT_UPLOADQUEUE = 100;
+
+    private const LIMIT_AVAILABILITY_MSGS = 100;
+
     /**
      * @return array|string
      */
@@ -24,7 +28,7 @@ final class Data extends AbstractPush
             "SELECT *
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cAbgeholt = 'N'
-            LIMIT " . \LIMIT_VERFUEGBARKEITSBENACHRICHTIGUNGEN,
+            LIMIT " . self::LIMIT_AVAILABILITY_MSGS,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $count   = \count($current);
@@ -48,7 +52,7 @@ final class Data extends AbstractPush
         $xml['queueddata']['uploadqueue']['tuploadqueue'] = $this->db->query(
             'SELECT *
             FROM tuploadqueue
-            LIMIT ' . \LIMIT_UPLOADQUEUE,
+            LIMIT ' . self::LIMIT_UPLOADQUEUE,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
 

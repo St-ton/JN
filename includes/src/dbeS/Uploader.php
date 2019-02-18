@@ -16,13 +16,6 @@ use JTL\Extensions\UploadDatei;
 class Uploader extends NetSyncHandler
 {
     /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
      * @param int $request
      */
     protected function request($request)

@@ -17,6 +17,8 @@ use JTL\Shop;
  */
 final class Orders extends AbstractPush
 {
+    private const LIMIT_ORDERS = 100;
+
     /**
      * @return array|string
      */
@@ -37,7 +39,7 @@ final class Orders extends AbstractPush
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
             WHERE cAbgeholt = 'N'
             ORDER BY tbestellung.kBestellung
-            LIMIT " . \LIMIT_BESTELLUNGEN,
+            LIMIT " . self::LIMIT_ORDERS,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         if (\count($orders) === 0) {

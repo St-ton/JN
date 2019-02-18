@@ -1561,3 +1561,9 @@ msgstr "Bestellstatus"
 
 msgid "pageUnknown"
 msgstr "Unbekannt"
+
+msgid "exception"
+msgstr "Ausnahme"
+
+msgid "errorDirCreate"
+msgstr "Verzeichnis konnte nicht erstellt werden: "

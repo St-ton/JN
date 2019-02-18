@@ -12,7 +12,7 @@ msgid "documentationHint"
 msgstr "Hier sehen Sie eine Übersicht über alle Versandarten, die aktuell in JTL-Shop zur Verfügung stehen. Wenn Sie auf eines der Bestimmungsländer einer Versandart klicken, können Sie Zuschläge für bestimmte Postleitzahlen hinterlegen (z. B. Inselzuschläge). Außerdem können Sie neue Versandarten anlegen und bestehende bearbeiten. Dokumentation und Beispiele zu diesem Thema finden Sie auf &lt;i class=\"fa fa-external-link\"&gt;</i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.de</a>"
 
 msgid "isleListsHint"
-msgstr ""
+msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z.B. Inselzuschläge) zu definieren. Ein (Zuschlag) deutet darauf hin, dass das Lieferland Zuschlagslisten für die jeweilige Versandart definiert hat."
 
 msgid "activeShippingmethods"
 msgstr "Aktive Versandarten"
@@ -331,3 +331,9 @@ msgstr "Versandbestätigung senden"
 
 msgid "deleteShippingMethod"
 msgstr "Versandart löschen: "
+
+msgid "successDeleteSurchargeList"
+msgstr "Zuschlagsliste erfolgreich gelöscht."
+
+msgid "successDeleteZIP"
+msgstr "PLZ/PLZ-Bereich erfolgreich gelöscht."

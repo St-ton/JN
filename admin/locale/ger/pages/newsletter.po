@@ -69,7 +69,7 @@ msgid "newsletteroverview"
 msgstr "Newsletter-Übersicht"
 
 msgid "newsletteroverviewdesc"
-msgstr ""
+msgstr " "
 
 msgid "newsletterdraftdesc"
 msgstr "Hier erstellen Sie eine Vorlage für Ihren Newsletter, die Sie anschließend testen und für den Versand freigeben können. "
@@ -138,7 +138,7 @@ msgid "newsletterSubscriberList"
 msgstr "Alle Abonnenten"
 
 msgid "newsletterSubscriberListDesc"
-msgstr ""
+msgstr " "
 
 msgid "newslettersubscriberSearch"
 msgstr "Abonnentensuche"
@@ -200,8 +200,11 @@ msgstr "Newsletter-Empfänger wurde erfolgreich hinzugefügt."
 msgid "errorFillEmail"
 msgstr "Bitte füllen Sie das Feld \"E-Mail\" aus."
 
-msgid "successDelete"
-msgstr " wurden erfolgreich gelöscht."
+msgid "successNewsletterQueueDelete"
+msgstr "Die Newsletterqueue %s wurden erfolgreich gelöscht."
+
+msgid "successNewsletterHistoryDelete"
+msgstr "Die Newsletterhistory %s wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter."
@@ -232,3 +235,6 @@ msgstr "Vorhandene Vorlagen"
 
 msgid "newsletterNoAccount"
 msgstr "Newsletter-Empfänger ohne Kundenkonto"
+
+msgid "errorEmailExists"
+msgstr "E-Mail Adresse existiert bereits"

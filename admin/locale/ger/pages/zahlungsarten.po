@@ -118,3 +118,9 @@ msgstr "Für den nächsten JTL-Wawi-Abgleich zur erneuten Abholung vormerken"
 
 msgid "installedPaymentTypes"
 msgstr "Installierte Zahlungsarten"
+
+msgid "successPaymentMethodSave"
+msgstr "Zahlungsart gespeichert."
+
+msgid "errorPaymentMethodNotFound"
+msgstr "Zahlungsart nicht gefunden."

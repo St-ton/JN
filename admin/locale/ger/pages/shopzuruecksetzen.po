@@ -12,7 +12,7 @@ msgid "shopResetDesc"
 msgstr "Hier können Sie aus einzelnen Bereichen Ihres JTL-Shops Daten löschen, die sie individuell verändert haben, und den Werkszustand wiederherstellen. Bitte beachten Sie, dass Ihre persönlichen Daten aus diesen Bereichen komplett entfernt werden und nach dem Löschen nur noch durch ein Backup wiederhergestellt werden können."
 
 msgid "successShopReturn"
-msgstr ""
+msgstr " "
 
 msgid "dangerStrong"
 msgstr "ACHTUNG"

@@ -148,3 +148,15 @@ msgstr "Hauptkategorie"
 
 msgid "deleteComment"
 msgstr "Möchten Sie die Kommentare löschen?"
+
+msgid "successNewsSave"
+msgstr "News erfolgreich gespeichert"
+
+msgid "successNewsCatSave"
+msgstr "Newskategorie erfolgreich eingetragen."
+
+msgid "successNewsCommentDelete"
+msgstr "Ihre markierten Kommentare wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNewsComment"
+msgstr "Fehler: Sie müssen mindestens einen Kommentar markieren."

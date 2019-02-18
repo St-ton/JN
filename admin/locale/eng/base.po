@@ -1561,3 +1561,9 @@ msgstr "Order status"
 
 msgid "pageUnknown"
 msgstr "Unknown"
+
+msgid "exception"
+msgstr "Exception"
+
+msgid "errorDirCreate"
+msgstr "Error: Directory not created."

@@ -80,9 +80,9 @@ class Image extends Portlet
                 'type'       => 'select',
                 'options'    => [
                     '',
-                    'img-rounded' => 'abgerundete Ecken',
-                    'img-circle' => 'Kreis',
-                    'img-thumbnail' => 'mit Rahmen'
+                    'rounded'   => 'abgerundete Ecken',
+                    'circle'    => 'Kreis',
+                    'thumbnail' => 'mit Rahmen'
                 ],
                 'dspl_width' => 50,
             ],

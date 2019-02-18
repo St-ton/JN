@@ -11,7 +11,11 @@ $scc     = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smar
 $scc->registerComponents();
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCurrencyConversionSmarty', [$plugins, 'getCurrencyConversionSmarty'])
+$smarty->registerPlugin(
+            Smarty::PLUGIN_FUNCTION,
+            'getCurrencyConversionSmarty',
+            [$plugins, 'getCurrencyConversionSmarty']
+       )
        ->registerPlugin(
             Smarty::PLUGIN_FUNCTION,
             'getCurrencyConversionTooltipButton',

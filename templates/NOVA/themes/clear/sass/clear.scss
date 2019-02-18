@@ -2124,7 +2124,8 @@ table caption {
             -moz-transition: all 0.3s;
             transition: all 0.3s;
         }
-        &.in {
+        &.in ,
+        &.show {
             .modal-dialog {
                 -webkit-transform: scale(1);
                 -moz-transform: scale(1);

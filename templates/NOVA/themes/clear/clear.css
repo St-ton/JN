@@ -12450,7 +12450,7 @@ table caption {
   -moz-transition: all 0.3s;
   transition: all 0.3s;
 }
-.gllry-container .modal.fade.in .modal-dialog {
+.gllry-container .modal.fade.in .modal-dialog, .gllry-container .modal.fade.show .modal-dialog {
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
   -ms-transform: scale(1);

@@ -14,8 +14,8 @@
                         {block name='breadcrumb-first-item'}
                             {breadcrumbitem class="first"
                                 router-tag-itemprop="url"
-                                href="{$oItem->getURLFull()}"
-                                title="{$oItem->getName()|escape:'html'}"
+                                href=$oItem->getURLFull()
+                                title=$oItem->getName()|escape:'html'
                                 itemprop="itemListElement"
                                 itemscope=true
                                 itemtype="http://schema.org/ListItem"
@@ -30,7 +30,7 @@
                             {breadcrumbitem class="last"
                                 router-tag-itemprop="url"
                                 href="{if $oItem->getHasChild() === true}{$oItem->getURLFull()}{/if}"
-                                title="{$oItem->getName()|escape:'html'}"
+                                title=$oItem->getName()|escape:'html'
                                 itemprop="itemListElement"
                                 itemscope=true
                                 itemtype="http://schema.org/ListItem"
@@ -49,8 +49,8 @@
                     {else}
                         {block name='breadcrumb-item'}
                             {breadcrumbitem router-tag-itemprop="url"
-                                href="{$oItem->getURLFull()}"
-                                title="{$oItem->getName()|escape:'html'}"
+                                href=$oItem->getURLFull()
+                                title=$oItem->getName()|escape:'html'
                                 itemprop="itemListElement"
                                 itemscope=true
                                 itemtype="http://schema.org/ListItem"

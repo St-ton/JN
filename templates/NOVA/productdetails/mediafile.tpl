@@ -37,7 +37,7 @@
                     {* Audio *}
                 {elseif $oMedienDatei->nMedienTyp == 2}
                     {if $oMedienDatei->cName|strlen > 1}
-                        {card title="{$oMedienDatei->cName}" class="mb-3"}
+                        {card title=$oMedienDatei->cName class="mb-3"}
                             {row}
                                 {col cols=12}
                                     {$oMedienDatei->cBeschreibung}
@@ -67,7 +67,7 @@
                     {* Sonstiges *}
                 {elseif $oMedienDatei->nMedienTyp == 4}
 
-                    {card title="{$oMedienDatei->cName}" class="mb-3"}
+                    {card title=$oMedienDatei->cName class="mb-3"}
                         {row}
                             {col md=6}
                                 {$oMedienDatei->cBeschreibung}
@@ -78,11 +78,11 @@
                                 {/if}
                                 {if !empty($oMedienDatei->cPfad)}
                                     <p>
-                                        <a href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">{$oMedienDatei->cName}</a>
+                                        {link href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}{$oMedienDatei->cName}{/link}
                                     </p>
                                 {elseif !empty($oMedienDatei->cURL)}
                                     <p>
-                                        <a href="{$oMedienDatei->cURL}" target="_blank"><i class="fa fa-external-link"></i> {$oMedienDatei->cName}</a>
+                                        {link href=$oMedienDatei->cURL target="_blank"}<i class="fa fa-external-link"></i> {$oMedienDatei->cName}{/link}
                                     </p>
                                 {/if}
                             {/col}
@@ -90,20 +90,24 @@
                     {/card}
                     {* PDF *}
                 {elseif $oMedienDatei->nMedienTyp == 5}
-                    {card title="{$oMedienDatei->cName}" class="mb-3"}
+                    {card title=$oMedienDatei->cName class="mb-3"}
                         {row}
                             {col md=6}
                                 {$oMedienDatei->cBeschreibung}
                             {/col}
                             {col md=6}
                                 {if !empty($oMedienDatei->cPfad)}
-                                    <a href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"><img alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png" /></a>
+                                    {link href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
+                                        {image alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png"}
+                                    {/link}
                                     <br />
-                                    <a href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank">{$oMedienDatei->cName}</a>
+                                    {link href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"}
+                                        {$oMedienDatei->cName}
+                                    {/link}
                                 {elseif !empty($oMedienDatei->cURL)}
-                                    <a href="{$oMedienDatei->cURL}" target="_blank"><img alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png" /></a>
+                                    {link href=$oMedienDatei->cURL target="_blank"}{image alt="PDF" src="{$PFAD_BILDER}intern/file-pdf.png"}{/link}
                                     <br />
-                                    <a href="{$oMedienDatei->cURL}" target="_blank">{$oMedienDatei->cName}</a>
+                                    {link href=$oMedienDatei->cURL target="_blank"}{$oMedienDatei->cName}{/link}
                                 {/if}
                             {/col}
                         {/row}

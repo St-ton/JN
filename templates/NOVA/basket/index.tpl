@@ -47,7 +47,7 @@
                                         {formgroup class="{if !empty($invalidCouponCode)} has-error{/if}"}
                                             {inputgroup}
                                                 {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
-                                                {input class="btn btn-secondary" type="submit" value="{lang key='useCoupon' section='checkout'}"}
+                                                {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
                                             {/inputgroup}
                                         {/formgroup}
                                     {/block}
@@ -83,7 +83,7 @@
                                                                 <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
                                                                 <label for="gift{$oArtikelGeschenk->kArtikel}" class="custom-control-label">
                                                                     {if $selectedFreegift===$oArtikelGeschenk->kArtikel}<div class="text-success text-right"><i class="fa fa-check"></i></div>{/if}
-                                                                    {image src="{$oArtikelGeschenk->Bilder[0]->cURLKlein}" class="image"}
+                                                                    {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" alt=$oArtikelGeschenk->cName}
                                                                     <div class="caption">
                                                                         <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                                                         <p>{$oArtikelGeschenk->cName}</p>
@@ -105,7 +105,7 @@
                     {/if}
                     {row class="mb-7"}
                         {col cols=12 class="proceed text-right"}
-                            {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg float-right mb-3"}{lang key='nextStepCheckout' section='checkout'}{/link}
+                            {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-primary btn-lg float-right mb-3"}{lang key='nextStepCheckout' section='checkout'}{/link}
                         {/col}
                     {/row}
                 {/block}
@@ -127,7 +127,7 @@
                     {/badge}<br/>
                     {lang key='emptybasket' section='checkout'}
                 {/alert}
-                {link href="{$ShopURL}" class="btn btn-primary"}{lang key='continueShopping' section='checkout'}{/link}
+                {link href=$ShopURL class="btn btn-primary"}{lang key='continueShopping' section='checkout'}{/link}
             {/col}
         {/row}
 

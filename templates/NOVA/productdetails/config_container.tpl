@@ -35,7 +35,7 @@
                         {row}
                             {if !empty($cBildPfad)}
                                 {col md=2 class="d-none d-md-block group-image"}
-                                {image src="{$cBildPfad}" alt="{$oSprache->getName()}" id="img{$kKonfiggruppe}" fluid=true }
+                                {image src=$cBildPfad alt=$oSprache->getName() id="img{$kKonfiggruppe}" fluid=true }
                                 {/col}
                             {/if}
                             {col md="{if empty($cBildPfad)}12{else}10{/if}" class="group-items"}
@@ -47,7 +47,7 @@
                                             {else}
                                                 {assign var=bSelectable value=0}
                                             {/if}
-                                            {listgroupitem data-id="{$oItem->getKonfigitem()}" class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
+                                            {listgroupitem data-id=$oItem->getKonfigitem() class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
                                                 {assign var=kKonfigitem value=$oItem->getKonfigitem()}
                                                 {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
                                                 {if !empty($cKurzBeschreibung)}
@@ -61,7 +61,7 @@
                                                 {/if}
 
                                                 {checkbox name="item[{$kKonfiggruppe}][]"
-                                                    value="{$oItem->getKonfigitem()}"
+                                                    value=$oItem->getKonfigitem()
                                                     disabled=empty($bSelectable)
                                                     data=["selected"=>{isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}]
                                                     checked=(!empty($aKonfigerror_arr)
@@ -114,7 +114,7 @@
                                             {else}
                                                 {assign var=bSelectable value=0}
                                             {/if}
-                                            {listgroupitem data-id="{$oItem->getKonfigitem()}" class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
+                                            {listgroupitem data-id=$oItem->getKonfigitem() class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
                                                 {assign var=kKonfigitem value=$oItem->getKonfigitem()}
                                                 {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
                                                 {if !empty($cKurzBeschreibung)}
@@ -127,7 +127,7 @@
                                                     <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                 {/if}
                                                 {radio name="item[{$kKonfiggruppe}][]"
-                                                    value="{$oItem->getKonfigitem()}"
+                                                    value=$oItem->getKonfigitem()
                                                     disabled=empty($bSelectable)
                                                     data=["selected"=>{isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}]
                                                     checked=(!empty($aKonfigerror_arr)
@@ -173,7 +173,7 @@
                                             {/listgroupitem}
                                         {/foreach}
                                     {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
-                                        {listgroupitem data-id="{$oItem->getKonfigitem()}" class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
+                                        {listgroupitem data-id=$oItem->getKonfigitem() class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
                                             {assign var=kKonfigitem value=$oItem->getKonfigitem()}
                                             {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
                                             {if !empty($cKurzBeschreibung)}
@@ -188,7 +188,7 @@
                                             {select name="item[{$kKonfiggruppe}][]"
                                                 multiple=$oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI
                                                 size="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}4{else}1{/if}"
-                                                data=["ref"=>"{$kKonfiggruppe}"]
+                                                data=["ref"=>$kKonfiggruppe]
                                                 required=$oGruppe->getMin() > 0
                                             }
                                                 <option value="">{lang key='pleaseChoose'}</option>
@@ -230,15 +230,15 @@
                                                 {input size="2" type="number"
                                                        id="quantity{$kKonfiggruppe}"
                                                        name="quantity[{$kKonfiggruppe}]"
-                                                       value="{$quantity}" autocomplete="off"
-                                                       min="{$oGruppe->getMin()}" max="{$oGruppe->getMax()}"}
+                                                       value=$quantity autocomplete="off"
+                                                       min=$oGruppe->getMin() max=$oGruppe->getMax()}
                                             </div>
                                         </div>
                                     {else}
                                         <div class="quantity">
                                             {input type="hidden" id="quantity{$kKonfiggruppe}"
                                                    name="quantity[{$kKonfiggruppe}]"
-                                                   value="{$quantity}"}
+                                                   value=$quantity}
                                         </div>
                                     {/if}
                                 {/if}

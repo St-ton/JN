@@ -6,22 +6,22 @@
 {strip}
 {assign var=checkLinkParents value=false}
     {if isset($Link) && $Link->getID() > 0}
-        {assign var='activeId' value=$Link->getID()}
+        {assign var=activeId value=$Link->getID()}
     {elseif Shop::$kLink > 0}
-        {assign var='activeId' value=JTL\Shop::$kLink}
-        {assign var='Link' value=JTL\Shop::Container()->getLinkService()->getLinkByID($activeId)}
+        {assign var=activeId value=JTL\Shop::$kLink}
+        {assign var=Link value=JTL\Shop::Container()->getLinkService()->getLinkByID($activeId)}
     {/if}
     {if !isset($activeParents) && (isset($Link))}
-        {assign var='activeParents' value=JTL\Shop::Container()->getLinkService()->getParentIDs($activeId)}
+        {assign var=activeParents value=JTL\Shop::Container()->getLinkService()->getParentIDs($activeId)}
         {assign var=checkLinkParents value=true}
     {/if}
     {get_navigation linkgroupIdentifier=$linkgroupIdentifier assign='links'}
     {if !empty($links)}
         {foreach $links as $li}
             {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}
-                {navitemdropdown text="{$li->getName()}" data=["tab"=>"lg{$li@iteration}"]}
+                {navitemdropdown text=$li->getName() data=["tab"=>"lg{$li@iteration}"]}
                     {container}
-                        {link href="{$li->getURL()}" title="{$li->getName()}"}
+                        {link href=$li->getURL() title=$li->getName()}
                             {$li->getName()}
                         {/link}
                         <hr class="hr-sm d-none d-md-block">
@@ -31,7 +31,7 @@
                                 {if !empty($subli->getName())}
                                     {dropdownitem tag="div" active=($subli->getIsActive() || ($checkLinkParents === true && isset($activeParents) && in_array($subli->getID(), $activeParents)))}
                                         <div class="title mt-3">
-                                            {link href="{$subli->getURL()}" rel="{if $subli->getNoFollow()}nofollow{/if}"}
+                                            {link href=$subli->getURL() rel="{if $subli->getNoFollow()}nofollow{/if}"}
                                                 {$subli->getName()}
                                             {/link}
                                         </div>
@@ -43,7 +43,7 @@
                     {/container}
                 {/navitemdropdown}
             {else}
-                {navitem href="{$li->getURL()}" nofollow=$li->getNoFollow() data=["tab"=>"lg{$li@iteration}"]}
+                {navitem href=$li->getURL() nofollow=$li->getNoFollow() data=["tab"=>"lg{$li@iteration}"]}
                     {$li->getName()}
                 {/navitem}
             {/if}

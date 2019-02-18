@@ -56,7 +56,7 @@
                                 {/if}
                                 {if $Einstellungen.kontakt.kontakt_abfragen_nachname !== 'N'}
                                     {col cols=12 md=6}
-                                        {assign var='invalidReason' value=null}
+                                        {assign var=invalidReason value=null}
                                         {if isset($fehlendeAngaben.nachname)}
                                             {if $fehlendeAngaben.nachname == 1}
                                                 {lang assign='invalidReason' key='fillOut'}
@@ -79,7 +79,7 @@
                         {/if}
                         {row}
                             {col cols=12 md=6}
-                                {assign var='invalidReason' value=null}
+                                {assign var=invalidReason value=null}
                                 {if isset($fehlendeAngaben.email)}
                                     {if $fehlendeAngaben.email == 1}{lang assign='invalidReason' key='fillOut'}
                                     {elseif $fehlendeAngaben.email == 2}{lang assign='invalidReason' key='invalidEmail'}
@@ -94,14 +94,14 @@
                             {row}
                                 {if $Einstellungen.kontakt.kontakt_abfragen_tel !== 'N'}
                                     {col cols=12 md=6}
-                                        {assign var='invalidReason' value=null}
+                                        {assign var=invalidReason value=null}
                                         {if isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 1}{lang assign='invalidReason' key='fillOut'}{elseif isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 2}{lang assign='invalidReason' key='invalidTel'}{/if}
                                         {include file='snippets/form_group_simple.tpl' options=['tel' , 'tel', 'tel', {$Vorgaben->cTel}, {lang key='tel' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_tel}, {$invalidReason}]}
                                     {/col}
                                 {/if}
                                 {if $Einstellungen.kontakt.kontakt_abfragen_mobil !== 'N'}
                                     {col cols=12 md=6}
-                                        {assign var='invalidReason' value=null}
+                                        {assign var=invalidReason value=null}
                                         {if isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 1}{lang assign='invalidReason' key='fillOut'}{elseif isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 2}{lang assign='invalidReason' key='invalidTel'}{/if}
                                         {include file='snippets/form_group_simple.tpl' options=['tel' , 'mobile', 'mobil', {$Vorgaben->cMobil}, {lang key='mobile' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_mobil}, {$invalidReason}]}
                                     {/col}
@@ -112,7 +112,7 @@
                         {if $Einstellungen.kontakt.kontakt_abfragen_fax !== 'N'}
                             {row}
                                 {col cols=12 md=6}
-                                    {assign var='invalidReason' value=null}
+                                    {assign var=invalidReason value=null}
                                     {if !empty($fehlendeAngaben.fax) && $fehlendeAngaben.fax === 1}{lang assign='invalidReason' key='fillOut'}{elseif isset($fehlendeAngaben.fax) && $fehlendeAngaben.fax === 2}{lang assign='invalidReason' key='invalidTel'}{/if}
                                     {include file='snippets/form_group_simple.tpl' options=['tel' , 'fax', 'fax', {$Vorgaben->cFax}, {lang key='fax' section='account data'}, {$Einstellungen.kontakt.kontakt_abfragen_fax}, {$invalidReason}]}
                                 {/col}

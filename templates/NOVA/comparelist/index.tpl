@@ -19,12 +19,12 @@
                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                         <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
                             <div>
-                                {link href="{$oArtikel->cURLFull}"}
+                                {link href=$oArtikel->cURLFull}
                                     {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
                                 {/link}
                             </div>
                             <p>
-                                {link href="{$oArtikel->cURLFull}"}{$oArtikel->cName}{/link}
+                                {link href=$oArtikel->cURLFull}{$oArtikel->cName}{/link}
                             </p>
 
                             {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
@@ -167,7 +167,7 @@
                     </td>
                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                         <td class="text-center" style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesseattribut}px">
-                            {link href="{$oArtikel->cURLDEL}" class="btn btn-default"}
+                            {link href=$oArtikel->cURLDEL class="btn btn-secondary"}
                                 <span class="fa fa-trash"></span>
                             {/link}
                         </td>
@@ -181,7 +181,7 @@
                         </td>
                         {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                             <td class="text-center" style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
-                                {link class="btn btn-primary" href="{$oArtikel->cURL}"}
+                                {link class="btn btn-primary" href=$oArtikel->cURL}
                                     {lang key='details' section='global'}
                                 {/link}
                             </td>

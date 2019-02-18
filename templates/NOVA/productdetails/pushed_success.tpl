@@ -8,7 +8,7 @@
     {else}
         {assign var=pushedArtikel value=$Artikel}
     {/if}
-    {assign var='showXSellingCart' value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
+    {assign var=showXSellingCart value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
     <div class="h4 alert-heading bg-success text-success mb-3">{$cartNote}</div>
     {row}
         {col cols=12 md="{if $showXSellingCart}6{else}12{/if}" class="text-center mb-3"}
@@ -18,10 +18,10 @@
                     {row}
                         {col cols=4 offset=1}
                             {counter assign=imgcounter print=0}
-                            <img src="{$pushedArtikel->Bilder[0]->cURLNormal}"
+                            {image src=$pushedArtikel->Bilder[0]->cURLNormal
                                  alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:'html'}{else}{$pushedArtikel->cName}{/if}"
                                  id="image{$pushedArtikel->kArtikel}_{$imgcounter}"
-                                 class="image img-fluid mb-3" />
+                                 class="image mb-3" fluid=true}
                         {/col}
                         {col cols=7 class="text-left"}
                             <dl>
@@ -36,7 +36,7 @@
                                                     {else}
                                                         {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
                                                             <span data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:'html'}">
-                                                                <img src="{$oMerkmalWert->cBildURLKlein}" title="{$oMerkmalWert->cWert|escape:'html'}" alt="{$oMerkmalWert->cWert|escape:'html'}" />
+                                                                {image src=$oMerkmalWert->cBildURLKlein title=$oMerkmalWert->cWert|escape:'html' alt=$oMerkmalWert->cWert|escape:'html'}
                                                             </span>
                                                         {else}
                                                             {$oMerkmalWert->cWert|escape:'html'}
@@ -55,7 +55,7 @@
             {/block}
 
             {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-basket"}<i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}{/link}
-            {link href="{$pushedArtikel->cURLFull}" class="btn btn-primary btn-checkout" data=["dismiss"=>"alert"] aria=["label"=>"Close"]}<i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}{/link}
+            {link href=$pushedArtikel->cURLFull class="btn btn-primary" data=["dismiss"=>"alert"] aria=["label"=>"Close"]}<i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}{/link}
 
         {/col}
         {block name='pushed-success-x-sell'}

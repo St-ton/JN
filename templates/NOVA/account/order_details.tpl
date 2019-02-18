@@ -113,12 +113,12 @@
             <tbody>
                 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
                     <tr>
-                        <td>{link class="popup-dep" id="{$oLieferschein->getLieferschein()}" href="#" title="{$oLieferschein->getLieferscheinNr()}"}{$oLieferschein->getLieferscheinNr()}{/link}</td>
+                        <td>{link class="popup-dep" id=$oLieferschein->getLieferschein() href="#" title=$oLieferschein->getLieferscheinNr()}{$oLieferschein->getLieferscheinNr()}{/link}</td>
                         <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
                         <td class="text-right">
                             {foreach $oLieferschein->oVersand_arr as $oVersand}
                                 {if $oVersand->getIdentCode()}
-                                    <p>{link href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}"}{lang key='packageTracking' section='order'}{/link}</p>
+                                    <p>{link href=$oVersand->getLogistikVarUrl() target="_blank" class="shipment" title=$oVersand->getIdentCode()}{lang key='packageTracking' section='order'}{/link}</p>
                                 {/if}
                             {/foreach}
                         </td>
@@ -144,7 +144,7 @@
             {card}
                 {foreach $oLieferschein->oVersand_arr as $oVersand}
                     {if $oVersand->getIdentCode()}
-                        <p>{link href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}"}{lang key='packageTracking' section='order'}{/link}</p>
+                        <p>{link href=$oVersand->getLogistikVarUrl() target="_blank" class="shipment" title=$oVersand->getIdentCode()}{lang key='packageTracking' section='order'}{/link}</p>
                     {/if}
                 {/foreach}
             {/card}
@@ -176,5 +176,5 @@
     <p>{$Bestellung->cKommentar}</p>
 {/if}
 {if !empty($oTrustedShopsBewertenButton->cPicURL)}
-    {link href="{$oTrustedShopsBewertenButton->cURL}" target="_blank"}{image src="{$oTrustedShopsBewertenButton->cPicURL}"}{/link}
+    {link href=$oTrustedShopsBewertenButton->cURL target="_blank"}{image src=$oTrustedShopsBewertenButton->cPicURL}{/link}
 {/if}

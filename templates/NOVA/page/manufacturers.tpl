@@ -7,8 +7,8 @@
     {foreach $oHersteller_arr as $Hersteller}
         {col cols=6 md=4 lg=3}
             {card class="text-center"}
-                {link href="{$Hersteller->cURL}" title="{$Hersteller->cMetaTitle}"}
-                    {image src="{$Hersteller->cBildURLNormal}" alt="{$Hersteller->getName()}"}
+                {link href=$Hersteller->cURL title=$Hersteller->cMetaTitle}
+                    {image src=$Hersteller->cBildURLNormal alt=$Hersteller->getName()}
                     {$Hersteller->getName()}
                 {/link}
             {/card}

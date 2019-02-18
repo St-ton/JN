@@ -2,12 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($fehlendeAngaben.shippingAddress)}
-    {assign var='fehlendeAngabenShipping' value=$fehlendeAngaben.shippingAddress}
-{else}
-    {assign var='fehlendeAngabenShipping' value=null}
-{/if}
-
+{assign var=fehlendeAngabenShipping value=$fehlendeAngaben.shippingAddress|default:null}
 <div class="form-group checkbox control-toggle">
     {input type="hidden" name="shipping_address" value="1"}
     {checkbox id="checkout_register_shipping_address"
@@ -27,7 +22,7 @@
                 {if $adresse->kLieferadresse > 0}
                     {listgroupitem tag="li"}
                         <label class="btn-block" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
-                            {radio name="kLieferadresse" value="{$adresse->kLieferadresse}" id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse)}
+                            {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse)}
                                 <span class="control-label label-default">{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
                                 , {$adresse->cStrasse} {$adresse->cHausnummer}, {$adresse->cPLZ} {$adresse->cOrt}
                                     , {$adresse->angezeigtesLand}</span>

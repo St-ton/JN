@@ -3,10 +3,10 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if empty($cPost_arr)}
-    {assign var='cPost_arr' value=null}
+    {assign var=cPost_arr value=null}
 {/if}
 {if empty($cPost_arr)}
-    {assign var='cPost_arr' value=$smarty.post}
+    {assign var=cPost_arr value=$smarty.post}
 {/if}
 
 {getCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$cPlausi_arr cPost_arr=$cPost_arr assign='checkboxes'}

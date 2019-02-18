@@ -24,10 +24,10 @@
             <tr class="type-{$oPosition->nPosTyp}">
                 <td>
                     {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
-                        <a href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans}">{$oPosition->cName|trans}</a>
+                        {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}
                         <ul class="list-unstyled text-muted small">
                             <li class="sku"><strong>{lang key='productNo' section='global'}:</strong> {$oPosition->Artikel->cArtNr}</li>
-                            {if isset($oPosition->Artikel->dMHD) && isset($oPosition->Artikel->dMHD_de) && $oPosition->Artikel->dMHD_de !== null}
+                            {if isset($oPosition->Artikel->dMHD, $oPosition->Artikel->dMHD_de)}
                                 <li title="{lang key='productMHDTool' section='global'}" class="best-before">
                                     <strong>{lang key='productMHD' section='global'}:</strong> {$oPosition->Artikel->dMHD_de}
                                 </li>

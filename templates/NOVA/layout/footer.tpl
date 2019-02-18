@@ -179,7 +179,7 @@
                                     {/if}"
                             }
                                 {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                    {dropdownitem href="{$oWaehrung->getURL()}" rel="nofollow"}
+                                    {dropdownitem href=$oWaehrung->getURL() rel="nofollow"}
                                         {$oWaehrung->getName()}
                                     {/dropdownitem}
                                 {/foreach}
@@ -221,7 +221,7 @@
                             {/if}
                             {if !$isBrandFree}
                                 {col cols=12 md=3 class="text-right" id="system-credits"}
-                                    Powered by <a href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow">JTL-Shop</a>
+                                    Powered by {link href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                 {/col}
                             {/if}
                         {/row}
@@ -235,15 +235,15 @@
 
 {* JavaScripts *}
 {block name='footer-js'}
-    {*{assign var='isFluidContent' value=isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
+    {*{assign var=isFluidContent value=isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
     {$isFluidContent|@var_dump}
-    {assign var='isFluidContent' value=$Link->getIsFluid()}
+    {assign var=isFluidContent value=$Link->getIsFluid()}
     {$isFluidContent|@var_dump}*}
     {if !$bExclusive && !$isFluidTemplate && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
         {if $Einstellungen.template.theme.background_image === 'custom'}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
+            {assign var=backstretchImgPath value=$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
         {else}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
+            {assign var=backstretchImgPath value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
         {/if}
         <script>
             $(window).on("load", function (e) {
@@ -285,7 +285,7 @@
                 {/if}
             {/if}
 
-            {assign var='customJSPath' value=$currentTemplateDir|cat:'/js/custom.js'}
+            {assign var=customJSPath value=$currentTemplateDir|cat:'/js/custom.js'}
             {if file_exists($customJSPath)}
                 "{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}",
             {/if}

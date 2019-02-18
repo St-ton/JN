@@ -16,7 +16,7 @@
                             <div id="shipment_{$versandart->kVersandart}">
                                 {radio
                                     name="Versandart"
-                                    value="{$versandart->kVersandart}"
+                                    value=$versandart->kVersandart
                                     id="del{$versandart->kVersandart}"
                                     checked=($Versandarten|@count == 1 || $AktiveVersandart == $versandart->kVersandart)
                                     required=($versandart@first)
@@ -27,7 +27,7 @@
                                         <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
                                     </span>
                                     {if $versandart->cBild}
-                                        {image class="img-fluid img-sm" src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}"}
+                                        {image fluid=true class="img-sm" src=$versandart->cBild alt=$versandart->angezeigterName|trans}
                                     {/if}
                                     <span class="content text-muted">
                                         {$versandart->angezeigterHinweistext|trans}
@@ -80,7 +80,7 @@
                                 {col cols=12 id="packaging_{$oVerpackung->kVerpackung}"}
                                     {checkbox
                                         name="kVerpackung[]"
-                                        value="{$oVerpackung->kVerpackung}"
+                                        value=$oVerpackung->kVerpackung
                                         id="pac{$oVerpackung->kVerpackung}"
                                         checked=(isset($oVerpackung->bWarenkorbAktiv) && $oVerpackung->bWarenkorbAktiv === true || (isset($AktiveVerpackung[$oVerpackung->kVerpackung]) && $AktiveVerpackung[$oVerpackung->kVerpackung] === 1))
                                     }
@@ -108,7 +108,7 @@
                 <div class="text-right">
                     {input type="hidden" name="versandartwahl" value="1"}
                     {input type="hidden" name="zahlungsartwahl" value="1"}
-                    {button type="submit" variant="primary" class="submit submit_once d-none"}
+                    {button type="submit" variant="primary" class="submit_once d-none"}
                         {lang key='continueOrder' section='account data'}
                     {/button}
                 </div>

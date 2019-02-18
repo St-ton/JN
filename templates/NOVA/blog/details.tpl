@@ -87,9 +87,9 @@
                         {card}
                             <div class="h4">{lang key='newsCommentAdd' section='news'}</div>
                             {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment"}
-                                {input type="hidden" name="kNews" value="{$oNewsArchiv->getID()}"}
+                                {input type="hidden" name="kNews" value=$oNewsArchiv->getID()}
                                 {input type="hidden" name="kommentar_einfuegen" value="1"}
-                                {input type="hidden" name="n" value="{$oNewsArchiv->getID()}"}
+                                {input type="hidden" name="n" value=$oNewsArchiv->getID()}
 
                                 {formgroup}
                                     {if $Einstellungen.news.news_kommentare_eingeloggt === 'N'}

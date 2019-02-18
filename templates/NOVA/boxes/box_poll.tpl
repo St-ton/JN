@@ -7,7 +7,7 @@
     {nav class="tree" vertical=true}
         {foreach $oBox->getItems() as $oUmfrageItem}
             {navitem}
-                {link href="{$oUmfrageItem->cURLFull}"}
+                {link href=$oUmfrageItem->cURLFull}
                     {$oUmfrageItem->cName}
                 {/link}
             {/navitem}

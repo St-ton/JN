@@ -15,16 +15,16 @@
                                 {strip}
                                     {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                                         {if $oMerkmal->cTyp === 'TEXT' || $oMerkmal->cTyp === 'SELECTBOX' || $oMerkmal->cTyp === ''}
-                                            <span class="value"><a href="{$oMerkmalWert->cURLFull}" class="badge badge-light">{$oMerkmalWert->cWert|escape:'html'}</a> </span>
+                                            <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
                                         {else}
                                             <span class="value">
-                                            <a href="{$oMerkmalWert->cURLFull}" data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:'html'}">
+                                            {link href=$oMerkmalWert->cURLFull data=['toggle'=>'tooltip', 'placement'=>'top'] title=$oMerkmalWert->cWert|escape:'html'}
                                                 {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                                    <img src="{$oMerkmalWert->cBildURLKlein}" title="{$oMerkmalWert->cWert|escape:'html'}" alt="{$oMerkmalWert->cWert|escape:'html'}" />
+                                                    {image src=$oMerkmalWert->cBildURLKlein title=$oMerkmalWert->cWert|escape:'html' alt=$oMerkmalWert->cWert|escape:'html'}
                                                 {else}
-                                                    <span class="value"><a href="{$oMerkmalWert->cURLFull}" class="badge badge-light">{$oMerkmalWert->cWert|escape:'html'}</a> </span>
+                                                    <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
                                                 {/if}
-                                            </a>
+                                            {/link}
                                         </span>
                                         {/if}
                                     {/foreach}

@@ -7,9 +7,11 @@
         {include file=$Zahlungsart->cZusatzschrittTemplate}
         {input type="hidden" name="zahlungsartwahl" value="1"}
         {input type="hidden" name="zahlungsartzusatzschritt" value="1"}
-        {input type="hidden" name="Zahlungsart" value="{$Zahlungsart->kZahlungsart}"}
+        {input type="hidden" name="Zahlungsart" value=$Zahlungsart->kZahlungsart}
     </div>
     <div class="text-right">
-        {input type="submit" value="{lang key='continueOrder' section='account data'}" class="submit btn btn-lg submit_once btn-primary"}
+        {button type="submit" value="1" variant="primary" size="lg" class="submit_once"}
+            {lang key='continueOrder' section='account data'}
+        {/button}
     </div>
 {/form}

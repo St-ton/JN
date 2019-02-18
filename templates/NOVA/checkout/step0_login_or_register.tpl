@@ -12,9 +12,9 @@
     {alert variant="danger"}{lang key='formToFast' section='account data'}{/alert}
 {/if}
 {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}
-    {assign var='withSidebar' value=1}
+    {assign var=withSidebar value=1}
 {else}
-    {assign var='withSidebar' value=0}
+    {assign var=withSidebar value=0}
 {/if}
 {row id="register-customer"}
     {col cols=12 id="existing-customer" md="{if $withSidebar === 0}4{else}12{/if}"}
@@ -44,7 +44,7 @@
                 {input type="hidden" name="checkout" value="1"}
                 {input type="hidden" name="form" value="1"}
                 {input type="hidden" name="editRechnungsadresse" value="0"}
-                {button type="submit" variant="primary" class="btn submit submit_once"}
+                {button type="submit" variant="primary" class="submit_once"}
                     {lang key='sendCustomerData' section='account data'}
                 {/button}
             </div>

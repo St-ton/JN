@@ -15,8 +15,8 @@
     {/if}
     {buttongroup class="mb-2 w-100"}
         {form method="post" action="admin/onpage-composer.php" class="w-100" addtoken=false}
-            {input type="hidden" name="jtl_token" value="{$adminSessionToken}"}
-            {input type="hidden" name="pageKey" value="{$draftKey}"}
+            {input type="hidden" name="jtl_token" value=$adminSessionToken}
+            {input type="hidden" name="pageKey" value=$draftKey}
             {button size="sm"
                 variant="danger"
                 class="opc-draft-item-discard float-right"
@@ -132,9 +132,9 @@
                 {/if}
 
                 {form method="post" action="admin/onpage-composer.php" addtoken=false}
-                    {input type="hidden" name="jtl_token" value="{$adminSessionToken}"}
-                    {input type="hidden" name="pageId" value="{$curPage->getId()}"}
-                    {input type="hidden" name="pageUrl" value="{$curPage->getUrl()}"}
+                    {input type="hidden" name="jtl_token" value=$adminSessionToken}
+                    {input type="hidden" name="pageId" value=$curPage->getId()}
+                    {input type="hidden" name="pageUrl" value=$curPage->getUrl()}
                     <div class="btn-group">
                         {button type="submit" name="action" value="extend" variant="primary"}
                             <i class="fas fa-plus-circle"></i>
@@ -148,9 +148,9 @@
                 {/form}
                 {if $otherLangDrafts|count > 0}
                     {form method="post" action="admin/onpage-composer.php"}
-                        {input type="hidden" name="jtl_token" value="{$adminSessionToken}"}
-                        {input type="hidden" name="pageId" value="{$curPage->getId()}"}
-                        {input type="hidden" name="pageUrl" value="{$curPage->getUrl()}"}
+                        {input type="hidden" name="jtl_token" value=$adminSessionToken}
+                        {input type="hidden" name="pageId" value=$curPage->getId()}
+                        {input type="hidden" name="pageUrl" value=$curPage->getUrl()}
                         {input type="hidden" name="action" value="adopt"}
                         <div class="btn-group">
                             {button variant="primary" class="dropdown-toggle" data=['toggle' => 'dropdown']
@@ -161,7 +161,7 @@
                             <ul class="dropdown-menu">
                                 {foreach $otherLangDrafts as $draft}
                                     <li>
-                                        {button type="submit" name="adoptFromKey" value="{$draft->kPage}" variant='link'}
+                                        {button type="submit" name="adoptFromKey" value=$draft->kPage variant='link'}
                                             <b>{$draft->cNameEnglisch}</b> : {$draft->cName}
                                         {/button}
                                     </li>

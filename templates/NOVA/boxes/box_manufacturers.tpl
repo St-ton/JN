@@ -7,7 +7,7 @@
     {if $oBox->getManufacturers()|@count > 8}
         {dropdown class="w-100" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}
             {foreach $oBox->getManufacturers() as $hst}
-               {dropdownitem href="{$hst->cSeo}"}
+               {dropdownitem href=$hst->cSeo}
                     {$hst->cName|escape:'html'}
                 {/dropdownitem}
             {/foreach}
@@ -16,7 +16,7 @@
         {nav vertical=true}
             {foreach $oBox->getManufacturers() as $hst}
                 {navitem}
-                    {link href="{$hst->cSeo}" title="{$hst->cName|escape:'html'}"}
+                    {link href=$hst->cSeo title=$hst->cName|escape:'html'}
                         {$hst->cName|escape:'html'}
                     {/link}
                 {/navitem}

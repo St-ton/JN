@@ -19,7 +19,7 @@
                 <div class="alert alert-info">{lang key='shareYourRatingGuidelines' section='product rating'}.</div>
                 <div class="vmiddle">
                     {if !empty($Artikel->Bilder[0]->cPfadMini)}
-                        <img alt="{$Artikel->cName}" src="{$Artikel->Bilder[0]->cURLMini}" class="image vmiddle" />
+                        {image alt=$Artikel->cName src=$Artikel->Bilder[0]->cURLMini class="image vmiddle"}
                     {/if}
                     <span class="vmiddle">{$Artikel->cName}</span>
                 </div>
@@ -41,15 +41,15 @@
                 {/formgroup}
                 {formgroup}
                     <label for="headline">{lang key='headline' section='product rating'}</label>
-                    {input type="text" name="cTitel" value="{$oBewertung->cTitel|default:''}" id="headline" required=true}
+                    {input type="text" name="cTitel" value=$oBewertung->cTitel|default:'' id="headline" required=true}
                 {/formgroup}
                 {formgroup}
                     <label for="comment">{lang key='comment' section='product rating'}</label>
                     {textarea name="cText" cols="80" rows="8" id="comment" required=true}{$oBewertung->cText|default:""}{/textarea}
                 {/formgroup}
                 {input type="hidden" name="bfh" value="1"}
-                {input type="hidden" name="a" value="{$Artikel->kArtikel}"}
-                {button type="submit" value="1" class="submit" variant="primary"}{lang key='submitRating' section='product rating'}{/button}
+                {input type="hidden" name="a" value=$Artikel->kArtikel}
+                {button type="submit" value="1" variant="primary"}{lang key='submitRating' section='product rating'}{/button}
             {/if}
         {/form}
     </div>

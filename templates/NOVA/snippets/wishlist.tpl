@@ -21,7 +21,7 @@
                         {block name='wishlist-email-form-body'}
                             {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
                                 {input type="hidden" name="wlvm" value="1"}
-                                {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
+                                {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {input type="hidden" name="send" value="1"}
                                 {formgroup
                                     label-for="wishlist-email"
@@ -52,12 +52,12 @@
                     class="form-inline"
                 }
                     {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
-                        {input type="hidden" name="wlid" value="{$cURLID}"}
+                        {input type="hidden" name="wlid" value=cURLID}
                     {else}
-                        {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
+                        {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                     {/if}
                     {inputgroup}
-                        {input name="cSuche" size="35" type="text" value="{$wlsearch}" placeholder="{lang key='wishlistSearch' section='login'}"}
+                        {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}"}
                         {inputgroupaddon append=true}
                             {button name="action" value="search" type="submit"}
                                 <i class="fa fa-search"></i> {lang key='wishlistSearchBTN' section='login'}
@@ -82,10 +82,10 @@
         }
             {block name='wishlist'}
                 {input type="hidden" name="wla" value="1"}
-                {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
+                {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                 {if !empty($wlsearch)}
                     {input type="hidden" name="wlsearch" value="1"}
-                    {input type="hidden" name="cSuche" value="{$wlsearch}"}
+                    {input type="hidden" name="cSuche" value=$wlsearch}
                 {/if}
                 {if !empty($CWunschliste->CWunschlistePos_arr)}
                     {if $isCurrenctCustomer === true}
@@ -96,7 +96,7 @@
                                         {lang key='name' section='global'}
                                     {/inputgrouptext}
                                 {/inputgroupaddon}
-                                {input id="wishlist-name" type="text"placeholder="name" name="wishlistName" value="{$CWunschliste->cName}"}
+                                {input id="wishlist-name" type="text" placeholder="name" name="wishlistName" value=$CWunschliste->cName}
                             {/inputgroup}
                         </div>
                     {/if}
@@ -114,12 +114,12 @@
                         {foreach $CWunschliste->CWunschlistePos_arr as $wlPosition}
                             <tr>
                                 <td class="img-col d-none d-sm-table-cell">
-                                    {link href="{$wlPosition->Artikel->cURLFull}"}
-                                        {image alt="{$wlPosition->Artikel->cName}" src="{$wlPosition->Artikel->cVorschaubildURL}" fluid=true}
+                                    {link href=$wlPosition->Artikel->cURLFull}
+                                        {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->cVorschaubildURL fluid=true}
                                     {/link}
                                 </td>
                                 <td>
-                                    {link href="{$wlPosition->Artikel->cURL}"}{$wlPosition->cArtikelName}{/link}
+                                    {link href=$wlPosition->Artikel->cURL}{$wlPosition->cArtikelName}{/link}
                                     {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                                         <p>{lang key='productOutOfStock' section='productDetails'}</p>
                                     {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
@@ -169,14 +169,14 @@
                                     <td class="text-right">
                                         {buttongroup vertical=true}
                                             {if $wlPosition->Artikel->bHasKonfig}
-                                                {link href="{$wlPosition->Artikel->cURLFull}" class="btn btn-primary"
+                                                {link href=$wlPosition->Artikel->cURLFull class="btn btn-primary"
                                                    title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
                                                     <span class="fa fa-cogs"></span>
                                                 {/link}
                                             {else}
                                                 {button
                                                     name="addToCart"
-                                                    value="{$wlPosition->kWunschlistePos}"
+                                                    value=$wlPosition->kWunschlistePos
                                                     variant="primary"
                                                     title="{lang key='wishlistaddToCart' section='login'}"
                                                 }
@@ -185,7 +185,7 @@
                                             {/if}
                                             {if $isCurrenctCustomer === true}
                                                 {button
-                                                    name="remove" value="{$wlPosition->kWunschlistePos}"
+                                                    name="remove" value=$wlPosition->kWunschlistePos
                                                     title="{lang key='wishlistremoveItem' section='login'}"
                                                 }
                                                     <span class="fa fa-trash"></span>
@@ -230,7 +230,7 @@
                 {block name='wishlist-body'}
                     {if $CWunschliste->nOeffentlich == 1}
                         {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                            {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
+                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                             {inputgroup}
                                 {input
                                     type="text"
@@ -286,8 +286,8 @@
                                             <td>{if $Wunschliste->nStandard == 1}{lang key='active' section='global'}{/if} {if $Wunschliste->nStandard == 0}{lang key='inactive' section='global'}{/if}</td>
                                             <td class="text-right">
                                                 {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                                                    {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
-                                                    {input type="hidden" name="kWunschlisteTarget" value="{$Wunschliste->kWunschliste}"}
+                                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                                    {input type="hidden" name="kWunschlisteTarget" value=$Wunschliste->kWunschliste}
                                                     {buttongroup size="sm"}
                                                         {if $Wunschliste->nStandard != 1}
                                                             {button name="action" value="setAsDefault"}
@@ -325,11 +325,11 @@
                                 </table>
                             {/if}
                             {form method="post" action="{get_static_route id='wunschliste.php'}" class="form-inline"}
-                                {input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"}
+                                {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {inputgroup}
-                                    {input name="cWunschlisteName" type="text" class="input-sm" placeholder="{lang key='wishlistAddNew' section='login'}" size="25"}
+                                    {input name="cWunschlisteName" type="text" class="input-sm" placeholder="{lang key='wishlistAddNew' section='login'}" size="35"}
                                     {inputgroupaddon append=true}
-                                        {button type="submit" variant="default" size="sm" name="action" value="createNew"}
+                                        {button type="submit" size="sm" name="action" value="createNew"}
                                             <i class="fa fa-save"></i> {lang key='wishlistSaveNew' section='login'}
                                         {/button}
                                     {/inputgroupaddon}

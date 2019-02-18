@@ -12,11 +12,11 @@
 
 {include file='snippets/opc_mount_point.tpl' id='opc_article_content_prepend'}
 
-{form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate"}
+{form id="buy_form" action=$Artikel->cURLFull class="evo-validate"}
     {row id="product-offer"}
         {col cols=12 md=6 class="product-gallery"}
             {include file='productdetails/image.tpl'}
-            {*<img src="{$Artikel->Bilder[0]->cURLNormal}" class="img-fluid mx-auto d-block" alt="Responsive image">*}
+            {*{image src=$Artikel->Bilder[0]->cURLNormal fluid=true class="mx-auto d-block" alt="Responsive image"}*}
             {if $Artikel->bHasKonfig}
                 {block name='productdetails-config-summary'}
                     {include file='productdetails/config_sidebar.tpl'}
@@ -44,9 +44,9 @@
                                     <meta itemprop="bestRating" content="5"/>
                                     <meta itemprop="worstRating" content="1"/>
                                     <meta itemprop="reviewCount" content="{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}"/>
-                                    <a href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab" class="hidden-print">
+                                    {link href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab" class="d-print-none"}
                                         {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
-                                    </a>
+                                    {/link}
                                 {*</div>*}
                                 {/col}
                                 {* /rating-wrapper*}
@@ -88,7 +88,7 @@
                                         {col cols=12 class="small" itemprop="brand" itemscope=true itemtype="http://schema.org/Organization"}
                                             <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                                                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
-                                                    {image src="{$Artikel->cHerstellerBildURLKlein}" alt="{$Artikel->cHersteller}" class="img-sm"}
+                                                    {image src=$Artikel->cHerstellerBildURLKlein alt=$Artikel->cHersteller class="img-sm"}
                                                     <meta itemprop="image" content="{$Artikel->cHerstellerBildURLKlein}">
                                                 {/if}
                                                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
@@ -138,19 +138,19 @@
                         {/if}
                         {input type="hidden" name="inWarenkorb" value="1"}
                         {if $Artikel->kArtikelVariKombi > 0}
-                            {input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}"}
+                            {input type="hidden" name="aK" value=$Artikel->kArtikelVariKombi}
                         {/if}
                         {if isset($Artikel->kVariKindArtikel)}
-                            {input type="hidden" name="VariKindArtikel" value="{$Artikel->kVariKindArtikel}"}
+                            {input type="hidden" name="VariKindArtikel" value=$Artikel->kVariKindArtikel}
                         {/if}
                         {if isset($smarty.get.ek)}
-                            {input type="hidden" name="ek" value="{$smarty.get.ek|intval}"}
+                            {input type="hidden" name="ek" value=$smarty.get.ek|intval}
                         {/if}
-                        {input type="hidden" name="AktuellerkArtikel" class="current_article" name="a" value="{$Artikel->kArtikel}"}
+                        {input type="hidden" name="AktuellerkArtikel" class="current_article" name="a" value=$Artikel->kArtikel}
                         {input type="hidden" name="wke" value="1"}
                         {input type="hidden" name="show" value="1"}
-                        {input type="hidden" name="kKundengruppe" value="{$smarty.session.Kundengruppe->getID()}"}
-                        {input type="hidden" name="kSprache" value="{$smarty.session.kSprache}"}
+                        {input type="hidden" name="kKundengruppe" value=$smarty.session.Kundengruppe->getID()}
+                        {input type="hidden" name="kSprache" value=$smarty.session.kSprache}
                     {/block}
                     {block name='productdetails-info-variation'}
                         <!-- VARIATIONEN -->

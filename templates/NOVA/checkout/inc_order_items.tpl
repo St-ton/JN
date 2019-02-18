@@ -36,8 +36,8 @@
         {row class="type-{$oPosition->nPosTyp}"}
             {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && !empty($oPosition->Artikel->cVorschaubild)}
                 {col cols=2 class="d-none d-sm-block text-center vcenter"}
-                    {link href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans}"}
-                        {image src="{$oPosition->Artikel->cVorschaubild}" alt="{$oPosition->cName|trans}" class="img-fluid"}
+                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
+                        {image src=$oPosition->Artikel->cVorschaubild alt=$oPosition->cName|trans fluid=true}
                     {/link}
                 {/col}
             {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
@@ -45,7 +45,7 @@
             {/if}
             {col cols=$headcols sm=$headsm}
                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                    <p>{link href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans}"}{$oPosition->cName|trans}{/link}</p>
+                    <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                     {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                             {if !$oPosition->istKonfigVater()}
@@ -211,7 +211,7 @@
                                             label-for="quantity{$oPosition@index}"
                                         }
                                             {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
-                                                {input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="quantity text-right" size="3" value="{$oPosition->nAnzahl}"}
+                                                {input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="quantity text-right" size="3" value=$oPosition->nAnzahl}
                                                 {inputgroupaddon append=true}
                                                     {button type="submit" title="{lang key='refresh' section='checkout'}"}<i class="fa fa-sync"></i>{/button}
                                                 {/inputgroupaddon}
@@ -222,11 +222,11 @@
                                     {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
                                         {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                             min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
-                                            required="{$oPosition->Artikel->fAbnahmeintervall > 0}"
+                                            required=($oPosition->Artikel->fAbnahmeintervall > 0)
                                             step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
                                             id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
                                             aria=["label"=>"{lang key='quantity'}"]
-                                            value="{$oPosition->nAnzahl}"
+                                            value=$oPosition->nAnzahl
                                             data=["decimals"=>"{if $oPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
                                         }
                                         {inputgroupaddon append=true}
@@ -243,7 +243,7 @@
                             {if $oPosition->istKonfigVater()}
                                 <div class="qty-wrapper">
                                     {buttongroup vertical=true id="quantity-grp{$oPosition@index}"}
-                                        {input name="anzahl[{$oPosition@index}]" type="text" class="text-center" value="{$oPosition->nAnzahl}" readonly=true}
+                                        {input name="anzahl[{$oPosition@index}]" type="text" class="text-center" value=$oPosition->nAnzahl readonly=true}
                                         {link class="btn btn-light configurepos ml-3"
                                             href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
                                             <span class="d-none d-sm-block d-md-none"><i class="fa fa-cogs"></i></span>
@@ -254,7 +254,7 @@
                             {else}
                                 <div class="p-3">
                                     {buttongroup vertical=true id="quantity-grp{$oPosition@index}"}
-                                        {input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="quantity text-right" size="3" value="{$oPosition->nAnzahl}"}
+                                        {input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="quantity text-right" size="3" value=$oPosition->nAnzahl}
                                         {if $oPosition->Artikel->cEinheit}
                                             {button class="unit d-none d-sm-block " disabled=true}{$oPosition->Artikel->cEinheit}{/button}
                                         {/if}
@@ -285,7 +285,7 @@
             {if $tplscope === 'cart'}
                 {col cols=2 class="delitem-col text-right"}
                 {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                    {button type="submit" variant="light" size="sm" class="droppos" name="dropPos" value="{$oPosition@index}" title="{lang key='delete'}"}<span class="fa fa-trash"></span>{/button}
+                    {button type="submit" variant="light" size="sm" class="droppos" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}<span class="fa fa-trash"></span>{/button}
                 {/if}
                 {/col}
             {/if}

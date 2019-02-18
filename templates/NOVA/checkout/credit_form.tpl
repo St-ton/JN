@@ -15,7 +15,7 @@
                     {/alert}
                     {input type="hidden" name="guthabenVerrechnen" value="1"}
                     {input type="hidden" name="guthaben" value="1"}
-                    {input type="submit" value="{lang key='useCredits' section='checkout'}" class="submit btn btn-secondary btn-block"}
+                    {button type="submit" value="1" block=true}{lang key='useCredits' section='checkout'}{/button}
                 {/col}
             {/row}
         </fieldset>

@@ -7,7 +7,7 @@
     {row}
         {col cols=12 class="mb-3"}
             {if !empty($oNewsUebersicht->getPreviewImage())}
-                {link href="{$oNewsUebersicht->getURL()}" title="{$oNewsUebersicht->getTitle()|escape:'quotes'}"}
+                {link href=$oNewsUebersicht->getURL() title=$oNewsUebersicht->getTitle()|escape:'quotes'}
                     <div class="nws-preview">
                         {image src="{$imageBaseURL}{$oNewsUebersicht->getPreviewImage()}"
                             alt="{$oNewsUebersicht->getTitle()|escape:'quotes'} - {$oNewsUebersicht->getMetaTitle()|escape:'quotes'}"
@@ -18,7 +18,7 @@
             {/if}
         {/col}
         {col cols=6}
-        {assign var='dDate' value=$oNewsUebersicht->getDateValidFrom()->format('Y-m-d')}
+        {assign var=dDate value=$oNewsUebersicht->getDateValidFrom()->format('Y-m-d')}
         {if $oNewsUebersicht->getAuthor() !== null}
             <div class="d-none d-sm-inline-block align-middle">{include file='snippets/author.tpl' oAuthor=$oNewsUebersicht->getAuthor()}</div>
         {else}
@@ -48,7 +48,7 @@
         {/col}
         {col cols=12 class="mb-4"}
 
-            {link itemprop="url" href="{$oNewsUebersicht->getURL()}" class="d-flex my-3 no-deco"}
+            {link itemprop="url" href=$oNewsUebersicht->getURL() class="d-flex my-3 no-deco"}
                 <strong><span itemprop="headline">{$oNewsUebersicht->getTitle()}</span></strong>
             {/link}
 
@@ -59,7 +59,7 @@
                     {$oNewsUebersicht->getContent()|strip_tags|truncate:200:''}
                 {/if}
                 <div class="mt-2">
-                    {link class="news-more-link" href="{$oNewsUebersicht->getURL()}"}{lang key='moreLink' section='news'} <i class="fas fa-long-arrow-alt-right"></i>{/link}
+                    {link class="news-more-link" href=$oNewsUebersicht->getURL()}{lang key='moreLink' section='news'} <i class="fas fa-long-arrow-alt-right"></i>{/link}
                 </div>
             </div>
         {/col}

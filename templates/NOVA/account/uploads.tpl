@@ -31,8 +31,8 @@
                         </td>
                         <td class="text-center">
                             {form method="post" action="{get_static_route id='jtl.php'}"}
-                                {input name="kUpload" type="hidden" value="{$oUpload->kUpload}"}
-                                {button assign="xs" name="{$oUpload->cName}"}<i class="fa fa-download"></i>{/button}
+                                {input name="kUpload" type="hidden" value=$oUpload->kUpload}
+                                {button size="sm" name=$oUpload->cName}<i class="fa fa-download"></i>{/button}
                             {/form}
                         </td>
                     </tr>

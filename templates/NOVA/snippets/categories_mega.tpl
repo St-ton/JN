@@ -10,9 +10,9 @@
     && ($Einstellungen.global.global_sichtbarkeit != 3
         || isset($smarty.session.Kunde->kKunde)
         && $smarty.session.Kunde->kKunde != 0)}
-    {assign var='show_subcategories' value=false}
+    {assign var=show_subcategories value=false}
     {if $Einstellungen.template.megamenu.show_subcategories !== 'N'}
-        {assign var='show_subcategories' value=true}
+        {assign var=show_subcategories value=true}
     {/if}
 
     {get_category_array categoryId=0 assign='categories'}
@@ -21,7 +21,7 @@
             {if $NaviFilter->hasCategory()}
                 {$activeId = $NaviFilter->getCategory()->getValue()}
             {elseif $nSeitenTyp == 1 && isset($Artikel)}
-                {assign var='activeId' value=$Artikel->gibKategorie()}
+                {assign var=activeId value=$Artikel->gibKategorie()}
             {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}
                 {$activeId = $smarty.session.LetzteKategorie}
             {else}
@@ -32,13 +32,13 @@
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
         {foreach $categories as $category}
-            {assign var='isDropdown' value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
+            {assign var=isDropdown value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
             {if $isDropdown}
-                {navitemdropdown text="{$category->cKurzbezeichnung}"
-                    data=["tab"=>"{$category@iteration}"]
+                {navitemdropdown text=$category->cKurzbezeichnung
+                    data=["tab"=>$category@iteration]
                     class="{if $category@first} pl-0 pr-2{else}px-2{/if}{if $category->kKategorie == $activeId} active{/if}"}
                     {container class="pt-2"}
-                        {link href="{$category->cURLFull}" title="{$category->cSeo}" class="title"}
+                        {link href=$category->cURLFull title=$category->cSeo class="title"}
                             {$category->cName}
                         {/link}
                         <hr class="my-2 d-none d-md-block">
@@ -64,15 +64,15 @@
                                                     <div class="category-wrapper">
                                                         {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                             <div class="d-none d-md-block">
-                                                                {link href="{$sub->cURLFull}" title="{$sub->cSeo}"}
+                                                                {link href=$sub->cURLFull title=$sub->cSeo}
                                                                     {image fluid-grow=true lazy=true src="{$imageBaseURL}gfx/trans.png"
-                                                                        alt="{$category->cKurzbezeichnung|escape:'html'}"
-                                                                        data=["src"=>"{$sub->cBildURLFull}"]}
+                                                                        alt=$category->cKurzbezeichnung|escape:'html'
+                                                                        data=["src" => $sub->cBildURLFull]}
                                                                 {/link}
                                                             </div>
                                                         {/if}
                                                             <div class="title pt-2">
-                                                                {link href="{$sub->cURLFull}" title="{$sub->cSeo}"}
+                                                                {link href=$sub->cURLFull title=$sub->cSeo}
                                                                     {$sub->cKurzbezeichnung}
                                                                 {/link}
                                                             </div>
@@ -87,13 +87,13 @@
                                                                 {foreach $subsub_categories as $subsub}
                                                                     {if $subsub@iteration <= $max_subsub_items}
                                                                         <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>
-                                                                            {link href="{$subsub->cURLFull}" title="{$subsub->cSeo}"}
+                                                                            {link href=$subsub->cURLFull title=$subsub->cSeo}
                                                                                 {$subsub->cKurzbezeichnung}
                                                                             {/link}
                                                                         </li>
                                                                     {else}
                                                                         <li class="more">
-                                                                            {link href="{$sub->cURLFull}" title="{$sub->cSeo}"}
+                                                                            {link href=$sub->cURLFull title=$sub->cSeo}
                                                                                 <i class="fa fa-chevron-circle-right"></i> {lang key='more'} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span>
                                                                             {/link}
                                                                         </li>
@@ -114,12 +114,12 @@
                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'
                                         && $category->cBildURL !== 'gfx/keinBild.gif'
                                     }
-                                        {link href="{$category->cURLFull}" title="{$category->cSeo}"}
-                                            {image class="lazy loading"
+                                        {link href=$category->cURLFull title=$category->cSeo}
+                                            {image lazy=true
                                                 fluid=true
-                                                data=["src"=>"{$category->cBildURLFull}"]
+                                                data=["src"=> $category->cBildURLFull]
                                                 src="{$imageBaseURL}gfx/trans.png"
-                                                alt="{$category->cKurzbezeichnung|escape:'html'}"}
+                                                alt=$category->cKurzbezeichnung|escape:'html'}
                                         {/link}
                                         <div class="mt-3"></div>
                                     {/if}
@@ -130,8 +130,8 @@
                     {/container}
                 {/navitemdropdown}
             {else}
-                {navitem href="{$category->cURLFull}" title="{$category->cSeo}"
-                    data=["tab"=>"{$category@iteration}"] class="{if $category->kKategorie == $activeId}active{/if}"}
+                {navitem href=$category->cURLFull title=$category->cSeo
+                    data=["tab"=>$category@iteration] class="{if $category->kKategorie == $activeId}active{/if}"}
                     {$category->cKurzbezeichnung}
                 {/navitem}
             {/if}
@@ -153,13 +153,13 @@
         && $smarty.session.Kunde->kKunde != 0)}
     {get_manufacturers assign='manufacturers'}
     {if !empty($manufacturers)}
-        {assign var='linkKeyHersteller' value=JTL\Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
-        {assign var='linkSEOHersteller' value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
+        {assign var=linkKeyHersteller value=JTL\Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
+        {assign var=linkSEOHersteller value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
         {navitemdropdown text="{if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}" data=["tab"=>"manufacturer"]}
             {container}
                 <div class="manufacturer">
                     {if isset($linkSEOHersteller)}
-                        {link href="{$linkSEOHersteller->getURL()}" title="{$linkSEOHersteller->getName()}"}
+                        {link href=$linkSEOHersteller->getURL() title=$linkSEOHersteller->getName()}
                             {$linkSEOHersteller->getName()}
                         {/link}
                     {else}
@@ -174,14 +174,14 @@
                                 <div class="category-wrapper manufacturer mt-3">
                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                         <div class="d-none d-md-block">
-                                            {link href="{$hst->cURLFull}" title="{$hst->cSeo}"}
-                                                {image class="lazy loading" data=["src"=>"{$hst->cBildURLNormal}"]
-                                                     src="{$imageBaseURL}gfx/trans.png" alt="{$hst->cName|escape:'html'}"}
+                                            {link href=$hst->cURLFull title=$hst->cSeo}
+                                                {image lazy=true data=["src" => $hst->cBildURLNormal]
+                                                     src="{$imageBaseURL}gfx/trans.png" alt=$hst->cName|escape:'html'}
                                             {/link}
                                         </div>
                                     {/if}
                                     <div class="title">
-                                        {link href="{$hst->cURLFull}" title="{$hst->cSeo}"}
+                                        {link href=$hst->cURLFull title=$hst->cSeo}
                                             {$hst->cName}
                                         {/link}
                                     </div>

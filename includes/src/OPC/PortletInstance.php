@@ -359,14 +359,6 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return array
-     */
-    public function getData(): array
-    {
-        return $this->jsonSerializeShort();
-    }
-
-    /**
      * @return string
      */
     public function getDataAttributeString(): string
@@ -383,11 +375,11 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getDataArray(): string
+    public function getData(): array
     {
-        return \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES);
+        return $this->jsonSerializeShort();
     }
 
     /**

@@ -17,14 +17,22 @@ trait PortletHtml
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    abstract public function getPreviewHtml(PortletInstance $instance): string;
+    public function getPreviewHtml(PortletInstance $instance): string
+    {
+        return $this->getPreviewHtmlFromTpl($instance);
+    }
 
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    abstract public function getFinalHtml(PortletInstance $instance): string;
+    public function getFinalHtml(PortletInstance $instance): string
+    {
+        return $this->getFinalHtmlFromTpl($instance);
+    }
 
     /**
      * @param PortletInstance $instance

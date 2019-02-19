@@ -232,7 +232,13 @@ class DB
         if ($isInstalled && $isActive) {
             /** @var Portlet $portlet */
             $fullClass = "\\JTL\\OPC\\Portlets\\$class";
-            $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
+
+            if (\class_exists($fullClass)) {
+                $portlet = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
+            } else {
+                $portlet = new Portlet($class, $portletDB->kPortlet, $portletDB->kPlugin);
+            }
+
             return $portlet
                 ->setTitle($portletDB->cTitle)
                 ->setGroup($portletDB->cGroup)

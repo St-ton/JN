@@ -838,7 +838,7 @@ class Product
         if ($config !== 'N'
             && ((int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
                 || (int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
-                || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull === 'Y'))
+                || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull !== 'Y'))
         ) {
             switch ($config) {
                 case 'Y':

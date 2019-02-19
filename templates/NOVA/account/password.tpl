@@ -30,7 +30,7 @@
                                   {input type="hidden" name="exclusive_content" value="1"}
                                 {/if}
                                 {input type="hidden" name="passwort_vergessen" value="1"}
-                                {button type="submit" value="1" class="btn-block submit submit_once" variant="primary"}
+                                {button type="submit" value="1" block=true class="submit_once" variant="primary"}
                                     {lang key='createNewPassword' section='forgot password'}
                                 {/button}
                             {/formgroup}
@@ -66,8 +66,8 @@
                                     {if $bExclusive === true}
                                         {input type="hidden" name="exclusive_content" value="1"}
                                     {/if}
-                                    {input type="hidden" name="fpwh" value="{$fpwh}"}
-                                    {button type="submit" value="1" class="btn-block submit submit_once" variant="primary"}
+                                    {input type="hidden" name="fpwh" value=$fpwh}
+                                    {button type="submit" value="1" block=true class="submit_once" variant="primary"}
                                         {lang key='createNewPassword' section='forgot password'}
                                     {/button}
                                 {/formgroup}

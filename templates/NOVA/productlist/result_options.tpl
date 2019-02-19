@@ -20,28 +20,28 @@
             {block name='productlist-result-options-sort'}
             {dropdown class="filter-type-FilterItemSort btn-group ml-3" variant="light" text="{lang key='sorting' section='productOverview'}"}
                 {foreach $Suchergebnisse->getSortingOptions() as $option}
-                    {dropdownitem rel="nofollow" href="{$option->getURL()}" class="filter-item" active=$option->isActive()}
+                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
                         {$option->getName()}
                     {/dropdownitem}
                 {/foreach}
             {/dropdown}
             {dropdown class="filter-type-FilterItemLimits btn-group ml-3" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
                 {foreach $Suchergebnisse->getLimitOptions() as $option}
-                    {dropdownitem rel="nofollow" href="{$option->getURL()}" class="filter-item" active=$option->isActive()}
+                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
                         {$option->getName()}
                     {/dropdownitem}
                 {/foreach}
             {/dropdown}
             {if isset($oErweiterteDarstellung->nDarstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])}
                 {buttongroup class="ml-3"}
-                    {link href="{$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]}"
+                    {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
                        id="ed_list"
                        class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
                        role="button"
                        title="{lang key='list' section='productOverview'}"}
                         <span class="fa fa-th-list"></span>
                     {/link}
-                    {link href="{$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]}"
+                    {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
                        id="ed_gallery"
                        class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
                        role="button"
@@ -62,7 +62,7 @@
                             {block name='productlist-result-options-'|cat:$filter->getNiceName()}
                                 {foreach $filter->getOptions() as $subFilter}
                                     {if $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER && $subFilter->getVisibility() !== \JTL\Filter\Visibility::SHOW_BOX}
-                                        {dropdown text="{$subFilter->getFrontendName()}" variant="light" class="btn-group mb-2 mr-2"}
+                                        {dropdown text=$subFilter->getFrontendName() variant="light" class="btn-group mb-2 mr-2"}
                                             {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
                                         {/dropdown}
                                     {/if}
@@ -74,7 +74,7 @@
                                     {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
                                     {assign var=innerClass value='dropdown-menu'}
                                     {assign var=itemClass value=''}
-                                    {dropdown class="{$outerClass}" text="{$filter->getFrontendName()}" variant="light" class="btn-group mb-2 mr-2"}
+                                    {dropdown class=$outerClass text=$filter->getFrontendName() variant="light" class="btn-group mb-2 mr-2"}
                                         {if $filter->getInputType() === \JTL\Filter\InputType::SELECT}
                                             {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
                                         {/if}
@@ -106,14 +106,14 @@
                         {if $activeValues|is_array}
                             {foreach $activeValues as $filterOption}
                                 {strip}
-                                    {link href="{$activeFilter->getUnsetFilterURL($filterOption->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="badge badge-info filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"}
+                                    {link href=$activeFilter->getUnsetFilterURL($filterOption->getValue()) rel="nofollow" title="Filter {lang key='delete'}" class="badge badge-info filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"}
                                         {$filterOption->getFrontendName()}&nbsp;<span class="fa fa-trash"></span>
                                     {/link}
                                 {/strip}
                             {/foreach}
                         {else}
                             {strip}
-                                {link href="{$activeFilter->getUnsetFilterURL($activeFilter->getValue())}" rel="nofollow" title="Filter {lang key='delete'}" class="badge badge-info filter-type-{$activeFilter->getNiceName()} mb-2 mr-2" }
+                                {link href=$activeFilter->getUnsetFilterURL($activeFilter->getValue()) rel="nofollow" title="Filter {lang key='delete'}" class="badge badge-info filter-type-{$activeFilter->getNiceName()} mb-2 mr-2" }
                                     {$activeValues->getFrontendName()}&nbsp;<span class="fa fa-trash"></span>
                                 {/link}
                             {/strip}
@@ -122,7 +122,7 @@
                 {/foreach}
                 {if $NaviFilter->getURL()->getUnsetAll() !== null}
                     {strip}
-                        {link href="{$NaviFilter->getURL()->getUnsetAll()}" title="{lang key='removeFilters'}"}
+                        {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
                             {lang key='removeFilters'}
                         {/link}
                     {/strip}

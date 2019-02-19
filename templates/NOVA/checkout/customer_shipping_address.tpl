@@ -125,15 +125,15 @@
 
 {* country *}
 {if isset($Lieferadresse->cLand)}
-    {assign var='cIso' value=$Lieferadresse->cLand}
+    {assign var=cIso value=$Lieferadresse->cLand}
 {elseif !empty($Kunde->cLand)}
-    {assign var='cIso' value=$Kunde->cLand}
+    {assign var=cIso value=$Kunde->cLand}
 {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-    {assign var='cIso' value=$Einstellungen.kunden.kundenregistrierung_standardland}
+    {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
 {elseif isset($laender[0]->cISO)}
-    {assign var='cIso' value=$laender[0]->cISO}
+    {assign var=cIso value=$laender[0]->cISO}
 {else}
-    {assign var='cIso' value=''}
+    {assign var=cIso value=''}
 {/if}
 {row}
     {col cols=12 md=6}
@@ -149,11 +149,11 @@
     {if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'N'}
         {getStates cIso=$cIso assign='oShippingStates'}
         {if isset($Lieferadresse->cBundesland)}
-            {assign var='cState' value=$Lieferadresse->cBundesland}
+            {assign var=cState value=$Lieferadresse->cBundesland}
         {elseif !empty($Kunde->cBundesland)}
-            {assign var='cState' value=$Kunde->cBundesland}
+            {assign var=cState value=$Kunde->cBundesland}
         {else}
-            {assign var='cState' value=''}
+            {assign var=cState value=''}
         {/if}
         {col cols=12 md=6}
             {formgroup

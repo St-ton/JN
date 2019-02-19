@@ -13,14 +13,14 @@
                         <tr>
                             <td class="item-image">
                                 {if $oPosition->Artikel->Bilder[0]->cPfadMini !== $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                    <img src="{$oPosition->Artikel->Bilder[0]->cURLMini}" alt="" class="img-sm" />
+                                    {image src=$oPosition->Artikel->Bilder[0]->cURLMini alt=$oPosition->Artikel->cName class="img-sm"}
                                 {/if}
                             </td>
                             <td class="item-name" colspan="2">
                                 {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;
-                                <a href="{$oPosition->Artikel->cURLFull}" title="{$oPosition->cName|trans|escape:'html'}">
+                                {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                     {$oPosition->cName|trans}
-                                </a>
+                                {/link}
                             </td>
                             <td class="item-price">
                                 {if $oPosition->istKonfigVater()}

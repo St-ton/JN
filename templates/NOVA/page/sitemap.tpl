@@ -43,13 +43,13 @@
                             {col sm=6 md=4}
                                 {listgroup}
                                     {listgroupitem}
-                                        {link href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}"}
+                                        {link href=$oKategorie->cURLFull title=$oKategorie->cName}
                                             <strong>{$oKategorie->cKurzbezeichnung}</strong>
                                         {/link}
                                     {/listgroupitem}
                                     {foreach $oKategorie->Unterkategorien as $oSubKategorie}
                                         {listgroupitem}
-                                            {link href="{$oSubKategorie->cURLFull}" title="{$oKategorie->cName}"}
+                                            {link href=$oSubKategorie->cURLFull title=$oKategorie->cName}
                                                 {$oSubKategorie->cKurzbezeichnung}
                                             {/link}
                                         {/listgroupitem}
@@ -58,8 +58,8 @@
                                                 {listgroup class="sub-categories"}
                                                     {foreach $oSubKategorie->Unterkategorien as $oSubSubKategorie}
                                                         {listgroupitem}
-                                                            {link href="{$oSubSubKategorie->cURLFull}"
-                                                               title="{$oKategorie->cName}"}
+                                                            {link href=$oSubSubKategorie->cURLFull
+                                                               title=$oKategorie->cName}
                                                                 {$oSubSubKategorie->cKurzbezeichnung}
                                                             {/link}
                                                         {/listgroupitem}
@@ -78,7 +78,7 @@
                             {foreach $oKategorieliste->elemente as $oKategorie}
                                 {if $oKategorie->Unterkategorien|@count == 0}
                                     {listgroupitem}
-                                        &nbsp;&nbsp;{link href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}"}
+                                        &nbsp;&nbsp;{link href=$oKategorie->cURLFull title=$oKategorie->cName}
                                             {$oKategorie->cKurzbezeichnung}
                                         {/link}
                                     {/listgroupitem}
@@ -107,7 +107,7 @@
                     {listgroup}
                         {foreach $oGlobaleMerkmale->oMerkmalWert_arr as $oGlobaleMerkmaleWerte}
                             {listgroupitem class="p33"}
-                                {link href="{$oGlobaleMerkmaleWerte->cURL}"}{$oGlobaleMerkmaleWerte->cWert}{/link}
+                                {link href=$oGlobaleMerkmaleWerte->cURL}{$oGlobaleMerkmaleWerte->cWert}{/link}
                             {/listgroupitem}
                         {/foreach}
                     {/listgroup}
@@ -129,7 +129,7 @@
             {block name='sitemap-manufacturer-body'}
                 {listgroup}
                     {foreach $oHersteller_arr as $oHersteller}
-                        {listgroupitem}{link href="{$oHersteller->cURL}"}{$oHersteller->cName}{/link}{/listgroupitem}
+                        {listgroupitem}{link href=$oHersteller->cURL}{$oHersteller->cName}{/link}{/listgroupitem}
                     {/foreach}
                 {/listgroup}
             {/block}
@@ -152,10 +152,10 @@
                         {if $oNewsMonatsUebersicht->oNews_arr|@count > 0}
                             {math equation='x-y' x=$oNewsMonatsUebersicht@iteration y=1 assign='i'}
                             {col sm=6 md=4}
-                                <strong>{link href="{$oNewsMonatsUebersicht->cURLFull}"}{$oNewsMonatsUebersicht->cName}{/link}</strong>
+                                <strong>{link href=$oNewsMonatsUebersicht->cURLFull}{$oNewsMonatsUebersicht->cName}{/link}</strong>
                                 {listgroup}
                                     {foreach $oNewsMonatsUebersicht->oNews_arr as $oNews}
-                                        {listgroupitem}&nbsp;&nbsp;{link href="{$oNews->cURLFull}"}{$oNews->cBetreff}{/link}{/listgroupitem}
+                                        {listgroupitem}&nbsp;&nbsp;{link href=$oNews->cURLFull}{$oNews->cBetreff}{/link}{/listgroupitem}
                                     {/foreach}
                                 {/listgroup}
                             {/col}
@@ -185,11 +185,11 @@
                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                         {if $oNewsKategorie->oNews_arr|@count > 0}
                             {col sm=6 md=4}
-                                <strong>{link href="{$oNewsKategorie->cURLFull}"}{$oNewsKategorie->cName}{/link}</strong>
+                                <strong>{link href=$oNewsKategorie->cURLFull}{$oNewsKategorie->cName}{/link}</strong>
                                 {listgroup}
                                     {foreach $oNewsKategorie->oNews_arr as $oNews}
                                         {listgroupitem}
-                                            &nbsp;&nbsp;{link href="{$oNews->cURLFull}"}{$oNews->cBetreff}{/link}
+                                            &nbsp;&nbsp;{link href=$oNews->cURLFull}{$oNews->cBetreff}{/link}
                                         {/listgroupitem}
                                     {/foreach}
                                 {/listgroup}

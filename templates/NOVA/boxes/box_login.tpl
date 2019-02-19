@@ -30,12 +30,12 @@
             {formgroup}
                 {if !empty($oRedirect->cURL)}
                     {foreach $oRedirect->oParameter_arr as $oParameter}
-                        {input type="hidden" name="{$oParameter->Name}" value="{$oParameter->Wert}"}
+                        {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}
                     {/foreach}
-                    {input type="hidden" name="r" value="{$oRedirect->nRedirect}"}
-                    {input type="hidden" name="cURL" value="{$oRedirect->cURL}"}
+                    {input type="hidden" name="r" value=$oRedirect->nRedirect}
+                    {input type="hidden" name="cURL" value=$oRedirect->cURL}
                 {/if}
-                {button type="submit" name="speichern" value="1" variant="primary" class="btn-block submit"}
+                {button type="submit" name="speichern" value="1" variant="primary" block=true class="submit"}
                     {lang key='login' section='checkout'}
                 {/button}
             {/formgroup}

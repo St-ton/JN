@@ -112,7 +112,7 @@
         {if Shop::isAdmin()}
             {include file='layout/header_composer_menu.tpl'}
         {/if}
-        {assign var="isSticky" value=$Einstellungen.template.theme.static_header === 'Y'}
+        {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
         <header class="d-print-none container-fluid {if $isSticky}sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
             {block name='header-container-inner'}
@@ -135,7 +135,7 @@
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
 
-                                    {link href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}" }
+                                    {link href=$ShopURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname fluid=true}
                                     {else}
@@ -185,7 +185,7 @@
 {/if}
 
 {*{block name='header-category-nav'}
-    {assign var="isSticky" value=$Einstellungen.template.theme.static_header === 'Y'}
+    {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
     {navbar id="evo-main-nav-wrapper" sticky=$isSticky toggleable=true fill=true class="navbar-expand-md accordion"}
         {if $isFluidTemplate}
             {include file='layout/header_category_nav.tpl'}
@@ -197,11 +197,11 @@
     {/navbar}
 {/block}*}
 {block name='header-fluid-banner'}
-    {assign var="isFluidBanner" value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
+    {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
     {if $isFluidBanner}
         {include file='snippets/banner.tpl'}
     {/if}
-    {assign var='isFluidSlider' value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
+    {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
     {if $isFluidSlider}
         {include file='snippets/slider.tpl'}
     {/if}
@@ -217,10 +217,14 @@
     {block name='product-pagination'}
         {if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
             <div class="d-none d-lg-block product-pagination next">
-                {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}<a href="{$NavigationBlaettern->naechsterArtikel->cURLFull}" title="{$NavigationBlaettern->naechsterArtikel->cName}"><span class="fa fa-chevron-right"></span></a>{/if}
+                {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}
+                    {link href=$NavigationBlaettern->naechsterArtikel->cURLFull title=$NavigationBlaettern->naechsterArtikel->cName}<span class="fa fa-chevron-right"></span>{/link}
+                {/if}
             </div>
             <div class="d-none d-lg-block product-pagination previous">
-                {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}<a href="{$NavigationBlaettern->vorherigerArtikel->cURLFull}" title="{$NavigationBlaettern->vorherigerArtikel->cName}"><span class="fa fa-chevron-left"></span></a>{/if}
+                {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}
+                    {link href=$NavigationBlaettern->vorherigerArtikel->cURLFull title=$NavigationBlaettern->vorherigerArtikel->cName}<span class="fa fa-chevron-left"></span>{/link}
+                {/if}
             </div>
         {/if}
     {/block}

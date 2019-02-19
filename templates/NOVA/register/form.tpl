@@ -12,10 +12,10 @@
     {if isset($checkout) && $checkout === 1}
         {include file='checkout/inc_shipping_address.tpl'}
     {/if}
-    {input type="hidden" name="checkout" value="{if isset($checkout)}{$checkout}{/if}"}
+    {input type="hidden" name="checkout" value=$checkout|default:''}
     {input type="hidden" name="form" value="1"}
-    {input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}"}
-    {button type="submit" value="1" variant="primary" class="btn-lg float-right submit submit_once"}
+    {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
+    {button type="submit" value="1" variant="primary" size="lg" class="float-right submit_once"}
         {lang key='sendCustomerData' section='account data'}
     {/button}
 {/form}

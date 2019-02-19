@@ -41,13 +41,13 @@
                     {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y'}
                         {if isset($smarty.session.Kunde) && $smarty.session.Kunde->kKunde > 0 && $smarty.session.Kunde->kKunde != $oBewertung->kKunde}
                             {col cols=6 md=12 class="review-helpful text-right text-md-center" id="help{$oBewertung->kBewertung}"}
-                                <button class="helpful btn btn-xs" title="{lang key='yes'}" name="hilfreich_{$oBewertung->kBewertung}" type="submit">
+                                {button size="sm" class="helpful" title="{lang key='yes'}" name="hilfreich_{$oBewertung->kBewertung}" type="submit"}
                                     <i class="far fa-thumbs-up"></i>
-                                </button>
+                                {/button}
                                 <sup class="badge badge-light"><b>{$oBewertung->nHilfreich}</b></sup>
-                                <button class="not_helpful btn btn-xs ml-2" title="{lang key='no'}" name="nichthilfreich_{$oBewertung->kBewertung}" type="submit">
+                                {button size="sm" class="not_helpful ml-2" title="{lang key='no'}" name="nichthilfreich_{$oBewertung->kBewertung}" type="submit"}
                                     <i class="far fa-thumbs-down"></i>
-                                </button>
+                                {/button}
                                 <sup class="badge badge-light"><b>{$oBewertung->nNichtHilfreich}</b></sup>
                             {/col}
                         {/if}
@@ -63,7 +63,7 @@
                             <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}
                         </small>
                 </blockquote>
-                <img itemprop="image" src="{$Artikel->cVorschaubild}" alt="{$oBewertung->cTitel}" class="d-none" />
+                {image itemprop="image" src=$Artikel->cVorschaubild alt=$oBewertung->cTitel class="d-none"}
                 {if !empty($oBewertung->cAntwort)}
                     <div class="review-reply">
                         <strong>Antwort von {$cShopName}:</strong>

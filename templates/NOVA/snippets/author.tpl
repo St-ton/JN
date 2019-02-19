@@ -7,7 +7,7 @@
         {link
             itemprop="name"
             href="#"
-            title="{$oAuthor->cName}"
+            title=$oAuthor->cName
             data=["toggle"=>"modal",
                 "target"=>"#author-{$oAuthor->kContentAuthor}"]
         }

@@ -6,12 +6,15 @@
  * @created Thu, 08 Feb 2018 16:21:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180208162100
  */
 class Migration_20180208162100 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Remove global attribute filter box option';
 
     /**

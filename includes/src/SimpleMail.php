@@ -1,11 +1,20 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use Exception;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use PHPMailer\PHPMailer\PHPMailer;
+use stdClass;
 
 /**
  * Class SimpleMail
+ * @package JTL
  */
 class SimpleMail
 {
@@ -113,14 +122,13 @@ class SimpleMail
     private $valid = true;
 
     /**
-     *
      * @param bool  $shopMail
      * @param array $mailConfig
      */
     public function __construct(bool $shopMail = true, array $mailConfig = [])
     {
         if ($shopMail === true) {
-            $config = Shop::getSettings([CONF_EMAILS])['emails'];
+            $config = Shop::getSettings([\CONF_EMAILS])['emails'];
 
             $this->cMethod        = $config['email_methode'];
             $this->cSendMailPfad  = $config['email_sendmail_pfad'];
@@ -171,7 +179,7 @@ class SimpleMail
         string $encoding = 'base64',
         string $type = 'application/octet-stream'
     ): bool {
-        if (!empty($name) && file_exists($path)) {
+        if (!empty($name) && \file_exists($path)) {
             $attachments              = [];
             $attachments['cName']     = $name;
             $attachments['cPath']     = $path;
@@ -250,9 +258,9 @@ class SimpleMail
         if ($this->validate() !== true) {
             return false;
         }
-        $mailer           = new \PHPMailer\PHPMailer\PHPMailer();
-        $mailer->CharSet  = JTL_CHARSET;
-        $mailer->Timeout  = SOCKET_TIMEOUT;
+        $mailer           = new PHPMailer();
+        $mailer->CharSet  = \JTL_CHARSET;
+        $mailer->Timeout  = \SOCKET_TIMEOUT;
         $mailer->From     = $this->cVerfasserMail;
         $mailer->Sender   = $this->cVerfasserMail;
         $mailer->FromName = $this->cVerfasserName;
@@ -333,7 +341,6 @@ class SimpleMail
     }
 
     /**
-     *
      * @return string|null
      */
     public function getVerfasserName(): ?string
@@ -342,7 +349,6 @@ class SimpleMail
     }
 
     /**
-     *
      * @return string|null
      */
     public function getBetreff(): ?string
@@ -351,7 +357,6 @@ class SimpleMail
     }
 
     /**
-     *
      * @return string|null
      */
     public function getBodyHTML(): ?string
@@ -360,7 +365,6 @@ class SimpleMail
     }
 
     /**
-     *
      * @return string|null
      */
     public function getBodyText(): ?string
@@ -374,7 +378,7 @@ class SimpleMail
      */
     public function setVerfasserMail(string $cVerfasserMail): bool
     {
-        if (filter_var($cVerfasserMail, FILTER_VALIDATE_EMAIL)) {
+        if (\filter_var($cVerfasserMail, \FILTER_VALIDATE_EMAIL)) {
             $this->cVerfasserMail = $cVerfasserMail;
 
             return true;
@@ -474,6 +478,7 @@ class SimpleMail
 
         return false;
     }
+
     /**
      * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
      * Gibt true zurück, falls Email geblockt, ansonsten false
@@ -483,31 +488,29 @@ class SimpleMail
      */
     public static function checkBlacklist(?string $mail): bool
     {
-        $mail = mb_convert_case(StringHandler::filterXSS($mail), MB_CASE_LOWER);
-        if (StringHandler::filterEmailAddress($mail) === false) {
+        $mail = \mb_convert_case(Text::filterXSS($mail), \MB_CASE_LOWER);
+        if (Text::filterEmailAddress($mail) === false) {
             return true;
         }
-        $conf = Shop::getSettings([CONF_EMAILBLACKLIST]);
+        $conf = Shop::getSettings([\CONF_EMAILBLACKLIST]);
         if ($conf['emailblacklist']['blacklist_benutzen'] !== 'Y') {
             return false;
         }
         $blacklist = Shop::Container()->getDB()->query(
             'SELECT cEmail FROM temailblacklist',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($blacklist as $item) {
-            if (mb_strpos($item->cEmail, '*') !== false) {
-                preg_match('/' . str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
+            if (\mb_strpos($item->cEmail, '*') !== false) {
+                \preg_match('/' . \str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked
-                if (isset($hits[0]) && mb_strlen($mail) === mb_strlen($hits[0])) {
-                    // Email schonmal geblockt worden?
+                if (isset($hits[0]) && \mb_strlen($mail) === \mb_strlen($hits[0])) {
                     $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
                     if (!empty($block->cEmail)) {
                         $_upd                = new stdClass();
                         $_upd->dLetzterBlock = 'NOW()';
                         Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                     } else {
-                        // temailblacklistblock Eintrag
                         $block                = new stdClass();
                         $block->cEmail        = $mail;
                         $block->dLetzterBlock = 'NOW()';
@@ -516,16 +519,13 @@ class SimpleMail
 
                     return true;
                 }
-            } elseif (mb_convert_case($item->cEmail, MB_CASE_LOWER) === mb_convert_case($mail, MB_CASE_LOWER)) {
-                // Email schonmal geblockt worden?
+            } elseif (\mb_convert_case($item->cEmail, \MB_CASE_LOWER) === \mb_convert_case($mail, \MB_CASE_LOWER)) {
                 $block = Shop::Container()->getDB()->select('temailblacklistblock', 'cEmail', $mail);
-
                 if (!empty($block->cEmail)) {
                     $_upd                = new stdClass();
                     $_upd->dLetzterBlock = 'NOW()';
                     Shop::Container()->getDB()->update('temailblacklistblock', 'cEmail', $mail, $_upd);
                 } else {
-                    // temailblacklistblock Eintrag
                     $block                = new stdClass();
                     $block->cEmail        = $mail;
                     $block->dLetzterBlock = 'NOW()';

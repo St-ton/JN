@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Smarty;
+namespace JTL\Smarty;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 use Smarty_Resource_Custom;
 
 /**
  * Class SmartyResourceNiceDB
- * @package Smarty
+ * @package JTL\Smarty
  */
 class SmartyResourceNiceDB extends Smarty_Resource_Custom
 {
@@ -84,11 +85,11 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                     $source = $vl->cContentText;
                 } else {
                     $source = '';
-                    \Shop::Container()->getLogService()->notice('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0]);
+                    Shop::Container()->getLogService()->notice('Ungueltiger Emailvorlagen-Typ: ' . $pcs[0]);
                 }
             } else {
                 $source = '';
-                \Shop::Container()->getLogService()->notice(
+                Shop::Container()->getLogService()->notice(
                     'Emailvorlage mit der ID ' . (int)$pcs[1] .
                     ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden'
                 );
@@ -109,7 +110,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             }
         } else {
             $source = '';
-            \Shop::Container()->getLogService()->notice('Template-Typ ' . $this->type . ' wurde nicht gefunden');
+            Shop::Container()->getLogService()->notice('Template-Typ ' . $this->type . ' wurde nicht gefunden');
         }
     }
 

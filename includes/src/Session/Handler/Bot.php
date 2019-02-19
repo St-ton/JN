@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session\Handler;
+namespace JTL\Session\Handler;
 
-use Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class Bot
- * @package Session\Handler
+ * @package JTL\Session\Handler
  */
 class Bot extends JTLDefault
 {
@@ -60,7 +60,7 @@ class Bot extends JTLDefault
     {
         $sessionData = '';
         if ($this->doSave === true) {
-            $sessionData = (($sessionData = \Shop::Container()->getCache()->get($this->sessionID)) !== false)
+            $sessionData = (($sessionData = Shop::Container()->getCache()->get($this->sessionID)) !== false)
                 ? $sessionData
                 : '';
         }
@@ -76,7 +76,7 @@ class Bot extends JTLDefault
     public function write($sessID, $sessData)
     {
         if ($this->doSave === true) {
-            \Shop::Container()->getCache()->set($this->sessionID, $sessData, [\CACHING_GROUP_CORE]);
+            Shop::Container()->getCache()->set($this->sessionID, $sessData, [\CACHING_GROUP_CORE]);
         }
 
         return true;

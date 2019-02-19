@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation;
+namespace JTL\Plugin\Admin\Validation;
 
-use DB\DbInterface;
+use JTL\DB\DbInterface;
+use JTL\Plugin\InstallCode;
 use JTL\XMLParser;
-use Plugin\InstallCode;
 
 /**
  * Class AbstractValidator
- * @package Plugin\Admin\Validation
+ * @package JTL\Plugin\Admin\Validation
  */
 abstract class AbstractValidator implements ValidatorInterface
 {

@@ -4,13 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Helper;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
@@ -39,7 +44,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
                     ['plgn' => $kPlugin, 'kpm' => (int)$_POST['kPluginAdminMenu']],
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 )
                 : [];
             foreach ($plgnConf as $current) {
@@ -53,7 +58,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 $upd->cName   = $current->cWertName;
                 if (isset($_POST[$current->cWertName])) {
                     if (is_array($_POST[$current->cWertName])) {
-                        if ($current->cConf === \Plugin\ExtensionData\Config::TYPE_DYNAMIC) {
+                        if ($current->cConf === Config::TYPE_DYNAMIC) {
                             // selectbox with "multiple" attribute
                             $upd->cWert = serialize($_POST[$current->cWertName]);
                         } else {
@@ -88,7 +93,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     }
     $data = $db->select('tplugin', 'kPlugin', $kPlugin);
     if ($data !== null) {
-        $loader  = \Plugin\Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
+        $loader  = Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
         $oPlugin = $loader->init($kPlugin, $invalidateCache);
     }
     if ($oPlugin !== null) {
@@ -105,7 +110,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         foreach ($oPlugin->getAdminMenu()->getItems() as $menu) {
             if ($menu->isMarkdown === true) {
                 $parseDown  = new Parsedown();
-                $content    = $parseDown->text(StringHandler::convertUTF8(file_get_contents($menu->file)));
+                $content    = $parseDown->text(Text::convertUTF8(file_get_contents($menu->file)));
                 $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
             } elseif ($menu->configurable === false
                 && $menu->file !== ''

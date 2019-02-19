@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class Journal
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * writes a journal of customer data changes,
  * e.g. deletion of a customer
@@ -69,7 +70,7 @@ class Journal
         string $message = '',
         \stdClass $detail = null
     ): void {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'INSERT INTO tanondatajournal(cIssuer, iIssuerId, cAction, cDetail, cMessage, dEventTime)
                 VALUES(:cIssuer, :iIssuerId, :cAction, :cDetail, :cMessage, :dEventTime)',
             [

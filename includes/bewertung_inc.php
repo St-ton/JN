@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+
 /**
  * Fügt für einen bestimmten Artikel, in einer bestimmten Sprache eine Bewertung hinzu.
  *
@@ -13,8 +19,9 @@
  * @param string $title
  * @param string $text
  * @param int    $stars
+ * @return string
  */
-function speicherBewertung(int $productID, int $customerID, int $langID, $title, $text, int $stars)
+function speicherBewertung(int $productID, int $customerID, int $langID, $title, $text, int $stars): string
 {
     $conf    = Shop::getSettings([CONF_BEWERTUNG]);
     $article = new Artikel();
@@ -22,23 +29,23 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     $url = !empty($article->cURLFull)
         ? (mb_strpos($article->cURLFull, '?') === false ? $article->cURLFull . '?' : $article->cURLFull . '&')
         : (Shop::getURL() . '/?a=' . $productID . '&');
-    if ($customerID <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
-        header('Location: ' . $url . 'cFehler=f04', true, 303);
-        exit;
+    if ($stars < 1 || $stars > 5) {
+        return $url . 'bewertung_anzeigen=1&cFehler=f05';
     }
-    $title = StringHandler::htmlentities(StringHandler::filterXSS($title));
-    $text  = StringHandler::htmlentities(StringHandler::filterXSS($text));
+    if ($customerID <= 0 || $conf['bewertung']['bewertung_anzeigen'] !== 'Y') {
+        return $url . 'bewertung_anzeigen=1&cFehler=f04';
+    }
+    $title = Text::htmlentities(Text::filterXSS($title));
+    $text  = Text::htmlentities(Text::filterXSS($text));
 
-    if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '' || $stars <= 0) {
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f01', true, 303);
-        exit;
+    if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '') {
+        return $url . 'bewertung_anzeigen=1&cFehler=f01';
     }
     unset($oBewertungBereitsVorhanden);
     // Prüfe ob die Einstellung (Bewertung nur bei bereits gekauftem Artikel) gesetzt ist
     // und der Kunde den Artikel bereits gekauft hat
-    if (pruefeKundeArtikelGekauft($productID, \Session\Frontend::getCustomer()) === false) {
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f03');
-        exit;
+    if (pruefeKundeArtikelGekauft($productID, JTL\Session\Frontend::getCustomer()) === false) {
+        return $url . 'bewertung_anzeigen=1&cFehler=f03';
     }
     $reward                  = 0.0;
     $rating                  = new stdClass();
@@ -75,19 +82,13 @@ function speicherBewertung(int $productID, int $customerID, int $langID, $title,
     unset($oBewertungBereitsVorhanden);
     if ($nFreischalten === 0) {
         if ($reward > 0) {
-            header(
-                'Location: ' . $url . 'bewertung_anzeigen=1&fB=' .
-                $reward . '&cHinweis=h04',
-                true,
-                301
-            );
-            exit;
+            return $url . 'bewertung_anzeigen=1&fB=' . $reward . '&cHinweis=h04';
         }
-        header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h01', true, 303);
-        exit;
+
+        return $url . 'bewertung_anzeigen=1&cHinweis=h01';
     }
-    header('Location: ' . $url . 'bewertung_anzeigen=1&cHinweis=h05', true, 303);
-    exit;
+
+    return $url . 'bewertung_anzeigen=1&cHinweis=h05';
 }
 
 
@@ -158,7 +159,7 @@ function speicherHilfreich(int $productID, int $customerID, int $langID, int $pa
                         SET nHilfreich = nHilfreich + 1
                         WHERE kBewertung = :rid',
                     ['rid' => $ratingID],
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             } else {
                 // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese negativ ist
@@ -168,7 +169,7 @@ function speicherHilfreich(int $productID, int $customerID, int $langID, int $pa
                         SET nNichtHilfreich = nNichtHilfreich + 1
                         WHERE kBewertung = :rid',
                     ['rid' => $ratingID],
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
 
@@ -191,7 +192,7 @@ function speicherHilfreich(int $productID, int $customerID, int $langID, int $pa
                     SET nHilfreich = nHilfreich + 1, nNichtHilfreich = nNichtHilfreich - 1
                     WHERE kBewertung = :rid',
                 ['rid' => $ratingID],
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
         } elseif ($helpful === 0 && $helpfulRating->nBewertung !== $helpful) {
             // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
@@ -200,7 +201,7 @@ function speicherHilfreich(int $productID, int $customerID, int $langID, int $pa
                     SET nHilfreich = nHilfreich-1, nNichtHilfreich = nNichtHilfreich+1
                     WHERE kBewertung = :rid',
                 ['rid' => $ratingID],
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
         }
 
@@ -214,7 +215,7 @@ function speicherHilfreich(int $productID, int $customerID, int $langID, int $pa
                 'rnb' => $helpful,
                 'cid' => $customerID
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         header(
             'Location: ' . Shop::getURL() . '/?a=' . $productID .
@@ -238,7 +239,7 @@ function aktualisiereDurchschnitt(int $productID, string $activate): bool
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kArtikel = ' . $productID . $sql,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 
     if ((int)$countData->nAnzahl === 1) {
@@ -253,7 +254,7 @@ function aktualisiereDurchschnitt(int $productID, string $activate): bool
         'SELECT (SUM(nSterne) / COUNT(*)) AS fDurchschnitt
             FROM tbewertung
             WHERE kArtikel = ' . $productID . $sql,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 
     if (isset($avg->fDurchschnitt) && $avg->fDurchschnitt > 0) {
@@ -294,7 +295,7 @@ function pruefeKundeArtikelBewertet(int $productID, int $customerID): int
  * @param Kunde $customer
  * @return bool
  */
-function pruefeKundeArtikelGekauft(int $productID, \Kunde $customer): bool
+function pruefeKundeArtikelGekauft(int $productID, Kunde $customer): bool
 {
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
     if ($productID > 0
@@ -317,7 +318,7 @@ function pruefeKundeArtikelGekauft(int $productID, \Kunde $customer): bool
                 'aid' => $productID,
                 'cid' => $customer->getID()
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (!isset($order->kBestellung) || !$order->kBestellung) {
@@ -346,7 +347,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
             FROM tbewertung
             WHERE kBewertung = :rid',
         ['rid' => $ratingID],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     $customerID  = (int)$rating->kKunde;
     $ratingBonus = Shop::Container()->getDB()->queryPrepared(
@@ -362,7 +363,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
             'dyear'  => date('Y'),
             'dmonth' => date('m')
         ],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     if ((float)$ratingBonus->fGuthabenProMonat >
         (float)$conf['bewertung']['bewertung_max_guthaben']
@@ -391,7 +392,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
                 'cid' => $customerID,
                 'rew' => $reward
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         $ratingBonus                 = new stdClass();
         $ratingBonus->kBewertung     = $ratingID;
@@ -412,7 +413,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
                     'reward'   => $reward,
                     'feedback' => $ratingID
                 ],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
         } else {
             Shop::Container()->getDB()->insert('tbewertungguthabenbonus', $ratingBonus);
@@ -436,7 +437,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
                 'cid' => $customerID,
                 'rew' => $reward
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         $ratingBonus                 = new stdClass();
         $ratingBonus->kBewertung     = $ratingID;
@@ -456,7 +457,7 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
                     'reward'   => $reward,
                     'feedback' => $ratingID
                 ],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
         } else {
             Shop::Container()->getDB()->insert('tbewertungguthabenbonus', $ratingBonus);

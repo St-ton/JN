@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\SearchSpecial;
+use JTL\Helpers\SearchSpecial;
 
 /**
  * @return string

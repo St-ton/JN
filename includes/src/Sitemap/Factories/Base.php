@@ -4,21 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
+
+use Generator;
+use stdClass;
+use JTL\Sitemap\Items\Base as BaseItem;
 
 /**
  * Class Base
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class Base extends AbstractFactory
 {
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $item           = new \Sitemap\Items\Base($this->config, $this->baseURL, $this->baseImageURL);
-        $data           = new \stdClass();
+        $item           = new BaseItem($this->config, $this->baseURL, $this->baseImageURL);
+        $data           = new stdClass();
         $data->langID   = $_SESSION['kSprache'];
         $data->langCode = $_SESSION['cISOSprache'];
         $item->generateData($data, $languages);

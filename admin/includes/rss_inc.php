@@ -4,7 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\URL;
+use JTL\Helpers\URL;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
 
 /**
  * @return bool
@@ -36,7 +39,7 @@ function generiereRSSXML()
 		<title>' . $conf['rss']['rss_titel'] . '</title>
 		<link>' . $shopURL . '</link>
 		<description>' . $conf['rss']['rss_description'] . '</description>
-		<language>' . StringHandler::convertISO2ISO639($Sprache->cISO) . '</language>
+		<language>' . Text::convertISO2ISO639($Sprache->cISO) . '</language>
 		<copyright>' . $conf['rss']['rss_copyright'] . '</copyright>
 		<pubDate>' . date('r') . '</pubDate>
 		<atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
@@ -56,7 +59,7 @@ function generiereRSSXML()
         $products = $db->query(
             "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                 tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
-                DATE_FORMAT(tartikel.dErstellt, \"%a, %d %b %Y %H:%i:%s UTC\") AS erstellt
+                DATE_FORMAT(tartikel.dErstellt, '%a, %d %b %Y %H:%i:%s UTC') AS erstellt
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
@@ -70,7 +73,7 @@ function generiereRSSXML()
                     AND cNeu = 'Y' 
                     AND DATE_SUB(now(), INTERVAL " . $days . ' DAY) < dErstellt
                 ORDER BY dLetzteAktualisierung DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($products as $artikel) {
             $url  = URL::buildURL($artikel, URLART_ARTIKEL, true);
@@ -95,7 +98,7 @@ function generiereRSSXML()
                     AND nAktiv = 1
                     AND dGueltigVon <= now()
                 ORDER BY dGueltigVon DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($news as $item) {
             $url  = URL::buildURL($item, URLART_NEWS);
@@ -116,7 +119,7 @@ function generiereRSSXML()
                 FROM tbewertung
                 WHERE DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dDatum
                     AND nAktiv = 1',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oBewertung_arr as $oBewertung) {
             $url  = URL::buildURL($oBewertung, URLART_ARTIKEL, true);
@@ -162,6 +165,6 @@ function bauerfc2822datum($dErstellt)
 function wandelXMLEntitiesUm($cText)
 {
     return mb_strlen($cText) > 0
-        ? '<![CDATA[ ' . StringHandler::htmlentitydecode($cText) . ' ]]>'
+        ? '<![CDATA[ ' . Text::htmlentitydecode($cText) . ' ]]>'
         : '';
 }

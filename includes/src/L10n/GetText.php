@@ -4,15 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace L10n;
+namespace JTL\L10n;
 
 use Gettext\Translations;
 use Gettext\Translator;
-use Plugin\AbstractExtension;
+use JTL\Plugin\Admin\ListingItem;
+use JTL\Plugin\PluginInterface;
+use JTL\Shop;
 
 /**
  * Class GetText
- * @package L10n
+ * @package JTL\L10n
  */
 class GetText
 {
@@ -32,14 +34,88 @@ class GetText
     private $loadedPoFiles = [];
 
     /**
+     * @var Translations[]
+     */
+    private $translations = [];
+
+    /**
      * GetText constructor.
      */
     public function __construct()
     {
-        $this->translator = new Translator();
-        $this->translator->register();
-        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? \Shop::getLanguageCode() ?? 'ger')
+        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? Shop::getLanguageCode() ?? 'ger')
              ->loadAdminLocale();
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminDir(): string
+    {
+        return \PFAD_ROOT . \PFAD_ADMIN;
+    }
+
+    /**
+     * @param PluginInterface $plugin
+     * @return string
+     */
+    public function getPluginDir(PluginInterface $plugin): string
+    {
+        return $plugin->getPaths()->getBasePath();
+    }
+
+    /**
+     * @param string $dir
+     * @param string $domain
+     * @return string
+     */
+    public function getMoPath(string $dir, string $domain): string
+    {
+        return $dir . 'locale/' . $this->langIso . '/' . $domain . '.mo';
+    }
+
+    /**
+     * @param string $domain
+     * @return string
+     */
+    public function getAdminMoPath(string $domain): string
+    {
+        return $this->getMoPath($this->getAdminDir(), $domain);
+    }
+
+    /**
+     * @param string          $domain
+     * @param PluginInterface $plugin
+     * @return string
+     */
+    public function getPluginMoPath(string $domain, PluginInterface $plugin): string
+    {
+        return $this->getMoPath($this->getPluginDir($plugin), $domain);
+    }
+
+    /**
+     * @param string $dir
+     * @param string $domain
+     * @return Translations
+     */
+    public function getTranslations(string $dir, string $domain): Translations
+    {
+        $path = $this->getMoPath($dir, $domain);
+
+        if (!isset($this->translations[$path])) {
+            $this->translations[$path] = Translations::fromMoFile($path);
+        }
+
+        return $this->translations[$path];
+    }
+
+    /**
+     * @param string $domain
+     * @return Translations
+     */
+    public function getAdminTranslations(string $domain): Translations
+    {
+        return $this->getTranslations($this->getAdminDir(), $domain);
     }
 
     /**
@@ -48,10 +124,12 @@ class GetText
      */
     public function setLangIso(string $langIso): self
     {
-        if ($this->langIso !== null && $this->langIso !== $langIso) {
-            $this->translator = new Translator();
+        if ($this->langIso !== $langIso) {
+            $this->translations = [];
+            $this->translator   = new Translator();
             $this->translator->register();
         }
+
         $this->langIso = $langIso;
 
         return $this;
@@ -63,17 +141,29 @@ class GetText
      */
     public function loadAdminLocale(string $domain = 'base'): self
     {
-        return $this->addLocale(\PFAD_ROOT . \PFAD_ADMIN, $domain);
+        return $this->addLocale($this->getAdminDir(), $domain);
     }
 
     /**
-     * @param string            $domain
-     * @param AbstractExtension $plugin
+     * @param string          $domain
+     * @param PluginInterface $plugin
      * @return GetText
      */
-    public function loadPluginLocale(string $domain, AbstractExtension $plugin): self
+    public function loadPluginLocale(string $domain, PluginInterface $plugin): self
     {
-        return $this->addLocale($plugin->getPaths()->getBasePath(), $domain);
+        return $this->addLocale($this->getPluginDir($plugin), $domain);
+    }
+
+    /**
+     * @param string      $domain
+     * @param ListingItem $item
+     * @return GetText
+     */
+    public function loadPluginItemLocale(string $domain, ListingItem $item): self
+    {
+        $dir = \PFAD_ROOT . \PLUGIN_DIR . $item->getDir() . '/';
+
+        return $this->addLocale($dir, $domain);
     }
 
     /**
@@ -83,13 +173,14 @@ class GetText
      */
     public function addLocale(string $dir, string $domain): self
     {
-        $path = $dir . 'locale/' . $this->langIso . '/' . $domain . '.mo';
+        $path = $this->getMoPath($dir, $domain);
+
         if (\array_key_exists($path, $this->loadedPoFiles)) {
             return $this;
         }
+
         if (\file_exists($path)) {
-            $translations = Translations::fromMoFile($path);
-            $this->translator->loadTranslations($translations);
+            $this->translator->loadTranslations($this->getTranslations($dir, $domain));
             $this->loadedPoFiles[$path] = true;
         }
 

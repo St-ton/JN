@@ -4,13 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 setzeSprache();
@@ -26,7 +31,7 @@ $cLivesucheSQL         = new stdClass();
 $cLivesucheSQL->cWhere = '';
 $cLivesucheSQL->cOrder = ' tsuchanfrage.nAnzahlGesuche DESC ';
 if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
-    $cSuche = $db->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
+    $cSuche = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
 
     if (mb_strlen($cSuche) > 0) {
         $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
@@ -112,14 +117,14 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                 "DELETE FROM tseo
                     WHERE cKey = 'kSuchanfrage'
                         AND kKey" . $cSQLDel,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             // Deaktivierte Suchanfragen in tsuchanfrage updaten
             $db->query(
                 "UPDATE tsuchanfrage
                     SET cSeo = ''
                     WHERE kSuchanfrage" . $cSQLDel,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             if (isset($_POST['nAktiv']) && is_array($_POST['nAktiv'])) {
                 foreach ($_POST['nAktiv'] as $i => $nAktiv) {
@@ -131,7 +136,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     );
                     // Aktivierte Suchanfragen in tseo eintragen
                     $ins           = new stdClass();
-                    $ins->cSeo     = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($query->cSuche));
+                    $ins->cSeo     = Seo::checkSeo(Seo::getSeo($query->cSuche));
                     $ins->cKey     = 'kSuchanfrage';
                     $ins->kKey     = $nAktiv;
                     $ins->kSprache = $_SESSION['kSprache'];
@@ -173,7 +178,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                 'lid' => (int)$_SESSION['kSprache'],
                                 'src' => $_POST['mapping_' . $sucheanfrage->kSuchanfrage]
                             ],
-                            \DB\ReturnType::DEFAULT
+                            ReturnType::DEFAULT
                         );
                         $db->delete(
                             'tsuchanfrage',
@@ -237,7 +242,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                             'lid' => (int)$_SESSION['kSprache'],
                                             'sid' => $oSuchanfrageNeu->kSuchanfrage
                                         ],
-                                        \DB\ReturnType::DEFAULT
+                                        ReturnType::DEFAULT
                                     );
                                     $db->delete(
                                         'tsuchanfrage',
@@ -253,7 +258,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                             'kid' => (int)$oSuchanfrageNeu->kSuchanfrage,
                                             'sid' => (int)$query->kSuchanfrage
                                         ],
-                                        \DB\ReturnType::DEFAULT
+                                        ReturnType::DEFAULT
                                     );
 
                                     $hinweis = __('successSearchMapMultiple');
@@ -383,7 +388,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
             } elseif ((int)$_POST['nErfolglosEditieren'] === 1) {
                 $idx = 'cSuche_' . $failedQuery->kSuchanfrageErfolglos;
 
-                $failedQuery->cSuche = StringHandler::filterXSS($_POST[$idx]);
+                $failedQuery->cSuche = Text::filterXSS($_POST[$idx]);
                 $upd                 = new stdClass();
                 $upd->cSuche         = $failedQuery->cSuche;
                 $db->update(
@@ -458,19 +463,19 @@ $queryCount        = $db->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrage
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $failedQueryCount  = $db->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrageerfolglos
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $mappingCount      = $db->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfragemapping
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oPagiSuchanfragen = (new Pagination('suchanfragen'))
     ->setItemCount($queryCount->nAnzahl)
@@ -493,7 +498,7 @@ $searchQueries = $db->query(
         GROUP BY tsuchanfrage.kSuchanfrage
         ORDER BY ' . $cLivesucheSQL->cOrder . '
         LIMIT ' . $oPagiSuchanfragen->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 if (isset($searchQueries->tcSeo) && mb_strlen($searchQueries->tcSeo) > 0) {
@@ -507,21 +512,21 @@ $failedQueries  = $db->query(
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
         ORDER BY nAnzahlGesuche DESC
         LIMIT ' . $oPagiErfolglos->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 $queryBlacklist = $db->query(
     'SELECT *
         FROM tsuchanfrageblacklist
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
         ORDER BY kSuchanfrageBlacklist',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 $queryMapping   = $db->query(
     'SELECT *
         FROM tsuchanfragemapping
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
         LIMIT ' . $oPagiMapping->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->assign('Sprachen', $languages)

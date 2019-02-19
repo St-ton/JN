@@ -6,6 +6,9 @@
  * @created Mon, 20 Jun 2016 13:41:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,11 +29,11 @@ class Migration_20160620134100 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tbesucher` CHANGE COLUMN `cSessId` `cSessID` VARCHAR(128)");
+        $this->execute('ALTER TABLE `tbesucher` CHANGE COLUMN `cSessId` `cSessID` VARCHAR(128)');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tbesucher` CHANGE COLUMN `cSessID` `cSessId` VARCHAR(128)");
+        $this->execute('ALTER TABLE `tbesucher` CHANGE COLUMN `cSessID` `cSessId` VARCHAR(128)');
     }
 }

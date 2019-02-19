@@ -6,7 +6,7 @@
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PERMISSIONCHECK_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT); // to get all folders which need to be writable

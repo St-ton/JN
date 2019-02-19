@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
-use Backend\AdminLoginStatus;
+use JTL\Backend\AdminLoginStatus;
 use Monolog\Logger;
 
 /**
  * Class AdminLoginStatusToLogLevel
- * @package Mapper
+ * @package JTL\Mapper
  */
 class AdminLoginStatusToLogLevel
 {

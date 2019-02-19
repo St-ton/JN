@@ -4,21 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\ReturnType;
+use Generator;
+use JTL\DB\ReturnType;
+use PDO;
+use JTL\Sitemap\Items\LiveSearch as Item;
 use function Functional\map;
 
 /**
  * Class LiveSearch
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class LiveSearch extends AbstractFactory
 {
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
@@ -35,10 +38,10 @@ final class LiveSearch extends AbstractFactory
                 ORDER BY tsuchanfrage.kSuchanfrage',
             ReturnType::QUERYSINGLE
         );
-        while (($ls = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+        while (($ls = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $ls->kSuchanfrage = (int)$ls->kSuchanfrage;
             $ls->langID       = (int)$ls->langID;
-            $item             = new \Sitemap\Items\LiveSearch($this->config, $this->baseURL, $this->baseImageURL);
+            $item             = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($ls, $languages);
             yield $item;
         }

@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Session\Frontend;
+use JTL\Catalog\Product\Artikel;
+use JTL\Session\Frontend;
 
 /**
  * Class RecentlyViewedProducts
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class RecentlyViewedProducts extends AbstractBox
 {
@@ -28,9 +29,9 @@ final class RecentlyViewedProducts extends AbstractBox
             && Frontend::getCustomerGroup()->mayViewCategories()
         ) {
             $products       = [];
-            $defaultOptions = \Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $oArtikel) {
-                $product = new \Artikel();
+                $product = new Artikel();
                 $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                 if ($product->kArtikel > 0) {
                     $products[$i] = $product;

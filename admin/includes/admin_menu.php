@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-\Shop::Container()->getGetText()->loadAdminLocale('menu');
+\JTL\Shop::Container()->getGetText()->loadAdminLocale('menu');
 
 /** @var array $adminMenu */
 $adminMenu = [
@@ -19,6 +19,7 @@ $adminMenu = [
             __('Settings')      => (object)[
                 'link'   => 'bilder.php',
                 'rights' => 'SETTINGS_IMAGES_VIEW',
+                'section' => CONF_BILDER,
             ],
             __('Watermark')     => (object)[
                 'link'   => 'branding.php',
@@ -39,18 +40,22 @@ $adminMenu = [
             __('Selection wizard') => (object)[
                 'link'   => 'auswahlassistent.php',
                 'rights' => 'EXTENSION_SELECTIONWIZARD_VIEW',
+                'section' => CONF_AUSWAHLASSISTENT,
             ],
             __('Item details')     => (object)[
-                'link'   => 'einstellungen.php?kSektion=5',
+                'link'   => 'einstellungen.php?kSektion=' . CONF_ARTIKELDETAILS,
                 'rights' => 'SETTINGS_ARTICLEDETAILS_VIEW',
+                'section' => CONF_ARTIKELDETAILS,
             ],
             __('Customer reviews') => (object)[
                 'link'   => 'bewertung.php',
                 'rights' => 'MODULE_VOTESYSTEM_VIEW',
+                'section' => CONF_BEWERTUNG,
             ],
             __('Price history')    => (object)[
                 'link'   => 'preisverlauf.php',
                 'rights' => 'MODULE_PRICECHART_VIEW',
+                'section' => CONF_PREISVERLAUF,
             ],
             __('Tags')             => (object)[
                 'link'   => 'tagging.php',
@@ -67,8 +72,9 @@ $adminMenu = [
                 'rights' => 'DISPLAY_TEMPLATE_VIEW',
             ],
             __('Front page')              => (object)[
-                'link'   => 'einstellungen.php?kSektion=2',
+                'link'   => 'einstellungen.php?kSektion=' . CONF_STARTSEITE,
                 'rights' => 'SETTINGS_STARTPAGE_VIEW',
+                'section' => CONF_STARTSEITE,
             ],
             __('GTC/cancellation policy') => (object)[
                 'link'   => 'agbwrb.php',
@@ -81,10 +87,12 @@ $adminMenu = [
             __('News')                    => (object)[
                 'link'   => 'news.php',
                 'rights' => 'CONTENT_NEWS_SYSTEM_VIEW',
+                'section' => CONF_NEWS,
             ],
             __('Box settings')            => (object)[
-                'link'   => 'einstellungen.php?kSektion=8',
+                'link'   => 'einstellungen.php?kSektion=' . CONF_BOXEN,
                 'rights' => 'SETTINGS_BOXES_VIEW',
+                'section' => CONF_BOXEN,
             ],
             __('Boxes')                   => (object)[
                 'link'   => 'boxen.php',
@@ -108,16 +116,19 @@ $adminMenu = [
         ],
         __('Forms')   => [
             __('Form settings')            => (object)[
-                'link'   => 'einstellungen.php?kSektion=6',
+                'link'   => 'einstellungen.php?kSektion=' . CONF_KUNDEN,
                 'rights' => 'SETTINGS_CUSTOMERFORM_VIEW',
+                'section' => CONF_KUNDEN,
             ],
             __('Contact form')             => (object)[
                 'link'   => 'kontaktformular.php',
                 'rights' => 'SETTINGS_CONTACTFORM_VIEW',
+                'section' => CONF_KONTAKTFORMULAR,
             ],
             __('Custom form fields')       => (object)[
                 'link'   => 'kundenfeld.php',
                 'rights' => 'ORDER_CUSTOMERFIELDS_VIEW',
+                'section' => CONF_KUNDENFELD,
             ],
             __('Check box administration') => (object)[
                 'link'   => 'checkbox.php',
@@ -126,8 +137,9 @@ $adminMenu = [
         ],
         __('E-Mails') => [
             __('Settings')   => (object)[
-                'link'   => 'einstellungen.php?kSektion=3',
+                'link'   => 'einstellungen.php?kSektion=' . CONF_EMAILS,
                 'rights' => 'SETTINGS_EMAILS_VIEW',
+                'section' => CONF_EMAILS,
             ],
             __('Templates')  => (object)[
                 'link'   => 'emailvorlagen.php',
@@ -140,6 +152,7 @@ $adminMenu = [
             __('Blacklist')  => (object)[
                 'link'   => 'emailblacklist.php',
                 'rights' => 'SETTINGS_EMAIL_BLACKLIST_VIEW',
+                'section' => CONF_EMAILBLACKLIST,
             ],
             __('E-mail log') => (object)[
                 'link'   => 'emailhistory.php',
@@ -150,8 +163,9 @@ $adminMenu = [
     __('Purchases')      => [
         __('Shopping cart') => [
             __('Shopping cart settings') => (object)[
-                'link'   => 'einstellungen.php?kSektion=7',
+                'link'   => 'einstellungen.php?kSektion=' . CONF_KAUFABWICKLUNG,
                 'rights' => 'SETTINGS_BASKET_VIEW',
+                'section' => CONF_KAUFABWICKLUNG,
             ],
             __('Saved baskets')          => (object)[
                 'link'   => 'warenkorbpers.php',
@@ -164,7 +178,8 @@ $adminMenu = [
             __('Trusted Shops')          => (object)[
                 'link'    => 'trustedshops.php',
                 'rights'  => 'ORDER_TRUSTEDSHOPS_VIEW',
-                'partner' => true
+                'partner' => true,
+                'section' => CONF_TRUSTEDSHOPS,
             ],
         ],
         __('Payments')      => [
@@ -200,10 +215,12 @@ $adminMenu = [
             __('Surveys')                 => (object)[
                 'link'   => 'umfrage.php',
                 'rights' => 'EXTENSION_VOTE_VIEW',
+                'section' => CONF_UMFRAGE,
             ],
             __('Customers win customers') => (object)[
                 'link'   => 'kundenwerbenkunden.php',
                 'rights' => 'MODULE_CAC_VIEW',
+                'section' => CONF_KUNDENWERBENKUNDEN,
             ],
             __('Coupons')                 => (object)[
                 'link'   => 'kupons.php',
@@ -216,10 +233,12 @@ $adminMenu = [
             __('Comparison list')         => (object)[
                 'link'   => 'vergleichsliste.php',
                 'rights' => 'MODULE_COMPARELIST_VIEW',
+                'section' => CONF_VERGLEICHSLISTE,
             ],
             __('Newsletter')              => (object)[
                 'link'   => 'newsletter.php',
                 'rights' => 'MODULE_NEWSLETTER_VIEW',
+                'section' => CONF_NEWSLETTER,
             ],
         ],
         __('Publicity')        => [
@@ -290,18 +309,21 @@ $adminMenu = [
             __('Sitemap export') => (object)[
                 'link'   => 'sitemapexport.php',
                 'rights' => 'EXPORT_SITEMAP_VIEW',
+                'section' => CONF_SITEMAP,
             ],
             __('RSS feed')       => (object)[
                 'link'   => 'rss.php',
                 'rights' => 'EXPORT_RSSFEED_VIEW',
+                'section' => CONF_RSS,
             ],
         ],
     ],
     __('Administration') => [
         __('Settings')    => [
             __('Global settings')               => (object)[
-                'link'   => 'einstellungen.php?kSektion=1',
+                'link'   => 'einstellungen.php?kSektion=' . CONF_GLOBAL,
                 'rights' => 'SETTINGS_GLOBAL_VIEW',
+                'section' => CONF_GLOBAL,
             ],
             __('Back end user')                 => (object)[
                 'link'   => 'benutzerverwaltung.php',
@@ -314,10 +336,12 @@ $adminMenu = [
             __('Global meta data')              => (object)[
                 'link'   => 'globalemetaangaben.php',
                 'rights' => 'SETTINGS_GLOBAL_META_VIEW',
+                'section' => CONF_METAANGABEN,
             ],
             __('Special items')                 => (object)[
                 'link'   => 'suchspecials.php',
                 'rights' => 'SETTINGS_SPECIALPRODUCTS_VIEW',
+                'section' => CONF_SUCHSPECIAL,
             ],
             __('Sitemap structure')             => (object)[
                 'link'   => 'shopsitemap.php',
@@ -374,10 +398,12 @@ $adminMenu = [
             __('Search settings') => (object)[
                 'link'   => 'sucheinstellungen.php',
                 'rights' => 'SETTINGS_ARTICLEOVERVIEW_VIEW',
+                'section' => CONF_ARTIKELUEBERSICHT,
             ],
             __('Filter')          => (object)[
                 'link'   => 'navigationsfilter.php',
                 'rights' => 'SETTINGS_NAVIGATION_FILTER_VIEW',
+                'section' => CONF_NAVIGATIONSFILTER,
             ],
             __('Queries')         => (object)[
                 'link'   => 'livesuche.php',
@@ -392,15 +418,32 @@ $adminMenu = [
 //                'link' => 'marktplatz.php',
 //                'rights' => 'PLUGIN_ADMIN_VIEW',
 //            ],
-        __('Plug-in administration') => (object)[
-            'link'   => 'pluginverwaltung.php',
-            'rights' => 'PLUGIN_ADMIN_VIEW',
-        ],
-        __('Plug-in profiler')       => (object)[
-            'link'   => 'profiler.php',
-            'rights' => 'PROFILER_VIEW',
-        ],
+            __('Plug-in administration') => (object)[
+                'link'   => 'pluginverwaltung.php',
+                'rights' => 'PLUGIN_ADMIN_VIEW',
+            ],
+            __('Plug-in profiler')       => (object)[
+                'link'   => 'profiler.php',
+                'rights' => 'PROFILER_VIEW',
+            ],
         ],
         __('Plugins')  => 'DYNAMIC_PLUGINS',
     ],
 ];
+
+$sectionMenuMapping = [];
+
+foreach ($adminMenu as $menuName => $menu) {
+    foreach ($menu as $subMenuName => $subMenu) {
+        if (is_array($subMenu)) {
+            foreach ($subMenu as $itemName => $item) {
+                if (isset($item->section)) {
+                    $sectionMenuMapping[$item->section] = (object)[
+                        'path' => $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName,
+                        'url'  => $item->link,
+                    ];
+                }
+            }
+        }
+    }
+}

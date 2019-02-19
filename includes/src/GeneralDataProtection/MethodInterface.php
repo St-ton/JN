@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
 /**
  * Interface MethodInterface
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  */
 interface MethodInterface
 {

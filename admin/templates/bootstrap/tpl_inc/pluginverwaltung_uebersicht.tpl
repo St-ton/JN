@@ -18,7 +18,55 @@ function ackCheck(kPlugin, hash)
 {/if}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')}
+{*include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')*}
+
+<div id="content" class="container-fluid" style="padding-top: 10px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="heading-body"><h4 class="panel-title">{__('pluginverwaltung')}</h4></div>
+            <div class="heading-right">
+                {if $hasAuth}
+                    <a href="store.php" class="btn btn-xs btn-danger"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
+                {else}
+                    <a href="store.php" class="btn btn-xs btn-default"><i class="fa fa-link"></i> {__('storeLink')}</a>
+                {/if}
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                {if $hasAuth}
+                    <div class="col-md-4 border-right">
+                        <div class="text-center">
+                            <h2 style="margin-bottom: 0px;margin-top: 0;">2</h2>
+                            <p style="color:#666;">{__('storeUpdatesAvailable')}</p>
+                            <a class="btn btn-xs btn-default" href="#">{__('storeListUpdates')}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 border-right">
+                        <div class="text-center">
+                            <h2 style="margin-bottom: 0px;margin-top: 0;">3</h2>
+                            <p style="color:#666;">{__('storePlugins')}</p>
+                            <a class="btn btn-xs btn-default" href="#">{__('storeListAll')}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h2 style="margin-bottom: 0px;margin-top: 0;">{$smarty.now|date_format}</h2>
+                            <p style="color:#666;">{__('storeLastUpdate')}</p>
+                            <a class="btn btn-xs btn-default" href="#">{__('storeUpdateNow')}</a>
+                        </div>
+                    </div>
+                {else}
+                    <div class="col-md-12">
+                        <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
+                        <a href="store.php" class="btn btn-primary">{__('storeLink')}</a>
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="content" class="container-fluid">
     <div id="settings">
         {if $pluginsByState|@count > 0}

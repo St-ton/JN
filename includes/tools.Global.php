@@ -4,20 +4,41 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Cart;
-use Helpers\Category;
-use Helpers\Date;
-use Helpers\FileSystem;
-use Helpers\Form;
-use Helpers\GeneralObject;
-use Helpers\PaymentMethod;
-use Helpers\PHPSettings;
-use Helpers\Product;
-use Helpers\Request;
-use Helpers\SearchSpecial;
-use Helpers\ShippingMethod;
-use Helpers\Tax;
-use Helpers\URL;
+use JTL\Helpers\Cart;
+use JTL\Helpers\Category;
+use JTL\Helpers\Date;
+use JTL\Helpers\FileSystem;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\PaymentMethod;
+use JTL\Helpers\PHPSettings;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Helpers\SearchSpecial;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Tax;
+use JTL\Helpers\URL;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Currency;
+use JTL\Jtllog;
+use JTL\Kampagne;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Customer\Kunde;
+use JTL\Checkout\Kupon;
+use JTL\Catalog\Product\Preise;
+use JTL\Redirect;
+use JTL\Shop;
+use JTL\SimpleMail;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\TrustedShops;
+use JTL\Checkout\Versandart;
+use JTL\Visitor;
+use JTL\Cart\WarenkorbPers;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Checkout\Zahlungsart;
+use JTL\Session\Frontend;
 
 /**
  * @param float  $fPreisNetto
@@ -41,7 +62,7 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', bool $
 function checkeTel($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::checkPhoneNumber instead', E_USER_DEPRECATED);
-    return StringHandler::checkPhoneNumber($data);
+    return Text::checkPhoneNumber($data);
 }
 
 /**
@@ -52,12 +73,12 @@ function checkeTel($data)
 function checkeDatum($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::checkDate instead', E_USER_DEPRECATED);
-    return StringHandler::checkDate($data);
+    return Text::checkDate($data);
 }
 
 /**
  * @param string      $cPasswort
- * @param null{string $cHashPasswort
+ * @param null|string $cHashPasswort
  * @return bool|string
  * @deprecated since 5.0.0
  */
@@ -155,7 +176,7 @@ function gibSeitenTyp()
 function filterXSS($cString, $nSuche = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return StringHandler::filterXSS($cString, $nSuche);
+    return Text::filterXSS($cString, $nSuche);
 }
 
 /**
@@ -183,9 +204,10 @@ function writeLog($logfile, $entry, $level)
         if (!$logfile) {
             return false;
         }
-        fwrite($logfile,
+        fwrite(
+            $logfile,
             "\n[" . date('m.d.y H:i:s') . '] ' .
-            '[' . (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
+            '[' . (new \JTL\GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
             $entry
         );
         fclose($logfile);
@@ -297,7 +319,7 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
             foreach ($oVariation->Werte as $oVariationWert) {
                 // Ist Variation ausverkauft?
                 if ($oVariationWert->fLagerbestand <= 0) {
-                    $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
+                    $oVariationWert->cNameEigenschaft   = $oVariation->cName;
                     $soldOut[$oVariation->kEigenschaft] = $oVariationWert;
                 }
             }
@@ -352,7 +374,7 @@ function sortiereFilter($filters, $key)
 function holeGlobaleMetaAngaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\Metadata::getGlobalMetaData();
+    return JTL\Filter\Metadata::getGlobalMetaData();
 }
 
 /**
@@ -362,7 +384,7 @@ function holeGlobaleMetaAngaben()
 function holeExcludedKeywords()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\Metadata::getExcludes();
+    return JTL\Filter\Metadata::getExcludes();
 }
 
 /**
@@ -466,7 +488,7 @@ function mappeSeitentyp(int $pageType)
             return 'Artikeldetails';
 
         case PAGE_ARTIKELLISTE:
-            return 'Artikelliste';
+            return 'ArtikelListe';
 
         case PAGE_WARENKORB:
             return 'Warenkorb';
@@ -806,7 +828,7 @@ function gibTrustedShopsBewertenButton(string $cMail, string $cBestellNr)
 function parseNewsText($cText)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::parseNewsText() instead.', E_USER_DEPRECATED);
-    return StringHandler::parseNewsText($cText);
+    return Text::parseNewsText($cText);
 }
 
 /**
@@ -946,7 +968,7 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::prepareMeta() instead.', E_USER_DEPRECATED);
-    return \Filter\Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
+    return JTL\Filter\Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
 }
 
 /**
@@ -959,7 +981,7 @@ function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 function truncateMetaDescription($cDesc)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::truncateMetaDescription() instead.', E_USER_DEPRECATED);
-    return \Filter\Metadata::truncateMetaDescription($cDesc);
+    return JTL\Filter\Metadata::truncateMetaDescription($cDesc);
 }
 
 /**
@@ -1165,8 +1187,8 @@ function gibStandardWaehrung($bISO = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session directly instead.', E_USER_DEPRECATED);
     return $bISO === true
-        ? \Session\Frontend::getCurrency()->getCode()
-        : \Session\Frontend::getCurrency()->getID();
+        ? Frontend::getCurrency()->getCode()
+        : Frontend::getCurrency()->getID();
 }
 
 /**
@@ -1241,7 +1263,7 @@ function generiereCaptchaCode($sec)
 function encodeCode($klartext)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SimpleCaptchaService::encodeCode() instead.', E_USER_DEPRECATED);
-    return \Services\JTL\SimpleCaptchaService::encodeCode($klartext);
+    return \JTL\Services\JTL\SimpleCaptchaService::encodeCode($klartext);
 }
 
 /**
@@ -1297,7 +1319,7 @@ function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2
 function valid_email($email)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::filterEmailAddress() instead.', E_USER_DEPRECATED);
-    return StringHandler::filterEmailAddress($email) !== false;
+    return Text::filterEmailAddress($email) !== false;
 }
 
 /**
@@ -1667,7 +1689,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
 function formatSize($size, $format = '%.2f')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::formatSize() instead.', E_USER_DEPRECATED);
-    return StringHandler::formatSize($size, $format);
+    return Text::formatSize($size, $format);
 }
 
 /**
@@ -1806,7 +1828,7 @@ function setzeMerkmalFilter($filter = [])
         __FUNCTION__ . ' is deprecated. Use ProductFilter::initAttributeFilter() instead.',
         E_USER_DEPRECATED
     );
-    return \Filter\ProductFilter::initAttributeFilter($filter);
+    return JTL\Filter\ProductFilter::initAttributeFilter($filter);
 }
 
 /**
@@ -1817,7 +1839,7 @@ function setzeMerkmalFilter($filter = [])
 function setzeSuchFilter($filter = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initSearchFilter() instead.', E_USER_DEPRECATED);
-    return \Filter\ProductFilter::initSearchFilter($filter);
+    return JTL\Filter\ProductFilter::initSearchFilter($filter);
 }
 
 /**
@@ -1828,7 +1850,7 @@ function setzeSuchFilter($filter = [])
 function setzeTagFilter($filter = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initTagFilter() instead.', E_USER_DEPRECATED);
-    return \Filter\ProductFilter::initTagFilter($filter);
+    return JTL\Filter\ProductFilter::initTagFilter($filter);
 }
 
 /**
@@ -2012,7 +2034,7 @@ function utf8_convert_recursive($data, $encode = true, $copy = false)
         __FUNCTION__ . ' is deprecated. Use StringHandler::utf8_convert_recursive() instead.',
         E_USER_DEPRECATED
     );
-    return StringHandler::utf8_convert_recursive($data, $encode, $copy);
+    return Text::utf8_convert_recursive($data, $encode, $copy);
 }
 
 /**
@@ -2026,7 +2048,7 @@ function utf8_convert_recursive($data, $encode = true, $copy = false)
 function json_safe_encode($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::json_safe_encode() instead.', E_USER_DEPRECATED);
-    return StringHandler::json_safe_encode($data);
+    return Text::json_safe_encode($data);
 }
 
 /**
@@ -2036,7 +2058,7 @@ function json_safe_encode($data)
 function checkeSpracheWaehrung($langISO = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use \Session\Frontend::checkReset() instead.', E_USER_DEPRECATED);
-    Session\Frontend::checkReset($langISO);
+    Frontend::checkReset($langISO);
 }
 /**
  * @param string $cISO
@@ -2064,7 +2086,7 @@ function landISO($cLand)
 }
 
 /**
- * @return \Link\LinkGroupCollection
+ * @return \JTL\Link\LinkGroupCollection
  * @deprecated since 5.0.0
  */
 function setzeLinks()
@@ -2073,7 +2095,7 @@ function setzeLinks()
         __FUNCTION__ . ' is deprecated. Use \Session\Frontend::setSpecialLinks() instead.',
         E_USER_DEPRECATED
     );
-    return Session\Frontend::setSpecialLinks();
+    return Frontend::setSpecialLinks();
 }
 /**
  * @param string $url

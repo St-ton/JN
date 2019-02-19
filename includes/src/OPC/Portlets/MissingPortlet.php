@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
-use Plugin\Extension;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
+use JTL\Plugin\PluginInterface;
 
 /**
  * Class MissingPortlet
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class MissingPortlet extends Portlet
 {
@@ -22,9 +22,9 @@ class MissingPortlet extends Portlet
     protected $missingClass = '';
 
     /**
-     * @var null|Extension
+     * @var null|PluginInterface
      */
-    protected $inactivePlugin = null;
+    protected $inactivePlugin;
 
     /**
      * @param PortletInstance $instance
@@ -75,18 +75,18 @@ class MissingPortlet extends Portlet
     }
 
     /**
-     * @return Extension|null
+     * @return PluginInterface|null
      */
-    public function getInactivePlugin(): ?Extension
+    public function getInactivePlugin(): ?PluginInterface
     {
         return $this->inactivePlugin;
     }
 
     /**
-     * @param Extension|null $inactivePlugin
+     * @param PluginInterface|null $inactivePlugin
      * @return MissingPortlet
      */
-    public function setInactivePlugin(?Extension $inactivePlugin): MissingPortlet
+    public function setInactivePlugin(?PluginInterface $inactivePlugin): MissingPortlet
     {
         $this->inactivePlugin = $inactivePlugin;
 

@@ -3,12 +3,23 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *
- * @global Smarty\JTLSmarty $smarty
+ * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
-use Helpers\Manufacturer;
-use Helpers\Category;
-use Helpers\Tax;
+use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Category;
+use JTL\Helpers\Tax;
+use JTL\Catalog\Product\Artikel;
+use JTL\CheckBox;
+use JTL\Media\Image;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\Staat;
+use JTL\Helpers\Text;
+use JTL\TrustedShops;
+use JTL\Media\MediaImage;
 
 $scc = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
 $scc->registerComponents();
@@ -49,13 +60,13 @@ function get_product_list($params, $smarty)
         ? $params['cAssign']
         : 'oCustomArtikel_arr';
     $attributeFilters = isset($params['cMerkmalFilter'])
-        ? \Filter\ProductFilter::initAttributeFilter(explode(';', $params['cMerkmalFilter']))
+        ? \JTL\Filter\ProductFilter::initAttributeFilter(explode(';', $params['cMerkmalFilter']))
         : [];
     $searchFilters    = isset($params['cSuchFilter'])
-        ? \Filter\ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
+        ? \JTL\Filter\ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
         : [];
     $tagFilters       = isset($params['cTagFilter'])
-        ? \Filter\ProductFilter::initTagFilter(explode(';', $params['cTagFilter']))
+        ? \JTL\Filter\ProductFilter::initTagFilter(explode(';', $params['cTagFilter']))
         : [];
     $params           = [
         'kKategorie'             => $params['kKategorie'] ?? null,
@@ -90,8 +101,8 @@ function get_product_list($params, $smarty)
             $products[] = $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        $products = (new \Filter\ProductFilter(
-            \Filter\Config::getDefault(),
+        $products = (new \JTL\Filter\ProductFilter(
+            \JTL\Filter\Config::getDefault(),
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         ))
@@ -318,13 +329,13 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         $fAufpreisNetto / $fVPEWert,
-                        \Session\Frontend::getCurrency()->getCode(),
+                        \JTL\Session\Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                        \Session\Frontend::getCurrency()->getCode(),
+                        \JTL\Session\Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -348,7 +359,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        \Session\Frontend::getCurrency()->getCode(),
+                        \JTL\Session\Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -357,7 +368,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
-                        \Session\Frontend::getCurrency()->getCode(),
+                        \JTL\Session\Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -483,8 +494,8 @@ function get_navigation($params, $smarty)
 }
 
 /**
- * @param \Link\LinkGroupInterface $linkGroup
- * @param int                      $kVaterLink
+ * @param \JTL\Link\LinkGroupInterface $linkGroup
+ * @param int                          $kVaterLink
  * @return \Tightenco\Collect\Support\Collection
  */
 function build_navigation_subs($linkGroup, $kVaterLink = 0)
@@ -495,7 +506,7 @@ function build_navigation_subs($linkGroup, $kVaterLink = 0)
         return $oNew_arr;
     }
     foreach ($linkGroup->getLinks() as $link) {
-        /** @var \Link\Link $link */
+        /** @var \JTL\Link\Link $link */
         if ($link->getParent() !== $kVaterLink) {
             continue;
         }
@@ -513,7 +524,7 @@ function build_navigation_subs($linkGroup, $kVaterLink = 0)
  */
 function get_trustedshops_data($params, $smarty)
 {
-    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
+    $oTrustedShops = new TrustedShops(-1, Text::convertISO2ISO639(Shop::getLanguageCode()));
     $smarty->assign($params['assign'], [
         'tsId'   => $oTrustedShops->tsId,
         'nAktiv' => $oTrustedShops->nAktiv

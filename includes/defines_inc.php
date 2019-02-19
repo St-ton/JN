@@ -45,6 +45,7 @@ define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
+define('CONF_FTP', 127);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -266,7 +267,7 @@ define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
 define('PFAD_PLUGIN_MIGRATIONS', 'migrations/');
-define('PFAD_EXTENSIONS', 'extensions/');
+define('PLUGIN_DIR', 'plugins/');
 define('PLUGIN_INFO_FILE', 'info.xml');
 define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');

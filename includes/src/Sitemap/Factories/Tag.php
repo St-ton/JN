@@ -4,21 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\ReturnType;
+use Generator;
+use JTL\DB\ReturnType;
+use JTL\Sitemap\Items\Tag as Item;
+use PDO;
 use function Functional\map;
 
 /**
  * Class Tag
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class Tag extends AbstractFactory
 {
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
@@ -34,10 +37,10 @@ final class Tag extends AbstractFactory
                 ORDER BY ttag.kTag',
             ReturnType::QUERYSINGLE
         );
-        while (($tag = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+        while (($tag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $tag->langID = (int)$tag->langID;
             $tag->kTag   = (int)$tag->kTag;
-            $item        = new \Sitemap\Items\Tag($this->config, $this->baseURL, $this->baseImageURL);
+            $item        = new Item($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($tag, $languages);
             yield $item;
         }

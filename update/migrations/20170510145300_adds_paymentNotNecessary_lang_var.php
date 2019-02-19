@@ -6,6 +6,9 @@
  * @created Wed, 10 May 2017 14:53:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170510145300 extends Migration implements IMigration
 {
-    protected $author = 'ms';
+    protected $author      = 'ms';
     protected $description = 'adds paymentNotNecessary language variable';
 
     public function up()

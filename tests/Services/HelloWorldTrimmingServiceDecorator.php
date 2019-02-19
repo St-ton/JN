@@ -26,7 +26,7 @@ class HelloWorldTrimmingServiceDecorator implements HelloWorldServiceInterface
     /**
      * @return string
      */
-    public function getHelloWorldString()
+    public function getHelloWorldString(): string
     {
         return trim($this->inner->getHelloWorldString());
     }

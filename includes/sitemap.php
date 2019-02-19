@@ -4,7 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Visitor;
+use JTL\DB\ReturnType;
 
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';
@@ -26,7 +30,7 @@ $nFloodProtection = Shop::Container()->getDB()->queryPrepared(
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
         ORDER BY `dErstellt` DESC',
     ['ip' => $cIP],
-    \DB\ReturnType::AFFECTED_ROWS
+    ReturnType::AFFECTED_ROWS
 );
 if ($nFloodProtection === 0) {
     // Track request
@@ -34,7 +38,7 @@ if ($nFloodProtection === 0) {
     $oSitemapTracker->cSitemap     = basename($cDatei);
     $oSitemapTracker->kBesucherBot = getRequestBot();
     $oSitemapTracker->cIP          = $cIP;
-    $oSitemapTracker->cUserAgent   = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
+    $oSitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
     $oSitemapTracker->dErstellt    = 'NOW()';
 
     Shop::Container()->getDB()->insert('tsitemaptracker', $oSitemapTracker);

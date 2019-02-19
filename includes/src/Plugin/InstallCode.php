@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class InstallCode
- * @package Plugin
+ * @package JTL\Plugin
  */
 class InstallCode extends Enum
 {
@@ -349,4 +349,6 @@ class InstallCode extends Enum
     public const EXT_MUST_NOT_HAVE_UNINSTALLER = 400;
 
     public const WRONG_EXT_DIR = 401;
+
+    public const INVALID_STORE_ID = 402;
 }

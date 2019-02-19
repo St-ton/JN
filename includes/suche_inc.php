@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Sprache;
+
 /**
  * @return array
  * @deprecated since 5.0.0
@@ -11,7 +14,7 @@
 function gibSuchSpalten()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\States\BaseSearchQuery::getSearchRows(Shop::getSettings([CONF_ARTIKELUEBERSICHT]));
+    return JTL\Filter\States\BaseSearchQuery::getSearchRows(Shop::getSettings([CONF_ARTIKELUEBERSICHT]));
 }
 
 /**
@@ -23,7 +26,7 @@ function gibSuchSpalten()
 function gibMaxPrioSpalte($exclude, $conf = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\States\BaseSearchQuery::getPrioritizedRows($exclude, $conf);
+    return JTL\Filter\States\BaseSearchQuery::getPrioritizedRows($exclude, $conf);
 }
 
 /**

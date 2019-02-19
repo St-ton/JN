@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
+
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class AbstractItem
- * @package News
+ * @package JTL\News
  */
 abstract class AbstractItem implements ItemInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array

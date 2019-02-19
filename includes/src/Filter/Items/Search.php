@@ -4,24 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\States\BaseSearchQuery;
-use Filter\StateSQL;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\States\BaseSearchQuery;
+use JTL\Filter\StateSQL;
+use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
+use JTL\MagicCompatibilityTrait;
+use stdClass;
 
 /**
  * Class Search
- * @package Filter
+ * @package JTL\Filter\Items
  */
 class Search extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -238,7 +242,7 @@ class Search extends AbstractFilter
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
-            ['lang' => $languageID, 'ip' => \Helpers\Request::getRealIP()],
+            ['lang' => $languageID, 'ip' => Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );
         $ipUsed       = $this->productFilter->getDB()->select(
@@ -248,7 +252,7 @@ class Search extends AbstractFilter
             'cSuche',
             $Suchausdruck,
             'cIP',
-            \Helpers\Request::getRealIP(),
+            Request::getRealIP(),
             false,
             'kSuchanfrageCache'
         );
@@ -257,9 +261,9 @@ class Search extends AbstractFilter
                 && ($ipUsed === null || empty($ipUsed->kSuchanfrageCache)))
         ) {
             // Fülle Suchanfragencache
-            $searchQueryCache           = new \stdClass();
+            $searchQueryCache           = new stdClass();
             $searchQueryCache->kSprache = $languageID;
-            $searchQueryCache->cIP      = \Helpers\Request::getRealIP();
+            $searchQueryCache->cIP      = Request::getRealIP();
             $searchQueryCache->cSuche   = $Suchausdruck;
             $searchQueryCache->dZeit    = 'NOW()';
             $this->productFilter->getDB()->insert('tsuchanfragencache', $searchQueryCache);
@@ -272,14 +276,14 @@ class Search extends AbstractFilter
             );
             if ($hits > 0) {
                 require_once \PFAD_ROOT . \PFAD_DBES . 'seo.php';
-                $searchQuery                  = new \stdClass();
+                $searchQuery                  = new stdClass();
                 $searchQuery->kSprache        = $languageID;
                 $searchQuery->cSuche          = $Suchausdruck;
                 $searchQuery->nAnzahlTreffer  = $hits;
                 $searchQuery->nAnzahlGesuche  = 1;
                 $searchQuery->dZuletztGesucht = 'NOW()';
-                $searchQuery->cSeo            = \JTL\SeoHelper::getSeo($Suchausdruck);
-                $searchQuery->cSeo            = \JTL\SeoHelper::checkSeo($searchQuery->cSeo);
+                $searchQuery->cSeo            = Seo::getSeo($Suchausdruck);
+                $searchQuery->cSeo            = Seo::checkSeo($searchQuery->cSeo);
                 $previuousQuery               = $this->productFilter->getDB()->select(
                     'tsuchanfrage',
                     'kSprache',
@@ -310,7 +314,7 @@ class Search extends AbstractFilter
                     return $this->productFilter->getDB()->insert('tsuchanfrage', $searchQuery) > 0;
                 }
             } else {
-                $queryMiss                  = new \stdClass();
+                $queryMiss                  = new stdClass();
                 $queryMiss->kSprache        = $languageID;
                 $queryMiss->cSuche          = $Suchausdruck;
                 $queryMiss->nAnzahlGesuche  = 1;

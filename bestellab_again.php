@@ -4,7 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Plugin\Helper;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
@@ -50,15 +55,15 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
                 && $_POST['inhaber']
             ) {
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenNr    =
-                    StringHandler::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cGueltigkeit =
-                    StringHandler::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cCVV         =
-                    StringHandler::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp   =
-                    StringHandler::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber     =
-                    StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
                 $bZusatzangabenDa                                    = true;
             }
             break;
@@ -73,17 +78,17 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
                     && $_POST['inhaber'])
             ) {
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cBankName =
-                    StringHandler::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['bankname']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr  =
-                    StringHandler::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['kontonr']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cBLZ      =
-                    StringHandler::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['blz']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN     =
-                    StringHandler::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['iban']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cBIC      =
-                    StringHandler::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
-                    StringHandler::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
+                    Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
                 $bZusatzangabenDa                                 = true;
             }
             break;
@@ -106,9 +111,9 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$kPlugin = \Plugin\Helper::getIDByModuleID($moduleID);
+$kPlugin = Helper::getIDByModuleID($moduleID);
 if ($kPlugin > 0) {
-    $loader  = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+    $loader  = Helper::getLoaderByPluginID($kPlugin);
     $oPlugin = $loader->init($kPlugin);
     if ($oPlugin !== null) {
         require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
@@ -132,7 +137,7 @@ if ($kPlugin > 0) {
     $paymentMethod->preparePaymentProcess($bestellung);
 }
 
-Shop::Smarty()->assign('WarensummeLocalized', \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized())
+Shop::Smarty()->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
     ->assign('Bestellung', $bestellung);
 
 unset(

@@ -1,0 +1,14 @@
+msgid "store"
+msgstr "JTL-Store"
+
+msgid "storeDesc"
+msgstr "Please link with JTL-Account in order to be able to access these resources"
+
+msgid "storeURL"
+msgstr ""
+
+msgid "storeLink"
+msgstr "Link now"
+
+msgid "storeRevoke"
+msgstr "Unlink"

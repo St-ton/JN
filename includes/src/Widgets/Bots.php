@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\Statistik;
 
 /**
  * Class Bots
- * @package Widgets
+ * @package JTL\Widgets
  */
 class Bots extends AbstractWidget
 {
@@ -35,7 +37,7 @@ class Bots extends AbstractWidget
      */
     public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
     {
-        return (new \Statistik(\firstDayOfMonth($nMonth, $nYear), \time()))->holeBotStats($nLimit);
+        return (new Statistik(\firstDayOfMonth($nMonth, $nYear), \time()))->holeBotStats($nLimit);
     }
 
     /**

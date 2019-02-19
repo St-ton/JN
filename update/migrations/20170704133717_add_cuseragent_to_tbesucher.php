@@ -6,6 +6,9 @@
  * @created Tue, 04 Jul 2017 13:37:17 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -27,11 +30,11 @@ class Migration_20170704133717 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE tbesucher ADD COLUMN cUserAgent VARCHAR(512) NULL AFTER cReferer");
+        $this->execute('ALTER TABLE tbesucher ADD COLUMN cUserAgent VARCHAR(512) NULL AFTER cReferer');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE tbesucher DROP COLUMN cUserAgent");
+        $this->execute('ALTER TABLE tbesucher DROP COLUMN cUserAgent');
     }
 }

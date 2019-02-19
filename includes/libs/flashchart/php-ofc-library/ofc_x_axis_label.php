@@ -35,7 +35,7 @@ class x_axis_label
     
     public function set_vertical()
     {
-        $this->rotate = "vertical";
+        $this->rotate = 'vertical';
     }
     
     public function set_visible()

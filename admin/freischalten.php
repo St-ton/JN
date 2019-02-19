@@ -4,9 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -15,7 +18,7 @@ $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'freischalten_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis              = '';
@@ -36,7 +39,7 @@ $recipientsSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
 $tab                   = Request::verifyGPDataString('tab');
 
 if (Request::verifyGPCDataInt('Suche') === 1) {
-    $search = Shop::Container()->getDB()->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
+    $search = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
 
     if (mb_strlen($search) > 0) {
         switch (Request::verifyGPDataString('cSuchTyp')) {

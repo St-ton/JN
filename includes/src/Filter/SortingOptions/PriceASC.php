@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class PriceASC
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class PriceASC extends AbstractSortingOption
 {
@@ -27,7 +28,7 @@ class PriceASC extends AbstractSortingOption
                    ->setTable('tpreise')
                    ->setOn('tartikel.kArtikel = tpreise.kArtikel 
                             AND tpreise.kKundengruppe = ' . $productFilter->getFilterConfig()->getCustomerGroupID());
-        $this->setName(\Shop::Lang()->get('sortPriceAsc'));
+        $this->setName(Shop::Lang()->get('sortPriceAsc'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_preis']);
         $this->setValue(\SEARCH_SORT_PRICE_ASC);
     }

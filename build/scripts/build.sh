@@ -183,16 +183,17 @@ build_create_config_file()
 build_migrate()
 {
     php -r "
-        require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
-        \$manager = new MigrationManager(null); \
-        try { \
-            \$result = \$manager->migrate(null); \
-        } catch (Exception \$e) { \
-            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
-            \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
-            echo \$result; \
-            exit(1); \
-        } \
+    require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
     ";
 
     echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};

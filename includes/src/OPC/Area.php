@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Shop;
 
 /**
  * Class Area
- * @package OPC
+ * @package JTL\OPC
  */
 class Area implements \JsonSerializable
 {
@@ -93,7 +95,7 @@ class Area implements \JsonSerializable
             $this->clear();
 
             foreach ($data['content'] as $portletData) {
-                $instance = \Shop::Container()->getOPC()->getPortletInstance($portletData);
+                $instance = Shop::Container()->getOPC()->getPortletInstance($portletData);
                 $this->addPortlet($instance);
             }
         }

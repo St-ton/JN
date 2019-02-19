@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class Checker
- * @package Cron
+ * @package JTL\Cron
  */
 class Checker
 {

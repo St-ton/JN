@@ -4,12 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 setzeSprache();
@@ -22,7 +25,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         && count($_POST['nVon']) > 0
         && count($_POST['nBis']) > 0
     ) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
         for ($i = 0; $i < 10; $i++) {
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
                 $filter       = new stdClass();

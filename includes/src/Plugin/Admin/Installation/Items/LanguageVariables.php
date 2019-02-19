@@ -4,13 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class LanguageVariables
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class LanguageVariables extends AbstractItem
 {
@@ -27,14 +29,14 @@ class LanguageVariables extends AbstractItem
      */
     public function install(): int
     {
-        $languages = \Sprache::getAllLanguages(2);
+        $languages = Sprache::getAllLanguages(2);
         foreach ($this->getNode() as $t => $langVar) {
             $t = (string)$t;
             \preg_match('/[0-9]+/', $t, $hits1);
             if (\mb_strlen($hits1[0]) !== \mb_strlen($t)) {
                 continue;
             }
-            $pluginLangVar          = new \stdClass();
+            $pluginLangVar          = new stdClass();
             $pluginLangVar->kPlugin = $this->plugin->kPlugin;
             $pluginLangVar->cName   = $langVar['Name'];
             if (isset($langVar['Description']) && \is_array($langVar['Description'])) {
@@ -50,14 +52,14 @@ class LanguageVariables extends AbstractItem
             // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
             // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
             $bVariableStandard   = false;
-            $oVariableSpracheStd = new \stdClass();
+            $oVariableSpracheStd = new stdClass();
             // Nur eine Sprache vorhanden
             if (isset($langVar['VariableLocalized attr'])
                 && \is_array($langVar['VariableLocalized attr'])
                 && \count($langVar['VariableLocalized attr']) > 0
             ) {
                 // tpluginsprachvariablesprache füllen
-                $localized                        = new \stdClass();
+                $localized                        = new stdClass();
                 $localized->kPluginSprachvariable = $id;
                 $localized->cISO                  = $langVar['VariableLocalized attr']['iso'];
                 $localized->cName                 = \preg_replace('/\s+/', ' ', $langVar['VariableLocalized']);
@@ -87,7 +89,7 @@ class LanguageVariables extends AbstractItem
                         $cISO                             = $loc['iso'];
                         $yx                               = \mb_substr($i, 0, \mb_strpos($i, ' '));
                         $cName                            = $langVar['VariableLocalized'][$yx];
-                        $localized                        = new \stdClass();
+                        $localized                        = new stdClass();
                         $localized->kPluginSprachvariable = $id;
                         $localized->cISO                  = $cISO;
                         $localized->cName                 = \preg_replace('/\s+/', ' ', $cName);

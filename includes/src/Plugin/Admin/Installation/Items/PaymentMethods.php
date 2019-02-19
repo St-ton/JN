@@ -4,16 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\Admin\InputType;
-use Plugin\ExtensionData\Config;
-use Plugin\Helper;
-use Plugin\InstallCode;
+use JTL\Helpers\PaymentMethod;
+use JTL\Plugin\Admin\InputType;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
+use JTL\Shop;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class PaymentMethods
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class PaymentMethods extends AbstractItem
 {
@@ -34,7 +38,7 @@ class PaymentMethods extends AbstractItem
      */
     public function install(): int
     {
-        $shopURL  = \Shop::getURL(true) . '/';
+        $shopURL  = Shop::getURL(true) . '/';
         $pluginID = $this->plugin->kPlugin;
         foreach ($this->getNode() as $i => $data) {
             $i = (string)$i;
@@ -43,7 +47,7 @@ class PaymentMethods extends AbstractItem
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $method                         = new \stdClass();
+            $method                         = new stdClass();
             $method->cName                  = $data['Name'];
             $method->cModulId               = Helper::getModuleIDByPluginID($pluginID, $data['Name']);
             $method->cKundengruppen         = '';
@@ -74,13 +78,13 @@ class PaymentMethods extends AbstractItem
             $methodID             = $this->db->insert('tzahlungsart', $method);
             $method->kZahlungsart = $methodID;
             if ($method->nNutzbar === 0) {
-                \Helpers\PaymentMethod::activatePaymentMethod($method);
+                PaymentMethod::activatePaymentMethod($method);
             }
             $moduleID = $method->cModulId;
             if (!$methodID) {
                 return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD;
             }
-            $paymentClass                         = new \stdClass();
+            $paymentClass                         = new stdClass();
             $paymentClass->cModulId               = Helper::getModuleIDByPluginID($pluginID, $data['Name']);
             $paymentClass->kPlugin                = $pluginID;
             $paymentClass->cClassPfad             = $data['ClassFile'] ?? null;
@@ -91,9 +95,9 @@ class PaymentMethods extends AbstractItem
             $this->db->insert('tpluginzahlungsartklasse', $paymentClass);
 
             $iso                    = '';
-            $allLanguages           = \Sprache::getAllLanguages(2);
+            $allLanguages           = Sprache::getAllLanguages(2);
             $bZahlungsartStandard   = false;
-            $oZahlungsartSpracheStd = new \stdClass();
+            $oZahlungsartSpracheStd = new stdClass();
             foreach ($data['MethodLanguage'] as $l => $loc) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -101,7 +105,7 @@ class PaymentMethods extends AbstractItem
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $iso = \mb_convert_case($loc['iso'], \MB_CASE_LOWER);
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    $localizedMethod               = new \stdClass();
+                    $localizedMethod               = new stdClass();
                     $localizedMethod->kZahlungsart = $methodID;
                     $localizedMethod->cISOSprache  = $iso;
                     $localizedMethod->cName        = $loc['Name'];
@@ -141,12 +145,12 @@ class PaymentMethods extends AbstractItem
             ];
             $sorting      = [100, 101, 102];
             for ($z = 0; $z < 3; $z++) {
-                $conf          = new \stdClass();
+                $conf          = new stdClass();
                 $conf->kPlugin = $pluginID;
                 $conf->cName   = $moduleID . '_' . $valueNames[$z];
                 $conf->cWert   = 0;
                 $this->db->insert('tplugineinstellungen', $conf);
-                $plgnConf                   = new \stdClass();
+                $plgnConf                   = new stdClass();
                 $plgnConf->kPlugin          = $pluginID;
                 $plgnConf->kPluginAdminMenu = 0;
                 $plgnConf->cName            = $names[$z];
@@ -181,7 +185,7 @@ class PaymentMethods extends AbstractItem
                         $nSort        = $config['sort'];
                         $cConf        = $config['conf'];
                     } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
-                        $conf          = new \stdClass();
+                        $conf          = new stdClass();
                         $conf->kPlugin = $pluginID;
                         $conf->cName   = $moduleID . '_' . $config['ValueName'];
                         $conf->cWert   = $initialValue;
@@ -195,7 +199,7 @@ class PaymentMethods extends AbstractItem
                         } else {
                             $this->db->insert('tplugineinstellungen', $conf);
                         }
-                        $plgnConf                   = new \stdClass();
+                        $plgnConf                   = new stdClass();
                         $plgnConf->kPlugin          = $pluginID;
                         $plgnConf->kPluginAdminMenu = 0;
                         $plgnConf->cName            = $config['Name'];
@@ -249,7 +253,7 @@ class PaymentMethods extends AbstractItem
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $config['SelectboxOptions'][0]['Option'][$yx];
 
-                                        $plgnConfValues                           = new \stdClass();
+                                        $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                         $plgnConfValues->cName                    = $cName;
                                         $plgnConfValues->cWert                    = $cWert;
@@ -263,7 +267,7 @@ class PaymentMethods extends AbstractItem
                                 }
                             } elseif (\count($config['SelectboxOptions'][0]) === 2) {
                                 $idx                                      = $config['SelectboxOptions'][0];
-                                $plgnConfValues                           = new \stdClass();
+                                $plgnConfValues                           = new stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                 $plgnConfValues->cName                    = $idx['Option'];
                                 $plgnConfValues->cWert                    = $idx['Option attr']['value'];
@@ -286,7 +290,7 @@ class PaymentMethods extends AbstractItem
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $config['RadioOptions'][0]['Option'][$yx];
 
-                                        $plgnConfValues                           = new \stdClass();
+                                        $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                         $plgnConfValues->cName                    = $cName;
                                         $plgnConfValues->cWert                    = $cWert;
@@ -297,7 +301,7 @@ class PaymentMethods extends AbstractItem
                                 }
                             } elseif (\count($config['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
                                 $idx                                      = $config['RadioOptions'][0];
-                                $plgnConfValues                           = new \stdClass();
+                                $plgnConfValues                           = new stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                 $plgnConfValues->cName                    = $idx['Option'];
                                 $plgnConfValues->cWert                    = $idx['Option attr']['value'];

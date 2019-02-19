@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Boxes
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class Boxes extends AbstractItem
 {

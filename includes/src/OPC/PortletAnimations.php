@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Trait PortletAnimations
- * @package OPC
+ * @package JTL\OPC
  */
 trait PortletAnimations
 {

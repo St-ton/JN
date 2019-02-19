@@ -6,6 +6,9 @@
  * @created Tue, 28 Feb 2017 16:31:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170228163100 extends Migration implements IMigration
 {
-    protected $author = 'ms';
+    protected $author      = 'ms';
     protected $description = 'sets nofollow for special pages';
 
     public function up()

@@ -4,14 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Extensions\AuswahlAssistent;
-use Extensions\AuswahlAssistentFrage;
-use Extensions\AuswahlAssistentGruppe;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Extensions\AuswahlAssistent;
+use JTL\Extensions\AuswahlAssistentFrage;
+use JTL\Extensions\AuswahlAssistentGruppe;
+use JTL\Nice;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('EXTENSION_SELECTIONWIZARD_VIEW', true, true);
 $cFehler  = '';
 $cHinweis = '';
@@ -19,7 +24,7 @@ $step     = '';
 $nice     = Nice::getInstance();
 $tab      = 'uebersicht';
 
-\Shop::Container()->getGetText()->loadConfigLocales();
+JTL\Shop::Container()->getGetText()->loadConfigLocales();
 
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
@@ -58,7 +63,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $tab      = 'uebersicht';
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
                 $cFehler = __('errorFillRequired');
-                $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+                $smarty->assign('cPost_arr', Text::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentFrage', (int)($_POST['kAuswahlAssistentFrage'] ?? 0));
             }
@@ -104,7 +109,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
                 $step    = 'edit-group';
                 $cFehler = __('errorFillRequired');
-                $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+                $smarty->assign('cPost_arr', Text::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentGruppe', (isset($_POST['kAuswahlAssistentGruppe'])
                            ? (int)$_POST['kAuswahlAssistentGruppe']
@@ -149,7 +154,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 FROM tmerkmal
                 ' . $cSQLJoin . '
                 ORDER BY tmerkmal.nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('oMerkmal_arr', $attributes)
                ->assign(

@@ -4,17 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache\Methods;
+namespace JTL\Cache\Methods;
 
-use Cache\ICachingMethod;
-use Cache\JTLCacheTrait;
+use FilesystemIterator;
+use JTL\Cache\ICachingMethod;
+use JTL\Cache\JTLCacheTrait;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Class cache_advancedfile
  *
  * Implements caching via filesystem where tags are not stored in a central file
  * but organized in folder and symlinked to the actual cache entry
- * @package Cache\Methods
+ * @package JTL\Cache\Methods
  */
 class cache_advancedfile implements ICachingMethod
 {
@@ -159,11 +162,11 @@ class cache_advancedfile implements ICachingMethod
      */
     public function flushAll(): bool
     {
-        $rdi = new \RecursiveDirectoryIterator(
+        $rdi = new RecursiveDirectoryIterator(
             $this->options['cache_dir'],
-            \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+            FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
         );
-        foreach (new \RecursiveIteratorIterator($rdi, \RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+        foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
             if ($value->isLink() || $value->isFile()) {
                 \unlink($value->getPathname());
             } elseif ($value->isDir()) {
@@ -263,11 +266,11 @@ class cache_advancedfile implements ICachingMethod
                 $path .= $dir . '/';
             }
             if (\is_dir($path)) {
-                $rdi = new \RecursiveDirectoryIterator(
+                $rdi = new RecursiveDirectoryIterator(
                     $path,
-                    \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                    FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
                 );
-                foreach (new \RecursiveIteratorIterator($rdi, \RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+                foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                     $res = false;
                     if ($value->isLink()) {
                         $value = $value->getPathname();
@@ -318,11 +321,11 @@ class cache_advancedfile implements ICachingMethod
                     $path .= $dir . '/';
                 }
                 if (\is_dir($path)) {
-                    $rdi = new \RecursiveDirectoryIterator(
+                    $rdi = new RecursiveDirectoryIterator(
                         $path,
-                        \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+                        FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
                     );
-                    foreach (new \RecursiveIteratorIterator($rdi, \RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+                    foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                         if ($value->isFile()) {
                             $res[] = $value->getFilename();
                         }

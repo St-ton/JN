@@ -4,13 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Customer\Kunde;
+use JTL\Shop;
 
 /**
  * Class CleanupGuestAccountsWithoutOrders
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * Deleted guest accounts with no open orders
  *
@@ -33,7 +35,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     private function cleanupCustomers(): void
     {
-        $guestAccounts = \Shop::Container()->getDB()->queryPrepared(
+        $guestAccounts = Shop::Container()->getDB()->queryPrepared(
             "SELECT kKunde
                 FROM tkunde
                 WHERE nRegistriert = 0
@@ -44,7 +46,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
         );
 
         foreach ($guestAccounts as $guestAccount) {
-            (new \Kunde((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0, true);
+            (new Kunde((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0, true);
         }
     }
 }

@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
-use Backend\AdminLoginStatus;
+use JTL\Backend\AdminLoginStatus;
 
 /**
  * Class AdminLoginStatusMessageMapper
- * @package Mapper
+ * @package JTL\Mapper
  */
 class AdminLoginStatusMessageMapper
 {

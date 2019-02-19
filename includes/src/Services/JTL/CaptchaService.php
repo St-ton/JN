@@ -6,13 +6,13 @@
  * @since         5.0
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Smarty\JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class CaptchaService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class CaptchaService implements CaptchaServiceInterface
 {

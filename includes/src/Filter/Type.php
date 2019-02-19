@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Type
  *
- * @package Filter
+ * @package JTL\Filter
  * @method static Type OR()
  * @method static Type AND()
  */

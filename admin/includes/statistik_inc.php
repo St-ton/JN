@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Linechart;
+use JTL\Piechart;
+use JTL\Shop;
+use JTL\Statistik;
+use JTL\DB\ReturnType;
+
 /**
  * @param int    $type
  * @param string $from
@@ -245,7 +251,7 @@ function getJSON($stats, $nAnzeigeIntervall, $nTyp)
                 "SELECT *
                     FROM twaehrung
                     WHERE cStandard = 'Y'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
             return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, $oWaehrung->cName);
@@ -440,11 +446,7 @@ function GetTypeNameStats($type)
         5 => 'Einstiegsseite'
     ];
 
-    if (isset($names[$type])) {
-        return $names[$type];
-    }
-
-    return '';
+    return $names[$type] ?? '';
 }
 
 /**
@@ -609,8 +611,8 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
                     $data[] = $obj;
                 }
 
-                $Colors = GetLineChartColors($i);
-                $chart->addSerie($Name, $data, $Colors[0], $Colors[1]);
+                $colors = GetLineChartColors($i);
+                $chart->addSerie($Name, $data, $colors[0], $colors[1]);
                 $chart->memberToJSON();
             }
 
@@ -622,19 +624,15 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
 }
 
 /**
- * @param int $Number
+ * @param int $number
  * @return mixed
  */
-function GetLineChartColors($Number)
+function GetLineChartColors($number)
 {
-    $Colors = [
+    $colors = [
         ['#EDEDED', '#EDEDED'],
         ['#989898', '#F78D23']
     ];
 
-    if (isset($Colors[$Number])) {
-        return $Colors[$Number];
-    }
-
-    return $Colors[0];
+    return $colors[$number] ?? $colors[0];
 }

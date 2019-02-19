@@ -4,8 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\DB\ReturnType;
 
 /**
  * If the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded
@@ -52,7 +54,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::Container()->getDB()->query('TRUNCATE ' . $target, \DB\ReturnType::AFFECTED_ROWS);
+                Shop::Container()->getDB()->query('TRUNCATE ' . $target, ReturnType::AFFECTED_ROWS);
             }
             $importDeleteDone = false;
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {

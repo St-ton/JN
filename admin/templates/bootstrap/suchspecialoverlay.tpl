@@ -31,7 +31,7 @@
                 <span class="input-group-wrap last">
                     <select name="kSuchspecialOverlay" class="form-control selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
                         {foreach $oSuchspecialOverlay_arr as $oSuchspecialOverlayTMP}
-                            <option value="{$oSuchspecialOverlayTMP->kSuchspecialOverlay}" {if $oSuchspecialOverlayTMP->kSuchspecialOverlay == $oSuchspecialOverlay->kSuchspecialOverlay}selected{/if}>{$oSuchspecialOverlayTMP->cSuchspecial}</option>
+                            <option value="{$oSuchspecialOverlayTMP->getType()}" {if $oSuchspecialOverlayTMP->getType() == $oSuchspecialOverlay->getType()}selected{/if}>{$oSuchspecialOverlayTMP->getName()}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -39,28 +39,26 @@
         </form>
     </div>
 
-    {if $oSuchspecialOverlay->kSuchspecialOverlay > 0}
+    {if $oSuchspecialOverlay->getType() > 0}
         <form name="einstellen" method="post" action="suchspecialoverlay.php" enctype="multipart/form-data" onsubmit="checkfile(event)">
             {$jtl_token}
             <input type="hidden" name="suchspecialoverlay" value="1" />
-            <input type="hidden" name="kSuchspecialOverlay" value="{$oSuchspecialOverlay->kSuchspecialOverlay}" />
+            <input type="hidden" name="kSuchspecialOverlay" value="{$oSuchspecialOverlay->getType()}" />
             <input type="hidden" name="speicher_einstellung" value="1" />
 
             <div class="clearall">
                 <div class="no_overflow panel panel-default" id="settings">
                     <div class="panel-body">
-                        {if $oSuchspecialOverlay->cBildPfad|strlen > 0}
-                            <img src="{$shopURL}/{$PFAD_SUCHSPECIALOVERLAY}{$oSuchspecialOverlay->cBildPfad}?rnd={$cRnd}" style="margin-bottom: 15px;" />
-                        {/if}
+                        <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" style="margin-bottom: 15px;" />
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="nAktiv">{__('suchspecialoverlayActive')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nAktiv" id="nAktiv" class="form-control combo">
-                                    <option value="1"{if $oSuchspecialOverlay->nAktiv == 1} selected{/if}>{__('yes')}
+                                    <option value="1"{if $oSuchspecialOverlay->getActive() == 1} selected{/if}>{__('yes')}
                                     </option>
-                                    <option value="0"{if $oSuchspecialOverlay->nAktiv == 0} selected{/if}>{__('no')}
+                                    <option value="0"{if $oSuchspecialOverlay->getActive() == 0} selected{/if}>{__('no')}
                                     </option>
                                 </select>
                             </span>
@@ -88,7 +86,7 @@
                                 <select id="nPrio" name="nPrio" class="form-control combo">
                                     <option value="-1"></option>
                                     {section name=prios loop=$nSuchspecialOverlayAnzahl start=1 step=1}
-                                        <option value="{$smarty.section.prios.index}"{if $smarty.section.prios.index == $oSuchspecialOverlay->nPrio} selected{/if}>{$smarty.section.prios.index}</option>
+                                        <option value="{$smarty.section.prios.index}"{if $smarty.section.prios.index == $oSuchspecialOverlay->getPriority()} selected{/if}>{$smarty.section.prios.index}</option>
                                     {/section}
                                 </select>
                             </span>
@@ -103,7 +101,7 @@
                             <span class="input-group-wrap">
                                 <select name="nTransparenz" class="form-control combo" id="nTransparenz">
                                     {section name=transparenz loop=101 start=0 step=1}
-                                        <option value="{$smarty.section.transparenz.index}"{if $smarty.section.transparenz.index == $oSuchspecialOverlay->nTransparenz} selected{/if}>{$smarty.section.transparenz.index}</option>
+                                        <option value="{$smarty.section.transparenz.index}"{if $smarty.section.transparenz.index == $oSuchspecialOverlay->getTransparance()} selected{/if}>{$smarty.section.transparenz.index}</option>
                                     {/section}
                                 </select>
                             </span>
@@ -116,7 +114,7 @@
                                 <label for="nGroesse">{__('suchspecialoverlaySize')}</label>
                             </span>
                             <span class="input-group-wrap">
-                                <input id="nGroesse" class="form-control" name="nGroesse" type="number" value="{$oSuchspecialOverlay->nGroesse}" />
+                                <input id="nGroesse" class="form-control" name="nGroesse" type="number" value="{$oSuchspecialOverlay->getSize()}" />
                             </span>
                             <span class="input-group-addon">
                                 {getHelpDesc cDesc=__('suchspecialoverlaySizeDesc')}
@@ -128,31 +126,31 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($isDeprecated)} disabled="disabled"{/if}>
-                                    <option value="1"{if $oSuchspecialOverlay->nPosition === '1'} selected{/if}>
+                                    <option value="1"{if $oSuchspecialOverlay->getPosition() === 1} selected{/if}>
                                         {__('topLeft')}
                                     </option>
-                                    <option value="2"{if $oSuchspecialOverlay->nPosition === '2'} selected{/if}>
+                                    <option value="2"{if $oSuchspecialOverlay->getPosition() === 2} selected{/if}>
                                         {__('top')}
                                     </option>
-                                    <option value="3"{if $oSuchspecialOverlay->nPosition === '3'} selected{/if}>
+                                    <option value="3"{if $oSuchspecialOverlay->getPosition() === 3} selected{/if}>
                                         {__('topRight')}
                                     </option>
-                                    <option value="4"{if $oSuchspecialOverlay->nPosition === '4'} selected{/if}>
+                                    <option value="4"{if $oSuchspecialOverlay->getPosition() === 4} selected{/if}>
                                         {__('right')}
                                     </option>
-                                    <option value="5"{if $oSuchspecialOverlay->nPosition === '5'} selected{/if}>
+                                    <option value="5"{if $oSuchspecialOverlay->getPosition() === 5} selected{/if}>
                                         {__('bottomRight')}
                                     </option>
-                                    <option value="6"{if $oSuchspecialOverlay->nPosition === '6'} selected{/if}>
+                                    <option value="6"{if $oSuchspecialOverlay->getPosition() === 6} selected{/if}>
                                         {__('bottom')}
                                     </option>
-                                    <option value="7"{if $oSuchspecialOverlay->nPosition === '7'} selected{/if}>
+                                    <option value="7"{if $oSuchspecialOverlay->getPosition() === 7} selected{/if}>
                                         {__('bottomLeft')}
                                     </option>
-                                    <option value="8"{if $oSuchspecialOverlay->nPosition === '8'} selected{/if}>
+                                    <option value="8"{if $oSuchspecialOverlay->getPosition() === 8} selected{/if}>
                                         {__('left')}
                                     </option>
-                                    <option value="9"{if $oSuchspecialOverlay->nPosition === '9'} selected{/if}>
+                                    <option value="9"{if $oSuchspecialOverlay->getPosition() === 9} selected{/if}>
                                         {__('centered')}
                                     </option>
                                 </select>

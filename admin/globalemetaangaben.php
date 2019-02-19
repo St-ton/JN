@@ -4,12 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $chinweis = '';
 $cfehler  = '';
 $db       = Shop::Container()->getDB();

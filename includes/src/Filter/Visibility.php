@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Visibility
  *
- * @package Filter
+ * @package JTL\Filter
  * @method static Visibility SHOW_NEVER()
  * @method static Visibility SHOW_BOX()
  * @method static Visibility SHOW_CONTENT()

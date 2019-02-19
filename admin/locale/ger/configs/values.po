@@ -1763,7 +1763,10 @@ msgid "bewertungserinnerung_nutzen_value(Y)"
 msgstr "Ja"
 
 msgid "bewertungserinnerung_nutzen_value(N)"
-msgstr "Nein"
+msgstr "Nie"
+
+msgid "bewertungserinnerung_nutzen_value(B)"
+msgstr "An Newslettereinwilligung koppeln"
 
 msgid "bewertung_guthaben_nutzen_value(Y)"
 msgstr "Ja"
@@ -2609,4 +2612,10 @@ msgid "compile_check_value(Y)"
 msgstr "Ja"
 
 msgid "compile_check_value(N)"
+msgstr "Nein"
+
+msgid "ftp_ssl_value(1)"
+msgstr "Ja"
+
+msgid "ftp_ssl_value(0)"
 msgstr "Nein"

@@ -22,7 +22,7 @@
 
                     {block name='searchspecial-overlay'}
                         {if isset($Artikel->oSuchspecialBild)}
-                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->cURLKlein alt=$alt}
+                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
                         {/if}
                     {/block}
 
@@ -156,7 +156,9 @@
                     <div class="delivery-status">
                         {block name='delivery-status'}
                             {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
-                            {if $Artikel->nErscheinendesProdukt}
+                            {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
+                                <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
+                            {elseif $Artikel->nErscheinendesProdukt}
                                 <div class="availablefrom">
                                     <small>{lang key='productAvailableFrom'}: {$Artikel->Erscheinungsdatum_de}</small>
                                 </div>
@@ -244,7 +246,7 @@
                                             {else}
                                                 <div class="quantity-wrapper form-group top7">
                                                     <div class="input-group input-group-sm">
-                                                        <input type="number" min="0"
+                                                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
                                                                {if $Artikel->fAbnahmeintervall > 0}step="{$Artikel->fAbnahmeintervall}"{/if} size="2"
                                                                id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl"
                                                                autocomplete="off"

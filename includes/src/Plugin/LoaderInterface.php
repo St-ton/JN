@@ -4,19 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 
 /**
  * Interface LoaderInterface
- * @package Plugin
+ * @package JTL\Plugin
  */
 interface LoaderInterface
 {
     /**
      * LoaderInterface constructor.
+     *
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
@@ -46,7 +47,7 @@ interface LoaderInterface
      * @param int  $id
      * @param bool $invalidateCache
      * @param int  $languageID
-     * @return Plugin|Extension
+     * @return LegacyPlugin|Plugin
      * @throws \InvalidArgumentException
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null);
@@ -54,18 +55,18 @@ interface LoaderInterface
     /**
      * @param object $obj
      * @param string $currentLanguageCode
-     * @return AbstractExtension
+     * @return PluginInterface
      */
     public function loadFromObject($obj, string $currentLanguageCode);
 
     /**
-     * @return AbstractExtension|null
+     * @return PluginInterface|null
      */
-    public function loadFromCache(): ?AbstractExtension;
+    public function loadFromCache(): ?PluginInterface;
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return bool
      */
-    public function saveToCache(AbstractExtension $extension): bool;
+    public function saveToCache(PluginInterface $extension): bool;
 }

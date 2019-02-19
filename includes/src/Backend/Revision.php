@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Shop;
+use InvalidArgumentException;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class Revision
- * @package Backend
+ * @package JTL\Backend
  */
 class Revision
 {
@@ -34,36 +36,36 @@ class Revision
     {
         $this->db      = $db ?? Shop::Container()->getDB();
         $this->mapping = [
-            'link'          => [
+            'link' => [
                 'table'         => 'tlink',
                 'id'            => 'kLink',
                 'reference'     => 'tlinksprache',
                 'reference_id'  => 'kLink',
                 'reference_key' => 'cISOSprache'
             ],
-            'export'        => [
+            'export'   => [
                 'table' => 'texportformat',
                 'id'    => 'kExportformat'
             ],
-            'mail'          => [
+            'mail'     => [
                 'table'         => 'temailvorlage',
                 'id'            => 'kEmailvorlage',
                 'reference'     => 'temailvorlagesprache',
                 'reference_id'  => 'kEmailvorlage',
                 'reference_key' => 'kSprache'
             ],
-            'opcpage'       => [
+            'opcpage'  => [
                 'table' => 'topcpage',
                 'id'    => 'kPage'
             ],
-            'news'          => [
+            'news' => [
                 'table'         => 'tnews',
                 'id'            => 'kNews',
                 'reference'     => 'tnewssprache',
                 'reference_id'  => 'kNews',
                 'reference_key' => 'languageCode'
             ],
-            'box'           => [
+            'box'      => [
                 'table'         => 'tboxen',
                 'id'            => 'kBox',
                 'reference'     => 'tboxsprache',
@@ -107,9 +109,9 @@ class Revision
 
     /**
      * @param int $id
-     * @return \stdClass|null
+     * @return stdClass|null
      */
-    public function getRevision(int $id): ?\stdClass
+    public function getRevision(int $id): ?stdClass
     {
         return $this->db->select('trevisions', 'id', $id);
     }
@@ -117,13 +119,13 @@ class Revision
     /**
      * @param string $type
      * @param int    $key
-     * @return \stdClass|null
+     * @return stdClass|null
      */
-    public function getLatestRevision($type, int $key): ?\stdClass
+    public function getLatestRevision($type, int $key): ?stdClass
     {
         $mapping = $this->getMapping($type);
         if ($key === 0 || $mapping === null) {
-            throw new \InvalidArgumentException('Invalid revision type ' . $type);
+            throw new InvalidArgumentException('Invalid revision type ' . $type);
         }
 
         $latestRevision = $this->db->queryPrepared(
@@ -145,7 +147,7 @@ class Revision
      * @param bool        $secondary
      * @param null|string $author
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addRevision($type, $key, bool $secondary = false, $author = null): bool
     {
@@ -154,7 +156,7 @@ class Revision
         }
         $key = (int)$key;
         if (empty($key) || ($mapping = $this->getMapping($type)) === null) {
-            throw new \InvalidArgumentException('Invalid type/key given. Got type ' . $type . ' and key ' . $key);
+            throw new InvalidArgumentException('Invalid type/key given. Got type ' . $type . ' and key ' . $key);
         }
         if ($author === null) {
             $author = $_SESSION['AdminAccount']->cLogin ?? '?';
@@ -164,7 +166,7 @@ class Revision
         if ($currentRevision === null || empty($currentRevision->$field)) {
             return false;
         }
-        $revision                     = new \stdClass();
+        $revision                     = new stdClass();
         $revision->type               = $type;
         $revision->reference_primary  = $key;
         $revision->content            = $currentRevision;

@@ -6,6 +6,9 @@
  * @created Tue, 29 May 2018 12:50:38 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -28,20 +31,20 @@ class Migration_20180529125038 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "ALTER TABLE `texportqueue` ADD COLUMN `nLastArticleID` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `nLimit_m`"
+            'ALTER TABLE `texportqueue` ADD COLUMN `nLastArticleID` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `nLimit_m`'
         );
         $this->execute(
-            "ALTER TABLE `tjobqueue` ADD COLUMN `nLastArticleID` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `nLimitm`"
+            'ALTER TABLE `tjobqueue` ADD COLUMN `nLastArticleID` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `nLimitm`'
         );
     }
 
     public function down()
     {
         $this->execute(
-            "ALTER TABLE `texportqueue` DROP COLUMN `nLastArticleID`"
+            'ALTER TABLE `texportqueue` DROP COLUMN `nLastArticleID`'
         );
         $this->execute(
-            "ALTER TABLE `tjobqueue` DROP COLUMN `nLastArticleID`"
+            'ALTER TABLE `tjobqueue` DROP COLUMN `nLastArticleID`'
         );
     }
 }

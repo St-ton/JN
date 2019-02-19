@@ -6,6 +6,9 @@
  * @created Thu, 22 Dec 2016 13:50:18 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,16 +25,16 @@
  */
 class Migration_20161222135018 extends Migration implements IMigration
 {
-    protected $author = 'fp';
+    protected $author      = 'fp';
     protected $description = 'Add index on tnewsletterempfaenger.kKunde';
 
     public function up()
     {
-        $this->execute("ALTER TABLE tnewsletterempfaenger ADD INDEX kKunde (kKunde)");
+        $this->execute('ALTER TABLE tnewsletterempfaenger ADD INDEX kKunde (kKunde)');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE tnewsletterempfaenger DROP INDEX kKunde");
+        $this->execute('ALTER TABLE tnewsletterempfaenger DROP INDEX kKunde');
     }
 }

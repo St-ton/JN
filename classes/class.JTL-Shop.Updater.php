@@ -297,8 +297,8 @@ class Updater
                         nTyp = {$code}, cFehlerSQL = '{$error}', dAktualisiert = now()", 3
                     );
 
-                    throw new PDOException($e->getMessage()."<br />Datei: '".$this->getSqlUpdatePath($targetVersion)
-                        ."' Zeile: '".($currentLine+1)."'.", $e->getCode(), $e->getPrevious());
+                    throw new \PDOException($e->getMessage()."\nFile: '".$this->getSqlUpdatePath($targetVersion)
+                        ."' line: '".($currentLine+1)."'.", $e->getCode(), $e->getPrevious());
                 }
             }
         }

@@ -292,9 +292,9 @@ class Updater
                     }
 
                     Shop::DB()->executeQuery(
-                        "UPDATE tversion SET
-                        nZeileVon = 1, nZeileBis = {$currentLine}, nFehler = {$errorCountForLine},
-                        nTyp = {$code}, cFehlerSQL = '{$error}', dAktualisiert = now()", 3
+                        'UPDATE tversion SET
+                        nZeileVon = 1, nZeileBis = '.$currentLine.', nFehler = '.$errorCountForLine.',
+                        nTyp = '.$code.', cFehlerSQL = \''.$error.'\', dAktualisiert = now()', 3
                     );
 
                     throw new \PDOException($e->getMessage()."\nFile: '".$this->getSqlUpdatePath($targetVersion)

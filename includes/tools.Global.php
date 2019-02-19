@@ -3358,7 +3358,7 @@ function gibVerfuegbarkeitsformularAnzeigen($Artikel, $einstellung)
     if (isset($einstellung) && $einstellung !== 'N' &&
         ($Artikel->inWarenkorbLegbar == INWKNICHTLEGBAR_LAGER ||
             $Artikel->inWarenkorbLegbar == INWKNICHTLEGBAR_LAGERVAR ||
-            ($Artikel->fLagerbestand <= 0 && $Artikel->cLagerKleinerNull === 'Y'))
+            ($Artikel->fLagerbestand <= 0 && $Artikel->cLagerKleinerNull !== 'Y'))
     ) {
         switch ($einstellung) {
             case 'Y':

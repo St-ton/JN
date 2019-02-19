@@ -1,1 +1,0 @@
-{include file="./image.tpl" isPreview=true}

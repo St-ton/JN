@@ -88,8 +88,9 @@ html {
   .btn,
   .btn-link,
   .nav-link {
-    min-width: 45px;
-    min-height: 45px;
+    // TODO: find non-intrusive way to enlarge button size for smaller devices
+    //min-width: 45px;
+    //min-height: 45px;
   }
 }
 

@@ -74,9 +74,10 @@ trait PortletHtml
     final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
         return getFrontendSmarty()
+            ->assign('isPreview', true)
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch($this->getTemplatePath() . 'preview.tpl');
+            ->fetch($this->getTemplatePath() . $this->getClass() . '.tpl');
     }
 
     /**
@@ -87,9 +88,10 @@ trait PortletHtml
     final protected function getFinalHtmlFromTpl($instance): string
     {
         return Shop::Smarty()
+            ->assign('isPreview', false)
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch($this->getTemplatePath() . 'final.tpl');
+            ->fetch($this->getTemplatePath() . $this->getClass() . '.tpl');
     }
 
     /**

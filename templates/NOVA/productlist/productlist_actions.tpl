@@ -18,11 +18,6 @@
                         {image class="svg" src="{$currentTemplateDir}themes/base/images/wishlist.svg" alt="{lang key='addToWishlist' section='productDetails'}"}
                     {/button}
                 {/if}
-                {if $Artikel->verfuegbarkeitsBenachrichtigung === 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
-                    {button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn-left" title="{lang key='requestNotification'}"}
-                        <span class="fa fa-bell"></span>
-                    {/button}
-                {/if}
             {/if}
             {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
                 <span class="btn btn-secondary quickview badge" data-src="{$Artikel->cURLFull}" data-target="buy_form_{$Artikel->kArtikel}" title="{$Artikel->cName}">

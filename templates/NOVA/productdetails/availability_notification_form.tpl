@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if isset($position) && $position === 'popup'}
-    {if count($Artikelhinweise) > 0}
+    {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
         {alert dismissable=true variant="danger"}
         {foreach $Artikelhinweise as $Artikelhinweis}
             {$Artikelhinweis}

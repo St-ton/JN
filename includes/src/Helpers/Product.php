@@ -836,6 +836,7 @@ class Product
     public static function showAvailabilityForm(Artikel $product, string $config): int
     {
         if ($config !== 'N'
+            && $product->cLagerBeachten === 'Y'
             && ((int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
                 || (int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
                 || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull !== 'Y'))

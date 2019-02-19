@@ -12,7 +12,7 @@
     </div>
 {/if}
 
-{if ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y'}
+{if $verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3}
     <div id="popupn{$kArtikel}" class="hidden">
         {include file='productdetails/availability_notification_form.tpl' position='popup' tplscope='artikeldetails'}
     </div>
@@ -31,7 +31,7 @@
 {/if}
 <script type="text/javascript">
     $(function() {ldelim}
-        {if isset($fehlendeAngaben_benachrichtigung) && count($fehlendeAngaben_benachrichtigung) > 0 && ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y'}
+        {if isset($fehlendeAngaben_benachrichtigung) && count($fehlendeAngaben_benachrichtigung) > 0 && ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3)}
             show_popup('n{$kArtikel}', '{lang key='requestNotification'}');
         {/if}
 

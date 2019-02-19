@@ -31,7 +31,7 @@
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
 {$useQuestionOnItem = $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
 {$usePriceFlow = ($Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf)}
-{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung !== 0 && $Artikel->cLagerBeachten === 'Y')}
+{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung !== 0)}
 {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
 && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
 && !empty($Artikel->cMedienTyp_arr))}

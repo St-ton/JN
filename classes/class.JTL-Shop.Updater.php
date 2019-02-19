@@ -16,6 +16,7 @@ class Updater
 
     /**
      * Constructor
+     * @throws Exception
      */
     public function __construct()
     {
@@ -24,6 +25,7 @@ class Updater
 
     /**
      * Check database integrity
+     * @throws Exception
      */
     public function verify()
     {
@@ -33,15 +35,15 @@ class Updater
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
             if ($dbVersion < 400) {
-                $count = (int)Shop::DB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
+                $count = (int)Shop::DB()->query('SELECT * FROM `ttemplate` WHERE `eTyp`=\'admin\'', 3);
                 if ($count === 0) {
-                    Shop::DB()->query("ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL", 3);
-                    Shop::DB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
+                    Shop::DB()->query('ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM(\'standard\',\'mobil\',\'admin\') NOT NULL', 3);
+                    Shop::DB()->query('INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES (\'bootstrap\', \'admin\')', 3);
                 }
             }
 
             if ($dbVersion < 404) {
-                Shop::DB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL", 3);
+                Shop::DB()->query('ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL', 3);
             }
 
             static::$isVerified = true;
@@ -52,6 +54,7 @@ class Updater
      * Has pending updates to execute
      *
      * @return bool
+     * @throws Exception
      */
     public function hasPendingUpdates()
     {
@@ -73,6 +76,7 @@ class Updater
      *
      * @param string $file
      * @param bool $compress
+     * @throws Exception
      */
     public function createSqlDump($file, $compress = true)
     {
@@ -137,6 +141,7 @@ class Updater
 
     /**
      * @return int
+     * @throws Exception
      */
     public function getCurrentDatabaseVersion()
     {
@@ -213,7 +218,7 @@ class Updater
         $sqlFile = $this->getSqlUpdatePath($targetVersion);
 
         if (!file_exists($sqlFile)) {
-            throw new Exception("Sql file in path '{$sqlFile}' not found");
+            throw new Exception('Sql file in path \''.$sqlFile.'\' not found');
         }
 
         $tversion = Shop::DB()->selectSingleRow('tversion', 'nVersion', $targetVersion);
@@ -245,6 +250,7 @@ class Updater
 
     /**
      * @return int|mixed
+     * @throws Exception
      */
     protected function updateToNextVersion()
     {
@@ -297,8 +303,8 @@ class Updater
                         nTyp = '.$code.', cFehlerSQL = \''.$error.'\', dAktualisiert = now()', 3
                     );
 
-                    throw new \PDOException($e->getMessage()."\nFile: '".$this->getSqlUpdatePath($targetVersion)
-                        ."' line: '".($currentLine+1)."'.", $e->getCode(), $e->getPrevious());
+                    throw new \PDOException($e->getMessage().'\\nFile: \''.$this->getSqlUpdatePath($targetVersion)
+                        .'\' line: \''.($currentLine+1).'\'.', $e->getCode(), $e->getPrevious());
                 }
             }
         }
@@ -353,9 +359,9 @@ class Updater
     protected function setVersion($targetVersion)
     {
         Shop::DB()->executeQuery(
-            "UPDATE tversion SET 
-            nVersion = {$targetVersion}, nZeileVon = 1, nZeileBis = 0, 
-            nFehler = 0, nTyp = 1, cFehlerSQL = '', dAktualisiert = now()", 3
+            'UPDATE tversion SET 
+            nVersion = '.$targetVersion.', nZeileVon = 1, nZeileBis = 0, 
+            nFehler = 0, nTyp = 1, cFehlerSQL = \'\', dAktualisiert = now()', 3
         );
     }
 

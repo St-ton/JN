@@ -36,13 +36,16 @@
                             {strip}
                                 <div>
                                     {*sizes based on template*}
-                                    {image data=['lazy'=>$image->cURLMini, 'list'=>{$image->galleryJSON|replace:"'":"&apos;"}, 'srcset'=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                         {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"]
-                                         sizes="(min-width: 1200px) 1080px,90vw"
-                                         alt=$image->cAltAttribut|escape:'html'
-                                         src=$image->cURLMini
+                                    {image alt=$image->cAltAttribut|escape:'html'
+                                        data=["lazy"=>$image->cURLMini,
+                                            "srcset"=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w",
+                                            "list"=>"{$image->galleryJSON|escape:"html"}"
+                                        ]
+                                        sizes="(min-width: 1200px) 1080px,90vw"
+                                        src=$image->cURLMini
                                      }
                                 </div>
                             {/strip}

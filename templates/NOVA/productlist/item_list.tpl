@@ -40,7 +40,6 @@
                             {/foreach}
                         {/block}
                     </div>
-                    {*{include file='snippets/image.tpl' src=$Artikel->Bilder[0]->cURLNormal alt=$alt tplscope=$tplscope}*}
 
                     {if $smarty.session.Kundengruppe->mayViewPrices()
                         && isset($Artikel->SieSparenX)

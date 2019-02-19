@@ -3654,6 +3654,7 @@ class Artikel
         $options->nAttribute            = 1;
         $options->nArtikelAttribute     = 1;
         $options->nMedienDatei          = 1;
+        $options->nVariationen          = 1;
         $options->nVariationKombi       = 1;
         $options->nVariationKombiKinder = 1;
         $options->nWarenlager           = 1;
@@ -3683,7 +3684,7 @@ class Artikel
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
         $options->nDownload         = 1;
-        $options->nVariationen      = 1;
+        $options->nVariationen      = 0;
 
         return $options;
     }

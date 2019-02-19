@@ -185,7 +185,7 @@ class Vergleichsliste
             }
         }
         if (\count($attributes) > 0) {
-            uasort($attributes, function (Merkmal $a, Merkmal $b) {
+            \uasort($attributes, function (Merkmal $a, Merkmal $b) {
                 return $a->nSort > $b->nSort;
             });
         }

@@ -2125,8 +2125,8 @@ class Artikel
                     INNER JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
-                    WHERE kEigenschaftWert IN (
-                        SELECT kEigenschaftWert
+                    WHERE (kEigenschaft, kEigenschaftWert) IN (
+                        SELECT kEigenschaft, kEigenschaftWert
                             FROM teigenschaftkombiwert
                             WHERE kEigenschaftKombi = ' . $this->kEigenschaftKombi . '
                     ) AND tartikelsichtbarkeit.kArtikel IS NULL

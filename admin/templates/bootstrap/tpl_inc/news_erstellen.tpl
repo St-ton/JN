@@ -34,14 +34,14 @@
     {literal}
 
     $(document).ready(function () {
-        $('#lang').change(function () {
+        $('#lang').on('change', function () {
             var iso = $('#lang option:selected').val();
             $('.iso_wrapper').slideUp();
             $('#iso_' + iso).slideDown();
             return false;
         });
 
-        $('input[name="nLinkart"]').change(function () {
+        $('input[name="nLinkart"]').on('change', function () {
             var lnk = $('input[name="nLinkart"]:checked').val();
             if (lnk == '1') {
                 $('#option_isActive').slideDown("slow");
@@ -50,7 +50,7 @@
                 $('#option_isActive select').val(1);
             }
         }).trigger('change');
-        $('form input[type=file]').change(function(e){
+        $('form input[type=file]').on('change', function(e){
             $('form div.alert').slideUp();
             var filesize= this.files[0].size;
             {/literal}

@@ -520,7 +520,7 @@ $.extend(Timepicker.prototype, {
 				})
 			);
 			this.timezone_select.val((typeof this.timezone != "undefined" && this.timezone != null && this.timezone != "") ? this.timezone : o.timezone);
-			this.timezone_select.change(function() {
+			this.timezone_select.on('change', function() {
 				tp_inst._onTimeChange();
 			});
 

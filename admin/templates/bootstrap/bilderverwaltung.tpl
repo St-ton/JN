@@ -373,7 +373,7 @@
     }
 
     $(function () {
-        $('[data-callback]').click(function (e) {
+        $('[data-callback]').on('click', function (e) {
             e.preventDefault();
             var $element = $(this);
             if ($element.attr('disabled') !== undefined) {

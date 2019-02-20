@@ -96,7 +96,7 @@
         </style>
     {/if}
     {block name='head-resources-jquery'}
-        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
+        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
     {$dbgBarHead}

@@ -36,7 +36,7 @@
                     searchDropdown.removeClass('open');
                 }
             })
-            .keydown(function(e) {
+            .on('keydown', function(e) {
                 if(e.key === 'Enter') {
                     if(selectedSearchItem === null) {
                         var searchString = $('#backend-search-input').val();
@@ -49,13 +49,13 @@
                     e.preventDefault();
                 }
             });
-        searchDropdown.keydown(function (e) {
+        searchDropdown.on('keydown', function (e) {
             if(e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 arrowNavigate(e.key === 'ArrowDown');
                 e.preventDefault();
             }
         });
-        $(document).click(function(e) {
+        $(document).on('click', function(e) {
             if ($(e.target).closest('.backend-search').length === 0) {
                 searchDropdown.removeClass('open');
             }

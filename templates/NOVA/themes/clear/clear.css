@@ -13545,6 +13545,7 @@ footer .footer-logo {
   animation: fadeMeIn 0.2s forwards;
   -webkit-animation-delay: 0.2s;
   animation-delay: 0.2s;
+  pointer-events: none;
 }
 
 @-webkit-keyframes fadeMeIn {

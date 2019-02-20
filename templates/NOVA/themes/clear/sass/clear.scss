@@ -1802,6 +1802,7 @@ footer {
   animation: fadeMeIn .2s forwards;
   -webkit-animation-delay: .2s;
   animation-delay: .2s;
+  pointer-events: none;
 }
 
 @-webkit-keyframes fadeMeIn {

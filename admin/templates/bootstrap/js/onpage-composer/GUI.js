@@ -387,7 +387,7 @@ GUI.prototype = {
 
     onBtnImportBlueprint: function()
     {
-        $('<input type="file" accept=".json">').change(this.onBlueprintImportChosen.bind(this)).click();
+        $('<input type="file" accept=".json">').on('change', this.onBlueprintImportChosen.bind(this)).click();
     },
 
     onBlueprintImportChosen: function(e)

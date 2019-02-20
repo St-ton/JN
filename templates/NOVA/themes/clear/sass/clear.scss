@@ -5,8 +5,8 @@
 @import "../../base/bootstrap-select/bootstrap-select.scss";
 @import "../../base/slick/slick.scss";
 @import "../../base/fileinput/fileinput.min.scss";
-@import "../base/wow/animate.css";
-@import "../base/slider/slider.css";
+@import "../../base/wow/animate.css";
+@import "../../base/slider/slider.css";
 
 @mixin font($font-family, $font-file, $font-weight) {
   @font-face {
@@ -276,7 +276,7 @@ header,
   }
 
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(sm) {
     #nav-cart-collapse,
     #nav-account-collapse,
     #nav-search-collapse {
@@ -998,6 +998,7 @@ ul.partlist-items {
 
 .gallery,
 .list {
+  align-items: flex-end;
   .image-wrapper .yousave{
     position: absolute;
     //margin-top: -32px;
@@ -1577,6 +1578,7 @@ $jqcloud-classes: 7;
     .unit {
       background: $input-bg;
       border-left: 0;
+      margin-left: -1px;
     }
   }
 }
@@ -1881,7 +1883,7 @@ footer {
 }
 
 #add-to-cart .btn{
-  em {
+  .btn-basket-check {
     /* this is the button text message */
     top: 0;
     left: 0;
@@ -1897,7 +1899,7 @@ footer {
     /* move the icon on the right - outside the button */
     //transform: translateX(50%) translateY(-50%);
   }
-  &.is-added em {
+  &.is-added .btn-basket-check {
     /* product added to the cart - hide text message on the left with no transition*/
     color: transparent;
     transform: translateY(-100%);
@@ -1930,7 +1932,7 @@ blockquote {
   border-left: 8px solid #ccc;
   margin: 1.5em 10px;
   padding: 0.5em 10px;
-  quotes: "\201C""\201D";
+  quotes: "\201C" "\201D";
   &::before {
     color: #ccc;
     content: open-quote;
@@ -2135,69 +2137,80 @@ table caption {
 }
 
 .gllry-container {
-    padding: 12px;
+  padding: 12px;
 
-    .gllry-item {
-        overflow: hidden;
-        padding: 3px;
+  .gllry-item {
+    overflow: hidden;
+    padding: 3px;
 
-        .box {
-            overflow: hidden;
+    .box {
+      overflow: hidden;
 
-            img {
-                height: 100%;
-                width: 100%;
-                object-fit: cover;
-                -o-object-fit: cover;
-            }
-        }
-        a:focus {
-            outline: none;
-        }
-        a:after {
-            content: "\f002";
-            font-family: FontAwesome;
-            opacity: 0;
-            background-color: rgba(0, 0, 0, 0.75);
-            position: absolute;
-            right: 3px;
-            left: 3px;
-            top: 3px;
-            bottom: 3px;
-            text-align: center;
-            font-size: 30px;
-            color: #fff;
-            -webkit-transition: all 0.5s ease-in-out 0s;
-            -moz-transition: all 0.5s ease-in-out 0s;
-            transition: all 0.5s ease-in-out 0s;
-        }
-        a:hover:after {
-            opacity: 1;
-        }
+      img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        -o-object-fit: cover;
+      }
     }
-    .modal.fade {
-        .modal-dialog {
-            -webkit-transform: scale(0.1);
-            -moz-transform: scale(0.1);
-            -ms-transform: scale(0.1);
-            transform: scale(0.1);
-            top: 100px;
-            opacity: 0;
-            -webkit-transition: all 0.3s;
-            -moz-transition: all 0.3s;
-            transition: all 0.3s;
-        }
-        &.in ,
-        &.show {
-            .modal-dialog {
-                -webkit-transform: scale(1);
-                -moz-transform: scale(1);
-                -ms-transform: scale(1);
-                transform: scale(1);
-                -webkit-transform: translate3d(0, -100px, 0);
-                transform: translate3d(0, -100px, 0);
-                opacity: 1;
-            }
-        }
+
+    a:focus {
+      outline: none;
     }
+
+    a:after {
+      content: "\f002";
+      font-family: FontAwesome;
+      opacity: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      position: absolute;
+      right: 3px;
+      left: 3px;
+      top: 3px;
+      bottom: 3px;
+      text-align: center;
+      font-size: 30px;
+      color: #fff;
+      -webkit-transition: all 0.5s ease-in-out 0s;
+      -moz-transition: all 0.5s ease-in-out 0s;
+      transition: all 0.5s ease-in-out 0s;
+    }
+
+    a:hover:after {
+      opacity: 1;
+    }
+  }
+
+  .modal.fade {
+    .modal-dialog {
+      -webkit-transform: scale(0.1);
+      -moz-transform: scale(0.1);
+      -ms-transform: scale(0.1);
+      transform: scale(0.1);
+      top: 100px;
+      opacity: 0;
+      -webkit-transition: all 0.3s;
+      -moz-transition: all 0.3s;
+      transition: all 0.3s;
+    }
+
+    &.in,
+    &.show {
+      .modal-dialog {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        transform: scale(1);
+        -webkit-transform: translate3d(0, -100px, 0);
+        transform: translate3d(0, -100px, 0);
+        opacity: 1;
+      }
+    }
+  }
+}
+.fas,
+.fab,
+.fa,
+.far {
+  vertical-align: middle;
 }

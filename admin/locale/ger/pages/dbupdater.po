@@ -27,10 +27,10 @@ msgid "errorSqlUpdate"
 msgstr "Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut."
 
 msgid "successUpdate"
-msgstr "Das Update wurde erfolgreich abgeschlossen"
+msgstr "Das Update wurde erfolgreich abgeschlossen."
 
 msgid "errorUpdate"
-msgstr "Fehler: Ein SQL-Befehl im Update hat 3 mal nicht funktioniert. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support!"
+msgstr "Fehler: Ein SQL-Befehl im Update konnte 3 mal ausgeführt werden. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support."
 
 msgid "eventProtocol"
 msgstr "Ereignisprotokoll"
@@ -42,16 +42,16 @@ msgid "createSuccess"
 msgstr " wurde erfolgreich erstellt"
 
 msgid "errorSaveCopy"
-msgstr "Sicherungskopie konnte nicht erstellt werden"
+msgstr "Sicherungskopie konnte nicht erstellt werden."
 
 msgid "infoUpdatePause"
 msgstr "Update wurde angehalten: "
 
 msgid "successMigrations"
-msgstr "Migrations wurden ausgeführt"
+msgstr "Migrationen wurden ausgeführt."
 
 msgid "successMigration"
-msgstr "Migration wurde erfolgreich ausgef&uuml;hrt"
+msgstr "Migration wurde erfolgreich ausgeführt."
 
 msgid "updateTo"
 msgstr "Update auf "

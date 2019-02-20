@@ -40,7 +40,6 @@
                             {/foreach}
                         {/block}
                     </div>
-                    {*{include file='snippets/image.tpl' src=$Artikel->Bilder[0]->cURLNormal alt=$alt tplscope=$tplscope}*}
 
                     {if $smarty.session.Kundengruppe->mayViewPrices()
                         && isset($Artikel->SieSparenX)
@@ -340,9 +339,3 @@
         {/col}
     {/row}
 </div>
-
-{if $Artikel->verfuegbarkeitsBenachrichtigung === 3}
-    <div id="popupn{$Artikel->kArtikel}" class="d-none">
-        {include file='productdetails/availability_notification_form.tpl' position='popup' tplscope='artikeldetails'}
-    </div>
-{/if}

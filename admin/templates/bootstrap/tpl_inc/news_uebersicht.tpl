@@ -1,11 +1,11 @@
 <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/sorttable.js"></script>
 <script>
     $(window).on('load', function(){
-        $('#submitDelete').click(function(){
+        $('#submitDelete').on('click', function(){
             $('#' + $(this).data('name') + ' input[data-id="loeschen"]').trigger('click');
         });
 
-        $('#kategorien button[data-target=".delete-modal"]').click(function(){
+        $('#kategorien button[data-target=".delete-modal"]').on('click', function(){
             $('.modal-title').html('{__('newsDeleteCat')}');
             $('#submitDelete').data('name', 'kategorien');
 
@@ -15,16 +15,16 @@
             });
             $('.delete-modal .modal-body').html('<ul class="list-group">' + itemsToDelete + '</ul>');
         });
-        $('#aktiv button[data-target=".delete-modal"]').click(function(){
+        $('#aktiv button[data-target=".delete-modal"]').on('click', function(){
             $('.modal-title').html('{__('newsDeleteNews')}');
             $('#submitDelete').data('name', 'aktiv');
         });
-        $('#inaktiv button[data-target=".delete-modal"]').click(function(){
+        $('#inaktiv button[data-target=".delete-modal"]').on('click', function(){
             $('.modal-title').html('{__('newsDeleteComment')}');
             $('#submitDelete').data('name', 'inaktiv');
         });
 
-        $('#category-list i.nav-toggle').click(function(event) {
+        $('#category-list i.nav-toggle').on('click', function(event) {
             event.stopPropagation();
             var tr = $(this).closest('tr');
             var td = $(this).parent();

@@ -6,13 +6,13 @@ msgid "filecheck"
 msgstr "Shopdateien-Check"
 
 msgid "filecheckDesc"
-msgstr "Mit diesem Tool können Sie prüfen, ob alle Shop-Dateien korrekt und vollständig hochgeladen wurden. Es wird pro Shopdatei geprüft, ob die Prüfsumme der Datei mit der Prüfsumme der Originaldatei übereinstimmt. Ist dies der Fall, so steht neben dem Dateinamen ein grün hinterlegtes \"OK\". Wurde eine Shopdatei geändert, fehlerhaft übertragen oder gelöscht, dann wird dies mit \"modifiziert\" kenntlich gemacht."
+msgstr "Hier können Sie sehen, ob alle Shopdateien korrekt und vollständig hochgeladen wurden. Es wird pro Datei geprüft, ob die Prüfsumme der Datei mit der Prüfsumme der Originaldatei übereinstimmt. Ist dies der Fall, so steht unter Status \"OK\". Wurde eine Shopdatei geändert, fehlerhaft übertragen oder gelöscht, dann wird dies mit \"modifiziert\" kenntlich gemacht."
 
 msgid "filecheckURL"
 msgstr "https://jtl-url.de/o9a4l"
 
 msgid "fileCheckNoneModifiedOrphanedFiles"
-msgstr "Derzeit gibt es keine modifizierten oder verwaisten Dateien"
+msgstr "Derzeit gibt es keine modifizierten oder verwaisten Dateien."
 
 msgid "fileCheckModifiedFilesHeadline"
 msgstr "Modifizierte Dateien"

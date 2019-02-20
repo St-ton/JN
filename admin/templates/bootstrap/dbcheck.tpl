@@ -139,7 +139,7 @@
 <script>
     {literal}
     $(document).ready(function () {
-        $('#viewAll').click(function () {
+        $('#viewAll').on('click', function () {
             $('#viewAll').hide();
             $('#viewModified').show().removeClass('hide');
             $('.unmodified').show();
@@ -147,7 +147,7 @@
             colorLines();
         });
 
-        $('#viewModified').click(function () {
+        $('#viewModified').on('click', function () {
             $('#viewAll').show().removeClass('hide');
             $('#viewModified').hide();
             $('.unmodified').hide();
@@ -155,7 +155,7 @@
             colorLines();
         });
 
-        $('*[data-action="migrate"]').click(function (e) {
+        $('*[data-action="migrate"]').on('click', function (e) {
             var $this = $(this);
 
             e.preventDefault();
@@ -163,7 +163,7 @@
             doSingleMigration($this.data('table'), $this.data('step'), $this.closest('tr'));
         });
 
-        $('#cancelWait').click(function (e) {
+        $('#cancelWait').on('click', function (e) {
             cancelWait(true);
             e.preventDefault();
         });

@@ -231,7 +231,7 @@
                                         }
                                         {inputgroupaddon append=true}
                                             {if $oPosition->cEinheit}
-                                                {inputgrouptext class="unit"}
+                                                {inputgrouptext class="unit form-control"}
                                                     {$oPosition->cEinheit}
                                                 {/inputgrouptext}
                                             {/if}

@@ -24,7 +24,7 @@ cDokuURL=__('auswahlassistentURL')}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cFrage">
-                                {__('aaQuestionName')}
+                                {__('question')}
                                 {if isset($cPlausi_arr.cName)}
                                     <span class="fillout">{__('FillOut')}</span>
                                 {/if}

@@ -80,7 +80,7 @@
                                             };
                                             $(document).ready(function () {
                                                 setPreviewImage();
-                                                $('#theme-theme_default').change(function () {
+                                                $('#theme-theme_default').on('change', function () {
                                                     setPreviewImage();
                                                 });
                                             });

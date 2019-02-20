@@ -15,13 +15,13 @@
                 {rdelim}
             {rdelim});
         {rdelim}
-        $('#massaction-main-switch').click(function () {ldelim}
+        $('#massaction-main-switch').on('click', function () {ldelim}
             var checkboxes = $('.massaction-checkbox'),
                 checked = $(this).prop('checked');
             checkboxes.prop('checked', checked);
         {rdelim});
 
-        $('#btn_toggle_cache').click(function () {ldelim}
+        $('#btn_toggle_cache').on('click', function () {ldelim}
             $("#row_toggle_cache").slideToggle('slow', 'linear');
         {rdelim});
     {rdelim});

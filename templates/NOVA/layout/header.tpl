@@ -154,7 +154,7 @@
                         {/col}
 
                         {col md=12 order=1 order-md=5 class="no-flex-grow"}
-                            {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}{/navbartoggle}
+                            {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}
                         {/col}
 
 
@@ -163,8 +163,8 @@
                             <div id="navbarToggler" class="collapse navbar-collapse mt-2" data-parent="#evo-main-nav-wrapper">
                                 {navbarnav class="megamenu show"}
                                     {include file='snippets/categories_mega.tpl'}
-                                    <span class="TabNav_Indicator"></span>
                                 {/navbarnav}
+                                <span class="TabNav_Indicator"></span>
                             </div>
                         {/col}
                         {col cols=12 md=5 order=6 order-md=2}

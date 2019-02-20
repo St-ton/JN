@@ -9,8 +9,7 @@
 {row}
     {col}
     {get_static_route id='news.php' assign=routeURL}
-        {form id="frm_filter" name="frm_filter" action="{$cCanonicalURL|default:$routeURL}" method="post" class="form-inline mb-4"}
-            {$jtl_token}
+        {form id="frm_filter" name="frm_filter" action=$cCanonicalURL|default:$routeURL class="form-inline mb-4"}
             {formgroup}
                 {select name="nSort" class="onchangeSubmit mb-2" aria=["label"=>"{lang key='newsSort' section='news'}"]}
                     <option value="-1"{if $nSort === -1} selected{/if}>{lang key='newsSort' section='news'}</option>
@@ -32,14 +31,14 @@
                 {/select}
                 {lang key='newsCategorie' section='news' assign='cCurrentKategorie'}
                 {if $oNewsCat->getID() > 0}
-                    {assign var='kNewsKategorie' value=$oNewsCat->getID()}
+                    {assign var=kNewsKategorie value=$oNewsCat->getID()}
                 {else}
-                    {assign var='kNewsKategorie' value=$kNewsKategorie|default:0}
+                    {assign var=kNewsKategorie value=$kNewsKategorie|default:0}
                 {/if}
                 {select name="nNewsKat" class="onchangeSubmit mb-2" aria=["label"=>"{lang key='newsCategorie' section='news'}"]}
                     <option value="-1"{if $kNewsKategorie === -1} selected{/if}>{lang key='newsCategorie' section='news'}</option>
                     {if !empty($oNewsKategorie_arr)}
-                        {assign var='selectedCat' value=$kNewsKategorie}
+                        {assign var=selectedCat value=$kNewsKategorie}
                         {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
                     {/if}
                 {/select}
@@ -59,7 +58,7 @@
                     {/foreach}
                 {/select}
 
-                {button name="submitGo" type="submit" value="{lang key='filterGo'}" class="mb-2"}{lang key='filterGo'}{/button}
+                {button name="submitGo" type="submit" value="1" class="mb-2"}{lang key='filterGo'}{/button}
             {/formgroup}
         {/form}
     {/col}
@@ -74,7 +73,7 @@
             {row}
                 {if !empty($oNewsCat->getPreviewImage())}
                     {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
-                    {col cols=12 sm=4}{image src="{$oNewsCat->getPreviewImage()}" center=true fluid=true}{/col}
+                    {col cols=12 sm=4}{image src=$oNewsCat->getPreviewImage() center=true fluid=true}{/col}
                 {else}
                     {col sm=12}{$oNewsCat->getDescription()}{/col}
                 {/if}

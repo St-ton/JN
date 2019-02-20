@@ -13,11 +13,11 @@
     }
         <hr class="mt-0 mb-4">
         {if ($oMerkmal->cTyp === 'SELECTBOX') && $oMerkmal->oMerkmalWert_arr|@count > 1}
-            {dropdown variant="link" text="{$oMerkmal->cName}"}
+            {dropdown variant="link" text=$oMerkmal->cName}
                 {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
-                    {dropdownitem href="{$oMerkmalWert->cSeo}"}
+                    {dropdownitem href=$oMerkmalWert->cSeo}
                         {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
-                            {image src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:'quotes'}"}
+                            {image src=$oMerkmalWert->cBildURLKlein alt=$oMerkmalWert->cWert|escape:'quotes'}
                         {/if}
                         {if $oMerkmal->cTyp !== 'BILD'}
                             {$oMerkmalWert->cWert}
@@ -29,12 +29,11 @@
             {nav vertical=true}
                 {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                     {navitem}
-                        {link
-                            href="{$oMerkmalWert->cURL}"
+                        {link href=$oMerkmalWert->cURL
                             class="{if $NaviFilter->hasAttributeValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getAttributeValue()->getValue() == $oMerkmalWert->kMerkmalWert}active{/if}"
                         }
                             {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
-                               {image src="{$oMerkmalWert->cBildURLKlein}" alt="{$oMerkmalWert->cWert|escape:'quotes'}"}
+                               {image src=$oMerkmalWert->cBildURLKlein alt=$oMerkmalWert->cWert|escape:'quotes'}
                             {/if}
                             {if $oMerkmal->cTyp !== 'BILD'}
                                 {$oMerkmalWert->cWert}

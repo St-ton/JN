@@ -7,13 +7,13 @@
             $all           = $('#bestellabschluss_bestellnummer_praefix, #bestellabschluss_bestellnummer_anfangsnummer, #bestellabschluss_bestellnummer_suffix'),
             force          = false;
 
-        $praefix.focus(function(e) {
+        $praefix.on('focus', function(e) {
             this.maxLength = 20 - $anfangsnummer.val().length - $suffix.val().length;
         });
-        $anfangsnummer.focus(function(e) {
+        $anfangsnummer.on('focus', function(e) {
             this.maxLength = 20 - $praefix.val().length - $suffix.val().length;
         });
-        $suffix.focus(function(e) {
+        $suffix.on('focus', function(e) {
             this.maxLength = 20 - $anfangsnummer.val().length - $praefix.val().length;
         });
 
@@ -32,7 +32,7 @@
                 updateBestellnummer(this);
             });
 
-        $all.closest('form').submit(function(e) {
+        $all.closest('form').on('submit', function(e) {
             var praefix       = $praefix.val(),
                 anfangsnummer = isNaN(parseInt($anfangsnummer.val())) ? 0 : parseInt($anfangsnummer.val()),
                 suffix        = $suffix.val(),

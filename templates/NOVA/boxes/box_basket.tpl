@@ -9,7 +9,7 @@
 }
     <hr class="mt-0 mb-4">
     <div class="box-body text-center">
-        {link href="{get_static_route id='warenkorb.php'}" class="basket {if $WarenkorbArtikelanzahl > 0}pushed{/if}" id="basket_drag_area"}
+        {link href="{get_static_route id='warenkorb.php'}" class="basket" id="basket_drag_area"}
             <span id="basket_text">{$Warenkorbtext}</span><br>
             <span class="basket_link"><i class="fas fa-shopping-cart"></i> {lang key='gotoBasket'}</span>
         {/link}

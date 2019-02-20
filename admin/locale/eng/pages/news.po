@@ -148,3 +148,15 @@ msgstr "Hauptkategorie"
 
 msgid "deleteComment"
 msgstr "Kommentare löschen?"
+
+msgid "successNewsSave"
+msgstr "News saved"
+
+msgid "successNewsCatSave"
+msgstr "News category created"
+
+msgid "successNewsCommentDelete"
+msgstr "News comments deleted."
+
+msgid "errorAtLeastOneNewsComment"
+msgstr "Error: Select at least one comment."

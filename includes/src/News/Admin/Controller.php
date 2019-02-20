@@ -253,7 +253,7 @@ class Controller
                 $this->db->insert('tnewskategorienews', $ins);
             }
             $this->flushCache();
-            $this->msg .= 'Ihre News wurde erfolgreich gespeichert.<br />';
+            $this->msg .= __('successNewsSave');
             if (isset($post['continue']) && $post['continue'] === '1') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
@@ -269,7 +269,7 @@ class Controller
                          ->assign('cPlausiValue_arr', $validation)
                          ->assign('oNewsKategorie_arr', $newsCategories)
                          ->assign('oNews', $newsItem);
-            $this->errorMsg .= 'Fehler: Bitte füllen Sie alle Pflichtfelder aus.<br />';
+            $this->errorMsg .= __('errorFillRequired');
 
             if (isset($post['kNews']) && \is_numeric($post['kNews'])) {
                 $this->continueWith = $newsItemID;
@@ -520,7 +520,7 @@ class Controller
         $dir   = self::UPLOAD_DIR_CATEGORY . $categoryID;
         if (!\is_dir($dir) && !\mkdir($dir) && !\is_dir($dir)) {
             $error = true;
-            $this->setErrorMsg('Verzeichnis konnte nicht erstellt werden: ' . $dir);
+            $this->setErrorMsg(__('errorDirCreate') . $dir);
         }
         if (isset($_FILES['previewImage']['name']) && \mb_strlen($_FILES['previewImage']['name']) > 0) {
             $extension = \mb_substr(
@@ -540,7 +540,7 @@ class Controller
         }
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
-            $this->msg .= 'Ihre Newskategorie wurde erfolgreich eingetragen.<br />';
+            $this->msg .= __('successNewsCatSave') . '<br />';
             $this->newsRedirect('kategorien', $this->msg);
         }
         $newsCategory = new Category($this->db);
@@ -778,7 +778,7 @@ class Controller
                 $this->db->delete('tnewskommentar', 'kNewsKommentar', (int)$id);
             }
             $this->flushCache();
-            $this->setMsg('Ihre markierten Kommentare wurden erfolgreich gelöscht.');
+            $this->setMsg(__('successNewsCommentDelete'));
             $tab    = Request::verifyGPDataString('tab');
             $params = [
                 'news'  => '1',
@@ -790,7 +790,7 @@ class Controller
             }
             $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), $params);
         } else {
-            $this->setErrorMsg('Fehler: Sie müssen mindestens einen Kommentar markieren.');
+            $this->setErrorMsg(__('errorAtLeastOneNewsComment'));
         }
     }
 

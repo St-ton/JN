@@ -416,7 +416,7 @@ class AuswahlAssistent
             $wizard = new self($cKey, $kKey, $languageID, true);
             // only start if the respective selection wizard group is enabled (active)
             if ($wizard->isActive()) {
-                foreach ($selected as $kMerkmalWert) {
+                foreach (\array_filter($selected, '\is_numeric') as $kMerkmalWert) {
                     $wizard->setNextSelection($kMerkmalWert);
                 }
                 $wizard->filter();

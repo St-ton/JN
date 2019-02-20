@@ -1061,7 +1061,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "f773693900d2fb9839fba42196162b0dc3323f41"
+                "reference": "148dde64992ac555cab8dce090002f66e3b7bdc5"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -1088,7 +1088,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-02-12T14:45:47+00:00"
+            "time": "2019-02-18T15:01:39+00:00"
         },
         {
             "name": "jtlshop/sccbs3",
@@ -1096,7 +1096,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git",
-                "reference": "d393769ac90d6e1321116d1449e6a7f5f1658892"
+                "reference": "07c1268d937230d00548a25cbe011fa39efc0f2e"
             },
             "require": {
                 "jtlshop/scc": "dev-master",
@@ -1123,7 +1123,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-02-12T14:46:54+00:00"
+            "time": "2019-02-14T17:43:48+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -3720,16 +3720,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.4",
+            "version": "7.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0"
+                "reference": "09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2896657da5fb237bc316bdfc18c2650efeee0dc0",
-                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9",
+                "reference": "09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9",
                 "shasum": ""
             },
             "require": {
@@ -3800,7 +3800,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-07T14:15:04+00:00"
+            "time": "2019-02-18T09:24:50+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

@@ -23,7 +23,7 @@
 </div>
 <script>
     $(document).ready(function(){
-        $('#{$modalID}-confirm').click(function(){
+        $('#{$modalID}-confirm').on('click', function(){
             var $modalButton = $('button[data-target="#{$modalID}-modal"');
 
             if($modalButton.data('href')) {

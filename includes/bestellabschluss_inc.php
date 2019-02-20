@@ -327,8 +327,8 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $kBestellung = $order->insertInDB();
 
     $logger = Shop::Container()->getLogService();
-    if ($logger->isHandling(JTLLOG_LEVEL_NOTICE)) {
-        $logger->withName('kBestellung')->notice('Bestellung gespeichert: ' . print_r($order, true), [$kBestellung]);
+    if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
+        $logger->withName('kBestellung')->debug('Bestellung gespeichert: ' . print_r($order, true), [$kBestellung]);
     }
     // TrustedShops buchen
     if (isset($_SESSION['TrustedShops']->cKaeuferschutzProdukt)

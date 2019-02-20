@@ -13,7 +13,7 @@
                         </span>
                     {/checkbox}
 
-                    {select name="cKaeuferschutzProdukt" class="form-control"}
+                    {select name="cKaeuferschutzProdukt"}
                         {foreach $oTrustedShops->oKaeuferschutzProdukte->item as $oItem}
                             <option value="{$oItem->tsProductID}"{if $oTrustedShops->cVorausgewaehltesProdukt == $oItem->tsProductID} selected{/if}>{lang key='trustedShopsBuyerProtection'} {lang key='trustedShopsTo'} {$oItem->protectedAmountDecimalLocalized}
                                 ({$oItem->grossFeeLocalized} {$oItem->cFeeTxt})
@@ -28,7 +28,7 @@
                             </span>
                         </span>
                     {/checkbox}
-                    {input name="cKaeuferschutzProdukt" type="hidden" value="{$oTrustedShops->oKaeuferschutzProdukte->item[0]->tsProductID}"}
+                    {input name="cKaeuferschutzProdukt" type="hidden" value=$oTrustedShops->oKaeuferschutzProdukte->item[0]->tsProductID}
                 {/if}
                 <p class="small text-muted mt-2">
                     {assign var=cISOSprache value=$oTrustedShops->cISOSprache}
@@ -41,8 +41,8 @@
                 </p>
             {/col}
             {col cols=2}
-                {link href="{$oTrustedShops->cLogoURL}" target="_blank"}
-                    {image src="{$URL_SHOP}/{$PFAD_GFX_TRUSTEDSHOPS}ts_logo.jpg" alt="" class="img-fluid"}
+                {link href=$oTrustedShops->cLogoURL target="_blank"}
+                    {image src="{$ShopURL}/{$PFAD_GFX_TRUSTEDSHOPS}ts_logo.jpg" alt="{lang key='trustedShopsBuyerProtection'}" fluid=true}
                 {/link}
             {/col}
         {/row}

@@ -8,12 +8,12 @@
 
 {if $Suchergebnisse->getSearchUnsuccessful() == true}
     {alert variant="info"}{lang key='noResults' section='productOverview'}{/alert}
-    {form id="suche2" action="{$ShopURL}" method="get"}
+    {form id="suche2" action=$ShopURL method="get"}
         <fieldset>
             {formgroup label-for="searchkey" label="{lang key='searchText'}"}
                     {input type="text" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey"}
             {/formgroup}
-            {input type="submit" value="{lang key='searchAgain' section='productOverview'}" class="submit btn btn-primary"}
+            {button variant="primary" type="submit" value="1"}{lang key='searchAgain' section='productOverview'}{/button}
         </fieldset>
     {/form}
 {/if}
@@ -57,13 +57,13 @@
         {foreach $oUnterKategorien_arr as $Unterkat}
             {col cols=6 md=4 lg=3}
                 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
-                    {link href="{$Unterkat->cURLFull}"}
-                        {image fluid-grow=true lazy=true src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}" class="mb-2"}
+                    {link href=$Unterkat->cURLFull}
+                        {image fluid-grow=true lazy=true src=$Unterkat->cBildURLFull alt=$Unterkat->cName class="mb-2"}
                     {/link}
                 {/if}
                 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                     <div class="caption text-center mb-2">
-                        {link href="{$Unterkat->cURLFull}"}
+                        {link href=$Unterkat->cURLFull}
                             {$Unterkat->cName}
                         {/link}
                     </div>
@@ -77,7 +77,7 @@
                         <ul class="list-unstyled small subsub">
                             {foreach $Unterkat->Unterkategorien as $UnterUnterKat}
                                 <li>
-                                    {link href="{$UnterUnterKat->cURLFull}" title="{$UnterUnterKat->cName}"}{$UnterUnterKat->cName}{/link}
+                                    {link href=$UnterUnterKat->cURLFull title=$UnterUnterKat->cName}{$UnterUnterKat->cName}{/link}
                                 </li>
                             {/foreach}
                         </ul>

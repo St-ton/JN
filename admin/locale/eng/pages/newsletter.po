@@ -232,3 +232,6 @@ msgstr "Vorhandene Vorlagen"
 
 msgid "newsletterNoAccount"
 msgstr "Newsletterempfänger ohne Kundenkonto"
+
+msgid "errorEmailExists"
+msgstr "Error: Email already exists"

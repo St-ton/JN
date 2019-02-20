@@ -7,7 +7,7 @@
     {listgroup}
         {foreach $Tagging as $tag}
             {listgroupitem class="tag"}
-                {link href="{$tag->cURLFull}"}{$tag->cName}{/link} <span class="badge-pill badge-primary float-right">{$tag->Anzahl}</span>
+                {link href=$tag->cURLFull}{$tag->cName}{/link} {badge pill=true variant="primary" class="float-right"}{$tag->Anzahl}{/badge}
             {/listgroupitem}
         {/foreach}
     {/listgroup}

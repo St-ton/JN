@@ -4,15 +4,15 @@
  *}
 {radiogroup}
     {foreach $Zahlungsarten as $zahlungsart}
-        {col cols=12 id="{$zahlungsart->cModulId}"}
+        {col cols=12 id=$zahlungsart->cModulId}
             {radio name="Zahlungsart"
-                    value="{$zahlungsart->kZahlungsart}"
+                    value=$zahlungsart->kZahlungsart
                     id="payment{$zahlungsart->kZahlungsart}"
                     checked=($AktiveZahlungsart === $zahlungsart->kZahlungsart || $Zahlungsarten|@count === 1)
                     required=($zahlungsart@first)
             }
                 {if $zahlungsart->cBild}
-                    {image src="{$zahlungsart->cBild}" alt="{$zahlungsart->angezeigterName|trans}" class="img-fluid img-sm"}
+                    {image src=$zahlungsart->cBild alt=$zahlungsart->angezeigterName|trans fluid=trueclass="img-sm"}
                 {else}
                     <span class="content">
                         <span class="title">{$zahlungsart->angezeigterName|trans}</span>

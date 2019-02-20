@@ -1,8 +1,8 @@
 <div id="billpay_wrapper">
    <div id="billpay_rate_selection">
-      {input type="hidden" name="billpay_rate_total" value="{$oRate->fBase}"}
+      {input type="hidden" name="billpay_rate_total" value=$oRate->fBase}
       <div class="input-group">
-         {select class="form-control" name="billpay_rate"}
+         {select name="billpay_rate"}
             {foreach $nRate_arr as $nRate}
                <option value="{$nRate}" {if $oRate->nRate == $nRate}selected="selected"{/if}>{$nRate} Raten</option>
             {/foreach}
@@ -13,9 +13,9 @@
       </div>
       <br/>
       <div id="billpay_links" class="btn-group">
-         {link class="btn btn-secondary popup" href="{$cBillpayTermsURL}" target="_blank"}AGB Ratenkauf{/link}
-         {link class="btn btn-secondary popup" href="{$cBillpayPrivacyURL}" target="_blank"}Datenschutzbestimmungen{/link}
-         {link class="btn btn-secondary popup" href="{$cBillpayTermsPaymentURL}" target="_blank"}Zahlungsbedingungen{/link}
+         {link class="btn btn-secondary popup" href=$cBillpayTermsURL target="_blank"}AGB Ratenkauf{/link}
+         {link class="btn btn-secondary popup" href=$cBillpayPrivacyURL target="_blank"}Datenschutzbestimmungen{/link}
+         {link class="btn btn-secondary popup" href=$cBillpayTermsPaymentURL target="_blank"}Zahlungsbedingungen{/link}
       </div>
    </div>
 

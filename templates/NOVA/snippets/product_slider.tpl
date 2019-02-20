@@ -5,7 +5,7 @@
 {strip}
 {if $productlist|@count > 0}
     {if !isset($tplscope)}
-        {assign var='tplscope' value='slider'}
+        {assign var=tplscope value='slider'}
     {/if}
 
     {if $tplscope === 'box'}
@@ -14,7 +14,7 @@
             <div class="h4 card-title">
                 {$title}
                 {if !empty($moreLink)}
-                    {link class="more float-right" href="{$moreLink}" title="{$moreTitle}" data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>"{$moreTitle}"]}
+                    {link class="more float-right" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>"{$moreTitle}"]}
                         <i class="fa fa-arrow-circle-right"></i>
                     {/link}
                 {/if}
@@ -34,7 +34,7 @@
             {if $title|strlen > 0}
                 <div class="hr-sect my-4">
                     {if !empty($moreLink)}
-                        {link class="more float-right" href="{$moreLink}" title="{$moreTitle}" data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>"{$moreTitle}"]}
+                        {link class="more float-right" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>$moreTitle]}
                         {$title}
                         {/link}
                     {/if}

@@ -6,7 +6,7 @@ msgid "umfrage"
 msgstr "Umfragesystem"
 
 msgid "umfrageDesc"
-msgstr "Das Umfragesystem erlaubt es Ihnen, vielseitige Umfragen im Shop durchzuführen. Als Motivation für Shop-Besucher können Sie Kupons oder Bonusguthaben an die Teilnahme der Umfrage knüpfen."
+msgstr "Hier können Sie Umfragen unter Ihren Kunden erstellen, mit denen Sie beispielsweise die Zufriedenheit Ihrer Kunden messen oder Marktforschung zu neuen gewünschten Produkten betreiben können. Um das Umfragemodul benutzen zu können, müssen Sie es vorher im JTL-Kundencenter erwerben oder testen und die Lizenz in der Onlineshop-Anbindung von JTL-Wawi aktivieren."
 
 msgid "umfrageURL"
 msgstr "https://jtl-url.de/nx0d7"
@@ -57,7 +57,7 @@ msgid "umfrageQs"
 msgstr "Fragen"
 
 msgid "umfrageQA"
-msgstr "Anworten"
+msgstr "Antworten"
 
 msgid "umfrageQASing"
 msgstr "Antwort"
@@ -81,10 +81,10 @@ msgid "umfrageStatsView"
 msgstr "Statistik anschauen"
 
 msgid "umfrageQResPercent"
-msgstr "Antworten Prozent"
+msgstr "Antworten (Prozent)"
 
 msgid "umfrageQResCount"
-msgstr "Antworten Anzahl"
+msgstr "Antworten (Anzahl)"
 
 msgid "umfrageQMax"
 msgstr "Gesamtanzahl"
@@ -105,10 +105,10 @@ msgid "umfrageQSort"
 msgstr "Sortierung"
 
 msgid "errorPollNotFound"
-msgstr "Fehler: Ihre Umfrage konnte nicht gefunden werden."
+msgstr "Fehler: Die Umfrage konnte nicht gefunden werden."
 
 msgid "successPollCreateNextSteps"
-msgstr "Ihre Umfrage wurde erfolgreich gespeichert. Bitte folgen Sie nun den weiteren Schritten."
+msgstr "Die Umfrage wurde erfolgreich gespeichert. Bitte folgen Sie nun den weiteren Schritten."
 
 msgid "errorRewardMissing"
 msgstr "Fehler: Bitte geben Sie nur eine Belohnungsart an."
@@ -117,31 +117,31 @@ msgid "errorDataMissing"
 msgstr "Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein."
 
 msgid "errorQuestionTypeNotCompatible"
-msgstr "Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. 'Um den Fragetyp zu ändern, resetten Sie bitte die Frage."
+msgstr "Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem vorherigen. Um den Fragetyp zu ändern, setzen Sie bitte die Frage zurück."
 
 msgid "successQuestionSave"
-msgstr "Ihr Frage wurde erfolgreich gespeichert."
+msgstr "Ihre Frage wurde erfolgreich gespeichert."
 
 msgid "errorMinNameTypeMissing"
 msgstr "Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein."
 
 msgid "successPollDelete"
-msgstr "Ihre markierten Umfragen wurden erfolgreich gelöscht."
+msgstr "Die markierten Umfragen wurden erfolgreich gelöscht."
 
 msgid "successAtLeastOnePoll"
 msgstr "Fehler: Bitte markieren Sie mindestens eine Umfrage."
 
 msgid "successQuestionDelete"
-msgstr "Ihre markierten Fragen wurden erfolgreich gelöscht."
+msgstr "Die markierten Fragen wurden erfolgreich gelöscht."
 
 msgid "successAnswerDelete"
-msgstr "Ihre markierten Antworten wurden erfolgreich gelöscht."
+msgstr "Die markierten Antworten wurden erfolgreich gelöscht."
 
 msgid "successOptionDelete"
-msgstr "Ihre markierten Optionen wurden erfolgreich gelöscht."
+msgstr "Die markierten Optionen wurden erfolgreich gelöscht."
 
 msgid "errorNoStatistic"
-msgstr "Fehler: Für diese Umfrage gibt es noch keine Stastistik."
+msgstr "Fehler: Für diese Umfrage gibt es noch keine Statistik."
 
 msgid "errorPollSelect"
 msgstr "Fehler: Bitte wählen Sie eine korrekte Umfrage aus."
@@ -150,13 +150,13 @@ msgid "questionTypeMultipleChoiceOne"
 msgstr "Multiple Choice (Eine Antwort)"
 
 msgid "questionTypeMultipleChoiceMany"
-msgstr "Multiple Choice (Viele Antworten)"
+msgstr "Multiple Choice (Mehrere Antworten)"
 
 msgid "questionTypeSelectboxOne"
 msgstr "Selectbox (Eine Antwort)"
 
 msgid "questionTypeSelectboxMany"
-msgstr "SelectBox (Viele Antworten)"
+msgstr "Selectbox (Mehrere Antworten)"
 
 msgid "questionTypeTextSmall"
 msgstr "Textfeld (klein)"
@@ -168,19 +168,19 @@ msgid "questionTypeMatrixOne"
 msgstr "Matrix (Eine Antwort pro Zeile)"
 
 msgid "questionTypeMatrixMany"
-msgstr "Matrix (Viele Antworten pro Zeile)"
+msgstr "Matrix (Mehrere Antworten pro Zeile)"
 
 msgid "questionTypeDivider"
 msgstr "Statischer Trenntext"
 
 msgid "questionTypeDividerNewPage"
-msgstr "Statischer Trenntext + Seitenwechsel"
+msgstr "Statischer Trenntext und Seitenwechsel"
 
 msgid "addAnswer"
 msgstr "Antwort hinzufügen"
 
 msgid "addOption"
-msgstr "Option hinzufügen'"
+msgstr "Option hinzufügen"
 
 msgid "activePolls"
 msgstr "Aktive Umfragen"

@@ -11,5 +11,5 @@
         </li>
     {/foreach}
 {else}
-    <div class="alert alert-info">Zur Zeit stehen keine Patches zur Verfügung</div>
+    <div class="alert alert-info">{__('noPatchesATM')}</div>
 {/if}

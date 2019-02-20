@@ -1129,7 +1129,7 @@ class Sprache
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
                     $productFilter->getFilterConfig()->setLanguageID($originalLanguage);
                     if ($productFilter->getPage() > 1) {
-                        if (\mb_strpos($url, 'navi.php') !== false) {
+                        if (\mb_strpos($url, '?') !== false || \mb_strpos($url, 'navi.php') !== false) {
                             $url .= '&amp;seite=' . $productFilter->getPage();
                         } else {
                             $url .= \SEP_SEITE . $productFilter->getPage();
@@ -1148,9 +1148,10 @@ class Sprache
                 $AktuellerArtikel->baueArtikelSprachURL(false);
             }
             $currentCurrencyCode = Frontend::getCurrency()->getID();
+            $currentLangCode     = Shop::getLanguageCode();
             foreach (Frontend::getCurrencies() as $currency) {
-                if (isset($AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()])) {
-                    $url = $AktuellerArtikel->cSprachURL_arr[Shop::getLanguageCode()];
+                if (isset($AktuellerArtikel->cSprachURL_arr[$currentLangCode])) {
+                    $url = $AktuellerArtikel->cSprachURL_arr[$currentLangCode];
                 } elseif ($specialPage !== null) {
                     $url = $specialPage->getURL();
                     if (empty($url)) {

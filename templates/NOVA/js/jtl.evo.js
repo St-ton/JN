@@ -602,7 +602,20 @@
 
         addInactivityCheck: function() {
             var timeoutID;
-            $("input[type='number']").InputSpinner();
+            var config = {
+                decrementButton: "<strong>-</strong>", // button text
+                incrementButton: "<strong>+</strong>", // ..
+                groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
+                buttonsClass: "btn-light form-control",
+                buttonsWidth: "",
+                textAlign: "center",
+                autoDelay: 500, // ms holding before auto value change
+                autoInterval: 100, // speed of auto value change
+                boostThreshold: 10, // boost after these steps
+                boostMultiplier: "auto", // you can also set a constant number as multiplier
+                locale: null // the locale for number rendering; if null, the browsers language is used
+            }
+            $("input[type='number']").InputSpinner(config);
 
 
             function setup() {

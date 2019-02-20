@@ -36,7 +36,7 @@
                     {if $child->inWarenkorbLegbar == 1 && !$child->bHasKonfig && ($child->nVariationAnzahl == $child->nVariationOhneFreifeldAnzahl)}
                         {inputgroup size="sm" class="float-right {if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} has-error{/if}"}
                             {if $child->cEinheit}
-                                {inputgroupaddon prepend=true is-text=true class="unit"}
+                                {inputgroupaddon prepend=true is-text=true class="unit form-control"}
                                     {$child->cEinheit}:
                                 {/inputgroupaddon}
                             {/if}

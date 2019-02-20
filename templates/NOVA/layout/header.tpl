@@ -234,7 +234,7 @@
     {/block}
 
     {block name='content-starttag'}
-        <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} {if $nSeitenTyp === 2} col-md-8{/if} col-lg-9{/if} order-lg-1 mb-6">
+        <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} col-lg-9{/if} order-lg-1 mb-6">
     {/block}
 
     {block name='header-breadcrumb'}

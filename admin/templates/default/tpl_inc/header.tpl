@@ -30,6 +30,14 @@
 	    <![endif]-->
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>
+            // Prevent auto-execution of scripts when no explicit dataType was provided (See gh-2432)
+            jQuery.ajaxPrefilter( function( s ) {
+                if ( s.crossDomain ) {
+                    s.contents.script = false;
+                }
+            } );
+        </script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
         <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 

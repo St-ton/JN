@@ -338,8 +338,8 @@ msgstr "Passwörter stimmen nicht überein."
 msgid "action"
 msgstr "Aktion"
 
-msgid "available"
-msgstr "Vorhanden"
+msgid "existing"
+msgstr "existing"
 
 msgid "html"
 msgstr "Html"

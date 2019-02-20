@@ -137,9 +137,6 @@ msgstr "Fehler: Die Newskategorie mit der ID %d konnte nicht gefunden werden."
 msgid "successNewsCommentUnlock"
 msgstr "Ihre markierten Newskommentare wurden erfolgreich freigeschaltet."
 
-msgid "errorAtLeastOneNewsComment"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newskommentar."
-
 msgid "goOnEdit"
 msgstr " und weiter bearbeiten"
 

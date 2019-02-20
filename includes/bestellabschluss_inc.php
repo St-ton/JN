@@ -665,6 +665,17 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                 ReturnType::DEFAULT
             );
         }
+        $db->queryPrepared(
+            'UPDATE tartikel
+                    SET fLagerbestand = IF (fLagerbestand >= :amountSubstract,
+                    (fLagerbestand - :amountSubstract), fLagerbestand)
+                    WHERE kArtikel = :productID',
+            [
+                'amountSubstract' => $amount * $product->fPackeinheit,
+                'productID' => $product->kArtikel
+            ],
+            ReturnType::DEFAULT
+        );
     } elseif ($product->fPackeinheit > 0) {
         if ($product->kStueckliste > 0) {
             $artikelBestand = aktualisiereStuecklistenLagerbestand($product, $amount);
@@ -702,6 +713,20 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         if ($product->kVaterArtikel > 0) {
             Artikel::beachteVarikombiMerkmalLagerbestand($product->kVaterArtikel, $productFilter);
+
+            //update parent stock
+            $db->queryPrepared(
+                'UPDATE tartikel SET fLagerbestand =
+                    (SELECT * FROM
+                        (SELECT SUM(fLagerbestand)
+                            FROM tartikel
+                            WHERE kVaterartikel = :productID
+                        ) AS x
+                    )
+                    WHERE kArtikel = :productID',
+                ['productID' => $product->kVaterArtikel],
+                ReturnType::DEFAULT
+            );
         }
     }
 

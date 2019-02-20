@@ -9,10 +9,10 @@ msgid "categorycheckURL"
 msgstr "https://jtl-url.de/njc39"
 
 msgid "categorycheckDesc"
-msgstr "Überprüft Kategorien auf vorhandende Vaterkategorien"
+msgstr "Hier finden Sie eine Auflistung aller Unterkategorien, die keine Hauptkategorie haben."
 
 msgid "errorCatsWithoutParents"
-msgstr "Es wurden Kategorien ohne korrekte Elternkategorie gefunden."
+msgstr "Es wurden Kategorien ohne Hauptkategorie gefunden."
 
 msgid "infoNoOrphanedCats"
 msgstr "Keine verwaisten Kategorien gefunden."

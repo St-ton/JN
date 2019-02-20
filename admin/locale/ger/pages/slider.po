@@ -39,13 +39,13 @@ msgid "overridesOther"
 msgstr "Wenn diese Option aktiviert ist, überschreibt sie andere"
 
 msgid "willOverride"
-msgstr "Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail Navigation, Navigation (Richtung), Effekte."
+msgstr "Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail-Navigation, Navigation (Richtung), Effekte."
 
 msgid "randomEffects"
-msgstr "zufällige Effekte"
+msgstr "Zufällige Effekte"
 
 msgid "selectedEffects"
-msgstr "ausgewählte Effekte"
+msgstr "Ausgewählte Effekte"
 
 msgid "availableEffects"
 msgstr "Verfügbare Effekte"
@@ -102,8 +102,7 @@ msgid "themeDark"
 msgstr "dark"
 
 msgid "warningAnimationTimeLower"
-msgstr "Der Wert von \"Animations Geschwindigkeit\" darf den Wert von \"Pause Zeit\" nicht überschreiten!"
+msgstr "Der Wert von \"Animationsgeschwindigkeit\" darf den Wert von \"Pausenzeit\" nicht überschreiten."
 
 msgid "pauseTime"
-msgstr "Pause Zeit (in ms)"
-
+msgstr "Pausenzeit (in ms)"

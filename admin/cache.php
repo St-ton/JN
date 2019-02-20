@@ -34,7 +34,7 @@ try {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 } catch (Exception $exc) {
-    $error = 'Ausnahme: ' . $exc->getMessage();
+    $error = __('exception') . ': ' . $exc->getMessage();
 }
 // get disabled cache types
 $deactivated       = $db->select(

@@ -76,3 +76,6 @@ msgstr "Import kann nicht gestartet werden!"
 
 msgid "successImportTempDelete"
 msgstr "Temporärer Import wurde gelöscht!"
+
+msgid "importCancel"
+msgstr "Import canceled."

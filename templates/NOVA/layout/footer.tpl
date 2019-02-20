@@ -179,7 +179,7 @@
                                     {/if}"
                             }
                                 {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                    {dropdownitem href=$oWaehrung->getURL() rel="nofollow"}
+                                    {dropdownitem href=$oWaehrung->getURLFull() rel="nofollow"}
                                         {$oWaehrung->getName()}
                                     {/dropdownitem}
                                 {/foreach}

@@ -23,9 +23,9 @@
         var config = {
             decrementButton: "<strong>-</strong>", // button text
             incrementButton: "<strong>+</strong>", // ..
-            groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
-            buttonsClass: "btn-light",
-            buttonsWidth: "",
+            groupClass: "", // css class of the input-group (sizing with input-group-sm or input-group-lg)
+            buttonsClass: "btn-outline-secondary",
+            buttonsWidth: "2.5rem",
             textAlign: "center",
             autoDelay: 500, // ms holding before auto value change
             autoInterval: 100, // speed of auto value change

@@ -7,7 +7,7 @@
         {has_boxes position='left' assign='hasLeftBox'}
         {if !$bExclusive && $hasLeftBox && !empty($boxes.left|strip_tags|trim)}
             {block name='footer-sidepanel-left'}
-                <aside id="sidepanel_left" class="d-print-none col-12 {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE} col-md-4{/if} col-lg-3 order-lg-0 mb-6">
+                <aside id="sidepanel_left" class="d-print-none col-12 col-lg-3 order-lg-0 mb-6">
                     {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                 </aside>
             {/block}

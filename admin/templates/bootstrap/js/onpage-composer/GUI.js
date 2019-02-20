@@ -320,11 +320,16 @@ GUI.prototype = {
         var configObject = this.configForm.serializeControls();
 
         for(var propname in configObject) {
-            var propval  = configObject[propname];
-            var propType = $('[name="' + propname + '"]').data('prop-type');
+            var propval   = configObject[propname];
+            var propInput = $('[name="' + propname + '"]');
+            var propType  = propInput.data('prop-type');
 
             if (propType === 'filter') {
                 propval = JSON.parse(propval);
+            } else if (propInput[0].type === 'radio') {
+                propval = Boolean(propval);
+            } else if (propInput[0].type === 'number') {
+                propval = parseInt(propval);
             }
 
             configObject[propname] = propval;

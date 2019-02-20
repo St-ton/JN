@@ -16,52 +16,11 @@ use JTL\OPC\PortletInstance;
 class Image extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @param bool            $preview
-     * @return string
-     */
-    public function getHtml(PortletInstance $instance, $preview = false): string
-    {
-        $instance->setImageAttributes();
-
-        if (!empty($instance->getProperty('responsive'))) {
-            $instance->addClass('img-responsive');
-        }
-
-        if (!empty($instance->getProperty('shape'))) {
-            $instance->addClass($instance->getProperty('shape'));
-        }
-
-        return '<img '
-            . $instance->getAttributeString()
-            . ($preview ? ' ' . $instance->getDataAttributeString() : '')
-            . '>';
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        return $this->getHtml($instance, true);
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        return $this->getHtml($instance);
-    }
-
-    /**
      * @return string
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-image"></i><br> Bild';
+        return $this->getFontAwesomeButtonHtml('image');
     }
 
     /**
@@ -81,13 +40,13 @@ class Image extends Portlet
                 'options'    => [
                     '',
                     'rounded'   => 'abgerundete Ecken',
-                    'circle'    => 'Kreis',
-                    'thumbnail' => 'mit Rahmen'
+                    'rounded-circle'    => 'Kreis',
+                    'img-thumbnail' => 'mit Rahmen'
                 ],
                 'dspl_width' => 50,
             ],
             'responsive' => [
-                'label'      => 'responsives Bild?',
+                'label'      => 'Responsives Bild?',
                 'type'       => 'radio',
                 'options'    => [
                     true  => 'ja',
@@ -100,9 +59,6 @@ class Image extends Portlet
             'alt'        => [
                 'label' => 'Alternativtext',
             ],
-            'title'      => [
-                'label' => 'title',
-            ]
         ];
     }
 

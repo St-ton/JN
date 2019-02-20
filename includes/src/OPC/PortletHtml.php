@@ -491,6 +491,6 @@ trait PortletHtml
             return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/OPC/generic.icon.svg';
         }
 
-        return $this->getTemplateUrl() . 'icon.svg';
+        return $url;
     }
 }

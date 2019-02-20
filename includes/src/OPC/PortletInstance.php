@@ -149,6 +149,13 @@ class PortletInstance implements \JsonSerializable
     public function setProperty($name, $value): self
     {
         $this->properties[$name] = $value;
+        $desc                    = $this->portlet->getPropertyDesc();
+
+        if ($desc['type'] === 'radio') {
+            $this->properties[$name] = (bool)$value;
+        } elseif ($desc['type'] === 'number') {
+            $this->properties[$name] = (float)$value;
+        }
 
         return $this;
     }

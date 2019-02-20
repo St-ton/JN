@@ -667,9 +667,9 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
         }
         $db->queryPrepared(
             'UPDATE tartikel
-                    SET fLagerbestand = IF (fLagerbestand >= :amountSubstract,
-                    (fLagerbestand - :amountSubstract), fLagerbestand)
-                    WHERE kArtikel = :productID',
+                SET fLagerbestand = IF (fLagerbestand >= :amountSubstract,
+                (fLagerbestand - :amountSubstract), fLagerbestand)
+                WHERE kArtikel = :productID',
             [
                 'amountSubstract' => $amount * $product->fPackeinheit,
                 'productID' => $product->kArtikel
@@ -680,11 +680,15 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
         if ($product->kStueckliste > 0) {
             $artikelBestand = aktualisiereStuecklistenLagerbestand($product, $amount);
         } else {
-            $db->query(
+            $db->queryPrepared(
                 'UPDATE tartikel
-                    SET fLagerbestand = IF (fLagerbestand >= ' . ($amount * $product->fPackeinheit) . ',
-                    (fLagerbestand - ' . ($amount * $product->fPackeinheit) . '), fLagerbestand)
-                    WHERE kArtikel = ' . (int)$product->kArtikel,
+                    SET fLagerbestand = IF (fLagerbestand >= :amountSubstract,
+                    (fLagerbestand - :amountSubstract), fLagerbestand)
+                    WHERE kArtikel = :productID',
+                [
+                    'amountSubstract' => $amount * $product->fPackeinheit,
+                    'productID' => $product->kArtikel
+                ],
                 ReturnType::DEFAULT
             );
             $tmpArtikel = $db->select(

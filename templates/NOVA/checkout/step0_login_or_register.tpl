@@ -22,13 +22,13 @@
             {block name='checkout-login'}
                 {block name='checkout-login-body'}
                     <fieldset>
-                        <legend>{block name='checkout-login-title'}{lang key='alreadyCustomer' section='global'}{/block}</legend>
+                        <legend>{block name='checkout-login-title'}{lang key='alreadyCustomer'}{/block}</legend>
                         {include file='register/form/customer_login.tpl' withSidebar=$withSidebar}
                     </fieldset>
                 {/block}
             {/block}
         {/form}
-        <div class="hr-sect my-5">{lang key='or' section='global'}</div>
+        <div class="hr-sect my-5">{lang key='or'}</div>
     {/col}
     {col cols=12 id="customer" md="{if $withSidebar === 0}8{else}12{/if}" class="mt-3"}
         {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}

@@ -197,6 +197,8 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
  */
 function getShopInfoIO($cTpl, $cWrapperID)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('widgets');
+
     $response         = new IOResponse();
     $api              = Shop::Container()->get(JTLApi::class);
     $oLatestVersion   = $api->getLatestVersion();

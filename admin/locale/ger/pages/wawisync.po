@@ -6,7 +6,7 @@ msgid "wawisync"
 msgstr "Synchronisierungsdaten mit JTL-Wawi"
 
 msgid "wawisyncDesc"
-msgstr "Hier hinterlegen Sie einen Benutzernamen und ein Passwort für den Abgleich mit JTL-Wawi. Sie müssen die gleichen Daten ebenfalls in JTL-Wawi im Dialogfenster \"Onlineshop-Anbindung\" hinterlegen. Benutzername und Passwort dürfen Groß- und Kleinbuchstaben, Zahlen sowie folgende Sonderzeichen enthalten: !\"#$%&amp;'()*+,-./:;=&gt;?@[\]^_`|}~"
+msgstr "Hier hinterlegen Sie einen Benutzernamen und ein Passwort für den Abgleich mit JTL-Wawi. Sie müssen die gleichen Daten ebenfalls in JTL-Wawi im Dialogfenster \"Onlineshop-Anbindung\" hinterlegen. Benutzername und Passwort dürfen Groß- und Kleinbuchstaben, Zahlen sowie folgende Sonderzeichen enthalten: !\"#$%&'()*+,-./:;=>?@[\\]^_`|}~"
 
 msgid "wawisyncURL"
 msgstr "https://jtl-url.de/gvca6"

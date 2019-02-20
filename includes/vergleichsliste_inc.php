@@ -43,6 +43,11 @@ function baueMerkmalundVariation($oVergleichsliste)
                 }
             }
         }
+        if (count($oMerkmale_arr) > 0) {
+            uasort($oMerkmale_arr, function ($a, $b) {
+                return $a->nSort > $b->nSort;
+            });
+        }
     }
 
     $Tmp_arr[0] = $oMerkmale_arr;

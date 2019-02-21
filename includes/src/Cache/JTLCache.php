@@ -6,7 +6,7 @@
 
 namespace JTL\Cache;
 
-use JTL\Cache\Methods\cache_null;
+use JTL\Cache\Methods\CacheNull;
 use JTL\Helpers\Request;
 use JTL\Profiler;
 use JTL\Session\Frontend;
@@ -329,7 +329,7 @@ final class JTLCache implements JTLCacheInterface
                 return true;
             }
         }
-        $this->setMethod(cache_null::getInstance($this->options));
+        $this->setMethod(CacheNull::getInstance($this->options));
 
         return false;
     }

@@ -14,18 +14,18 @@ use RedisCluster;
 use RedisClusterException;
 
 /**
- * Class cache_redisCluster
+ * Class CacheRedisCluster
  * @package JTL\Cache\Methods
  * Implements caching via phpredis in cluster mode
  *
  * @see https://github.com/nicolasff/phpredis
  */
-class cache_redisCluster implements ICachingMethod
+class CacheRedisCluster implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_redisCluster
+     * @var CacheRedisCluster
      */
     public static $instance;
 

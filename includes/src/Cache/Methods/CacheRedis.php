@@ -12,18 +12,18 @@ use Redis;
 use RedisException;
 
 /**
- * Class cache_redis
+ * Class CacheRedis
  * Implements caching via phpredis
  *
  * @see https://github.com/nicolasff/phpredis
  * @package JTL\Cache\Methods
  */
-class cache_redis implements ICachingMethod
+class CacheRedis implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_redis
+     * @var CacheRedis
      */
     public static $instance;
 

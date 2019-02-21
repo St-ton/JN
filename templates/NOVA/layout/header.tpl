@@ -154,7 +154,7 @@
                         {/col}
 
                         {col md=12 order=1 order-md=5 class="no-flex-grow"}
-                            {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}
+                            {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}{/navbartoggle}
                         {/col}
 
 

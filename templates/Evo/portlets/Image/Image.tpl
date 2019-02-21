@@ -7,6 +7,7 @@
     srcset=$imgAttribs.srcset
     sizes=$imgAttribs.srcsizes
     alt=$imgAttribs.alt
+    title=$imgAttribs.title
     data=$data|default:null
     fluid=$instance->getProperty('responsive')
     style=$instance->getStyleString()

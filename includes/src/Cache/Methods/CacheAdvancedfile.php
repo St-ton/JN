@@ -13,20 +13,20 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
 /**
- * Class cache_advancedfile
+ * Class CacheAdvancedfile
  *
  * Implements caching via filesystem where tags are not stored in a central file
  * but organized in folder and symlinked to the actual cache entry
  * @package JTL\Cache\Methods
  */
-class cache_advancedfile implements ICachingMethod
+class CacheAdvancedfile implements ICachingMethod
 {
     use JTLCacheTrait {
         test as traitTest;
     }
 
     /**
-     * @var cache_advancedfile
+     * @var CacheAdvancedfile
      */
     public static $instance;
 

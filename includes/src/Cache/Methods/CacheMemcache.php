@@ -10,17 +10,17 @@ use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
 
 /**
- * Class cache_memcache
+ * Class CacheMemcache
  *
  * Implements the Memcache memory object caching system - no "d" at the end
  * @package JTL\Cache\Methods
  */
-class cache_memcache implements ICachingMethod
+class CacheMemcache implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_memcache
+     * @var CacheMemcache
      */
     public static $instance;
 

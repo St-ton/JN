@@ -10,16 +10,16 @@ use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
 
 /**
- * Class cache_session
+ * Class CacheSession
  * Implements caching via PHP $_SESSION object
  * @package JTL\Cache\Methods
  */
-class cache_session implements ICachingMethod
+class CacheSession implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_session
+     * @var CacheSession
      */
     public static $instance;
 

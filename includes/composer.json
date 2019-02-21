@@ -55,7 +55,8 @@
         "symfony/finder": "^4.0",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3",
-        "sensiolabs/security-checker": "^5.0"
+        "sensiolabs/security-checker": "^5.0",
+        "squizlabs/php_codesniffer": "^3.4"
     },
     "suggest": {
         "ext-redis": "Better caching method",

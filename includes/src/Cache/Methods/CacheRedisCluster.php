@@ -238,7 +238,7 @@ class CacheRedisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('JTL\Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
+            : \array_map('JTL\Cache\Methods\CacheRedisCluster::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);

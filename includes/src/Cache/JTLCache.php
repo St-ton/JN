@@ -319,8 +319,8 @@ final class JTLCache implements JTLCacheInterface
     {
         $cache = null;
         /** @var ICachingMethod $className */
-        $className = 'JTL\Cache\Methods\cache_' . $methodName;
-        $cache     = new $className($this->options);
+        $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
+        $cache = new $class($this->options);
         if (!empty($cache) && $cache instanceof ICachingMethod) {
             $this->setError($cache->getError());
             if ($cache->isInitialized() && $cache->isAvailable()) {
@@ -727,6 +727,7 @@ final class JTLCache implements JTLCacheInterface
             'memcached',
             'null',
             'redis',
+            'redisCluster',
             'session',
             'xcache'
         ];
@@ -752,7 +753,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $available = [];
         foreach ($this->getAllMethods() as $methodName) {
-            $class = 'JTL\Cache\Methods\cache_' . $methodName;
+            $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
             /** @var ICachingMethod $instance */
             $instance               = new $class($this->options);
             $available[$methodName] = [

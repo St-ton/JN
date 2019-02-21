@@ -480,7 +480,7 @@ class Plugins
     /**
      * @param LinkGroupInterface $linkGroup
      * @param int                $kVaterLink
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function buildNavigationSubs($linkGroup, $kVaterLink = 0)
     {

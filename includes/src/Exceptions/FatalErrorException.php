@@ -1,15 +1,41 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace JTL\Exceptions;
 
 /**
- * Fatal Error Exception.
- *
+ * Class FatalErrorException
+ * @package JTL\Exceptions
  * @author Konstanton Myakshin <koc-dp@yandex.ru>
  */
 class FatalErrorException extends \ErrorException
 {
-    public function __construct(string $message, int $code, int $severity, string $filename, int $lineno, int $traceOffset = null, bool $traceArgs = true, array $trace = null, \Throwable $previous = null)
+    /**
+     * FatalErrorException constructor.
+     * @param string          $message
+     * @param int             $code
+     * @param int             $severity
+     * @param string          $filename
+     * @param int             $lineno
+     * @param int|null        $traceOffset
+     * @param bool            $traceArgs
+     * @param array|null      $trace
+     * @param \Throwable|null $previous
+     */
+    public function __construct(
+        string $message,
+        int $code,
+        int $severity,
+        string $filename,
+        int $lineno,
+        int $traceOffset = null,
+        bool $traceArgs = true,
+        array $trace = null,
+        \Throwable $previous = null
+    )
     {
         parent::__construct($message, $code, $severity, $filename, $lineno, $previous);
 
@@ -23,9 +49,9 @@ class FatalErrorException extends \ErrorException
             $this->setTrace($trace);
         } elseif (null !== $traceOffset) {
             if (\function_exists('xdebug_get_function_stack')) {
-                $trace = xdebug_get_function_stack();
+                $trace = \xdebug_get_function_stack();
                 if (0 < $traceOffset) {
-                    array_splice($trace, -$traceOffset);
+                    \array_splice($trace, -$traceOffset);
                 }
 
                 foreach ($trace as &$frame) {
@@ -50,7 +76,7 @@ class FatalErrorException extends \ErrorException
                 }
 
                 unset($frame);
-                $trace = array_reverse($trace);
+                $trace = \array_reverse($trace);
             } else {
                 $trace = [];
             }
@@ -59,6 +85,10 @@ class FatalErrorException extends \ErrorException
         }
     }
 
+    /**
+     * @param $trace
+     * @throws \ReflectionException
+     */
     protected function setTrace($trace)
     {
         $traceReflector = new \ReflectionProperty('Exception', 'trace');

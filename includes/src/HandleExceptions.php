@@ -1,39 +1,48 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace JTL;
 
 use Exception;
 use ErrorException;
 use JTL\Exceptions\FatalErrorException;
+use JTL\Exceptions\FatalThrowableError;
 
+/**
+ * Class HandleExceptions
+ * @package JTL
+ */
 class HandleExceptions
 {
+    /**
+     * HandleExceptions constructor.
+     */
     public function __construct()
     {
-        error_reporting(-1);
-
-        set_error_handler([$this, 'handleError']);
-
-        set_exception_handler([$this, 'handleException']);
-
-        register_shutdown_function([$this, 'handleShutdown']);
+        \error_reporting(-1);
+        \set_error_handler([$this, 'handleError']);
+        \set_exception_handler([$this, 'handleException']);
+        \register_shutdown_function([$this, 'handleShutdown']);
     }
 
     /**
      * Convert PHP errors to ErrorException instances.
      *
-     * @param  int  $level
-     * @param  string  $message
-     * @param  string  $file
-     * @param  int  $line
+     * @param  int    $level
+     * @param  string $message
+     * @param  string $file
+     * @param  int    $line
      * @param  array  $context
      * @return void
      *
      * @throws \ErrorException
      */
-    public function handleError($level, $message, $file = '', $line = 0, $context = [])
+    public function handleError($level, $message, $file = '', $line = 0, $context = []): void
     {
-        if (error_reporting() & $level) {
+        if (\error_reporting() & $level) {
             throw new ErrorException($message, 0, $level, $file, $line);
         }
     }
@@ -45,12 +54,12 @@ class HandleExceptions
      * the HTTP and Console kernels. But, fatal error exceptions must
      * be handled differently since they are not normal exceptions.
      *
-     * @param  \Throwable  $e
+     * @param \Throwable|FatalThrowableError $e
      * @return void
      */
-    public function handleException($e)
+    public function handleException($e): void
     {
-        if (! $e instanceof Exception) {
+        if (!$e instanceof Exception) {
             $e = new FatalThrowableError($e);
         }
 
@@ -63,9 +72,9 @@ class HandleExceptions
      *
      * @return void
      */
-    public function handleShutdown()
+    public function handleShutdown(): void
     {
-        if (! is_null($error = error_get_last()) && $this->isFatal($error['type'])) {
+        if (($error = \error_get_last() !== null) && $this->isFatal($error['type'])) {
             $this->handleException($this->fatalExceptionFromError($error, 0));
         }
     }
@@ -73,11 +82,11 @@ class HandleExceptions
     /**
      * Create a new fatal exception instance from an error array.
      *
-     * @param  array  $error
-     * @param  int|null  $traceOffset
-     * @return \JTL\Exceptions\FatalErrorException
+     * @param  array    $error
+     * @param  int|null $traceOffset
+     * @return FatalErrorException
      */
-    protected function fatalExceptionFromError(array $error, $traceOffset = null)
+    protected function fatalExceptionFromError(array $error, $traceOffset = null): FatalErrorException
     {
         return new FatalErrorException(
             $error['message'], $error['type'], 0, $error['file'], $error['line'], $traceOffset
@@ -87,11 +96,11 @@ class HandleExceptions
     /**
      * Determine if the error type is fatal.
      *
-     * @param  int  $type
+     * @param  int $type
      * @return bool
      */
-    protected function isFatal($type)
+    protected function isFatal($type): bool
     {
-        return in_array($type, [E_COMPILE_ERROR, E_CORE_ERROR, E_ERROR, E_PARSE]);
+        return \in_array($type, [\E_COMPILE_ERROR, \E_CORE_ERROR, \E_ERROR, \E_PARSE], true);
     }
 }

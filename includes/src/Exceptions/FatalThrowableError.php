@@ -1,26 +1,37 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
 
 namespace JTL\Exceptions;
 
 /**
- * Fatal Throwable Error.
- *
+ * Class FatalThrowableError
+ * @package JTL\Exceptions
  * @author Nicolas Grekas <p@tchwork.com>
  */
 class FatalThrowableError extends FatalErrorException
 {
+    /**
+     * @var string
+     */
     private $originalClassName;
 
+    /**
+     * FatalThrowableError constructor.
+     * @param \Throwable $e
+     */
     public function __construct(\Throwable $e)
     {
         $this->originalClassName = \get_class($e);
 
         if ($e instanceof \ParseError) {
-            $severity = E_PARSE;
+            $severity = \E_PARSE;
         } elseif ($e instanceof \TypeError) {
-            $severity = E_RECOVERABLE_ERROR;
+            $severity = \E_RECOVERABLE_ERROR;
         } else {
-            $severity = E_ERROR;
+            $severity = \E_ERROR;
         }
 
         \ErrorException::__construct(
@@ -35,6 +46,9 @@ class FatalThrowableError extends FatalErrorException
         $this->setTrace($e->getTrace());
     }
 
+    /**
+     * @return string
+     */
     public function getOriginalClassName(): string
     {
         return $this->originalClassName;

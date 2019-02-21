@@ -130,7 +130,7 @@ class Pagination
     private $items;
 
     /**
-     * @var array|\Illuminate\Support\Collection
+     * @var array|Collection
      */
     private $pageItems;
 
@@ -211,7 +211,7 @@ class Pagination
     }
 
     /**
-     * @param array|\Illuminate\Support\Collection $items - item array to be paginated and sorted
+     * @param array|Collection $items - item array to be paginated and sorted
      * @return $this
      */
     public function setItemArray($items): self
@@ -508,7 +508,7 @@ class Pagination
     }
 
     /**
-     * @return array|\Illuminate\Support\Collection|null
+     * @return array|Collection|null
      */
     public function getPageItems()
     {

@@ -259,7 +259,7 @@
         {else}
             <div class="">
                 {if $nPage === 0}
-                    <div class="alert alert-info">{#warningChangesForAllPages#}</div>
+                    <div class="alert alert-info">{__('warningChangesForAllPages')}</div>
                 {/if}
                 <form name="boxen" method="post" action="boxen.php">
                     {$jtl_token}

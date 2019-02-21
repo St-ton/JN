@@ -154,7 +154,7 @@
                         {input type="hidden" name="action" value="adopt"}
                         <div class="btn-group">
                             {button variant="primary" class="dropdown-toggle" data=['toggle' => 'dropdown']
-                                    aria=['haspopup' => true, 'expanded' => false]}
+                                    aria=['haspopup' => 'true', 'expanded' => 'false']}
                                 <i class="fas fa-language"></i>
                                 Aus anderer Sprache übernehmen <span class="caret"></span>
                             {/button}

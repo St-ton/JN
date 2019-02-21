@@ -35,8 +35,7 @@ class FatalErrorException extends \ErrorException
         bool $traceArgs = true,
         array $trace = null,
         \Throwable $previous = null
-    )
-    {
+    ) {
         parent::__construct($message, $code, $severity, $filename, $lineno, $previous);
 
         if (null !== $trace) {

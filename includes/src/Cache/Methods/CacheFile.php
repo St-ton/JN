@@ -10,16 +10,16 @@ use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
 
 /**
- * Class cache_file
+ * Class CacheFile
  * Implements caching via filesystem
  * @package JTL\Cache\Methods
  */
-class cache_file implements ICachingMethod
+class CacheFile implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_file
+     * @var CacheFile
      */
     public static $instance;
 

@@ -505,7 +505,7 @@ function mappeDatenMember($cMemberRow_arr, $cMapping_arr)
  * @param int    $mod
  * @return Linechart
  */
-function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
+function prepareLineChartStats($stats, $name, $axis, $mod = 1)
 {
     $chart = new Linechart(['active' => false]);
 
@@ -541,7 +541,7 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
  * @param int    $maxEntries
  * @return Piechart
  */
-function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
+function preparePieChartStats($stats, $name, $axis, $maxEntries = 6)
 {
     $chart = new Piechart(['active' => false]);
     if (is_array($stats) && count($stats) > 0) {

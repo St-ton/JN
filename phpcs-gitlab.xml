@@ -15,17 +15,15 @@
     <arg value="sp"/>
     <ini name="memory_limit" value="256M"/>
 
-    <rule ref="Generic.PHP.DeprecatedFunctions"/>
-
     <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
-
-    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
 
     <rule ref="Generic.Commenting.Todo"/>
     <rule ref="Generic.Commenting.Todo.CommentFound">
         <message>Please review this TODO comment: %s</message>
         <severity>3</severity>
     </rule>
+
+    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
 
     <rule ref="Generic.Files.LineLength.MaxExceeded">
         <message>Line contains %2$s chars, which is more than the limit of %1$s</message>
@@ -49,6 +47,8 @@
         </properties>
     </rule>
 
+    <rule ref="Generic.PHP.DeprecatedFunctions"/>
+
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
             <property name="forbiddenFunctions" type="array">
@@ -71,20 +71,13 @@
         <severity>0</severity>
     </rule>
 
-    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+    <exclude name="PSR1.Methods.CamelCapsMethodName"/>
+    <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+    <!--<rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
         <exclude-pattern>*/includes/src/Shop.php</exclude-pattern>
-    </rule>
+    </rule>-->
 
     <rule ref="PSR2"/>
-
-    <rule ref="Squiz.Strings.DoubleQuoteUsage">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-        <exclude-pattern>*/data/*</exclude-pattern>
-    </rule>
-    <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-        <exclude-pattern>*/data/*</exclude-pattern>
-    </rule>
 
     <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
     <rule ref="Squiz.WhiteSpace.LogicalOperatorSpacing"/>
@@ -99,3 +92,4 @@
         </properties>
     </rule>
 </ruleset>
+<!-- usage: includes/vendor/bin/phpcs -n extensions=php exclude=Squiz.Strings.DoubleQuoteUsage.ContainsVar . -->

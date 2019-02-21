@@ -10,17 +10,17 @@ use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
 
 /**
- * Class cache_null
+ * Class CacheNull
  *
  * emergency fallback caching method
  * @package JTL\Cache\Methods
  */
-class cache_null implements ICachingMethod
+class CacheNull implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_null|null
+     * @var CacheNull|null
      */
     public static $instance;
 

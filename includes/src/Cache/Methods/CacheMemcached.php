@@ -11,19 +11,19 @@ use JTL\Cache\JTLCacheTrait;
 use Memcached;
 
 /**
- * Class cache_memcached
+ * Class CacheMemcached
  * Implements the Memcached memory object caching system - notice the "d" at the end
  *
  * @package JTL\Cache\Methods
  * @warning Untested
  * @package JTL\Cache\Methods
  */
-class cache_memcached implements ICachingMethod
+class CacheMemcached implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_memcached
+     * @var CacheMemcached
      */
     public static $instance;
 

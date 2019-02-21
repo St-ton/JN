@@ -665,32 +665,12 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                 ReturnType::DEFAULT
             );
         }
-        $db->queryPrepared(
-            'UPDATE tartikel
-                SET fLagerbestand = IF (fLagerbestand >= :amountSubstract,
-                (fLagerbestand - :amountSubstract), fLagerbestand)
-                WHERE kArtikel = :productID',
-            [
-                'amountSubstract' => $amount * $product->fPackeinheit,
-                'productID' => $product->kArtikel
-            ],
-            ReturnType::DEFAULT
-        );
+        updateStock($product->kArtikel, $amount, $product->fPackeinheit);
     } elseif ($product->fPackeinheit > 0) {
         if ($product->kStueckliste > 0) {
             $artikelBestand = aktualisiereStuecklistenLagerbestand($product, $amount);
         } else {
-            $db->queryPrepared(
-                'UPDATE tartikel
-                    SET fLagerbestand = IF (fLagerbestand >= :amountSubstract,
-                    (fLagerbestand - :amountSubstract), fLagerbestand)
-                    WHERE kArtikel = :productID',
-                [
-                    'amountSubstract' => $amount * $product->fPackeinheit,
-                    'productID' => $product->kArtikel
-                ],
-                ReturnType::DEFAULT
-            );
+            updateStock($product->kArtikel, $amount, $product->fPackeinheit);
             $tmpArtikel = $db->select(
                 'tartikel',
                 'kArtikel',
@@ -717,24 +697,30 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
         // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
         if ($product->kVaterArtikel > 0) {
             Artikel::beachteVarikombiMerkmalLagerbestand($product->kVaterArtikel, $productFilter);
-
-            //update parent stock
-            $db->queryPrepared(
-                'UPDATE tartikel SET fLagerbestand =
-                    (SELECT * FROM
-                        (SELECT SUM(fLagerbestand)
-                            FROM tartikel
-                            WHERE kVaterartikel = :productID
-                        ) AS x
-                    )
-                    WHERE kArtikel = :productID',
-                ['productID' => $product->kVaterArtikel],
-                ReturnType::DEFAULT
-            );
+            updateStock($product->kVaterArtikel, $amount, $product->fPackeinheit);
         }
     }
 
     return $artikelBestand;
+}
+
+/**
+ * @param int $productID
+ * @param float|int $amount
+ * @param float|int $packeinheit
+ */
+function updateStock(int $productID, $amount, $packeinheit)
+{
+    Shop::Container()->getDB()->queryPrepared(
+        'UPDATE tartikel
+            SET fLagerbestand = GREATEST(fLagerbestand - :amountSubstract, 0)
+            WHERE kArtikel = :productID',
+        [
+            'amountSubstract' => $amount * $packeinheit,
+            'productID' => $productID
+        ],
+        ReturnType::DEFAULT
+    );
 }
 
 /**

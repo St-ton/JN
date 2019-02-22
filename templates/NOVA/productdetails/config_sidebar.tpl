@@ -29,7 +29,7 @@
         }
         {inputgroupaddon append=true}
         {button name="inWarenkorb" type="submit" value="{lang key='addToCart'}"
-        variant="primary" class="submit"
+        variant="primary"
         title="{if isset($kEditKonfig)}{lang key='applyChanges'}{else}{lang key='addToCart'}{/if}"
         }
         {if isset($kEditKonfig)}
@@ -41,10 +41,10 @@
         {/inputgroupaddon}
         {/inputgroup}
         {if $Artikel->kVariKindArtikel > 0}
-            {input type="hidden" name="a2" value="{$Artikel->kVariKindArtikel}"}
+            {input type="hidden" name="a2" value=$Artikel->kVariKindArtikel}
         {/if}
         {if isset($kEditKonfig)}
-            {input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"}
+            {input type="hidden" name="kEditKonfig" value=$kEditKonfig}
         {/if}
     {/if}
     {/cardfooter}*}

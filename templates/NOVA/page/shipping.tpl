@@ -8,7 +8,7 @@
         {form method="post"
               action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}index.php{/if}{if $bExclusive}?exclusive_content=1{/if}"
               class="form-inline evo-validate" id="shipping-calculator-form"}
-            {input type="hidden" name="s" value="{$Link->getID()}"}
+            {input type="hidden" name="s" value=$Link->getID()}
             {include file='snippets/shipping_calculator.tpl' checkout=false}
         {/form}
     {else}

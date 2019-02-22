@@ -60,7 +60,7 @@
                             <tr id="shipment_{$versandart->kVersandart}">
                                 <td>
                                     {if $versandart->cBild}
-                                        {image src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}"}
+                                        {image src=$versandart->cBild alt="{$versandart->angezeigterName|trans}"}
                                     {else}
                                         {$versandart->angezeigterName|trans}
                                     {/if}

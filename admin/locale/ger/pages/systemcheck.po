@@ -3,16 +3,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "systemcheck"
-msgstr "Systemcheck"
+msgstr "System-Check"
 
 msgid "systemcheckURL"
 msgstr "https://jtl-url.de/njc39"
 
 msgid "systemcheckDesc"
-msgstr "Überprüft relevante serverseitige Einstellungen"
+msgstr "Der System-Check überprüft relevante serverseitige Einstellungen."
 
 msgid "noteImportantCheckSettings"
-msgstr "Um einen einwandfreien Betrieb gewährleisten zu können ist es zwingend erforderlich, alle <code>markierten</code> Eigeschaften zu überprüfen."
+msgstr "Um einen einwandfreien Betrieb gewährleisten zu können, ist es zwingend erforderlich, alle <code>markierten</code> Eigenschaften zu überprüfen."
 
 msgid "suggestedAdjustments"
 msgstr "Empfohlene Anpassungen"

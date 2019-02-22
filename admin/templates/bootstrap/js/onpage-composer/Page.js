@@ -94,7 +94,7 @@ Page.prototype = {
 
     loadFromImport: function(loadCB)
     {
-        this.jq('<input type="file" accept=".json">').change(this.onImportChosen.bind(this, loadCB)).click();
+        this.jq('<input type="file" accept=".json">').on('change', this.onImportChosen.bind(this, loadCB)).click();
     },
 
     loadPageFromWebStorage: function(loadCB)

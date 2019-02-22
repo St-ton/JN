@@ -3,19 +3,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "pluginverwaltung"
-msgstr "Pluginverwaltung"
+msgstr "Plugin-Verwaltung"
 
 msgid "pluginverwaltungLocales"
 msgstr "Sprachvariablen"
 
 msgid "pluginverwaltungLicenceKeyInput"
-msgstr "Plugin Lizenzschlüsseleingabe"
+msgstr "Lizenzschlüsseleingabe für Plugin"
 
 msgid "pluginverwaltungLicenceKey"
 msgstr "Lizenzschlüssel"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plugins erweitern den Funktionsumfang, ohne den Kern-Shopcode zu verändern. Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br /><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shopsystems!</strong>"
+msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shop-Systems.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/5stze"
@@ -24,7 +24,7 @@ msgid "pluginListNotInstalled"
 msgstr "Verfügbare (nicht installierte) Plugins"
 
 msgid "pluginListNotActivated"
-msgstr "Verfügbare (nicht aktivierte) Plugins"
+msgstr "Verfügbare (nicht aktive) Plugins"
 
 msgid "pluginListNotInstalledAndError"
 msgstr "Fehlerhafte (nicht installierte) Plugins"
@@ -45,7 +45,7 @@ msgid "pluginAuthor"
 msgstr "Autor"
 
 msgid "pluginHomepage"
-msgstr "Homepage"
+msgstr "Website"
 
 msgid "pluginDesc"
 msgstr "Beschreibung"
@@ -81,7 +81,7 @@ msgid "statusError"
 msgstr "Fehlerhaft"
 
 msgid "pluginBtnUpdate"
-msgstr "Updaten"
+msgstr "Aktualisieren"
 
 msgid "pluginBtnInstall"
 msgstr "Installieren"
@@ -93,16 +93,16 @@ msgid "pluginBtnReload"
 msgstr "Neu laden"
 
 msgid "pluginBtnLicenceAdd"
-msgstr "Lizenzkey eingeben"
+msgstr "Lizenzschlüssel eingeben"
 
 msgid "pluginBtnLicenceChange"
-msgstr "ändern"
+msgstr "Ändern"
 
 msgid "pluginBtnLicence"
 msgstr "Lizenz"
 
 msgid "pluginLocalesStd"
-msgstr "auf den Installationszustand zurücksetzen"
+msgstr "Auf den Installationszustand zurücksetzen"
 
 msgid "pluginEditLocales"
 msgstr "Sprachvariablen"
@@ -111,7 +111,7 @@ msgid "pluginEditLinkgrps"
 msgstr "Linkgruppen"
 
 msgid "pluginUpdateExists"
-msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann geupdated werden"
+msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann aktualisiert werden."
 
 msgid "pluginUpdateExistsError"
 msgstr "Dieses hat jedoch den folgenden Fehler"
@@ -123,40 +123,40 @@ msgid "errorPluginKeyInvalid"
 msgstr "Fehler: Ihr Lizenzschlüssel ist ungültig."
 
 msgid "errorPluginNotFound"
-msgstr "Fehler: Ihr Plugin wurde nicht in der Datenbank gefunden."
+msgstr "Fehler: Das Plugin wurde nicht in der Datenbank gefunden."
 
 msgid "successPluginActivate"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich aktiviert."
+msgstr "Die ausgewählten Plugins wurden erfolgreich aktiviert."
 
 msgid "errorAtLeastOnePlugin"
 msgstr "Fehler: Bitte wählen Sie mindestens ein Plugin aus."
 
 msgid "successPluginDeactivate"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich deaktiviert."
+msgstr "Die ausgewählten Plugins wurden erfolgreich deaktiviert."
 
 msgid "errorPluginDeleteSQL"
 msgstr "Fehler: Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden."
 
 msgid "successPluginDelete"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich deinstalliert."
+msgstr "Die ausgewählten Plugins wurden erfolgreich deinstalliert."
 
 msgid "errorPluginNotFoundMultiple"
 msgstr "Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden."
 
 msgid "successPluginRefresh"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich neu geladen."
+msgstr "Die ausgewählten Plugins wurden erfolgreich neu geladen."
 
 msgid "errorPluginRefresh"
 msgstr "Fehler: Ein Plugin konnte nicht neu geladen werden."
 
 msgid "successPlguinUpdate"
-msgstr "Ihr Plugin wurde erfolgreich geupdated."
+msgstr "Das Plugin wurde erfolgreich aktualisiert."
 
 msgid "errorPluginUpdate"
-msgstr "Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: "
+msgstr "Fehler: Bei der Aktualisierung ist ein Fehler aufgetreten. Fehlercode: "
 
 msgid "successPluginInstall"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich installiert."
+msgstr "Die ausgewählten Plugins wurden erfolgreich installiert."
 
 msgid "errorPluginInstall"
 msgstr "Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
@@ -165,7 +165,7 @@ msgid "successVariableRestore"
 msgstr "Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt."
 
 msgid "surePluginUpdate"
-msgstr "Wollen Sie das Plugin wirklich updaten?"
+msgstr "Möchten Sie das Plugin wirklich updaten?"
 
 msgid "successPluginUpload"
 msgstr "Plugin erfolgreich hochgeladen."
@@ -174,16 +174,16 @@ msgid "errorPluginUpload"
 msgstr "Plugin konnte nicht hochgeladen werden."
 
 msgid "sureResetLangVar"
-msgstr "Wollen Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br><br> *Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren."
+msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> *Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren."
 
 msgid "dangerPluginNotCompatible"
-msgstr "Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen."
+msgstr "Achtung: Plugin ist nicht vollständig mit JTL-Shop 5 kompatibel. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "licensePlugin"
-msgstr "Plugin Lizenz"
+msgstr "Plugin-Lizenz"
 
 msgid "storeNotLinkedDesc"
-msgstr "Um auf JTL-Store Inhalte zugreifen zu k&ouml;nnen, müssen Sie zun&auml;chst Ihr JTL-Konto verkn&uuml;pfen."
+msgstr "Um auf JTL-Store Inhalte zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto verknüpfen."
 
 msgid "storeLink"
 msgstr "Konto verknüpfen"

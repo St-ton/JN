@@ -75,7 +75,7 @@
     {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
         {form action="{$cThisUrl}{$cAnchor}" method="get" class="form-inline float-right"}
             {foreach $cParam_arr as $cParamName => $cParamValue}
-                {input type="hidden" name="{$cParamName}" value="{$cParamValue}"}
+                {input type="hidden" name=$cParamName value=$cParamValue}
             {/foreach}
             {if in_array('count', $parts)}
                 {formgroup class="items-per-page-group"}

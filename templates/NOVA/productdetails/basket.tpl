@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
-    <div id="add-to-cart" class="hidden-print product-buy text-right{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
+    <div id="add-to-cart" class="d-print-none product-buy text-right{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
     {block name='add-to-cart'}
         {if $Artikel->nErscheinendesProdukt}
             <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center">
@@ -23,7 +23,7 @@
                     {inputgroup id="quantity-grp" class="choose_quantity"}
                         {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                             min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
-                            required="{$Artikel->fAbnahmeintervall > 0}"
+                            required=($Artikel->fAbnahmeintervall > 0)
                             step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
                             id="quantity" class="quantity text-right" name="anzahl"
                             aria=["label"=>"{lang key='quantity'}"]
@@ -32,11 +32,11 @@
                         }
                         {inputgroupappend}
                             {if $Artikel->cEinheit}
-                                {inputgrouptext class="unit"}
+                                {inputgrouptext class="unit form-control"}
                                     {$Artikel->cEinheit}
                                 {/inputgrouptext}
                             {/if}
-                            {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="submit ml-4" variant="primary"}
+                            {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="ml-4" variant="primary"}
                                 <em>
                                     <span class="fas fa-shopping-cart d-block d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
                                 </em>
@@ -51,7 +51,7 @@
         {/if}
         {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
             {alert variant="info" class="mt-2 purchase-info"}
-                {assign var='units' value=$Artikel->cEinheit}
+                {assign var=units value=$Artikel->cEinheit}
                 {if empty($Artikel->cEinheit) || $Artikel->cEinheit|@count_characters == 0}
                     <p>{lang key='units' section='productDetails' assign='units'}</p>
                 {/if}

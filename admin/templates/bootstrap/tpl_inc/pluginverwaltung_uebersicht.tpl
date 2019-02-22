@@ -81,7 +81,7 @@ function ackCheck(kPlugin, hash)
                     <a data-toggle="tab" role="tab" href="#probleme">{__('problems')} <span class="badge">{$PluginErrorCount}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'verfuegbar'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#verfuegbar">{__('available')} <span class="badge">{$pluginsAvailable->count()}</span></a>
+                    <a data-toggle="tab" role="tab" href="#verfuegbar">{__('existing')} <span class="badge">{$pluginsAvailable->count()}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}">
                     <a data-toggle="tab" role="tab" href="#fehlerhaft">{__('faulty')} <span class="badge">{$pluginsErroneous->count()}</span></a>

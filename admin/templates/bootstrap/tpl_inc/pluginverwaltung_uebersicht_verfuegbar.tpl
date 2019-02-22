@@ -9,7 +9,7 @@
         // for all found licenses..
         for (var key in vLicenses) {
             // ..bind a click-handler to the plugins checkbox
-            $('input[id="plugin-check-'+key+'"]').click(function(event) {
+            $('input[id="plugin-check-'+key+'"]').on('click', function(event) {
                 // grab the element, which was rising that click-event (click to the checkbox)
                 var oTemp = $(event.currentTarget);
                 szPluginName = oTemp.val();

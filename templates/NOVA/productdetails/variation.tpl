@@ -2,13 +2,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{assign var='modal' value=isset($smarty.get.quickView) && $smarty.get.quickView == 1}
+{assign var=modal value=isset($smarty.get.quickView) && $smarty.get.quickView == 1}
 {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
-    {assign var="VariationsSource" value="Variationen"}
+    {assign var=VariationsSource value="Variationen"}
     {if isset($ohneFreifeld) && $ohneFreifeld}
-        {assign var="VariationsSource" value="VariationenOhneFreifeld"}
+        {assign var=VariationsSource value="VariationenOhneFreifeld"}
     {/if}
-    {assign var="oVariationKombi_arr" value=$Artikel->getChildVariations()}
+    {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
     {row}
         {col class="updatingStockInfo text-center d-none"}
             <i class="fa fa-spinner fa-spin" title="{lang key='updatingStockInformation' section='productDetails'}"></i>
@@ -61,12 +61,12 @@
                         {/block}
                     {elseif $Variation->cTyp === 'RADIO'}
                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
-                            {assign var="bSelected" value=false}
+                            {assign var=bSelected value=false}
                             {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
-                               {assign var="bSelected" value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                               {assign var=bSelected value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
                             {/if}
                             {if isset($oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft])}
-                                {assign var="bSelected" value=$Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert}
+                                {assign var=bSelected value=$Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert}
                             {/if}
                             {if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl == 1 &&
                             $Einstellungen.global.artikeldetails_variationswertlager == 3 &&
@@ -107,12 +107,12 @@
                     {elseif $Variation->cTyp === 'IMGSWATCHES' || $Variation->cTyp === 'TEXTSWATCHES'}
                         <div class="btn-group swatches {$Variation->cTyp|lower}">
                             {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
-                                {assign var="bSelected" value=false}
+                                {assign var=bSelected value=false}
                                 {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
-                                    {assign var="bSelected" value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                                    {assign var=bSelected value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                 {/if}
                                 {if isset($oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft])}
-                                    {assign var="bSelected" value=($Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert)}
+                                    {assign var=bSelected value=($Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert)}
                                 {/if}
                                 {if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl == 1 &&
                                 $Einstellungen.global.artikeldetails_variationswertlager == 3 &&
@@ -120,7 +120,7 @@
                                     {* /do nothing *}
                                 {else}
                                     {block name='productdetails-info-variation-swatch'}
-                                    <label class="variation block btn btn-default{if $bSelected} active{/if}{if $Variationswert->notExists} not-available{/if}"
+                                    <label class="variation block btn btn-secondary{if $bSelected} active{/if}{if $Variationswert->notExists} not-available{/if}"
                                             data-type="swatch"
                                             data-original="{$Variationswert->cName}"
                                             data-key="{$Variationswert->kEigenschaft}"
@@ -154,9 +154,9 @@
                                                />
                                        <span class="label-variation">
                                             {if !empty($Variationswert->cBildPfadMiniFull)}
-                                                <img src="{$Variationswert->cBildPfadMiniFull}" alt="{$Variationswert->cName|escape:'quotes'}"
-                                                     data-list='{prepare_image_details item=$Variationswert json=true}'
-                                                     title="{$Variationswert->cName}" />
+                                                {image src=$Variationswert->cBildPfadMiniFull alt=$Variationswert->cName|escape:'quotes'
+                                                     data=['list' => "{prepare_image_details item=$Variationswert json=true}"]
+                                                     title=$Variationswert->cName}
                                             {else}
                                                 {$Variationswert->cName}
                                             {/if}

@@ -6,7 +6,7 @@ msgid "dbcheck"
 msgstr "Datenbank-Check"
 
 msgid "dbcheckDesc"
-msgstr "Mit diesem Tool können Sie die Konsistenz Ihrer Datenbank überprüfen"
+msgstr "Mit dem Datenbank-Check können Sie die Konsistenz Ihrer Shop-Datenbank überprüfen."
 
 msgid "dbcheckURL"
 msgstr "https://jtl-url.de/vrf0o"
@@ -33,7 +33,7 @@ msgid "errorWrongCollationRow"
 msgstr "Inkonsistente Kollation in Spalte %s"
 
 msgid "errorEmptyCache"
-msgstr "Leeren des Objektcache fehlgeschlagen! (%s)"
+msgstr "Leeren des Objekt-Cache fehlgeschlagen! (%s)"
 
 msgid "countTables"
 msgstr "Anzahl Tabellen"
@@ -60,13 +60,13 @@ msgid "structureMigrationNeeded"
 msgstr "Struktur-Migration erforderlich!"
 
 msgid "structureMigrationNeededLong"
-msgstr "Für %s Tabellen ist eine Verschiebung in den InnoDB-Tablespace und ggfs. die Konvertierung in einen UTF-8 Zeichensatz erforderlich. Von dieser Migration sind ca. %s an Daten betroffen."
+msgstr "Für %s Tabellen ist eine Verschiebung in den InnoDB-Tablespace und ggfs. die Konvertierung in einen UTF-8-Zeichensatz erforderlich. Von dieser Migration sind ca. %s an Daten betroffen."
 
 msgid "warningOldDBVersion"
-msgstr "Veraltete Datenbankversion!"
+msgstr "Veraltete Datenbank-Version"
 
 msgid "warningOldDBVersionLong"
-msgstr "Die verwendete Datenbankversion %s unterstützt nicht alle Möglichkeiten dieser Shop-Version! Einige Features stehen deshalb nach der Migration nicht mehr zur Verfügung."
+msgstr "Die verwendete Datenbank-Version %s unterstützt nicht alle Möglichkeiten dieser Shop-Version. Einige Funktionen stehen deshalb nach der Migration nicht mehr zur Verfügung."
 
 msgid "fullTextDeactivate"
 msgstr "Die Volltextsuche wird deaktiviert."
@@ -75,10 +75,10 @@ msgid "fullTextDelete"
 msgstr "Der Volltextindex %s für %s wird gelöscht."
 
 msgid "notEnoughTableSpace"
-msgstr "Nicht genügend Platz im InnoDB-Tablespace!"
+msgstr "Nicht genügend Platz im InnoDB-Tablespace."
 
 msgid "notEnoughTableSpaceLong"
-msgstr "Im InnoDB-Tablespace Ihrer Datenbank stehen offensichtlich nur %s für Daten zur Verfügung. Das wird für die zu migrierende Datenmenge u.U. nicht ausreichen! Bitte stellen Sie sicher, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht."
+msgstr "Im InnoDB-Tablespace Ihrer Datenbank stehen nur %s für Daten zur Verfügung. Dies wird für die zu migrierende Datenmenge u.U. nicht ausreichen. Bitte stellen Sie sicher, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht."
 
 msgid "structureMigration"
 msgstr "Struktur-Migration für %s Tabellen"
@@ -93,19 +93,19 @@ msgid "noteSoloMigration"
 msgstr "Die Einzel-Migration wird empfohlen, wenn nur einige wenige Tabellen geändert werden müssen oder einzelne Tabellen mit der automatischen Migration oder der Migration per Script nicht geändert werden konnten."
 
 msgid "noteSoloMigrationClick"
-msgstr "Sie können mit einem Klick auf das <i class=\"fa fa-cogs\">&nbsp;</i>-Symbol die Migration für jede Tabelle einzeln in der u.a. Liste durchführen."
+msgstr "Sie können mit einem Klick auf das &lt;i class=\"fa fa-cogs\"&gt;&nbsp;</i>-Symbol die Migration für jede Tabelle einzeln in der Liste durchführen."
 
 msgid "warningDoBackupSingle"
-msgstr "Erstellen Sie unbedingt ein Backup der gesamten Datenbank, mindestens jedoch der Tabellen die Sie ändern wollen, <strong>BEVOR</strong> Sie die Migration durchführen!"
+msgstr "Erstellen Sie unbedingt ein Backup der gesamten Datenbank, mindestens jedoch der Tabellen die Sie ändern möchten, <strong>BEVOR</strong> Sie die Migration durchführen!"
 
 msgid "noteRecommendMigration"
-msgstr "Die automatische Migration wird empfohlen, wenn Ihre Shop-Datenbank komplett umgestellt werden muss und sich die Datenmenge innerhalb der <a title=\"Softwarebeschränkungen und Grenzen der JTL-Produkte\" href=\"https://jtl-url.de/8qsat\">Spezifikationen</a> für JTL-Shop befindet."
+msgstr "Die automatische Migration wird empfohlen, wenn Ihre Shop-Datenbank komplett umgestellt werden muss und sich die Datenmenge innerhalb der &lt;a title=\"Softwarebeschränkungen und Grenzen der JTL-Produkte\" href=\"https://jtl-url.de/8qsat\"&gt;Spezifikationen</a> für JTL-Shop befindet."
 
 msgid "notePatienceOne"
 msgstr "Bitte haben Sie Geduld! Bei %s Tabellen und einer Datenmenge von ca. %s kann die Migration"
 
 msgid "notePatienceTwo"
-msgstr " dauern. Während der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschränkungen im Frontend kommen kann. Es wird deshalb empfohlen, den <a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen!<br /> Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im Zweiten die Konvertierung der Daten in den UTF-8 Zeichensatz."
+msgstr " dauern. Während der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschränkungen im Frontend kommen kann. Es wird deshalb empfohlen, den &lt;a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\"&gt;Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen.<br/> Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im Zweiten die Konvertierung der Daten in den UTF-8-Zeichensatz."
 
 msgid "lessThanOneMinute"
 msgstr "weniger als eine Minute"
@@ -120,16 +120,16 @@ msgid "warningDoBackup"
 msgstr "Erstellen Sie unbedingt ein Backup der gesamten Datenbank <strong>BEVOR</strong> Sie die Migration ausführen!"
 
 msgid "yesBackup"
-msgstr "Ich habe ein Backup der kompletten Shop-Datenbank erstellt!"
+msgstr "Ich habe ein Backup der kompletten Shop-Datenbank erstellt."
 
 msgid "maintenanceActive"
-msgstr "Wartungsmodus ist aktiv!"
+msgstr "Wartungsmodus ist aktiv."
 
 msgid "noMaintenance"
-msgstr "Ich verzichte auf den Wartungsmodus!"
+msgstr "Ich verzichte auf den Wartungsmodus."
 
 msgid "yesEnoughSpace"
-msgstr "Ich habe sichergestellt, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht!"
+msgstr "Ich habe sichergestellt, dass genügend Platz im InnoDB-Tablespace zur Verfügung steht."
 
 msgid "migrationStart"
 msgstr "Migration starten"
@@ -138,28 +138,28 @@ msgid "noteMigrationScript"
 msgstr "Die Migration per Script über die MySQL-Konsole wird empfohlen, wenn Sie administrativen Zugang zu Ihrem Datenbankserver haben und eine große Menge an Daten migriert werden muss."
 
 msgid "noteMigrationScriptClick"
-msgstr "Mit einem Klick auf den Button \"Script erstellen\" können Sie sich ein Script zur Durchführung der notwendigen Migration generieren lassen. Dieses Script können Sie dann komplett oder in Teilen auf der Konsole Ihres Datenbankservers ausführen. Sie benötigen dafür einen administrativen Zugang (z.B. per SSH) zu Ihrem Datenbank-Server. Eine Weboberfläche wie phpMyAdmin ist für das Ausführen dieses Scriptes <strong>nicht</strong> geeignet."
+msgstr "Mit einem Klick auf die Schaltfläche \"Script erstellen\" können Sie sich ein Script zur Durchführung der notwendigen Migration generieren lassen. Dieses Script können Sie dann komplett oder in Teilen auf der Konsole Ihres Datenbankservers ausführen. Sie benötigen dafür einen administrativen Zugang (z.B. per SSH) zu Ihrem Datenbank-Server. Eine Weboberfläche wie phpMyAdmin ist für das Ausführen dieses Scriptes <strong>nicht</strong> geeignet."
 
 msgid "noteMigrationScriptDesc"
-msgstr "Das Script wird anhand der aktuellen Situation erstellt und beinhaltet nur die Änderungen, die für diesen JTL-Shop notwendig sind. Sie können das Script nicht verwenden, um die Migration auf einem anderen JTL-Shop auszuführen!"
+msgstr "Das Script wird anhand der aktuellen Situation erstellt und beinhaltet nur die Änderungen, die für diesen JTL-Shop notwendig sind. Sie können das Script nicht verwenden, um die Migration auf einem anderen JTL-Shop auszuführen."
 
 msgid "noteMigrationScriptMaintenance"
-msgstr "Bedenken Sie beim Ausführen des Scriptes, dass dieses ggfs. eine längere Zeit für den kompletten Durchlauf benötigt und währenddessen wichtige Tabellen im Shop für den Zugriff gesperrt werden. Es wird deshalb empfohlen, den <a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen!"
+msgstr "Bedenken Sie beim Ausführen des Scriptes, dass dieses ggfs. eine längere Zeit für den kompletten Durchlauf benötigt und währenddessen wichtige Tabellen im Shop für den Zugriff gesperrt werden. Es wird deshalb empfohlen, den &lt;a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\"&gt;Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen."
 
 msgid "warningDoBackupScript"
-msgstr "Erstellen Sie unbedingt ein Backup der gesamten Datenbank <strong>BEVOR</strong> Sie das Script ausführen!"
+msgstr "Erstellen Sie unbedingt ein Backup der gesamten Datenbank <strong>BEVOR</strong> Sie das Script ausführen."
 
 msgid "warningUseConsoleScript"
-msgstr "Verwenden Sie eine Serverkonsole und <strong>NICHT</strong> phpMyAdmin zum Ausführen des Scriptes!"
+msgstr "Verwenden Sie eine Serverkonsole und <strong>NICHT</strong> phpMyAdmin zum Ausführen des Scriptes."
 
 msgid "warningUseThisShopScript"
-msgstr "Verwenden Sie das Script nur für die Migration <strong>DIESES</strong> JTL-Shops!"
+msgstr "Verwenden Sie das Script nur für die Migration <strong>DIESES</strong> JTL-Shops."
 
 msgid "createScript"
 msgstr "Script erstellen"
 
 msgid "sureCancelStructureMigration"
-msgstr "Wollen Sie die Struktur-Migration wirklich abbrechen?"
+msgstr "Möchten Sie die Struktur-Migration wirklich abbrechen?"
 
 msgid "cancelMigration"
 msgstr "Migration wird beendet..."
@@ -168,7 +168,7 @@ msgid "migrateOf"
 msgstr "Migrieren von "
 
 msgid "notApproveMaintenance"
-msgstr "Bitte bestätigen Sie den Wartungsmodus und das Backup!"
+msgstr "Bitte bestätigen Sie den Wartungsmodus und das Backup."
 
 msgid "errorNoInnoDBSupport"
 msgstr "Keine InnoDB-Unterstützung verfügbar!"
@@ -177,10 +177,10 @@ msgid "errorNoUTF8Support"
 msgstr "Keine Unterstützung für die UTF-8-Kollation <strong>utf8_unicode_ci</strong>!"
 
 msgid "errorNoInnoDBSupportDesc"
-msgstr "Ihre aktuelle Datenbankversion %s unterstützt keine InnoDB-Tabellen - eine Struktur-Migration ist nicht möglich!<br /> Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der InnoDB-Unterstützung in Verbindung."
+msgstr "Ihre aktuelle Datenbankversion %s unterstützt keine InnoDB-Tabellen - eine Struktur-Migration ist nicht möglich.<br/> Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der InnoDB-Unterstützung in Verbindung."
 
 msgid "errorNoUTF8SupportDesc"
-msgstr "Ihre aktuelle Datenbankversion {$DB_Version->server} unterstützt die Kollation \"utf8_unicode_ci\" nicht - eine Struktur-Migration ist nicht möglich!<br /> Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der Kollation \"utf8_unicode_ci\" in Verbindung."
+msgstr "Ihre aktuelle Datenbankversion {$DB_Version-&gt;server} unterstützt die Kollation \"utf8_unicode_ci\" nicht - eine Struktur-Migration ist nicht möglich.<br/> Bitte setzen Sie sich mit Ihrem Datenbank-Administrator oder Ihrem Hoster zwecks Aktivierung der Kollation \"utf8_unicode_ci\" in Verbindung."
 
 msgid "startAutomaticMigration"
 msgstr "Starten der automatischen Migration..."
@@ -189,4 +189,4 @@ msgid "clearCache"
 msgstr "Cache bereinigen..."
 
 msgid "errorTableInUse"
-msgstr " ist in Benutzung und kann nicht migriert werden! Fortfahren?"
+msgstr " ist in Benutzung und kann nicht migriert werden! Möchten Sie fortfahren?"

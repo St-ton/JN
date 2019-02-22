@@ -16,7 +16,7 @@
        {rdelim});
     </script>
 {elseif !$alertNote}
-    {alert variant="info"}{lang key='loginDesc' section='login'} {if isset($oRedirect) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}{/alert}
+    {alert variant="info"}{lang key='loginDesc' section='login'} {if isset($oRedirect->cName) && $oRedirect->cName}{lang key='redirectDesc1'} {$oRedirect->cName} {lang key='redirectDesc2'}.{/if}{/alert}
 {/if}
 
 {include file='snippets/extension.tpl'}
@@ -52,12 +52,12 @@
                         {input type="hidden" name="login" value="1"}
                         {if !empty($oRedirect->cURL)}
                             {foreach $oRedirect->oParameter_arr as $oParameter}
-                                {input type="hidden" name="{$oParameter->Name}" value="{$oParameter->Wert}"}
+                                {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}
                             {/foreach}
-                            {input type="hidden" name="r" value="{$oRedirect->nRedirect}"}
-                            {input type="hidden" name="cURL" value="{$oRedirect->cURL}"}
+                            {input type="hidden" name="r" value=$oRedirect->nRedirect}
+                            {input type="hidden" name="cURL" value=$oRedirect->cURL}
                         {/if}
-                        {button type="submit" value="1" class="btn-block submit" variant="primary"}
+                        {button type="submit" value="1" block=true variant="primary"}
                             {lang key='login' section='checkout'}
                         {/button}
                     {/formgroup}

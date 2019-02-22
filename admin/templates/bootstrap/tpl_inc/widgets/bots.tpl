@@ -3,8 +3,8 @@
         <table class="table table-condensed table-hover table-blank">
             <thead>
                 <tr>
-                    <th>Name / User-Agent</th>
-                    <th class="tright">Anzahl</th>
+                    <th>{__('name')} / {__('userAgent')}</th>
+                    <th class="tright">{__('count')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -16,7 +16,7 @@
                             {elseif isset($oBots->cUserAgent) && $oBots->cUserAgent|strlen > 0}
                                 {$oBots->cUserAgent}
                             {else}
-                                Unbekannt
+                                {__('unknown')}
                             {/if}
                         </td>
                         <td class="tright">{$oBots->nCount}</td>

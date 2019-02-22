@@ -370,18 +370,18 @@ final class BoxAdmin
         }
 
         return $this->db->queryPrepared(
-                'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
+            'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
                     VALUES (:boxID, :validPageType, :sort, :active)
                     ON DUPLICATE KEY UPDATE
                       nSort = :sort, bAktiv = :active',
-                [
+            [
                     'boxID'         => $boxID,
                     'validPageType' => $pageID,
                     'sort'          => $nSort,
                     'active'        => $active
                 ],
-                ReturnType::DEFAULT
-            ) !== 0;
+            ReturnType::DEFAULT
+        ) !== 0;
     }
 
     /**

@@ -10,8 +10,7 @@ var tabNavList = document.body.querySelector(".megamenu");
 //get all tab nav links
 var tabNavLinks = document.querySelectorAll(".megamenu>.nav-item");
 //get tab nav current link indicator
-var tabNavCurrentLinkindicator = tabNavList.querySelector(".TabNav_Indicator");
-
+var tabNavCurrentLinkindicator = tabsModule.querySelector(".TabNav_Indicator");
 
 /**
  * position indicator function

@@ -1,13 +1,13 @@
 {**
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
- *}666666666
+ *}
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
     {foreach $Suchergebnisse->Bewertung as $oBewertung}
         {if $NaviFilter->hasRatingFilter() && $NaviFilter->getRatingFilter()->getValue() == $oBewertung->nStern}
             <li>
                 {* @todo: use getter *}
-                <a rel="nofollow" href="{$NaviFilter->URL->getRatings()}" class="active">
+                {link rel="nofollow" href=$NaviFilter->URL->getRatings() class="active"}
                     <i class="fa fa-check-square-o text-muted"></i>
                     <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     <span class="value">
@@ -23,11 +23,11 @@
                             </em>
                         {/if}
                     </span>
-                </a>
+                {/link}
             </li>
         {elseif $oBewertung->nAnzahl >= 1 && $oBewertung->nStern > 0}
             <li>
-                <a rel="nofollow" href="{$oBewertung->cURL}">
+                {link rel="nofollow" href=$oBewertung->cURL}
                     <i class="fa fa-square-o text-muted"></i>
                     <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     <span class="value">
@@ -43,11 +43,11 @@
                             </em>
                         {/if}
                     </span>
-                </a>
+                {/link}
             </li>
         {elseif $oBewertung->nAnzahl >= 1 && $oBewertung->nStern > 0}
             <li>
-                <a rel="nofollow" href="{$oBewertung->cURL}">
+                {link rel="nofollow" href=$oBewertung->cURL}
                     <i class="fa fa-square-o text-muted"></i>
                     <span class="badge pull-right">{$oBewertung->nAnzahl}</span>
                     <span class="value">
@@ -63,7 +63,7 @@
                             </em>
                         {/if}
                     </span>
-                </a>
+                {/link}
             </li>
         {/if}
     {/foreach}

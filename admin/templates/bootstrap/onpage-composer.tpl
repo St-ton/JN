@@ -17,7 +17,7 @@
 
     <link rel="stylesheet" href="{$templateUrl}css/onpage-composer/host.css">
 
-    <script src="{$templateUrl}js/jquery-2.2.4.min.js"></script>
+    <script src="{$templateUrl}js/jquery-3.3.1.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
 

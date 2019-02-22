@@ -16,7 +16,7 @@
                         title="{lang key='addToCompare' section='productOverview'}"
                         data=["toggle"=>"tooltip", "placement"=>"top"]
                         }
-                            <img class="svg" src="{$currentTemplateDir}themes/base/images/compare.svg" alt="{lang key='addToCompare' section='productOverview'}" />
+                            {image class="svg" src="{$currentTemplateDir}themes/base/images/compare.svg" alt="{lang key='addToCompare' section='productOverview'}"}
                         {/button}
                     {/if}
                     {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
@@ -24,7 +24,7 @@
                         title="{lang key='addToWishlist' section='productDetails'}"
                         data=["toggle"=>"tooltip", "placement"=>"top"]
                         }
-                            <img class="svg" src="{$currentTemplateDir}themes/base/images/wishlist.svg" alt="{lang key='addToWishlist' section='productDetails'}" />
+                            {image class="svg" src="{$currentTemplateDir}themes/base/images/wishlist.svg" alt="{lang key='addToWishlist' section='productDetails'}"}
                         {/button}
                     {/if}
                 </div>
@@ -36,15 +36,17 @@
                             {strip}
                                 <div>
                                     {*sizes based on template*}
-                                    <img data-srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                         {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                         sizes="(min-width: 1200px) 1080px,90vw"
-                                         alt="{$image->cAltAttribut|escape:"html"}"
-                                         data-list='{$image->galleryJSON|replace:"'":"&apos;"}'
-                                         src="{$image->cURLMini}" data-lazy="{$image->cURLMini}"
-                                         />
+                                    {image alt=$image->cAltAttribut|escape:'html'
+                                        data=["lazy"=>$image->cURLMini,
+                                            "srcset"=>"{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
+                                                {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w",
+                                            "list"=>"{$image->galleryJSON|escape:"html"}"
+                                        ]
+                                        sizes="(min-width: 1200px) 1080px,90vw"
+                                        src=$image->cURLMini
+                                     }
                                 </div>
                             {/strip}
                         {/foreach}

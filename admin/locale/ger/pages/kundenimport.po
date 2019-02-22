@@ -12,7 +12,7 @@ msgid "customerImportDesc"
 msgstr "Hier haben Sie die Möglichkeit, Kundendaten aus anderen Shopsystemen samt Passwort zu importieren. Ihre Kunden müssen sich somit nicht erneut in diesem Shop anmelden. <strong>Wichtig: Achten Sie bei einem Serverwechsel unbedingt darauf, den Blowfish-Key (zu finden in der /includes/config.JTL-Shop.ini.php) für das neue System zu übernehmen!</strong>"
 
 msgid "csvFile"
-msgstr "Kunden CSV - Datei"
+msgstr "CSV-Datei mit Kundendaten"
 
 msgid "customerGroup"
 msgstr "Kunden diese Kundengruppe zuweisen"
@@ -24,31 +24,31 @@ msgid "generateNewPass"
 msgstr "Passwort neu erstellen und Kunden per E-Mail informieren"
 
 msgid "passYes"
-msgstr "Ja, jedem Kunden ein neues Passwort erstellen und per E-Mail informieren"
+msgstr "Ja, für jeden Kunden ein neues Passwort erstellen und per E-Mail informieren"
 
 msgid "passNo"
 msgstr "Nein, Passwort aus CSV-Datei übernehmen und Kunden nicht per E-Mail benachrichtigen"
 
 msgid "errorInvalidEmail"
-msgstr "keine gültige Email ($kunde->cMail) ! Übergehe diesen Datensatz."
+msgstr "Keine gültige E-Mail-Adresse ($kunde-&gt;cMail) ! Übergehe diesen Datensatz."
 
 msgid "errorNoPassword"
-msgstr "kein Passwort! Übergehe diesen Datensatz. (Kann unregstrierter JTL Shop Kunde sein)"
+msgstr "Kein Passwort. Übergehe diesen Datensatz. (Könnte unregistrierter JTL-Shop-Kunde sein)"
 
 msgid "errorNoSurname"
-msgstr "kein Nachname! Übergehe diesen Datensatz."
+msgstr "Kein Nachname! Übergehe diesen Datensatz."
 
 msgid "errorEmailDuplicate"
-msgstr "Kunde mit dieser Emailadresse bereits vorhanden: %s! Übergehe Datensatz."
+msgstr "Kunde mit dieser E-Mail-Adresse bereits vorhanden: %s. Übergehe diesen Datensatz."
 
 msgid "errorImportRecord"
-msgstr "Fehler beim Import dieser Zeile! Bitte in ShopRoot/logs/ nachschauen!"
+msgstr "Fehler beim Import dieser Zeile. Bitte in Root/logs/ nachschauen."
 
 msgid "successImportRecord"
 msgstr "Datensatz OK. Importiere: "
 
 msgid "checkHead"
-msgstr "Checke Kopfzeile ... "
+msgstr "Überprüfe Kopfzeile... "
 
 msgid "errorFormatNotFound"
 msgstr " - Format nicht erkannt!"

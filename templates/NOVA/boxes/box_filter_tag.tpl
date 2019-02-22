@@ -9,7 +9,7 @@
         {foreach $oBox->getItems() as $oTag}
             {if $NaviFilter->hasTagFilter() && $NaviFilter->getTagFilter(0)->getValue() === $oTag->kTag}
                 {navitem}
-                    {link rel="nofollow" href="{$NaviFilter->tagFilterCompat->getUnsetFilterURL()}" class="active"}
+                    {link rel="nofollow" href=$NaviFilter->tagFilterCompat->getUnsetFilterURL() class="active"}
                         <i class="far fa-check-square text-muted"></i>
                         <span class="value">
                             {$oTag->getName()}
@@ -19,7 +19,7 @@
                 {/navitem}
             {else}
                 {navitem}
-                    {link rel="nofollow" href="{$oTag->getURL()}" class="active"}
+                    {link rel="nofollow" href=$oTag->getURL() class="active"}
                         <span class="value">
                             {$oTag->getName()}
                             <span class="badge badge-light float-right">{$oTag->getCount()}</span>

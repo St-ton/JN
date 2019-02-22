@@ -275,7 +275,7 @@ header,
   }
 
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(sm) {
     #nav-cart-collapse,
     #nav-account-collapse,
     #nav-search-collapse {
@@ -997,6 +997,7 @@ ul.partlist-items {
 
 .gallery,
 .list {
+  align-items: flex-end;
   .image-wrapper .yousave{
     position: absolute;
     //margin-top: -32px;
@@ -1576,6 +1577,7 @@ $jqcloud-classes: 7;
     .unit {
       background: $input-bg;
       border-left: 0;
+      margin-left: -1px;
     }
   }
 }
@@ -1800,6 +1802,7 @@ footer {
   animation: fadeMeIn .2s forwards;
   -webkit-animation-delay: .2s;
   animation-delay: .2s;
+  pointer-events: none;
 }
 
 @-webkit-keyframes fadeMeIn {
@@ -1880,7 +1883,7 @@ footer {
 }
 
 #add-to-cart .btn{
-  em {
+  .btn-basket-check {
     /* this is the button text message */
     top: 0;
     left: 0;
@@ -1896,7 +1899,7 @@ footer {
     /* move the icon on the right - outside the button */
     //transform: translateX(50%) translateY(-50%);
   }
-  &.is-added em {
+  &.is-added .btn-basket-check {
     /* product added to the cart - hide text message on the left with no transition*/
     color: transparent;
     transform: translateY(-100%);
@@ -2131,4 +2134,11 @@ table caption {
 }
 .selection-wizard-question a {
   white-space: nowrap;
+}
+
+.fas,
+.fab,
+.fa,
+.far {
+  vertical-align: middle;
 }

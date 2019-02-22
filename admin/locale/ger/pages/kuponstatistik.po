@@ -6,16 +6,16 @@ msgid "couponstatisticsURL"
 msgstr "https://jtl-url.de/v5h81"
 
 msgid "couponStatistic"
-msgstr "Kupon-Statistik"
+msgstr "Coupon-Statistik"
 
 msgid "fromUntilDate"
-msgstr "von - bis Datum"
+msgstr "Datum (von/bis)"
 
 msgid "filtering"
 msgstr "Filtern"
 
 msgid "countUsedCoupons"
-msgstr "Summe benutzter Kupons (% der Bestellungen)"
+msgstr "Summe benutzter Coupons (% der Bestellungen)"
 
 msgid "countOrders"
 msgstr "Bestellungen gesamt"
@@ -24,14 +24,13 @@ msgid "countCustomers"
 msgstr "Anzahl der Kunden"
 
 msgid "couponAmountAll"
-msgstr "Wert aller benutzten Kupons zusammen"
+msgstr "Gesamtwert aller benutzten Coupons:"
 
 msgid "shoppingCartAmountAll"
-msgstr "Wert aller Bestellungen mit benutzten Kupons"
+msgstr "Gesamtwert aller Bestellungen mit benutzten Coupons:"
 
 msgid "couponValue"
-msgstr "Kuponwert"
+msgstr "Couponwert"
 
 msgid "orderPosition"
 msgstr "Bestellposition"
-

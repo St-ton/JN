@@ -90,7 +90,7 @@ function handleError($output)
 {
     $error = error_get_last();
     if ($error['type'] === 1) {
-        $error = translateError($error['message']) . "\n";
+        $error  = translateError($error['message']) . "\n";
         $error .= 'Datei: ' . $error['file'];
         Shop::Container()->getLogService()->error($error);
 

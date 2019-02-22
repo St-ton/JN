@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {lang key='upcomingProducts' assign='slidertitle'}
-{assign var='moreLink' value=$oBox->getURL()}
+{assign var=moreLink value=$oBox->getURL()}
 {lang key='showAllUpcomingProducts' assign='moreTitle'}
 {include file='snippets/product_slider.tpl'
     id='boxslider-comingsoon'

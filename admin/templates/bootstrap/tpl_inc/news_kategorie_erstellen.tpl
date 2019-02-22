@@ -3,13 +3,13 @@
     {literal}
 
     $(document).ready(function () {
-        $('#lang').change(function () {
+        $('#lang').on('change', function () {
             var iso = $('#lang option:selected').val();
             $('.iso_wrapper').slideUp();
             $('#iso_' + iso).slideDown();
             return false;
         });
-        $('form input[type=file]').change(function(e){
+        $('form input[type=file]').on('change', function(e){
             $('form div.alert').slideUp();
             var filesize= this.files[0].size;
             {/literal}

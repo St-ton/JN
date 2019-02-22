@@ -18,7 +18,7 @@
                             || $Artikel->nIstVater == 0)}
                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                    {image src="{$oVariBoxMatrixBild->cBild}" fluid=true alt=""}<br>
+                                    {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
                                 {/if}
                             {/foreach}
                         {/if}
@@ -40,7 +40,7 @@
                                     || $Artikel->nIstVater == 0)}
                                 {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                     {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWert1->kEigenschaftWert}
-                                        {image src="{$oVariBoxMatrixBild->cBild}" fluid=true alt=""}<br>
+                                        {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
                                     {/if}
                                 {/foreach}
                             {/if}
@@ -81,7 +81,7 @@
                                             && isset($child->nVariationOhneFreifeldAnzahl)
                                             && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
                                         <div>
-                                            {link href="{$child->cSeo}" title="{lang key='configure'} {$oVariationWert0->cName}-{$oVariationWert1->cName}" class="btn btn-primary configurepos"}
+                                            {link href=$child->cSeo title="{lang key='configure'} {$oVariationWert0->cName}-{$oVariationWert1->cName}" class="btn btn-primary configurepos"}
                                                 <i class="fa fa-cogs"></i>
                                                 <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
                                             {/link}
@@ -279,7 +279,7 @@
                                 {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                     {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                         {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                            {image src="{$oVariBoxMatrixBild->cBild}" fluid=true alt=""}<br>
+                                            {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
                                         {/if}
                                     {/foreach}
                                 {/if}
@@ -319,7 +319,7 @@
                                     || (isset($child->nVariationAnzahl)
                                         && isset($child->nVariationOhneFreifeldAnzahl)
                                         && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
-                                    {link href="{$child->cSeo}" title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
+                                    {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                         <i class="fa fa-cogs"></i>
                                         <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
                                     {/link}
@@ -470,7 +470,7 @@
                                 {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                     {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                         {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                            {image src="{$oVariBoxMatrixBild->cBild}" fluid=true alt=""}<br>
+                                            {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
                                         {/if}
                                     {/foreach}
                                 {/if}
@@ -496,7 +496,7 @@
                                     || (isset($child->nVariationAnzahl)
                                         && isset($child->nVariationOhneFreifeldAnzahl)
                                         && $child->nVariationAnzahl > $child->nVariationOhneFreifeldAnzahl)}
-                                    {link href="{$child->cSeo}" title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
+                                    {link href=$child->cSeo title="{lang key='configure'} {$oVariationWertHead->cName}" class="btn btn-primary configurepos"}
                                         <i class="fa fa-cogs"></i>
                                         <span class="d-none d-sm-inline-block pl-2">{lang key='configure'}</span>
                                     {/link}

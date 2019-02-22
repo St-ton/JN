@@ -18,7 +18,7 @@
                         <input type="file" class="custom-file-input" name="vcard" required>
                         <label class="custom-file-label" for="customFile">Choose file</label>
                     </div>
-                    {button class="btn-block" type="submit"}
+                    {button type="submit" block=true}
                         <i class="fas fa-file-alt"></i>&nbsp;{lang key='uploadVCard' section='account data'}
                     {/button}
                 </fieldset>

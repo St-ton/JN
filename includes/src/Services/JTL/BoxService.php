@@ -348,8 +348,8 @@ class BoxService implements BoxServiceInterface
             '_' . (int)$visible .
             '_' . Shop::getLanguageID();
         $visiblePositions  = [];
-        $this->visibility  = $this->getVisibility($pageType);
         $templatePositions = Template::getInstance()->getBoxLayoutXML();
+        $this->getVisibility($pageType);
         foreach ($this->visibility as $position => $isVisible) {
             if (isset($templatePositions[$position])) {
                 $isVisible = $isVisible && $templatePositions[$position];

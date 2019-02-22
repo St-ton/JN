@@ -347,14 +347,14 @@ function isTouchCapable() {
 
 function lazyLoadMenu(viewport){
     if (viewport !== 'xs' && viewport != 'sm'){
-        $('#evo-main-nav-wrapper .dropdown').hover(function(e) {
+        $('#evo-main-nav-wrapper .dropdown').on('mouseenter mouseleave', function(e) {
             $(this).find('img.lazy').each(function(i, item) {
                 var img = $(item);
                 $(img).lazy(0, function() {
-                    $(this).load(function() {
+                    $(this).on('load', function() {
                         img.removeClass('loading')
                             .addClass('loaded');
-                    }).error(function() {
+                    }).on('error', function() {
                         img.removeClass('loading')
                             .addClass('error');
                     });
@@ -370,7 +370,7 @@ function removeFromSessionStorage(entryKey) {
     }
 }
 
-$(window).load(function(){
+$(window).on("load", function (e) {
     navigation();
 });
 

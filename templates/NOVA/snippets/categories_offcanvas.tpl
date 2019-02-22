@@ -9,12 +9,12 @@
         {link href="#" class="nav-sub pull-left" data-ref="0"}
             <i class="fa fa-bars"></i> {lang key='showAll'}
         {/link}
-        {link href="#" class="nav-sub pull-right" data-ref="{$result->current->kOberKategorie}"}
+        {link href="#" class="nav-sub pull-right" data-ref=$result->current->kOberKategorie}
             <i class="fa fa-backward"></i> {lang key='back'}
         {/link}
     {/navitem}
     {navitem}
-        {link href="{$result->current->cURL}" class="nav-active"}
+        {link href=$result->current->cURL class="nav-active"}
             {$result->current->cName} {$view_|lower}
         {/link}
     {/navitem}

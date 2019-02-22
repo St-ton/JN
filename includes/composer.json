@@ -5,7 +5,7 @@
     "type": "project",
     "homepage": "https://www.jtl-software.de",
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",
@@ -100,5 +100,8 @@
             "JTL\\": ["src/"],
             "Plugin\\": ["../plugins/"]
         }
+    },
+    "autoload-dev": {
+        "psr-4": { "Tests\\": "../tests/" }
     }
 }

@@ -6,12 +6,10 @@
 
 namespace JTL\Media;
 
-use DateTime;
-use DateTimeZone;
 use Exception;
 use FilesystemIterator;
+use function Functional\select;
 use Generator;
-use Imanee\Imanee;
 use InvalidArgumentException;
 use JTL\DB\ReturnType;
 use JTL\Shop;
@@ -207,7 +205,6 @@ class MediaImage implements IMedia
         try {
             $request  = '/' . \ltrim($request, '/');
             $mediaReq = $this->create($request);
-
             $imgNames = Shop::Container()->getDB()->queryPrepared(
                 'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
                     FROM tartikel AS a
@@ -223,8 +220,8 @@ class MediaImage implements IMedia
                 throw new Exception('No such product id: ' . (int)$mediaReq->id);
             }
 
-            $thumbPath  = null;
-            $matchFound = false;
+            $imgFilePath = null;
+            $matchFound  = false;
 
             foreach ($imgNames as $imgName) {
                 $imgName->imgPath = self::getThumb(
@@ -235,8 +232,8 @@ class MediaImage implements IMedia
                     (int)$mediaReq->number
                 );
                 if ('/' . $imgName->imgPath === $request) {
-                    $matchFound = true;
-                    $thumbPath  = \PFAD_ROOT . $imgName->imgPath;
+                    $matchFound  = true;
+                    $imgFilePath = \PFAD_ROOT . $imgName->imgPath;
                     break;
                 }
             }
@@ -246,57 +243,20 @@ class MediaImage implements IMedia
                 exit;
             }
 
-            if (!\is_file($thumbPath)) {
-                Image::render($mediaReq);
+            if (!\is_file($imgFilePath)) {
+                Image::render($mediaReq, true);
             }
-
-            $imanee = new Imanee($thumbPath);
-
-            self::writeHttp($imanee);
         } catch (Exception $e) {
             $display = \strtolower(\ini_get('display_errors'));
             if (\in_array($display, ['on', '1', 'true'], true)) {
-                $imanee = Image::error($mediaReq, $e->getMessage());
-
-                self::writeHttp($imanee, true);
-            } else {
-                \http_response_code(500);
+                echo $e->getMessage();
             }
+            \http_response_code(500);
         }
         exit;
     }
 
-    /**
-     * @param Imanee $imanee
-     * @param bool   $nocache
-     */
-    public static function writeHttp(Imanee $imanee, $nocache = false): void
-    {
-        $data = $imanee->output();
-
-        while (\ob_get_level()) {
-            \ob_end_clean();
-        }
-
-        \header('Accept-Ranges: none');
-        \header('Content-Encoding: None');
-        // no multibyte string here
-        \header('Content-Length: ' . \strlen($data));
-        \header('Content-Type: ' . $imanee->getMime());
-
-        if ($nocache === true) {
-            $format   = 'D, d M Y H:i:s \G\M\T';
-            $expires  = new DateTime('+1 month', new DateTimezone('UTC'));
-            $modified = new DateTime('now', new DateTimezone('UTC'));
-
-            \header('Cache-Control: max-age=2592000');
-            \header('Expires: ' . $expires->format($format));
-            \header('Last-Modified: ' . $modified->format($format));
-        }
-
-        echo $data;
-    }
-
+    
     /**
      * @param MediaImageRequest $req
      * @param bool              $overwrite
@@ -307,7 +267,6 @@ class MediaImage implements IMedia
         $result   = [];
         $rawImage = null;
         $rawPath  = $req->getRaw(true);
-
         if ($overwrite === true) {
             self::clearCache($req->getType(), $req->getId());
         }
@@ -319,28 +278,22 @@ class MediaImage implements IMedia
                 'renderTime' => 0,
                 'cached'     => false,
             ];
-
             try {
                 $req->size   = $size;
                 $thumbPath   = $req->getThumb(null, true);
                 $res->cached = \is_file($thumbPath);
-
                 if ($res->cached === false) {
                     $renderStart = \microtime(true);
-                    if ($rawImage === null) {
-                        if (!\is_file($rawPath)) {
-                            throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
-                        }
-                        $rawImage = new Imanee($rawPath);
+                    if ($rawImage === null && !\is_file($rawPath)) {
+                        throw new Exception(\sprintf('Image source "%s" does not exist', $rawPath));
                     }
-                    Image::render($req, $rawImage);
+                    Image::render($req);
                     $res->renderTime = (\microtime(true) - $renderStart) * 1000;
                 }
             } catch (Exception $e) {
                 $res->success = false;
                 $res->error   = $e->getMessage();
             }
-
             $result[$size] = $res;
         }
 
@@ -370,14 +323,9 @@ class MediaImage implements IMedia
      */
     public static function getUncachedProductImageCount(): int
     {
-        $i = 0;
-        foreach (self::getProductImages() as $image) {
-            if (!self::isCached($image)) {
-                ++$i;
-            }
-        }
-
-        return $i;
+        return \count(select(self::getProductImages(), function ($e) {
+            return !self::isCached($e);
+        }));
     }
 
     /**
@@ -504,9 +452,9 @@ class MediaImage implements IMedia
     public static function isCached(MediaImageRequest $req): bool
     {
         return \file_exists($req->getThumb(Image::SIZE_XS, true))
-            && \file_exists($req->getThumb(Image::SIZE_SM, true))
-            && \file_exists($req->getThumb(Image::SIZE_MD, true))
-            && \file_exists($req->getThumb(Image::SIZE_LG, true));
+        && \file_exists($req->getThumb(Image::SIZE_SM, true))
+        && \file_exists($req->getThumb(Image::SIZE_MD, true))
+        && \file_exists($req->getThumb(Image::SIZE_LG, true));
     }
 
     /**

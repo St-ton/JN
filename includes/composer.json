@@ -21,7 +21,7 @@
         "ext-xml": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "imanee/imanee": "dev-master",
+        "intervention/image": "^2.4",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^4.2",
         "jtlshop/shop4-systemcheck": "^1.1",

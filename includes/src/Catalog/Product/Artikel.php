@@ -3668,15 +3668,15 @@ class Artikel
         $options->nMain                 = 1;
         $options->bSimilar              = true;
         $options->nLanguageURLs         = 1;
-        $options->nVariationen          = 1;
 
         return $options;
     }
 
     /**
+     * @param bool $withVariations
      * @return stdClass
      */
-    public static function getDefaultOptions(): stdClass
+    public static function getDefaultOptions(bool $withVariations = false): stdClass
     {
         $options                    = new stdClass();
         $options->nMerkmale         = 1;
@@ -3684,7 +3684,7 @@ class Artikel
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
         $options->nDownload         = 1;
-        $options->nVariationen      = 0;
+        $options->nVariationen      = $withVariations ? 1 : 0;
 
         return $options;
     }

@@ -99,7 +99,7 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
 // Lade VariationKombiKind
 if (Shop::$kVariKindArtikel > 0) {
     $oVariKindArtikel = new Artikel();
-    $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, Artikel::getDetailOptions());
+    $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, Artikel::getDefaultOptions(true));
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
             $oVariKindArtikel,

@@ -3542,6 +3542,7 @@ class Artikel
         $oArtikelOptionen->nAttribute            = 1;
         $oArtikelOptionen->nArtikelAttribute     = 1;
         $oArtikelOptionen->nMedienDatei          = 1;
+        $oArtikelOptionen->nVariationen          = 1;
         $oArtikelOptionen->nVariationKombi       = 1;
         $oArtikelOptionen->nVariationKombiKinder = 1;
         $oArtikelOptionen->nWarenlager           = 1;
@@ -3560,9 +3561,10 @@ class Artikel
     }
 
     /**
+     * @param bool $withVariations
      * @return stdClass
      */
-    public static function getDefaultOptions()
+    public static function getDefaultOptions($withVariations = false)
     {
         $options                    = new stdClass();
         $options->nMerkmale         = 1;
@@ -3570,7 +3572,7 @@ class Artikel
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
         $options->nDownload         = 1;
-        $options->nVariationen      = 1;
+        $options->nVariationen      = $withVariations ? 1 : 0;
 
         return $options;
     }

@@ -3384,7 +3384,7 @@ function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
 {
     if ((int)$kArtikel > 0) {
         $oArtikel = new Artikel();
-        $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+        $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions(true));
     }
 
     if (!isset($oArtikel->kArtikel) || $oArtikel->kArtikel == 0) {

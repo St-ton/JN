@@ -22,7 +22,8 @@ setzeSprache();
 if (isset($_POST['speichern']) && Form::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
-    if (is_array($_POST['nVon'])
+    if (isset($_POST['nVon'])
+        && is_array($_POST['nVon'])
         && is_array($_POST['nBis'])
         && count($_POST['nVon']) > 0
         && count($_POST['nBis']) > 0

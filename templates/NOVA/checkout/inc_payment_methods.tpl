@@ -12,7 +12,7 @@
                     required=($zahlungsart@first)
             }
                 {if $zahlungsart->cBild}
-                    {image src=$zahlungsart->cBild alt=$zahlungsart->angezeigterName|trans fluid=trueclass="img-sm"}
+                    {image src=$zahlungsart->cBild alt=$zahlungsart->angezeigterName|trans fluid=true class="img-sm"}
                 {else}
                     <span class="content">
                         <span class="title">{$zahlungsart->angezeigterName|trans}</span>

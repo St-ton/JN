@@ -646,6 +646,7 @@
 
             function setup() {
                 $('#cart-form .nmbr-cfg-group input').on('change',resetTimer);
+                $('#cart-form .choose_quantity input').on('change',resetTimer);
                 $('#cart-form .nmbr-cfg-group .btn-decrement, #cart-form .nmbr-cfg-group .btn-increment').on('click',resetTimer);
                 $('#cart-form .nmbr-cfg-group .btn-decrement, #cart-form .nmbr-cfg-group .btn-increment').on('touchstart',resetTimer);
                 $('#cart-form .nmbr-cfg-group .btn-decrement, #cart-form .nmbr-cfg-group .btn-increment').on('keydown',resetTimer);

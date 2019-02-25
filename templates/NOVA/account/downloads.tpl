@@ -17,7 +17,7 @@
                     </a>
                 </div>
             {/cardheader}
-            {collapse id="collapse-download-{$oDownload@iteration}" class="{if $oDownload@iteration === 1} show{/if}"}
+            {collapse id="collapse-download-{$oDownload@iteration}" visible=$oDownload@iteration === 1}
                 {cardbody}
                     <dl>
                         <dt>{lang key='downloadLimit'}</dt>
@@ -59,7 +59,7 @@
                     </a>
                 </div>
             {/cardheader}
-            {collapse id="collapse-download-{$oDownload@iteration}" class="{if $oDownload@iteration === 1} show{/if}"}
+            {collapse id="collapse-download-{$oDownload@iteration}" visible=$oDownload@iteration === 1}
                 {cardbody}
                     <dl>
                         <dt>{lang key='downloadLimit'}</dt>

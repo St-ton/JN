@@ -15,7 +15,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class CMS

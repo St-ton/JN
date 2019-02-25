@@ -496,12 +496,12 @@ function get_navigation($params, $smarty)
 /**
  * @param \JTL\Link\LinkGroupInterface $linkGroup
  * @param int                          $kVaterLink
- * @return \Tightenco\Collect\Support\Collection
+ * @return \Illuminate\Support\Collection
  */
 function build_navigation_subs($linkGroup, $kVaterLink = 0)
 {
     $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
+    $oNew_arr   = new \Illuminate\Support\Collection();
     if ($linkGroup->getTemplate() === 'hidden' || $linkGroup->getName() === 'hidden') {
         return $oNew_arr;
     }

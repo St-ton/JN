@@ -24,7 +24,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
 use JTL\TrustedShops;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Plugins
@@ -480,7 +480,7 @@ class Plugins
     /**
      * @param LinkGroupInterface $linkGroup
      * @param int                $kVaterLink
-     * @return \Tightenco\Collect\Support\Collection
+     * @return Collection
      */
     public function buildNavigationSubs($linkGroup, $kVaterLink = 0)
     {

@@ -13,7 +13,7 @@ use JTL\Helpers\Text;
 use JTL\Plugin\State;
 use JTL\Shop;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Link

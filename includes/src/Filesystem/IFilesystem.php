@@ -6,6 +6,8 @@
 
 namespace JTL\Filesystem;
 
+use Generator;
+
 /**
  * Interface IFilesystem
  * @package JTL\Filesystem

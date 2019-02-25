@@ -6,6 +6,7 @@
 
 namespace JTL\Filesystem;
 
+use Generator;
 use SplFileInfo;
 use FilesystemIterator;
 use RecursiveIteratorIterator;
@@ -20,7 +21,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function getMeta($path)
+    public function getMeta($path) : FileInfo
     {
         $location = $this->applyPathPrefix($path);
 
@@ -30,7 +31,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function get($path /*, $mode = null*/)
+    public function get($path, $mode = null) :? string
     {
         $location = $this->applyPathPrefix($path);
 
@@ -44,7 +45,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function put($path, $contents, $mode = null)
+    public function put($path, $contents, $mode = null) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -62,7 +63,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function cwd()
+    public function cwd() :? string
     {
         return @\getcwd();
     }
@@ -70,7 +71,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chdir($path)
+    public function chdir($path) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -80,7 +81,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chgrp($path, $group)
+    public function chgrp($path, $group) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -90,7 +91,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chmod($path, $mode = null)
+    public function chmod($path, $mode = null) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -104,7 +105,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chown($path, $owner)
+    public function chown($path, $owner) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -114,7 +115,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function move($path, $target)
+    public function move($path, $target) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -124,7 +125,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function copy($path, $target)
+    public function copy($path, $target) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -134,7 +135,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function delete($path)
+    public function delete($path) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -144,7 +145,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function exists($path)
+    public function exists($path) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -154,7 +155,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function makeDirectory($path, $mode = null, $recursive = false)
+    public function makeDirectory($path, $mode = null, $recursive = false) : bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -168,7 +169,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function moveDirectory($from, $to, $overwrite = false)
+    public function moveDirectory($from, $to, $overwrite = false) : bool
     {
         $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
@@ -185,7 +186,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function copyDirectory($from, $to, $mode = null)
+    public function copyDirectory($from, $to, $mode = null) : bool
     {
         $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
@@ -220,7 +221,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function deleteDirectory($directory, $preserve = false)
+    public function deleteDirectory($directory, $preserve = false) : bool
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -248,7 +249,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function listContents($directory = '', $recursive = false)
+    public function listContents($directory = '', $recursive = false) : Generator
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -272,7 +273,7 @@ class LocalFilesystem extends AbstractFilesystem
      *
      * @return string
      */
-    protected function getFilePath(SplFileInfo $file)
+    protected function getFilePath(SplFileInfo $file) : string
     {
         $location = $file->getPathname();
         $path     = $this->removePathPrefix($location);
@@ -285,7 +286,7 @@ class LocalFilesystem extends AbstractFilesystem
      *
      * @return FileInfo
      */
-    protected function mapFileInfo(SplFileInfo $file)
+    protected function mapFileInfo(SplFileInfo $file) : FileInfo
     {
         $location = $this->removePathPrefix($file->getPath());
 

@@ -6,7 +6,7 @@
 
 namespace JTL\Link;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Interface LinkInterface

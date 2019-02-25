@@ -196,20 +196,6 @@ code_quality:
   tags:
     - build
 
-test_PHP_7.1:
-  stage: test
-  variables:
-    PHP_VERSION_TEST_STEP: '7.1'
-  script:
-    - *testingScript
-    - testing
-  only:
-    - branches
-  except:
-    - master
-  tags:
-    - build
-
 test_PHP_7.2:
   stage: test
   variables:
@@ -235,22 +221,6 @@ test_PHP_7.3:
     - branches
   except:
     - master
-  tags:
-    - build
-
-removeContainerPHP7.1:
-  stage: cleanUpTest
-  variables:
-    PHP_VERSION_TEST_STEP: '7.1'
-  script:
-    - *cleanUpTesting
-    - failedTesting
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
   tags:
     - build
 

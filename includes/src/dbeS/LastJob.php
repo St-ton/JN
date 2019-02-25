@@ -55,7 +55,7 @@ final class LastJob
         }
         $this->finishStdJobs();
         $GLOBALS['nIntervall'] = \defined('LASTJOBS_INTERVALL') ? \LASTJOBS_INTERVALL : 12;
-        $jobs = $this->getRepeatedJobs($GLOBALS['nIntervall']);
+        $jobs                  = $this->getRepeatedJobs($GLOBALS['nIntervall']);
         \executeHook(\HOOK_LASTJOBS_HOLEJOBS, ['jobs' => &$jobs]);
         $conf = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP]);
         foreach ($jobs as $job) {

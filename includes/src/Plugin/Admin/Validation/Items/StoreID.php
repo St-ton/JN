@@ -20,12 +20,10 @@ class StoreID extends AbstractItem
     public function validate(): int
     {
         $baseNode = $this->getBaseNode();
-        if (!isset($baseNode['StoreID'])) {
-            return InstallCode::INVALID_STORE_ID;
-        }
-        \preg_match('/[\w_]+/', $baseNode['StoreID'], $hits);
-        if (empty($baseNode['StoreID']) || \strlen($hits[0]) !== \strlen($baseNode['StoreID'])) {
-            return InstallCode::INVALID_STORE_ID;
+        if (isset($baseNode['StoreID'])) {
+            if (preg_match("/\\w+/", $baseNode['StoreID']) !== 1) {
+                return InstallCode::INVALID_STORE_ID;
+            }
         }
 
         return InstallCode::OK;

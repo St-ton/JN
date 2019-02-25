@@ -98,7 +98,7 @@ if (Form::validateToken()) {
             if ($oNewsTmp) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
-                    'E-Mail Adresse existiert bereits',
+                    __('errorEmailExists'),
                     'errorEmailExists'
                 );
                 $smarty->assign('oNewsletter', $oNewsletter);
@@ -113,7 +113,7 @@ if (Form::validateToken()) {
     } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterQueue'])) {
-                $newsletterDeleteMsg = 'Die Newsletterqueue "';
+                $noticeTMP = '';
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
                     $entry = $db->query(
                         'SELECT tnewsletterqueue.kNewsletter, tnewsletter.cBetreff
@@ -126,11 +126,14 @@ if (Form::validateToken()) {
                     $db->delete('tnewsletter', 'kNewsletter', (int)$entry->kNewsletter);
                     $db->delete('tjobqueue', ['cKey', 'kKey'], ['kNewsletter', (int)$entry->kNewsletter]);
                     $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
-                    $newsletterDeleteMsg .= $entry->cBetreff . '", ';
+
+                    $noticeTMP .= $entry->cBetreff . '", ';
                 }
-                $newsletterDeleteMsg  = mb_substr($newsletterDeleteMsg, 0, -2);
-                $newsletterDeleteMsg .= __('successDelete');
-                $alertHelper->addAlert(Alert::TYPE_NOTE, $newsletterDeleteMsg, 'successDeleteQueue');
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    sprintf(__('successNewsletterQueueDelete'), mb_substr($noticeTMP, 0, -2)),
+                    'successDeleteQueue'
+                );
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
@@ -140,14 +143,16 @@ if (Form::validateToken()) {
     ) {
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterHistory'])) {
-                $newsletterHistoryDeleteMsg = 'Die Newsletterhistory ';
+                $noticeTMP = '';
                 foreach ($_POST['kNewsletterHistory'] as $kNewsletterHistory) {
                     $db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
-                    $newsletterHistoryDeleteMsg .= $kNewsletterHistory . ', ';
+                    $noticeTMP .= $kNewsletterHistory . ', ';
                 }
-                $newsletterHistoryDeleteMsg  = mb_substr($newsletterHistoryDeleteMsg, 0, -2);
-                $newsletterHistoryDeleteMsg .= __('successDelete') . '<br />';
-                $alertHelper->addAlert(Alert::TYPE_NOTE, $newsletterHistoryDeleteMsg, 'successDeleteHistory');
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    sprintf(__('successNewsletterHistoryDelete'), mb_substr($noticeTMP, 0, -2)),
+                    'successDeleteHistory'
+                );
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
             }

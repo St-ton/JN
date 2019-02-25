@@ -163,43 +163,15 @@
             <File Path="themes/clear/clear.css"/>
         </CSS>
         <JS Name="jtl3.js">
-            <!--<File Path="js/jquery.dimension.js"/>
-            <File Path="js/jquery.offcanvas.js"/>
-            <File Path="js/jquery.nivo.slider.pack.js"/>
-            <File Path="js/jquery.waitforimages.js"/>
-            <File Path="js/jquery.lazy.js"/>
-            <File Path="js/jquery.serialize-object.js"/>
-            <File Path="js/bootstrap.bundle.js"/>
-            <File Path="js/bootstrap-tabdrop.js"/>
-            <File Path="js/bootstrap-slider.js"/>
-            <File Path="js/bootstrap-modal.js"/>
-            <File Path="js/bootstrap-grid.js"/>
-            <File Path="js/bootstrap-toolkit.js"/>
-            <File Path="js/bootstrap-select.js"/>
-            <File Path="js/bootstrap-hover-dropdown.min.js"/>
-            <File Path="js/jtl.evo.js"/>
-            <File Path="js/jtl.article.js"/>
-            <File Path="js/jtl.basket.js"/>
-            <File Path="js/jtl.io.js"/>
-            <File Path="js/jtl.gallery.js"/>
-            <File Path="js/typeahead.bundle.js"/>
-            <File Path="js/photoswipe.js"/>
-            <File Path="js/slick.js"/>
-            <File Path="js/spin.js"/>
-            <File Path="js/global.js"/>
-            <File Path="js/stickyfill.min.js"/>-->
-            <!--<File Path="js/jquery-3.3.1.min.js"/>-->
-            <!--<File Path="js/jquery-migrate-3.0.1.min.js"/>-->
-            <!--<File Path="js/jquery.mobile.custom.min.js"/>-->
             <File Path="js/jquery.backstretch.min.js"/>
             <File Path="js/jquery.lazy.js"/>
             <File Path="js/bootstrap-toolkit.js"/>
             <File Path="js/popper.min.js"/>
-            <!--<File Path="js/bootstrap.min.js"/>-->
             <File Path="js/bootstrap.bundle.min.js"/>
-            <File Path="js/bootstrap-select-1.13.2.js"/>
+            <File Path="js/bootstrap-select.min.js"/>
             <File Path="js/bootstrap-tabdrop.js"/>
-            <File Path="js/bootstrap-modal.js"/>
+            <File Path="js/eModal.min.js"/>
+            <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/jtl.evo.js"/>
             <File Path="js/spin.js"/>
             <File Path="js/typeahead.bundle.js"/>
@@ -211,7 +183,7 @@
             <File Path="js/jtl.basket.js"/>
             <File Path="js/wow.min.js"/>
             <File Path="js/parallax.min.js"/>
-            <File Path="js/Chart.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
+            <File Path="js/Chart.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/bs4-input-spinner.js"/>
         </JS>

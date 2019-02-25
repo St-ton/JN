@@ -25,7 +25,7 @@ function createSearchIndex($index, $create)
     $errorMsg = '';
 
     if (!in_array($index, ['tartikel', 'tartikelsprache'], true)) {
-        return new IOError('Ungültiger Index angegeben', 403);
+        return new IOError(__('errorIndexInvalid'), 403);
     }
 
     try {
@@ -71,7 +71,7 @@ function createSearchIndex($index, $create)
                 $rows = array_intersect($searchRows, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
                 break;
             default:
-                return new IOError('Ungültiger Index angegeben', 403);
+                return new IOError(__('errorIndexInvalid'), 403);
         }
 
         try {

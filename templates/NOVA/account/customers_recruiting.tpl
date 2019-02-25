@@ -7,7 +7,6 @@
     {row}
         {col md=6}
             {form id="kwk" action="{get_static_route id='jtl.php'}" method="post" class="evo-validate"}
-                {$jtl_token}
                 {include file='snippets/form_group_simple.tpl'
                 options=[
                 'text', 'kwkFirstName', 'cVorname', null,
@@ -32,7 +31,7 @@
                 {formgroup}
                     {input type="hidden" name="KwK" value="1"}
                     {input type="hidden" name="kunde_werben" value="1"}
-                    {input type="submit" value="{lang key='kwkSend' section='login'}" class="submit btn btn-primary"}
+                    {button type="submit" value="1" variant="primary" class="submit_once"}{lang key='kwkSend' section='login'}{/button}
                 {/formgroup}
             {/form}
         {/col}

@@ -8,10 +8,10 @@
         {listgroup}
             {assign var=maxItems value=$oBox->getItemCount()}
             {foreach $oBox->getItems() as $oWunschlistePos}
-                {listgroupitem data-id="{$oWunschlistePos->kArtikel}" class="border-0"}
+                {listgroupitem data-id=$oWunschlistePos->kArtikel class="border-0"}
                     {if $oWunschlistePos@iteration > $maxItems}{break}{/if}
                     {link class="remove float-right"
-                        href="{$oWunschlistePos->cURL}"
+                        href=$oWunschlistePos->cURL
                         data=["name"=>"Wunschliste.remove",
                             "toggle"=>"product-actions",
                             "value"=>"{ldelim}'a':{$oWunschlistePos->kWunschlistePos}{rdelim}"]
@@ -19,9 +19,9 @@
                     }
                         <span class="fa fa-trash"></span>
                     {/link}
-                    {link href="{$oWunschlistePos->Artikel->cURLFull}" title="{$oWunschlistePos->cArtikelName|escape:'quotes'}"}
+                    {link href=$oWunschlistePos->Artikel->cURLFull title=$oWunschlistePos->cArtikelName|escape:'quotes'}
                         {if $oBox->getShowImages()}
-                            {image alt="{$oWunschlistePos->cArtikelName|escape:'quotes'}" src="{$oWunschlistePos->Artikel->Bilder[0]->cURLMini}" class="img-xs"}
+                            {image alt=$oWunschlistePos->cArtikelName|escape:'quotes' src=$oWunschlistePos->Artikel->Bilder[0]->cURLMini class="img-xs"}
                         {/if}
                         {$oWunschlistePos->fAnzahl|replace_delim} &times; {$oWunschlistePos->cArtikelName|truncate:25:"..."}
                     {/link}

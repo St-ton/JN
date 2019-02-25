@@ -9,7 +9,7 @@
         && $Suchergebnisse->getTagFilterOptions()|@count > 0 && $Suchergebnisse->getTagFilterJSON()}
         {card class="tags mb-4" subtitle="{lang key='productsTaggedAs' section='productOverview'}"}
             {foreach $Suchergebnisse->getTagFilterOptions() as $oTag}
-                {link href="{$oTag->getURL()}" class="badge badge-light mr-2 tag{$oTag->getClass()}"}{$oTag->getName()}{/link}
+                {link href=$oTag->getURL() class="badge badge-light mr-2 tag{$oTag->getClass()}"}{$oTag->getName()}{/link}
             {/foreach}
         {/card}
     {/if}
@@ -20,7 +20,7 @@
         <hr>
         {card class="tags search-terms mb-4" subtitle="{lang key='productsSearchTerm' section='productOverview'}"}
             {foreach $Suchergebnisse->getSearchFilterOptions() as $oSuchFilter}
-                {link href="{$oSuchFilter->getURL()}" class="badge badge-light mr-2 tag{$oSuchFilter->getClass()}"}{$oSuchFilter->getName()}{/link}
+                {link href=$oSuchFilter->getURL() class="badge badge-light mr-2 tag{$oSuchFilter->getClass()}"}{$oSuchFilter->getName()}{/link}
             {/foreach}
         {/card}
     {/if}

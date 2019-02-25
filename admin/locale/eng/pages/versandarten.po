@@ -331,3 +331,9 @@ msgstr "Versandbestätigung senden?"
 
 msgid "deleteShippingMethod"
 msgstr "Versandart löschen: "
+
+msgid "successDeleteSurchargeList"
+msgstr "Surcharge list deleted."
+
+msgid "successDeleteZIP"
+msgstr "ZIP / ZIP-area deleted."

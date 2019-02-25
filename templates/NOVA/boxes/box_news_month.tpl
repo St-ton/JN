@@ -7,7 +7,7 @@
     {nav vertical=true}
         {foreach $oBox->getItems() as $oNewsMonatsUebersicht}
             {navitem}
-                {link href="{$oNewsMonatsUebersicht->cURL}"  title="{$oNewsMonatsUebersicht->cName}"}
+                {link href=$oNewsMonatsUebersicht->cURL  title=$oNewsMonatsUebersicht->cName}
                     <span class="value">
                         <i class="far fa-newspaper mr-2"></i>
                         {$oNewsMonatsUebersicht->cName}

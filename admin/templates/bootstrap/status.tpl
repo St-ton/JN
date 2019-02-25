@@ -10,7 +10,7 @@
                 },
                 function(){
                     $(this).removeClass('active');
-                }).click( function(){
+                })on('click', function(){
                     document.location = $(this).attr('data-href');
                 }
             );
@@ -86,7 +86,9 @@
                             <div class="text-center">
                                 {$imageCache = $status->getImageCache()}
                                 <i class="fa fa-file-image-o text-four-times text-success"></i>
-                                <h3 style="margin-top:10px;margin-bottom:0">{$imageCache->total|number_format}</h3>
+                                <h3 style="margin-top:10px;margin-bottom:0">
+                                    {(($imageCache->generated[JTL\Media\Image::SIZE_XS] + $imageCache->generated[JTL\Media\Image::SIZE_SM] + $imageCache->generated[JTL\Media\Image::SIZE_MD] + $imageCache->generated[JTL\Media\Image::SIZE_LG]) / 4)|round:0}
+                                </h3>
                                 <span style="color:#c7c7c7">{__('imagesInCache')}</span>
                             </div>
                         </div>

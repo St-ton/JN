@@ -4,7 +4,6 @@
  *}
 {if $Kunde->fGuthaben > 0 && (!isset($smarty.session.Bestellung->GuthabenNutzen) || !$smarty.session.Bestellung->GuthabenNutzen)}
     {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline"}
-        {$jtl_token}
         <fieldset>
             {row}
                 {col cols=6}
@@ -16,7 +15,7 @@
                     {/alert}
                     {input type="hidden" name="guthabenVerrechnen" value="1"}
                     {input type="hidden" name="guthaben" value="1"}
-                    {input type="submit" value="{lang key='useCredits' section='checkout'}" class="submit btn btn-secondary btn-block"}
+                    {button type="submit" value="1" block=true}{lang key='useCredits' section='checkout'}{/button}
                 {/col}
             {/row}
         </fieldset>

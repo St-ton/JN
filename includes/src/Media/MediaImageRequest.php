@@ -178,8 +178,10 @@ class MediaImageRequest
     }
 
     /**
+     * Gets the storage path of the original image
+     *
      * @param bool $absolute
-     * @return null|string
+     * @return null|string storage path
      */
     public function getRaw(bool $absolute = false): ?string
     {

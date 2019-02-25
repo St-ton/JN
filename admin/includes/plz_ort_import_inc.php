@@ -356,12 +356,13 @@ function plzimportActionDoImport($target = '', $part = '', $step = 0): stdClass
  * @param string $message
  * @return stdClass
  */
-function plzimportActionResetImport($type = 'success', $message = 'Import wurde abgebrochen!'): stdClass
+function plzimportActionResetImport($type = 'success', $message = ''): stdClass
 {
     session_write_close();
 
-    $step   = 100;
-    $result = (object)[
+    $message = $message ?: __('importCancel');
+    $step    = 100;
+    $result  = (object)[
         'type'    => Text::filterXSS($type),
         'message' => Text::filterXSS($message),
     ];

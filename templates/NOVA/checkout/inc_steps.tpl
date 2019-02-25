@@ -2,9 +2,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{assign var='step1_active' value=($bestellschritt[1] == 1 || $bestellschritt[2] == 1)}
-{assign var='step2_active' value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}
-{assign var='step3_active' value=($bestellschritt[5] == 1)}
+{assign var=step1_active value=($bestellschritt[1] == 1 || $bestellschritt[2] == 1)}
+{assign var=step2_active value=($bestellschritt[3] == 1 || $bestellschritt[4] == 1)}
+{assign var=step3_active value=($bestellschritt[5] == 1)}
 {if $bestellschritt[1] != 3}
     {*{row class="nav-wizard"}
         {col cols="{if $step1_active}8 {else}2{/if}"

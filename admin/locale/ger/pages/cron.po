@@ -1,5 +1,5 @@
 msgid "queueEntries"
-msgstr "Queueeinträge"
+msgstr "Queue-Einträge"
 
 msgid "headingType"
 msgstr "Typ"
@@ -20,7 +20,7 @@ msgid "headingRunning"
 msgstr "Läuft aktuell"
 
 msgid "createQueueEntry"
-msgstr "Queueeintrag erstellen"
+msgstr "Queue-Eintrag erstellen"
 
 msgid "msgCreated"
 msgstr "Erfolgreich erstellt."
@@ -32,10 +32,10 @@ msgid "msgDeleted"
 msgstr "Erfolgreich gelöscht."
 
 msgid "imagecache"
-msgstr "Bildercache"
+msgstr "Bilder-Cache"
 
 msgid "statusemail"
-msgstr "Status-Mails"
+msgstr "Status-E-Mails"
 
 msgid "dataprotection"
 msgstr "Kundendatenanonymisierung"

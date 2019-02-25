@@ -7,7 +7,7 @@
         {has_boxes position='left' assign='hasLeftBox'}
         {if !$bExclusive && $hasLeftBox && !empty($boxes.left|strip_tags|trim)}
             {block name='footer-sidepanel-left'}
-                <aside id="sidepanel_left" class="d-print-none col-12 {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE} col-md-4{/if} col-lg-3 order-lg-0 mb-6">
+                <aside id="sidepanel_left" class="d-print-none col-12 col-lg-3 order-lg-0 mb-6">
                     {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
                 </aside>
             {/block}
@@ -42,7 +42,6 @@
                                 </p>
                             {/col}
                             {form methopd="post" action="{get_static_route id='newsletter.php'}" class="col-12 col-md-4"}
-                                {$jtl_token}
                                 {input type="hidden" name="abonnieren" value="2"}
                                 {formgroup label-for="newsletter_email" label="{lang key='emailadress'}" class="mb-0"}
                                     {inputgroup}
@@ -180,7 +179,7 @@
                                     {/if}"
                             }
                                 {foreach $smarty.session.Waehrungen as $oWaehrung}
-                                    {dropdownitem href="{$oWaehrung->getURL()}" rel="nofollow"}
+                                    {dropdownitem href=$oWaehrung->getURLFull() rel="nofollow"}
                                         {$oWaehrung->getName()}
                                     {/dropdownitem}
                                 {/foreach}
@@ -222,7 +221,7 @@
                             {/if}
                             {if !$isBrandFree}
                                 {col cols=12 md=3 class="text-right" id="system-credits"}
-                                    Powered by <a href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow">JTL-Shop</a>
+                                    Powered by {link href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                 {/col}
                             {/if}
                         {/row}
@@ -236,15 +235,15 @@
 
 {* JavaScripts *}
 {block name='footer-js'}
-    {*{assign var='isFluidContent' value=isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
+    {*{assign var=isFluidContent value=isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
     {$isFluidContent|@var_dump}
-    {assign var='isFluidContent' value=$Link->getIsFluid()}
+    {assign var=isFluidContent value=$Link->getIsFluid()}
     {$isFluidContent|@var_dump}*}
     {if !$bExclusive && !$isFluidTemplate && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
         {if $Einstellungen.template.theme.background_image === 'custom'}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
+            {assign var=backstretchImgPath value=$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
         {else}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
+            {assign var=backstretchImgPath value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
         {/if}
         <script>
             $(window).on("load", function (e) {
@@ -286,7 +285,7 @@
                 {/if}
             {/if}
 
-            {assign var='customJSPath' value=$currentTemplateDir|cat:'/js/custom.js'}
+            {assign var=customJSPath value=$currentTemplateDir|cat:'/js/custom.js'}
             {if file_exists($customJSPath)}
                 "{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}",
             {/if}

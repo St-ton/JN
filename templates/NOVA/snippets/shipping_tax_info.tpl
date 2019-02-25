@@ -30,7 +30,7 @@
                     {lang key='shipping' section='basket'}{/link}
             {else}
                 {link
-                    href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}"
+                    href=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()
                     rel="nofollow"
                     class="shipment popup"
                     data-toggle="tooltip"
@@ -41,7 +41,7 @@
                 {/link}
             {/if}
         {elseif isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
-            {lang key='plus' section='basket'} {link href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}" rel="nofollow" class="shipment popup"}
+            {lang key='plus' section='basket'} {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() rel="nofollow" class="shipment popup"}
                 {lang key='shipping' section='basket'}
             {/link}
         {/if}

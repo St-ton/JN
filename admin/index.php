@@ -177,6 +177,7 @@ function redirectToURI($szURI)
 
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {
+    Shop::Container()->getGetText()->loadAdminLocale('widgets');
     if (!$oAccount->getIsTwoFaAuthenticated()) {
         $_SESSION['AdminAccount']->TwoFA_active = true;
         // restore first generated token from POST

@@ -116,7 +116,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken())
     );
     $db->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_NOTE, 'Zuschlagsliste erfolgreich gelöscht!', 'successlistDelete');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successDeleteSurchargeList'), 'successlistDelete');
 }
 // Zuschlagliste editieren
 if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
@@ -144,7 +144,7 @@ if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && Form::validateToken())
     $step = 'Zuschlagsliste';
     $db->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_NOTE, 'PLZ/PLZ-Bereich erfolgreich gelöscht.', 'successZIPDelete');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successDeleteZIP'), 'successZIPDelete');
 }
 
 if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && Form::validateToken()) {
@@ -444,7 +444,11 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
             $db->update('tversandart', 'kVersandart', $kVersandart, $Versandart);
             $db->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
             $db->delete('tversandartstaffel', 'kVersandart', $kVersandart);
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successShippingMethodChange'), 'successShippingMethodChange');
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(__('successShippingMethodChange'), $Versandart->cName),
+                'successShippingMethodChange'
+            );
         }
         if ($kVersandart > 0) {
             foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
@@ -682,8 +686,8 @@ if ($step === 'uebersicht') {
             'cISOSprache'
         );
         foreach ($kKundengruppe_arr as $kKundengruppe) {
-            if ((int)$kKundengruppe === '-1') {
-                $method->cKundengruppenName_arr[] = 'Alle';
+            if ((int)$kKundengruppe === -1) {
+                $method->cKundengruppenName_arr[] = __('all');
             } else {
                 foreach ($oKundengruppen_arr as $oKundengruppen) {
                     if ((int)$oKundengruppen->kKundengruppe === (int)$kKundengruppe) {

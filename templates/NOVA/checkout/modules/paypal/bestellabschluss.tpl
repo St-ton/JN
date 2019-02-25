@@ -18,9 +18,9 @@ $(document).ready(function() {ldelim}
       </noscript>
    </div>
    <div>
-      {form method="post" action="{$url}" id="paypal_checkout"}
+      {form method="post" action=$url id="paypal_checkout"}
          {foreach $fields as $value}
-            {input type="hidden" name="{$name}" value="{$value|escape:'html'}"}
+            {input type="hidden" name=$name value=$value|escape:'html'}
          {/foreach}
          {input type="submit" value="{lang key='paypalBtn' section='checkout'}" id="paypal_button"}
       {/form}

@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if isset($position) && $position === 'popup'}
-    {if count($Artikelhinweise) > 0}
+    {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
         {alert dismissable=true variant="danger"}
         {foreach $Artikelhinweise as $Artikelhinweis}
             {$Artikelhinweis}
@@ -12,7 +12,6 @@
     {/if}
 {/if}
 {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}" method="post" id="article_availability{$Artikel->kArtikel}" class="evo-validate"}
-    {$jtl_token}
     <fieldset>
         <legend>{lang key='contact'}</legend>
         {if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname !== 'N' || $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname !== 'N'}
@@ -76,5 +75,7 @@
     {input type="hidden" name="a" value="{if $Artikel->kVariKindArtikel}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"}
     {input type="hidden" name="show" value="1"}
     {input type="hidden" name="benachrichtigung_verfuegbarkeit" value="1"}
-    {input type="submit" value="{lang key='requestNotification'}" class="btn btn-primary w-auto"}
+    {button type="submit" value="1" variant="primary" class="w-auto"}
+        {lang key='requestNotification'}
+    {/button}
 {/form}

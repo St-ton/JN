@@ -8,24 +8,23 @@
             <span class="mr-2 d-inline-block">{lang key='page' section='productOverview'}:</span>
         {buttongroup class="pagination pagination-ajax d-inline-block"}
         {if $filterPagination->getPrev()->getPageNumber() > 0}
-            {link class="prev btn btn-link" href="{$filterPagination->getPrev()->getURL()}"}<i class="fas fa-chevron-left"></i>{/link}
+            {link class="prev btn btn-link" href=$filterPagination->getPrev()->getURL()}<i class="fas fa-chevron-left"></i>{/link}
         {/if}
 
         {foreach $filterPagination->getPages() as $page}
-            {link disabled=$page->isActive() href="{$page->getURL()}" disabled=$page->isActive()
+            {link disabled=$page->isActive() href=$page->getURL() disabled=$page->isActive()
             class="page{if $page->isActive()} active{/if} btn btn-link"}
             {$page->getPageNumber()}
             {/link}
         {/foreach}
 
         {if $filterPagination->getNext()->getPageNumber() > 0}
-            {link class="next btn btn-link" href="{$filterPagination->getNext()->getURL()}"}<i class="fas fa-chevron-right"></i>{/link}
+            {link class="next btn btn-link" href=$filterPagination->getNext()->getURL()}<i class="fas fa-chevron-right"></i>{/link}
         {/if}
         {/buttongroup}
         {/col}
         {*{col cols=6 md=4 lg=3 class="text-right"}
             {form action="{$ShopURL}/" method="get" class="form-inline pagination"}
-                {$jtl_token}
                 {if $NaviFilter->hasCategory()}
                     {input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}"}
                 {/if}

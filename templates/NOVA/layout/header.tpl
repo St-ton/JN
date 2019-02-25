@@ -94,6 +94,7 @@
         <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
+    {$dbgBarHead}
 </head>
 {/block}
 
@@ -111,7 +112,7 @@
         {if Shop::isAdmin()}
             {include file='layout/header_composer_menu.tpl'}
         {/if}
-        {assign var="isSticky" value=$Einstellungen.template.theme.static_header === 'Y'}
+        {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
         <header class="d-print-none container-fluid {if $isSticky}sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
             {block name='header-container-inner'}
@@ -134,7 +135,7 @@
                                     <meta itemprop="url" content="{$ShopURL}">
                                     <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
 
-                                    {link href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}" }
+                                    {link href=$ShopURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
                                         {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname fluid=true}
                                     {else}
@@ -147,23 +148,13 @@
                         {col id="shop-nav" md=4 order=3 order-md=3 class=""}
                             {block name='header-branding-shop-nav'}
                                 <div class="d-flex float-right">
-                                    {*{include file='layout/header_nav_search.tpl'}*}
                                     {include file='layout/header_nav_icons.tpl'}
                                 </div>
                             {/block}
                         {/col}
 
-                        {col cols=12 md=6 order=4 order-md=4 offset-md=6}
-                            {*account*}
-                            {include file='layout/header_shop_nav_account.tpl'}
-                            {*basket*}
-                            {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2"}
-                                {include file='basket/cart_dropdown.tpl'}
-                            {/collapse}
-                        {/col}
-
                         {col md=12 order=1 order-md=5 class="no-flex-grow"}
-                            {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}{/navbartoggle}
+                            {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}
                         {/col}
 
 
@@ -172,8 +163,8 @@
                             <div id="navbarToggler" class="collapse navbar-collapse mt-2" data-parent="#evo-main-nav-wrapper">
                                 {navbarnav class="megamenu show"}
                                     {include file='snippets/categories_mega.tpl'}
-                                    <span class="TabNav_Indicator"></span>
                                 {/navbarnav}
+                                <span class="TabNav_Indicator"></span>
                             </div>
                         {/col}
                         {col cols=12 md=5 order=6 order-md=2}
@@ -194,7 +185,7 @@
 {/if}
 
 {*{block name='header-category-nav'}
-    {assign var="isSticky" value=$Einstellungen.template.theme.static_header === 'Y'}
+    {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
     {navbar id="evo-main-nav-wrapper" sticky=$isSticky toggleable=true fill=true class="navbar-expand-md accordion"}
         {if $isFluidTemplate}
             {include file='layout/header_category_nav.tpl'}
@@ -206,11 +197,11 @@
     {/navbar}
 {/block}*}
 {block name='header-fluid-banner'}
-    {assign var="isFluidBanner" value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
+    {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
     {if $isFluidBanner}
         {include file='snippets/banner.tpl'}
     {/if}
-    {assign var='isFluidSlider' value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
+    {assign var=isFluidSlider value=$Einstellungen.template.theme.slider_full_width === 'Y' && isset($oSlider) && count($oSlider->getSlides()) > 0}
     {if $isFluidSlider}
         {include file='snippets/slider.tpl'}
     {/if}
@@ -226,10 +217,14 @@
     {block name='product-pagination'}
         {if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
             <div class="d-none d-lg-block product-pagination next">
-                {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}<a href="{$NavigationBlaettern->naechsterArtikel->cURLFull}" title="{$NavigationBlaettern->naechsterArtikel->cName}"><span class="fa fa-chevron-right"></span></a>{/if}
+                {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}
+                    {link href=$NavigationBlaettern->naechsterArtikel->cURLFull title=$NavigationBlaettern->naechsterArtikel->cName}<span class="fa fa-chevron-right"></span>{/link}
+                {/if}
             </div>
             <div class="d-none d-lg-block product-pagination previous">
-                {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}<a href="{$NavigationBlaettern->vorherigerArtikel->cURLFull}" title="{$NavigationBlaettern->vorherigerArtikel->cName}"><span class="fa fa-chevron-left"></span></a>{/if}
+                {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}
+                    {link href=$NavigationBlaettern->vorherigerArtikel->cURLFull title=$NavigationBlaettern->vorherigerArtikel->cName}<span class="fa fa-chevron-left"></span>{/link}
+                {/if}
             </div>
         {/if}
     {/block}
@@ -239,7 +234,7 @@
     {/block}
 
     {block name='content-starttag'}
-        <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} {if $nSeitenTyp === 2} col-md-8{/if} col-lg-9{/if} order-lg-1 mb-6">
+        <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} col-lg-9{/if} order-lg-1 mb-6">
     {/block}
 
     {block name='header-breadcrumb'}

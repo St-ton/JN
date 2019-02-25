@@ -338,8 +338,8 @@ msgstr "Passwörter stimmen nicht überein."
 msgid "action"
 msgstr "Aktion"
 
-msgid "available"
-msgstr "Vorhanden"
+msgid "existing"
+msgstr "existing"
 
 msgid "html"
 msgstr "Html"
@@ -1561,3 +1561,42 @@ msgstr "Order status"
 
 msgid "pageUnknown"
 msgstr "Unknown"
+
+msgid "exception"
+msgstr "Exception"
+
+msgid "errorDirCreate"
+msgstr "Error: Directory not created."
+
+msgid "unknown"
+msgstr "Unknown"
+
+msgid "userAgent"
+msgstr "Useragent"
+
+msgid "host"
+msgstr "Host"
+
+msgid "warning"
+msgstr "Warning"
+
+msgid "moreInfo"
+msgstr "More information"
+
+msgid "available"
+msgstr "available"
+
+msgid "info"
+msgstr "Info"
+
+msgid "guests"
+msgstr "Guests"
+
+msgid "overall"
+msgstr "Overall"
+
+msgid "entryPage"
+msgstr "Entry page"
+
+msgid "origin"
+msgstr "Origin"

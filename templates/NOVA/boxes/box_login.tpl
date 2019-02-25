@@ -11,7 +11,6 @@
     {if empty($smarty.session.Kunde->kKunde)}
         {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form box_login evo-validate"}
             {input type="hidden" name="login" value="1"}
-            {$jtl_token}
             {include file='snippets/form_group_simple.tpl'
                 options=[
                     'email', 'email-box-login', 'email', null,{lang key='emailadress'}, true
@@ -31,12 +30,14 @@
             {formgroup}
                 {if !empty($oRedirect->cURL)}
                     {foreach $oRedirect->oParameter_arr as $oParameter}
-                        {input type="hidden" name="{$oParameter->Name}" value="{$oParameter->Wert}"}
+                        {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}
                     {/foreach}
-                    {input type="hidden" name="r" value="{$oRedirect->nRedirect}"}
-                    {input type="hidden" name="cURL" value="{$oRedirect->cURL}"}
+                    {input type="hidden" name="r" value=$oRedirect->nRedirect}
+                    {input type="hidden" name="cURL" value=$oRedirect->cURL}
                 {/if}
-                {input type="submit" value="{lang key='login' section='checkout'}" class="btn btn-primary btn-block submit"}
+                {button type="submit" name="speichern" value="1" variant="primary" block=true class="submit"}
+                    {lang key='login' section='checkout'}
+                {/button}
             {/formgroup}
             {nav vertical=true class="register-or-resetpw"}
                 {navitem class="resetpw" href="{get_static_route id='pass.php' secure=true}"}

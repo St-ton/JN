@@ -6,7 +6,8 @@
 
 namespace JTL\OPC;
 
-use Imanee\Imanee;
+use JTL\Media\Image;
+use Intervention\Image\ImageManager;
 use JTL\Shop;
 
 /**
@@ -400,15 +401,14 @@ class PortletInstance implements \JsonSerializable
         foreach (static::$dirSizes as $size => $width) {
             $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
             if (!\file_exists($sizedImgPath) === true) {
-                $image     = new Imanee(\PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $name);
-                $imageSize = $image->getSize();
-                $factor    = $width / $imageSize['width'];
-
-                $image->resize((int)$width, (int)($imageSize['height'] * $factor))
-                      ->write(
-                          \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
-                          $settings['bilder']['bilder_jpg_quali']
-                      );
+                $manager = new ImageManager(['driver' => Image::getImageDriver()]);
+                // to finally create image instances
+                $img    = $manager->make($sizedImgPath);
+                $factor = $width / $img->getWidth();
+                $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                $img->save(\PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name, $settings['bilder']['bilder_jpg_quali']);
             }
 
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';

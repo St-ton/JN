@@ -180,7 +180,7 @@
     }
 
     $(document).ready(function () {
-        $('form #cSuchspecialOverlayBild').change(function(e){
+        $('form #cSuchspecialOverlayBild').on('change', function(e){
             $('form div.alert').slideUp();
             var filesize= this.files[0].size;
             {/literal}

@@ -5,7 +5,6 @@
 
 {if $KuponMoeglich == 1}
     {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline evo-validate"}
-        {$jtl_token}
         {input type="hidden" name="pruefekupon" value="1"}
         <fieldset>
             {inputgroup}
@@ -18,7 +17,7 @@
                     aria=["label"=>"{lang key='couponCode' section='account data'}"]
                     required=true}
                 {inputgroupaddon append=true}
-                    {input type="submit" value="{lang key='useCoupon' section='checkout'}" class="submit btn btn-secondary"}
+                    {button type="submit" value="1"}{lang key='useCoupon' section='checkout'}{/button}
                 {/inputgroupaddon}
             {/inputgroup}
         </fieldset>

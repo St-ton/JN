@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {foreach $oNewsKategorie_arr as $oNewsKategorie}
-    {if $selectedCat === $oNewsKategorie->getID()}{assign var='oCurNewsCat' value=$oNewsKategorie}{/if}
+    {if $selectedCat === $oNewsKategorie->getID()}{assign var=oCurNewsCat value=$oNewsKategorie}{/if}
     <option value="{$oNewsKategorie->getID()}"
         {if isset($selectedCat)}
             {if is_array($selectedCat)}

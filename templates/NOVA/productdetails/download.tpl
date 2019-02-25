@@ -4,7 +4,7 @@
  *}
 {foreach $Artikel->oDownload_arr as $oDownload}
     {if isset($oDownload->oDownloadSprache)}
-        {card title="{$oDownload->oDownloadSprache->getName()}" class="mb-3"}
+        {card title=$oDownload->oDownloadSprache->getName() class="mb-3"}
             {row}
                 {col cols=12 md="{if $oDownload->hasPreview()}6{/if}"}
                     {$oDownload->oDownloadSprache->getBeschreibung()}
@@ -23,7 +23,7 @@
                             </video>
                         {elseif $oDownload->getPreviewType() === 'image'}
                             {image src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
-                                 fluid=true alt="{$oDownload->oDownloadSprache->getBeschreibung()|strip_tags}"}
+                                 fluid=true alt=$oDownload->oDownloadSprache->getBeschreibung()|strip_tags}
                         {else}
                             {link href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}"
                                title="{$oDownload->oDownloadSprache->getName()}" target="_blank"}

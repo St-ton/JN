@@ -3,11 +3,11 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if !empty($Products)}
-    <form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate">
+    {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles" class="evo-validate"}
         <div class="panel panel-default">
-            <input type="hidden" name="a" value="{$ProductMain->kArtikel}" />
-            <input type="hidden" name="addproductbundle" value="1" />
-            <input type="hidden" name="aBundle" value="{$ProductKey}" />
+            {input type="hidden" name="a" value=$ProductMain->kArtikel}
+            {input type="hidden" name="addproductbundle" value="1"}
+            {input type="hidden" name="aBundle" value=$ProductKey}
             {block name='productdetails-bundle'}{* for additional hidden inputs use block prepend *}
             <div class="panel-heading">
                 <h5 class="panel-title">{lang key='buyProductBundle' section='productDetails'}</h5>
@@ -17,11 +17,11 @@
                     <ul class="list-inline bundle-list">
                         {foreach $Products as $bundleProduct}
                             <li>
-                                <a href="{$bundleProduct->cURLFull}">
-                                    <img src="{if $bundleProduct->Bilder[0]->cURLKlein}{$bundleProduct->Bilder[0]->cURLKlein}{else}{$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}"
-                                         alt="{$bundleProduct->cName}"
-                                         title="{$bundleProduct->cName}" />
-                                </a>
+                                {link href=$bundleProduct->cURLFull}
+                                    {image src="{if $bundleProduct->Bilder[0]->cURLKlein}{$bundleProduct->Bilder[0]->cURLKlein}{else}{$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN}{/if}"
+                                         alt=$bundleProduct->cName
+                                         title=$bundleProduct->cName}
+                                {/link}
                             </li>
                             {if !$bundleProduct@last}
                                 <li>
@@ -46,7 +46,7 @@
                             {/if}
                         </p>
                         <p>
-                            <button name="inWarenkorb" type="submit" value="{lang key='addAllToCart'}" class="submit btn btn-default">{lang key='addAllToCart'}</button>
+                            {button name="inWarenkorb" type="submit" value="1"}{lang key='addAllToCart'}{/button}
                         </p>
                     {/if}
                 </div>
@@ -62,7 +62,7 @@
                                         {break}
                                     {/if}
                                 {/foreach}
-                                <a href="{$Product->cURLFull}">{$Product->cName}</a>
+                                {link href=$Product->cURLFull}{$Product->cName}{/link}
                                 <strong class="price price-xs">{$Product->Preise->cVKLocalized[0]}</strong>
                             </li>
                         {/foreach}
@@ -71,5 +71,5 @@
             </div>
             {/block}
         </div>
-    </form>
+    {/form}
 {/if}

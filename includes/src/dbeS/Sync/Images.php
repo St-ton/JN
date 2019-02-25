@@ -669,7 +669,7 @@ final class Images extends AbstractSync
             );
             return $image->cPfad;
         }
-        $imageName      = $attributeValue->kEigenschaftWert;
+        $imageName = $attributeValue->kEigenschaftWert;
         if ($attributeValue->cName) {
             switch ($this->config['bilder']['bilder_variation_namen']) {
                 case 1:

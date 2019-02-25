@@ -199,7 +199,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     }
 
     Shop::Container()->getCache()->flushAll();
-    $alertHelper->addAlert(Alert::TYPE_NOTE, 'Zahlungsart gespeichert.', 'successSave');
+    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successPaymentMethodSave'), 'successSave');
     $step = 'uebersicht';
 }
 
@@ -211,7 +211,7 @@ if ($step === 'einstellen') {
     );
     if ($zahlungsart === null) {
         $step = 'uebersicht';
-        $alertHelper->addAlert(Alert::TYPE_NOTE, 'Zahlungsart nicht gefunden.', 'errorNotFound');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
         if ((int)$zahlungsart->nSOAP === 1 || (int)$zahlungsart->nCURL === 1 || (int)$zahlungsart->nSOCKETS === 1) {

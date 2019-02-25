@@ -9,9 +9,9 @@
         {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
             {col sm=6 md=4 class="text-center"}
                 <label for="gift{$oArtikelGeschenk->kArtikel}">
-                    {link href="{$oArtikelGeschenk->cURLFull}"}{image src="{$oArtikelGeschenk->Bilder[0]->cURLKlein}" class="image"}{/link}
+                    {link href=$oArtikelGeschenk->cURLFull}{image src=$oArtikelGeschenk->Bilder[0]->cURLKlein alt=$oArtikelGeschenk->cName class="image"}{/link}
                     <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
-                    <p>{link href="{$oArtikelGeschenk->cURLFull}"}{$oArtikelGeschenk->cName}{/link}</p>
+                    <p>{link href=$oArtikelGeschenk->cURLFull}{$oArtikelGeschenk->cName}{/link}</p>
                 </label>
             {/col}
         {/foreach}

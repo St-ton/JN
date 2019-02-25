@@ -17,7 +17,7 @@
         {block name='order-completed'}
         {if !empty($oTrustedShopsBewertenButton->cPicURL)}
             <div>
-                {link href="{$oTrustedShopsBewertenButton->cURL}" target="_blank"}{image src="{$oTrustedShopsBewertenButton->cPicURL}"}{/link}
+                {link href=$oTrustedShopsBewertenButton->cURL target="_blank"}{image src=$oTrustedShopsBewertenButton->cPicURL}{/link}
             </div>
         {/if}
         {if isset($abschlussseite)}

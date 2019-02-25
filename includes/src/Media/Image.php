@@ -7,7 +7,8 @@
 namespace JTL\Media;
 
 use Exception;
-use Imanee\Imanee;
+use Intervention\Image\Constraint;
+use Intervention\Image\ImageManager;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
@@ -72,15 +73,15 @@ class Image
      * @var array
      */
     private static $positionMapper = [
-        'oben'         => Imanee::IM_POS_TOP_CENTER,
-        'oben-rechts'  => Imanee::IM_POS_TOP_RIGHT,
-        'rechts'       => Imanee::IM_POS_MID_RIGHT,
-        'unten-rechts' => Imanee::IM_POS_BOTTOM_RIGHT,
-        'unten'        => Imanee::IM_POS_BOTTOM_CENTER,
-        'unten-links'  => Imanee::IM_POS_BOTTOM_LEFT,
-        'links'        => Imanee::IM_POS_MID_LEFT,
-        'oben-links'   => Imanee::IM_POS_TOP_LEFT,
-        'zentriert'    => Imanee::IM_POS_MID_CENTER
+        'oben'         => 'top',
+        'oben-rechts'  => 'top-right',
+        'rechts'       => 'right',
+        'unten-rechts' => 'bottom-right',
+        'unten'        => 'bottom',
+        'unten-links'  => 'bottom-left',
+        'links'        => 'left',
+        'oben-links'   => 'top-left',
+        'zentriert'    => 'center'
     ];
 
     /**
@@ -236,7 +237,6 @@ class Image
     /**
      * Convert old branding naming
      *
-     * @todo Caching
      * @return array
      */
     private static function getBranding(): array
@@ -352,73 +352,22 @@ class Image
 
     /**
      * @param MediaImageRequest $req
-     * @param Imanee            $rawImage
-     * @return Imanee
+     * @param bool              $streamOutput
      * @throws Exception
-     * @throws \Imanee\Exception\UnsupportedFormatException
-     * @throws \Imanee\Exception\UnsupportedMethodException
-     * @internal param string $rawPath
      */
-    public static function render(MediaImageRequest $req, Imanee $rawImage = null): Imanee
+    public static function render(MediaImageRequest $req, bool $streamOutput = false): void
     {
         $rawPath = $req->getRaw(true);
-
         if (!\is_file($rawPath)) {
             throw new Exception(\sprintf('Image "%s" does not exist', $rawPath));
         }
-
-        $size   = $req->getSize();
-        $width  = $size->getWidth();
-        $height = $size->getHeight();
-
-        $settings = self::getSettings();
-
-        $imanee = $rawImage === null
-            ? new Imanee($rawPath)
-            : clone $rawImage;
-
-        $imanee->resize($width, $height, true, $settings['scale']);
-
-        $background = $settings['format'] === 'png'
-            ? 'transparent' : $settings['background'];
-
-        if ($settings['container'] === true) {
-            $imanee = (new Imanee())
-                ->newImage($width, $height, $background)
-                ->setFormat($settings['format'])
-                ->placeImage($imanee, Imanee::IM_POS_MID_CENTER, $width, $height);
-        } else {
-            $imanee = (new Imanee())
-                ->newImage($imanee->getWidth(), $imanee->getHeight(), $background)
-                ->setFormat($settings['format'])
-                ->placeImage($imanee, Imanee::IM_POS_MID_CENTER, $imanee->getWidth(), $imanee->getHeight());
-        }
-
-        if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {
-            $branding   = $settings['branding'];
-            $brandImage = new Imanee($branding->path);
-            $brandSize  = $brandImage->getSize();
-
-            $containerImage = (new Imanee())
-                ->newImage($brandSize['width'], $brandSize['height'], 'transparent')
-                ->setFormat('png')
-                ->placeImage($brandImage, Imanee::IM_POS_MID_CENTER);
-
-            if ($branding->size > 0) {
-                $brandWidth  = \round(($imanee->getWidth() * $branding->size) / 100.0);
-                $brandHeight = \round(($brandWidth / $brandSize['width']) * $brandSize['height']);
-                $width       = \min($brandSize['width'], $brandWidth);
-                $height      = \min($brandSize['height'], $brandHeight);
-
-                $containerImage->resize($width, $height);
-            }
-            $imanee->watermark($containerImage, $branding->position, $branding->transparency);
-        }
-
-        $req->ext  = $settings['format'];
-        $thumbnail = $req->getThumb(null, true);
-        $directory = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
-
+        $containerDim = $req->getSize();
+        $maxWidth     = $containerDim->getWidth();
+        $maxHeight    = $containerDim->getHeight();
+        $settings     = self::getSettings();
+        $background   = $settings['format'] === 'png' ? 'transparent' : $settings['background'];
+        $thumbnail    = $req->getThumb(null, true);
+        $directory    = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
         if (!\is_dir($directory) && !\mkdir($directory, 0777, true)) {
             $error = \error_get_last();
             if (empty($error)) {
@@ -426,40 +375,47 @@ class Image
             }
             throw new Exception(\is_array($error) ? $error['message'] : $error);
         }
-
-        $imanee->setFormat($settings['format']);
-        $imanee->write($thumbnail, $settings['quality']);
-
+        $manager = new ImageManager(['driver' => self::getImageDriver()]);
+        $img     = $manager->make($rawPath);
+        if ($settings['scale'] === true || $img->getWidth() > $maxWidth || $img->getHeight() > $maxHeight) {
+            $img->resize($maxWidth, $maxHeight, function (Constraint $constraint) {
+                $constraint->aspectRatio();
+            });
+        }
+        if ($settings['container'] === true) {
+            $img->resizeCanvas($maxWidth, $maxHeight, 'center', false, $background);
+        }
+        if (isset($settings['branding']) && $req->getSize()->getType() === self::SIZE_LG) {
+            $branding  = $settings['branding'];
+            $watermark = $manager->make($branding->path);
+            if ($branding->size > 0) {
+                $brandWidth  = \round(($img->getWidth() * $branding->size) / 100.0);
+                $brandHeight = \round(($brandWidth / $watermark->getWidth()) * $watermark->getHeight());
+                $newWidth    = \min($watermark->getWidth(), $brandWidth);
+                $newHeight   = \min($watermark->getHeight(), $brandHeight);
+                $watermark->resize($newWidth, $newHeight, function (Constraint $constraint) {
+                    $constraint->aspectRatio();
+                });
+                $watermark->opacity($branding->transparency);
+                $img->insert($watermark, $branding->position, 10, 10);
+            }
+        }
         \executeHook(\HOOK_IMAGE_RENDER, [
-            'imanee'   => $imanee,
+            'image'    => $img,
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
-
-        return $imanee;
+        $img->save($thumbnail, $settings['quality']);
+        if ($streamOutput) {
+            echo $img->response($settings['format']);
+        }
     }
 
     /**
-     * @param MediaImageRequest $req
-     * @param null              $error
-     * @throws \Imanee\Exception\UnsupportedMethodException
-     * @return Imanee
+     * @return string
      */
-    public static function error(MediaImageRequest $req, $error = null): Imanee
+    public static function getImageDriver(): string
     {
-        $size = $req->getSize();
-
-        $imanee = new Imanee();
-        $imanee->newImage($size->getWidth(), $size->getHeight(), '#bc3726');
-        $imanee->setFormat('jpg');
-        $imanee->getResource()->mime = 'image/jpg';
-
-        $drawer = clone $imanee->getDrawer();
-        $drawer->setFontColor('white');
-
-        $imanee->setDrawer($drawer);
-        $imanee->placeText($error, Imanee::IM_POS_MID_CENTER, $size->getWidth() * 0.9);
-
-        return $imanee;
+        return \extension_loaded('imagick') ? 'imagick' : 'gd';
     }
 }

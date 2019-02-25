@@ -12,19 +12,19 @@ msgid "votesystemURL"
 msgstr "https://jtl-url.de/vpl3k"
 
 msgid "votesystemDesc"
-msgstr "Einstellungen zum Bewertungs- und Rezensionsmodul."
+msgstr "Hier legen Sie fest, ob Kunden Ihre Artikel bewerten können. Außerdem können Sie alle bisher abgegebenen aktiven und inaktiven Bewertungen durchsuchen und ggf. bearbeiten."
 
 msgid "bewertungsText1"
 msgstr "Das Bewertungssystem zeigt eine von Ihnen angegebene Anzahl an Bewertungssternen unter den Artikeln in der Detailansicht an. "
 
 msgid "bewertungsText2"
-msgstr "Wir empfehlen bei Änderung der Bewertungsstern-Anzahl auf jeden Fall auch die Bewertungen zurückzusetzen, ansonsten kann es zu Rechenfehlern kommen!"
+msgstr "Wir empfehlen bei Änderung der Bewertungsstern-Anzahl auf jeden Fall, auch die Bewertungen zurückzusetzen. Ansonsten kann es zu Rechenfehlern kommen."
 
 msgid "bewertungsText3"
-msgstr "Kommentiert werden darf grundsätzlich nur von eingeloggten Benutzern, egal was unter \"Benutzung nur mit Login\" eingetragen wird.<br />Wenn angemeldete Benutzer eine Bewertung vornehmen, werden sie auch nicht nach einem Tag zurückgesetzt und können erneut bewerten.<br />Dies ist nur bei nicht eingeloggten Benutzern so."
+msgstr "Kommentiert werden darf grundsätzlich nur von eingeloggten Benutzern, egal was unter \"Benutzung nur mit Login\" eingetragen wird.<br/>Wenn angemeldete Benutzer eine Bewertung vornehmen, werden sie auch nicht nach einem Tag zurückgesetzt und können erneut bewerten.<br/>Dies ist nur bei nicht eingeloggten Benutzern so."
 
 msgid "popup"
-msgstr "als Popup"
+msgstr "als Pop-up"
 
 msgid "clearVotes"
 msgstr "Alle Bewertungen zurücksetzen"
@@ -33,7 +33,7 @@ msgid "removeReply"
 msgstr "Antwort entfernen"
 
 msgid "clearVotesComent"
-msgstr "Wählen Sie diesen Punkt wirklich nur dann aus, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen wollen. Das Bewertungssystem wird hierbei komplett zurückgesetzt, auch die Kommentare!"
+msgstr "Wählen Sie diese Option nur dann, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen möchten. Das Bewertungssystem wird komplett zurückgesetzt, inklusive aller Kommentare."
 
 msgid "options"
 msgstr "Auswahl"
@@ -54,7 +54,7 @@ msgid "ratingText"
 msgstr "Bewertungstext"
 
 msgid "ratingReply"
-msgstr "Antwort"
+msgstr "Antwort:"
 
 msgid "ratingStars"
 msgstr "Sterne"
@@ -63,7 +63,7 @@ msgid "ratingForProduct"
 msgstr "Bewertungen für einen bestimmten Artikel"
 
 msgid "ratingcArtNr"
-msgstr "Artikelnummer/Artikelname"
+msgstr "Artikelnummer / Artikelname"
 
 msgid "ratingSearchedFor"
 msgstr "Gesucht nach"
@@ -72,7 +72,7 @@ msgid "ratingLast50"
 msgstr "Aktive Bewertungen"
 
 msgid "successRatingEdit"
-msgstr "Ihre Bewertung wurde erfolgreich editiert."
+msgstr "Ihre Bewertung wurde erfolgreich bearbeitet."
 
 msgid "errorCreditUnlock"
 msgstr "Guthabenbonus kann nur mit \"Bewertung freischalten\" verwendet werden."

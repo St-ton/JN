@@ -192,7 +192,7 @@ class WarenkorbPersPos
      * @param string $cFreifeldWert
      * @return bool
      */
-    public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert, string $cFreifeldWert = ''): bool
+    public function istEigenschaftEnthalten(int $kEigenschaft, ?int $kEigenschaftWert, string $cFreifeldWert = ''): bool
     {
         foreach ($this->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
             if ((int)$oWarenkorbPersPosEigenschaft->kEigenschaft === $kEigenschaft

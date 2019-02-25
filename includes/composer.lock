@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c69af767eb87af99b6488dc9f9c49386",
+    "content-hash": "921f88cea6c1878fe2c2c682d95519f9",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -591,67 +591,6 @@
             "time": "2018-12-27T00:33:19+00:00"
         },
         {
-            "name": "imanee/imanee",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/imanee/imanee.git",
-                "reference": "cf390b5e7f92ca21d6e388abe51433e9ed671b1b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/imanee/imanee/zipball/cf390b5e7f92ca21d6e388abe51433e9ed671b1b",
-                "reference": "cf390b5e7f92ca21d6e388abe51433e9ed671b1b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "ext-gd": "*",
-                "ext-imagick": "*",
-                "mockery/mockery": "^0.9.4",
-                "phpunit/phpunit": "3.7.*",
-                "raveren/kint": "^1.0",
-                "satooshi/php-coveralls": "^0.6.1"
-            },
-            "suggest": {
-                "ext-gd": "To allow Imanee\\ImageResource\\GDResource usage.",
-                "ext-imagick": "To allow Imanee\\ImageResource\\ImagickResource usage."
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Imanee\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Erika Heidi",
-                    "email": "erika@erikaheidi.com"
-                }
-            ],
-            "description": "PHP Image Manipulation Library",
-            "homepage": "http://imanee.io",
-            "keywords": [
-                "ImageMagick",
-                "gd",
-                "image",
-                "imagick",
-                "php"
-            ],
-            "time": "2015-11-20T02:04:09+00:00"
-        },
-        {
             "name": "intervention/httpauth",
             "version": "2.0.4",
             "source": {
@@ -703,6 +642,76 @@
                 "laravel"
             ],
             "time": "2018-12-06T18:40:29+00:00"
+        },
+        {
+            "name": "intervention/image",
+            "version": "2.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/image.git",
+                "reference": "e82d274f786e3d4b866a59b173f42e716f0783eb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/e82d274f786e3d4b866a59b173f42e716f0783eb",
+                "reference": "e82d274f786e3d4b866a59b173f42e716f0783eb",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "guzzlehttp/psr7": "~1.1",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "^4.8 || ^5.7"
+            },
+            "suggest": {
+                "ext-gd": "to use GD library based image processing.",
+                "ext-imagick": "to use Imagick based image processing.",
+                "intervention/imagecache": "Caching extension for the Intervention Image library"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Intervention\\Image\\ImageServiceProvider"
+                    ],
+                    "aliases": {
+                        "Image": "Intervention\\Image\\Facades\\Image"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@olivervogel.com",
+                    "homepage": "http://olivervogel.com/"
+                }
+            ],
+            "description": "Image handling and manipulation library with support for Laravel integration",
+            "homepage": "http://image.intervention.io/",
+            "keywords": [
+                "gd",
+                "image",
+                "imagick",
+                "laravel",
+                "thumbnail",
+                "watermark"
+            ],
+            "time": "2018-05-29T14:19:03+00:00"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -846,7 +855,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "f773693900d2fb9839fba42196162b0dc3323f41"
+                "reference": "eab93963be0aa468dce5b9a3f48bd7ee8330b870"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -873,7 +882,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-02-12T14:45:47+00:00"
+            "time": "2019-02-22T09:58:45+00:00"
         },
         {
             "name": "jtlshop/sccbs3",
@@ -881,7 +890,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git",
-                "reference": "d393769ac90d6e1321116d1449e6a7f5f1658892"
+                "reference": "224f165d51a54eaad1f2b40c559dd96206727dbd"
             },
             "require": {
                 "jtlshop/scc": "dev-master",
@@ -908,7 +917,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-02-12T14:46:54+00:00"
+            "time": "2019-02-21T15:59:46+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -2268,16 +2277,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.7.25",
+            "version": "v5.7.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "bcdb1d4ca989a3aaa74aeac67c8e44ccf1761b9d"
+                "reference": "c1a36a2a8a0aa731c1acdcd83f57724ffe630d00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/bcdb1d4ca989a3aaa74aeac67c8e44ccf1761b9d",
-                "reference": "bcdb1d4ca989a3aaa74aeac67c8e44ccf1761b9d",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/c1a36a2a8a0aa731c1acdcd83f57724ffe630d00",
+                "reference": "c1a36a2a8a0aa731c1acdcd83f57724ffe630d00",
                 "shasum": ""
             },
             "require": {
@@ -2314,7 +2323,7 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2019-02-05T15:00:41+00:00"
+            "time": "2019-02-13T19:40:13+00:00"
         },
         {
             "name": "tubalmartin/cssmin",
@@ -3159,16 +3168,16 @@
         },
         {
             "name": "phpunit/php-timer",
-            "version": "2.0.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-timer.git",
-                "reference": "8b8454ea6958c3dee38453d3bd571e023108c91f"
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/8b8454ea6958c3dee38453d3bd571e023108c91f",
-                "reference": "8b8454ea6958c3dee38453d3bd571e023108c91f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-timer/zipball/8b389aebe1b8b0578430bda0c7c95a829608e059",
+                "reference": "8b389aebe1b8b0578430bda0c7c95a829608e059",
                 "shasum": ""
             },
             "require": {
@@ -3180,7 +3189,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -3204,7 +3213,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2018-02-01T13:07:23+00:00"
+            "time": "2019-02-20T10:12:59+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -3257,16 +3266,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.4",
+            "version": "7.5.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0"
+                "reference": "09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2896657da5fb237bc316bdfc18c2650efeee0dc0",
-                "reference": "2896657da5fb237bc316bdfc18c2650efeee0dc0",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9",
+                "reference": "09c85e14994df92e5ff1f5ec0b481bdb7d3d3df9",
                 "shasum": ""
             },
             "require": {
@@ -3337,7 +3346,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-02-07T14:15:04+00:00"
+            "time": "2019-02-18T09:24:50+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -3952,6 +3961,57 @@
             "time": "2018-12-19T17:14:59+00:00"
         },
         {
+            "name": "squizlabs/php_codesniffer",
+            "version": "3.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
+                "reference": "379deb987e26c7cd103a7b387aea178baec96e48"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/379deb987e26c7cd103a7b387aea178baec96e48",
+                "reference": "379deb987e26c7cd103a7b387aea178baec96e48",
+                "shasum": ""
+            },
+            "require": {
+                "ext-simplexml": "*",
+                "ext-tokenizer": "*",
+                "ext-xmlwriter": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "bin": [
+                "bin/phpcs",
+                "bin/phpcbf"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Greg Sherwood",
+                    "role": "lead"
+                }
+            ],
+            "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
+            "homepage": "http://www.squizlabs.com/php-codesniffer",
+            "keywords": [
+                "phpcs",
+                "standards"
+            ],
+            "time": "2018-12-19T23:57:18+00:00"
+        },
+        {
             "name": "symfony/config",
             "version": "v4.2.3",
             "source": {
@@ -4479,7 +4539,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "imanee/imanee": 20,
         "jtlshop/sccbs3": 20,
         "jtlshop/scc": 20,
         "phpgangsta/googleauthenticator": 20,

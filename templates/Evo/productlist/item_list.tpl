@@ -215,7 +215,7 @@
                                             </button>
                                         </div>
                                     {/if}
-                                    {if $Artikel->verfuegbarkeitsBenachrichtigung === 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
+                                    {if $Artikel->verfuegbarkeitsBenachrichtigung === 3}
                                         <div class="btn-group btn-group-xs" role="group">
                                             <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key='requestNotification'}">
                                                 <span class="fa fa-bell"></span>

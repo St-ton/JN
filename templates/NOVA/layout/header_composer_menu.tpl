@@ -4,24 +4,24 @@
  *}
 {function draftItem}
     {if $isCurDraft}
-        {assign var='draftTooltip' value='Momentan öffentlich'}
+        {assign var=draftTooltip value='Momentan öffentlich'}
         {if $draftPublishTo !== null}
-            {assign var='draftTooltip' value=$draftTooltip|cat:' bis '|cat:($draftPublishTo|date_format:'d.m.Y')}
+            {assign var=draftTooltip value=$draftTooltip|cat:' bis '|cat:($draftPublishTo|date_format:'d.m.Y')}
         {/if}
     {elseif $draftPublishFrom !== null}
-        {assign var='draftTooltip' value='Öffentlich ab '|cat:($draftPublishFrom|date_format:'d.m.Y')}
+        {assign var=draftTooltip value='Öffentlich ab '|cat:($draftPublishFrom|date_format:'d.m.Y')}
     {else}
-        {assign var='draftTooltip' value='Entwurf'}
+        {assign var=draftTooltip value='Entwurf'}
     {/if}
     {buttongroup class="mb-2 w-100"}
-        <form method="post" action="admin/onpage-composer.php" class="w-100">
-            <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-            <input type="hidden" name="pageKey" value="{$draftKey}">
+        {form method="post" action="admin/onpage-composer.php" class="w-100" addtoken=false}
+            {input type="hidden" name="jtl_token" value=$adminSessionToken}
+            {input type="hidden" name="pageKey" value=$draftKey}
             {button size="sm"
                 variant="danger"
                 class="opc-draft-item-discard float-right"
                 title="Entwurf löschen" role="button" id="btnDiscard{$draftKey}"}
-                <i class="fa fa-trash"></i>
+                <i class="fas fa-trash"></i>
             {/button}
             {button type="submit" name="action" value="edit" title="Entwurf bearbeiten" variant="{if $isCurDraft}secondary{else}light{/if}" size="sm"}
                 {if $isCurDraft}
@@ -51,16 +51,16 @@
                     });
                 })();
             </script>
-        </form>
+        {/form}
     {/buttongroup}
 {/function}
 
-{assign var="curPage" value=$opcPageService->getCurPage()}
-{assign var="curPageId" value=$curPage->getId()}
-{assign var="pageDrafts" value=$opcPageService->getDrafts($curPageId)}
-{assign var="curDraftKey" value=$curPage->getKey()}
-{assign var="adminSessionToken" value=$opc->getAdminSessionToken()}
-{assign var="otherLangDrafts" value=$opcPageService->getOtherLanguageDrafts($curPageId)}
+{assign var=curPage value=$opcPageService->getCurPage()}
+{assign var=curPageId value=$curPage->getId()}
+{assign var=pageDrafts value=$opcPageService->getDrafts($curPageId)}
+{assign var=curDraftKey value=$curPage->getKey()}
+{assign var=adminSessionToken value=$opc->getAdminSessionToken()}
+{assign var=otherLangDrafts value=$opcPageService->getOtherLanguageDrafts($curPageId)}
 
 <div id="opc-switcher" class="d-none d-md-flex">
     <div class="switcher">
@@ -131,45 +131,44 @@
                     <p><label>Neuer Entwurf:</label></p>
                 {/if}
 
-                <form method="post" action="admin/onpage-composer.php">
-                    <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                    <input type="hidden" name="pageId" value="{$curPage->getId()}">
-                    <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
+                {form method="post" action="admin/onpage-composer.php" addtoken=false}
+                    {input type="hidden" name="jtl_token" value=$adminSessionToken}
+                    {input type="hidden" name="pageId" value=$curPage->getId()}
+                    {input type="hidden" name="pageUrl" value=$curPage->getUrl()}
                     <div class="btn-group">
-                        <button type="submit" name="action" value="extend" class="btn btn-primary">
-                            <i class="fa fa-plus-circle"></i>
+                        {button type="submit" name="action" value="extend" variant="primary"}
+                            <i class="fas fa-plus-circle"></i>
                             Seite erweitern
-                        </button>
-                        <button type="submit" name="action" value="replace" class="btn btn-primary">
-                            <i class="fa fa-file-o"></i>
+                        {/button}
+                        {button type="submit" name="action" value="replace" variant="primary"}
+                            <i class="fas fa-file"></i>
                             Seite ersetzen
-                        </button>
+                        {/button}
                     </div>
-                </form>
+                {/form}
                 {if $otherLangDrafts|count > 0}
-                    <form method="post" action="admin/onpage-composer.php">
-                        <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                        <input type="hidden" name="pageId" value="{$curPage->getId()}">
-                        <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
-                        <input type="hidden" name="action" value="adopt">
+                    {form method="post" action="admin/onpage-composer.php"}
+                        {input type="hidden" name="jtl_token" value=$adminSessionToken}
+                        {input type="hidden" name="pageId" value=$curPage->getId()}
+                        {input type="hidden" name="pageUrl" value=$curPage->getUrl()}
+                        {input type="hidden" name="action" value="adopt"}
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-language"></i>
+                            {button variant="primary" class="dropdown-toggle" data=['toggle' => 'dropdown']
+                                    aria=['haspopup' => 'true', 'expanded' => 'false']}
+                                <i class="fas fa-language"></i>
                                 Aus anderer Sprache übernehmen <span class="caret"></span>
-                            </button>
+                            {/button}
                             <ul class="dropdown-menu">
                                 {foreach $otherLangDrafts as $draft}
                                     <li>
-                                        <button type="submit" name="adoptFromKey" value="{$draft->kPage}"
-                                                class="btn btn-link">
+                                        {button type="submit" name="adoptFromKey" value=$draft->kPage variant='link'}
                                             <b>{$draft->cNameEnglisch}</b> : {$draft->cName}
-                                        </button>
+                                        {/button}
                                     </li>
                                 {/foreach}
                             </ul>
                         </div>
-                    </form>
+                    {/form}
                 {/if}
             </div>
         </div>

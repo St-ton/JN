@@ -1614,7 +1614,7 @@ define('HOOK_KUNDE_DB_INSERT', 215);
 /**
  * @since 4.03
  * @file Image.php
- * @param Imanee - imanee
+ * @param \Intervention\Image\Image - image
  * @param array  - settings
  * @param string - thumbnail
  */

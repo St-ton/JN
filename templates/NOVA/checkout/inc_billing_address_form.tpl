@@ -32,9 +32,9 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_titel !== 'N'}
             {col cols=12 md=6}
                 {if isset($cPost_var['titel'])}
-                    {assign var='inputVal_title' value=$cPost_var['titel']}
+                    {assign var=inputVal_title value=$cPost_var['titel']}
                 {elseif isset($Kunde->cTitel)}
-                    {assign var='inputVal_title' value=$Kunde->cTitel}
+                    {assign var=inputVal_title value=$Kunde->cTitel}
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
@@ -50,9 +50,9 @@
     {row}
         {col cols=12 md=6}
             {if isset($cPost_var['vorname'])}
-                {assign var='inputVal_firstName' value=$cPost_var['vorname']}
+                {assign var=inputVal_firstName value=$cPost_var['vorname']}
             {elseif isset($Kunde->cVorname)}
-                {assign var='inputVal_firstName' value=$Kunde->cVorname}
+                {assign var=inputVal_firstName value=$Kunde->cVorname}
             {/if}
             {include file='snippets/form_group_simple.tpl'
                 options=[
@@ -64,9 +64,9 @@
         {/col}
         {col cols=12 md=6}
             {if isset($cPost_var['nachname'])}
-                {assign var='inputVal_lastName' value=$cPost_var['nachname']}
+                {assign var=inputVal_lastName value=$cPost_var['nachname']}
             {elseif isset($Kunde->cNachname)}
-                {assign var='inputVal_lastName' value=$Kunde->cNachname}
+                {assign var=inputVal_lastName value=$Kunde->cNachname}
             {/if}
             {include file='snippets/form_group_simple.tpl'
                 options=[
@@ -82,9 +82,9 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
         {col cols=12 md=6}
             {if isset($cPost_var['firma'])}
-                {assign var='inputVal_firm' value=$cPost_var['firma']}
+                {assign var=inputVal_firm value=$cPost_var['firma']}
             {elseif isset($Kunde->cFirma)}
-                {assign var='inputVal_firm' value=$Kunde->cFirma}
+                {assign var=inputVal_firm value=$Kunde->cFirma}
             {/if}
             {include file='snippets/form_group_simple.tpl'
                 options=[
@@ -99,9 +99,9 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
         {col cols=12 md=6}
             {if isset($cPost_var['firmazusatz'])}
-                {assign var='inputVal_firmext' value=$cPost_var['firmazusatz']}
+                {assign var=inputVal_firmext value=$cPost_var['firmazusatz']}
             {elseif isset($Kunde->cZusatz)}
-                {assign var='inputVal_firmext' value=$Kunde->cZusatz}
+                {assign var=inputVal_firmext value=$Kunde->cZusatz}
             {/if}
             {include file='snippets/form_group_simple.tpl'
                 options=[
@@ -117,9 +117,9 @@
     {row}
         {col cols=12 md=8}
             {if isset($cPost_var['strasse'])}
-                {assign var='inputVal_street' value=$cPost_var['strasse']}
+                {assign var=inputVal_street value=$cPost_var['strasse']}
             {elseif isset($Kunde->cStrasse)}
-                {assign var='inputVal_street' value=$Kunde->cStrasse}
+                {assign var=inputVal_street value=$Kunde->cStrasse}
             {/if}
             {include file='snippets/form_group_simple.tpl'
                 options=[
@@ -132,9 +132,9 @@
 
         {col cols=12 md=4}
             {if isset($cPost_var['hausnummer'])}
-                {assign var='inputVal_streetnumber' value=$cPost_var['hausnummer']}
+                {assign var=inputVal_streetnumber value=$cPost_var['hausnummer']}
             {elseif isset($Kunde->cHausnummer)}
-                {assign var='inputVal_streetnumber' value=$Kunde->cHausnummer}
+                {assign var=inputVal_streetnumber value=$Kunde->cHausnummer}
             {/if}
             {include file='snippets/form_group_simple.tpl'
                 options=[
@@ -150,9 +150,9 @@
         {row}
             {col cols=12 md=6}
                 {if isset($cPost_var['adresszusatz'])}
-                    {assign var='inputVal_street2' value=$cPost_var['adresszusatz']}
+                    {assign var=inputVal_street2 value=$cPost_var['adresszusatz']}
                 {elseif isset($Kunde->cAdressZusatz)}
-                    {assign var='inputVal_street2' value=$Kunde->cAdressZusatz}
+                    {assign var=inputVal_street2 value=$Kunde->cAdressZusatz}
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
@@ -166,15 +166,15 @@
     {/if}
     {* country *}
     {if isset($cPost_var['land'])}
-        {assign var='cIso' value=$cPost_var['land']}
+        {assign var=cIso value=$cPost_var['land']}
     {elseif !empty($Kunde->cLand)}
-        {assign var='cIso' value=$Kunde->cLand}
+        {assign var=cIso value=$Kunde->cLand}
     {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-        {assign var='cIso' value=$Einstellungen.kunden.kundenregistrierung_standardland}
+        {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
     {elseif isset($laender[0]->cISO)}
-        {assign var='cIso' value=$laender[0]->cISO}
+        {assign var=cIso value=$laender[0]->cISO}
     {else}
-        {assign var='cIso' value=''}
+        {assign var=cIso value=''}
     {/if}
     {row}
         {col cols=12 md=6}
@@ -183,7 +183,7 @@
                 label-for="country"
                 label="{lang key='country' section='account data'}"
             }
-                {select name="land" id="country" class="country-input form-control" required=true autocomplete="billing country"}
+                {select name="land" id="country" class="country-input" required=true autocomplete="billing country"}
                     <option value="" disabled>{lang key='country' section='account data'}</option>
                     {foreach $laender as $land}
                         <option value="{$land->cISO}" {if $cIso === $land->cISO}selected="selected"{/if}>{$land->cName}</option>
@@ -199,11 +199,11 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'N'}
             {getStates cIso=$cIso assign='oStates'}
             {if isset($cPost_var['bundesland'])}
-                {assign var='cState' value=$cPost_var['bundesland']}
+                {assign var=cState value=$cPost_var['bundesland']}
             {elseif !empty($Kunde->cBundesland)}
-                {assign var='cState' value=$Kunde->cBundesland}
+                {assign var=cState value=$Kunde->cBundesland}
             {else}
-                {assign var='cState' value=''}
+                {assign var=cState value=''}
             {/if}
             {col cols=12 md=6}
                 {formgroup class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
@@ -215,7 +215,7 @@
                         title="{lang key=pleaseChoose}"
                         name="bundesland"
                         id="state"
-                        class="form-control state-input"
+                        class="state-input"
                         autocomplete="billing address-level1"
                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')}
                             <option value="" selected disabled>{lang key='pleaseChoose'}</option>
@@ -228,9 +228,8 @@
                         type="text"
                         title="{lang key=pleaseChoose}"
                         name="bundesland"
-                        value="{$cState}"
+                        value=$cState
                         id="state"
-                        class="form-control"
                         placeholder="{lang key='state' section='account data'}"
                         autocomplete="billing address-level1"
                         required=($Einstellungen.kunden.kundenregistrierung_abfragen_bundesland === 'Y')
@@ -259,7 +258,7 @@
                 name="plz"
                 value="{if isset($cPost_var['plz'])}{$cPost_var['plz']}{elseif isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}"
                 id="postcode"
-                class="postcode_input form-control"
+                class="postcode_input"
                 placeholder="{lang key='plz' section='account data'}"
                 required=true
                 autocomplete="billing postal-code"
@@ -286,7 +285,7 @@
                 name="ort"
                 value="{if isset($cPost_var['ort'])}{$cPost_var['ort']}{elseif isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}"
                 id="city"
-                class="city_input form-control typeahead"
+                class="city_input typeahead"
                 placeholder="{lang key='city' section='account data'}"
                 required=true
                 autocomplete="billing address-level2"
@@ -317,7 +316,6 @@
                 name="ustid"
                 value="{if isset($cPost_var['ustid'])}{$cPost_var['ustid']}{elseif isset($Kunde->cUSTID)}{$Kunde->cUSTID}{/if}"
                 id="ustid"
-                class="form-control"
                 placeholder="{lang key='ustid' section='account data'}"
                 required=($Einstellungen.kunden.kundenregistrierung_abfragen_ustid === 'Y')
                 }
@@ -351,9 +349,9 @@
     {row}
         {col cols=12 md=6}
             {if isset($cPost_var['email'])}
-                {assign var='inputVal_email' value=$cPost_var['email']}
+                {assign var=inputVal_email value=$cPost_var['email']}
             {elseif isset($Kunde->cMail)}
-                {assign var='inputVal_email' value=$Kunde->cMail}
+                {assign var=inputVal_email value=$Kunde->cMail}
             {/if}
             {include file='snippets/form_group_simple.tpl'
                 options=[
@@ -370,9 +368,9 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N'}
             {col cols=12 md=6}
                 {if isset($cPost_var['tel'])}
-                    {assign var='inputVal_tel' value=$cPost_var['tel']}
+                    {assign var=inputVal_tel value=$cPost_var['tel']}
                 {elseif isset($Kunde->cTel)}
-                    {assign var='inputVal_tel' value=$Kunde->cTel}
+                    {assign var=inputVal_tel value=$Kunde->cTel}
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
@@ -387,9 +385,9 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'}
             {col cols=12 md=6}
                 {if isset($cPost_var['fax'])}
-                    {assign var='inputVal_fax' value=$cPost_var['fax']}
+                    {assign var=inputVal_fax value=$cPost_var['fax']}
                 {elseif isset($Kunde->cFax)}
-                    {assign var='inputVal_fax' value=$Kunde->cFax}
+                    {assign var=inputVal_fax value=$Kunde->cFax}
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
@@ -408,9 +406,9 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N'}
                 {col cols=12 md=6}
                     {if isset($cPost_var['mobil'])}
-                        {assign var='inputVal_mobile' value=$cPost_var['mobil']}
+                        {assign var=inputVal_mobile value=$cPost_var['mobil']}
                     {elseif isset($Kunde->cMobil)}
-                        {assign var='inputVal_mobile' value=$Kunde->cMobil}
+                        {assign var=inputVal_mobile value=$Kunde->cMobil}
                     {/if}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
@@ -425,9 +423,9 @@
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
                 {col cols=12 md=6}
                     {if isset($cPost_var['www'])}
-                        {assign var='inputVal_www' value=$cPost_var['www']}
+                        {assign var=inputVal_www value=$cPost_var['www']}
                     {elseif isset($Kunde->cWWW)}
-                        {assign var='inputVal_www' value=$Kunde->cWWW}
+                        {assign var=inputVal_www value=$Kunde->cWWW}
                     {/if}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
@@ -445,9 +443,9 @@
         {row}
             {col cols=12 md=6}
                 {if isset($cPost_var['geburtstag'])}
-                    {assign var='inputVal_birthday' value=$cPost_var['geburtstag']}
+                    {assign var=inputVal_birthday value=$cPost_var['geburtstag']}
                 {elseif isset($Kunde->dGeburtstag_formatted)}
-                    {assign var='inputVal_birthday' value=$Kunde->dGeburtstag_formatted}
+                    {assign var=inputVal_birthday value=$Kunde->dGeburtstag_formatted}
                 {/if}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
@@ -476,9 +474,8 @@
                             type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
                             name="custom_{$kKundenfeld}"
                             id="custom_{$kKundenfeld}"
-                            value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert}{/if}"
-                            class="form-control"
-                            placeholder="{$oKundenfeld->cName}"
+                            value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{else}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert|default:''}{/if}"
+                            placeholder=$oKundenfeld->cName
                             required=(($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)))
                             data-toggle="floatLabel"
                             data-value="no-js"

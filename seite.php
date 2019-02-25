@@ -117,7 +117,10 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
-$smarty->assign('Link', $link);
+$smarty->assign('Link', $link)
+       ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
+       ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
+       ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
 
 executeHook(HOOK_SEITE_PAGE);
 

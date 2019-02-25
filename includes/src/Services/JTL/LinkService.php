@@ -394,6 +394,7 @@ final class LinkService implements LinkServiceInterface
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
+                Shop::dbg($first, false, 'FOUND:');
                 $meta->cTitle    = $first->getMetaTitle();
                 $meta->cDesc     = $first->getMetaDescription();
                 $meta->cKeywords = $first->getMetaKeyword();

@@ -31,7 +31,7 @@
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
 {$useQuestionOnItem = $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
 {$usePriceFlow = ($Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf)}
-{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y')}
+{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung !== 0)}
 {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
 && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
 && !empty($Artikel->cMedienTyp_arr))}
@@ -111,7 +111,7 @@
 
         {if !empty($separatedTabs)}
             {foreach $separatedTabs as $separatedTab}
-                {tab title="{$separatedTab.name}" active=$setActiveClass.separatedTabs && $separatedTab@first id="tb-sprtd-{{$separatedTab.id}}" class="nav-item" swipeable=true}
+                {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="tb-sprtd-{{$separatedTab.id}}" class="nav-item" swipeable=true}
                     <div id="tab-{$separatedTab.id}">
                         {$separatedTab.content}
                     </div>
@@ -154,7 +154,7 @@
         {if $useMediaGroup}
             {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
                 {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
-                {tab title="{$cMedienTyp}" active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
+                {tab title=$cMedienTyp active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
                     <div id="tab-{$cMedienTypId}">
                         {include file='productdetails/mediafile.tpl'}
                     </div>

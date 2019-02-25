@@ -12,9 +12,9 @@
     {alert variant="danger"}{lang key='formToFast' section='account data'}{/alert}
 {/if}
 {if isset($boxes.left) && !$bExclusive && !empty($boxes.left)}
-    {assign var='withSidebar' value=1}
+    {assign var=withSidebar value=1}
 {else}
-    {assign var='withSidebar' value=0}
+    {assign var=withSidebar value=0}
 {/if}
 {row id="register-customer"}
     {col cols=12 id="existing-customer" md="{if $withSidebar === 0}4{else}12{/if}"}
@@ -22,21 +22,19 @@
             {block name='checkout-login'}
                 {block name='checkout-login-body'}
                     <fieldset>
-                        {$jtl_token}
-                        <legend>{block name='checkout-login-title'}{lang key='alreadyCustomer' section='global'}{/block}</legend>
+                        <legend>{block name='checkout-login-title'}{lang key='alreadyCustomer'}{/block}</legend>
                         {include file='register/form/customer_login.tpl' withSidebar=$withSidebar}
                     </fieldset>
                 {/block}
             {/block}
         {/form}
-        <div class="hr-sect my-5">{lang key='or' section='global'}</div>
+        <div class="hr-sect my-5">{lang key='or'}</div>
     {/col}
     {col cols=12 id="customer" md="{if $withSidebar === 0}8{else}12{/if}" class="mt-3"}
         {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
         {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate" id="form-register"}
             {block name='checkout-register'}
                 {block name='checkout-register-body'}
-                    {$jtl_token}
                     {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
                     <hr/>
                     {include file='checkout/inc_shipping_address.tpl'}
@@ -46,7 +44,7 @@
                 {input type="hidden" name="checkout" value="1"}
                 {input type="hidden" name="form" value="1"}
                 {input type="hidden" name="editRechnungsadresse" value="0"}
-                {button type="submit" variant="primary" class="btn submit"}
+                {button type="submit" variant="primary" class="submit_once"}
                     {lang key='sendCustomerData' section='account data'}
                 {/button}
             </div>

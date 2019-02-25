@@ -7,6 +7,7 @@
 namespace JTL\Catalog;
 
 use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Merkmal;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Konfigitem;
 use JTL\Helpers\Request;
@@ -182,6 +183,11 @@ class Vergleichsliste
                     $variations = $oArtikel->Variationen;
                 }
             }
+        }
+        if (\count($attributes) > 0) {
+            \uasort($attributes, function (Merkmal $a, Merkmal $b) {
+                return $a->nSort > $b->nSort;
+            });
         }
 
         return [

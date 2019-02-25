@@ -28,9 +28,9 @@
                             {/select}
                         {/formgroup}
                         {if !empty($oPlausi->cPost_arr.cVorname)}
-                            {assign var='inputVal_firstname' value=$oPlausi->cPost_arr.cVorname}
+                            {assign var=inputVal_firstname value=$oPlausi->cPost_arr.cVorname}
                         {elseif !empty($oKunde->cVorname)}
-                            {assign var='inputVal_firstname' value=$oKunde->cVorname}
+                            {assign var=inputVal_firstname value=$oKunde->cVorname}
                         {/if}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
@@ -40,9 +40,9 @@
                             ]
                         }
                         {if !empty($oPlausi->cPost_arr.cNachname)}
-                            {assign var='inputVal_lastName' value=$oPlausi->cPost_arr.cNachname}
+                            {assign var=inputVal_lastName value=$oPlausi->cPost_arr.cNachname}
                         {elseif !empty($oKunde->cNachname)}
-                            {assign var='inputVal_lastName' value=$oKunde->cNachname}
+                            {assign var=inputVal_lastName value=$oKunde->cNachname}
                         {/if}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
@@ -52,9 +52,9 @@
                             ]
                         }
                         {if !empty($oPlausi->cPost_arr.cEmail)}
-                            {assign var='inputVal_email' value=$oPlausi->cPost_arr.cEmail}
+                            {assign var=inputVal_email value=$oPlausi->cPost_arr.cEmail}
                         {elseif !empty($oKunde->cMail)}
-                            {assign var='inputVal_email' value=$oKunde->cMail}
+                            {assign var=inputVal_email value=$oKunde->cMail}
                         {/if}
                         {include file='snippets/form_group_simple.tpl'
                             options=[
@@ -63,11 +63,7 @@
                                 true, null, 'email'
                             ]
                         }
-                        {if isset($oPlausi->nPlausi_arr)}
-                            {assign var=plausiArr value=$oPlausi->nPlausi_arr}
-                        {else}
-                            {assign var=plausiArr value=array()}
-                        {/if}
+                        {assign var=plausiArr value=$oPlausi->nPlausi_arr|default:[]}
                         {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
                             isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                             <hr>
@@ -83,9 +79,8 @@
                         {/if}
 
                         {formgroup}
-                            {$jtl_token}
                             {input type="hidden" name="abonnieren" value="1"}
-                            {button type="submit" variant="primary" class="submit"}
+                            {button type="submit" variant="primary"}
                                 <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
                             {/button}
                             <p class="info small">
@@ -116,9 +111,8 @@
                                 true, $oFehlendeAngaben->cUnsubscribeEmail|default:null, 'email'
                             ]
                         }
-                        {$jtl_token}
                         {input type="hidden" name="abmelden" value="1"}
-                        {button type="submit" class="submit"}
+                        {button type="submit"}
                             <span>{lang key='newsletterSendUnsubscribe' section='newsletter'}</span>
                         {/button}
                     </fieldset>

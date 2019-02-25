@@ -12,7 +12,6 @@
     {/if}
 {/if}
 {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}index.php{/if}" method="post" id="article_question" class="evo-validate"}
-    {$jtl_token}
     <fieldset>
         <legend>{lang key='contact'}</legend>
         {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
@@ -156,11 +155,15 @@
 
     {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P' && !empty($oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName())}
         <p class="privacy text-muted small">
-            <a href="{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL()}" class="popup">{$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName()}</a>
+            {link href=$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getURL() class="popup"}
+                {$oSpezialseiten_arr[$smarty.const.LINKTYP_DATENSCHUTZ]->getName()}
+            {/link}
         </p>
     {/if}
 
-    {input type="hidden" name="a" value="{$Artikel->kArtikel}"}
+    {input type="hidden" name="a" value=$Artikel->kArtikel}
     {input type="hidden" name="show" value="1"}
-    {input type="submit" value="{lang key='sendQuestion' section='productDetails'}" class="btn btn-primary w-auto"}
+    {button type="submit" value="1" variant="primary" class="w-auto"}
+        {lang key='sendQuestion' section='productDetails'}
+    {/button}
 {/form}

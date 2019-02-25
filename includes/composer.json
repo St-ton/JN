@@ -21,7 +21,7 @@
         "ext-xml": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "imanee/imanee": "dev-master",
+        "intervention/image": "^2.4",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^4.2",
         "jtlshop/shop4-systemcheck": "^1.1",
@@ -54,7 +54,8 @@
         "symfony/finder": "^4.0",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3",
-        "sensiolabs/security-checker": "^5.0"
+        "sensiolabs/security-checker": "^5.0",
+        "squizlabs/php_codesniffer": "^3.4"
     },
     "suggest": {
         "ext-redis": "Better caching method",

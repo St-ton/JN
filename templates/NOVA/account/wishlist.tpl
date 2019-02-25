@@ -3,14 +3,13 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste"}
-    {$jtl_token}
     {block name='wishlist'}
     {input type="hidden" name="wla" value="1"}
-    {input type="hidden" name="wl" value="{$CWunschliste->kWunschliste}"}
+    {input type="hidden" name="wl" value=$CWunschliste->kWunschliste}
 
     {if isset($wlsearch)}
         {input type="hidden" name="wlsearch" value="1"}
-        {input type="hidden" name="cSuche" value="{$wlsearch}"}
+        {input type="hidden" name="cSuche" value=$wlsearch}
     {/if}
     <div id="edit-widhlist-name">
         {inputgroup}
@@ -19,7 +18,7 @@
                     <strong>{lang key='name' section='global'}</strong>
                 {/inputgrouptext}
             {/inputgroupaddon}
-            {input id="wishlist-name" type="text" class="form-control" placeholder="name" name="WunschlisteName" value="{$CWunschliste->cName}" autofocus=true}
+            {input id="wishlist-name" type="text" placeholder="name" name="WunschlisteName" value=$CWunschliste->cName autofocus=true}
             {inputgroupaddon append=true}
                 {button type="submit"}{lang key='edit' section='global'}{/button}
             {/inputgroupaddon}
@@ -40,13 +39,13 @@
             {foreach $CWunschliste->CWunschlistePos_arr as $CWunschlistePos}
                 <tr>
                     <td class="img-col d-none d-sm-block d-md-block">
-                        {link href="{$CWunschlistePos->Artikel->cURLFull}"}
-                            {image alt="{$CWunschlistePos->Artikel->cName}" src="{$CWunschlistePos->Artikel->cVorschaubild}" fluid=true}
+                        {link href=$CWunschlistePos->Artikel->cURLFull}
+                            {image alt=$CWunschlistePos->Artikel->cName src=$CWunschlistePos->Artikel->cVorschaubild fluid=true}
                         {/link}
                     </td>
                     <td>
                         <div class="text-content">
-                            {link href="{$CWunschlistePos->Artikel->cURLFull}"}{$CWunschlistePos->cArtikelName}{/link}
+                            {link href=$CWunschlistePos->Artikel->cURLFull}{$CWunschlistePos->cArtikelName}{/link}
                             {if $CWunschlistePos->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                                 <p>{lang key='productOutOfStock' section='productDetails'}</p>
                             {elseif $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
@@ -69,19 +68,19 @@
                     </td>
                     <td>
                         <div class="text-content">
-                            {textarea class="form-control" rows="2" name="Kommentar_{$CWunschlistePos->kWunschlistePos}"}{$CWunschlistePos->cKommentar}{/textarea}
+                            {textarea rows="2" name="Kommentar_{$CWunschlistePos->kWunschlistePos}"}{$CWunschlistePos->cKommentar}{/textarea}
                         </div>
                     </td>
                     {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                         <td width="1%"></td>
                         <td class="text-right">
-                            {link href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key='wishlistremoveItem' section='login'}"}
+                            {link href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-secondary" title="{lang key='wishlistremoveItem' section='login'}"}
                                 <span class="fa fa-trash-o"></span>
                             {/link}
                         </td>
                     {else}
                         <td>
-                            {input name="Anzahl_{$CWunschlistePos->kWunschlistePos}" class="wunschliste_anzahl form-control" type="text" size="1" value="{$CWunschlistePos->fAnzahl|replace_delim}"}
+                            {input name="Anzahl_{$CWunschlistePos->kWunschlistePos}" class="wunschliste_anzahl" type="text" size="1" value=$CWunschlistePos->fAnzahl|replace_delim}
                             <br />{$CWunschlistePos->Artikel->cEinheit}
                         </td>
                         <td class="text-right">
@@ -89,7 +88,7 @@
                                 {if $CWunschlistePos->Artikel->bHasKonfig}
                                     {link
                                         class="btn btn-secondary"
-                                        href="{$CWunschlistePos->Artikel->cURLFull}"
+                                        href=$CWunschlistePos->Artikel->cURLFull
                                         title="{lang key='product' section='global'} {lang key='configure' section='global'}"
                                     }
                                         <span class="fa fa-gears"></span>
@@ -152,7 +151,7 @@
                     }
                         <i class="fas fa-shopping-cart"></i>
                     {/link}
-                    {button type="submit" title="{lang key='wishlistUpdate' section='login'}" class="btn btn-default"}
+                    {button type="submit" title="{lang key='wishlistUpdate' section='login'}"}
                         <i class="fa fa-sync"></i>
                     {/button}
                     {link

@@ -11,7 +11,7 @@
                     {if count($LivesucheTop) > 0}
                         {foreach $LivesucheTop as $suche}
                             {listgroupitem class="tag"}
-                                {link href="{$suche->cURL}"}{$suche->cSuche}{/link}
+                                {link href=$suche->cURL}{$suche->cSuche}{/link}
                                 <span class="badge-pill badge-primary float-right">{$suche->nAnzahlTreffer}</span>
                             {/listgroupitem}
                         {/foreach}
@@ -28,7 +28,7 @@
                     {if count($LivesucheLast) > 0}
                         {foreach $LivesucheLast as $suche}
                             {listgroupitem class="tag"}
-                                {link href="{$suche->cURL}"}{$suche->cSuche}{/link}
+                                {link href=$suche->cURL}{$suche->cSuche}{/link}
                                 <span class="badge-pill badge-primary float-right">{$suche->nAnzahlTreffer}</span>
                             {/listgroupitem}
                         {/foreach}

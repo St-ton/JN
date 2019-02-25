@@ -749,7 +749,7 @@ class IOMethods
         $weightDiff   = 0;
         $newProductNr = '';
         foreach ($valueIDs as $valueID) {
-            $currentValue = new EigenschaftWert($valueID);
+            $currentValue = new EigenschaftWert((int)$valueID);
             $weightDiff  += $currentValue->fGewichtDiff;
             $newProductNr = (!empty($currentValue->cArtNr) && $product->cArtNr !== $currentValue->cArtNr)
                 ? $currentValue->cArtNr

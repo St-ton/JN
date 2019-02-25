@@ -17,8 +17,8 @@
                     {break}
                 {/if}
                 {$id = '"a"'}
-                {listgroupitem data-id="{$oArtikel->kArtikel}"}
-                    {link href="{$oArtikel->cURLDEL}" class="remove float-right"
+                {listgroupitem data-id=$oArtikel->kArtikel}
+                    {link href=$oArtikel->cURLDEL class="remove float-right"
                         title="{lang section="comparelist" key="removeFromCompareList"}"
                         data=["name"=>"Vergleichsliste.remove",
                             "toggle"=>"product-actions",
@@ -26,9 +26,9 @@
                     }
                         <span class="fa fa-trash"></span>
                     {/link}
-                    {link href="{$oArtikel->cURLFull}"}
-                        {image src="{$oArtikel->Bilder[0]->cURLMini}"
-                             alt="{$oArtikel->cName|strip_tags|truncate:60|escape:'html'}" class="img-xs"}
+                    {link href=$oArtikel->cURLFull}
+                        {image src=$oArtikel->Bilder[0]->cURLMini
+                             alt=$oArtikel->cName|strip_tags|truncate:60|escape:'html' class="img-xs"}
                         {$oArtikel->cName|truncate:25:'...'}
                     {/link}
                 {/listgroupitem}

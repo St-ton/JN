@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "order"
-msgstr "Bestellungen"
+msgstr "Bestellhistorie"
 
 msgid "orderDesc"
 msgstr " "
@@ -18,7 +18,7 @@ msgid "orderPaymentName"
 msgstr "Zahlungsart"
 
 msgid "orderWawiPickedUp"
-msgstr "Abgeholt durch Wawi"
+msgstr "Bereits durch JTL-Wawi abgeholt"
 
 msgid "orderCostumerRegistered"
 msgstr "Kunde registriert"
@@ -30,7 +30,7 @@ msgid "orderDate"
 msgstr "Bestelldatum"
 
 msgid "orderPickedUpResetBTN"
-msgstr "Wawi-Abholung zurücksetzen"
+msgstr "Für den nächsten JTL-Wawi-Abgleich zur erneuten Abholung vormerken"
 
 msgid "orderSearch"
 msgstr "Suche"

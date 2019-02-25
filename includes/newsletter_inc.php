@@ -168,7 +168,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     );
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
-                        Shop::Lang()->get('newsletterAdd', 'newsletterAdd'),
+                        Shop::Lang()->get('newsletterAdd', 'messages'),
                         'newsletterAdd'
                     );
                     $plausi = new stdClass();

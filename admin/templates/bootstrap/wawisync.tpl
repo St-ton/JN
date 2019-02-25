@@ -6,7 +6,7 @@
         {$jtl_token}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{__('userName')}/{__('password')} {__('change')}</h3>
+                <h3 class="panel-title">{__('username')}/{__('password')} {__('change')}</h3>
             </div>
             <div class="panel-body">
                 <div class="input-group">

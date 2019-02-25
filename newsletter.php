@@ -79,7 +79,7 @@ if (isset($_GET['fc']) && mb_strlen($_GET['fc']) > 0) {
         );
         $alertHelper->addAlert(
             Alert::TYPE_NOTE,
-            Shop::Lang()->get('newsletterActive', 'errorMessages'),
+            Shop::Lang()->get('newsletterActive', 'messages'),
             'newsletterActive'
         );
     } else {

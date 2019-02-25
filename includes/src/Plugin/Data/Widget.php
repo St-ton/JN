@@ -7,7 +7,7 @@
 namespace JTL\Plugin\Data;
 
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\reindex;
 
 /**

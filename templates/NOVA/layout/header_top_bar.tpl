@@ -24,7 +24,7 @@
                             {/if}"
                     }
                         {foreach $smarty.session.Waehrungen as $oWaehrung}
-                            {dropdownitem href="{$oWaehrung->getURL()}" rel="nofollow" }
+                            {dropdownitem href=$oWaehrung->getURLFull() rel="nofollow" }
                                 {$oWaehrung->getName()}
                             {/dropdownitem}
                         {/foreach}
@@ -57,7 +57,7 @@
     {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='top-bar-cms-pages'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
-                {link class="btn btn-link btn-sm" active="{$Link->getIsActive()}" href="{$Link->getURL()}" title="{$Link->getTitle()}"}
+                {link class="btn btn-link btn-sm" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
                     {$Link->getName()}
                 {/link}
             {/foreach}

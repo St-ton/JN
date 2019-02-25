@@ -971,10 +971,10 @@ msgid "produktfrage_abfragen_captcha_desc"
 msgstr "Soll ein Sicherheitscode abgefragt werden, damit das Formular akzeptiert und abgesendet wird?"
 
 msgid "benachrichtigung_nutzen_name"
-msgstr "Service anbieten bei Produkten, deren Lagerbestand &lt;=0 ist"
+msgstr "Service bei nicht verfügbaren Artikeln anbieten"
 
 msgid "benachrichtigung_nutzen_desc"
-msgstr "Kunden k&ouml;nnen hiermit automatisch per Email benachrichtigt werden, sobald das Produkt wieder auf Lager ist"
+msgstr "Hier können Sie festlegen, ob Kunden bei Artikeln, die aktuell nicht lieferbar sind, angeben können, dass sie informiert werden möchten, wenn der Artikel wieder verfügbar ist. (Pop-Up in Listenansicht im NOVA Template inaktiv)"
 
 msgid "benachrichtigung_abfragen_vorname_name"
 msgstr "Vorname abfragen"

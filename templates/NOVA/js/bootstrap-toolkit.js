@@ -1,11 +1,11 @@
-/*
+/*!
  * Responsive Bootstrap Toolkit
  * Author:    Maciej Gurban
  * License:   MIT
- * Version:   2.5.1 (2015-11-02)
+ * Version:   2.6.3 (2016-06-21)
  * Origin:    https://github.com/maciej-gurban/responsive-bootstrap-toolkit
  */
-;var ResponsiveBootstrapToolkit = (function($){
+var ResponsiveBootstrapToolkit = (function($){
 
     // Internal methods
     var internal = {
@@ -30,7 +30,7 @@
             }
         },
 
-         /**
+        /**
          * Append visibility divs after DOM laoded
          */
         applyDetectionDivs: function() {
@@ -232,3 +232,7 @@
     return self;
 
 })(jQuery);
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = ResponsiveBootstrapToolkit;
+}

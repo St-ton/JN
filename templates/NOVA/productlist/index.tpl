@@ -25,14 +25,14 @@
                             && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht)
                             && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1))
             )}
-                {assign var='style' value='list'}
-                {assign var='grid' value='12'}
+                {assign var=style value='list'}
+                {assign var=grid value='12'}
             {else}
-                {assign var='style' value='gallery'}
-                {assign var='grid' value='6'}
-                {assign var='gridmd' value='6'}
+                {assign var=style value='gallery'}
+                {assign var=grid value='6'}
+                {assign var=gridmd value='6'}
                 {if !$bExclusive || empty($boxes.left)}
-                    {assign var='gridmd' value='4'}
+                    {assign var=gridmd value='4'}
                 {/if}
             {/if}
             {if !empty($Suchergebnisse->getError())}
@@ -46,7 +46,7 @@
             {/if}
 
             {block name='productlist-results'}
-            {row class="{$style}" id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
+            {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
                 {foreach $Suchergebnisse->getProducts() as $Artikel}
                     {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper mb-5" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
                         {if $style === 'list'}

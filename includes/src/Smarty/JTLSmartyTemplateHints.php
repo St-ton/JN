@@ -13,6 +13,40 @@ namespace JTL\Smarty;
 class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
 {
     /**
+     * @param string $template
+     * @param null $cache_id
+     * @param null $compile_id
+     * @param null $parent
+     * @return string
+     * @throws \SmartyException
+     */
+    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    {
+        $prefix  = '';
+        $postfix = '';
+        if (\SHOW_TEMPLATE_HINTS === 1 && $template !== null) {
+            $prefix  = '<!-- start ' . $template . '-->';
+            $postfix = '<!-- end ' . $template . '-->';
+        } elseif (\SHOW_TEMPLATE_HINTS === 2) {
+            $prefix  = '<section class="tpl-debug">';
+            $prefix .= '<span class="badge tpl-name">' . $template . '</span></section>';
+        } elseif (\SHOW_TEMPLATE_HINTS === 3) {
+            $prefix  = '<section class="tpl-debug">';
+            $prefix .= '<span class="badge tpl-name">' . $template . '</span>';
+            $postfix = '</section>';
+        } elseif (\SHOW_TEMPLATE_HINTS === 4) {
+            $tplID   = \uniqid('tpl');
+            $prefix  = '<span class="tpl-debug-start" data-uid="' .
+                    $tplID . '" style="display:none;" data-tpl="' . $template . '">';
+            $prefix .= '<span class="tpl-name">' . $template . '</span>';
+            $prefix .= '</span>';
+            $postfix = '<span class="tpl-debug-end" data-uid="' . $tplID . '" style="display:none"></span>';
+        }
+
+        return $prefix . parent::fetch($template, $cache_id, $compile_id, $parent) . $postfix;
+    }
+
+    /**
      * Runtime function to render sub-template
      *
      * @param string  $template template name
@@ -80,8 +114,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         if (\SHOW_TEMPLATE_HINTS === 1) {
             echo '<!-- end ' . $tplName . '-->';
         } elseif (\SHOW_TEMPLATE_HINTS === 2
-            && $tplName === 'layout/header.tpl'
-            && $tplName === 'layout/header_custom.tpl'
+            && ($tplName === 'layout/header.tpl' || $tplName === 'layout/header_custom.tpl')
         ) {
             echo '<style>
                     .tpl-debug{border:1px dashed black;position:relative;min-height:25px;opacity:.75;z-index:9;}

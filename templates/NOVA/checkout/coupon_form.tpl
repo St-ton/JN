@@ -17,7 +17,7 @@
                     aria=["label"=>"{lang key='couponCode' section='account data'}"]
                     required=true}
                 {inputgroupaddon append=true}
-                    {input type="submit" value="{lang key='useCoupon' section='checkout'}" class="submit btn btn-secondary"}
+                    {button type="submit" value="1"}{lang key='useCoupon' section='checkout'}{/button}
                 {/inputgroupaddon}
             {/inputgroup}
         </fieldset>

@@ -3,16 +3,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "objectcache"
-msgstr "Object Cache"
+msgstr "Objekt-Cache"
 
 msgid "objectcacheDesc"
-msgstr "Der Object Cache puffert Daten, sodass sie schneller geladen werden"
+msgstr "Hier stellen Sie den von JTL-Shop genutzten Cache ein. Der Objekt-Cache puffert Daten, damit sie schneller geladen werden. Sie können für jede Objektart festlegen, ob diese im Cache gespeichert werden soll."
 
 msgid "cacheURL"
 msgstr "https://jtl-url.de/lt1ec"
 
 msgid "cg_article_description"
-msgstr "Enthält Produktdaten"
+msgstr "Enthält Artikeldaten"
 
 msgid "cg_category_description"
 msgstr "Enthält Kategoriedaten"
@@ -21,13 +21,13 @@ msgid "cg_language_description"
 msgstr "Enthält Sprachvariablen und Übersetzungen"
 
 msgid "cg_template_description"
-msgstr "Enthält Templateeinstellungen"
+msgstr "Enthält Template-Einstellungen"
 
 msgid "cg_option_description"
 msgstr "Enthält allgemeine Einstellungen"
 
 msgid "cg_plugin_description"
-msgstr "Enthält Plugindaten"
+msgstr "Enthält Plugin-Daten"
 
 msgid "cg_core_description"
 msgstr "Enthält JTL-eigene Daten"
@@ -87,7 +87,7 @@ msgid "cg_manufacturer_nicename"
 msgstr "Hersteller"
 
 msgid "cg_filter_nicename"
-msgstr "Produktfilter"
+msgstr "Artikelfilter"
 
 msgid "entries"
 msgstr "Einträge"
@@ -114,13 +114,13 @@ msgid "empty"
 msgstr "leeren"
 
 msgid "clearObjectCache"
-msgstr "Gesamten Objektcache leeren"
+msgstr "Gesamten Objekt-Cache leeren"
 
 msgid "clearPageCache"
-msgstr "Gesamten Seitencache leeren"
+msgstr "Gesamten Seiten-Cache leeren"
 
 msgid "clearTemplateCache"
-msgstr "Gesamten Templatecache leeren"
+msgstr "Gesamten Template-Cache leeren"
 
 msgid "config"
 msgstr "Konfiguration"
@@ -138,7 +138,7 @@ msgid "successCacheEmptied"
 msgstr " Caches erfolgreich geleert."
 
 msgid "errorNoCacheType"
-msgstr "Kein Cache-Typ ausgewählt."
+msgstr "Es wurde kein Cache-Typ ausgewählt."
 
 msgid "errorCacheTypeDelete"
 msgstr "Konnte Cache %s nicht löschen (evtl. bereits leer)."
@@ -150,7 +150,7 @@ msgid "successCacheTypeDeactivate"
 msgstr "Ausgewählte Typen erfolgreich deaktiviert."
 
 msgid "successCacheDelete"
-msgstr "Object Cache wurde erfolgreich gelöscht."
+msgstr "Object-Cache wurde erfolgreich gelöscht."
 
 msgid "errorCacheDelete"
 msgstr "Der Cache konnte nicht gelöscht werden."
@@ -207,7 +207,7 @@ msgid "keyCountInCache"
 msgstr "Anzahl Keys im Cache"
 
 msgid "templateCache"
-msgstr "Template Cache"
+msgstr "Template-Cache"
 
 msgid "filesFrontend"
 msgstr "Dateien Frontend"

@@ -6,9 +6,9 @@
     <div class="slider-wrapper theme-{$oSlider->getTheme()}{if $oSlider->getControlNav()} control-nav{/if}{if $oSlider->getDirectionNav()} direction-nav{/if}{if $oSlider->getThumbnail()} thumbnail-nav{/if}">
         <div id="slider-{$oSlider->getID()}" class="nivoSlider">
             {foreach $oSlider->getSlides() as $oSlide}
-                {assign var='slideTitle' value=$oSlide->getTitle()}
+                {assign var=slideTitle value=$oSlide->getTitle()}
                 {if !empty($oSlide->getText())}
-                    {assign var='slideTitle' value="#slide_caption_{$oSlide->getID()}"}
+                    {assign var=slideTitle value="#slide_caption_{$oSlide->getID()}"}
                 {/if}
                 {if !empty($oSlide->getLink())}
                     <a href="{$oSlide->getLink()}"{if !empty($oSlide->getText())} title="{$oSlide->getText()|strip_tags}"{/if} class="slide">
@@ -16,7 +16,7 @@
                     <div class="slide">
                 {/if}
 
-                {image alt="{$oSlide->getTitle()}" title="{$slideTitle}" src="{$oSlide->getAbsoluteImage()}" data-thumb="{if !empty($oSlide->getAbsoluteThumbnail()) && $oSlider->getThumbnail()}{$oSlide->getAbsoluteThumbnail()}{/if}"}
+                {image alt=$oSlide->getTitle() title=$slideTitle src=$oSlide->getAbsoluteImage() data-thumb="{if !empty($oSlide->getAbsoluteThumbnail()) && $oSlider->getThumbnail()}{$oSlide->getAbsoluteThumbnail()}{/if}"}
 
                 {if !empty($oSlide->getLink())}
                     </a>

@@ -9,7 +9,7 @@ msgid "langURL"
 msgstr "https://jtl-url.de/nab7v"
 
 msgid "langDesc"
-msgstr "Ändern Sie hier die Standard-Textbausteine des Shops. Alle Texte sind sprachabhängig definiert. Sie haben in der Sprachverwaltung außerdem  die Möglichkeit, Ihre Textbausteine pro Sprache zu exportieren und wieder zu importieren."
+msgstr "Ändern Sie hier die Standard-Textbausteine des Onlineshops. Alle Texte sind sprachabhängig definiert. Sie haben in der Sprachverwaltung außerdem die Möglichkeit, Ihre Textbausteine pro Sprache zu exportieren und wieder zu importieren."
 
 msgid "langVars"
 msgstr "Sprachvariablen"
@@ -36,16 +36,16 @@ msgid "langSection"
 msgstr "Sprachsektion"
 
 msgid "notImportedYet"
-msgstr "Sprache wurde noch nicht importiert"
+msgstr "Sprache wurde noch nicht importiert."
 
 msgid "errorImport"
 msgstr "Fehler beim Importieren der Datei."
 
 msgid "successImport"
-msgstr "Es wurden %s Variablen aktualisiert"
+msgstr "Es wurden %s Variablen aktualisiert."
 
 msgid "newLangAvailable"
-msgstr "Es sind neue Sprache(n) verfügbar."
+msgstr "Neue Sprache(n) verfügbar."
 
 msgid "successVarRemove"
 msgstr "Variable %s wurde erfolgreich gelöscht."
@@ -54,13 +54,13 @@ msgid "errorVarFormat"
 msgstr "Die Variable darf nur aus Buchstaben und Zahlen bestehen und darf nicht leer sein."
 
 msgid "errorVarExistsForLang"
-msgstr "Die Variable existiert bereits für folgende Sprachen: %s. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!"
+msgstr "Die Variable existiert bereits für folgende Sprachen: %s. Bitte wählen Sie aus, welche Versionen Sie überschreiben möchten."
 
 msgid "successVarChange"
 msgstr "Variablen erfolgreich geändert: "
 
 msgid "errorVarChangeNone"
-msgstr "Keine Variable wurde geändert."
+msgstr "Es wurde keine Variable geändert."
 
 msgid "successListReset"
 msgstr "Liste erfolgreich zurückgesetzt."
@@ -69,7 +69,7 @@ msgid "searchInContentAndVarName"
 msgstr "Suchen im Variablennamen und im Inhalt"
 
 msgid "systemOwn"
-msgstr "System/eigene"
+msgstr "System / eigene"
 
 msgid "system"
 msgstr "nur System"

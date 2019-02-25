@@ -143,7 +143,7 @@
                         <tr>
                             <th class="col-xs-7">{__('software')}</th>
                             <th class="col-xs-3 text-center">{__('requirements')}</th>
-                            <th class="col-xs-2 text-center">{__('available')}</th>
+                            <th class="col-xs-2 text-center">{__('existing')}</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -13,24 +13,24 @@ use JTL\dbeS\Push\AbstractPush;
 use JTL\dbeS\Push\Invoice;
 use JTL\dbeS\Push\MediaFiles;
 use JTL\dbeS\Push\Payments;
-use JTL\dbeS\Sync\{AbstractSync,
-    Attributes,
-    Brocken,
-    Data,
-    Downloads,
-    Globals,
-    Images,
-    ConfigGroups,
-    Manufacturers,
-    Orders,
-    Products,
-    ImageCheck,
-    ImageLink,
-    ImageUpload,
-    Categories,
-    Customer,
-    DeliverySlips,
-    QuickSync};
+use JTL\dbeS\Sync\AbstractSync;
+use JTL\dbeS\Sync\Attributes;
+use JTL\dbeS\Sync\Brocken;
+use JTL\dbeS\Sync\Data;
+use JTL\dbeS\Sync\Downloads;
+use JTL\dbeS\Sync\Globals;
+use JTL\dbeS\Sync\Images;
+use JTL\dbeS\Sync\ConfigGroups;
+use JTL\dbeS\Sync\Manufacturers;
+use JTL\dbeS\Sync\Orders;
+use JTL\dbeS\Sync\Products;
+use JTL\dbeS\Sync\ImageCheck;
+use JTL\dbeS\Sync\ImageLink;
+use JTL\dbeS\Sync\ImageUpload;
+use JTL\dbeS\Sync\Categories;
+use JTL\dbeS\Sync\Customer;
+use JTL\dbeS\Sync\DeliverySlips;
+use JTL\dbeS\Sync\QuickSync;
 use JTL\Helpers\Text;
 use JTL\XML;
 use Psr\Log\LoggerInterface;
@@ -154,8 +154,7 @@ class Starter
         DbInterface $db,
         JTLCacheInterface $cache,
         LoggerInterface $log
-    )
-    {
+    ) {
         $this->auth        = $syncLogin;
         $this->fileHandler = $fileHandler;
         $this->logger      = $log;
@@ -285,7 +284,7 @@ class Starter
         }
         $this->executeNetSync($handledFile);
         $direction = 'pull';
-        $handler = self::$pullMapping[$handledFile] ?? null;
+        $handler   = self::$pullMapping[$handledFile] ?? null;
         if ($handler === null) {
             $handler = self::$pushMapping[$handledFile] ?? null;
             if ($handler !== null) {

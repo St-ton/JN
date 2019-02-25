@@ -21,7 +21,7 @@
             <File Path="css/typeaheadjs.css"/>
         </CSS>
         <JS Name="admin_js">
-            <File Path="js/jquery-2.2.4.min.js"/>
+            <File Path="js/jquery-3.3.1.min.js"/>
             <File Path="js/jquery-ui.min.js"/>
             <File Path="js/bootstrap.min.js"/>
             <File Path="js/colorpicker.js"/>

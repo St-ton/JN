@@ -19,12 +19,12 @@
     {input type="hidden" name="login" value="1"}
     {if !empty($oRedirect->cURL)}
         {foreach $oRedirect->oParameter_arr as $oParameter}
-            {input type="hidden" name="{$oParameter->Name}" value="{$oParameter->Wert}"}
+            {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}
         {/foreach}
-        {input type="hidden" name="r" value="{$oRedirect->nRedirect}"}
-        {input type="hidden" name="cURL" value="{$oRedirect->cURL}"}
+        {input type="hidden" name="r" value=$oRedirect->nRedirect}
+        {input type="hidden" name="cURL" value=$oRedirect->cURL}
     {/if}
-    {button type="submit" variant="primary" class="{if !isset($withSidebar) || $withSidebar === 0}btn-block{/if} submit"}
+    {button type="submit" variant="primary" block=(!isset($withSidebar) || $withSidebar === 0)}
         {lang key='login' section='checkout'}
     {/button}
     {link class="small" href="{get_static_route id='pass.php'}" class="ml-3"}

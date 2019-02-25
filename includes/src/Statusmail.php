@@ -937,12 +937,12 @@ class Statusmail
         }
 
         if (\count($logLevels) > 0) {
-            $mail->oLogEntry_arr    = $this->getLogEntries($logLevels);
-            $cLogFilePath           = \tempnam(\sys_get_temp_dir(), 'jtl');
-            $fileStream             = \fopen($cLogFilePath, 'w');
+            $mail->oLogEntry_arr   = $this->getLogEntries($logLevels);
+            $cLogFilePath          = \tempnam(\sys_get_temp_dir(), 'jtl');
+            $fileStream            = \fopen($cLogFilePath, 'w');
             $attachment            = new stdClass();
             $attachment->cFilePath = $cLogFilePath;
-            $smarty                 = Shop::Smarty()->assign('oMailObjekt', $mail);
+            $smarty                = Shop::Smarty()->assign('oMailObjekt', $mail);
             if ($mailType === 'text') {
                  \fwrite(
                      $fileStream,

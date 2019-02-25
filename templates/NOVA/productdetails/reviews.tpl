@@ -30,7 +30,7 @@
                                         <strong>
                                     {/if}
                                     {if $nSterne > 0 && (!isset($bewertungSterneSelected) || $bewertungSterneSelected !== $schluessel)}
-                                        <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes">{$schluessel} {if $i == 4}{lang key='starSingular' section='product rating'}{else}{lang key='starPlural' section='product rating'}{/if}</a>
+                                        {link href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes"}{$schluessel} {if $i == 4}{lang key='starSingular' section='product rating'}{else}{lang key='starPlural' section='product rating'}{/if}{/link}
                                     {else}
                                         {$schluessel} {if $i == 4}{lang key='starSingular' section='product rating'}{else}{lang key='starPlural' section='product rating'}{/if}
                                     {/if}
@@ -39,7 +39,7 @@
                                     {/if}
                                 {/col}
                                 {col cols=6}
-                                    {progress now="{$percent|round}" min=0 max=100}
+                                    {progress now=$percent|round min=0 max=100}
 
                                 {/col}
                                 {col cols=2}
@@ -49,9 +49,9 @@
                         {/foreach}
                         {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
                             <p>
-                                <a href="{$Artikel->cURLFull}#tab-votes" class="btn btn-default">
+                                {link href="{$Artikel->cURLFull}#tab-votes" class="btn btn-secondary"}
                                     {lang key='allRatings'}
-                                </a>
+                                {/link}
                             </p>
                         {/if}
                     {/collapse}
@@ -66,11 +66,14 @@
                     <p>{lang key='shareYourExperience' section='product rating'}: </p>
                 {/if}
                 {input type="hidden" name="bfa" value="1"}
-                {input type="hidden" name="a" value="{$Artikel->kArtikel}"}
-                {input type="submit" name="bewerten" value="{if $bereitsBewertet === false}{lang key='productAssess'
-                    section='product rating'}{else}{lang key='edit' section='product rating'}{/if}"
-                    class="btn btn-secondary w-auto mb-3"
-                }
+                {input type="hidden" name="a" value=$Artikel->kArtikel}
+                {button type="submit" name="bewerten" value="1" class="w-auto mb-3"}
+                    {if $bereitsBewertet === false}
+                        {lang key='productAssess' section='product rating'}
+                    {else}
+                        {lang key='edit' section='product rating'}
+                    {/if}
+                {/button}
             {/form}
         {/col}
     {/row}
@@ -92,9 +95,9 @@
             {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes"}
                 {block name='productdetails-review-most-helpful'}
                     {input type="hidden" name="bhjn" value="1"}
-                    {input type="hidden" name="a" value="{$Artikel->kArtikel}"}
-                    {input type="hidden" name="btgsterne" value="{$BlaetterNavi->nSterne}"}
-                    {input type="hidden" name="btgseite" value="{$BlaetterNavi->nAktuelleSeite}"}
+                    {input type="hidden" name="a" value=$Artikel->kArtikel}
+                    {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
+                    {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
 
                     {cardbody class="review"}
                         {foreach $Artikel->HilfreichsteBewertung->oBewertung_arr as $oBewertung}
@@ -110,9 +113,9 @@
         {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes'}
         {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list"}
             {input type="hidden" name="bhjn" value="1"}
-            {input type="hidden" name="a" value="{$Artikel->kArtikel}"}
-            {input type="hidden" name="btgsterne" value="{$BlaetterNavi->nSterne}"}
-            {input type="hidden" name="btgseite" value="{$BlaetterNavi->nAktuelleSeite}"}
+            {input type="hidden" name="a" value=$Artikel->kArtikel}
+            {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
+            {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
             {foreach $ratingPagination->getPageItems() as $oBewertung}
                 {card class="review mb-3 {if $oBewertung@last}last{/if}"}
                     {include file='productdetails/review_item.tpl' oBewertung=$oBewertung}

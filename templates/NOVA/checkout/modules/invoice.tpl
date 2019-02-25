@@ -54,7 +54,7 @@
                         label-cols=4
                         horizontal=true
                     }
-                        {input type="text" name="dGeburtstag" value="{$cData_arr.dGeburtstag}" id="dGeburtstag" class="birthday"}
+                        {input type="text" name="dGeburtstag" value=$cData_arr.dGeburtstag id="dGeburtstag" class="birthday"}
                         {if $cMissing_arr.dGeburtstag > 0}
                             {alert variant="danger"}
                                 {if $cMissing_arr.dGeburtstag == 1}
@@ -77,7 +77,7 @@
                         label-cols=4
                         horizontal=true
                     }
-                        {input type="text" name="cTel" value="{$cData_arr.cTel}" id="cTel"}
+                        {input type="text" name="cTel" value=$cData_arr.cTel id="cTel"}
                         {if $cMissing_arr.cTel > 0}
                             {alert variant="danger"}{lang key='fillOut'}{/alert}
                         {/if}
@@ -105,7 +105,7 @@
                             label="Inhaber"
                             label-for="cInhaber"
                         }
-                            {input type="text" name="cInhaber" value="{$cData_arr.cInhaber}" id="cInhaber" placeholder="Nachname*" required=true}
+                            {input type="text" name="cInhaber" value=$cData_arr.cInhaber id="cInhaber" placeholder="Nachname*" required=true}
                         {/formgroup}
                     {/col}
                 {/row}
@@ -204,7 +204,7 @@
                     label="Firmenname"
                     label-for="cFirma"
                 }
-                    {input type="text" name="cFirma" value="{$cData_arr.cFirma}" id="cFirma"}
+                    {input type="text" name="cFirma" value=$cData_arr.cFirma id="cFirma"}
                     {if $cMissing_arr.cFirma > 0}
                         {alert variant="danger"}{lang key='fillOut'}{/alert}
                     {/if}
@@ -215,7 +215,7 @@
                     label="USt-IdNr.<span class='optional'> - {lang key='optional'}</span>"
                     label-for="cUSTID"
                 }
-                    {input type="text" name="cUSTID" value="{$cData_arr.cUSTID}" id="cUSTID"}
+                    {input type="text" name="cUSTID" value=$cData_arr.cUSTID id="cUSTID"}
                     {if $cMissing_arr.cUSTID > 0}
                         {alert variant="danger"}{lang key='fillOut'}{/alert}
                     {/if}
@@ -226,7 +226,7 @@
                     label="Handelsregisternummer<span class='optional'> - {lang key='optional'}</span>"
                     label-for="cHrn"
                 }
-                    {input type="text" name="cHrn" value="{$cData_arr.cHrn}" id="cHrn"}
+                    {input type="text" name="cHrn" value=$cData_arr.cHrn id="cHrn"}
                     {if $cMissing_arr.cHrn > 0}
                         {alert variant="danger"}{lang key='fillOut'}{/alert}
                     {/if}
@@ -239,7 +239,7 @@
         <fieldset>
             <legend>Weitere Informationen</legend>
             {buttongroup}
-                {link class="btn btn-secondary popup" href="{$cBillpayTermsURL}" target="_blank"}
+                {link class="btn btn-secondary popup" href=$cBillpayTermsURL target="_blank"}
                     {lang key="termsAndConditions" section="shipping payment"}
                 {/link}
                 {link class="btn btn-secondary popup" href="{$cBillpayTermsURL}#datenschutz" target="_blank"}

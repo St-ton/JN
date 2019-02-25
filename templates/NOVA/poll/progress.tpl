@@ -12,10 +12,10 @@
 
 {if $oUmfrage->getQuestionCount() > 0}
     {form method="post" action="{if empty($oUmfrage->getURL())}{get_static_route id='umfrage.php'}{else}{$ShopURL}/{$oUmfrage->getURL()}{/if}" class="evo-validate"}
-        {input name="u" type="hidden" value="{$oUmfrage->getID()}"}
+        {input name="u" type="hidden" value=$oUmfrage->getID()}
         {foreach $oUmfrage->getQuestions() as $question}
             {assign var=questionID value=$question->getID()}
-            {input name="kUmfrageFrage[]" type="hidden" value="{$questionID}"}
+            {input name="kUmfrageFrage[]" type="hidden" value=$questionID}
                 {card no-body=true}
                     {cardheader}
                         <div id="poll-question-label-{$questionID}" class="h3">{$question->getName()} {if !$question->isRequired()}<span class="optional"> - {lang key='optional'}</span>{/if}</div>
@@ -73,9 +73,9 @@
 
                             {if $question->getType() === \JTL\Survey\QuestionType::MULTI_SINGLE}
                                 {radio name="sq{$questionID}[]"
-                                    value="{$answer->getID()}"
+                                    value=$answer->getID()
                                     checked=($nSessionFragenWerte_arr[$questionID]->isActive($answer->getID()))
-                                    aria=["label"=>"{$answer->getName()}"]
+                                    aria=["label"=>$answer->getName()]
                                 }
                                     {$answer->getName()}
                                 {/radio}
@@ -83,23 +83,23 @@
 
                             {if $question->getType() === \JTL\Survey\QuestionType::MULTI}
                                 {checkbox name="sq{$questionID}[]"
-                                    value="{$answer->getID()}"
+                                    value=$answer->getID()
                                     checked=($nSessionFragenWerte_arr[$questionID]->isActive($answer->getID()))
-                                    aria=["label"=>"{$answer->getName()}"]
+                                    aria=["label"=>$answer->getName()]
                                 }
                                     {$answer->getName()}
                                 {/checkbox}
                             {/if}
 
                             {if $question->getType() === \JTL\Survey\QuestionType::SELECT_SINGLE}
-                                <option value="{$answer->getID()}"
+                                <option value=$answer->getID()
                                     {if $nSessionFragenWerte_arr[$questionID]->isActive($answer->getID())} selected{/if}>
                                     {$answer->getName()}
                                 </option>
                             {/if}
 
                             {if $question->getType() === \JTL\Survey\QuestionType::SELECT_MULTI}
-                                <option value="{$answer->getID()}"
+                                <option value=$answer->getID()
                                     {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $answer->getID()} selected{/if}{/foreach}{/if}>
                                     {$answer->getName()}
                                 </option>
@@ -114,7 +114,7 @@
                                             {radio name="sq{$questionID}_{$answer->getID()}"
                                                 value="{$answer->getID()}_{$oUmfrageMatrixOption->getID()}"
                                                 checked=($nSessionFragenWerte_arr[$questionID]->isActive($answer->getID(), $oUmfrageMatrixOption->getID()))
-                                                aria=["label"=>"{$answer->getName()}"]
+                                                aria=["label"=>$answer->getName()]
                                                 required=$question->isRequired()
                                             }
                                             {/radio}
@@ -132,7 +132,7 @@
                                             {checkbox name="sq{$questionID}[]"
                                                 value="{$answer->getID()}_{$oUmfrageMatrixOption->getID()}"
                                                 checked="{if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $answerTMP}{if $answerTMP->kUmfrageFrageAntwort == $answer->getID() && $oUmfrageMatrixOption->getID() == $answerTMP->kUmfrageMatrixOption} true{/if}{/foreach}{/if}"
-                                                aria=["label"=>"{$answer->getName()}"]
+                                                aria=["label"=>$answer->getName()]
                                             }
                                             {/checkbox}
                                         </td>
@@ -201,15 +201,15 @@
             {/col}
             {col cols=4}
                 {if $nAktuelleSeite > 0 && $nAktuelleSeite < $nAnzahlSeiten}
-                    <button class="float-right" name="next" type="submit" value="next">
+                    {button type="submit" class="float-right" name="next" value="next"}
                         <span>{lang key='umfrageNext' section='umfrage'}</span>
-                    </button>
+                    {/button}
                 {/if}
             {/col}
         {/row}
-        {input name="s" type="hidden" value="{$nAktuelleSeite}"}
+        {input name="s" type="hidden" value=$nAktuelleSeite}
         {if $nAktuelleSeite == $nAnzahlSeiten}
-            {button type="submit" name="end" value="1" variant="primary" class="submit mt-3"}
+            {button type="submit" name="end" value="1" variant="primary" class="mt-3"}
                 {lang key='umfrageSubmit' section='umfrage'}
             {/button}
         {/if}

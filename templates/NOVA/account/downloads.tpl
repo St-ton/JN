@@ -21,17 +21,17 @@
                 {cardbody}
                     <dl>
                         <dt>{lang key='downloadLimit'}</dt>
-                        <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited'}{/if}</dd>
+                        <dd class="bottom17">{$oDownload->cLimit|default:{lang key='unlimited'}}</dd>
                         <dt>{lang key='validUntil'}</dt>
-                        <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited'}{/if}</dd>
+                        <dd class="bottom17">{$oDownload->dGueltigBis|default:{lang key='unlimited'}}</dd>
                         <dt>{lang key='download'}</dt>
                         <dd class="bottom17">
                             {if $Bestellung->cStatus == $BESTELLUNG_STATUS_BEZAHLT || $Bestellung->cStatus == $BESTELLUNG_STATUS_VERSANDT}
                                 {form method="post" action="{get_static_route id='jtl.php'}"}
                                     {input name="a" type="hidden" value="getdl"}
-                                    {input name="bestellung" type="hidden" value="{$Bestellung->kBestellung}"}
-                                    {input name="dl" type="hidden" value="{$oDownload->getDownload()}"}
-                                    {button size="xs" type="submit"}
+                                    {input name="bestellung" type="hidden" value=$Bestellung->kBestellung}
+                                    {input name="dl" type="hidden" value=$oDownload->getDownload()}
+                                    {button size="sm" type="submit"}
                                         <i class="fa fa-download"></i> {lang key='download'}
                                     {/button}
                                 {/form}
@@ -63,14 +63,14 @@
                 {cardbody}
                     <dl>
                         <dt>{lang key='downloadLimit'}</dt>
-                        <dd class="bottom17">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key='unlimited'}{/if}</dd>
+                        <dd class="bottom17">{$oDownload->cLimit|default:{lang key='unlimited'}}</dd>
                         <dt>{lang key='validUntil'}</dt>
-                        <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited'}{/if}</dd>
+                        <dd class="bottom17">{$oDownload->dGueltigBis|default:{lang key='unlimited'}}</dd>
                         <dt>{lang key='download'}</dt>
                         <dd class="bottom17">
                             {form method="post" action="{get_static_route id='jtl.php'}"}
-                                {input name="kBestellung" type="hidden" value="{$oDownload->kBestellung}"}
-                                {input name="kKunde" type="hidden" value="{$smarty.session.Kunde->kKunde}"}
+                                {input name="kBestellung" type="hidden" value=$oDownload->kBestellung}
+                                {input name="kKunde" type="hidden" value=$smarty.session.Kunde->kKunde}
                                 {assign var=cStatus value=$BESTELLUNG_STATUS_OFFEN}
                                 {foreach $Bestellungen as $Bestellung}
                                     {if $Bestellung->kBestellung == $oDownload->kBestellung}
@@ -78,8 +78,8 @@
                                     {/if}
                                 {/foreach}
                                 {if $cStatus == $BESTELLUNG_STATUS_BEZAHLT || $cStatus == $BESTELLUNG_STATUS_VERSANDT}
-                                    {input name="dl" type="hidden" value="{$oDownload->getDownload()}"}
-                                    {button size="xs" type="submit"}
+                                    {input name="dl" type="hidden" value=$oDownload->getDownload()}
+                                    {button size="sm" type="submit"}
                                         <i class="fa fa-download"></i> {lang key='download'}
                                     {/button}
                                 {else}

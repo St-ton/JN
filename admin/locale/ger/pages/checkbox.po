@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "checkbox"
-msgstr "Checkboxverwaltung"
+msgstr "Checkboxenverwaltung"
 
 msgid "checkboxDesc"
 msgstr " "
@@ -39,7 +39,7 @@ msgid "availableCheckboxes"
 msgstr "Vorhandene Checkboxen"
 
 msgid "checkboxCreate"
-msgstr "neue Checkbox erstellen"
+msgstr "Neue Checkbox erstellen"
 
 msgid "internalLink"
 msgstr "Interner Link"
@@ -48,43 +48,43 @@ msgid "noLink"
 msgstr "Kein Link"
 
 msgid "hintInternalPage"
-msgstr "Interne Shop CMS Seite. Einstellbar unter Inhalt->CMS"
+msgstr "Hier können Sie optional eine eigene Seite neben der Checkbox verlinken lassen."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Stelle im Shopfrontend an der die Checkboxen angezeigt werden (Mehrfachauswahl mit STRG möglich)."
+msgstr "Hier legen Sie die Stelle fest, an der die Checkbox angezeigt werden soll. Sie können mit gehaltener Strg-Taste mehrere Seiten auswählen."
 
 msgid "hintCheckCheckboxActivation"
-msgstr "Soll die Checkbox geprüft werden, ob diese aktiviert wurde?"
+msgstr "Hier legen Sie fest, ob die Checkbox aktiviert werden muss oder optional ist."
 
 msgid "hintCheckboxActive"
-msgstr "Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"
+msgstr "Hier legen Sie fest, ob die Checkbox angezeigt werden soll."
 
 msgid "checkboxLogging"
-msgstr "Checkbox Logging"
+msgstr "Checkbox-Logging"
 
 msgid "hintCheckboxLogActivate"
-msgstr "Soll die Eingabe der Checkbox protokolliert werden?"
+msgstr "Hier legen Sie fest, ob in der Datenbank von JTL-Shop protokolliert werden soll, wenn diese Checkbox aktiviert wird."
 
 msgid "sortHigherBottom"
-msgstr "Sortierung (höher = weiter unten)"
+msgstr "Sortierung"
 
 msgid "specialShopFunction"
-msgstr "Spezielle Shopfunktion"
+msgstr "Spezielle Shop-Funktion"
 
 msgid "hintCheckboxFunction"
-msgstr "Soll die Checkbox eine Funktion ausführen, wenn sie aktiviert wurde?"
+msgstr "Hier legen Sie fest, ob eine spezielle Funktion von JTL-Shop ausgeführt werden soll, wenn die Checkbox aktiviert wurde."
 
 msgid "hintCheckboxName"
-msgstr "Name der Checkbox"
+msgstr "Hier geben Sie den internen Namen für die Checkbox ein."
 
 msgid "hintCheckboxText"
-msgstr "Welcher Text soll hinter der Checkbox stehen?"
+msgstr "Hier geben Sie für jede Sprache die Beschriftung ein, die hinter der Checkbox stehen soll."
 
 msgid "hintCheckboxDescription"
-msgstr "Soll die Checkbox eine Beschreibung erhalten?"
+msgstr "Hier können Sie optional für jede Sprache zusätzlich eine Beschreibung eingeben, die Ihren Kunden bei der Checkbox angezeigt wird."
 
 msgid "hintCheckboxOrder"
-msgstr "Anzeigereihenfolge von Checkboxen."
+msgstr "Hier legen Sie fest, an welcher Stelle die Checkbox stehen soll, falls es mehrere anzuzeigende Checkboxen gibt. Checkboxen mit einer höheren Sortierung stehen weiter unten."
 
 msgid "hintCheckboxCustomerGroup"
-msgstr "Für welche Kundengruppen soll die Checkbox sichtbar sein (Mehrfachauswahl mit STRG möglich)?"
+msgstr "Hier legen Sie fest, welche Kundengruppen die Checkbox sehen sollen. Mit gehaltener Strg-Taste können Sie mehrere Kundengruppen auswählen."

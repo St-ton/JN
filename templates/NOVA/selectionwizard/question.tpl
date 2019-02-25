@@ -6,14 +6,14 @@
     <div class="h5 selection-wizard-question-heading">
         {$oFrage->cFrage}
         {if $nQuestion < $AWA->getCurQuestion()}
-            {link href="#" data=["value"=>"{$nQuestion}"] class="fa fa-edit question-edit"}{/link}
+            {link href="#" data=["value"=>$nQuestion] class="fa fa-edit question-edit"}{/link}
         {/if}
     </div>
     {if $nQuestion < $AWA->getCurQuestion()}
         <span class="selection-wizard-answer">
-            {assign var='oWert' value=$AWA->getSelectedValue($nQuestion)}
+            {assign var=oWert value=$AWA->getSelectedValue($nQuestion)}
             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                {image src="{$imageBaseURL}{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}"}
+                {image src=$oWert->cBildURLKlein alt=$oWert->getValue() title=$oWert->getValue()}
             {/if}
             {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']:true}
                 {$oWert->getValue()}
@@ -38,9 +38,9 @@
         {else}
             {foreach $oFrage->oWert_arr as $oWert}
                 {if isset($oWert->nAnzahl)}
-                    {link class="selection-wizard-answer no-deco" href="#" data=["value"=>"{$oWert->kMerkmalWert}"]}
+                    {link class="selection-wizard-answer no-deco" href="#" data=["value"=>$oWert->kMerkmalWert]}
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                            {image src="{$imageBaseURL}{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}"}
+                            {image src=$oWert->cBildURLKlein alt=$oWert->getValue() title=$oWert->getValue()}
                         {/if}
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                             {$oWert->getValue()}
@@ -63,7 +63,7 @@
                 {if $oWert->getCount() > 0}
                     <span class="selection-wizard-answer">
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                            {image src="{$imageBaseURL}{$oWert->cBildpfadKlein}" alt="{$oWert->getValue()}" title="{$oWert->getValue()}"}
+                            {image src=$oWert->cBildURLKlein alt=$oWert->getValue() title=$oWert->getValue()}
                         {/if}
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                             {$oWert->getValue()}

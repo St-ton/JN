@@ -116,7 +116,7 @@
                     {cardbody}
                     {block name='checkout-confirmation-comment-body'}
                         {lang assign='orderCommentsTitle' key='orderComments' section='shipping payment'}
-                        {textarea title="{$orderCommentsTitle|escape:'html'}" name="kommentar" cols="50" rows="3" id="comment" placeholder="{lang key='comment' section='product rating'}"}
+                        {textarea title=$orderCommentsTitle|escape:'html' name="kommentar" cols="50" rows="3" id="comment" placeholder="{lang key='comment' section='product rating'}"}
                         {if isset($smarty.session.kommentar)}{$smarty.session.kommentar}{/if}
                         {/textarea}
                     {/block}
@@ -209,7 +209,7 @@
                         <div class="mb-7">
                             {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
                         </div>
-                        {button type="submit" variant="primary" id="complete-order-button" class="submit submit_once float-right ml-3"}
+                        {button type="submit" variant="primary" id="complete-order-button" class="submit_once float-right ml-3"}
                             {lang key='orderLiableToPay' section='checkout'}
                         {/button}
                         {link href="{get_static_route id='warenkorb.php'}" class="btn btn-light float-right"}

@@ -13,7 +13,7 @@ use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Nice;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\group;
 
 /**

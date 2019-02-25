@@ -5,8 +5,8 @@
 {include file='selectionwizard/index.tpl'}
 
 {if isset($StartseiteBoxen) && $StartseiteBoxen|@count > 0}
-    {assign var='moreLink' value=null}
-    {assign var='moreTitle' value=null}
+    {assign var=moreLink value=null}
+    {assign var=moreTitle value=null}
     {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_prepend'}
     {foreach $StartseiteBoxen as $Box}
         {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente) > 0 && isset($Box->cURL)}
@@ -23,7 +23,7 @@
                 {lang key='bestsellers' assign='title'}
                 {lang key='showAllBestsellers' assign='moreTitle'}
             {/if}
-            {assign var='moreLink' value=$Box->cURL}
+            {assign var=moreLink value=$Box->cURL}
             {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
         {/if}
     {/foreach}

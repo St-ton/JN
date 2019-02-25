@@ -27,7 +27,7 @@ use JTL\Catalog\Tag;
 use JTL\Catalog\TagArticle;
 use JTL\Catalog\UnitsOfMeasure;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Product
@@ -836,9 +836,10 @@ class Product
     public static function showAvailabilityForm(Artikel $product, string $config): int
     {
         if ($config !== 'N'
+            && $product->cLagerBeachten === 'Y'
             && ((int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
                 || (int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
-                || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull === 'Y'))
+                || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull !== 'Y'))
         ) {
             switch ($config) {
                 case 'Y':

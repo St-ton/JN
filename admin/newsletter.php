@@ -86,7 +86,7 @@ if (Form::validateToken()) {
         if (!empty($oNewsletter->cEmail)) {
             $oNewsTmp = $db->select('tnewsletterempfaenger', 'cEmail', $oNewsletter->cEmail);
             if ($oNewsTmp) {
-                $cFehler = 'E-Mail Adresse existiert bereits';
+                $cFehler = __('errorEmailExists');
                 $smarty->assign('oNewsletter', $oNewsletter);
             } else {
                 $db->insert('tnewsletterempfaenger', $oNewsletter);
@@ -99,7 +99,7 @@ if (Form::validateToken()) {
     } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterQueue'])) {
-                $cHinweis = 'Die Newsletterqueue "';
+                $noticeTMP = '';
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
                     $entry = $db->query(
                         'SELECT tnewsletterqueue.kNewsletter, tnewsletter.cBetreff
@@ -112,10 +112,9 @@ if (Form::validateToken()) {
                     $db->delete('tnewsletter', 'kNewsletter', (int)$entry->kNewsletter);
                     $db->delete('tjobqueue', ['cKey', 'kKey'], ['kNewsletter', (int)$entry->kNewsletter]);
                     $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
-                    $cHinweis .= $entry->cBetreff . '", ';
+                    $noticeTMP .= $entry->cBetreff . '", ';
                 }
-                $cHinweis  = mb_substr($cHinweis, 0, -2);
-                $cHinweis .= __('successDelete') . '<br />';
+                $cHinweis .= sprintf(__('successNewsletterQueueDelete'), mb_substr($noticeTMP, 0, -2));
             } else {
                 $cFehler .= __('errorAtLeastOneNewsletter') . '.<br />';
             }
@@ -125,13 +124,12 @@ if (Form::validateToken()) {
     ) {
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterHistory'])) {
-                $cHinweis = 'Die Newsletterhistory ';
+                $noticeTMP = '';
                 foreach ($_POST['kNewsletterHistory'] as $kNewsletterHistory) {
                     $db->delete('tnewsletterhistory', 'kNewsletterHistory', (int)$kNewsletterHistory);
-                    $cHinweis .= $kNewsletterHistory . ', ';
+                    $noticeTMP .= $kNewsletterHistory . ', ';
                 }
-                $cHinweis  = mb_substr($cHinweis, 0, -2);
-                $cHinweis .= __('successDelete') . '<br />';
+                $cHinweis .= sprintf(__('successNewsletterHistoryDelete'), mb_substr($noticeTMP, 0, -2)) . '<br />';
             } else {
                 $cFehler .= __('errorAtLeastOneHistory') . '<br />';
             }

@@ -31,7 +31,7 @@
                 {formgroup}
                     {input type="hidden" name="KwK" value="1"}
                     {input type="hidden" name="kunde_werben" value="1"}
-                    {input type="submit" value="{lang key='kwkSend' section='login'}" class="submit btn btn-primary"}
+                    {button type="submit" value="1" variant="primary" class="submit_once"}{lang key='kwkSend' section='login'}{/button}
                 {/formgroup}
             {/form}
         {/col}

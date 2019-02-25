@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace Tests\Services\JTL\Validation;
 
 use JTL\Services\JTL\Validation\RuleSet;
 use JTL\Services\JTL\Validation\ValidationService;
-use PHPUnit\Framework\TestCase;
+use Tests\BaseTestCase;
 
 /**
  * Class ValidationServiceTest
  * @package Services\JTL\Validation
  */
-class ValidationServiceTest extends TestCase
+class ValidationServiceTest extends BaseTestCase
 {
     public function test_validate_happyPath()
     {
@@ -195,7 +195,7 @@ class ValidationServiceTest extends TestCase
             'email'  => 'martin.schophaus@jtl-software.com',
         ];
         $vs          = new ValidationService([], [], []);
-        $result      = $vs->validateSet((object)$array, $rulesConfig);
+        $result      = $vs->validateSet($array, $rulesConfig);
         $this->assertTrue($result->isValid());
     }
 

@@ -3,19 +3,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "exportformat"
-msgstr "Aufgabenplaner Exporte"
+msgstr "Aufgabenplaner für Exporte"
 
 msgid "exportformatDesc"
-msgstr "Mit dem Aufgabenplaner können Sie automatisch auszuführende Aufgaben z.B. für Preissuchmaschinen-Exportformate anlegen."
+msgstr "Mit dem Aufgabenplaner können Sie automatisch auszuführende Aufgaben, z. B. Exporte für Preissuchmaschinen, anlegen."
 
 msgid "exportformatUrl"
 msgstr "https://jtl-url.de/jl5z1"
 
 msgid "exportformatOptions"
-msgstr "Sprache/Währung/Kundengrp"
+msgstr "Sprache/Währung/Kundengruppe"
 
 msgid "exportformatAdd"
-msgstr "Neue Planung erstellen"
+msgstr "Neue Aufgabe erstellen"
 
 msgid "exportformatStart"
 msgstr "Startdatum"
@@ -27,10 +27,10 @@ msgid "exportformatLastXHourPre"
 msgstr "Letzten"
 
 msgid "exportformatDelete"
-msgstr "Planung löschen"
+msgstr "Markierte Aufgabe löschen"
 
 msgid "exportformatQueue"
-msgstr "Aktive, geplante Aufgaben"
+msgstr "Geplante Aufgaben"
 
 msgid "exportformatNoFormat"
 msgstr "Keine Exportformate vorhanden"
@@ -42,7 +42,7 @@ msgid "exportformatLastStart"
 msgstr "letzter Start"
 
 msgid "exportformatNextStart"
-msgstr "vsl. nächster Start"
+msgstr "Nächster Start (geplant)"
 
 msgid "exportformatTodaysWork"
 msgstr "Zuletzt fertiggestellt"
@@ -57,7 +57,7 @@ msgid "errorWrongQueue"
 msgstr "Fehler: Bitte wählen Sie eine gültige Warteschlange aus."
 
 msgid "successQueueDelete"
-msgstr "Ihr ausgewählten Warteschlangen wurde erfolgreich gelöscht."
+msgstr "Die ausgewählten Warteschlangen wurden erfolgreich gelöscht."
 
 msgid "errorCronStart"
 msgstr "Es wurde kein Cron-Job gestartet."
@@ -69,16 +69,16 @@ msgid "successCronStart"
 msgstr "Es wurde ein Cron-Job gestartet."
 
 msgid "successQueueDone"
-msgstr "Es wurde eine Job-Queue abgearbeitet"
+msgstr "Es wurde eine Job-Warteschlange abgearbeitet."
 
 msgid "successQueuseDone"
-msgstr "Es wurden %s Job-Queues abgearbeitet"
+msgstr "Es wurden %s Job-Warteschlangen abgearbeitet."
 
 msgid "errorFormatInQueue"
 msgstr "Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden."
 
 msgid "successQueueCreate"
-msgstr "Ihre neue Exportwarteschlange wurde erfolgreich angelegt."
+msgstr "Ihre neue Export-Warteschlange wurde erfolgreich angelegt."
 
 msgid "errorGreaterEqualOne"
 msgstr "Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein."

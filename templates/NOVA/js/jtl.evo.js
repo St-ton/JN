@@ -170,14 +170,40 @@
         },
 
         productTabsPriceFlow: function() {
-            if ($('a[href="#tab-tb-prcFlw"]').length) {
+            var chartOptions = {
+                responsive:       true,
+                    scaleBeginAtZero: false,
+                    tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var label = data.datasets[tooltipItem.datasetIndex].label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += Math.round(tooltipItem.yLabel * 100) / 100;
+                            label += window.chartDataCurrency;
+                            return label;
+                        }
+                    }
+                }
+            };
+            if ($('#tab-link-tb-prcFlw').length) {
                 // using tabs
-                $('a[href="#tab-tb-prcFlw"]').on('shown.bs.tab', function () {
+                $('#tab-tb-prcFlw').on('shown.bs.tab', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
-                        window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
-                            responsive:       true,
-                            scaleBeginAtZero: false,
-                            tooltipTemplate:  "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
+                        window.priceHistoryChart = new Chart(window.ctx, {
+                            type: 'bar',
+                            data: window.chartData,
+                            options: chartOptions
+                        });
+                    }
+                });
+                $('#tab-content-product-tabs').on('afterChange', function (event, slick) {
+                    if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
+                        window.priceHistoryChart = new Chart(window.ctx, {
+                            type: 'bar',
+                            data: window.chartData,
+                            options: chartOptions
                         });
                     }
                 });
@@ -185,10 +211,10 @@
                 // using cards
                 $('#tab-priceFlow').on('shown.bs.collapse', function () {
                     if (typeof window.priceHistoryChart !== 'undefined' && window.priceHistoryChart === null) {
-                        window.priceHistoryChart = new Chart(window.ctx).Bar(window.chartData, {
-                            responsive:       true,
-                            scaleBeginAtZero: false,
-                            tooltipTemplate:  "<%if (label){%><%=label%> - <%}%><%= parseFloat(value).toFixed(2).replace('.', ',') %> " + window.chartDataCurrency
+                        window.priceHistoryChart = new Chart(window.ctx, {
+                            type: 'bar',
+                            data: window.chartData,
+                            options: chartOptions
                         });
                     }
                 });
@@ -602,7 +628,20 @@
 
         addInactivityCheck: function() {
             var timeoutID;
-            $("input[type='number']").InputSpinner();
+            var config = {
+                decrementButton: "<strong>-</strong>", // button text
+                incrementButton: "<strong>+</strong>", // ..
+                groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
+                buttonsClass: "btn-light form-control",
+                buttonsWidth: "",
+                textAlign: "center",
+                autoDelay: 500, // ms holding before auto value change
+                autoInterval: 100, // speed of auto value change
+                boostThreshold: 10, // boost after these steps
+                boostMultiplier: "auto", // you can also set a constant number as multiplier
+                locale: null // the locale for number rendering; if null, the browsers language is used
+            }
+            $("input[type='number']").InputSpinner(config);
 
 
             function setup() {

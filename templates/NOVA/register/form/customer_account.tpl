@@ -5,7 +5,7 @@
 {block name='billing-address-form'}
     {include file='checkout/inc_billing_address_form.tpl'}
 {/block}
-{assign var="unregForm" value=0}
+{assign var=unregForm value=0}
 {block name='content'}
     {if !$editRechnungsadresse}
         {if !$smarty.session.Warenkorb->hasDigitalProducts() && isset($checkout)

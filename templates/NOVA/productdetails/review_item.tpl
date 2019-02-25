@@ -66,7 +66,7 @@
                 {image itemprop="image" src=$Artikel->cVorschaubild alt=$oBewertung->cTitel class="d-none"}
                 {if !empty($oBewertung->cAntwort)}
                     <div class="review-reply">
-                        <strong>Antwort von {$cShopName}:</strong>
+                        <strong>{lang key='reply' section='product rating'} {$cShopName}:</strong>
                         <blockquote>
                             <p>{$oBewertung->cAntwort}</p><br>
                             <small>{$oBewertung->AntwortDatum}</small>

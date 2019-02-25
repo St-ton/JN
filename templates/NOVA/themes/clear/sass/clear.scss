@@ -876,13 +876,12 @@ ul.partlist-items {
         position: absolute;
         z-index: $zindex-dropdown - 1;
         left: 0;
-        top: 0;
+        bottom: 0;
         height: auto !important;
         min-height: 100%;
         width: 110%;
         margin-left: -5%;
-        padding-left: $grid-gutter-width / 2 + 10;
-        padding-right: $grid-gutter-width / 2 + 10;
+        padding: $grid-gutter-width $grid-gutter-width 0;
         transition: box-shadow 0.3s;
         background: #fff;
         box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
@@ -1005,6 +1004,9 @@ ul.partlist-items {
     padding: $pagination-padding-y $pagination-padding-x;
     left: ($grid-gutter-width / 2);
   }
+ /* .product-wrapper:hover{
+    align-self: flex-start;
+  }*/
 }
 .gallery .image-wrapper .yousave {
   margin-top: -(1 + (2 * map_get($spacers, 2)));

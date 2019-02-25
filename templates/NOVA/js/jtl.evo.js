@@ -695,7 +695,7 @@
             this.popupDep();
             this.popover();
             // this.preventDropdownToggle();
-            this.smoothScroll2();
+            // this.smoothScroll2();
             this.addCartBtnAnimation();
             this.checkout();
             this.addInactivityCheck();

@@ -12663,13 +12663,12 @@ ul.partlist-items {
     position: absolute;
     z-index: 999;
     left: 0;
-    top: 0;
+    bottom: 0;
     height: auto !important;
     min-height: 100%;
     width: 110%;
     margin-left: -5%;
-    padding-left: 26px;
-    padding-right: 26px;
+    padding: 32px 32px 0;
     transition: box-shadow 0.3s;
     background: #fff;
     box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
@@ -12786,6 +12785,9 @@ ul.partlist-items {
 .gallery,
 .list {
   align-items: flex-end;
+  /* .product-wrapper:hover{
+     align-self: flex-start;
+   }*/
 }
 .gallery .image-wrapper .yousave,
 .list .image-wrapper .yousave {

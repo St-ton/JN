@@ -217,7 +217,7 @@ class PriceRange extends AbstractFilter
                 'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' . $conversionFactor . '))), 2)';
         } else {
             foreach ($rateKeys as $nSteuersatzKeys) {
-                $taxRate      = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
+                $taxRate          = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $this->condition .= ' IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ',
                     ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                     Frontend::getCustomerGroup()->getDiscount() . ', ' . $discount . ', 0)) / 100), 
@@ -490,7 +490,7 @@ class PriceRange extends AbstractFilter
                 foreach ($priceRanges as $i => $count) {
                     $fo   = new Option();
                     $from = $minPrice + $i * $nStep;
-                    $to = $minPrice + ($i + 1) * $nStep;
+                    $to   = $minPrice + ($i + 1) * $nStep;
                     if ($to > $maxPrice) {
                         if ($from >= $maxPrice) {
                             $from = $minPrice + ($i - 1) * $nStep;
@@ -532,7 +532,7 @@ class PriceRange extends AbstractFilter
                     return [];
                 }
                 $selectSQL = '';
-                $count      = \count($ranges);
+                $count     = \count($ranges);
                 for ($i = 0; $i < $count; ++$i) {
                     if ($i > 0) {
                         $selectSQL .= ', ';

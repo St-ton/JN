@@ -27,7 +27,7 @@ class Bestseller extends AbstractSortingOption
                    ->setType('LEFT JOIN')
                    ->setTable('tbestseller')
                    ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
-        $this->setName(Shop::Lang()->get('Bestseller'));
+        $this->setName(Shop::Lang()->get('bestseller'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bestseller']);
         $this->setValue(\SEARCH_SORT_BESTSELLER);
     }

@@ -22,6 +22,7 @@ function getWidgets(bool $bActive = true)
 {
     $cache   = Shop::Container()->getCache();
     $db      = Shop::Container()->getDB();
+    $gettext = Shop::Container()->getGetText();
     $widgets = $db->queryPrepared(
         'SELECT tadminwidgets.*, tplugin.cPluginID, tplugin.bExtension
             FROM tadminwidgets
@@ -33,6 +34,11 @@ function getWidgets(bool $bActive = true)
         ['active' => (int)$bActive, 'activated' => State::ACTIVATED],
         ReturnType::ARRAY_OF_OBJECTS
     );
+    foreach ($widgets as $widget) {
+        $gettext->loadAdminLocale('widgets/' . $widget->cClass);
+        $widget->cTitle       = __($widget->cClass . '_title');
+        $widget->cDescription = __($widget->cClass . '_desc');
+    }
     if ($bActive) {
         $smarty = JTLSmarty::getInstance(false, \JTL\Smarty\ContextType::BACKEND);
         foreach ($widgets as $widget) {

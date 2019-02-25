@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "483c2ce8f658d60d6413f05035b38217",
+    "content-hash": "fc69771b2f8efff9a10a6e8c246cd646",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -1061,7 +1061,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/scc.git",
-                "reference": "65997d0f01ff35af41297ce03e557b19d41666b6"
+                "reference": "eab93963be0aa468dce5b9a3f48bd7ee8330b870"
             },
             "require": {
                 "myclabs/php-enum": "^1.5",
@@ -1088,7 +1088,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-02-21T10:51:05+00:00"
+            "time": "2019-02-22T09:58:45+00:00"
         },
         {
             "name": "jtlshop/sccbs3",
@@ -1096,7 +1096,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git",
-                "reference": "07c1268d937230d00548a25cbe011fa39efc0f2e"
+                "reference": "224f165d51a54eaad1f2b40c559dd96206727dbd"
             },
             "require": {
                 "jtlshop/scc": "dev-master",
@@ -1123,7 +1123,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-02-14T17:43:48+00:00"
+            "time": "2019-02-21T15:59:46+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -4885,7 +4885,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",

@@ -98,7 +98,7 @@ interface ValidationServiceInterface
     public function validateGP(string $name, $ruleSet): ValidationResultInterface;
 
     /**
-     * @param array|object $set
+     * @param array $set
      * @param array        $rulesConfig
      * @return SetValidationResultInterface
      */

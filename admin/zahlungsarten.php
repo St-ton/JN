@@ -283,7 +283,7 @@ if ($step === 'einstellen') {
             ReturnType::ARRAY_OF_OBJECTS
         );
         $smarty->assign('Conf', $Conf)
-               ->assign('Zahlungsart', $zahlungsart)
+               ->assign('zahlungsart', $zahlungsart)
                ->assign('kundengruppen', $kundengruppen)
                ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($zahlungsart))
                ->assign('sprachen', Sprache::getAllLanguages())

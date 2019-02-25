@@ -402,7 +402,7 @@ class Plugins
                 $bError                   = isset($params['cPlausi_arr'][$oCheckBox->cID]);
                 $cPost_arr                = $params['cPost_arr'];
                 $oCheckBox->isActive      = isset($cPost_arr[$oCheckBox->cID]);
-                $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText;
+                $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText ?? '';
                 $oCheckBox->cLinkURL      = $cLinkURL;
                 $oCheckBox->cLinkURLFull  = $cLinkURL;
                 $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)

@@ -6,6 +6,7 @@
 
 use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Link\Link;
 
 /**
  * @param \JTL\Link\LinkGroupInterface $linkGroup
@@ -274,7 +275,7 @@ function holeSpezialseiten()
  */
 function isDuplicateSpecialLink(int $linkType, int $linkID, array $customerGroups): bool
 {
-    $link = new \Link\Link(Shop::Container()->getDB());
+    $link = new Link(Shop::Container()->getDB());
     $link->setCustomerGroups($customerGroups);
     $link->setLinkType($linkType);
     $link->setID($linkID);

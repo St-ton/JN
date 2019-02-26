@@ -6,6 +6,8 @@
 
 namespace JTL;
 
+use \JTL\Link\Link;
+
 /**
  * Class PlausiCMS
  * @package JTL
@@ -28,7 +30,7 @@ class PlausiCMS extends Plausi
                 if (isset($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['nLinkart'])
                     && (int)$this->xPostVar_arr['nLinkart'] === 3
                 ) {
-                    $link = new \Link\Link(Shop::Container()->getDB());
+                    $link = new Link(Shop::Container()->getDB());
                     $link->setCustomerGroups($this->xPostVar_arr['cKundengruppen']);
                     $link->setLinkType((int)$this->xPostVar_arr['nSpezialseite']);
                     $link->setID((int)$this->xPostVar_arr['kLink']);

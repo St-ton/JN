@@ -3,24 +3,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
-    {if $cFehler}
-        {if isset($cPlausi_arr.vDatum)}
-            <div class="alert alert-danger">{if $cPlausi_arr.vDatum == 1}{__('errorDate')}{/if}</div>
-        {/if}
-        {if isset($cPlausi_arr.bDatum)}
-            <div class="alert alert-danger">
-                {if $cPlausi_arr.bDatum == 1}
-                    {__('errorDate')}
-                {elseif $cPlausi_arr.bDatum == 2}
-                    {__('errorDateActiveToGreater')}
-                {/if}
-            </div>
-        {/if}
-        {if isset($cPlausi_arr.oFile)}
-            <div class="alert alert-danger"><i class="fa fa-warning"></i> {__('errorImageSizeTooLarge')}</div>
-        {/if}
-    {/if}
-
     {if $cAction === 'edit' || $cAction === 'new'}
     <script type="text/javascript">
         var file2large = false;

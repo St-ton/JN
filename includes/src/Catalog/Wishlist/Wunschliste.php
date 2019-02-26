@@ -510,7 +510,7 @@ class Wunschliste
     public function ueberpruefePositionen(): string
     {
         $cArtikel_arr = [];
-        $hinweis      = '';
+        $notice       = '';
         $db           = Shop::Container()->getDB();
         foreach ($this->CWunschlistePos_arr as $wlPosition) {
             if (!isset($wlPosition->kArtikel) || (int)$wlPosition->kArtikel <= 0) {
@@ -542,7 +542,7 @@ class Wunschliste
                                 );
                                 if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
                                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                    $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                                     break;
                                 }
@@ -577,7 +577,7 @@ class Wunschliste
                                         && empty($oEigenschaftWertVorhanden->cFreifeldWert)
                                     ) {
                                         $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                        $hinweis       .= '<br />' .
+                                        $notice        .= '<br />' .
                                             Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->kArtikel);
@@ -591,19 +591,20 @@ class Wunschliste
                     }
                 } else {
                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                    $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                 }
             } else {
                 $cArtikel_arr[] = $wlPosition->cArtikelName;
-                $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
-        $hinweis .= \implode(', ', $cArtikel_arr);
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $hinweis, 'wlNote');
 
-        return $hinweis;
+        $notice .= \implode(', ', $cArtikel_arr);
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'wlNote');
+
+        return $notice;
     }
 
     /**

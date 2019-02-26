@@ -19,8 +19,8 @@ $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-$cHinweis        = '';
-$cFehler         = '';
+$notice          = '';
+$errorMsg        = '';
 $step            = 'plugin_uebersicht';
 $invalidateCache = false;
 $bError          = false;
@@ -29,6 +29,7 @@ $kPlugin         = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
 $oPlugin         = null;
+$alertHelper     = Shop::Container()->getAlertService();
 if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
@@ -80,9 +81,9 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
             }
         }
         if ($bError) {
-            $cFehler = __('errorConfigSave');
+            $errorMsg = __('errorConfigSave');
         } else {
-            $cHinweis = __('successConfigSave');
+            $notice = __('successConfigSave');
         }
     }
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
@@ -102,8 +103,8 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
                 'plugin'   => $oPlugin,
                 'hasError' => &$bError,
-                'msg'      => &$cHinweis,
-                'error'    => $cFehler,
+                'msg'      => &$notice,
+                'error'    => $errorMsg,
                 'options'  => $oPlugin->getConfig()->getOptions()
             ]);
         }
@@ -127,8 +128,9 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         }
     }
 }
+$alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
+$alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
+
 $smarty->assign('oPlugin', $oPlugin)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('plugin.tpl');

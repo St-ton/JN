@@ -21,8 +21,6 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
-$cHinweis              = '';
-$cFehler               = '';
 $step                  = 'freischalten_uebersicht';
 $ratingsSQL            = new stdClass();
 $liveSearchSQL         = new stdClass();
@@ -37,6 +35,7 @@ $commentsSQL->cWhere   = '';
 $recipientsSQL->cWhere = '';
 $recipientsSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
 $tab                   = Request::verifyGPDataString('tab');
+$alertHelper           = Shop::Container()->getAlertService();
 
 if (Request::verifyGPCDataInt('Suche') === 1) {
     $search = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
@@ -78,7 +77,7 @@ if (Request::verifyGPCDataInt('Suche') === 1) {
         $smarty->assign('cSuche', $search)
                ->assign('cSuchTyp', Request::verifyGPDataString('cSuchTyp'));
     } else {
-        $cFehler = __('errorSearchTermMissing');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchTermMissing'), 'errorSearchTermMissing');
     }
 }
 
@@ -123,15 +122,15 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
             if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
-                $cHinweis .= __('successRatingUnlock') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingUnlock'), 'successRatingUnlock');
             } else {
-                $cFehler .= __('errorAtLeastOneRating') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (loescheBewertung($_POST['kBewertung'])) {
-                $cHinweis .= __('successRatingDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingDelete'), 'successRatingDelete');
             } else {
-                $cFehler .= __('errorAtLeastOneRating') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
             }
         }
     } elseif (Request::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
@@ -145,78 +144,99 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
 
                     if ($nReturnValue === 1) { // Alles O.K.
                         if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
-                            $cHinweis = sprintf(__('successLiveSearchMap'), $cMapping);
+                            $alertHelper->addAlert(
+                                Alert::TYPE_SUCCESS,
+                                sprintf(__('successLiveSearchMap'), $cMapping),
+                                'successLiveSearchMap'
+                            );
                         } else {
-                            $cFehler = __('errorLiveSearchMapNotUnlock');
+                            $alertHelper->addAlert(
+                                Alert::TYPE_ERROR,
+                                __('errorLiveSearchMapNotUnlock'),
+                                'errorLiveSearchMapNotUnlock'
+                            );
                         }
                     } else {
                         switch ($nReturnValue) {
                             case 2:
-                                $cFehler = __('errorMapUnknown');
+                                $searchError = __('errorMapUnknown');
                                 break;
                             case 3:
-                                $cFehler = __('errorSearchNotFoundDB');
+                                $searchError = __('errorSearchNotFoundDB');
                                 break;
                             case 4:
-                                $cFehler = __('errorMapDB');
+                                $searchError = __('errorMapDB');
                                 break;
                             case 5:
-                                $cFehler = __('errorMapToNotExisting');
+                                $searchError = __('errorMapToNotExisting');
                                 break;
                             case 6:
-                                $cFehler = __('errorMapSelf');
+                                $searchError = __('errorMapSelf');
                                 break;
                             default:
                                 break;
                         }
+                        $alertHelper->addAlert(Alert::TYPE_ERROR, $searchError, 'searchError');
                     }
                 } else {
-                    $cFehler = __('errorAtLeastOneLiveSearch');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        __('errorAtLeastOneLiveSearch'),
+                        'errorAtLeastOneLiveSearch'
+                    );
                 }
             } else {
-                $cFehler = __('errorMapNameMissing');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMapNameMissing'), 'errorMapNameMissing');
             }
         }
 
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kSuchanfrage']) && schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
-                $cHinweis .= __('successSearchUnlock') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchUnlock'), 'successSearchUnlock');
             } else {
-                $cFehler .= __('errorAtLeastOneSearch') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kSuchanfrage']) && loescheSuchanfragen($_POST['kSuchanfrage'])) {
-                $cHinweis .= __('successSearchDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDelete'), 'successSearchDelete');
             } else {
-                $cFehler .= __('errorAtLeastOneSearch') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         }
     } elseif (Request::verifyGPCDataInt('tags') === 1 && Form::validateToken()) { // Tags
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
-                $cHinweis .= __('successTagUnlock') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagUnlock'), 'successTagUnlock');
             } else {
-                $cFehler .= __('errorAtLeastOneTag') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
-                $cHinweis .= __('successTagDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagDelete'), 'successTagDelete');
             } else {
-                $cFehler .= __('errorAtLeastOneTag') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
             }
         }
     } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
-                $cHinweis .= __('successNewsCommentUnlock') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentUnlock'), 'successNewsCommentUnlock');
             } else {
-                $cFehler .= __('errorAtLeastOneNewsComment') . '<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorAtLeastOneNewsComment'),
+                    'errorAtLeastOneNewsComment'
+                );
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kNewsKommentar']) && loescheNewskommentare($_POST['kNewsKommentar'])) {
-                $cHinweis .= __('successNewsCommentDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentDelete'), 'successNewsCommentDelete');
             } else {
-                $cFehler .= __('errorAtLeastOneNewsComment') . '<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorAtLeastOneNewsComment'),
+                    'errorAtLeastOneNewsComment'
+                );
             }
         }
     } elseif (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
@@ -224,17 +244,17 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
             if (isset($_POST['kNewsletterEmpfaenger'])
                 && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])
             ) {
-                $cHinweis .= __('successNewsletterUnlock') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterUnlock'), 'successNewsletterUnlock');
             } else {
-                $cFehler .= __('errorAtLeastOneNewsletter') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kNewsletterEmpfaenger'])
                 && loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])
             ) {
-                $cHinweis .= __('successNewsletterDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterDelete'), 'successNewsletterDelete');
             } else {
-                $cFehler .= __('errorAtLeastOneNewsletter') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
     }
@@ -274,9 +294,7 @@ if ($step === 'freischalten_uebersicht') {
            ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients);
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('cTab', $tab)
        ->display('freischalten.tpl');

@@ -532,9 +532,10 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
             break;
     }
 
-    $smarty->assign('hinweis', $messages['notice'])
-           ->assign('fehler', $messages['error'])
-           ->assign('step', $step)
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'expoFormatError');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'expoFormatNote');
+
+    $smarty->assign('step', $step)
            ->assign('cTab', Request::verifyGPDataString('tab'))
            ->display('exportformat_queue.tpl');
 }

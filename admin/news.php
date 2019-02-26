@@ -319,10 +319,11 @@ $customerGroups = \Functional\map($db->query(
     return $e;
 });
 
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+
 $smarty->assign('oKundengruppe_arr', $customerGroups)
-       ->assign('hinweis', $controller->getMsg())
        ->assign('sprachen', $languages)
-       ->assign('fehler', $controller->getErrorMsg())
        ->assign('step', $controller->getStep())
        ->assign('nMaxFileSize', $maxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])

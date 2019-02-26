@@ -1995,7 +1995,7 @@ class Cart
     public static function checkOrderAmountAndStock(array $conf = []): string
     {
         $cart         = Frontend::getCart();
-        $cHinweis     = '';
+        $notice       = '';
         $cArtikelName = '';
         $bVorhanden   = false;
         $cISOSprache  = Shop::getLanguageCode();
@@ -2017,10 +2017,10 @@ class Cart
         $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
 
         if ($bVorhanden) {
-            $cHinweis = \sprintf(Shop::Lang()->get('orderExpandInventory', 'basket'), '<ul>' . $cArtikelName . '</ul>');
+            $notice = \sprintf(Shop::Lang()->get('orderExpandInventory', 'basket'), '<ul>' . $cArtikelName . '</ul>');
         }
 
-        return $cHinweis;
+        return $notice;
     }
 
     /**

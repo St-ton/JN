@@ -21,8 +21,8 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 JTL\Shop::Container()->getGetText()->loadConfigLocales();
 
-$cFehler = null;
-$cStep   = 'uebersicht';
+$cStep       = 'uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
@@ -110,12 +110,12 @@ if (mb_strlen($oBillpay->getSetting('pid')) > 0
            ->assign('oItem_arr', $oItem_arr)
            ->assign('oPagiLog', $oPagiLog);
 } else {
-    $cFehler = __('errorBillpayNotConfigured') .
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBillpayNotConfigured'), 'errorBillpayNotConfigured');
         '<a href="https://jtl-url.de/0kqhs" rel="noopener" target="_blank">' .
         '<i class="fa fa-external-link"></i>' . __('docu') . '</a>';
 }
 
-$smarty->assign('cFehlerBillpay', $cFehler);
+$smarty->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR));
 
 $Conf = Shop::Container()->getDB()->selectAll(
     'teinstellungenconf',

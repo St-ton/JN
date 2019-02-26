@@ -16,12 +16,14 @@ use JTL\DB\ReturnType;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 
-$cHinweis = '';
-$cFehler  = '';
-$db       = Shop::Container()->getDB();
+$db = Shop::Container()->getDB();
 setzeSprache();
 if (isset($_POST['speichern']) && Form::validateToken()) {
-    $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST),
+        'saveSettings'
+    );
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (isset($_POST['nVon'], $_POST['nBis'])
         && is_array($_POST['nVon'])
@@ -48,6 +50,4 @@ $priceRangeFilters = $db->query(
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))
        ->assign('oPreisspannenfilter_arr', $priceRangeFilters)
        ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->display('navigationsfilter.tpl');

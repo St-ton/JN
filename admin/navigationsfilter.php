@@ -18,6 +18,7 @@ $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 
 $cHinweis = '';
 $cFehler  = '';
+$db       = Shop::Container()->getDB();
 setzeSprache();
 if (isset($_POST['speichern']) && Form::validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
@@ -28,18 +29,18 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         && count($_POST['nVon']) > 0
         && count($_POST['nBis']) > 0
     ) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
+        $db->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
         foreach ($_POST['nVon'] as $i => $nVon) {
             $nVon = (float)$nVon;
             $nBis = (float)$_POST['nBis'][$i];
             if ($nVon >= 0 && $nBis >= 0) {
-                Shop::Container()->getDB()->insert('tpreisspannenfilter', (object)['nVon' => $nVon, 'nBis' => $nBis]);
+                $db->insert('tpreisspannenfilter', (object)['nVon' => $nVon, 'nBis' => $nBis]);
             }
         }
     }
 }
 
-$priceRangeFilters = Shop::Container()->getDB()->query(
+$priceRangeFilters = $db->query(
     'SELECT * FROM tpreisspannenfilter',
     ReturnType::ARRAY_OF_OBJECTS
 );

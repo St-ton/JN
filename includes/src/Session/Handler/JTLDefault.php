@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session\Handler;
+namespace JTL\Session\Handler;
 
 /**
  * Class JTLDefault
- * @package Session\Handler
+ * @package JTL\Session\Handler
  */
 class JTLDefault extends \SessionHandler implements JTLHandlerInterface
 {

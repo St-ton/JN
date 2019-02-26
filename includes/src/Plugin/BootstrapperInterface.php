@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Events\Dispatcher;
+use JTL\Events\Dispatcher;
 
 /**
  * Interface BootstrapperInterface
- * @package Plugin
+ * @package JTL\Plugin
  */
 interface BootstrapperInterface
 {

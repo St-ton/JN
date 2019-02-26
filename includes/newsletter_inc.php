@@ -4,7 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Alert;
+use JTL\CheckBox;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Session\Frontend;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -47,9 +53,9 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
     $plausi              = new stdClass();
     $plausi->nPlausi_arr = [];
     $nlCustomer          = null;
-    if (!$validate || StringHandler::filterEmailAddress($customer->cEmail) !== false) {
+    if (!$validate || Text::filterEmailAddress($customer->cEmail) !== false) {
         $plausi->nPlausi_arr = newsletterAnmeldungPlausi();
-        $kKundengruppe       = \Session\Frontend::getCustomerGroup()->getID();
+        $kKundengruppe       = Frontend::getCustomerGroup()->getID();
         $checkBox            = new CheckBox();
         $plausi->nPlausi_arr = array_merge(
             $plausi->nPlausi_arr,
@@ -61,7 +67,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
         $plausi->cPost_arr['cNachname'] = $customer->cNachname;
         $plausi->cPost_arr['cEmail']    = $customer->cEmail;
         $plausi->cPost_arr['captcha']   = isset($_POST['captcha'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha']))
+            ? Text::htmlentities(Text::filterXSS($_POST['captcha']))
             : null;
         if (!$validate || count($plausi->nPlausi_arr) === 0) {
             $recipient = Shop::Container()->getDB()->select(
@@ -162,7 +168,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     );
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
-                        Shop::Lang()->get('newsletterAdd', 'newsletterAdd'),
+                        Shop::Lang()->get('newsletterAdd', 'messages'),
                         'newsletterAdd'
                     );
                     $plausi = new stdClass();

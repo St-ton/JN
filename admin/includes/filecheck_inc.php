@@ -29,43 +29,39 @@ function getAllModifiedFiles(&$files, &$errorsCount)
     if (!is_array($files)) {
         return 4;
     }
-    if (file_exists($md5file)) {
-        $cShopFileAll = file_get_contents($md5file);
-        if (mb_strlen($cShopFileAll) > 0) {
-            $cShopFile_arr = explode("\n", $cShopFileAll);
-            if (is_array($cShopFile_arr) && count($cShopFile_arr) > 0) {
-                $errorsCount = 0;
-
-                array_multisort($cShopFile_arr);
-                foreach ($cShopFile_arr as $cShopFile) {
-                    if (mb_strlen($cShopFile) === 0) {
-                        continue;
-                    }
-
-                    list($cDateiMD5, $cDatei) = explode(';', $cShopFile);
-
-                    $cMD5Akt   = '';
-                    $cFilePath = PFAD_ROOT . $cDatei;
-
-                    if (file_exists($cFilePath)) {
-                        $cMD5Akt = md5_file($cFilePath);
-                    }
-
-                    if ($cMD5Akt !== $cDateiMD5) {
-                        $files[] = $cDatei;
-
-                        $errorsCount++;
-                    }
-                }
-            }
-
-            return 1;
-        }
-
+    if (!file_exists($md5file)) {
+        return 2;
+    }
+    $hashes = file_get_contents($md5file);
+    if (mb_strlen($hashes) === 0) {
         return 3;
     }
+    $shopFiles = explode("\n", $hashes);
+    if (is_array($shopFiles) && count($shopFiles) > 0) {
+        $errorsCount = 0;
+        array_multisort($shopFiles);
+        foreach ($shopFiles as $shopFile) {
+            if (mb_strlen($shopFile) === 0) {
+                continue;
+            }
 
-    return 2;
+            [$hash, $file] = explode(';', $shopFile);
+
+            $currentHash = '';
+            $path        = PFAD_ROOT . $file;
+            if (file_exists($path)) {
+                $currentHash = md5_file($path);
+            }
+
+            if ($currentHash !== $hash) {
+                $files[] = $file;
+
+                $errorsCount++;
+            }
+        }
+    }
+
+    return 1;
 }
 
 /**
@@ -91,32 +87,30 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
     if (!is_array($files)) {
         return 4;
     }
-    if (file_exists($csvFile)) {
-        $cShopFileAll = file_get_contents($csvFile);
-        if (mb_strlen($cShopFileAll) > 0) {
-            $cShopFile_arr = explode("\n", $cShopFileAll);
-            if (is_array($cShopFile_arr) && count($cShopFile_arr) > 0) {
-                $errorsCount = 0;
-
-                array_multisort($cShopFile_arr);
-                foreach ($cShopFile_arr as $cShopFile) {
-                    if (mb_strlen($cShopFile) === 0) {
-                        continue;
-                    }
-
-                    if (file_exists(PFAD_ROOT . $cShopFile)) {
-                        $files[] = $cShopFile;
-
-                        $errorsCount++;
-                    }
-                }
-            }
-
-            return 1;
-        }
-
+    if (!file_exists($csvFile)) {
+        return 2;
+    }
+    $fileData = file_get_contents($csvFile);
+    if (mb_strlen($fileData) === 0) {
         return 3;
     }
+    $shopFiles = explode("\n", $fileData);
+    if (is_array($shopFiles) && count($shopFiles) > 0) {
+        $errorsCount = 0;
 
-    return 2;
+        array_multisort($shopFiles);
+        foreach ($shopFiles as $shopFile) {
+            if (mb_strlen($shopFile) === 0) {
+                continue;
+            }
+
+            if (file_exists(PFAD_ROOT . $shopFile)) {
+                $files[] = $shopFile;
+
+                $errorsCount++;
+            }
+        }
+    }
+
+    return 1;
 }

@@ -4,17 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
-use Shop;
+use ArrayIterator;
+use Countable;
+use Exception;
+use function Functional\pluck;
+use IteratorAggregate;
+use JTL\Shop;
+use JTL\SingletonTrait;
 
 /**
  * Class Notification
- * @package Backend
+ * @package JTL\Backend
  */
-class Notification implements \IteratorAggregate, \Countable
+class Notification implements IteratorAggregate, Countable
 {
-    use \SingletonTrait;
+    use SingletonTrait;
 
     /**
      * @var NotificationEntry[]
@@ -65,15 +71,15 @@ class Notification implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): ArrayIterator
     {
         \usort($this->array, function (NotificationEntry $a, NotificationEntry $b) {
             return $b->getType() <=> $a->getType();
         });
 
-        return new \ArrayIterator($this->array);
+        return new ArrayIterator($this->array);
     }
 
     /**
@@ -81,7 +87,7 @@ class Notification implements \IteratorAggregate, \Countable
      *
      * @todo Remove translated messages
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function buildDefault(): self
     {
@@ -242,7 +248,7 @@ class Notification implements \IteratorAggregate, \Countable
                     'benutzerverwaltung.php'
                 );
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 'Datenbank-Update',
@@ -257,7 +263,7 @@ class Notification implements \IteratorAggregate, \Countable
                 NotificationEntry::TYPE_WARNING,
                 'Ungültige Linkgruppen',
                 'Eine oder mehrere Linkgruppen nutzen nicht-eindeutige Template-Namen: ' .
-                \implode(', ', \Functional\pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName')),
+                \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName')),
                 'links.php'
             );
         }

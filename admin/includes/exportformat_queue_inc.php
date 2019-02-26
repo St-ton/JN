@@ -4,7 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Cron\LegacyCron;
+use JTL\Catalog\Currency;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * @return array|bool
@@ -23,7 +30,7 @@ function holeExportformatCron()
                 ON tcron.jobType = 'exportformat'
                 AND tcron.foreignKeyID = texportformat.kExportformat
             ORDER BY tcron.startDate DESC",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($exports as $export) {
         $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
@@ -47,7 +54,7 @@ function holeExportformatCron()
                 FROM tjobqueue 
                 WHERE cronID = :id",
             ['id' => (int)$export->cronID],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         $export->nAnzahlArtikel  = holeMaxExportArtikelAnzahl($export);
     }
@@ -67,7 +74,7 @@ function holeCron($kCron)
             "SELECT *, DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de
                 FROM tcron
                 WHERE cronID = " . $kCron,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oCron->cronID) && $oCron->cronID > 0) {
@@ -83,37 +90,35 @@ function holeCron($kCron)
 }
 
 /**
- * @param int $nAlleXStd
+ * @param int $hours
  * @return bool|string
  */
-function rechneUmAlleXStunden($nAlleXStd)
+function rechneUmAlleXStunden($hours)
 {
-    if ($nAlleXStd > 0) {
-        // nAlleXStd umrechnen
-        if ($nAlleXStd > 24) {
-            $nAlleXStd = round($nAlleXStd / 24);
-            if ($nAlleXStd >= 365) {
-                $nAlleXStd /= 365;
-                if ($nAlleXStd == 1) {
-                    $nAlleXStd .= __('year');
-                } else {
-                    $nAlleXStd .= __('years');
-                }
-            } elseif ($nAlleXStd == 1) {
-                $nAlleXStd .= __('day');
+    if ($hours <= 0) {
+        return false;
+    }
+    if ($hours > 24) {
+        $hours = round($hours / 24);
+        if ($hours >= 365) {
+            $hours /= 365;
+            if ($hours == 1) {
+                $hours .= __('year');
             } else {
-                $nAlleXStd .= __('days');
+                $hours .= __('years');
             }
-        } elseif ($nAlleXStd > 1) {
-            $nAlleXStd .= __('hour');
+        } elseif ($hours == 1) {
+            $hours .= __('day');
         } else {
-            $nAlleXStd .= __('hours');
+            $hours .= __('days');
         }
-
-        return $nAlleXStd;
+    } elseif ($hours > 1) {
+        $hours .= __('hour');
+    } else {
+        $hours .= __('hours');
     }
 
-    return false;
+    return $hours;
 }
 
 /**
@@ -163,9 +168,9 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
                         ON tjobqueue.cronID = tcron.cronID
                     WHERE tcron.cronID = :id',
                 ['id' => $kCron],
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             );
-            $oCron = new Cron(
+            $oCron = new LegacyCron(
                 $kCron,
                 $kExportformat,
                 $nAlleXStunden,
@@ -191,7 +196,7 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
         if (isset($oCron->cronID) && $oCron->cronID > 0) {
             return -1;
         }
-        $oCron = new Cron(
+        $oCron = new LegacyCron(
             0,
             $kExportformat,
             $nAlleXStunden,
@@ -292,15 +297,15 @@ function holeExportformatQueueBearbeitet($hours)
             WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
         ['lid' => $kSprache, 'hrs' => $hours],
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
+ * @param JTLSmarty $smarty
  * @return string
  */
-function exportformatQueueActionErstellen(\Smarty\JTLSmarty $smarty)
+function exportformatQueueActionErstellen(JTLSmarty $smarty)
 {
     $smarty->assign('oExportformat_arr', holeAlleExportformate());
 
@@ -308,11 +313,11 @@ function exportformatQueueActionErstellen(\Smarty\JTLSmarty $smarty)
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
- * @param array             $messages
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  * @return string
  */
-function exportformatQueueActionEditieren(\Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionEditieren(JTLSmarty $smarty, array &$messages)
 {
     $kCron = Request::verifyGPCDataInt('kCron');
     $oCron = $kCron > 0 ? holeCron($kCron) : 0;
@@ -384,10 +389,10 @@ function exportformatQueueActionTriggern(array &$messages)
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
+ * @param JTLSmarty $smarty
  * @return string
  */
-function exportformatQueueActionFertiggestellt(\Smarty\JTLSmarty $smarty)
+function exportformatQueueActionFertiggestellt(JTLSmarty $smarty)
 {
     $nStunden = Request::verifyGPCDataInt('nStunden');
     if ($nStunden <= 0) {
@@ -401,11 +406,11 @@ function exportformatQueueActionFertiggestellt(\Smarty\JTLSmarty $smarty)
 }
 
 /**
- * @param \Smarty\JTLSmarty $smarty
- * @param array             $messages
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  * @return string
  */
-function exportformatQueueActionErstellenEintragen(\Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$messages)
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
@@ -415,8 +420,8 @@ function exportformatQueueActionErstellenEintragen(\Smarty\JTLSmarty $smarty, ar
     $oValues       = new stdClass();
 
     $oValues->kExportformat = $kExportformat;
-    $oValues->dStart        = StringHandler::filterXSS($_POST['dStart']);
-    $oValues->nAlleXStunden = StringHandler::filterXSS($_POST['nAlleXStunden']);
+    $oValues->dStart        = Text::filterXSS($_POST['dStart']);
+    $oValues->nAlleXStunden = Text::filterXSS($_POST['nAlleXStunden']);
 
     if ($kExportformat > 0) {
         if (dStartPruefen($dStart)) {
@@ -474,7 +479,7 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
 
     $urlParams = null;
     if (!empty($cTab)) {
-        $urlParams['tab'] = StringHandler::filterXSS($cTab);
+        $urlParams['tab'] = Text::filterXSS($cTab);
     }
 
     header('Location: exportformat_queue.php' .
@@ -483,12 +488,12 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param string           $step
- * @param \Smarty\JTLSmarty $smarty
- * @param array            $messages
+ * @param string    $step
+ * @param JTLSmarty $smarty
+ * @param array     $messages
  * @return void
  */
-function exportformatQueueFinalize($step, \Smarty\JTLSmarty $smarty, array &$messages)
+function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
 {
     if (isset($_SESSION['exportformatQueue.notice'])) {
         $messages['notice'] = $_SESSION['exportformatQueue.notice'];

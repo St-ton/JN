@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\CheckBox;
+use JTL\Shop;
+use JTL\Helpers\Text;
+
 /**
  * @param array $cPost_arr
  * @param array $oSprache_arr
@@ -89,8 +93,8 @@ function speicherCheckBox($post, $languages)
     }
     $checkBox->kCheckBoxFunktion = (int)$post['kCheckBoxFunktion'];
     $checkBox->cName             = htmlspecialchars($post['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-    $checkBox->cKundengruppe     = StringHandler::createSSK($post['kKundengruppe']);
-    $checkBox->cAnzeigeOrt       = StringHandler::createSSK($post['cAnzeigeOrt']);
+    $checkBox->cKundengruppe     = Text::createSSK($post['kKundengruppe']);
+    $checkBox->cAnzeigeOrt       = Text::createSSK($post['cAnzeigeOrt']);
     $checkBox->nAktiv            = 0;
     if ($post['nAktiv'] === 'Y') {
         $checkBox->nAktiv = 1;

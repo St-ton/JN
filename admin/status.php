@@ -4,14 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Backend\Status;
+use JTL\Network\JTLApi;
+
 /**
- * @global \Smarty\JTLSmarty     $smarty
- * @global \Backend\AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-$smarty->assign('status', \Backend\Status::getInstance())
-       ->assign('sub', Shop::Container()->get(\Network\JTLApi::class)->getSubscription())
+$smarty->assign('status', Status::getInstance())
+       ->assign('sub', Shop::Container()->get(JTLApi::class)->getSubscription())
        ->display('status.tpl');

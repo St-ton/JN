@@ -5,6 +5,9 @@
  * @author Felix Moche
  */
 
+use JTL\Update\Migration;
+use JTL\Update\IMigration;
+
 /**
  * Class Migration_20190207074500
  */
@@ -15,17 +18,15 @@ class Migration_20190207074500 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `twaehrung` 
+        $this->execute('ALTER TABLE `twaehrung` 
             CHANGE COLUMN `cName` `cName` VARCHAR(255) NULL DEFAULT NULL,
-            CHANGE COLUMN `cNameHTML` `cNameHTML` VARCHAR(255) NULL DEFAULT NULL"
-        );
+            CHANGE COLUMN `cNameHTML` `cNameHTML` VARCHAR(255) NULL DEFAULT NULL');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `twaehrung` 
+        $this->execute('ALTER TABLE `twaehrung` 
             CHANGE COLUMN `cName` `cName` VARCHAR(20) NULL DEFAULT NULL,
-            CHANGE COLUMN `cNameHTML` `cNameHTML` VARCHAR(20) NULL DEFAULT NULL"
-        );
+            CHANGE COLUMN `cNameHTML` `cNameHTML` VARCHAR(20) NULL DEFAULT NULL');
     }
 }

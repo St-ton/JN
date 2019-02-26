@@ -4,15 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Mapper\PluginState;
+use JTL\Shop;
 use JTL\XMLParser;
 
 /**
  * Class LegacyPlugin
- * @package Plugin
+ * @package JTL\Plugin,
  */
 class LegacyPlugin extends PluginBC
 {
@@ -82,15 +84,14 @@ class LegacyPlugin extends PluginBC
     public $cFehler = '';
 
     /**
-     * Konstruktor
-     *
+     * LegacyPlugin constructor.
      * @param int  $id
-     * @param bool $invalidateCache - set to true to clear plugin cache
+     * @param bool $invalidateCache
      */
     public function __construct(int $id = 0, bool $invalidateCache = false)
     {
         if ($id > 0) {
-            $this->loadFromDB($id, \Shop::Container()->getDB(), \Shop::Container()->getCache(), $invalidateCache);
+            $this->loadFromDB($id, Shop::Container()->getDB(), Shop::Container()->getCache(), $invalidateCache);
         }
     }
 
@@ -159,7 +160,7 @@ class LegacyPlugin extends PluginBC
         $obj->dInstalliert         = $this->getMeta()->getDateInstalled()->format('d.m.Y H:i');
         $obj->bBootstrap           = $this->isBootstrap() ? 1 : 0;
 
-        return \Shop::Container()->getDB()->update('tplugin', 'kPlugin', $obj->kPlugin, $obj);
+        return Shop::Container()->getDB()->update('tplugin', 'kPlugin', $obj->kPlugin, $obj);
     }
 
     /**
@@ -186,10 +187,10 @@ class LegacyPlugin extends PluginBC
 
     /**
      * @param string $pluginID
-     * @return null|LegacyPlugin
+     * @return null|PluginInterface
      * @deprecated since 5.0.0
      */
-    public static function getPluginById(string $pluginID): ?self
+    public static function getPluginById(string $pluginID): ?PluginInterface
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
@@ -220,7 +221,7 @@ class LegacyPlugin extends PluginBC
     public function mapPluginStatus(int $state): string
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $mapper = new \Mapper\PluginState();
+        $mapper = new PluginState();
 
         return $mapper->map($state);
     }

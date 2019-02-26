@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Backend\Notification;
-use Backend\NotificationEntry;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use Events\Dispatcher;
+use JTL\Backend\Notification;
+use JTL\Backend\NotificationEntry;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Events\Dispatcher;
 
 /**
  * Class Bootstrapper
- * @package Plugin
+ * @package JTL\Plugin
  */
 abstract class Bootstrapper implements BootstrapperInterface
 {

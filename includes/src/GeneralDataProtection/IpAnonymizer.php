@@ -4,20 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
+
+use JTL\Shop;
 
 /**
  * Class IpAnonymizer
- * @package GeneralDataProtection
- *
+ * @package JTL\GeneralDataProtection
  * v4
  * anonymize()       : 255.255.255.34 -> 255.255.255.0
  * anonymizeLegacy() : 255.255.255.34 -> 255.255.255.*
- *
  * v6
  * anonymize()       : 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 -> 2001:db8:85a3:8d3:0:0:0:0   (also cuts leading zeros!)
  * anonymizeLegacy() : 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 -> 2001:0db8:85a3:08d3:*:*:*:*
- *
  */
 class IpAnonymizer
 {
@@ -85,7 +84,7 @@ class IpAnonymizer
     public function __construct(string $szIP = '', bool $bBeautify = false)
     {
         try {
-            $this->logger = \Shop::Container()->getLogService();
+            $this->logger = Shop::Container()->getLogService();
         } catch (\Exception $e) {
             $this->logger = null;
         }
@@ -223,7 +222,7 @@ class IpAnonymizer
         $maskParts             = \preg_split('/[\.:]/', $this->ipMask);
         $ipParts               = \preg_split('/[\.:]/', $this->ip);
         $len                   = \count($ipParts);
-        (4 === $len) ? $szGlue = '.' : $szGlue = ':';
+        ($len === 4) ? $szGlue = '.' : $szGlue = ':';
         for ($i = 0; $i < $len; $i++) {
             (\hexdec($maskParts[$i]) !== 0) ?: $ipParts{$i} = '*';
         }

@@ -4,21 +4,27 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap;
+namespace JTL\Sitemap;
 
-use DB\DbInterface;
-use Helpers\Request;
-use Helpers\Tax;
+use function Functional\some;
+use JTL\DB\DbInterface;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Helpers\Tax;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Sitemap\Factories\FactoryInterface;
+use JTL\Sitemap\ItemRenderers\RendererInterface;
+use JTL\Sitemap\Items\ItemInterface;
+use JTL\Sitemap\SchemaRenderers\SchemaRendererInterface;
+use JTL\Sprache;
 use Psr\Log\LoggerInterface;
-use Sitemap\Factories\FactoryInterface;
-use Sitemap\ItemRenderers\RendererInterface;
-use Sitemap\Items\ItemInterface;
-use Sitemap\SchemaRenderers\SchemaRendererInterface;
+use stdClass;
 use function Functional\first;
 
 /**
  * Class Export
- * @package Sitemap
+ * @package JTL\Sitemap
  */
 final class Export
 {
@@ -93,8 +99,8 @@ final class Export
         $this->renderer       = $renderer;
         $this->schemaRenderer = $schemaRenderer;
         $this->config         = $config;
-        $this->baseImageURL   = \Shop::getImageBaseURL();
-        $this->baseURL        = \Shop::getURL() . '/';
+        $this->baseImageURL   = Shop::getImageBaseURL();
+        $this->baseURL        = Shop::getURL() . '/';
         $this->gzip           = \function_exists('gzopen');
         $this->blockedURLs    = [
             'navi.php',
@@ -123,7 +129,7 @@ final class Export
         $res        = '';
 
         foreach ($languages as $language) {
-            $language->cISO639 = \StringHandler::convertISO2ISO639($language->cISO);
+            $language->cISO639 = Text::convertISO2ISO639($language->cISO);
         }
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
@@ -170,13 +176,13 @@ final class Export
      */
     private function setSessionData(array $customerGroupIDs): void
     {
-        $defaultLang             = \Sprache::getDefaultLanguage();
+        $defaultLang             = Sprache::getDefaultLanguage();
         $defaultLangID           = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
         Tax::setTaxRates();
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = new \Kundengruppe();
+            $_SESSION['Kundengruppe'] = new Kundengruppe();
         }
         $_SESSION['Kundengruppe']->setID(first($customerGroupIDs));
     }
@@ -222,7 +228,7 @@ final class Export
      */
     private function isURLBlocked(string $url): bool
     {
-        return \Functional\some($this->blockedURLs, function ($e) use ($url) {
+        return some($this->blockedURLs, function ($e) use ($url) {
             return \mb_strpos($url, $e) !== false;
         });
     }
@@ -282,7 +288,7 @@ final class Export
         foreach ($urlCounts as $count) {
             $totalCount += $count;
         }
-        $report                     = new \stdClass();
+        $report                     = new stdClass();
         $report->nTotalURL          = $totalCount;
         $report->fVerarbeitungszeit = \number_format($timeTotal, 2);
         $report->dErstellt          = 'NOW()';
@@ -292,7 +298,7 @@ final class Export
             if ($count <= 0) {
                 continue;
             }
-            $ins                 = new \stdClass();
+            $ins                 = new stdClass();
             $ins->kSitemapReport = $reportID;
             $ins->cDatei         = 'sitemap_' . $i . '.xml' . ($this->gzip ? '.gz' : '');
             $ins->nAnzahlURL     = $count;

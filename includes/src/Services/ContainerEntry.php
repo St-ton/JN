@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
 /**
  * Class ContainerEntry
- * @package Services
+ * @package JTL\Services
  */
 class ContainerEntry
 {

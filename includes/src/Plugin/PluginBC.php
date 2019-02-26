@@ -4,15 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
+
+use DateTime;
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class PluginBC
- * @package Plugin
+ * @package JTL\Plugin
  */
 class PluginBC extends AbstractPlugin
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -28,6 +31,7 @@ class PluginBC extends AbstractPlugin
         'cURL'                            => ['getMeta', 'URL'],
         'cVerzeichnis'                    => ['getPaths', 'BaseDir'],
         'cPluginID'                       => 'PluginID',
+        'cStoreID'                        => 'StoreID',
         'cLizenz'                         => ['getLicense', 'Key'],
         'cLizenzKlasse'                   => ['getLicense', 'Class'],
         'cLizenzKlasseName'               => ['getLicense', 'ClassName'],
@@ -64,11 +68,7 @@ class PluginBC extends AbstractPlugin
         'nCalledHook'                     => 'CalledHook',
         'cTextReadmePath'                 => ['getMeta', 'ReadmeMD'],
         'cTextLicensePath'                => ['getMeta', 'LicenseMD'],
-        'changelogPath'                   => ['getMeta', 'ChangelogMD'],
-        //        'cLicencePfadURL'                 => '',
-        //        'cLicencePfadURLSSL'              => '',
-        //        'oPluginHook_arr'                 => '',
-        //        'oPluginUninstall'                => '',
+        'changelogPath'                   => ['getMeta', 'ChangelogMD']
     ];
 
     /**
@@ -94,7 +94,7 @@ class PluginBC extends AbstractPlugin
      */
     public function setCompatDateUpdated(string $date): void
     {
-        $this->getMeta()->setDateLastUpdate(new \DateTime($date));
+        $this->getMeta()->setDateLastUpdate(new DateTime($date));
     }
 
     /**
@@ -110,7 +110,7 @@ class PluginBC extends AbstractPlugin
      */
     public function setCompatDateUpdatedGER(string $date): void
     {
-        $this->getMeta()->setDateLastUpdate(new \DateTime($date));
+        $this->getMeta()->setDateLastUpdate(new DateTime($date));
     }
 
     /**
@@ -126,7 +126,7 @@ class PluginBC extends AbstractPlugin
      */
     public function setCompatDateInstalled(string $date): void
     {
-        $this->getMeta()->setDateInstalled(new \DateTime($date));
+        $this->getMeta()->setDateInstalled(new DateTime($date));
     }
 
     /**
@@ -142,7 +142,7 @@ class PluginBC extends AbstractPlugin
      */
     public function setCompatDateInstalledGER(string $date): void
     {
-        $this->getMeta()->setDateInstalled(new \DateTime($date));
+        $this->getMeta()->setDateInstalled(new DateTime($date));
     }
 
     /**

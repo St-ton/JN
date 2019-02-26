@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class NameASC
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class NameASC extends AbstractSortingOption
 {
@@ -22,7 +23,7 @@ class NameASC extends AbstractSortingOption
     {
         parent::__construct($productFilter);
         $this->setOrderBy('tartikel.cName');
-        $this->setName(\Shop::Lang()->get('sortNameAsc'));
+        $this->setName(Shop::Lang()->get('sortNameAsc'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_name']);
         $this->setValue(\SEARCH_SORT_NAME_ASC);
     }

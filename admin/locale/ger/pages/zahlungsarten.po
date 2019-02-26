@@ -9,10 +9,10 @@ msgid "paymentmethodsURL"
 msgstr "https://jtl-url.de/covba"
 
 msgid "paymentmethodName"
-msgstr "Zahlungsartname"
+msgstr "Name der Zahlungsart"
 
 msgid "installedPaymentmethods"
-msgstr "Folgende Zahlungsarten sind installiert"
+msgstr "Folgende Zahlungsarten sind installiert:"
 
 msgid "name"
 msgstr "Zahlungsart"
@@ -27,22 +27,22 @@ msgid "restrictedToCustomerGroups"
 msgstr "Erlaubte Kundengruppen"
 
 msgid "feeName"
-msgstr "Gebührname"
+msgstr "Name der Gebühr"
 
 msgid "pictureURL"
 msgstr "Bild-URL"
 
 msgid "pictureDesc"
-msgstr "Geben Sie hier den Pfad oder URL zu einem Bild an, das statt des anzuzeigenden Namens in der Kaufabwicklung bei dieser Zahlungsart angezeigt werden soll."
+msgstr "Hier geben Sie den Pfad oder die URL eines Bildes an, das statt des Namens der Zahlungsart in der Kaufabwicklung angezeigt werden soll."
 
 msgid "noticeText"
 msgstr "Hinweistext"
 
 msgid "noticeTextShop"
-msgstr "Hinweistext Shop"
+msgstr "Hinweistext (Shop)"
 
 msgid "noticeTextEmail"
-msgstr "Hinweistext Email"
+msgstr "Hinweistext (E-Mail)"
 
 msgid "paymentAckMail"
 msgstr "E-Mail: Bestätigung der Zahlung"
@@ -96,13 +96,13 @@ msgid "paymentsURL"
 msgstr "https://jtl-url.de/covba"
 
 msgid "paymentsDesc"
-msgstr "Hier können Sie alle Zahlungseingänge zu einer gewünschten Zahlungsart einsehen und deren Abgleichs-Status zur Wawi untersuchen."
+msgstr "Hier können Sie alle Zahlungseingänge zu einer gewünschten Zahlungsart und deren Abgleichs-Status zu JTL-Wawi einsehen."
 
 msgid "successPaymentMethodCheck"
 msgstr "Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft."
 
 msgid "successLogReset"
-msgstr "Der Fehlerlog von %s wurde erfolgreich zurückgesetzt."
+msgstr "Der Fehler-Log von %s wurde erfolgreich zurückgesetzt."
 
 msgid "noLogs"
 msgstr "Keine Logs vorhanden."
@@ -111,10 +111,16 @@ msgid "amountPayed"
 msgstr "Gezahlter Betrag"
 
 msgid "syncedWithWawi"
-msgstr "Abgeholt durch Wawi"
+msgstr "Bereits durch JTL-Wawi abgeholt"
 
 msgid "wawiSyncReset"
-msgstr "Wawi-Abholung zurücksetzen"
+msgstr "Für den nächsten JTL-Wawi-Abgleich zur erneuten Abholung vormerken"
 
 msgid "installedPaymentTypes"
 msgstr "Installierte Zahlungsarten"
+
+msgid "successPaymentMethodSave"
+msgstr "Zahlungsart gespeichert."
+
+msgid "errorPaymentMethodNotFound"
+msgstr "Zahlungsart nicht gefunden."

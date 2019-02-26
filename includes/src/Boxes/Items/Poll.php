@@ -4,15 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
-use Helpers\URL;
-use Session\Frontend;
+use JTL\DB\ReturnType;
+use JTL\Helpers\URL;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class Poll
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class Poll extends AbstractBox
 {
@@ -27,13 +28,13 @@ final class Poll extends AbstractBox
         $sql       = ($conf = $this->config['umfrage']['umfrage_box_anzahl']) > 0
             ? ' LIMIT ' . (int)$conf
             : '';
-        $langID    = \Shop::getLanguageID();
+        $langID    = Shop::getLanguageID();
         $cacheID   = 'bu_' . $langID . '_' . Frontend::getCustomerGroup()->getID() . \md5($sql);
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_CORE];
         $cached    = true;
-        if (($polls = \Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($polls = Shop::Container()->getCache()->get($cacheID)) === false) {
             $cached = false;
-            $polls  = \Shop::Container()->getDB()->queryPrepared(
+            $polls  = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, 
                 tumfrage.cName, tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, 
                 tumfrage.nAktiv, tumfrage.dGueltigVon, tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo,
@@ -57,7 +58,7 @@ final class Poll extends AbstractBox
                 ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $polls, $cacheTags);
         }
         foreach ($polls as $poll) {
             $poll->cURL     = URL::buildURL($poll, \URLART_UMFRAGE);

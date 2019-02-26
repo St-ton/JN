@@ -1763,7 +1763,10 @@ msgid "bewertungserinnerung_nutzen_value(Y)"
 msgstr "Yes"
 
 msgid "bewertungserinnerung_nutzen_value(N)"
-msgstr "No"
+msgstr "Never"
+
+msgid "bewertungserinnerung_nutzen_value(nlbound)"
+msgstr "Bind to newletter consent"
 
 msgid "bewertung_guthaben_nutzen_value(Y)"
 msgstr "Yes"
@@ -2611,3 +2614,8 @@ msgstr "Yes"
 msgid "compile_check_value(N)"
 msgstr "No"
 
+msgid "ftp_ssl_value(1)"
+msgstr "Yes"
+
+msgid "ftp_ssl_value(0)"
+msgstr "No"

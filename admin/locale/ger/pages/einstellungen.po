@@ -12,7 +12,7 @@ msgid "savePreferences"
 msgstr "Einstellungen speichern"
 
 msgid "backToOverview"
-msgstr "zurück zur Übersicht"
+msgstr "Zurück zur Übersicht"
 
 msgid "settingsSaved"
 msgstr "Die Einstellungen wurden erfolgreich gespeichert."

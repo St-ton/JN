@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
 
-use PHPUnit\Framework\TestCase;
+use JTL\Services\JTL\Validation\Rules\Type;
+use Tests\BaseTestCase;
 
 /**
  * Class TypeTest
  * @package Services\JTL\Validation\Rules
  */
-class TypeTest extends TestCase
+class TypeTest extends BaseTestCase
 {
     public function test()
     {

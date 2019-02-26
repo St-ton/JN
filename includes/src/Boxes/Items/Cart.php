@@ -4,11 +4,12 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
 /**
  * Class Cart
- * @package Boxes\Items
+ *
+ * @package JTL\Boxes\Items
  */
 final class Cart extends AbstractBox
 {

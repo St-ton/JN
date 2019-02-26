@@ -4,13 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use Session\Frontend;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Sprache;
 
 /**
  * Class Config
- * @package Filter
+ * @package JTL\Filter
  */
 class Config implements ConfigInterface
 {
@@ -45,11 +48,11 @@ class Config implements ConfigInterface
     public static function getDefault(): ConfigInterface
     {
         $config = new self();
-        $config->setLanguageID(\Shop::getLanguageID());
-        $config->setLanguages(\Sprache::getInstance()->getLangArray());
-        $config->setConfig(\Shopsetting::getInstance()->getAll());
+        $config->setLanguageID(Shop::getLanguageID());
+        $config->setLanguages(Sprache::getInstance()->getLangArray());
+        $config->setConfig(Shopsetting::getInstance()->getAll());
         $config->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
-        $config->setBaseURL(\Shop::getURL() . '/');
+        $config->setBaseURL(Shop::getURL() . '/');
 
         return $config;
     }

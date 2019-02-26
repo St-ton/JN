@@ -6,10 +6,10 @@ msgid "link"
 msgstr "Seite"
 
 msgid "links"
-msgstr "Content Management System (Eigene Seiten)"
+msgstr "Linkgruppen und Eigene Seiten"
 
 msgid "linksDesc"
-msgstr "Erstellen Sie eigene Shop-Seiten mit xHTML-Inhalt, Links zu URLs oder Spezialseiten. Eine Seite ist immer einer Linkgruppe zugeordnet. Linkgruppen können in eigenen Boxen (Boxen-Typ Linkgruppe) angezeigt werden. Die Seiten in der Linkgruppe <em>Kopf</em> werden standardmäßig im Header des Templates als Reiter gelistet. Die Linkgruppe <em>Informationen</em> lässt sich als seitliche Box vom Typ Linkgruppe in der Boxenverwaltung hinzufügen. Die Linkgruppe <em>Fuss</em> wird im Fuß-Bereich des Templates dargestellt."
+msgstr "Hier konfigurieren Sie die verschiedenen Linkgruppen, die Sie über die Boxenverwaltung in JTL-Shop anzeigen lassen können. Sie können in jeder der Linkgruppen eigene Seiten mit Inhalt, Links zu anderen URLs oder Spezialseiten erstellen."
 
 msgid "linksUrl"
 msgstr "https://jtl-url.de/rcl9g"
@@ -45,7 +45,7 @@ msgid "addLink"
 msgstr "Seite hinzufügen"
 
 msgid "newLinks"
-msgstr "Seite erstellen/ändern"
+msgstr "Seite erstellen / bearbeiten"
 
 msgid "newLinksSave"
 msgstr "Seite speichern"
@@ -54,7 +54,7 @@ msgid "linkType"
 msgstr "Seitentyp"
 
 msgid "linkWithOwnContent"
-msgstr "Seite mit eigenem xHTML-Inhalt"
+msgstr "Seite mit eigenem Inhalt"
 
 msgid "linkToExternalURL"
 msgstr "Link zu einer externen Adresse"
@@ -66,10 +66,10 @@ msgid "url"
 msgstr "Ziel-URL"
 
 msgid "urlDesc"
-msgstr "Nur auszufüllen, wenn der Seitentyp <em>Link zu einer externen Adresse</em> ist."
+msgstr "Füllen Sie dieses Feld nur aus, wenn der Seitentyp <em>Link zu einer externen Adresse</em> ist."
 
 msgid "titleDesc"
-msgstr "Nur auszufüllen, wenn der Seitentyp <em>Seite mit eigenem xHtml-Inhalt</em> ist."
+msgstr "Hier hinterlegen Sie den Namen der Seite. Sie müssen diesen nur ausfüllen, wenn es sich um eine <em>Seite mit eigenem Inhalt</em> handelt."
 
 msgid "restrictedToCustomerGroups"
 msgstr "Sichtbar für"
@@ -78,7 +78,7 @@ msgid "linkTitle"
 msgstr "Überschrift"
 
 msgid "linkSeo"
-msgstr "Suchmaschinenname"
+msgstr "Name für Suchmaschinen"
 
 msgid "choose"
 msgstr "Bitte wählen"
@@ -99,13 +99,13 @@ msgid "metaDescription"
 msgstr "Meta Description"
 
 msgid "metaTitleDesc"
-msgstr "«title»-Tag der Seite. Für Suchmaschinen sehr wichtiger Ranking-Faktor. Empfehlung: Suchwort-optimierter prägnanter Seitentitel, 1-6 Wörter, maximal 69 Zeichen. "
+msgstr "Der Meta Title wird von Suchmaschinen als Überschrift der Seite verwendet. Dieser sollte möglichst aussagekräftig und maximal 69 Zeichen lang sein. "
 
 msgid "metaKeywordsDesc"
-msgstr "Suchbegriffe, die auf dieser Seite vorkommen. Empfehlung: 1-3 Suchbegriffe, maximal 55 Zeichen. Meta-Keywords haben keinen Einfluß auf das Ranking der Seite bei Google (Google ignoriert die Meta-Keywords)! "
+msgstr "In den Meta-Keywords tragen Sie Schlüsselwörter zur Seite ein. Wichtige Schlüsselwörter sollten vorne stehen. Handelt es sich um einen deutschsprachigen Shop, sind Umlaute erlaubt. (Hinweis: Die Suchmaschine Google ignoriert Meta Keywords einer Seite.) "
 
 msgid "metaDescriptionDesc"
-msgstr "Metainformationen für Suchmaschinen (Kurzbeschreibung der Seite). Google zeigt maximal 156 Zeichen der Meta-Description. "
+msgstr "Die Meta Description gibt einen Überblick über den Inhalt einer Seite und wird als Textausschnitt in Suchmaschinen angezeigt. Die Beschreibung sollte den Inhalt der Seite so genau wie möglich und in kurzer Form wiedergeben (max. 156 Zeichen). "
 
 msgid "agb"
 msgstr "AGB"
@@ -117,34 +117,34 @@ msgid "visibleAfterLogin"
 msgstr "Sichtbar nur nach Anmeldung"
 
 msgid "showPrintButton"
-msgstr "Druck-Button anzeigen"
+msgstr "Drucken-Button anzeigen"
 
 msgid "noFollow"
-msgstr "\"nofollow\"- bzw. \"noindex\"-Attribut setzen, um Suchmaschinen von der Indizierung der Seite abzuhalten"
+msgstr "\"nofollow\"- bzw. \"noindex\"-Attribut setzen, um Suchmaschinen von der Indexierung der Seite abzuhalten"
 
 msgid "tagging"
-msgstr "Tagging Übersicht"
+msgstr "Tagging-Übersicht"
 
 msgid "livesearch"
-msgstr "Livesuche"
+msgstr "Live-Suche"
 
 msgid "manufacturer"
-msgstr "Hersteller Übersicht"
+msgstr "Hersteller-Übersicht"
 
 msgid "newsletterArchive"
-msgstr "Newsletterarchiv"
+msgstr "Newsletter-Archiv"
 
 msgid "newsArchive"
-msgstr "Newsarchiv"
+msgstr "News-Archiv"
 
 msgid "gratisGeschenk"
-msgstr "Gratis Geschenk"
+msgstr "Gratisgeschenk"
 
 msgid "wrb"
-msgstr "WRB"
+msgstr "Widerrufsbelehrung"
 
 msgid "linkPicAdd"
-msgstr "weiteres Bild"
+msgstr "Weiteres Bild"
 
 msgid "linkPics"
 msgstr "Verfügbare Bilder"
@@ -153,10 +153,10 @@ msgid "cIdentifierText"
 msgstr "Eindeutige Seiten-ID"
 
 msgid "bIsFluidText"
-msgstr "Container-Fluid?"
+msgstr "Container-Fluid"
 
 msgid "noData"
-msgstr "keine Links vorhanden"
+msgstr "Keine Links vorhanden"
 
 msgid "successLinkFromLinkGroupDelete"
 msgstr "Link erfolgreich aus Linkgruppe entfernt."
@@ -165,7 +165,7 @@ msgid "errorLinkFromLinkGroupDelete"
 msgstr "Link konnte nicht aus Linkgruppe entfernt werden."
 
 msgid "successLinkDelete"
-msgstr "Link erfolgreich gelöscht!"
+msgstr "Link erfolgreich gelöscht."
 
 msgid "errorLinkDelete"
 msgstr "Link konnte nicht gelöscht werden."
@@ -174,7 +174,7 @@ msgid "errorLinkGroupDelete"
 msgstr "Linkgruppe konnte nicht gelöscht werden."
 
 msgid "successLinkGroupDelete"
-msgstr "Linkgruppe erfolgreich gelöscht!"
+msgstr "Linkgruppe erfolgreich gelöscht."
 
 msgid "successLinkCreate"
 msgstr "Link wurde erfolgreich hinzugefügt."
@@ -216,16 +216,16 @@ msgid "dangerDeleteAllLinksInLinkGroup"
 msgstr "Alle Links innerhalb dieser Linkgruppe werden ebenfalls gelöscht."
 
 msgid "dangerDeleteLinksAlso"
-msgstr "Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht"
+msgstr "Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht."
 
 msgid "sureDeleteLinkGroup"
-msgstr "Wollen Sie die Linkgruppe \"<strong>%s</strong>\" wirklich löschen?"
+msgstr "Möchten Sie die Linkgruppe \"<strong>%s</strong>\" wirklich löschen?"
 
 msgid "continueEdit"
 msgstr "und weiter bearbeiten"
 
 msgid "createWithSearchEngineName"
-msgstr "(anlegen unter \"Suchmaschinenname\")"
+msgstr "(anlegen unter \"Name für Suchmaschinen\")"
 
 msgid "sureDeleteLink"
 msgstr "Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links und alle Kopien gelöscht werden!"
@@ -234,7 +234,7 @@ msgid "linksWithoutLinkGroup"
 msgstr "Links ohne Linkgruppe"
 
 msgid "dangerLinkWillGetDeleted"
-msgstr "Achtung: Link ist in %s Linkgruppen vorhanden und wird aus allen gelöscht!"
+msgstr "Achtung: Link ist in %s Linkgruppen vorhanden und wird aus allen gelöscht."
 
 msgid "isDuplicateSpecialLink"
 msgstr "Die Spezialseite existiert bereits für die gewählte(n) Kundengruppe(n)."

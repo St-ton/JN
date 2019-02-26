@@ -4,21 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\ReturnType;
+use Generator;
+use JTL\DB\ReturnType;
+use JTL\Sitemap\Items\Attribute as AttributeItem;
+use PDO;
 use function Functional\map;
 
 /**
  * Class Attribute
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class Attribute extends AbstractFactory
 {
     /**
      * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
         $languageIDs = map($languages, function ($e) {
             return (int)$e->kSprache;
@@ -47,11 +50,11 @@ final class Attribute extends AbstractFactory
                 ORDER BY tmerkmal.kMerkmal, tmerkmal.cName',
             ReturnType::QUERYSINGLE
         );
-        while (($attribute = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+        while (($attribute = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $attribute->kMerkmal     = (int)$attribute->kMerkmal;
             $attribute->kMerkmalWert = (int)$attribute->kMerkmalWert;
             $attribute->langID       = (int)$attribute->langID;
-            $item                    = new \Sitemap\Items\Attribute($this->config, $this->baseURL, $this->baseImageURL);
+            $item                    = new AttributeItem($this->config, $this->baseURL, $this->baseImageURL);
             $item->generateData($attribute, $languages);
             yield $item;
         }

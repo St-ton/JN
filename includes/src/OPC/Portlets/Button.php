@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Button
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Button extends Portlet
 {

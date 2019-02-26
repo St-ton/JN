@@ -4,13 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Session\Frontend;
+use JTL\Helpers\Text;
+use JTL\Catalog\Product\Preise;
+use JTL\Session\Frontend;
 
 /**
  * Class Wishlist
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class Wishlist extends AbstractBox
 {
@@ -40,7 +42,7 @@ final class Wishlist extends AbstractBox
                     $additionalParams .= '&' . $postMember . '=' . $_REQUEST[$postMember];
                 }
             }
-            $additionalParams = \StringHandler::filterXSS($additionalParams);
+            $additionalParams = Text::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
                 $cRequestURI  = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'];
                 $nPosAnd      = \mb_strrpos($cRequestURI, '&');
@@ -77,7 +79,7 @@ final class Wishlist extends AbstractBox
                             (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = \Preise::getLocalizedPriceString($fPreis, Frontend::getCurrency());
+                $wishlistItem->cPreis = Preise::getLocalizedPriceString($fPreis, Frontend::getCurrency());
             }
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));

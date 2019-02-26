@@ -6,10 +6,10 @@
  * Time: 14:40
  */
 
-namespace Backend\Settings\Sections;
+namespace JTL\Backend\Settings\Sections;
 
-use DB\DbInterface;
-use Smarty\JTLSmarty;
+use JTL\DB\DbInterface;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Interface Section

@@ -4,20 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Tightenco\Collect\Support\Collection;
+use DateTime;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\MagicCompatibilityTrait;
+use JTL\Nice;
+use stdClass;
+use Illuminate\Support\Collection;
 use function Functional\group;
 
 /**
  * Class Survey
- * @package Survey
+ * @package JTL\Survey
  */
 class Survey
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -65,17 +70,17 @@ class Survey
     private $isActive = false;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $validFrom;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $validUntil;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $created;
 
@@ -100,7 +105,7 @@ class Survey
     private $db;
 
     /**
-     * @var \Nice
+     * @var Nice
      */
     private $nice;
 
@@ -134,10 +139,10 @@ class Survey
     /**
      * Survey constructor.
      * @param DbInterface           $db
-     * @param \Nice                 $nice
+     * @param Nice                  $nice
      * @param SurveyQuestionFactory $factory
      */
-    public function __construct(DbInterface $db, \Nice $nice, SurveyQuestionFactory $factory)
+    public function __construct(DbInterface $db, Nice $nice, SurveyQuestionFactory $factory)
     {
         $this->db        = $db;
         $this->nice      = $nice;
@@ -198,7 +203,7 @@ class Survey
                 ['sid' => $this->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $questions = group($questions, function (\stdClass $e) {
+            $questions = group($questions, function (stdClass $e) {
                 return $e->kUmfrageFrage;
             });
             foreach ($questions as $questionID => $questionData) {
@@ -272,7 +277,7 @@ class Survey
     public function setCustomerGroups($customerGroups): void
     {
         if (!\is_array($customerGroups)) {
-            $customerGroups = \StringHandler::parseSSK($customerGroups);
+            $customerGroups = Text::parseSSK($customerGroups);
         }
         $this->customerGroups = $customerGroups;
     }
@@ -358,58 +363,58 @@ class Survey
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getValidFrom(): \DateTime
+    public function getValidFrom(): DateTime
     {
         return $this->validFrom;
     }
 
     /**
-     * @param \DateTime|string $validFrom
+     * @param DateTime|string $validFrom
      */
     public function setValidFrom($validFrom): void
     {
         if (\is_string($validFrom)) {
-            $validFrom = new \DateTime($validFrom);
+            $validFrom = new DateTime($validFrom);
         }
         $this->validFrom = $validFrom;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getValidUntil(): \DateTime
+    public function getValidUntil(): DateTime
     {
         return $this->validUntil;
     }
 
     /**
-     * @param \DateTime|string $validUntil
+     * @param DateTime|string $validUntil
      */
     public function setValidUntil($validUntil): void
     {
         if (\is_string($validUntil)) {
-            $validUntil = new \DateTime($validUntil);
+            $validUntil = new DateTime($validUntil);
         }
         $this->validUntil = $validUntil;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreated(): \DateTime
+    public function getCreated(): DateTime
     {
         return $this->created;
     }
 
     /**
-     * @param \DateTime|string $created
+     * @param DateTime|string $created
      */
     public function setCreated($created): void
     {
         if (\is_string($created)) {
-            $created = new \DateTime($created);
+            $created = new DateTime($created);
         }
         $this->created = $created;
     }
@@ -507,7 +512,7 @@ class Survey
     {
         $res            = \get_object_vars($this);
         $res['db']      = '*truncated*';
-        $res['nice']    = '*truncated*';
+        $res['Nice']    = '*truncated*';
         $res['factory'] = '*truncated*';
 
         return $res;

@@ -96,7 +96,7 @@
         </style>
     {/if}
     {block name='head-resources-jquery'}
-        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
+        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
     {$dbgBarHead}
@@ -123,7 +123,7 @@
     {/if}
 
     {block name='header'}
-        {if Shop::isAdmin()}
+        {if \JTL\Shop::isAdmin()}
             {include file='layout/header_composer_menu.tpl'}
         {/if}
         <header class="hidden-print {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'}container-block{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">

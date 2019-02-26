@@ -20,7 +20,7 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">{__('available')} {__('agbwrb')}</h3>
+            <h3 class="panel-title">{__('existing')} {__('agbwrb')}</h3>
         </div>
         <table class="table table-striped">
             <thead>

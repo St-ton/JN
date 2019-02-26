@@ -1,13 +1,18 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\MagicCompatibilityTrait;
+namespace JTL;
+
+use function Functional\first;
+use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class Slider
+ * @package JTL
  */
 class Slider implements IExtensionPoint
 {
@@ -156,7 +161,7 @@ class Slider implements IExtensionPoint
      */
     public function set(stdClass $data): self
     {
-        foreach (get_object_vars($data) as $field => $value) {
+        foreach (\get_object_vars($data) as $field => $value) {
             if (($mapping = $this->getMapping($field)) !== null) {
                 $method = 'set' . $mapping;
                 $this->$method($value);
@@ -187,9 +192,9 @@ class Slider implements IExtensionPoint
                 WHERE tslider.kSlider = :kslider' . $activeSQL .
             ' ORDER BY tslide.nSort',
             ['kslider' => $kSlider],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        $first = \Functional\first($data);
+        $first = first($data);
         if ($first !== null) {
             $this->setID($first->id);
             foreach ($data as $slideData) {
@@ -202,7 +207,7 @@ class Slider implements IExtensionPoint
             }
             $this->set($first);
 
-            return $this->getID() > 0 && count($this->slides) > 0;
+            return $this->getID() > 0 && \count($this->slides) > 0;
         }
 
         return false;
@@ -374,7 +379,7 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @return int
+     * @return bool
      */
     public function getIsActive(): bool
     {

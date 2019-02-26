@@ -82,7 +82,7 @@ Iframe.prototype = {
         this.jq('a, button')      // disable links and buttons that could change the current iframe page
             .off('click')
             .attr('onclick', '')
-            .click(function(e) { e.preventDefault(); });
+            .on('click', function(e) { e.preventDefault(); });
 
         this.portletPreviewLabel.appendTo(this.body);
         this.portletToolbar.appendTo(this.body);

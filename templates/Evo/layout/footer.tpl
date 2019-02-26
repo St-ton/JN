@@ -206,7 +206,7 @@
         <div id="copyright" {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'boxed'} class="container-block"{/if}>
             {block name='footer-copyright'}
                 <div class="container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
-                    {assign var=isBrandFree value=Shop::isBrandfree()}
+                    {assign var=isBrandFree value=\JTL\Shop::isBrandfree()}
                     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                         <div class="container-block clearfix">
                     {/if}
@@ -251,7 +251,7 @@
             {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
         {/if}
         <script>
-            $(window).load(function() {
+            $(window).on("load", function (e) {
                 $.backstretch('{$backstretchImgPath}');
                 new WOW().init();
             });

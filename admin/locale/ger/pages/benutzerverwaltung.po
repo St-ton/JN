@@ -6,7 +6,7 @@ msgid "benutzer"
 msgstr "Benutzerverwaltung"
 
 msgid "benutzerDesc"
-msgstr "Hier verwalten Sie Benutzer und Gruppenberechtigungen für das Shop-Admin-Backend. Sie können neue Benutzer hinzufügen und diese einer Gruppe zuordnen. In der Funktion Gruppen setzen Sie Berechtigungen für bestimmte Bereiche des Admin-Backends. "
+msgstr "Hier verwalten Sie Benutzer- und Gruppenberechtigungen für das Backend von JTL-Shop. Sie können neue Benutzer hinzufügen und diese einer Gruppe zuordnen. In der Registerkarte „Benutzergruppen“ setzen Sie Berechtigungen für bestimmte Bereiche des Backends. "
 
 msgid "benutzerURL"
 msgstr "https://jtl-url.de/2t78f"
@@ -18,10 +18,10 @@ msgid "benutzerKategorie"
 msgstr "Benutzer verwalten"
 
 msgid "benutzer2FA"
-msgstr "2FA"
+msgstr "2-Faktor-Authentifizierung"
 
 msgid "benutzerLoginVersuche"
-msgstr "Loginversuche"
+msgstr "Fehlgeschlagene Login-Versuche"
 
 msgid "benutzerLetzterLogin"
 msgstr "Letzte Anmeldung"
@@ -39,37 +39,37 @@ msgid "benutzerLoeschen"
 msgstr "Benutzer löschen"
 
 msgid "benutzerNeu"
-msgstr "Neuen Benutzer anlegen"
+msgstr "Benutzer anlegen"
 
 msgid "sperrenLabel"
-msgstr "sperren"
+msgstr "Benutzer sperren"
 
 msgid "entsperrenLabel"
-msgstr "entsperren"
+msgstr "Benutzer entsperren"
 
 msgid "loeschenLabelDeaktiviert"
-msgstr "Gruppe enthält noch Mitglieder!"
+msgstr "Löschen nicht möglich. Die Benutzergruppe hat noch Mitglieder."
 
 msgid "gruppenTab"
-msgstr "Gruppen"
+msgstr "Benutzergruppen"
 
 msgid "gruppenverwaltung"
-msgstr "Gruppenverwaltung"
+msgstr "Benutzergruppenverwaltung"
 
 msgid "gruppenKategorie"
-msgstr "Gruppen verwalten"
+msgstr "Benutzergruppen verwalten"
 
 msgid "gruppeNeu"
-msgstr "Neue Gruppe anlegen"
+msgstr "Benutzergruppe anlegen"
 
 msgid "gruppeBearbeiten"
-msgstr "Gruppe bearbeiten"
+msgstr "Benutzergruppe bearbeiten"
 
 msgid "stateON"
-msgstr "an"
+msgstr "Aktiviert"
 
 msgid "stateOFF"
-msgstr "aus"
+msgstr "Deaktiviert"
 
 msgid "errorSelfLock"
 msgstr "Sie können sich nicht selbst sperren."
@@ -111,22 +111,22 @@ msgid "errorUserDelete"
 msgstr "Benutzer konnte nicht gelöscht werden."
 
 msgid "errorAtLeastOneRight"
-msgstr "Mindestens eine Berechtigung auswählen."
+msgstr "Sie müssen mindestens eine Berechtigung auswählen."
 
 msgid "successGroupEdit"
-msgstr "Gruppe wurde erfolgreich bearbeitet."
+msgstr "Benutzergruppe wurde erfolgreich bearbeitet."
 
 msgid "successGroupCreate"
-msgstr "Gruppe wurde erfolgreich angelegt."
+msgstr "Benutzergruppe wurde erfolgreich angelegt."
 
 msgid "successGroupDelete"
-msgstr "Gruppe wurde erfolgreich gelöscht."
+msgstr "Benutzergruppe wurde erfolgreich gelöscht."
 
 msgid "errorGroupDelete"
-msgstr "Gruppe kann nicht entfernt werden."
+msgstr "Benutzergruppe kann nicht entfernt werden."
 
 msgid "errorGroupDeleteCustomer"
-msgstr "Die Gruppe kann nicht entfernt werden, da sich noch ein oder mehrere Mitglied(er) in der Gruppe befinden."
+msgstr "Die Benutzergruppe kann nicht entfernt werden, da sie noch mindestens ein Mitglied hat."
 
 msgid "errorKeyChange"
 msgstr " konnte nicht geändert werden!"
@@ -135,7 +135,7 @@ msgid "sureDeleteGroup"
 msgstr "Sind Sie sicher, dass die Gruppe entfernt werden soll?"
 
 msgid "usernameNotAvailable"
-msgstr "Benutzername <strong>%s</strong> bereits vergeben"
+msgstr "Benutzername <strong>%s</strong> bereits vergeben."
 
 msgid "timelyAccess"
 msgstr "Zeitlich begrenzter Zugriff"
@@ -144,16 +144,16 @@ msgid "tillInclusive"
 msgstr "... bis einschließlich"
 
 msgid "errorUsernameMissing"
-msgstr "Bitte legen Sie zuerst, in den Anmeldedaten, einen Benutzernamen fest!"
+msgstr "Bitte legen Sie zuerst in den Anmeldedaten einen Benutzernamen fest."
 
 msgid "warningAuthSecretOverwrite"
-msgstr "Das bisherige \"Authentication Secret\" wird ersetzt! Wirklich fortfahren?"
+msgstr "Das bisherige \"Authentication Secret\" wird ersetzt. Möchten Sie fortfahren?"
 
 msgid "warningNoPermissionToBackendAfter"
-msgstr "<strong>Achtung:</strong> Bitte beachten Sie, dass Sie mit diesem Account keine Möglichkeit mehr haben, in das Shop-Backend zu gelangen, falls Sie keinen Zugriff mehr auf die Google-Authenticator-App auf Ihrem Mobilgerät haben sollten!<br>"
+msgstr "<strong>Achtung:</strong> Bitte beachten Sie, dass Sie nach dem Speichern mit diesem Benutzerkonto keine Möglichkeit mehr haben, in das Backend von JTL-Shop zu gelangen, falls Sie keinen Zugriff mehr auf die Google Authenticator App auf Ihrem Mobilgerät haben sollten!"
 
 msgid "infoScanQR"
-msgstr "Scannen Sie den hier abgebildeten QR-Code mit der \"Google-Authenticator\"-app auf Ihrem Handy."
+msgstr "Scannen Sie den hier abgebildeten QR-Code mit der Google Authenticator App auf Ihrem Handy."
 
 msgid "emergencyCode"
 msgstr "Notfall-Codes"
@@ -165,10 +165,10 @@ msgid "clickHereToCreateQR"
 msgstr "Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:"
 
 msgid "codeCreate"
-msgstr "Neuen Code erstellen"
+msgstr "Neuen Code erzeugen"
 
 msgid "emergencyCodeCreate"
-msgstr "Notfall-Codes neu erstellen"
+msgstr "Notfall-Codes neu erzeugen"
 
 msgid "shopEmergencyCodes"
-msgstr "JTL-shop Backend Notfall-Codes"
+msgstr "Notfall-Codes für das JTL-Shop-Backend"

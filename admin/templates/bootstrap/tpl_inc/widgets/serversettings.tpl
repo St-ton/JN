@@ -1,11 +1,11 @@
 {capture name='testfailed'}
     <a class="label label-warning" href="systemcheck.php" title="Mehr Informationen im Systemcheck">
-        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><span class="sr-only">Warnung</span>
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><span class="sr-only">{__('warning')}</span>
     </a>
 {/capture}
 {capture name='testpassed'}
     <span class="label label-success">
-        <i class="fa fa-check" aria-hidden="true"></i><span class="sr-only">OK</span>
+        <i class="fa fa-check" aria-hidden="true"></i><span class="sr-only">{__('ok')}</span>
     </span>
 {/capture}
 
@@ -13,7 +13,7 @@
     <table class="table table-condensed table-hover table-blank">
         <tbody>
             <tr>
-                <td>Maximale PHP Ausführungszeit</td>
+                <td>{__('maxPHPExecutionTime')}</td>
                 <td>{$maxExecutionTime}</td>
                 <td class="text-right">
                     {if $bMaxExecutionTime}
@@ -24,7 +24,7 @@
                 </td>
             </tr>
             <tr>
-                <td>PHP-Speicherlimit</td>
+                <td>{__('phpMemoryLimit')}</td>
                 <td>{$memoryLimit}</td>
                 <td class="text-right">
                     {if $bMemoryLimit}
@@ -35,7 +35,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Maximale PHP Übertragungsgröße (FILE)</td>
+                <td>{__('phpMaxTransimissionSizeFile')}</td>
                 <td>{$maxFilesize}</td>
                 <td class="text-right">
                     {if $bMaxFilesize}
@@ -46,7 +46,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Maximale PHP Übertragungsgröße (POST)</td>
+                <td>{__('phpMaxTransimissionSizePost')}</td>
                 <td>{$postMaxSize}</td>
                 <td class="text-right">
                     {if $bPostMaxSize}
@@ -57,8 +57,8 @@
                 </td>
             </tr>
             <tr>
-                <td>allow_url_fopen aktiviert</td>
-                <td>{if $bAllowUrlFopen}ja{else}nein{/if}</td>
+                <td>allow_url_fopen {__('activated')}</td>
+                <td>{if $bAllowUrlFopen}{__('yes')}{else}{__('no')}{/if}</td>
                 <td class="text-right">
                     {if $bAllowUrlFopen}
                         {$smarty.capture.testpassed}
@@ -71,8 +71,8 @@
             {* only show this, if something went wrong *}
             {if isset($SOAPCheck) }
             <tr>
-                <td>SOAP-Erweiterung</td>
-                <td>nein</td>
+                <td>{__('soapExtension')}</td>
+                <td>{__('no')}</td>
                 <td class="text-right">
                     {if $SOAPCheck}
                         {$smarty.capture.testpassed}

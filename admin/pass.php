@@ -4,16 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Helpers\Text;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step     = 'prepare';
 $cFehler  = '';
 $cHinweis = '';
 if (isset($_POST['mail']) && Form::validateToken()) {
     $account = Shop::Container()->getAdminAccount();
-    $account->prepareResetPassword(StringHandler::filterXSS($_POST['mail']));
+    $account->prepareResetPassword(Text::filterXSS($_POST['mail']));
     $cHinweis = __('successEmailSend');
 } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh']) && Form::validateToken()) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {

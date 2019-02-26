@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+
 /**
  * @param int $kSlider
  * @return mixed

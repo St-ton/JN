@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
 
-use DB\DbInterface;
-use Plugin\AbstractPlugin;
-use Plugin\PluginInterface;
-use Smarty\ContextType;
-use Smarty\JTLSmarty;
+use JTL\DB\DbInterface;
+use JTL\Plugin\PluginInterface;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class AbstractWidget
- * @package Widgets
+ * @package JTL\Widgets
  */
 abstract class AbstractWidget implements WidgetInterface
 {
@@ -24,7 +24,7 @@ abstract class AbstractWidget implements WidgetInterface
     public $oSmarty;
 
     /**
-     * @var \DB\DbInterface
+     * @var DbInterface
      */
     public $oDB;
 
@@ -43,8 +43,8 @@ abstract class AbstractWidget implements WidgetInterface
      */
     public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $oPlugin = null)
     {
-        $this->oSmarty = $smarty ?? \Shop::Smarty(false, ContextType::BACKEND);
-        $this->oDB     = $db ?? \Shop::Container()->getDB();
+        $this->oSmarty = $smarty ?? Shop::Smarty(false, ContextType::BACKEND);
+        $this->oDB     = $db ?? Shop::Container()->getDB();
         $this->oPlugin = $oPlugin;
         $this->init();
     }

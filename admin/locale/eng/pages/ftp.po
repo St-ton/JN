@@ -1,0 +1,20 @@
+msgid "ftp"
+msgstr "FTP-Account"
+
+msgid "ftpDesc"
+msgstr " "
+
+msgid "ftpURL"
+msgstr " "
+
+msgid "ftpSave"
+msgstr "Save"
+
+msgid "ftpTest"
+msgstr "Test"
+
+msgid "ftpValidConnection"
+msgstr "Connection has been succesfully established"
+
+msgid "ftpInvalidShopRoot"
+msgstr "A valid shop instance has not been found."

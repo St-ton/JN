@@ -3,6 +3,9 @@
  * Add isbn and hazard config
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180312123000
  */
@@ -24,7 +27,7 @@ class Migration_20180313133000 extends Migration implements IMigration
             'Artikel ISBN anzeigen',
             'selectbox',
             499,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Soll die ISBN (International Standard Book Number) angezeigt werden?',
                 'inputOptions'  => [
                     'N' => 'Nein',
@@ -41,7 +44,7 @@ class Migration_20180313133000 extends Migration implements IMigration
             'Gefahrentafel im Artikel anzeigen',
             'selectbox',
             499,
-            (object) [
+            (object)[
                 'cBeschreibung' => 'Soll die europäische Gefahrentafel angezeigt werden (sofern in Wawi UN-Nummer und Gefahrnummer gepflegt sind)?',
                 'inputOptions'  => [
                     'N' => 'Nein',

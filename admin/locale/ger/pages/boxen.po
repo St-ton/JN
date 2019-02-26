@@ -9,7 +9,7 @@ msgid "boxenURL"
 msgstr "https://jtl-url.de/2uknw"
 
 msgid "boxenDesc"
-msgstr "Mithilfe der Boxenverwaltung fügen Sie Boxen hinzu, ändern die Reihenfolge oder ändern die Sichtbarkeit von Boxen-Containern auf bestimmten Seiten. Eine Box befindet sich immer in einem vom Template vordefinierten Boxen-Container (z.B. Container links oder Container rechts) und kann dort mit Hilfe der Sortiernummer neu angeordnet werden. <br />Sie können eigene Boxen z.B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt in einem Boxen-Container anlegen. Bei Eigenen Boxen und Linkgruppen-Boxen erscheint eine Editieren-Grafik neben dem Boxnamen. Über diesen Grafischen Link verknüpfen Sie die Box mit einer Linkgruppe bzw. weisen der Box eigene xHTML-Inhalte zu.<br />"
+msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Die generelle Verfügbarkeit eines Containers wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
 
 msgid "showContainer"
 msgstr "Container anzeigen"
@@ -36,7 +36,7 @@ msgid "catBoxNum"
 msgstr "Kategoriebox-Nummer"
 
 msgid "catBoxNumTooltip"
-msgstr "Listet nur die Kategorien mit dem Wawi-Kategorieattribut \"kategoriebox\" und der gesetzten Nummer. Standard=0 für alle Kategorien mit oder ohne Funktionsattribut."
+msgstr "Listet nur die Kategorien mit dem Kategorieattribut \"kategoriebox\" aus JTL-Wawi und der gesetzten Nummer auf. Standard=0 für alle Kategorien mit oder ohne Funktionsattribut."
 
 msgid "linkgroup"
 msgstr "Linkgruppe"
@@ -45,7 +45,7 @@ msgid "remove"
 msgstr "Aus Liste entfernen"
 
 msgid "confirmDeleteBox"
-msgstr "Sind Sie sicher, dass Sie die Box \"%s\" löschen möchten? Alle Boxen innerhalb eines Containers werden ggf. ebenfalls gelöscht!"
+msgstr "Sind Sie sicher, dass Sie die Box \"%s\" löschen möchten? Alle Boxen innerhalb eines Containers werden ggf. ebenfalls gelöscht."
 
 msgid "new"
 msgstr "Neue Box"
@@ -72,7 +72,7 @@ msgid "boxEdit"
 msgstr "Box bearbeiten"
 
 msgid "warningInvisibleBoxes"
-msgstr "Achtung - es existieren Boxen, die aktuell nicht angezeigt werden können."
+msgstr "Achtung! Es existieren Boxen, die aktuell nicht angezeigt werden können."
 
 msgid "noBoxesAvailableFor"
 msgstr "Momentan sind noch keine Boxen vorhanden für \"%s\"."
@@ -84,7 +84,7 @@ msgid "visibleOnPages"
 msgstr "Sichtbar auf folgenden Seiten"
 
 msgid "invisibleBoxes"
-msgstr "Unsichtbare Boxen"
+msgstr "Nicht sichtbare Boxen"
 
 msgid "deleteSelected"
 msgstr "Markierte löschen"
@@ -105,7 +105,7 @@ msgid "successBoxDelete"
 msgstr " Box(en) wurde(n) erfolgreich gelöscht."
 
 msgid "successContainerCreate"
-msgstr "Container wurde erfolgreich hinzugefügt."
+msgstr "Container wurde erfolgreich angelegt."
 
 msgid "errorContainerCreate"
 msgstr "Container konnte nicht angelegt werden."
@@ -114,7 +114,7 @@ msgid "successBoxCreate"
 msgstr "Box wurde erfolgreich hinzugefügt."
 
 msgid "errorBoxCreate"
-msgstr "Box konnte nicht angelegt werden."
+msgstr "Box konnte nicht hinzugefügt werden."
 
 msgid "errorBoxDelete"
 msgstr "Box konnte nicht entfernt werden."
@@ -136,3 +136,6 @@ msgstr "sichtbar auf manchen Seiten"
 
 msgid "deactivatedOnAllPages"
 msgstr "auf allen Seiten deaktiviert"
+
+msgid "warningChangesForAllPages"
+msgstr "Die Auswahl \"Alle Seiten\" überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten gemacht wurden."

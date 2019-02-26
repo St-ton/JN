@@ -4,17 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Tightenco\Collect\Support\Collection;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use Illuminate\Support\Collection;
 use function Functional\group;
 use function Functional\map;
 
 /**
  * Class ItemList
- * @package News
+ * @package JTL\News
  */
 final class ItemList implements ItemListInterface
 {

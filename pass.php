@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Helpers\Text;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -12,6 +17,7 @@ $linkHelper  = Shop::Container()->getLinkService();
 $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_PASSWORD_VERGESSEN);
 $step        = 'formular';
 $alertHelper = Shop::Container()->getAlertService();
+$smarty      = Shop::Smarty();
 if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwort_vergessen'] === 1) {
     $kunde = Shop::Container()->getDB()->select(
         'tkunde',
@@ -29,7 +35,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         $oKunde = new Kunde($kunde->kKunde);
         $oKunde->prepareResetPassword();
 
-        Shop::Smarty()->assign('Kunde', $oKunde);
+        $smarty->assign('Kunde', $oKunde);
     } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
         $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('accountLocked'), 'accountLocked');
     } else {
@@ -75,13 +81,13 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         );
     }
     $step = 'confirm';
-    Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_POST['fpwh']));
+    $smarty->assign('fpwh', Text::filterXSS($_POST['fpwh']));
 } elseif (isset($_GET['fpwh'])) {
     $resetItem = Shop::Container()->getDB()->select('tpasswordreset', 'cKey', $_GET['fpwh']);
     if ($resetItem) {
         $dateExpires = new DateTime($resetItem->dExpires);
         if ($dateExpires >= new DateTime()) {
-            Shop::Smarty()->assign('fpwh', StringHandler::filterXSS($_GET['fpwh']));
+            $smarty->assign('fpwh', Text::filterXSS($_GET['fpwh']));
         } else {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
@@ -100,7 +106,6 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
 }
 $cCanonicalURL = $linkHelper->getStaticRoute('pass.php');
 $link          = $linkHelper->getPageLink($kLink);
-
 if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
     $alertHelper->addAlert(
         Alert::TYPE_INFO,
@@ -110,10 +115,10 @@ if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
     );
 }
 
-Shop::Smarty()->assign('step', $step)
-    ->assign('Link', $link);
+$smarty->assign('step', $step)
+       ->assign('Link', $link);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-Shop::Smarty()->display('account/password.tpl');
+$smarty->display('account/password.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

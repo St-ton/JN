@@ -4,11 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Kampagne;
+use JTL\Shop;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/globalinclude.php';
 
-$session = \Session\Frontend::getInstance();
+$session = Frontend::getInstance();
 
 // kK   = kKampagne
 // kN   = kNewsletter

@@ -4,26 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace JTL\Plugin\Admin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Mapper\PluginValidation;
+use JTL\Plugin\Admin\Validation\ValidatorInterface;
+use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\PluginLoader;
+use JTL\Shop;
 use JTL\XMLParser;
-use Mapper\PluginValidation;
-use Plugin\AbstractPlugin;
-use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\PluginInterface;
-use Plugin\PluginLoader;
-use Plugin\InstallCode;
-use Plugin\LegacyPlugin;
-use Plugin\LegacyPluginLoader;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\map;
 
 /**
  * Class Listing
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin
  */
 final class Listing
 {
@@ -87,7 +87,7 @@ final class Listing
         try {
             $all = $this->db->selectAll('tplugin', [], [], 'kPlugin, bExtension', 'cName, cAutor, nPrio');
         } catch (\InvalidArgumentException $e) {
-            $all = \Shop::Container()->getDB()->query(
+            $all = Shop::Container()->getDB()->query(
                 'SELECT kPlugin, 0 AS bExtension
                     FROM tplugin
                     ORDER BY cName, cAutor, nPrio',
@@ -163,21 +163,21 @@ final class Listing
                 if ($fileinfo->isDot() || !$fileinfo->isDir()) {
                     continue;
                 }
-                $dir = $fileinfo->getBasename();
+                $dir  = $fileinfo->getBasename();
                 $info = $fileinfo->getPathname() . '/' . \PLUGIN_INFO_FILE;
                 if (!\file_exists($info)) {
                     continue;
                 }
-                $xml = $parser->parse($info);
-                $code = $validator->validateByPath($pluginDir . $dir);
+                $xml                 = $parser->parse($info);
+                $code                = $validator->validateByPath($pluginDir . $dir);
                 $xml['cVerzeichnis'] = $dir;
-                $xml['cFehlercode'] = $code;
-                $item = new ListingItem();
-                $plugin = $item->parseXML($xml);
+                $xml['cFehlercode']  = $code;
+                $item                = new ListingItem();
+                $plugin              = $item->parseXML($xml);
                 $plugin->setPath($pluginDir . $dir);
 
                 if ($isExtension) {
-                    \Shop::Container()->getGetText()->loadPluginItemLocale('base', $item);
+                    Shop::Container()->getGetText()->loadPluginItemLocale('base', $item);
                 }
 
                 $msgid = $item->getID() . '_desc';

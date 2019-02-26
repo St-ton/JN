@@ -73,10 +73,10 @@ PageTree.prototype = {
             li.toggleClass('expanded');
         }
 
-        expander.click(expand);
+        expander.on('click', expand);
         item.dblclick(expand);
 
-        item.click(function(e) {
+        item.on('click', function(e) {
             e.preventDefault();
 
             if(click) {

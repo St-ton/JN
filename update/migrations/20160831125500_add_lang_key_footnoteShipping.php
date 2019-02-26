@@ -6,6 +6,9 @@
  * @created Wed, 31 Aug 2016 12:55:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -51,4 +54,3 @@ class Migration_20160831125500 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'footnoteExclusiveVat', 'All prices exclusive legal <abbr title="value added tax">VAT</abbr> plus <a href="#SHIPPING_LINK#">shipping costs</a>');
     }
 }
-

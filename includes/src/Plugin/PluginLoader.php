@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Shop;
 
 /**
  * Class PluginLoader
- * @package Plugin
+ * @package JTL\Plugin
  */
 class PluginLoader extends AbstractLoader
 {
@@ -31,16 +32,16 @@ class PluginLoader extends AbstractLoader
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null)
     {
-        if (($languageID = $languageID ?? \Shop::getLanguageID()) === 0) {
-            $languageID = \Shop::Lang()->getDefaultLanguage()->kSprache;
+        if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
+            $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
         }
-        $languageCode  = \Shop::Lang()->getIsoFromLangID($languageID)->cISO;
+        $languageCode  = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         } elseif (($extension = $this->loadFromCache()) !== null) {
-            $getText = \Shop::Container()->getGetText();
+            $getText = Shop::Container()->getGetText();
             $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $languageCode);
             $getText->loadPluginLocale($extension->getPluginID(), $extension);
 
@@ -92,7 +93,7 @@ class PluginLoader extends AbstractLoader
         $extension->setPriority((int)$obj->nPrio);
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
-        $getText = \Shop::Container()->getGetText();
+        $getText = Shop::Container()->getGetText();
         $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
         $getText->loadPluginLocale($obj->cPluginID, $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));

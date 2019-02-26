@@ -6,6 +6,9 @@
  * @created Wed, 07 Sep 2016 12:11:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -24,8 +27,8 @@ class Migration_20160907121100 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("DELETE FROM `teinstellungenconf` WHERE kEinstellungenConf = 1562 OR kEinstellungenConf = 1563 OR kEinstellungenConf = 1564");
-        $this->execute("DELETE FROM `teinstellungenconfwerte` WHERE kEinstellungenConf = 1562 OR kEinstellungenConf = 1563 OR kEinstellungenConf = 1564");
+        $this->execute('DELETE FROM `teinstellungenconf` WHERE kEinstellungenConf = 1562 OR kEinstellungenConf = 1563 OR kEinstellungenConf = 1564');
+        $this->execute('DELETE FROM `teinstellungenconfwerte` WHERE kEinstellungenConf = 1562 OR kEinstellungenConf = 1563 OR kEinstellungenConf = 1564');
     }
 
     public function down()

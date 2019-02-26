@@ -4,6 +4,8 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
+
 /**
  * Class VueInstaller
  */
@@ -179,18 +181,18 @@ class VueInstaller
 
     /**
      * @return VueInstaller
-     * @throws \Exceptions\InvalidEntityNameException
+     * @throws \JTL\Exceptions\InvalidEntityNameException
      */
     private function doInstall(): self
     {
         if ($this->initNiceDB($this->post['db'])) {
-            $this->db->query('SET FOREIGN_KEY_CHECKS=0', \DB\ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=0', ReturnType::DEFAULT);
             $this->parseMysqlDump(__DIR__ . '/initial_schema.sql');
             $this->insertUsers();
             $blowfishKey = $this->getUID(30);
             $this->writeConfigFile($this->post['db'], $blowfishKey);
             $this->payload['secretKey'] = $blowfishKey;
-            $this->db->query('SET FOREIGN_KEY_CHECKS=1', \DB\ReturnType::DEFAULT);
+            $this->db->query('SET FOREIGN_KEY_CHECKS=1', ReturnType::DEFAULT);
         }
         $this->sendResponse();
 
@@ -281,7 +283,7 @@ ini_set('display_errors', 0);" . "\n";
             ) {
                 $query .= $sql_line;
                 if (preg_match('/;\s*$/', $sql_line)) {
-                    $result = $this->db->executeQuery($query, \DB\ReturnType::QUERYSINGLE);
+                    $result = $this->db->executeQuery($query, ReturnType::QUERYSINGLE);
                     if (!$result) {
                         $this->responseStatus    = false;
                         $this->responseMessage[] = $this->db->getErrorMessage() .
@@ -297,7 +299,7 @@ ini_set('display_errors', 0);" . "\n";
 
     /**
      * @return VueInstaller
-     * @throws \Exceptions\InvalidEntityNameException
+     * @throws \JTL\Exceptions\InvalidEntityNameException
      */
     private function insertUsers(): self
     {

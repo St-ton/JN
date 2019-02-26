@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Alert;
-use Tightenco\Collect\Support\Collection;
+use JTL\Alert;
+use Illuminate\Support\Collection;
 
 /**
- * Class AlertService
+ * Interface AlertServiceInterface
+ * @package JTL\Services\JTL
  */
 interface AlertServiceInterface
 {

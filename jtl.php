@@ -6,15 +6,34 @@
  * @global Session $session
  */
 
-use Helpers\Cart;
-use Helpers\Date;
-use Helpers\Form;
-use Helpers\Product;
-use Helpers\Request;
-use Helpers\ShippingMethod;
-use Helpers\Tax;
-use Pagination\Pagination;
-use Extensions\Download;
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Cart;
+use JTL\Helpers\Date;
+use JTL\Helpers\Form;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Tax;
+use JTL\Alert;
+use JTL\CheckBox;
+use JTL\Customer\Kunde;
+use JTL\Customer\Kundendatenhistory;
+use JTL\Customer\KundenwerbenKunden;
+use JTL\Checkout\Lieferadresse;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\SimpleMail;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\TrustedShops;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Pagination\Pagination;
+use JTL\Extensions\Download;
+use JTL\Extensions\UploadDatei;
+use JTL\Session\Frontend;
+use JTL\DB\ReturnType;
+use JTL\GeneralDataProtection\Journal;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -57,8 +76,8 @@ if (isset($_POST['kUpload'])
     && !empty($_SESSION['Kunde']->kKunde)
     && Form::validateToken()
 ) {
-    $file = new \Extensions\UploadDatei((int)$_POST['kUpload']);
-    \Extensions\UploadDatei::send_file_to_browser(
+    $file = new UploadDatei((int)$_POST['kUpload']);
+    UploadDatei::send_file_to_browser(
         PFAD_UPLOADS . $file->cPfad,
         'application/octet-stream',
         $file->cName
@@ -76,7 +95,7 @@ if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
 if (isset($_POST['login']) && (int)$_POST['login'] === 1 && !empty($_POST['email']) && !empty($_POST['passwort'])) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
 }
-$customerID           = \Session\Frontend::getCustomer()->getID();
+$customerID           = Frontend::getCustomer()->getID();
 $editRechnungsadresse = 0;
 
 if (isset($customer)
@@ -98,7 +117,7 @@ if ($customerID > 0) {
     if (isset($_GET['logout']) && (int)$_GET['logout'] === 1) {
         $kSprache    = Shop::getLanguageID();
         $cISOSprache = Shop::getLanguageCode();
-        $currency    = \Session\Frontend::getCurrency();
+        $currency    = Frontend::getCurrency();
         unset(
             $_SESSION['kKategorieVonUnterkategorien_arr'],
             $_SESSION['oKategorie_arr'],
@@ -130,7 +149,7 @@ if ($customerID > 0) {
     }
 
     if (isset($_GET['del']) && (int)$_GET['del'] === 1) {
-        $openOrders = \Session\Frontend::getCustomer()->getOpenOrders();
+        $openOrders = Frontend::getCustomer()->getOpenOrders();
         if (!empty($openOrders)) {
             if ($openOrders->ordersInCancellationTime > 0) {
                 $ordersInCancellationTime = sprintf(
@@ -176,12 +195,12 @@ if ($customerID > 0) {
         if (Request::verifyGPCDataInt('kunde_werben') === 1) {
             if (!SimpleMail::checkBlacklist($_POST['cEmail'])) {
                 if (KundenwerbenKunden::checkInputData($_POST)) {
-                    if (KundenwerbenKunden::saveToDB($_POST, $Einstellungen)) {
+                    if (KundenwerbenKunden::saveToDB($_POST, $conf)) {
                         $alertHelper->addAlert(
                             Alert::TYPE_NOTE,
                             sprintf(
                                 Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
-                                StringHandler::filterXSS($_POST['cEmail'])
+                                Text::filterXSS($_POST['cEmail'])
                             ),
                             'kwkAdd'
                         );
@@ -190,7 +209,7 @@ if ($customerID > 0) {
                             Alert::TYPE_ERROR,
                             sprintf(
                                 Shop::Lang()->get('kwkAlreadyreg', 'errorMessages') . '<br />',
-                                StringHandler::filterXSS($_POST['cEmail'])
+                                Text::filterXSS($_POST['cEmail'])
                             ),
                             'kwkAlreadyreg'
                         );
@@ -212,7 +231,7 @@ if ($customerID > 0) {
         }
     }
     if (isset($_GET['wlph']) && (int)$_GET['wlph'] > 0 && (int)$_GET['wl'] > 0) {
-        $cURLID           = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
+        $cURLID           = Text::filterXSS(Request::verifyGPDataString('wlid'));
         $kWunschlistePos  = Request::verifyGPCDataInt('wlph');
         $kWunschliste     = Request::verifyGPCDataInt('wl');
         $step             = 'mein Konto';
@@ -240,7 +259,7 @@ if ($customerID > 0) {
     }
     // WunschlistePos alle in den Warenkorb adden
     if (isset($_GET['wlpah']) && (int)$_GET['wlpah'] === 1 && (int)$_GET['wl'] > 0) {
-        $cURLID       = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
+        $cURLID       = Text::filterXSS(Request::verifyGPDataString('wlid'));
         $kWunschliste = Request::verifyGPCDataInt('wl');
         $step         = 'mein Konto';
         $wishlist     = Wunschliste::getWishListDataByID($kWunschliste);
@@ -279,7 +298,7 @@ if ($customerID > 0) {
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
             $wishlist = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (!empty($wishlist->kKunde) && (int)$wishlist->kKunde === \Session\Frontend::getCustomer()->getID()) {
+            if (!empty($wishlist->kKunde) && (int)$wishlist->kKunde === Frontend::getCustomer()->getID()) {
                 $alertHelper->addAlert(Alert::TYPE_NOTE, Wunschliste::update($kWunschliste), 'updateWL');
                 $step                    = 'wunschliste anzeigen';
                 $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
@@ -288,7 +307,7 @@ if ($customerID > 0) {
     }
     if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
         $step = 'mein Konto';
-        $name = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
+        $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
         $alertHelper->addAlert(Alert::TYPE_NOTE, Wunschliste::save($name), 'saveWL');
     }
     if (Request::verifyGPCDataInt('wlvm') > 0 && ($kWunschliste = Request::verifyGPCDataInt('wl')) > 0) {
@@ -311,7 +330,7 @@ if ($customerID > 0) {
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Wunschliste::send(
-                            explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email']))),
+                            explode(' ', Text::htmlentities(Text::filterXSS($_POST['email']))),
                             $kWunschliste
                         ),
                         'sendWL'
@@ -328,7 +347,7 @@ if ($customerID > 0) {
         $kWunschliste = Request::verifyGPCDataInt('wl');
         if ($kWunschliste) {
             $wishlist = new Wunschliste($kWunschliste);
-            if ($wishlist->kKunde > 0 && $wishlist->kKunde === \Session\Frontend::getCustomer()->getID()) {
+            if ($wishlist->kKunde > 0 && $wishlist->kKunde === Frontend::getCustomer()->getID()) {
                 $step = 'wunschliste anzeigen';
                 $wishlist->entferneAllePos();
                 if ((int)$_SESSION['Wunschliste']->kWunschliste === $wishlist->kWunschliste) {
@@ -343,11 +362,11 @@ if ($customerID > 0) {
         }
     }
     if (Request::verifyGPCDataInt('wlsearch') === 1) {
-        $searchQuery  = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
+        $searchQuery  = Text::filterXSS(Request::verifyGPDataString('cSuche'));
         $kWunschliste = Request::verifyGPCDataInt('wl');
         if ($kWunschliste) {
             $wishlist = new Wunschliste($kWunschliste);
-            if ($wishlist->kKunde && $wishlist->kKunde === \Session\Frontend::getCustomer()->getID()) {
+            if ($wishlist->kKunde && $wishlist->kKunde === Frontend::getCustomer()->getID()) {
                 $step                          = 'wunschliste anzeigen';
                 $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
                 $smarty->assign('wlsearch', $searchQuery)
@@ -359,7 +378,7 @@ if ($customerID > 0) {
         $kWunschliste = Request::verifyGPCDataInt('wl');
         if ($kWunschliste > 0) {
             $wishlist = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-            if (isset($wishlist->kKunde) && (int)$wishlist->kKunde === \Session\Frontend::getCustomer()->getID()) {
+            if (isset($wishlist->kKunde) && (int)$wishlist->kKunde === Frontend::getCustomer()->getID()) {
                 if (isset($_REQUEST['wlAction']) && Form::validateToken()) {
                     $wlAction = Request::verifyGPDataString('wlAction');
                     if ($wlAction === 'setPrivate') {
@@ -390,11 +409,11 @@ if ($customerID > 0) {
         $step = 'passwort aendern';
     }
     if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
-        $postData = StringHandler::filterXSS($_POST);
+        $postData = Text::filterXSS($_POST);
         $smarty->assign('cPost_arr', $postData);
 
         $fehlendeAngaben    = checkKundenFormularArray($postData, 1, 0);
-        $kKundengruppe      = \Session\Frontend::getCustomerGroup()->getID();
+        $kKundengruppe      = Frontend::getCustomerGroup()->getID();
         $checkBox           = new CheckBox();
         $fehlendeAngaben    = array_merge(
             $fehlendeAngaben,
@@ -431,7 +450,7 @@ if ($customerID > 0) {
                 Shop::Container()->getDB()->query(
                     'DELETE FROM tkundenattribut
                         WHERE kKunde = ' . $customerID . $cSQL,
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
                 $customerAttributeIDs  = array_keys($customerAttributes);
                 $nonEditableAttributes = getNonEditableCustomerFields();
@@ -466,9 +485,9 @@ if ($customerID > 0) {
             );
             Tax::setTaxRates();
             if (isset($_SESSION['Warenkorb']->kWarenkorb)
-                && \Session\Frontend::getCart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+                && Frontend::getCart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
             ) {
-                \Session\Frontend::getCart()->gibGesamtsummeWarenLocalized();
+                Frontend::getCart()->gibGesamtsummeWarenLocalized();
             }
         } else {
             $smarty->assign('fehlendeAngaben', $fehlendeAngaben);
@@ -555,7 +574,7 @@ if ($customerID > 0) {
         $bestellung = new Bestellung(Request::verifyGPCDataInt('bestellung'), true);
         if ($bestellung->kKunde !== null
             && (int)$bestellung->kKunde > 0
-            && (int)$bestellung->kKunde === \Session\Frontend::getCustomer()->getID()
+            && (int)$bestellung->kKunde === Frontend::getCustomer()->getID()
         ) {
             if (Request::verifyGPCDataInt('dl') > 0 && Download::checkLicense()) {
                 $returnCode = Download::getFile(
@@ -611,9 +630,9 @@ if ($customerID > 0) {
             );
             Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
         } else {
-            \Session\Frontend::getCustomer()->deleteAccount(
-                GeneralDataProtection\Journal::ISSUER_TYPE_CUSTOMER,
-                \Session\Frontend::getCustomer()->getID(),
+            Frontend::getCustomer()->deleteAccount(
+                Journal::ISSUER_TYPE_CUSTOMER,
+                Frontend::getCustomer()->getID(),
                 false,
                 true
             );
@@ -767,7 +786,7 @@ if ($customerID > 0) {
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
             ['customer' => $customerID],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
     $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
@@ -776,10 +795,9 @@ if ($customerID > 0) {
            ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
 }
 $alertNote = $alertHelper->alertTypeExists(Alert::TYPE_NOTE);
-if (!$alertNote && $step === 'mein Konto' && \Session\Frontend::getCustomer()->isLoggedIn()) {
+if (!$alertNote && $step === 'mein Konto' && Frontend::getCustomer()->isLoggedIn()) {
     $alertHelper->addAlert(Alert::TYPE_INFO, Shop::Lang()->get('myAccountDesc', 'login'), 'myAccountDesc');
 }
-
 $cCanonicalURL = $linkHelper->getStaticRoute('jtl.php', true);
 $link          = $linkHelper->getPageLink($kLink);
 $smarty->assign('bewertungen', $ratings)

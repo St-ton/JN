@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
 
 /**
  * Interface ItemInterface
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 interface ItemInterface
 {

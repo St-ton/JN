@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Interface LinkGroupInterface
- * @package Link
+ * @package JTL\Link
  */
 interface LinkGroupInterface
 {

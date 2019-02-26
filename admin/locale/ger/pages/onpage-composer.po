@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "The OPC update is not installed properly. Please update your migrations."
-msgstr "Das OPC Update wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie ihre Migrationen."
+msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie ihre Migrationen."
 
 msgid "Draft"
 msgstr "Entwurf"
@@ -26,7 +26,7 @@ msgid "Save page"
 msgstr "Seite speichern"
 
 msgid "Close OnPage-Composer"
-msgstr "OnPage-Composer schließen"
+msgstr "OnPage Composer schließen"
 
 msgid "Portlets"
 msgstr "Portlets"
@@ -44,7 +44,7 @@ msgid "Import blueprint"
 msgstr "Vorlage importieren"
 
 msgid "Unsaved revision"
-msgstr "Ungespeicherte Version"
+msgstr "Nicht gespeicherte Version"
 
 msgid "Current revision"
 msgstr "Aktuelle Version"
@@ -59,7 +59,7 @@ msgid "Save this Portlet as a blueprint"
 msgstr "Portlet als Vorlage speichern"
 
 msgid "Blueprint name"
-msgstr "Vorlagen-Name"
+msgstr "Vorlagenname"
 
 msgid "Delete Blueprint?"
 msgstr "Vorlage löschen?"
@@ -92,7 +92,7 @@ msgstr "Schriftgröße"
 # Animations tab
 
 msgid "Animation style"
-msgstr "Animations-Typ"
+msgstr "Animationstyp"
 
 msgid "Duration"
 msgstr "Dauer"
@@ -110,46 +110,46 @@ msgid "Change the animation duration (e.g. 2s)"
 msgstr "Dauer der Animation (z.B. 2s)"
 
 msgid "Delay before the animation starts"
-msgstr "Wartezeit bis die Animation beginnt"
+msgstr "Wartezeit, bis die Animation beginnt"
 
 msgid "Distance to start the animation (related to the browser bottom)"
 msgstr "Animation beginnt sobald der Scroll-Abstand erreicht ist (von der Unterkante des Fensters)"
 
 msgid "Number of times the animation is repeated"
-msgstr "Wie oft wird die Animation wiederholt"
+msgstr "Anzahl Wiederholungen"
 
 msgid "onPageComposer"
 msgstr "OnPage Composer"
 
 msgid "toggleNavigation"
-msgstr "Toggle navigation"
+msgstr "Navigation ein-/ausschalten"
 
 msgid "somethingHappend"
 msgstr "Something happened"
 
 msgid "noteInfoInGuide"
-msgstr "Du findest neben den, nachfolgend aufgelisteten, Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
+msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\">&lt;i class=\"fa fa-external-link\"&gt;</i> Guide</a>."
 
 msgid "generalIntroduction"
 msgstr "Allgemeine Einführung"
 
 msgid "getToKnowComposer"
-msgstr "lerne den Composer kennen und lege dein erstes Portlet an"
+msgstr "Lernen Sie den OnPage Composer kennen und legen Sie Ihr erstes Portlet an."
 
 msgid "animation"
 msgstr "Animation"
 
 msgid "noteMovementOnPage"
-msgstr "du möchtest etwas Bewegung auf deinen Seiten, lerne hier wie`s geht"
+msgstr "Sie möchten etwas Bewegung auf Ihren Seiten? Lernen Sie hier, wie dies geht."
 
 msgid "noteSaveAsTemplate"
-msgstr "Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br> Leg' sie doch als Vorlage an und greife so einfach immer wieder darauf zu."
+msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufig verwenden möchten?<br/> Legen Sie sie doch als Vorlage an und greifen Sie so einfach immer wieder darauf zu."
 
 msgid "settingsMore"
 msgstr "Einstellungen (Vertiefung)"
 
 msgid "noteTricks"
-msgstr "Lerne hier ein paar Tricks um deine Seiten für die verschiedenen Displayformate fit zu machen."
+msgstr "Lernen Sie hier ein paar Tricks, um Ihre Seiten für die verschiedenen Display-Formate fit zu machen."
 
 msgid "startTour"
 msgstr "Tour starten"
@@ -161,16 +161,16 @@ msgid "draftName"
 msgstr "Interner Name des Entwurfes"
 
 msgid "restoreChanges"
-msgstr "Lokale Änderungen wiederherstellen?"
+msgstr "Möchten Sie die lokalen Änderungen wiederherstellen?"
 
 msgid "restoreUnsaved"
-msgstr "Dieser Entwurf hat lokal ungespeicherte Änderungen. Wollen Sie diese wiederherstellen?"
+msgstr "Dieser Entwurf hat nicht gespeicherte lokale Änderungen. Möchten Sie diese wiederherstellen?"
 
 msgid "noCurrent"
-msgstr "Nein, Aktuelle Version bearbeiten!"
+msgstr "Nein, Aktuelle Version bearbeiten"
 
 msgid "yesRestore"
-msgstr "Ja, wiederherstellen!"
+msgstr "Ja, wiederherstellen"
 
 msgid "portletLabel"
 msgstr "Portlet-Label"
@@ -185,7 +185,7 @@ msgid "saveTemplate"
 msgstr "Auswahl als Vorlage speichern"
 
 msgid "goUp"
-msgstr "Gehe eine Ebene höher"
+msgstr "Eine Ebene höher"
 
 msgid "deleteSelect"
 msgstr "Auswahl löschen [Entf]"
@@ -194,4 +194,4 @@ msgid "portletPreviewLabel"
 msgstr "Portlet-Preview-Label"
 
 msgid "templateTitle"
-msgstr "Vorlagen-Titel"
+msgstr "Vorlagentitel"

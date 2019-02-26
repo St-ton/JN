@@ -4,19 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 
 /**
  * Interface LoaderInterface
- * @package Plugin
+ * @package JTL\Plugin
  */
 interface LoaderInterface
 {
     /**
      * LoaderInterface constructor.
+     *
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */

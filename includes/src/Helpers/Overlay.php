@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Shop;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class Overlay
- * @package Helpers
+ * @package JTL\Helpers
  * @since 5.0.0
  */
 class Overlay
@@ -43,13 +43,13 @@ class Overlay
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
 
         $dir = \PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE .
-            \Media\Image\Overlay::ORIGINAL_FOLDER_NAME;
+            \JTL\Media\Image\Overlay::ORIGINAL_FOLDER_NAME;
         if (!\is_dir($dir)) {
             return false;
         }
         foreach (\scandir($dir, \SORT_NUMERIC) as $overlay) {
             $overlayParts = \explode('_', $overlay);
-            if (\count($overlayParts) === 3 && $overlayParts[0] === \Media\Image\Overlay::IMAGENAME_TEMPLATE) {
+            if (\count($overlayParts) === 3 && $overlayParts[0] === \JTL\Media\Image\Overlay::IMAGENAME_TEMPLATE) {
                 $filePath = $dir . '/' . $overlay;
                 $lang     = (int)$overlayParts[1];
                 $type     = (int)\substr($overlayParts[2], 0, \strpos($overlayParts[2], '.'));
@@ -68,7 +68,7 @@ class Overlay
                         'lang'         => $lang,
                         'type'         => $type,
                         'templateName' => $template,
-                        'defaultName'  => \Media\Image\Overlay::DEFAULT_TEMPLATE
+                        'defaultName'  => \JTL\Media\Image\Overlay::DEFAULT_TEMPLATE
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
@@ -88,7 +88,7 @@ class Overlay
                 }
             }
         }
-        Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_ARTICLE]);
 
         return true;
     }

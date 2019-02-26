@@ -227,6 +227,9 @@ msgstr "Captcha neu laden"
 msgid "invalidToken"
 msgstr "Ungültiger Sicherheitscode übermittelt"
 
+msgid "allPages"
+msgstr "All pages"
+
 msgid "errorFillRequired"
 msgstr "Fehler: Bitte füllen Sie alle Pflichtfelder korrekt aus."
 
@@ -335,8 +338,8 @@ msgstr "Passwörter stimmen nicht überein."
 msgid "action"
 msgstr "Aktion"
 
-msgid "available"
-msgstr "Vorhanden"
+msgid "existing"
+msgstr "existing"
 
 msgid "html"
 msgstr "Html"
@@ -1447,3 +1450,153 @@ msgstr "Konto"
 
 msgid "shop"
 msgstr "Shop"
+
+msgid "pageHome"
+msgstr "Home"
+
+msgid "pageShipping"
+msgstr "Shipping"
+
+msgid "pageWRB"
+msgstr "Cancellation"
+
+msgid "pageAGB"
+msgstr "Conditions"
+
+msgid "pageTagging"
+msgstr "Tagging"
+
+msgid "pageLiveSearch"
+msgstr "Livesearch"
+
+msgid "pageDataProtection"
+msgstr "Data protection"
+
+msgid "pageManufacturer"
+msgstr "Manufacturer"
+
+msgid "pageSitemap"
+msgstr "Sitemap"
+
+msgid "pageGifts"
+msgstr "Gifts"
+
+msgid "pageSelectionAssitant"
+msgstr "Selection assitant"
+
+msgid "pageCustom"
+msgstr "Custom Page"
+
+msgid "pageAccount"
+msgstr "Account"
+
+msgid "pageLogin"
+msgstr "Login"
+
+msgid "pageRegister"
+msgstr "Register"
+
+msgid "pageCart"
+msgstr "Cart"
+
+msgid "pageForgotPassword"
+msgstr "Forgot Password"
+
+msgid "pageContact"
+msgstr "Contact"
+
+msgid "pageNewsletter"
+msgstr "Newsletter"
+
+msgid "pageNewsletterArchive"
+msgstr "Newsletterarchive"
+
+msgid "pageNews"
+msgstr "News"
+
+msgid "pageNewsMonth"
+msgstr "Newsmonth"
+
+msgid "pageNewsCategory"
+msgstr "Newscategory"
+
+msgid "pageNewsDetail"
+msgstr "Newsdetail"
+
+msgid "pagePoll"
+msgstr "Poll"
+
+msgid "pagePlugin"
+msgstr "Plugin"
+
+msgid "page404"
+msgstr "404"
+
+msgid "pageOrderProcess"
+msgstr "Order process"
+
+msgid "pageOrderFinalize"
+msgstr "Order finalize"
+
+msgid "pageWishList"
+msgstr "wishlist"
+
+msgid "pageCompareList"
+msgstr "Comparelist"
+
+msgid "pageProduct"
+msgstr "Product"
+
+msgid "pageProductList"
+msgstr "Prroduclist"
+
+msgid "pageRating"
+msgstr "Rating"
+
+msgid "pageMaintenance"
+msgstr "Maintenance"
+
+msgid "pageOrderStatus"
+msgstr "Order status"
+
+msgid "pageUnknown"
+msgstr "Unknown"
+
+msgid "exception"
+msgstr "Exception"
+
+msgid "errorDirCreate"
+msgstr "Error: Directory not created."
+
+msgid "unknown"
+msgstr "Unknown"
+
+msgid "userAgent"
+msgstr "Useragent"
+
+msgid "host"
+msgstr "Host"
+
+msgid "warning"
+msgstr "Warning"
+
+msgid "moreInfo"
+msgstr "More information"
+
+msgid "available"
+msgstr "available"
+
+msgid "info"
+msgstr "Info"
+
+msgid "guests"
+msgstr "Guests"
+
+msgid "overall"
+msgstr "Overall"
+
+msgid "entryPage"
+msgstr "Entry page"
+
+msgid "origin"
+msgstr "Origin"

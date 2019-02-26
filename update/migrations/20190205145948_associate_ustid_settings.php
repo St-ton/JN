@@ -6,6 +6,9 @@
  * @created Tue, 05 Feb 2019 14:59:48 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20190205145948 extends Migration implements IMigration
 {
-    protected $author = 'Clemens Rudolph';
+    protected $author      = 'Clemens Rudolph';
     protected $description = 'associate UstId-settings';
 
     public function up()

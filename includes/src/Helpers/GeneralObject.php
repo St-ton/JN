@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
 use stdClass;
 
 /**
  * Class GeneralObject
- * @package Helpers
+ * @package JTL\Helpers
  * @since 5.0.0
  */
 class GeneralObject

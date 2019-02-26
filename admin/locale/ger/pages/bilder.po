@@ -9,4 +9,4 @@ msgid "bilderURL"
 msgstr "https://jtl-url.de/kgce4"
 
 msgid "bilderDesc"
-msgstr "Bilder Einstellungen"
+msgstr "Bildeinstellungen"

@@ -4,23 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Artikel;
-use DB\ReturnType;
-use Kundengruppe;
-use Preise;
-use Session\Frontend;
-use Shop;
-use Sprache;
+use JTL\Catalog\Product\Artikel;
+use JTL\Cart\Warenkorb;
+use JTL\DB\ReturnType;
+use JTL\Customer\Kundengruppe;
+use JTL\Catalog\Product\Preise;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Checkout\Versandart;
 use stdClass;
-use StringHandler;
-use Versandart;
-use Warenkorb;
 
 /**
  * Class ShippingMethod
- * @package Helpers
+ * @package JTL\Helpers
  */
 class ShippingMethod
 {
@@ -339,8 +338,8 @@ class ShippingMethod
             }
 
             $shippingMethods = self::getPossibleShippingMethods(
-                StringHandler::filterXSS($cLand),
-                StringHandler::filterXSS($cPLZ),
+                Text::filterXSS($cLand),
+                Text::filterXSS($cPLZ),
                 self::getShippingClasses(Frontend::getCart()),
                 $kKundengruppe
             );
@@ -352,7 +351,7 @@ class ShippingMethod
                     ))
                     ->assign('Versandarten', $shippingMethods)
                     ->assign('Versandland', Sprache::getCountryCodeByCountryName($cLand))
-                    ->assign('VersandPLZ', StringHandler::filterXSS($cPLZ));
+                    ->assign('VersandPLZ', Text::filterXSS($cPLZ));
             } else {
                 $cError = Shop::Lang()->get('noDispatchAvailable');
             }
@@ -391,11 +390,11 @@ class ShippingMethod
         $additionalProduct->fWarenwertNetto = 0;
         $additionalProduct->fGewicht        = 0;
 
-        $shippingClasses                = self::getShippingClasses($cart);
-        $conf                           = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
-        $additionalShippingFees         = 0;
-        $fWarensummeProSteuerklasse_arr = [];
-        $kSteuerklasse                  = 0;
+        $shippingClasses        = self::getShippingClasses($cart);
+        $conf                   = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
+        $additionalShippingFees = 0;
+        $perTaxClass            = [];
+        $kSteuerklasse          = 0;
         // Vorkonditionieren -- Gleiche kartikel aufsummieren
         // aber nur, wenn artikelabhaengiger Versand bei dem jeweiligen kArtikel
         $productIDs = [];
@@ -448,11 +447,10 @@ class ShippingMethod
             if ($tmpProduct->nIstVater === 0) {
                 //Summen pro Steuerklasse summieren
                 if ($tmpProduct->kSteuerklasse === null) {
-                    $fWarensummeProSteuerklasse_arr[$tmpProduct->kSteuerklasse] = 0;
+                    $perTaxClass[$tmpProduct->kSteuerklasse] = 0;
                 }
 
-                $fWarensummeProSteuerklasse_arr[$tmpProduct->kSteuerklasse] +=
-                    $tmpProduct->Preise->fVKNetto * $product['fAnzahl'];
+                $perTaxClass[$tmpProduct->kSteuerklasse] += $tmpProduct->Preise->fVKNetto * $product['fAnzahl'];
 
                 $oVersandPos = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
                     $tmpProduct,
@@ -539,13 +537,11 @@ class ShippingMethod
                         $kEigenschaftWert0
                     );
                     $child->fuelleArtikel($kKindArtikel, $defaultOptions);
-                    //Summen pro Steuerklasse summieren
-                    if (!\array_key_exists($child->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                        $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] = 0;
+                    // Summen pro Steuerklasse summieren
+                    if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
+                        $perTaxClass[$child->kSteuerklasse] = 0;
                     }
-
-                    $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] +=
-                        $child->Preise->fVKNetto * $product['fAnzahl'];
+                    $perTaxClass[$child->kSteuerklasse] += $child->Preise->fVKNetto * $product['fAnzahl'];
 
                     $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
                         $child,
@@ -575,12 +571,11 @@ class ShippingMethod
                     );
                     $child->fuelleArtikel($kKindArtikel, $defaultOptions);
                     //Summen pro Steuerklasse summieren
-                    if (!\array_key_exists($child->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                        $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] = 0;
+                    if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
+                        $perTaxClass[$child->kSteuerklasse] = 0;
                     }
 
-                    $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] +=
-                        $child->Preise->fVKNetto * $product['fAnzahl'];
+                    $perTaxClass[$child->kSteuerklasse] += $child->Preise->fVKNetto * $product['fAnzahl'];
 
                     $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
                         $child,
@@ -596,7 +591,9 @@ class ShippingMethod
                     $additionalProduct->fWarenwertNetto += $product['fAnzahl'] * $child->Preise->fVKNetto;
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
-                if (\mb_strlen($shippingClasses) > 0 && \mb_strpos($shippingClasses, $child->kVersandklasse) === false) {
+                if (\mb_strlen($shippingClasses) > 0
+                    && \mb_strpos($shippingClasses, $child->kVersandklasse) === false
+                ) {
                     $shippingClasses = '-' . $child->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {
                     $shippingClasses = $child->kVersandklasse;
@@ -639,20 +636,20 @@ class ShippingMethod
 
         if (\abs($oVersandart->fEndpreis - $oVersandartNurWK->fEndpreis) > 0.01) {
             //Versand mit neuen Artikeln > als Versand ohne Steuerklasse bestimmen
-            foreach ($cart->PositionenArr as $oPosition) {
-                if ((int)$oPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+            foreach ($cart->PositionenArr as $position) {
+                if ((int)$position->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                     //Summen pro Steuerklasse summieren
-                    if (!\array_key_exists($oPosition->Artikel->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                        $fWarensummeProSteuerklasse_arr[$oPosition->Artikel->kSteuerklasse] = 0;
+                    if (!\array_key_exists($position->Artikel->kSteuerklasse, $perTaxClass)) {
+                        $perTaxClass[$position->Artikel->kSteuerklasse] = 0;
                     }
-                    $fWarensummeProSteuerklasse_arr[$oPosition->Artikel->kSteuerklasse] +=
-                        $oPosition->Artikel->Preise->fVKNetto * $oPosition->nAnzahl;
+                    $perTaxClass[$position->Artikel->kSteuerklasse] +=
+                        $position->Artikel->Preise->fVKNetto * $position->nAnzahl;
                 }
             }
 
             if ($conf['kaufabwicklung']['bestellvorgang_versand_steuersatz'] === 'US') {
                 $nMaxSumme = 0;
-                foreach ($fWarensummeProSteuerklasse_arr as $j => $fWarensummeProSteuerklasse) {
+                foreach ($perTaxClass as $j => $fWarensummeProSteuerklasse) {
                     if ($fWarensummeProSteuerklasse > $nMaxSumme) {
                         $nMaxSumme     = $fWarensummeProSteuerklasse;
                         $kSteuerklasse = $j;
@@ -660,7 +657,7 @@ class ShippingMethod
                 }
             } else {
                 $nMaxSteuersatz = 0;
-                foreach ($fWarensummeProSteuerklasse_arr as $j => $fWarensummeProSteuerklasse) {
+                foreach ($perTaxClass as $j => $fWarensummeProSteuerklasse) {
                     if (Tax::getSalesTax($j) > $nMaxSteuersatz) {
                         $nMaxSteuersatz = Tax::getSalesTax($j);
                         $kSteuerklasse  = $j;
@@ -1165,7 +1162,7 @@ class ShippingMethod
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, [
             'fPreis'         => &$preis,
-            'versandart'     => $versandart,
+            'ersandart'      => $versandart,
             'cISO'           => $cISO,
             'oZusatzArtikel' => $oZusatzArtikel,
             'Artikel'        => $Artikel,
@@ -1383,7 +1380,7 @@ class ShippingMethod
             $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
         if (($oVersandart = Shop::Container()->getCache()->get($cacheID)) === false) {
             if (\mb_strlen($country) > 0) {
-                $customerSQL = " AND cLaender LIKE '%" . StringHandler::filterXSS($country) . "%'";
+                $customerSQL = " AND cLaender LIKE '%" . Text::filterXSS($country) . "%'";
             } else {
                 $landIso     = Shop::Container()->getDB()->query(
                     'SELECT cISO

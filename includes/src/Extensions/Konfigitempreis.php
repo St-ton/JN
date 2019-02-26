@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use Session\Frontend;
+use JTL\Nice;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class Konfigitempreis
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class Konfigitempreis
 {
@@ -61,7 +63,7 @@ class Konfigitempreis
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
     }
 
     /**
@@ -70,7 +72,7 @@ class Konfigitempreis
      */
     private function loadFromDB(int $kKonfigitem = 0, int $kKundengruppe = 0): void
     {
-        $item = \Shop::Container()->getDB()->select(
+        $item = Shop::Container()->getDB()->select(
             'tkonfigitempreis',
             'kKonfigitem',
             $kKonfigitem,
@@ -98,13 +100,13 @@ class Konfigitempreis
      */
     public function save(bool $bPrim = true)
     {
-        $ins = new \stdClass();
+        $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
             $ins->$member = $this->$member;
         }
         unset($ins->kKonfigitem, $ins->kKundengruppe);
 
-        $kPrim = \Shop::Container()->getDB()->insert('tkonfigitempreis', $ins);
+        $kPrim = Shop::Container()->getDB()->insert('tkonfigitempreis', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -118,12 +120,12 @@ class Konfigitempreis
      */
     public function update(): int
     {
-        $upd                = new \stdClass();
+        $upd                = new stdClass();
         $upd->kSteuerklasse = $this->getSteuerklasse();
         $upd->fPreis        = $this->fPreis;
         $upd->nTyp          = $this->getTyp();
 
-        return \Shop::Container()->getDB()->update(
+        return Shop::Container()->getDB()->update(
             'tkonfigitempreis',
             ['kKonfigitem', 'kKundengruppe'],
             [$this->getKonfigitem(), $this->getKundengruppe()],
@@ -136,7 +138,7 @@ class Konfigitempreis
      */
     public function delete(): int
     {
-        return \Shop::Container()->getDB()->delete(
+        return Shop::Container()->getDB()->delete(
             'tkonfigitempreis',
             ['kKonfigitem', 'kKundengruppe'],
             [(int)$this->kKonfigitem, (int)$this->kKundengruppe]

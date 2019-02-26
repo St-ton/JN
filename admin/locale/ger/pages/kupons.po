@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "coupons"
-msgstr "Kupons"
+msgstr "Coupons"
 
 msgid "couponsURL"
 msgstr "https://jtl-url.de/w07rb"
 
 msgid "couponsDesc"
-msgstr "Erstellen und Verwalten von Kupons"
+msgstr "Hier legen Sie neue Coupons an und verwalten bereits angelegte Coupons."
 
 msgid "emptySetMessage1"
 msgstr "Zurzeit sind keine"
@@ -24,7 +24,7 @@ msgid "restrictions"
 msgstr "Einschränkungen"
 
 msgid "codeHint"
-msgstr "Wird kein Code eingegeben, wird ein Code automatisch erstellt."
+msgstr "Geben Sie hier einen Code ein. Wird kein Code eingegeben, wird ein Code automatisch erstellt."
 
 msgid "mbw"
 msgstr "Mindestbestellwert"
@@ -42,22 +42,22 @@ msgid "validUntil"
 msgstr "Gültig bis"
 
 msgid "newCoupon"
-msgstr "Neuen Kupon erstellen"
+msgstr "Neuen Coupon erstellen"
 
 msgid "newCouponDesc"
-msgstr "Bitte füllen Sie alle Felder aus, um einen neuen Kupon zu erstellen.<br />Wird kein Code eingegeben, wird ein Code automatisch erstellt.<br />Wenn Sie den Kupon auf wenige Artikel beschränken möchten, geben Sie die Artikelnummern semikolongetrennt an.<br />Soll der Kupon für alle Artikel im Shop gelten, so lassen Sie dieses Feld frei."
+msgstr "Bitte füllen Sie alle Felder aus, um einen neuen Coupon zu erstellen.<br/>Wird kein Code eingegeben, wird ein Code automatisch erstellt.<br/>Wenn Sie den Coupon auf wenige Artikel beschränken möchten, geben Sie die Artikelnummern semikolongetrennt an.<br/>Soll der Coupon für alle Artikel im Onlineshop gelten, so lassen Sie dieses Feld frei."
 
 msgid "modifyCoupon"
-msgstr "Kupon ändern"
+msgstr "Coupon ändern"
 
 msgid "minOrderValue"
 msgstr "Mindestbestellwert"
 
 msgid "uses"
-msgstr "max. Verwendungen"
+msgstr "Maximale Verwendungen"
 
 msgid "usesPerCustomer"
-msgstr "max. Verwendungen pro Kunde"
+msgstr "Maximale Verwendungen pro Kunde"
 
 msgid "productRestrictions"
 msgstr "Beschränken auf Artikelnummern"
@@ -75,34 +75,34 @@ msgid "restrictedToCustomers"
 msgstr "Beschränken auf Kunden"
 
 msgid "allCategories"
-msgstr "alle Kategorien"
+msgstr "Alle Kategorien"
 
 msgid "allCustomers"
-msgstr "alle Kunden"
+msgstr "Alle Kunden"
 
 msgid "informCustomers"
-msgstr "Markierte Kunden jetzt per E-Mail über Kupon informieren"
+msgstr "Markierte Kunden jetzt per E-Mail über Coupon informieren."
 
 msgid "emailPreview"
-msgstr "E-Mail Vorschau"
+msgstr "E-Mail-Vorschau"
 
 msgid "couponType"
-msgstr "Kuponart"
+msgstr "Coupon-Art"
 
 msgid "standardCoupon"
-msgstr "Standardkupon"
+msgstr "Standardcoupon"
 
 msgid "shippingCoupon"
-msgstr "Versandkostenfreikupon"
+msgstr "Versandkostenfrei-Coupon"
 
 msgid "newCustomerCoupon"
-msgstr "Neukunden-/Begrüßungskupon"
+msgstr "Neukunden- / Begrüßungscoupon"
 
 msgid "additionalShippingCosts"
 msgstr "Gilt für Nachnahmegebühren"
 
 msgid "additionalShippingCostsHint"
-msgstr "etwa für Nachnahmegebühren"
+msgstr "Hier können Sie angeben, ob der Coupon auch für Nachnahmegebühren gilt."
 
 msgid "taxClass"
 msgstr "Steuerklasse"
@@ -111,22 +111,22 @@ msgid "shippingCountries"
 msgstr "Gilt für folgende Lieferländer"
 
 msgid "shippingCountriesHint"
-msgstr "Mit Semikolon getrennte ISO-Codes der Länder. Z.B. DE;AT;CH;"
+msgstr "Geben Sie hier per Semikolon getrennt die ISO-Codes der Länder ein, für die der Coupon gilt, z. B. DE;AT;CH."
 
 msgid "wholeWKDiscount"
-msgstr "Ganzen Warenkorb rabattieren"
+msgstr "Ganzen Warenwert rabattieren"
 
 msgid "wholeWKDiscountHint"
-msgstr "Die Einstellung \"ganzen Warenkorb rabattieren\" hat bei festen Kuponbeträgen Auswirkung auf den Mindestbestellwert. Ist diese Einstellung auf \"Nein\" gestellt, so zählt für den Kupon-Mindestbestellwert nur die Gesamtsumme der Warenkorbpositionen, welche unter Beschränkungen im Kupon eingetragen sind.<br/>Beispiel: Legen Sie Produkte von JTL-Software im Gesamtwert von mindestens 500 EUR in Ihren Warenkorb und erhalten Sie mit dem Kuponcode JTL50 ganze 50 EUR Rabatt auf Ihre Bestellung!"
+msgstr "Die Einstellung \"Ganzen Warenwert rabattieren\" greift nur bei prozentualen Rabatten. Steht die Einstellung auf \"Ja\", so wird der Rabatt vom gesamten Warenwert abgezogen.<br/>Ist diese Einstellung auf \"Nein\" gestellt, so wird der Rabatt bereits von jeder gültigen einzelnen Position abgezogen."
 
 msgid "gross"
 msgstr "Brutto"
 
 msgid "couponsCreation"
-msgstr " Massengenerierung von Kupons"
+msgstr " Massengenerierung von Coupons"
 
 msgid "numberCouponsDesc"
-msgstr "Anzahl der Kupons"
+msgstr "Anzahl Coupons"
 
 msgid "lowerCaseDesc"
 msgstr "Zufallscode mit Kleinbuchstaben a - z"
@@ -141,10 +141,10 @@ msgid "hashLengthDesc"
 msgstr "Länge des Zufallscodes"
 
 msgid "prefixHashDesc"
-msgstr "Präfix vom Zufallscode"
+msgstr "Präfix des Zufallscodes"
 
 msgid "suffixHashDesc"
-msgstr "Suffix vom Zufallscode"
+msgstr "Suffix des Zufallscodes"
 
 msgid "openEnd"
 msgstr "Ende offen"
@@ -153,13 +153,13 @@ msgid "periodOfValidity"
 msgstr "Gültigkeitsdauer (Tage)"
 
 msgid "validFromHelp"
-msgstr "Leer lassen, wenn der Kupon ab sofort gültig ist."
+msgstr "Hier legen Sie fest, ab wann der Coupon gültig sein soll. Voreingestellt ist immer der aktuelle Zeitpunkt."
 
 msgid "validUntilHelp"
-msgstr "Leer lassen, wenn der Kupon unbegrenzt gültig ist oder eine Gültigkeitsdauer in Tagen (siehe unten) angegeben wird."
+msgstr "Hier legen Sie fest, bis zu welchem Zeitpunkt der Coupon gültig sein soll. Wenn Sie das Feld leer lassen, ist der Coupon entweder unbegrenzt gültig oder es wird die Einstellung \"Gültigkeitsdauer (Tage)\" berücksichtigt."
 
 msgid "periodOfValidityHelp"
-msgstr "Bei der Einstellung \"Gültig bis\", wird das Datum aus \"Gültig von\" mit der eingetragenen Zahl addiert."
+msgstr "Hier legen Sie fest, wie lange der Coupon in Tagen gültig ist. Diese Option ist alternativ zur Option \"Gültig bis\". Sind beide Felder leer, ist der Coupon unbegrenzt gültig."
 
 msgid "errorImportCSV"
 msgstr "Konnte CSV-Datei nicht vollständig importieren."
@@ -171,43 +171,43 @@ msgid "errorImportRow"
 msgstr "Zeile(n) sind nicht importierbar."
 
 msgid "successCouponSave"
-msgstr "Der Kupon wurde erfolgreich gespeichert."
+msgstr "Der Coupon wurde erfolgreich gespeichert."
 
 msgid "errorCouponSave"
-msgstr "Der Kupon konnte nicht gespeichert werden."
+msgstr "Der Coupon konnte nicht gespeichert werden."
 
 msgid "successCouponDelete"
-msgstr "Ihre markierten Kupons wurden erfolgreich gelöscht."
+msgstr "Die markierten Coupons wurden erfolgreich gelöscht."
 
 msgid "errorCouponDelete"
-msgstr "Fehler: Ein oder mehrere Kupons konnten nicht gelöscht werden."
+msgstr "Fehler: Ein oder mehrere Coupons konnten nicht gelöscht werden."
 
 msgid "errorAtLeastOneCoupon"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Kupon."
+msgstr "Fehler: Bitte markieren Sie mindestens einen Coupon."
 
 msgid "errorCouponNameMissing"
-msgstr "Es wurde kein Kuponname angegeben. Bitte geben Sie einen Namen an!"
+msgstr "Es wurde kein Couponname angegeben. Bitte geben Sie einen Namen an."
 
 msgid "errorCouponValueNegative"
-msgstr "Bitte geben Sie einen nicht-negativen Kuponwert an!"
+msgstr "Bitte geben Sie einen positiven Couponwert an."
 
 msgid "errorCouponMinOrderValueNegative"
-msgstr "Bitte geben Sie einen nicht-negativen Mindestbestellwert an!"
+msgstr "Bitte geben Sie einen Mindestbestellwert größer oder gleich 0 an."
 
 msgid "errorCouponISOMissing"
-msgstr "Bitte geben Sie die Länderkürzel (ISO-Codes) unter 'Lieferländer' an, für die dieser Versandkupon gelten soll!"
+msgstr "Bitte geben Sie die Länderkürzel (ISO-Codes) unter 'Lieferländer' an, für die dieser Versandkostenfrei-Coupon gelten soll."
 
 msgid "errorCouponCodeLong"
-msgstr "Der zu generiende Code ist länger als 32 Zeichen. Bitte verringern Sie die Menge der Zeichen in Präfix, Suffix oder geben eine kleinere Zahl bei der Länge des Zufallcodes an."
+msgstr "Der zu generierende Code ist länger als 32 Zeichen. Bitte verringern Sie die Anzahl an Zeichen in Präfix/Suffix oder geben Sie eine kleinere Zahl bei der Länge des Zufallcodes an."
 
 msgid "errorCouponCodeShort"
-msgstr "Der zu generiende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Menge der Zeichen in Präfix, Suffix oder geben eine größere Zahl bei der Länge des Zufallcodes an."
+msgstr "Der zu generierende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Anzahl an Zeichen in Präfix/Suffix oder geben Sie eine größere Zahl bei der Länge des Zufallcodes an."
 
 msgid "errorCouponCodeOptionSelect"
-msgstr "Bitte wählen Sie für &quot;Zufallscode mit ...&quot; mindestens eine Option aus!"
+msgstr "Bitte wählen Sie für \"Zufallscode mit ...\" mindestens eine Option aus."
 
 msgid "errorCouponCodeDuplicate"
-msgstr "Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte wählen Sie einen anderen Code!"
+msgstr "Der angegeben Code wird bereits von einem anderen Coupon verwendet. Bitte wählen Sie einen anderen Code."
 
 msgid "errorProductNumberNotFound"
 msgstr "Die Artikelnummer %s gehört zu keinem gültigen Artikel und wird entfernt."
@@ -216,14 +216,13 @@ msgid "errorISOInvalid"
 msgstr "Der ISO-Code %s gehört zu keinem gültigen Land."
 
 msgid "errorPeriodBeginFormat"
-msgstr "Bitte geben sie den Beginn des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!"
+msgstr "Bitte geben Sie den Beginn des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an."
 
 msgid "errorPeriodEndFormat"
-msgstr "Bitte geben sie das Ende des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!"
+msgstr "Bitte geben Sie das Ende des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an."
 
 msgid "errorPeriodEndAfterBegin"
-msgstr "Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des Gültigkeitszeitraumes liegen!"
+msgstr "Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des Gültigkeitszeitraumes liegen."
 
 msgid "searchNameZipEmail"
 msgstr "Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl"
-

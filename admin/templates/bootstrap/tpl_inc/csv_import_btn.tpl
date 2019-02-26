@@ -16,7 +16,7 @@
 
         $fileInput_{$importerId} = $('<input>', { type: 'file', name: 'csvfile', accept: '.csv,.slf' });
         $fileInput_{$importerId}.hide();
-        $fileInput_{$importerId}.change(function () {
+        $fileInput_{$importerId}.on('change', function () {
             {if $bCustomStrategy === true}
                 $('#modal-{$importerId}').modal('show');
             {else}

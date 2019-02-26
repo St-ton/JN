@@ -11,7 +11,7 @@
     function startKundenfeldwertEdit() {
         $('#cTyp').after($('<div class="kundenfeld_wert"></div>').append(
                 $('<button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen"></button>')
-                .click(function() {
+                .on('click', function() {
                     addKundenfeldWert();
                 })
                 .append('<i class="fa fa-plus-square-o"></i>&nbsp;' + {/literal}{__('addValue')}{literal}))
@@ -74,7 +74,7 @@
                         +'<input name="cfValues[' + key + '][nSort]" type="text" class="field form-control" value="' + recommendSort() + '" />')),
                     $('<div class="btn-group"></div>').append(
                         $('<button name="delete" type="button" class="btn btn-danger" value="Entfernen"></button>')
-                            .click(function() {
+                            .on('click', function() {
                                 delKundenfeldWert(this);
                             })
                             .append('<i class="fa fa-trash"></i>&nbsp;'  + {/literal}{__('remove')}{literal})

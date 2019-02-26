@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class TableCleaner
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * controller of "shop customer data anonymization"
  * ("GDPR" or "Global Data Protection Rules", german: "DSGVO")
@@ -53,7 +54,7 @@ class TableCleaner
     public function __construct()
     {
         try {
-            $this->logger = \Shop::Container()->getLogService();
+            $this->logger = Shop::Container()->getLogService();
         } catch (\Exception $e) {
             $this->logger = null;
         }
@@ -89,7 +90,7 @@ class TableCleaner
     public function __destruct()
     {
         // removes journal-entries at the end of next year after their creation
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tanondatajournal
             WHERE dEventTime <= LAST_DAY(DATE_ADD(:pNow - INTERVAL 2 YEAR, INTERVAL 12 - MONTH(:pNow) MONTH))',
             ['pNow' => $this->now->format('Y-m-d H:i:s')],

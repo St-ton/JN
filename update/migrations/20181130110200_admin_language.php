@@ -5,6 +5,10 @@
  * @author Danny Raufeisen
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+
 /**
  * Class Migration_20181130110200
  */
@@ -21,6 +25,6 @@ class Migration_20181130110200 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("ALTER TABLE tadminlogin DROP COLUMN kSprache");
+        $this->execute('ALTER TABLE tadminlogin DROP COLUMN kSprache');
     }
 }

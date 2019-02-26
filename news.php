@@ -4,8 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\URL;
-use Pagination\Pagination;
+use JTL\Helpers\URL;
+use JTL\Alert;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Pagination\Pagination;
+use JTL\Session\Frontend;
+use JTL\News\Controller;
+use JTL\News\Item;
+use JTL\News\ViewType;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
@@ -22,18 +29,18 @@ $cMetaTitle       = '';
 $cMetaDescription = '';
 $cMetaKeywords    = '';
 $conf             = Shopsetting::getInstance()->getAll();
-$customerGroupID  = \Session\Frontend::getCustomerGroup()->getID();
+$customerGroupID  = Frontend::getCustomerGroup()->getID();
 $linkService      = Shop::Container()->getLinkService();
 $link             = $linkService->getPageLink($linkService->getSpecialPageLinkKey(LINKTYP_NEWS));
-$controller       = new \News\Controller($db, $conf, $smarty);
+$controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
 
 switch ($controller->getPageType($params)) {
-    case \News\ViewType::NEWS_DETAIL:
+    case ViewType::NEWS_DETAIL:
         Shop::setPageType(PAGE_NEWSDETAIL);
         $pagination = new Pagination('comments');
         $newsItemID = $params['kNews'];
-        $newsItem   = new \News\Item($db);
+        $newsItem   = new Item($db);
         $newsItem->load($newsItemID);
 
         $cMetaTitle       = $newsItem->getMetaTitle();
@@ -53,20 +60,26 @@ switch ($controller->getPageType($params)) {
             'pagination' => $pagination
         ]);
         break;
-    case \News\ViewType::NEWS_CATEGORY:
+    case ViewType::NEWS_CATEGORY:
         Shop::setPageType(PAGE_NEWSKATEGORIE);
         $kNewsKategorie = (int)$params['kNewsKategorie'];
         $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
         $breadCrumbName = $overview->getName();
+        $newsCategory   = new \News\Category($db);
+        $newsCategory->load($kNewsKategorie);
+
+        $cMetaTitle       = $newsCategory->getMetaTitle();
+        $cMetaDescription = $newsCategory->getMetaDescription();
+        $cMetaKeywords    = $newsCategory->getMetaKeyword();
         break;
-    case \News\ViewType::NEWS_OVERVIEW:
+    case ViewType::NEWS_OVERVIEW:
         Shop::setPageType(PAGE_NEWS);
         $kNewsKategorie = 0;
         $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
         break;
-    case \News\ViewType::NEWS_MONTH_OVERVIEW:
+    case ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);
         $id             = (int)$params['kNewsMonatsUebersicht'];
         $overview       = $controller->displayOverview($pagination, 0, $id, $customerGroupID);
@@ -75,7 +88,7 @@ switch ($controller->getPageType($params)) {
         $breadCrumbName = $overview->getName();
 
         break;
-    case \News\ViewType::NEWS_DISABLED:
+    case ViewType::NEWS_DISABLED:
     default:
         Shop::$is404 = true;
         Shop::$kLink = 0;
@@ -84,7 +97,7 @@ switch ($controller->getPageType($params)) {
         return;
 }
 
-$cMetaTitle = \Filter\Metadata::prepareMeta(
+$cMetaTitle = JTL\Filter\Metadata::prepareMeta(
     $cMetaTitle,
     null,
     (int)$conf['metaangaben']['global_meta_maxlaenge_title']

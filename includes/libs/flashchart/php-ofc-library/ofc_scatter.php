@@ -2,13 +2,13 @@
 
 class scatter_value
 {
-    public function __construct($x, $y, $dot_size=-1)
+    public function __construct($x, $y, $dot_size = -1)
     {
         $this->x = $x;
         $this->y = $y;
         
         if ($dot_size > 0) {
-            $tmp = 'dot-size';
+            $tmp        = 'dot-size';
             $this->$tmp = $dot_size;
         }
     }
@@ -18,7 +18,7 @@ class scatter
 {
     public function __construct($colour)
     {
-        $this->type      = "scatter";
+        $this->type = 'scatter';
         $this->set_colour($colour);
     }
     
@@ -29,7 +29,7 @@ class scatter
 
     public function set_default_dot_style($style)
     {
-        $tmp = 'dot-style';
+        $tmp        = 'dot-style';
         $this->$tmp = $style;
     }
     

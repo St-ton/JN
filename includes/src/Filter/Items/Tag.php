@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use Filter\Join;
-use Filter\FilterInterface;
-use Filter\Type;
-use Filter\ProductFilter;
-use Filter\States\BaseTag;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\States\BaseTag;
+use JTL\Filter\Type;
 
 /**
  * Class Tag
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Tag extends BaseTag
 {

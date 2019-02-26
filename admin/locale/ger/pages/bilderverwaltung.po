@@ -57,7 +57,7 @@ msgid "successImageDelete"
 msgstr "Bilder gelöscht"
 
 msgid "successImageGenerate"
-msgstr "Bilder erfolgreich generiert."
+msgstr "Bilder erfolgreich generiert"
 
 msgid "pendingImageDelete"
 msgstr "Lösche Bilder..."
@@ -66,4 +66,4 @@ msgid "pendingStatisticCalc"
 msgstr "Statistiken werden berechnet..."
 
 msgid "pendingImageGenerate"
-msgstr "Bilder werden generiert."
+msgstr "Bilder werden generiert"

@@ -4,11 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
+
+use JTL\Helpers\URL;
 
 /**
  * Class Tag
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 final class Tag extends AbstractItem
 {
@@ -17,7 +19,7 @@ final class Tag extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\Helpers\URL::buildURL($this->data, \URLART_TAG, true));
+        $this->setLocation(URL::buildURL($this->data, \URLART_TAG, true));
     }
 
     /**

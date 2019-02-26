@@ -4,11 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
+
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\MerkmalWert;
 
 /**
  * Interface MetadataInterface
- * @package Filter
+ * @package JTL\Filter
  */
 interface MetadataInterface
 {
@@ -57,37 +62,37 @@ interface MetadataInterface
     public function setMetaKeywords($metaKeywords): MetadataInterface;
 
     /**
-     * @return \Kategorie|null
+     * @return Kategorie|null
      */
-    public function getCategory(): ?\Kategorie;
+    public function getCategory(): ?Kategorie;
 
     /**
-     * @param \Kategorie $category
+     * @param Kategorie $category
      * @return MetadataInterface
      */
-    public function setCategory(\Kategorie $category): MetadataInterface;
+    public function setCategory(Kategorie $category): MetadataInterface;
 
     /**
-     * @return \Hersteller|null
+     * @return Hersteller|null
      */
-    public function getManufacturer(): ?\Hersteller;
+    public function getManufacturer(): ?Hersteller;
 
     /**
-     * @param \Hersteller $manufacturer
+     * @param Hersteller $manufacturer
      * @return MetadataInterface
      */
-    public function setManufacturer(\Hersteller $manufacturer): MetadataInterface;
+    public function setManufacturer(Hersteller $manufacturer): MetadataInterface;
 
     /**
-     * @return \MerkmalWert|null
+     * @return MerkmalWert|null
      */
-    public function getAttributeValue(): ?\MerkmalWert;
+    public function getAttributeValue(): ?MerkmalWert;
 
     /**
-     * @param \MerkmalWert $attributeValue
+     * @param MerkmalWert $attributeValue
      * @return MetadataInterface
      */
-    public function setAttributeValue(\MerkmalWert $attributeValue): MetadataInterface;
+    public function setAttributeValue(MerkmalWert $attributeValue): MetadataInterface;
 
     /**
      * @return string
@@ -122,17 +127,17 @@ interface MetadataInterface
     public static function getGlobalMetaData(): array;
 
     /**
-     * @param \Kategorie|null      $category
-     * @param \KategorieListe|null $list
+     * @param Kategorie|null      $category
+     * @param KategorieListe|null $list
      * @return $this
      */
-    public function getNavigationInfo(\Kategorie $category = null, \KategorieListe $list = null): MetadataInterface;
+    public function getNavigationInfo(Kategorie $category = null, KategorieListe $list = null): MetadataInterface;
 
     /**
      * @param array                  $products
      * @param SearchResultsInterface $searchResults
      * @param array                  $globalMeta
-     * @param \Kategorie|null        $category
+     * @param Kategorie|null         $category
      * @return string
      */
     public function generateMetaDescription(
@@ -143,19 +148,19 @@ interface MetadataInterface
     ): string;
 
     /**
-     * @param array           $products
-     * @param \Kategorie|null $category
+     * @param array               $products
+     * @param Kategorie|null $category
      * @return string
      */
-    public function generateMetaKeywords($products, \Kategorie $category = null): string;
+    public function generateMetaKeywords($products, Kategorie $category = null): string;
 
     /**
      * @param SearchResultsInterface $searchResults
      * @param array                  $globalMeta
-     * @param \Kategorie|null        $category
+     * @param Kategorie|null    $category
      * @return string
      */
-    public function generateMetaTitle($searchResults, $globalMeta, \Kategorie $category = null): string;
+    public function generateMetaTitle($searchResults, $globalMeta, Kategorie $category = null): string;
 
     /**
      * Erstellt für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta an.

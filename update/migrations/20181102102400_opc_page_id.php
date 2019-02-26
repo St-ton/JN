@@ -1,4 +1,8 @@
 <?php
+
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Change OPC page id type
  *
@@ -12,15 +16,15 @@ class Migration_20181102102400 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE topcpage DROP INDEX cPageId");
-        $this->execute("ALTER TABLE topcpage MODIFY cPageId TEXT NOT NULL");
-        $this->execute("ALTER TABLE topcpage ADD UNIQUE INDEX (cPageId(255), dPublishFrom)");
+        $this->execute('ALTER TABLE topcpage DROP INDEX cPageId');
+        $this->execute('ALTER TABLE topcpage MODIFY cPageId TEXT NOT NULL');
+        $this->execute('ALTER TABLE topcpage ADD UNIQUE INDEX (cPageId(255), dPublishFrom)');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE topcpage DROP INDEX cPageId");
-        $this->execute("ALTER TABLE topcpage MODIFY cPageId CHAR(32) NOT NULL");
-        $this->execute("ALTER TABLE topcpage ADD UNIQUE INDEX (cPageId, dPublishFrom)");
+        $this->execute('ALTER TABLE topcpage DROP INDEX cPageId');
+        $this->execute('ALTER TABLE topcpage MODIFY cPageId CHAR(32) NOT NULL');
+        $this->execute('ALTER TABLE topcpage ADD UNIQUE INDEX (cPageId, dPublishFrom)');
     }
 }

@@ -1,5 +1,5 @@
 stages:
-#  - codeclimate
+  - codeQuality
   - test
   - cleanUpTest
   - build
@@ -7,6 +7,31 @@ stages:
   - cleanUp
   - stagingPre
   - staging
+
+.codeQualityScripts: &codeQualityScripts |
+  function codeQualityCheck() {
+    export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
+
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    echo "Code quality check of projekt in docker image codesniffer..."
+
+    docker run \
+      -v $(pwd):/code \
+      -w /code \
+      --name="$CI_CONTAINER_NAME" \
+      $CI_REGISTRY_IMAGE/codesniffer \
+      sh -c "bash build/scripts/global-codesniffer.sh /code"
+
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
+
+    echo "Code quality check finished"
+  }
 
 .testingScript: &testingScript |
   export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
@@ -157,28 +182,13 @@ stages:
     fi
   }
 
-#code_quality:
-#  stage: codeclimate
-#  services:
-#    - docker:stable-dind
-#  script:
-#    - codeQuality
-#  artifacts:
-#    paths: [gl-code-quality-report.json]
-#  only:
-#    - branches
-#  except:
-#    - master
-#  tags:
-#    - building_testing_docker
-
-test_PHP_7.1:
-  stage: test
-  variables:
-    PHP_VERSION_TEST_STEP: '7.1'
+code_quality:
+  stage: codeQuality
   script:
-    - *testingScript
-    - testing
+    - *codeQualityScripts
+    - codeQualityCheck
+  artifacts:
+    paths: [code-quality-report.txt]
   only:
     - branches
   except:
@@ -211,22 +221,6 @@ test_PHP_7.3:
     - branches
   except:
     - master
-  tags:
-    - build
-
-removeContainerPHP7.1:
-  stage: cleanUpTest
-  variables:
-    PHP_VERSION_TEST_STEP: '7.1'
-  script:
-    - *cleanUpTesting
-    - failedTesting
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
   tags:
     - build
 

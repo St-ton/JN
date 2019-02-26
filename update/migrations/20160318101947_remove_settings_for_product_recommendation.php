@@ -6,6 +6,9 @@
  * @created Fri, 18 Mar 2016 10:19:47 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20160318101947
  */
@@ -16,8 +19,8 @@ class Migration_20160318101947 extends Migration implements IMigration
     public function up()
     {
         $this->execute("DELETE FROM `teinstellungen` WHERE `cName` IN ('artikeldetails_artikelweiterempfehlen_anzeigen','artikeldetails_artikelweiterempfehlen_sperreminuten','artikeldetails_artikelweiterempfehlen_captcha')");
-        $this->execute("DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` IN (609,610,611,1471)");
-        $this->execute("DELETE FROM `teinstellungenconfwerte` WHERE `kEinstellungenConf` IN (609,610,611,1471)");
+        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` IN (609,610,611,1471)');
+        $this->execute('DELETE FROM `teinstellungenconfwerte` WHERE `kEinstellungenConf` IN (609,610,611,1471)');
     }
 
     public function down()

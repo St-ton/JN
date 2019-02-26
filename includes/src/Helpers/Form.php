@@ -4,19 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\ReturnType;
 use Exception;
-use Kundengruppe;
-use Session\Frontend;
-use Shop;
-use SimpleMail;
-use StringHandler;
+use function Functional\none;
+use JTL\DB\ReturnType;
+use JTL\Customer\Kundengruppe;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\SimpleMail;
+use stdClass;
 
 /**
  * Class Form
- * @package Helpers
+ * @package JTL\Helpers
  * @since 5.0.0
  */
 class Form
@@ -83,7 +84,7 @@ class Form
      */
     public static function eingabenKorrekt(array $fehlendeAngaben): int
     {
-        return (int)\Functional\none(
+        return (int)none(
             $fehlendeAngaben,
             function ($e) {
                 return $e > 0;
@@ -109,7 +110,7 @@ class Form
         if (!$_POST['subject']) {
             $ret['subject'] = 1;
         }
-        if (StringHandler::filterEmailAddress($_POST['email']) === false) {
+        if (Text::filterEmailAddress($_POST['email']) === false) {
             $ret['email'] = 2;
         }
         if (SimpleMail::checkBlacklist($_POST['email'])) {
@@ -125,13 +126,13 @@ class Form
             $ret['firma'] = 1;
         }
         if ($conf['kontakt']['kontakt_abfragen_fax'] === 'Y') {
-            $ret['fax'] = StringHandler::checkPhoneNumber($_POST['fax']);
+            $ret['fax'] = Text::checkPhoneNumber($_POST['fax']);
         }
         if ($conf['kontakt']['kontakt_abfragen_tel'] === 'Y') {
-            $ret['tel'] = StringHandler::checkPhoneNumber($_POST['tel']);
+            $ret['tel'] = Text::checkPhoneNumber($_POST['tel']);
         }
         if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
-            $ret['mobil'] = StringHandler::checkPhoneNumber($_POST['mobil']);
+            $ret['mobil'] = Text::checkPhoneNumber($_POST['mobil']);
         }
         if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !self::validateCaptcha($_POST)) {
             $ret['captcha'] = 2;
@@ -141,12 +142,12 @@ class Form
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      * @since 5.0.0
      */
-    public static function baueKontaktFormularVorgaben(): \stdClass
+    public static function baueKontaktFormularVorgaben(): stdClass
     {
-        $msg = new \stdClass();
+        $msg = new stdClass();
         if (isset($_SESSION['Kunde'])) {
             $msg->cAnrede   = $_SESSION['Kunde']->cAnrede;
             $msg->cVorname  = $_SESSION['Kunde']->cVorname;
@@ -161,38 +162,38 @@ class Form
             ? (int)$_POST['subject']
             : null;
         $msg->cNachricht      = isset($_POST['nachricht'])
-            ? StringHandler::filterXSS($_POST['nachricht'])
+            ? Text::filterXSS($_POST['nachricht'])
             : null;
 
         if (isset($_POST['anrede']) && $_POST['anrede']) {
-            $msg->cAnrede = StringHandler::filterXSS($_POST['anrede']);
+            $msg->cAnrede = Text::filterXSS($_POST['anrede']);
         }
         if (isset($_POST['vorname']) && $_POST['vorname']) {
-            $msg->cVorname = StringHandler::filterXSS($_POST['vorname']);
+            $msg->cVorname = Text::filterXSS($_POST['vorname']);
         }
         if (isset($_POST['nachname']) && $_POST['nachname']) {
-            $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
+            $msg->cNachname = Text::filterXSS($_POST['nachname']);
         }
         if (isset($_POST['firma']) && $_POST['firma']) {
-            $msg->cFirma = StringHandler::filterXSS($_POST['firma']);
+            $msg->cFirma = Text::filterXSS($_POST['firma']);
         }
         if (isset($_POST['email']) && $_POST['email']) {
-            $msg->cMail = StringHandler::filterXSS($_POST['email']);
+            $msg->cMail = Text::filterXSS($_POST['email']);
         }
         if (isset($_POST['fax']) && $_POST['fax']) {
-            $msg->cFax = StringHandler::filterXSS($_POST['fax']);
+            $msg->cFax = Text::filterXSS($_POST['fax']);
         }
         if (isset($_POST['tel']) && $_POST['tel']) {
-            $msg->cTel = StringHandler::filterXSS($_POST['tel']);
+            $msg->cTel = Text::filterXSS($_POST['tel']);
         }
         if (isset($_POST['mobil']) && $_POST['mobil']) {
-            $msg->cMobil = StringHandler::filterXSS($_POST['mobil']);
+            $msg->cMobil = Text::filterXSS($_POST['mobil']);
         }
         if (isset($_POST['subject']) && $_POST['subject']) {
-            $msg->kKontaktBetreff = StringHandler::filterXSS($_POST['subject']);
+            $msg->kKontaktBetreff = Text::filterXSS($_POST['subject']);
         }
         if (isset($_POST['nachricht']) && $_POST['nachricht']) {
-            $msg->cNachricht = StringHandler::filterXSS($_POST['nachricht']);
+            $msg->cNachricht = Text::filterXSS($_POST['nachricht']);
         }
         if (isset($msg->cAnrede) && \mb_strlen($msg->cAnrede) === 1) {
             if ($msg->cAnrede === 'm') {
@@ -275,14 +276,14 @@ class Form
             'cISOSprache',
             Shop::getLanguageCode()
         );
-        $Objekt                       = new \stdClass();
+        $Objekt                       = new stdClass();
         $Objekt->tnachricht           = self::baueKontaktFormularVorgaben();
         $Objekt->tnachricht->cBetreff = $betreffSprache->cName;
 
         $conf    = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL]);
-        $from    = new \stdClass();
+        $from    = new stdClass();
         $senders = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
-        $mail    = new \stdClass();
+        $mail    = new stdClass();
         if (\is_array($senders) && \count($senders)) {
             foreach ($senders as $f) {
                 $from->{$f->cKey} = $f->cValue;
@@ -306,7 +307,7 @@ class Form
         $Objekt->mail = $mail;
         if (isset($_SESSION['kSprache']) && !isset($Objekt->tkunde)) {
             if (!isset($Objekt->tkunde)) {
-                $Objekt->tkunde = new \stdClass();
+                $Objekt->tkunde = new stdClass();
             }
             $Objekt->tkunde->kSprache = $_SESSION['kSprache'];
         }
@@ -335,7 +336,7 @@ class Form
             $Objekt->mail       = $mail;
             \sendeMail(\MAILTEMPLATE_KONTAKTFORMULAR, $Objekt);
         }
-        $KontaktHistory                  = new \stdClass();
+        $KontaktHistory                  = new stdClass();
         $KontaktHistory->kKontaktBetreff = $betreff->kKontaktBetreff;
         $KontaktHistory->kSprache        = $_SESSION['kSprache'];
         $KontaktHistory->cAnrede         = $Objekt->tnachricht->cAnrede ?? null;
@@ -377,10 +378,10 @@ class Form
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      * @since 5.0.0
      */
-    public static function baueFormularVorgaben(): \stdClass
+    public static function baueFormularVorgaben(): stdClass
     {
         return self::baueKontaktFormularVorgaben();
     }

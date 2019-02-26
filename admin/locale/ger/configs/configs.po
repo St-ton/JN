@@ -974,7 +974,7 @@ msgid "benachrichtigung_nutzen_name"
 msgstr "Service bei nicht verfügbaren Artikeln anbieten"
 
 msgid "benachrichtigung_nutzen_desc"
-msgstr "Hier können Sie festlegen, ob Kunden bei Artikeln, die aktuell nicht lieferbar sind, angeben können, dass sie informiert werden möchten, wenn der Artikel wieder verfügbar ist."
+msgstr "Hier können Sie festlegen, ob Kunden bei Artikeln, die aktuell nicht lieferbar sind, angeben können, dass sie informiert werden möchten, wenn der Artikel wieder verfügbar ist. (Pop-Up in Listenansicht im NOVA Template inaktiv)"
 
 msgid "benachrichtigung_abfragen_vorname_name"
 msgstr "Vorname abfragen"
@@ -3303,3 +3303,21 @@ msgstr "shop_logo"
 
 msgid "shop_logo_desc"
 msgstr ""
+
+msgid "ftp_hostname_name"
+msgstr "Hostname"
+
+msgid "ftp_port_name"
+msgstr "Port"
+
+msgid "ftp_user_name"
+msgstr "Benutzername"
+
+msgid "ftp_pass_name"
+msgstr "Passwort"
+
+msgid "ftp_ssl_name"
+msgstr "Verschlüsselt (SSL)"
+
+msgid "ftp_path_name"
+msgstr "Pfad zum Shop"

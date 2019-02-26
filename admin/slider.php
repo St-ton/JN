@@ -5,12 +5,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Slide;
+use JTL\Slider;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
+use JTL\Boxes\Admin\BoxAdmin;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $cFehler     = '';
 $cHinweis    = '';
@@ -88,7 +95,7 @@ switch ($action) {
                 Shop::Container()->getDB()->delete(
                     'textensionpoint',
                     ['cClass', 'kInitial'],
-                    ['Slider', $slider->getID()]
+                    ['slider', $slider->getID()]
                 );
                 $oExtension                = new stdClass();
                 $oExtension->kSprache      = $kSprache;
@@ -96,7 +103,7 @@ switch ($action) {
                 $oExtension->nSeite        = $nSeite;
                 $oExtension->cKey          = $cKey;
                 $oExtension->cValue        = $cValue;
-                $oExtension->cClass        = 'Slider';
+                $oExtension->cClass        = 'slider';
                 $oExtension->kInitial      = $slider->getID();
                 Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
 
@@ -177,8 +184,9 @@ $smarty->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $action)
        ->assign('kSlider', $kSlider)
+       ->assign('validPageTypes', (new BoxAdmin(Shop::Container()->getDB()))->getMappedValidPageTypes())
        ->assign('oSlider_arr', Shop::Container()->getDB()->query(
            'SELECT * FROM tslider',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
        ->display('slider.tpl');

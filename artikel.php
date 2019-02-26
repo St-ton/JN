@@ -4,16 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Product\Preisverlauf;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\Session\Frontend;
+use JTL\Extensions\Upload;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 Shop::setPageType(PAGE_ARTIKEL);
 $oPreisverlauf  = null;
 $bPreisverlauf  = false;
@@ -84,7 +95,7 @@ if (Shop::$kVariKindArtikel > 0) {
     $bCanonicalURL = $conf['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
     $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
-if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && \Session\Frontend::getCustomerGroup()->mayViewPrices()) {
+if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Frontend::getCustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
         : $AktuellerArtikel->kArtikel;
@@ -144,7 +155,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
-if (\Session\Frontend::getCustomer()->getID() > 0) {
+if (Frontend::getCustomer()->getID() > 0) {
     $rated = Product::getRatedByCurrentCustomer(
         (int)$AktuellerArtikel->kArtikel,
         (int)$AktuellerArtikel->kVaterArtikel
@@ -193,10 +204,10 @@ if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
 }
 
-$uploads = \Extensions\Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
-$maxSize = \Extensions\Upload::uploadMax();
+$uploads = Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
+$maxSize = Upload::uploadMax();
 $smarty->assign('nMaxUploadSize', $maxSize)
-       ->assign('cMaxUploadSize', \Extensions\Upload::formatGroesse($maxSize))
+       ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
        ->assign('oUploadSchema_arr', $uploads)
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
@@ -248,7 +259,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_ARTIKEL_PAGE, ['oArtikel' => $AktuellerArtikel]);
 
 if (Request::isAjaxRequest()) {
-    $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
+    $smarty->assign('listStyle', isset($_GET['isListStyle']) ? Text::filterXSS($_GET['isListStyle']) : '');
 }
 
 $smarty->display('productdetails/index.tpl');

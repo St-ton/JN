@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
 
 /**
  * Class News
- * @package Widgets
+ * @package JTL\Widgets
  */
 class News extends AbstractWidget
 {

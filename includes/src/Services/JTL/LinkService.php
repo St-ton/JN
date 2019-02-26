@@ -4,23 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Link\Link;
+use JTL\Link\LinkGroupCollection;
+use JTL\Link\LinkGroupInterface;
+use JTL\Link\LinkGroupList;
+use JTL\Link\LinkGroupListInterface;
+use JTL\Link\LinkInterface;
+use JTL\Shop;
+use Illuminate\Support\Collection;
 use function Functional\first;
 use function Functional\first_index_of;
-use Link\LinkGroupCollection;
-use Link\LinkGroupInterface;
-use Link\LinkGroupList;
-use Link\LinkGroupListInterface;
-use Link\LinkInterface;
-use Link\Link;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 final class LinkService implements LinkServiceInterface
 {
@@ -62,7 +63,7 @@ final class LinkService implements LinkServiceInterface
      */
     public static function getInstance(): LinkServiceInterface
     {
-        return self::$instance ?? new self(\Shop::Container()->getDB(), \Shop::Container()->getCache());
+        return self::$instance ?? new self(Shop::Container()->getDB(), Shop::Container()->getCache());
     }
 
     /**
@@ -288,7 +289,7 @@ final class LinkService implements LinkServiceInterface
         }
 
         return $full && \mb_strpos($id, 'http') !== 0
-            ? \Shop::getURL($secure) . '/' . $id
+            ? Shop::getURL($secure) . '/' . $id
             : $id;
     }
 
@@ -393,6 +394,7 @@ final class LinkService implements LinkServiceInterface
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
+                Shop::dbg($first, false, 'FOUND:');
                 $meta->cTitle    = $first->getMetaTitle();
                 $meta->cDesc     = $first->getMetaDescription();
                 $meta->cKeywords = $first->getMetaKeyword();
@@ -409,7 +411,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function checkNoIndex(): bool
     {
-        return \Shop::getProductFilter()->getMetaData()->checkNoIndex();
+        return Shop::getProductFilter()->getMetaData()->checkNoIndex();
     }
 
     /**
@@ -436,10 +438,10 @@ final class LinkService implements LinkServiceInterface
                         break;
                     case \PAGE_EIGENE:
                         $parent = $link->getParent();
-                        if ($parent === 0 && $this->isChildActive($linkID, \Shop::$kLink)) {
+                        if ($parent === 0 && $this->isChildActive($linkID, Shop::$kLink)) {
                             $link->setIsActive(true);
                         }
-                        if ($linkID === \Shop::$kLink) {
+                        if ($linkID === Shop::$kLink) {
                             $link->setIsActive(true);
                             $parent = $this->getRootLink($linkID);
                             $linkGroup->getLinks()->filter(function (LinkInterface $l) use ($parent) {
@@ -513,7 +515,7 @@ final class LinkService implements LinkServiceInterface
         $linkWRB = null;
         // kLink für AGB und WRB suchen
         foreach ($this->getSpecialPages() as $sp) {
-            /** @var \Link\LinkInterface $sp */
+            /** @var LinkInterface $sp */
             if ($sp->getLinkType() === \LINKTYP_AGB) {
                 $linkAGB = $sp;
             } elseif ($sp->getLinkType() === \LINKTYP_WRB) {

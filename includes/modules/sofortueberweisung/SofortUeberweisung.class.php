@@ -4,6 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Checkout\Bestellung;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Checkout\ZahlungsLog;
+use JTL\DB\ReturnType;
+
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 // Debug - 1 = An / 0 = Aus
@@ -116,7 +123,7 @@ class SofortUeberweisung extends PaymentMethod
             "SELECT cWert
                 FROM teinstellungen
                 WHERE cName = 'zahlungsart_sofortueberweisung_project_password'",
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oEinstellungen->cWert)) {
@@ -139,7 +146,7 @@ class SofortUeberweisung extends PaymentMethod
             "SELECT cWert
                 FROM teinstellungen
                 WHERE cName = 'zahlungsart_sofortueberweisung_benachrichtigung_password'",
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (!empty($oEinstellungen->cWert)) {
@@ -290,7 +297,7 @@ class SofortUeberweisung extends PaymentMethod
                     INNER JOIN tzahlungseingang 
                         ON tzahlungseingang.kBestellung = ' . (int)$order->kBestellung . "
                     WHERE tzahlungsession.cZahlungsID = '" . substr($paymentHash, 1) . "'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
             if (!isset($transaction)
@@ -493,12 +500,12 @@ class SofortUeberweisung extends PaymentMethod
      */
     public function removeEntities()
     {
-        $this->reason_1        = StringHandler::unhtmlentities($this->reason_1);
-        $this->reason_2        = StringHandler::unhtmlentities($this->reason_2);
-        $this->user_variable_2 = StringHandler::unhtmlentities($this->user_variable_2);
-        $this->user_variable_3 = StringHandler::unhtmlentities($this->user_variable_3);
-        $this->user_variable_4 = StringHandler::unhtmlentities($this->user_variable_4);
-        $this->name            = StringHandler::unhtmlentities($this->name);
+        $this->reason_1        = Text::unhtmlentities($this->reason_1);
+        $this->reason_2        = Text::unhtmlentities($this->reason_2);
+        $this->user_variable_2 = Text::unhtmlentities($this->user_variable_2);
+        $this->user_variable_3 = Text::unhtmlentities($this->user_variable_3);
+        $this->user_variable_4 = Text::unhtmlentities($this->user_variable_4);
+        $this->name            = Text::unhtmlentities($this->name);
     }
 
     /**

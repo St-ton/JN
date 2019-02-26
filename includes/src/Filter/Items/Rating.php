@@ -4,23 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\StateSQL;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class Rating
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Rating extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -40,7 +42,7 @@ class Rating extends AbstractFilter
         $this->setIsCustom(false)
              ->setUrlParam('bf')
              ->setVisibility($this->getConfig('navigationsfilter')['bewertungsfilter_benutzen'])
-             ->setFrontendName(\Shop::Lang()->get('Votes'));
+             ->setFrontendName(Shop::Lang()->get('Votes'));
     }
 
     /**
@@ -57,9 +59,9 @@ class Rating extends AbstractFilter
     public function setSeo(array $languages): FilterInterface
     {
         $this->setName(
-            \Shop::Lang()->get('from', 'productDetails') . ' ' .
+            Shop::Lang()->get('from', 'productDetails') . ' ' .
             $this->getValue() . ' ' .
-            \Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
+            Shop::Lang()->get($this->getValue() > 0 ? 'starPlural' : 'starSingular')
         );
 
         return $this;
@@ -152,9 +154,9 @@ class Rating extends AbstractFilter
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName(
-                    \Shop::Lang()->get('from', 'productDetails') . ' ' .
+                    Shop::Lang()->get('from', 'productDetails') . ' ' .
                     $row->nSterne . ' ' .
-                    \Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
+                    Shop::Lang()->get($row->nSterne > 1 ? 'starPlural' : 'starSingular')
                 )
                 ->setValue((int)$row->nSterne)
                 ->setCount($stars);

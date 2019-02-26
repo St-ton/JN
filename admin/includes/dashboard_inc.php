@@ -4,7 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\IO\IOResponse;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Plugin\State;
+use JTL\Plugin\Helper;
+use JTL\Smarty\JTLSmarty;
+use JTL\Network\JTLApi;
 
 /**
  * @param bool $bActive
@@ -22,11 +30,11 @@ function getWidgets(bool $bActive = true)
             WHERE bActive = :active
                 AND tplugin.nStatus IS NULL OR tplugin.nStatus = :activated
             ORDER BY eContainer ASC, nPos ASC',
-        ['active' => (int)$bActive, 'activated' => \Plugin\State::ACTIVATED],
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ['active' => (int)$bActive, 'activated' => State::ACTIVATED],
+        ReturnType::ARRAY_OF_OBJECTS
     );
     if ($bActive) {
-        $smarty = \Smarty\JTLSmarty::getInstance(false, \Smarty\ContextType::BACKEND);
+        $smarty = JTLSmarty::getInstance(false, \JTL\Smarty\ContextType::BACKEND);
         foreach ($widgets as $widget) {
             $widget->kWidget    = (int)$widget->kWidget;
             $widget->kPlugin    = (int)$widget->kPlugin;
@@ -35,7 +43,7 @@ function getWidgets(bool $bActive = true)
             $widget->bActive    = (int)$widget->bActive;
             $widget->bExtension = (int)$widget->bExtension;
             $widget->cContent   = '';
-            $className          = '\Widgets\\' . $widget->cClass;
+            $className          = '\JTL\Widgets\\' . $widget->cClass;
             $classPath          = null;
             $widget->cNiceTitle = str_replace(['--', ' '], '-', $widget->cTitle);
             $widget->cNiceTitle = mb_convert_case(
@@ -44,7 +52,7 @@ function getWidgets(bool $bActive = true)
             );
             $plugin             = null;
             if ($widget->kPlugin > 0) {
-                $loader = \Plugin\Helper::getLoader($widget->bExtension === 1, $db, $cache);
+                $loader = Helper::getLoader($widget->bExtension === 1, $db, $cache);
                 $plugin = $loader->init($widget->kPlugin);
                 $hit    = $plugin->getWidgets()->getWidgetByID($widget->kWidget);
                 if ($hit === null) {
@@ -57,7 +65,7 @@ function getWidgets(bool $bActive = true)
                 require_once $classPath;
             }
             if (class_exists($className)) {
-                /** @var \Widgets\AbstractWidget $instance */
+                /** @var \JTL\Widgets\AbstractWidget $instance */
                 $instance         = new $className($smarty, $db, $plugin);
                 $widget->cContent = $instance->getContent();
                 $widget->hasBody  = $instance->hasBody;
@@ -170,7 +178,7 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
     } else {
         $data = json_decode($cData);
     }
-    $data    = $decodeUTF8 ? StringHandler::utf8_convert_recursive($data) : $data;
+    $data    = $decodeUTF8 ? Text::utf8_convert_recursive($data) : $data;
     $wrapper = Shop::Smarty()->assign($dataName, $data)->fetch('tpl_inc/' . $tpl);
     $response->assign($wrapperID, 'innerHTML', $wrapper);
 
@@ -189,8 +197,10 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
  */
 function getShopInfoIO($cTpl, $cWrapperID)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('widgets');
+
     $response         = new IOResponse();
-    $api              = Shop::Container()->get(\Network\JTLApi::class);
+    $api              = Shop::Container()->get(JTLApi::class);
     $oLatestVersion   = $api->getLatestVersion();
     $strLatestVersion = $oLatestVersion
         ? sprintf('%d.%02d', $oLatestVersion->getMajor(), $oLatestVersion->getMinor())

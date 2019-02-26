@@ -4,13 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
+
+use JTL\IO\IO;
+use JTL\IO\IOError;
 
 /**
  * Class AdminIO
+ *
  * @package Backend
  */
-class AdminIO extends \IO
+class AdminIO extends IO
 {
     /**
      * @var AdminAccount
@@ -61,13 +65,13 @@ class AdminIO extends \IO
     public function execute($name, $params)
     {
         if (!$this->exists($name)) {
-            return new \IOError('Function not registered');
+            return new IOError('Function not registered');
         }
 
         $permission = $this->functions[$name][2];
 
         if ($permission !== null && !$this->oAccount->permission($permission)) {
-            return new \IOError('User has not the required permission to execute this function', 401);
+            return new IOError('User has not the required permission to execute this function', 401);
         }
 
         return parent::execute($name, $params);

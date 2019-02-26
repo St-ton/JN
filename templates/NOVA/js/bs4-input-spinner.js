@@ -11,7 +11,7 @@
     var originalVal = $.fn.val
     $.fn.val = function (value) {
         if (arguments.length >= 1) {
-            if (this[0]["bootstrap-input-spinner"] && this[0].setValue) {
+            if (this[0] && this[0]["bootstrap-input-spinner"] && this[0].setValue) {
                 this[0].setValue(value)
             }
         }
@@ -23,7 +23,7 @@
         var config = {
             decrementButton: "<strong>-</strong>", // button text
             incrementButton: "<strong>+</strong>", // ..
-            groupClass: "", // css class of the input-group (sizing with input-group-sm or input-group-lg)
+            groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
             buttonsClass: "btn-outline-secondary",
             buttonsWidth: "2.5rem",
             textAlign: "center",
@@ -33,16 +33,17 @@
             boostMultiplier: "auto", // you can also set a constant number as multiplier
             locale: null // the locale for number rendering; if null, the browsers language is used
         }
-        Object.assign(config, options)
-
         // JTL: adds unit to quantity group
         var unit = '';
-        if($('#quantity-grp .unit').length >= 1) {
+        if ($('#quantity-grp .unit').length >= 1) {
             unit = $('#quantity-grp .unit')[0].outerHTML;
             $('#quantity-grp .unit')[0].remove()
         }
 
-        // JTL: changed HTML to use buttons in existing btn-groups
+        for (var option in options) {
+            config[option] = options[option]
+        }
+
         var html = '<div class="nmbr-cfg-group ' + config.groupClass + '">' +
             '<div class="input-group-prepend">' +
             '<button style="min-width: ' + config.buttonsWidth + '" class="btn btn-decrement ' + config.buttonsClass + '" type="button">' + config.decrementButton + '</button>' +
@@ -85,46 +86,40 @@
             var value = parseFloat($original[0].value)
             var boostStepsCount = 0
 
+            var prefix = $original.attr("data-prefix") || ""
+            var suffix = $original.attr("data-suffix") || ""
+
+            if (prefix) {
+                var prefixElement = $('<span class="input-group-text">' + prefix + '</span>')
+                $inputGroup.find(".input-group-prepend").append(prefixElement)
+            }
+            if (suffix) {
+                var suffixElement = $('<span class="input-group-text">' + suffix + '</span>')
+                $inputGroup.find(".input-group-append").prepend(suffixElement)
+            }
+
             $original[0].setValue = function (newValue) {
                 setValue(newValue)
             }
 
-            if ($original.prop("class").indexOf("is-invalid") !== -1) { // TODO dynamically copy all classes
-                $input.addClass("is-invalid")
-            }
-            if ($original.prop("class").indexOf("is-valid") !== -1) {
-                $input.addClass("is-valid")
-            }
-            if ($original.prop("required")) {
-                $input.prop("required", true)
-            }
-            if ($original.prop("placeholder")) {
-                $input.prop("placeholder", $original.prop("placeholder"))
-            }
+            var observer = new MutationObserver(function () {
+                copyAttributes()
+            })
+            observer.observe($original[0], {attributes: true})
+            copyAttributes()
 
             $original.after($inputGroup)
 
-            if (isNaN(value)) {
-                $original[0].value = ""
-                $input[0].value = ""
-            } else {
-                $original[0].value = value
-                $input[0].value = numberFormat.format(value)
-            }
+            setValue(value)
 
-            $input.on("paste keyup change", function () {
-                var inputValue = $input[0].value
-                if (locale === "en-US" || locale === "en-GB" || locale === "th-TH") {
-                    value = parseFloat(inputValue)
-                } else {
-                    value = parseFloat(inputValue.replace(/[. ]/g, '').replace(/,/g, '.')) // i18n
+            $input.on("paste input change focusout", function (event) {
+                var newValue = $input[0].value
+                var focusOut = event.type === "focusout"
+                if (!(locale === "en-US" || locale === "en-GB" || locale === "th-TH")) {
+                    newValue = newValue.replace(/[. ]/g, '').replace(/,/g, '.')
                 }
-                if (isNaN(value)) {
-                    $original[0].value = ""
-                } else {
-                    $original[0].value = value
-                }
-                dispatchChangeEvents($original)
+                setValue(newValue, focusOut)
+                dispatchEvent($original, event.type)
             })
 
             onPointerDown($buttonDecrement[0], function () {
@@ -137,59 +132,77 @@
                 resetTimer()
             })
 
-            function setValue(newValue) {
+            function setValue(newValue, updateInput) {
+                if(updateInput === undefined) {
+                    updateInput = true
+                }
                 if (isNaN(newValue) || newValue === "") {
                     $original[0].value = ""
-                    $input[0].value = ""
-                    value = 0.0
+                    if (updateInput) {
+                        $input[0].value = ""
+                    }
+                    value = 0
                 } else {
+                    newValue = parseFloat(newValue)
+                    newValue = Math.min(Math.max(newValue, min), max)
+                    newValue = Math.round(newValue * Math.pow(10, decimals)) / Math.pow(10, decimals)
                     $original[0].value = newValue
-                    $input[0].value = numberFormat.format(newValue)
-                    value = parseFloat(newValue)
+                    if (updateInput) {
+                        $input[0].value = numberFormat.format(newValue)
+                    }
+                    value = newValue
                 }
             }
 
-            function dispatchChangeEvents($element) {
-                setTimeout(function () {
-                    var changeEvent = new Event("change", {bubbles: true})
-                    var inputEvent = new Event("input", {bubbles: true})
-                    $element[0].dispatchEvent(changeEvent)
-                    $element[0].dispatchEvent(inputEvent)
-                })
+            function dispatchEvent($element, type) {
+                if (type) {
+                    setTimeout(function () {
+                        var event;
+                        if(typeof(Event) === 'function') {
+                            event = new Event(type, {bubbles: true})
+                        } else { // IE
+                            event = document.createEvent('Event');
+                            event.initEvent(type, true, true);
+                        }
+                        $element[0].dispatchEvent(event)
+                    })
+                }
             }
 
             function stepHandling(step) {
-                calcStep(step)
-                resetTimer()
-                autoDelayHandler = setTimeout(function () {
-                    autoIntervalHandler = setInterval(function () {
-                        if (boostStepsCount > config.boostThreshold) {
-                            if (autoMultiplier) {
-                                calcStep(step * parseInt(boostMultiplier, 10))
-                                boostMultiplier = Math.min(1000000, boostMultiplier * 1.1)
-                                if(stepMax) {
-                                    boostMultiplier = Math.min(stepMax, boostMultiplier)
+                if(!$input[0].disabled) {
+                    calcStep(step)
+                    resetTimer()
+                    autoDelayHandler = setTimeout(function () {
+                        autoIntervalHandler = setInterval(function () {
+                            if (boostStepsCount > config.boostThreshold) {
+                                if (autoMultiplier) {
+                                    calcStep(step * parseInt(boostMultiplier, 10))
+                                    if(boostMultiplier < 100000000) {
+                                        boostMultiplier = boostMultiplier * 1.1
+                                    }
+                                    if (stepMax) {
+                                        boostMultiplier = Math.min(stepMax, boostMultiplier)
+                                    }
+                                } else {
+                                    calcStep(step * boostMultiplier)
                                 }
                             } else {
-                                calcStep(step * boostMultiplier)
+                                calcStep(step)
                             }
-                        } else {
-                            calcStep(step)
-                        }
-                        boostStepsCount++
-                    }, config.autoInterval)
-                }, config.autoDelay)
+                            boostStepsCount++
+                        }, config.autoInterval)
+                    }, config.autoDelay)
+                }
             }
 
             function calcStep(step) {
                 if (isNaN(value)) {
                     value = 0
                 }
-                value = Math.round(value / step) * step
-                value = Math.min(Math.max(value + step, min), max)
-                $input[0].value = numberFormat.format(value)
-                $original[0].value = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals)
-                dispatchChangeEvents($original)
+                setValue(Math.round(value / step) * step + step)
+                dispatchEvent($original, "input")
+                dispatchEvent($original, "change")
             }
 
             function resetTimer() {
@@ -197,6 +210,17 @@
                 boostMultiplier = boostMultiplier = autoMultiplier ? 1 : config.boostMultiplier
                 clearTimeout(autoDelayHandler)
                 clearTimeout(autoIntervalHandler)
+            }
+
+            function copyAttributes() {
+                $input.prop("required", $original.prop("required"))
+                $input.prop("placeholder", $original.prop("placeholder"))
+                var disabled = $original.prop("disabled")
+                $input.prop("disabled", disabled)
+                $buttonIncrement.prop("disabled", disabled)
+                $buttonDecrement.prop("disabled", disabled)
+                $input.prop("class", "form-control " + $original.prop("class"))
+                // $inputGroup.prop("class", "input-group " + $original.prop("class") + " " + config.groupClass)
             }
 
         })
@@ -224,7 +248,9 @@
             callback(e)
         })
         element.addEventListener("touchstart", function (e) {
-            e.preventDefault()
+            if(e.cancelable) {
+                e.preventDefault()
+            }
             callback(e)
         })
         element.addEventListener("keydown", function (e) {

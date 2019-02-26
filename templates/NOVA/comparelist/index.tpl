@@ -11,7 +11,7 @@
 
     {include file='snippets/extension.tpl'}
     
-    {if $oVergleichsliste->oArtikel_arr|@count > 1}
+    {if $oVergleichsliste->oArtikel_arr|@count > 0}
         <div class="comparelist table-responsive">
             <table class="table table-striped table-bordered table-sm">
                 <tr>

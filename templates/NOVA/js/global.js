@@ -324,7 +324,7 @@ $(document).ready(function () {
         return false;
     });
 
-    $(document).on('click', '.pagination-ajax li:not(.active) a', function(e) {
+    $(document).on('click', '.pagination-ajax a:not(.active)', function(e) {
         var url = $(this).attr('href');
         history.pushState(null, null, url);
         loadContent(url);

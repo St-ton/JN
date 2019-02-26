@@ -13,24 +13,13 @@ namespace JTL\dbeS;
 class SyncCronjob extends NetSyncHandler
 {
     /**
-     * @param \Exception $oException
-     */
-    public static function exception($oException)
-    {
-    }
-
-    /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
      * @param int $request
      */
     protected function request($request)
     {
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'smartyinclude.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'exportformat_inc.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'exportformat_queue_inc.php';
         switch ($request) {
             case NetSyncRequest::CRONJOBSTATUS:
                 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'cron_inc.php';

@@ -173,18 +173,8 @@
                                             {/listgroupitem}
                                         {/foreach}
                                     {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
-                                        {listgroupitem data-id=$oItem->getKonfigitem() class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
-                                            {assign var=kKonfigitem value=$oItem->getKonfigitem()}
-                                            {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
-                                            {if !empty($cKurzBeschreibung)}
-                                                {assign var=cBeschreibung value=$oItem->getKurzBeschreibung()}
-                                            {else}
-                                                {assign var=cBeschreibung value=$oItem->getBeschreibung()}
-                                            {/if}
-
-                                            {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
-                                                <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
-                                            {/if}
+                                        {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
+                                        {listgroupitem data-id=$kKonfiggruppe}
                                             {select name="item[{$kKonfiggruppe}][]"
                                                 multiple=$oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI
                                                 size="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}4{else}1{/if}"
@@ -224,21 +214,24 @@
 
                                     {if !$oGruppe->quantityEquals()}
                                         <div class="quantity form-inline" data-id="{$kKonfiggruppe}" style="display:none">
-                                            <label for="quantity{$kKonfiggruppe}">{lang key='quantity'}:</label>
-
-                                            <div class="input-group">
+                                            {inputgroup}
+                                                {inputgroupaddon prepend=true}
+                                                    {inputgrouptext}
+                                                        {lang key='quantity'}:
+                                                    {/inputgrouptext}
+                                                {/inputgroupaddon}
                                                 {input size="2" type="number"
-                                                       id="quantity{$kKonfiggruppe}"
-                                                       name="quantity[{$kKonfiggruppe}]"
-                                                       value=$quantity autocomplete="off"
-                                                       min=$oGruppe->getMin() max=$oGruppe->getMax()}
-                                            </div>
+                                                    id="quantity{$kKonfiggruppe}"
+                                                    name="quantity[{$kKonfiggruppe}]"
+                                                    value=$quantity autocomplete="off"
+                                                    min=$oGruppe->getMin() max=$oGruppe->getMax()}
+                                            {/inputgroup}
                                         </div>
                                     {else}
                                         <div class="quantity">
                                             {input type="hidden" id="quantity{$kKonfiggruppe}"
-                                                   name="quantity[{$kKonfiggruppe}]"
-                                                   value=$quantity}
+                                                name="quantity[{$kKonfiggruppe}]"
+                                                value=$quantity}
                                         </div>
                                     {/if}
                                 {/if}

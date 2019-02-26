@@ -6,7 +6,9 @@
 
 namespace JTL\dbeS;
 
+use JTL\DB\DbInterface;
 use JTL\Shop;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Synclogin
@@ -31,17 +33,18 @@ class Synclogin
 
     /**
      * Synclogin constructor.
-     * get wawi sync user/pass from db
+     * @param DbInterface     $db
+     * @param LoggerInterface $logger
      */
-    public function __construct()
+    public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        $obj = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
+        $obj = $db->select('tsynclogin', 'kSynclogin', 1);
         if ($obj !== null) {
             foreach (\array_keys(\get_object_vars($obj)) as $member) {
                 $this->$member = $obj->$member;
             }
         } else {
-            Shop::Container()->getLogService()->error('Kein Sync-Login gefunden.');
+            $logger->error('Kein Sync-Login gefunden.');
         }
     }
 

@@ -24,7 +24,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
 use JTL\TrustedShops;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Plugins
@@ -402,7 +402,7 @@ class Plugins
                 $bError                   = isset($params['cPlausi_arr'][$oCheckBox->cID]);
                 $cPost_arr                = $params['cPost_arr'];
                 $oCheckBox->isActive      = isset($cPost_arr[$oCheckBox->cID]);
-                $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText;
+                $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText ?? '';
                 $oCheckBox->cLinkURL      = $cLinkURL;
                 $oCheckBox->cLinkURLFull  = $cLinkURL;
                 $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
@@ -480,7 +480,7 @@ class Plugins
     /**
      * @param LinkGroupInterface $linkGroup
      * @param int                $kVaterLink
-     * @return \Tightenco\Collect\Support\Collection
+     * @return Collection
      */
     public function buildNavigationSubs($linkGroup, $kVaterLink = 0)
     {

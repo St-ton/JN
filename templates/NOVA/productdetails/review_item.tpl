@@ -63,10 +63,10 @@
                             <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}
                         </small>
                 </blockquote>
-                {image itemprop="image" src=$Artikel->cVorschaubild alt=$oBewertung->cTitel class="d-none"}
+                <meta itemprop="thumbnailURL" content="{$Artikel->cVorschaubildURL}">
                 {if !empty($oBewertung->cAntwort)}
                     <div class="review-reply">
-                        <strong>Antwort von {$cShopName}:</strong>
+                        <strong>{lang key='reply' section='product rating'} {$cShopName}:</strong>
                         <blockquote>
                             <p>{$oBewertung->cAntwort}</p><br>
                             <small>{$oBewertung->AntwortDatum}</small>

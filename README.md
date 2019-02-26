@@ -45,7 +45,7 @@
 ## Third party libraries
 * Smarty (http://www.smarty.net/) - LGPL
 * Guzzle - MIT
-* imanee - MIT
+* Intervention Image - MIT
 * CKEditor - LGPL
 * elFinder - BSD
 * CodeMirror - MIT

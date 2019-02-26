@@ -9,7 +9,7 @@ namespace JTL\Services\JTL;
 use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkInterface;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Interface LinkServiceInterface

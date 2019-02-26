@@ -12,18 +12,18 @@ use Redis;
 use RedisException;
 
 /**
- * Class cache_redis
+ * Class CacheRedis
  * Implements caching via phpredis
  *
  * @see https://github.com/nicolasff/phpredis
  * @package JTL\Cache\Methods
  */
-class cache_redis implements ICachingMethod
+class CacheRedis implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_redis
+     * @var CacheRedis
      */
     public static $instance;
 
@@ -258,7 +258,7 @@ class cache_redis implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('JTL\Cache\Methods\cache_redis::_keyFromTagName', $tags);
+            : \array_map('JTL\Cache\Methods\CacheRedis::_keyFromTagName', $tags);
         $res       = \count($matchTags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);

@@ -7,7 +7,7 @@
 namespace JTL\Cache\Methods;
 
 /**
- * Class cache_xcache
+ * Class CacheXcache
  * Implements the XCache Opcode Cache
  *
  * @warning Untested
@@ -15,7 +15,7 @@ namespace JTL\Cache\Methods;
  * @package JTL\Cache\Methods
  * @deprecated since 5.0.0
  */
-class cache_xcache extends cache_null
+class CacheXcache extends CacheNull
 {
     /**
      * @inheritdoc

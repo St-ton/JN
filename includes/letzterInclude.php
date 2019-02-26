@@ -25,15 +25,16 @@ use JTL\Visitor;
 use JTL\Cart\Warenkorb;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
+use JTL\Filter\Metadata;
 
 $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
 $tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
-$shopLogo   = Shop::getLogo();
 $shopURL    = Shop::getURL();
 $cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
 $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
+$link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
 $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];
@@ -65,12 +66,10 @@ $specialPageTypes   = [
     PAGE_MEINKONTO,
     PAGE_LOGIN
 ];
-if (in_array($pagetType, $specialPageTypes, true)) {
-    $mapper           = new \JTL\Mapper\PageTypeToLinkType();
-    $metaData         = $linkHelper->buildSpecialPageMeta($mapper->map($pagetType));
-    $cMetaTitle       = $metaData->cTitle;
-    $cMetaDescription = $metaData->cDesc;
-    $cMetaKeywords    = $metaData->cKeywords;
+if ($link !== null) {
+    $cMetaTitle       = $link->getMetaTitle();
+    $cMetaDescription = $link->getMetaDescription();
+    $cMetaKeywords    = $link->getMetaKeyword();
 }
 if (is_object($globalMetaData)) {
     if (empty($cMetaTitle)) {
@@ -81,6 +80,19 @@ if (is_object($globalMetaData)) {
     }
     if (empty($cMetaKeywords)) {
         $cMetaKeywords = $globalMetaData->Meta_Keywords;
+    }
+    $cMetaTitle       = Metadata::prepareMeta(
+        $cMetaTitle,
+        null,
+        (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+    );
+    $cMetaDescription = Metadata::prepareMeta(
+        $cMetaDescription,
+        null,
+        (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+    );
+    if (empty($cMetaKeywords) && !empty($link->getContent())) {
+        $cMetaKeywords = Metadata::getTopMetaKeywords($link->getContent());
     }
 }
 if (!isset($AktuelleKategorie)) {
@@ -147,8 +159,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
        ->assign('bAjaxRequest', Request::isAjaxRequest())
        ->assign('jtl_token', Form::getTokenInput())
-       ->assign('ShopLogoURL', $shopLogo)
-       ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
+       ->assign('ShopLogoURL', Shop::getLogo(true))
        ->assign('nSeitenTyp', $pagetType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)

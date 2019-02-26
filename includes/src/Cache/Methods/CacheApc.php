@@ -10,17 +10,17 @@ use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
 
 /**
- * Class cache_apc
+ * Class CacheApc
  *
  * implements the APC Opcode Cache
  * @package JTL\Cache\Methods
  */
-class cache_apc implements ICachingMethod
+class CacheApc implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_apc
+     * @var CacheApc
      */
     public static $instance;
 

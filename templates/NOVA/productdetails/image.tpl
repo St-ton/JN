@@ -16,7 +16,7 @@
                         title="{lang key='addToCompare' section='productOverview'}"
                         data=["toggle"=>"tooltip", "placement"=>"top"]
                         }
-                            {image class="svg" src="{$currentTemplateDir}themes/base/images/compare.svg" alt="{lang key='addToCompare' section='productOverview'}"}
+                            {image class="svg" src="{$imageBaseURL}{$currentTemplateDir}themes/base/images/compare.svg" alt="{lang key='addToCompare' section='productOverview'}"}
                         {/button}
                     {/if}
                     {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
@@ -24,7 +24,7 @@
                         title="{lang key='addToWishlist' section='productDetails'}"
                         data=["toggle"=>"tooltip", "placement"=>"top"]
                         }
-                            {image class="svg" src="{$currentTemplateDir}themes/base/images/wishlist.svg" alt="{lang key='addToWishlist' section='productDetails'}"}
+                            {image class="svg" src="{$imageBaseURL}{$currentTemplateDir}themes/base/images/wishlist.svg" alt="{lang key='addToWishlist' section='productDetails'}"}
                         {/button}
                     {/if}
                 </div>

@@ -22,7 +22,7 @@ use JTL\Plugin\Data\PaymentMethods;
 use JTL\Plugin\Data\Widget;
 use JTL\Shop;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class AbstractLoader

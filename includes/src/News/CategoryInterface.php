@@ -7,7 +7,7 @@
 namespace JTL\News;
 
 use DateTime;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Interface CategoryInterface

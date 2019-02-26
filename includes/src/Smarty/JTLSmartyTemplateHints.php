@@ -22,7 +22,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
      */
     public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
-        $prefix = '';
+        $prefix  = '';
         $postfix = '';
         if (\SHOW_TEMPLATE_HINTS === 1 && $template !== null) {
             $prefix  = '<!-- start ' . $template . '-->';
@@ -35,8 +35,8 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
             $prefix .= '<span class="badge tpl-name">' . $template . '</span>';
             $postfix = '</section>';
         } elseif (\SHOW_TEMPLATE_HINTS === 4) {
-            $tplID  = \uniqid('tpl');
-            $prefix = '<span class="tpl-debug-start" data-uid="' .
+            $tplID   = \uniqid('tpl');
+            $prefix  = '<span class="tpl-debug-start" data-uid="' .
                     $tplID . '" style="display:none;" data-tpl="' . $template . '">';
             $prefix .= '<span class="tpl-name">' . $template . '</span>';
             $prefix .= '</span>';

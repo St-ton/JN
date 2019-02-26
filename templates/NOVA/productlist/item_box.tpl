@@ -131,10 +131,6 @@
                         {/inputgroup}
                     {/if}
                 {/formgroup}
-            {else}
-                {formgroup}
-                    {link class="btn btn-secondary btn-md btn-block mt-1" role="button" href=$Artikel->cURLFull}{lang key='details'}{/link}
-                {/formgroup}
             {/if}
             {/block}
 

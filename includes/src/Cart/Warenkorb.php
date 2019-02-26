@@ -1099,7 +1099,7 @@ class Warenkorb
     {
         $currency         = $this->Waehrung ?? Frontend::getCurrency();
         $conversionFactor = $currency->getConversionFactor();
-        $total      = 0;
+        $total            = 0;
         foreach ($this->PositionenArr as $pos) {
             // Lokalisierte Preise addieren
             if ($gross) {
@@ -1128,7 +1128,7 @@ class Warenkorb
                 $_SESSION['Kunde']->fGuthaben,
                 Frontend::getCart()->gibGesamtsummeWaren(true, false)
             );
-            $total                             -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
+            $total                                   -= $_SESSION['Bestellung']->fGuthabenGenutzt * $conversionFactor;
         }
         $total /= $conversionFactor;
         $this->useSummationRounding();

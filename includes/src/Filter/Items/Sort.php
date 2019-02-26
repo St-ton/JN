@@ -15,7 +15,7 @@ use JTL\Filter\SortingOptions\SortDefault;
 use JTL\Filter\SortingOptions\SortingOptionInterface;
 use JTL\Mapper\SortingType;
 use JTL\Shop;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Sort

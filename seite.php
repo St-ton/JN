@@ -24,10 +24,11 @@ $smarty      = Shop::Smarty();
 $conf        = Shopsetting::getInstance()->getAll();
 $linkHelper  = Shop::Container()->getLinkService();
 $alertHelper = Shop::Container()->getAlertService();
+$link        = null;
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
+    $link  = $linkHelper->getLinkByID($kLink);
 }
-$link = $linkHelper->getLinkByID(Shop::$kLink);
 if ($link === null || !$link->isVisible()) {
     $link = $linkHelper->getSpecialPage(LINKTYP_STARTSEITE);
     $link->setRedirectCode(301);
@@ -117,7 +118,10 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
-$smarty->assign('Link', $link);
+$smarty->assign('Link', $link)
+       ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
+       ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
+       ->assign('meta_language', StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
 
 executeHook(HOOK_SEITE_PAGE);
 

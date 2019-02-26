@@ -10,7 +10,7 @@ use JTL\Boxes\Items\AbstractBox;
 use JTL\Filter\Pagination\Info;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;
@@ -25,7 +25,7 @@ class SearchResults implements SearchResultsInterface
     use MagicCompatibilityTrait;
 
     /**
-     * @var \Tightenco\Collect\Support\Collection()
+     * @var \Illuminate\Support\Collection()
      * @former Artikel
      */
     private $products;

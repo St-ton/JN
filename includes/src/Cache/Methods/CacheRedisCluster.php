@@ -14,18 +14,18 @@ use RedisCluster;
 use RedisClusterException;
 
 /**
- * Class cache_redisCluster
+ * Class CacheRedisCluster
  * @package JTL\Cache\Methods
  * Implements caching via phpredis in cluster mode
  *
  * @see https://github.com/nicolasff/phpredis
  */
-class cache_redisCluster implements ICachingMethod
+class CacheRedisCluster implements ICachingMethod
 {
     use JTLCacheTrait;
 
     /**
-     * @var cache_redisCluster
+     * @var CacheRedisCluster
      */
     public static $instance;
 
@@ -238,7 +238,7 @@ class cache_redisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('JTL\Cache\Methods\cache_redisCluster::_keyFromTagName', $tags);
+            : \array_map('JTL\Cache\Methods\CacheRedisCluster::_keyFromTagName', $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);

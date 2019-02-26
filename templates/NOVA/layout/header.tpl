@@ -157,7 +157,6 @@
                             {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}{/navbartoggle}
                         {/col}
 
-
                         {col cols=12 order=5}
                             {*categories*}
                             <div id="navbarToggler" class="collapse navbar-collapse mt-2" data-parent="#evo-main-nav-wrapper">

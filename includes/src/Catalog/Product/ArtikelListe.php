@@ -277,7 +277,7 @@ class ArtikelListe
             // top artikel nicht nochmal in den bestsellen vorkommen lassen
             $excludes = '';
             if (isset($topArtikelliste->elemente) && \is_array($topArtikelliste->elemente)) {
-                $exclude            = map($topArtikelliste->elemente, function ($e) {
+                $exclude  = map($topArtikelliste->elemente, function ($e) {
                     return (int)$e->kArtikel;
                 });
                 $excludes = \count($exclude) > 0

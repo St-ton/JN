@@ -5,8 +5,8 @@
 @import "../../base/bootstrap-select/bootstrap-select.scss";
 @import "../../base/slick/slick.scss";
 @import "../../base/fileinput/fileinput.min.scss";
-@import "../../base/wow/animate.css";
-@import "../../base/slider/slider.css";
+@import "../../base/wow/animate";
+@import "../../base/slider/slider";
 
 @mixin font($font-family, $font-file, $font-weight) {
   @font-face {

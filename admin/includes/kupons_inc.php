@@ -688,7 +688,7 @@ function informCouponCustomers($coupon)
         }
         $products = [];
         foreach ($productIDs as $productID) {
-            $product = new Artikel($db);
+            $product = new Artikel();
             $product->fuelleArtikel(
                 $productID,
                 $defaultOptions,

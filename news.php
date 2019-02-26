@@ -67,6 +67,12 @@ switch ($controller->getPageType($params)) {
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
         $breadCrumbName = $overview->getName();
+        $newsCategory   = new \News\Category($db);
+        $newsCategory->load($kNewsKategorie);
+
+        $cMetaTitle       = $newsCategory->getMetaTitle();
+        $cMetaDescription = $newsCategory->getMetaDescription();
+        $cMetaKeywords    = $newsCategory->getMetaKeyword();
         break;
     case ViewType::NEWS_OVERVIEW:
         Shop::setPageType(PAGE_NEWS);

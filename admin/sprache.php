@@ -40,7 +40,7 @@ if (isset($_FILES['csvfile']['tmp_name'])
     if ($res === false) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImport'), 'errorImport');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, sprintf(__('successImport'), $res), 'successImport');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, sprintf(__('successImport'), $res), 'successImport');
     }
 }
 
@@ -84,7 +84,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_LANGUAGE]);
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successVarRemove'), $_GET['cName']),
                 'successVarRemove'
             );
@@ -190,7 +190,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 count($cChanged_arr) > 0
                     ? __('successVarChange') . implode(', ', $cChanged_arr)
                     : __('errorVarChangeNone'),
@@ -205,7 +205,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                 ->clearLog();
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_LANGUAGE]);
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successListReset'), 'successListReset');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successListReset'), 'successListReset');
             break;
         default:
             break;

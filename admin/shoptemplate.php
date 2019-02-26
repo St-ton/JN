@@ -47,7 +47,7 @@ if (isset($_POST['key'], $_POST['upload'])) {
 }
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } elseif ($_GET['check'] === 'false') {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
@@ -61,7 +61,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
     $customCSS = $scss->getCustomCSSFile($dir);
     if (isset($_POST['reset']) && (int)$_POST['reset'] === 1) {
         if (file_exists($customCSS) && is_writable($customCSS)) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLayoutReset'), 'successLayoutReset');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutReset'), 'successLayoutReset');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLayoutReset'), 'errorLayoutReset');
         }
@@ -81,7 +81,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
                 'errorLayoutReset'
             );
         } else {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLayoutSave'), 'successLayoutSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutSave'), 'successLayoutSave');
         }
     }
 }
@@ -145,7 +145,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     }
     $bCheck = __switchTemplate($_POST['ordner'], $_POST['eTyp']);
     if ($bCheck) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
@@ -181,7 +181,7 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         $oTpl->eTyp = 'admin';
         $bCheck     = __switchTemplate($dir, $oTpl->eTyp);
         if ($bCheck) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
@@ -259,7 +259,7 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
            ->assign('oEinstellungenXML', $tplConfXML);
 } elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateSave'), 'successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }

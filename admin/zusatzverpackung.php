@@ -95,7 +95,7 @@ if ($action === 'save') {
             Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
         }
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             sprintf(__('successPackagingSave'), $_POST['cName_' . $oSprache_arr[0]->cISO]),
             'successPackagingSave'
         );
@@ -130,7 +130,7 @@ if ($action === 'save') {
             // tverpackungsprache loeschen
             Shop::Container()->getDB()->delete('tverpackungsprache', 'kVerpackung', $kVerpackung);
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successPackagingDelete'), 'successPackagingDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingDelete'), 'successPackagingDelete');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOnePackaging'), 'errorAtLeastOnePackaging');
     }
@@ -141,7 +141,7 @@ if ($action === 'save') {
             $upd->nAktiv = isset($_POST['nAktiv']) && in_array($kVerpackung, $_POST['nAktiv'], true) ? 1 : 0;
             Shop::Container()->getDB()->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
     }
 }
 

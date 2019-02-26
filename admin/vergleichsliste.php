@@ -74,7 +74,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
         Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
     }
 
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 

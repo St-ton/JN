@@ -20,7 +20,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSettings($settingsIDs, $_POST),
         'saveSettings'
     );

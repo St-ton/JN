@@ -55,7 +55,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
     $db->delete('texcludekeywords', 'cISOSprache', $keywords->cISOSprache);
     $db->insert('texcludekeywords', $keywords);
     Shop::Container()->getCache()->flushAll();
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
 }
 
 $excludeKeywords = $db->select('texcludekeywords', 'cISOSprache', $_SESSION['cISOSprache']);

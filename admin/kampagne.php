@@ -94,7 +94,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $nReturnValue = speicherKampagne($oKampagne);
 
     if ($nReturnValue === 1) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCampaignSave'), 'successCampaignSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignSave'), 'successCampaignSave');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, mappeFehlerCodeSpeichern($nReturnValue), 'campaignError');
         $smarty->assign('oKampagne', $oKampagne);
@@ -106,7 +106,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
 
         if ($nReturnValue == 1) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCampaignDelete'), 'successCampaignDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignDelete'), 'successCampaignDelete');
         }
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCampaign'), 'errorAtLeastOneCampaign');

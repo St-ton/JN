@@ -34,13 +34,13 @@ if (isset($_POST['erstellenShowButton'])) {
     $kCheckBox_arr = $_POST['kCheckBox'];
     if (isset($_POST['checkboxAktivierenSubmit'])) {
         $oCheckBox->aktivateCheckBox($kCheckBox_arr);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCheckboxActivate'), 'successCheckboxActivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxActivate'), 'successCheckboxActivate');
     } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
         $oCheckBox->deaktivateCheckBox($kCheckBox_arr);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCheckboxDeactivate'), 'successCheckboxDeactivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDeactivate'), 'successCheckboxDeactivate');
     } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
         $oCheckBox->deleteCheckBox($kCheckBox_arr);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCheckboxDelete'), 'successCheckboxDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDelete'), 'successCheckboxDelete');
     }
 } elseif (Request::verifyGPCDataInt('edit') > 0) {
     $kCheckBox = Request::verifyGPCDataInt('edit');
@@ -54,7 +54,7 @@ if (isset($_POST['erstellenShowButton'])) {
     if (count($cPlausi_arr) === 0) {
         $oCheckBox = speicherCheckBox($_POST, $oSprach_arr);
         $cStep     = 'uebersicht';
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCheckboxCreate'), 'successCheckboxCreate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxCreate'), 'successCheckboxCreate');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         $smarty->assign('cPost_arr', Text::filterXSS($_POST))

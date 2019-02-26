@@ -33,7 +33,7 @@ $step             = 'uebersicht';
 $alertHelper      = Shop::Container()->getAlertService();
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
 }
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
@@ -46,7 +46,7 @@ if (($action = Request::verifyGPDataString('a')) !== ''
     if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         (new ZahlungsLog($method->cModulId))->loeschen();
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             sprintf(__('successLogReset'), $method->cName),
             'successLogReset'
         );
@@ -199,7 +199,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     }
 
     Shop::Container()->getCache()->flushAll();
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successPaymentMethodSave'), 'successSave');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodSave'), 'successSave');
     $step = 'uebersicht';
 }
 
@@ -211,7 +211,7 @@ if ($step === 'einstellen') {
     );
     if ($zahlungsart === null) {
         $step = 'uebersicht';
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('errorPaymentMethodNotFound'), 'errorNotFound');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
         if ((int)$zahlungsart->nSOAP === 1 || (int)$zahlungsart->nCURL === 1 || (int)$zahlungsart->nSOCKETS === 1) {

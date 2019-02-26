@@ -41,7 +41,7 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSettings($settingsIDs, $_POST),
         'saveSettings'
     );
@@ -208,9 +208,9 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                 $errorMapMessage .= sprintf(__('errorSearchMapSelf'), $mapping->cSucheNeu);
             }
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, $succesMapMessage ?? '', 'successSearchMap');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, $succesMapMessage ?? '', 'successSearchMap');
         $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMapMessage ?? '', 'errorSearchMap');
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchRefresh'), 'successSearchRefresh');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchRefresh'), 'successSearchRefresh');
     } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
         $cMapping = Request::verifyGPDataString('cMapping');
 
@@ -266,7 +266,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                                     );
 
                                     $alertHelper->addAlert(
-                                        Alert::TYPE_NOTE,
+                                        Alert::TYPE_SUCCESS,
                                         __('successSearchMapMultiple'),
                                         'successSearchMapMultiple'
                                     );
@@ -315,12 +315,12 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                 // Aus tseo loeschen
                 $db->delete('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$kSuchanfrage]);
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_SUCCESS,
                     sprintf(__('successSearchDelete'), $kSuchanfrage_obj->cSuche),
                     'successSearchDelete'
                 );
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_SUCCESS,
                     sprintf(__('successSearchBlacklist'), $kSuchanfrage_obj->cSuche),
                     'successSearchBlacklist'
                 );
@@ -395,7 +395,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                             );
 
                             $alertHelper->addAlert(
-                                Alert::TYPE_NOTE,
+                                Alert::TYPE_SUCCESS,
                                 sprintf(
                                     __('successSearchMap'),
                                     $mapping->cSuche,
@@ -446,7 +446,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     (int)$queryID
                 );
             }
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchDeleteMultiple'), 'successSearchDeleteMultiple');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeleteMultiple'), 'successSearchDeleteMultiple');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
         }
@@ -467,7 +467,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         }
     }
     $smarty->assign('tab', 'blacklist');
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBlacklistRefresh'), 'successBlacklistRefresh');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBlacklistRefresh'), 'successBlacklistRefresh');
 } elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 4) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kSuchanfrageMapping'])) {
@@ -484,7 +484,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                         (int)$mappingID
                     );
                     $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
+                        Alert::TYPE_SUCCESS,
                         sprintf(__('successSearchMapDelete'), $queryMapping->cSuche),
                         'successSearchMapDelete'
                     );

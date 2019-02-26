@@ -19,7 +19,7 @@ $oAccount->permission('SETTINGS_NAVIGATION_FILTER_VIEW', true, true);
 setzeSprache();
 if (isset($_POST['speichern']) && Form::validateToken()) {
     Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST),
         'saveSettings'
     );

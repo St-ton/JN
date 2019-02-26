@@ -43,7 +43,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $_POST,
             Request::verifyGPCDataInt('kText')
         )) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSave'), 'agbWrbSuccessSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'agbWrbSuccessSave');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'agbWrbErrorSave');
         }

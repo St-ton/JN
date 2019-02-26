@@ -28,7 +28,7 @@ if ($cAction === 'delete') {
         && count($_POST['kEmailhistory']) > 0
     ) {
         $oEmailhistory->deletePack($_POST['kEmailhistory']);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successHistoryDelete'), 'successHistoryDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successHistoryDelete'), 'successHistoryDelete');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSelectEntry'), 'errorSelectEntry');
     }

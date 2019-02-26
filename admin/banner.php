@@ -107,7 +107,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
         if ($kImageMap && $ins > 0) {
             $cAction = 'view';
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSave'), 'successSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'successSave');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'errorSave');
         }
@@ -181,7 +181,7 @@ switch ($cAction) {
 
     case 'delete':
         if (entferneBanner((int)$_POST['id'])) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successDeleted'), 'successDeleted');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleted'), 'successDeleted');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDeleted'), 'errorDeleted');
         }

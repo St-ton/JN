@@ -29,7 +29,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_KUNDENFELD, $_POST),
         'saveSettings'
     );
@@ -43,7 +43,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             }
             if ($success) {
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_SUCCESS,
                     __('successCustomerFieldDelete'),
                     'successCustomerFieldDelete'
                 );
@@ -63,7 +63,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             $success              = $success && $cf->save($customerField);
         }
         if ($success) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCustomerFieldRefresh'), 'successCustomerFieldRefresh');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldRefresh'), 'successCustomerFieldRefresh');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldRefresh'), 'errorCustomerFieldRefresh');
         }
@@ -89,7 +89,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 
         if (count($check->getPlausiVar()) === 0) {
             if ($cf->save($customerField, $cfValues)) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCustomerFieldSave'), 'successCustomerFieldSave');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldSave'), 'successCustomerFieldSave');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldSave'), 'errorCustomerFieldSave');
             }

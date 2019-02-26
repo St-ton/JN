@@ -27,7 +27,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST),
         'saveSettings'
     );
@@ -59,11 +59,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             $alertHelper->addAlert(
                 Alert::TYPE_NOTE,
                 sprintf(
-                    __('errorExistRename'),
+                    __('errorBestsellerExistRename'),
                     Text::filterXSS($_POST['bestseller']),
                     $bestSellerSeo
                 ),
-                'errorExistRename'
+                'errorBestsellerExistRename'
             );
         }
         $oBestSeller       = new stdClass();
@@ -245,7 +245,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             ReturnType::AFFECTED_ROWS
         );
     }
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSeoSave'), 'successSeoSave');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSeoSave'), 'successSeoSave');
 }
 
 $ssSeoData      = $db->selectAll(

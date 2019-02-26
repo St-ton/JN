@@ -24,7 +24,7 @@ if (Form::validateToken()) {
         $statusMail->sendAllActiveStatusMails();
     } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if ($statusMail->updateConfig()) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successChangesSave'), 'successChangesSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successChangesSave'), 'successChangesSave');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorConfigSave'), 'errorConfigSave');
         }

@@ -20,7 +20,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
 }
 $oWunschlistePos     = Shop::Container()->getDB()->query(
     'SELECT COUNT(tWunsch.kWunschliste) AS nAnzahl

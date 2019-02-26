@@ -43,7 +43,7 @@ if (isset($_POST['einstellungen'])
     && Form::validateToken()
 ) {
     $step = 'uebersicht';
-    $alertHelper->addAlert(Alert::TYPE_NOTE, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
     $smarty->assign('tab', 'einstellungen');
 }
 
@@ -52,7 +52,7 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 
     if ($oWarenkorbPers->entferneSelf()) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCartPersPosDelete'), 'successCartPersPosDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
     }
 
     unset($oWarenkorbPers);

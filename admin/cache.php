@@ -75,7 +75,7 @@ switch ($action) {
                     }
                     if ($okCount > 0) {
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                            Alert::TYPE_SUCCESS,
                             $okCount . __('successCacheEmptied'),
                             'successCacheEmptied'
                         );
@@ -102,7 +102,7 @@ switch ($action) {
                     );
                     if ($res > 0) {
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                            Alert::TYPE_SUCCESS,
                             __('successCacheTypeActivate'),
                             'successCacheTypeActivate'
                         );
@@ -128,7 +128,7 @@ switch ($action) {
                     );
                     if ($res > 0) {
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                            Alert::TYPE_SUCCESS,
                             __('successCacheTypeDeactivate'),
                             'successCacheTypeDeactivate'
                         );
@@ -144,7 +144,7 @@ switch ($action) {
     case 'flush_object_cache':
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCacheDelete'), 'successCacheDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCacheDelete'), 'successCacheDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCacheDelete'), 'errorCacheDelete');
         }
@@ -214,13 +214,13 @@ switch ($action) {
                     }
                     if ($value->cWert !== 'null') {
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                            Alert::TYPE_SUCCESS,
                             '<strong>' . $value->cWert . '</strong>' . __('successCacheMethodSave'),
                             'successCacheDelete'
                         );
                     } else {
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                            Alert::TYPE_ERROR,
                             __('errorCacheMethodSelect'),
                             'errorCacheMethodSelect'
                         );
@@ -237,7 +237,7 @@ switch ($action) {
         }
         $cache->flushAll();
         $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         $tab = 'settings';
         break;
     case 'benchmark':
@@ -310,7 +310,7 @@ switch ($action) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorCache');
         $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'noticeCache');
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             sprintf(
                 __('successTemplateCacheDelete'),
                 '<strong>' . number_format($cbParameters['count']) . '</strong>'

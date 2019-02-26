@@ -34,7 +34,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 if (Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
         if (editiereBewertung($_POST)) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successRatingEdit'), 'successRatingEdit');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingEdit'), 'successRatingEdit');
             if (Request::verifyGPCDataInt('nFZ') === 1) {
                 header('Location: freischalten.php');
                 exit();
@@ -51,7 +51,7 @@ if (Form::validateToken()) {
         } else {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 saveAdminSectionSettings(CONF_BEWERTUNG, $_POST),
                 'saveConf'
             );
@@ -76,7 +76,7 @@ if (Form::validateToken()) {
                 );
                 Shop::Container()->getCache()->flushTags($cacheTags);
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_SUCCESS,
                     count($_POST['kBewertung']) . __('successRatingUnlock'),
                     'successRatingUnlock'
                 );
@@ -87,7 +87,7 @@ if (Form::validateToken()) {
                     Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
                 }
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_SUCCESS,
                     count($_POST['kBewertung']) . __('successRatingDelete'),
                     'successRatingDelete'
                 );
@@ -130,7 +130,7 @@ if (Form::validateToken()) {
             );
             Shop::Container()->getCache()->flushTags($cacheTags);
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 count($_POST['kBewertung']) . __('successRatingDelete'),
                 'successRatingDelete'
             );
@@ -147,7 +147,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 } elseif ($step === 'bewertung_uebersicht') {
     if (isset($_GET['a']) && $_GET['a'] === 'delreply' && Form::validateToken()) {
         removeReply(Request::verifyGPCDataInt('kBewertung'));
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successRatingCommentDelete'), 'successRatingCommentDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingCommentDelete'), 'successRatingCommentDelete');
     }
     $nBewertungen      = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl

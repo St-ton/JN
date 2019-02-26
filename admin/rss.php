@@ -14,14 +14,14 @@ $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
 $alertHelper = Shop::Container()->getAlertService();
 if (isset($_GET['f']) && (int)$_GET['f'] === 1 && Form::validateToken()) {
     if (generiereRSSXML()) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successRSSCreate'), 'successRSSCreate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRSSCreate'), 'successRSSCreate');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorRSSCreate'), 'errorRSSCreate');
     }
 }
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_RSS, $_POST),
         'saveSettings'
     );

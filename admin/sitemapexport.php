@@ -27,7 +27,7 @@ if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
     );
 } elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' . __('successSave'),
         'successSubjectDelete'
     );
@@ -39,7 +39,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_SITEMAP, $_POST),
         'saveSettings'
     );
@@ -55,7 +55,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             ReturnType::AFFECTED_ROWS
         );
     }
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSitemapDLDelete'), 'successSitemapDLDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapDLDelete'), 'successSitemapDLDelete');
 } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
     $reports = isset($_POST['kSitemapReport'])
         ? array_map('\intval', $_POST['kSitemapReport'])
@@ -68,7 +68,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             ReturnType::AFFECTED_ROWS
         );
     }
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSitemapReportDelete'), 'successSitemapReportDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapReportDelete'), 'successSitemapReportDelete');
 }
 
 $nYearDownloads = Request::verifyGPCDataInt('nYear_downloads');
@@ -81,7 +81,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
         ReturnType::AFFECTED_ROWS
     );
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         sprintf(__('successSitemapDLDeleteByYear'), $nYearDownloads),
         'successSitemapDLDeleteByYear'
     );
@@ -95,7 +95,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && For
         ReturnType::AFFECTED_ROWS
     );
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         sprintf(__('successSitemapReportDeleteByYear'), $nYearDownloads),
         'successSitemapReportDeleteByYear'
     );

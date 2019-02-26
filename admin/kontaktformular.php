@@ -20,7 +20,7 @@ if (isset($_GET['del']) && (int)$_GET['del'] > 0 && Form::validateToken()) {
     Shop::Container()->getDB()->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
     Shop::Container()->getDB()->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
 
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSubjectDelete'), 'successSubjectDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectDelete'), 'successSubjectDelete');
 }
 
 if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateToken()) {
@@ -52,7 +52,7 @@ if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateTo
         Shop::Container()->getDB()->insert('tspezialcontentsprache', $spezialContent3);
         unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successContentSave'), 'successContentSave');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContentSave'), 'successContentSave');
     $cTab = 'content';
 }
 
@@ -74,12 +74,12 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
         $kKontaktBetreff = 0;
         if ((int)$_POST['kKontaktBetreff'] === 0) {
             $kKontaktBetreff = Shop::Container()->getDB()->insert('tkontaktbetreff', $neuerBetreff);
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSubjectCreate'), 'successSubjectCreate');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
         } else {
             $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
             Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successSubjectSave'), $neuerBetreff->cName),
                 'successSubjectSave'
             );
@@ -113,7 +113,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST),
         'saveSettings'
     );

@@ -17,7 +17,7 @@ setzeSprache();
 
 if (isset($_POST['speichern']) && Form::validateToken()) {
     Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_SITEMAP, $_POST),
         'saveSettings'
     );

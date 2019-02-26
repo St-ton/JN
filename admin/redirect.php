@@ -64,7 +64,7 @@ if (Form::validateToken()) {
                 Request::verifyGPDataString('cFromUrl'),
                 Request::verifyGPDataString('cToUrl')
             )) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successRedirectSave'), 'successRedirectSave');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRedirectSave'), 'successRedirectSave');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
                 $smarty
@@ -80,7 +80,7 @@ if (Form::validateToken()) {
                 if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
                     $cError_arr = $oRedirect->doImport($cFile);
                     if (count($cError_arr) === 0) {
-                        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successImport'), 'successImport');
+                        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
                     } else {
                         @unlink($cFile);
                         $alertHelper->addAlert(

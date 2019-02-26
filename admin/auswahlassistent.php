@@ -58,7 +58,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
 
             if ((!is_array($cPlausi_arr) && $cPlausi_arr) || count($cPlausi_arr) === 0) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successQuestionSaved'), 'successQuestionSaved');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionSaved'), 'successQuestionSaved');
                 $tab = 'uebersicht';
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
@@ -73,7 +73,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         && Form::validateToken()
     ) {
         if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successQuestionDeleted'), 'successQuestionDeleted');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDeleted'), 'successQuestionDeleted');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorQuestionDeleted'), 'errorQuestionDeleted');
         }
@@ -104,7 +104,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             if ((!is_array($cPlausi_arr) && $cPlausi_arr) || count($cPlausi_arr) === 0) {
                 $step = 'uebersicht';
                 $tab  = 'uebersicht';
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successGroupSaved'), 'successGroupSaved');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successGroupSaved'), 'successGroupSaved');
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
                 $step = 'edit-group';
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
@@ -116,14 +116,14 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
         } elseif ($_POST['a'] === 'delGrp') {
             if (AuswahlAssistentGruppe::deleteGroup($_POST)) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successGroupDeleted'), 'successGroupDeleted');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successGroupDeleted'), 'successGroupDeleted');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorGroupDeleted'), 'errorGroupDeleted');
             }
         } elseif ($_POST['a'] === 'saveSettings') {
             $step = 'uebersicht';
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST),
                 'saveSettings'
             );

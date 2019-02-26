@@ -50,7 +50,7 @@ if ($cAction === 'update') {
         }
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successStoreRefresh'), 'successStoreRefresh');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successStoreRefresh'), 'successStoreRefresh');
 }
 
 if ($cStep === 'uebersicht') {

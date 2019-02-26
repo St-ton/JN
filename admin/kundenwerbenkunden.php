@@ -27,7 +27,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST),
         'saveSettings'
     );
@@ -41,7 +41,7 @@ if (Request::verifyGPCDataInt('KwK') === 1
         foreach ($kwkIDs as $id) {
             Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$id);
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewCustomerDelete'), 'successNewCustomerDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewCustomerDelete'), 'successNewCustomerDelete');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewCustomer'), 'errorAtLeastOneNewCustomer');
     }

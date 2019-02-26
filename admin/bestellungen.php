@@ -24,7 +24,7 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successOrderReset'), 'successOrderReset');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successOrderReset'), 'successOrderReset');
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');

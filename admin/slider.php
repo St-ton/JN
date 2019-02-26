@@ -107,7 +107,7 @@ switch ($action) {
                 Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
 
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_SUCCESS,
                     __('successSliderSave'),
                     'successSliderSave',
                     ['saveInSession' => true]

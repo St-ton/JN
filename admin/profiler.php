@@ -21,14 +21,14 @@ if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successEntryDelete'), 'successEntryDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntryDelete'), 'successEntryDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntryDelete'), 'errorEntryDelete');
         }
     } elseif (isset($_POST['delete-all']) && $_POST['delete-all'] === 'y') {
         $res = deleteProfileRun(true);
         if (is_numeric($res) && $res > 0) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successEntriesDelete'), 'successEntriesDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntriesDelete'), 'successEntriesDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntriesDelete'), 'errorEntriesDelete');
         }

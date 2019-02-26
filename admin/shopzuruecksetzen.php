@@ -245,7 +245,7 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
         }
         Shop::Container()->getCache()->flushAll();
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successShopReturn'), 'successShopReturn');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShopReturn'), 'successShopReturn');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorChooseOption'), 'errorChooseOption');
     }

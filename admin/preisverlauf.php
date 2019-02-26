@@ -13,7 +13,7 @@ $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST),
         'saveSettings'
     );

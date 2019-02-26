@@ -15,7 +15,7 @@ $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
 $shopSettings = Shopsetting::getInstance();
 if (isset($_POST['speichern'])) {
     Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_BILDER, $_POST),
         'saveSettings'
     );

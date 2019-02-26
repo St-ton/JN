@@ -122,13 +122,13 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
             if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successRatingUnlock'), 'successRatingUnlock');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingUnlock'), 'successRatingUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (loescheBewertung($_POST['kBewertung'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successRatingDelete'), 'successRatingDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingDelete'), 'successRatingDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
             }
@@ -145,7 +145,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                     if ($nReturnValue === 1) { // Alles O.K.
                         if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
                             $alertHelper->addAlert(
-                                Alert::TYPE_NOTE,
+                                Alert::TYPE_SUCCESS,
                                 sprintf(__('successLiveSearchMap'), $cMapping),
                                 'successLiveSearchMap'
                             );
@@ -192,13 +192,13 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
 
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kSuchanfrage']) && schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchUnlock'), 'successSearchUnlock');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchUnlock'), 'successSearchUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kSuchanfrage']) && loescheSuchanfragen($_POST['kSuchanfrage'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchDelete'), 'successSearchDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDelete'), 'successSearchDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
@@ -206,13 +206,13 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('tags') === 1 && Form::validateToken()) { // Tags
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTagUnlock'), 'successTagUnlock');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagUnlock'), 'successTagUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTagDelete'), 'successTagDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagDelete'), 'successTagDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
             }
@@ -220,7 +220,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewsCommentUnlock'), 'successNewsCommentUnlock');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentUnlock'), 'successNewsCommentUnlock');
             } else {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
@@ -230,7 +230,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
             if (isset($_POST['kNewsKommentar']) && loescheNewskommentare($_POST['kNewsKommentar'])) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewsCommentDelete'), 'successNewsCommentDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentDelete'), 'successNewsCommentDelete');
             } else {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
@@ -244,7 +244,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
             if (isset($_POST['kNewsletterEmpfaenger'])
                 && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])
             ) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewsletterUnlock'), 'successNewsletterUnlock');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterUnlock'), 'successNewsletterUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
@@ -252,7 +252,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
             if (isset($_POST['kNewsletterEmpfaenger'])
                 && loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])
             ) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successNewsletterDelete'), 'successNewsletterDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterDelete'), 'successNewsletterDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }

@@ -36,7 +36,7 @@ $oSpracheTMP = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 $oNice       = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, saveAdminSectionSettings(CONF_UMFRAGE, $_POST), 'saveSettings');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_UMFRAGE, $_POST), 'saveSettings');
     }
     if (Request::verifyGPCDataInt('umfrage') === 1 && Form::validateToken()) {
         if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
@@ -188,7 +188,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $kUmfrageTMP = $kUmfrage;
 
                     $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
+                        Alert::TYPE_SUCCESS,
                         __('successPollCreateNextSteps'),
                         'successPollCreateNextSteps'
                     );
@@ -276,7 +276,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oAnzahlAUndOVorhanden
                 );
 
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successQuestionSave'), 'successQuestionSave');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionSave'), 'successQuestionSave');
                 Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
                 $step = 'umfrage_frage_erstellen';
@@ -312,7 +312,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         ReturnType::AFFECTED_ROWS
                     );
                 }
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successPollDelete'), 'successPollDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPollDelete'), 'successPollDelete');
                 Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('successAtLeastOnePoll'), 'successAtLeastOnePoll');
@@ -328,7 +328,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     loescheFrage($kUmfrageFrage);
                 }
 
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successQuestionDelete'), 'successQuestionDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDelete'), 'successQuestionDelete');
             }
             // Bestimmte Antworten loeschen
             if (isset($_POST['kUmfrageFrageAntwort'])
@@ -348,7 +348,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         ReturnType::AFFECTED_ROWS
                     );
                 }
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successAnswerDelete'), 'successAnswerDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successAnswerDelete'), 'successAnswerDelete');
             }
             // Bestimmte Optionen loeschen
             if (isset($_POST['kUmfrageMatrixOption'])
@@ -368,7 +368,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     );
                 }
 
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successOptionDelete'), 'successOptionDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successOptionDelete'), 'successOptionDelete');
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen'])

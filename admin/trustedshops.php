@@ -36,7 +36,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
         $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
         if ($ts->oZertifikat->kTrustedShopsZertifikat > 0) {
             if ($ts->loescheTrustedShopsZertifikat($ts->oZertifikat->kTrustedShopsZertifikat)) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successDelete'), 'successDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDelete'), 'successDelete');
 
                 Shop::Container()->getDB()->query(
                     'DELETE FROM teinstellungen
@@ -126,7 +126,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
 
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         unset($confData);
     }
@@ -140,7 +140,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 
     if ($ts->oZertifikat->kTrustedShopsZertifikat > 0 && $ts->oZertifikat->nAktiv == 1) {
         $ts->holeKaeuferschutzProdukte($ts->oZertifikat->kTrustedShopsZertifikat);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBuyerProtectSave'), 'successBuyerProtectSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBuyerProtectSave'), 'successBuyerProtectSave');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBuyerProtectSave'), 'errorBuyerProtectSave');
     }
@@ -203,7 +203,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             trim($_POST['kb-tsId']),
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTSIDMissing'), 'errorTSIDMissing');
     }
@@ -228,7 +228,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             if ($nReturnValue === 1) {
                 $filename = $tscRating->cTSID . '.gif';
                 $ts::ladeKundenbewertungsWidgetNeu($filename);
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successStatusSave'), 'successStatusSave');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successStatusSave'), 'successStatusSave');
             } elseif ($nReturnValue === 2) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorStatusSave'), 'errorStatusSave');
             } elseif ($nReturnValue === 3) {
@@ -420,7 +420,7 @@ function mappeTSFehlerCode(int $nReturnValue)
     $alertHelper = Shop::Container()->getAlertService();
     $errorMsg    = '';
     if ($nReturnValue === -1) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSaveAddTSBox'), 'successSaveAddTSBox');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSaveAddTSBox'), 'successSaveAddTSBox');
     } elseif ($nReturnValue === 1) {
         // Fehlende Sprache + TSID
         $errorMsg = __('errorFillRequired');

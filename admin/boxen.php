@@ -37,7 +37,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                         ++$cnt;
                     }
                 }
-                $alertHelper->addAlert(Alert::TYPE_NOTE, $cnt . __('successBoxDelete'), 'successBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, $cnt . __('successBoxDelete'), 'successBoxDelete');
             }
             break;
 
@@ -48,14 +48,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 // Neuer Container
                 $bOk = $boxAdmin->create(0, $pageID, $ePosition);
                 if ($bOk) {
-                    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successContainerCreate'), 'successContainerCreate');
+                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContainerCreate'), 'successContainerCreate');
                 } else {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorContainerCreate'), 'errorContainerCreate');
                 }
             } else {
                 $bOk = $boxAdmin->create($boxID, $pageID, $ePosition, $kContainer);
                 if ($bOk) {
-                    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBoxCreate'), 'successBoxCreate');
+                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxCreate'), 'successBoxCreate');
                 } else {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxCreate'), 'errorBoxCreate');
                 }
@@ -65,7 +65,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
         case 'del':
             $bOk = $boxAdmin->delete($boxID);
             if ($bOk) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBoxDelete'), 'successBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxDelete'), 'successBoxDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxDelete'), 'errorBoxDelete');
             }
@@ -120,7 +120,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             }
 
             if ($bOk) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBoxEdit'), 'successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
@@ -135,7 +135,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             $bValue    = $_REQUEST['box_show'] ?? false;
             $bOk       = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
             if ($bOk) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBoxEdit'), 'successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
@@ -149,14 +149,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if ($ePosition !== 'left' || $pageID > 0) {
                 $boxAdmin->setVisibility($pageID, $ePosition, isset($_REQUEST['box_show']));
             }
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBoxRefresh'), 'successBoxRefresh');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxRefresh'), 'successBoxRefresh');
             break;
 
         case 'activate':
             $bActive = (bool)$_REQUEST['value'];
             $bOk     = $boxAdmin->activate($boxID, 0, $bActive);
             if ($bOk) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBoxEdit'), 'successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
@@ -167,7 +167,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             $bValue    = (bool)$_GET['value'];
             $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
             if ($bOk) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successBoxEdit'), 'successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }

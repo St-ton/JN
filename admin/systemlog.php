@@ -24,7 +24,7 @@ $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSystemLogReset'), 'successSystemLogReset');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSystemLogReset'), 'successSystemLogReset');
     } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update(
@@ -34,12 +34,12 @@ if (Form::validateToken()) {
             (object)['cWert' => $minLogLevel]
         );
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         $smarty->assign('cTab', 'config');
     } elseif (Request::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete'),
                 'successEntriesDelete'
             );

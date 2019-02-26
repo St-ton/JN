@@ -56,14 +56,14 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
             $revision->addRevision('export', $kExportformat);
             $ef->update();
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successFormatEdit'), $ef->getName()),
                 'successFormatEdit'
             );
         } else {
             $kExportformat = $ef->save();
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successFormatCreate'), $ef->getName()),
                 'successFormatCreate'
             );
@@ -177,7 +177,7 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             );
 
             if ($bDeleted > 0) {
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successFormatDelete'), 'successFormatDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFormatDelete'), 'successFormatDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatDelete'), 'errorFormatDelete');
             }
@@ -191,7 +191,7 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             ) {
                 if (empty($_GET['hasError'])) {
                     $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
+                        Alert::TYPE_SUCCESS,
                         sprintf(__('successFormatCreate'), $exportformat->cName),
                         'successFormatCreate'
                     );

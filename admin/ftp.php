@@ -19,7 +19,7 @@ $alertHelper  = Shop::Container()->getAlertService();
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, saveAdminSectionSettings(CONF_FTP, $_POST), 'saveSettings');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FTP, $_POST), 'saveSettings');
     $shopSettings->reset();
 
     if (isset($_POST['test'])) {

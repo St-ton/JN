@@ -29,7 +29,7 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
     $xPlausiVar_arr = $oPlausiTrennzeichen->getPlausiVar();
     if (count($xPlausiVar_arr) === 0) {
         if (speicherTrennzeichen($_POST)) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorConfigSave'), 'errorConfigSave');

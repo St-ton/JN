@@ -16,7 +16,7 @@ $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
 $step = 'emailblacklist';
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST),
         'saveSettings'
     );

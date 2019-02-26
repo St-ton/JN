@@ -44,7 +44,7 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
     $res = $linkAdmin->removeLinkFromLinkGroup((int)$_POST['removefromlinkgroup'], (int)$_POST['kLinkgruppe']);
     if ($res > 0) {
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             __('successLinkFromLinkGroupDelete'),
             'successLinkFromLinkGroupDelete'
         );
@@ -59,7 +59,7 @@ if (isset($_POST['removefromlinkgroup'], $_POST['kLinkgruppe'])
 if (isset($_POST['dellink']) && (int)$_POST['dellink'] > 0 && Form::validateToken()) {
     $res = $linkAdmin->deleteLink((int)$_POST['dellink']);
     if ($res > 0) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkDelete'), 'successLinkDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkDelete'), 'successLinkDelete');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkDelete'), 'errorLinkDelete');
     }
@@ -90,7 +90,7 @@ if (((isset($_POST['dellinkgruppe']) && (int)$_POST['dellinkgruppe'] > 0)
         $linkGroupID = (int)$_POST['kLinkgruppe'];
     }
     if ($linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkGroupDelete'), 'successLinkGroupDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkGroupDelete'), 'successLinkGroupDelete');
         $clearCache = true;
         $step       = 'uebersicht';
         $_POST      = [];
@@ -121,10 +121,10 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         $link = $linkAdmin->createOrUpdateLink($_POST);
         if ((int)$_POST['kLink'] === 0) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkCreate'), 'successLinkCreate');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkCreate'), 'successLinkCreate');
         } else {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successLinkEdit'), $link->getDisplayName()),
                 'successLinkEdit'
             );
@@ -245,11 +245,11 @@ if (isset($_POST['neu_linkgruppe']) && (int)$_POST['neu_linkgruppe'] === 1 && Fo
         } else {
             if ((int)$_POST['kLinkgruppe'] === 0) {
                 $linkAdmin->createOrUpdateLinkGroup(0, $_POST);
-                $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLinkGroupCreate'), 'successLinkGroupCreate');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkGroupCreate'), 'successLinkGroupCreate');
             } else {
                 $linkgruppe = $linkAdmin->createOrUpdateLinkGroup((int)$_POST['kLinkgruppe'], $_POST);
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_SUCCESS,
                     sprintf(__('successLinkGroupEdit'), $linkgruppe->cName),
                     'successLinkGroupEdit'
                 );
@@ -281,7 +281,7 @@ if (isset($_POST['aender_linkgruppe']) && (int)$_POST['aender_linkgruppe'] === 1
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
         } elseif ($res instanceof LinkInterface) {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successLinkMove'), $link->getDisplayName()),
                 'successLinkMove'
             );
@@ -308,7 +308,7 @@ if (isset($_POST['kopiere_in_linkgruppe'])
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
     } elseif ($res instanceof LinkInterface) {
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             sprintf(__('successLinkCopy'), $link->getDisplayName()),
             'successLinkCopy'
         );
@@ -326,7 +326,7 @@ if (isset($_POST['aender_linkvater']) && (int)$_POST['aender_linkvater'] === 1 &
         && ($oLink = $linkAdmin->updateParentID((int)$_POST['kLink'], (int)$_POST['kVaterLink'])) !== false
     ) {
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             sprintf(__('successLinkMove'), $oLink->cName),
             'successLinkMove'
         );

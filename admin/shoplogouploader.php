@@ -45,14 +45,14 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLogoDelete'), 'successLogoDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLogoDelete'), 'successLogoDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLogoDelete'), 'errorLogoDelete');
         }
     }
     $nReturnValue = saveShopLogo($_FILES);
     if ($nReturnValue === 1) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successLogoUpload'), 'successLogoUpload');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLogoUpload'), 'successLogoUpload');
     } else {
         // 2 = Dateiname entspricht nicht der Konvention oder fehlt
         // 3 = Dateityp entspricht nicht der (Nur jpg/gif/png/bmp/ Bilder) Konvention oder fehlt

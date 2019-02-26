@@ -73,7 +73,7 @@ $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDon
 });
 
 if ($res) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successImportCSV'), 'successImportCSV');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
 } else {
     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV'), 'errorImportCSV');
     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportRow'), 'errorImportRow');
@@ -129,7 +129,7 @@ if ($action === 'bearbeiten') {
         ) {
             informCouponCustomers($oKupon);
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCouponSave'), 'successCouponSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponSave'), 'successCouponSave');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponSave'), 'errorCouponSave');
     }
@@ -138,7 +138,7 @@ if ($action === 'bearbeiten') {
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
         $kKupon_arr = array_map('\intval', $_POST['kKupon_arr']);
         if (loescheKupons($kKupon_arr)) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successCouponDelete'), 'successCouponDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponDelete'), 'successCouponDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponDelete'), 'errorCouponDelete');
         }

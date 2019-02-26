@@ -138,7 +138,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                             }
                         }
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                            Alert::TYPE_SUCCESS,
                             sprintf(
                                 __('successTagMap'),
                                 $tagmapping_obj->cNamem,
@@ -152,13 +152,13 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                 }
             } else {
                 $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
+                    Alert::TYPE_ERROR,
                     sprintf(__('errorTagMapSelf'), $tag->cName),
                     'errorTagMapSelf'
                 );
             }
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTagRefresh'), 'successTagRefresh');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagRefresh'), 'successTagRefresh');
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         if (is_array($_POST['kTag'])) {
             // flush cache before deleting the tags, since they will be removed from ttagartikel
@@ -180,7 +180,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                     $db->delete('ttagmapping', 'cNameNeu', $oTag->cName);
                     $db->delete('ttagartikel', 'kTag', $kTag);
                     $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
+                        Alert::TYPE_SUCCESS,
                         sprintf(__('successTagDelete'), $oTag->cName),
                         'successTagDelete'
                     );
@@ -205,7 +205,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                 if (mb_strlen($oMapping->cName) > 0) {
                     $db->delete('ttagmapping', 'kTagMapping', $kTagMapping);
                     $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
+                        Alert::TYPE_SUCCESS,
                         sprintf(__('successMapDelete'), $oMapping->cName),
                         'successMapDelete'
                     );
@@ -224,7 +224,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
 } elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') ||
     (isset($_POST['tagging']) && (int)$_POST['tagging'] === 3)) {
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSettings($settingsIDs, $_POST),
         'saveSettings'
     );
@@ -239,7 +239,7 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
         count($_POST['kArtikel_arr']) && Request::verifyGPCDataInt('detailloeschen') === 1) {
         if (loescheTagsVomArtikel($_POST['kArtikel_arr'], Request::verifyGPCDataInt('kTag'))) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTagDeleteProduct'), 'successTagDeleteProduct');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagDeleteProduct'), 'successTagDeleteProduct');
         } else {
             $step = 'detail';
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorProductTagDelete'), 'errorProductTagDelete');

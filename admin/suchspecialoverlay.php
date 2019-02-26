@@ -29,7 +29,7 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
     ) {
         if (speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successConfigSave'), 'successConfigSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }

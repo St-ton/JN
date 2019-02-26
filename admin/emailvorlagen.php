@@ -139,7 +139,7 @@ if (isset($_POST['resetEmailvorlage'])
                 }
             }
         }
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateReset'), 'successTemplateReset');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateReset'), 'successTemplateReset');
     }
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
@@ -585,14 +585,14 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
             }
         } else {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_ERROR,
                 __('errorTemplateMissing') . $lang->cNameDeutsch,
                 'errorTemplateMissing'
             );
         }
     }
     if ($sendStatus === true) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successEmailSend'), 'successEmailSend');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEmailSend'), 'errorEmailSend');
     }
@@ -826,7 +826,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         $step = 'prebearbeiten';
     } elseif ($smartyError->nCode === 0) {
         setzeFehler((int)$_POST['kEmailvorlage'], false, true);
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successTemplateEdit'), 'successTemplateEdit');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateEdit'), 'successTemplateEdit');
         $step     = 'uebersicht';
         $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
     } else {
@@ -887,7 +887,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
             ],
             $upd
         );
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successFileAppendixDelete'), 'successFileAppendixDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFileAppendixDelete'), 'successFileAppendixDelete');
     }
 
     $step  = 'bearbeiten';

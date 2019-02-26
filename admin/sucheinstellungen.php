@@ -122,7 +122,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
             }
         } else {
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 __('successIndexCreate'),
                 'successIndexCreate',
                 ['saveInSession' => true]
@@ -130,7 +130,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
     } else {
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             __('successIndexDelete'),
             'successIndexDelete',
             ['saveInSession' => true]
@@ -165,7 +165,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
 
     $shopSettings = Shopsetting::getInstance();
     $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
+        Alert::TYPE_SUCCESS,
         saveAdminSectionSettings($kSektion, $_POST),
         'saveSettings'
     );
@@ -198,9 +198,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
 
     if ($sucheFulltext && $fulltextChanged) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchActivate'), 'successSearchActivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchActivate'), 'successSearchActivate');
     } elseif ($fulltextChanged) {
-        $alertHelper->addAlert(Alert::TYPE_NOTE, __('successSearchDeactivate'), 'successSearchDeactivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeactivate'), 'successSearchDeactivate');
     }
 
     $conf = Shop::getSettings([$kSektion]);

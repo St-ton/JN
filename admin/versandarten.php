@@ -49,7 +49,7 @@ if (isset($_POST['del'])
     && Form::validateToken()
     && Versandart::deleteInDB($_POST['del'])
 ) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successShippingMethodDelete'), 'successShippingMethodDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShippingMethodDelete'), 'successShippingMethodDelete');
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
 if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && Form::validateToken()) {
@@ -86,7 +86,7 @@ if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && Form::validateToken())
     $step = 'uebersicht';
     if (Versandart::cloneShipping($_POST['clone'])) {
         $alertHelper->addAlert(
-            Alert::TYPE_NOTE,
+            Alert::TYPE_SUCCESS,
             __('successShippingMethodDuplicated'),
             'successShippingMethodDuplicated'
         );
@@ -116,7 +116,7 @@ if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken())
     );
     $db->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successDeleteSurchargeList'), 'successlistDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteSurchargeList'), 'successlistDelete');
 }
 // Zuschlagliste editieren
 if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
@@ -144,7 +144,7 @@ if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && Form::validateToken())
     $step = 'Zuschlagsliste';
     $db->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('successDeleteZIP'), 'successZIPDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteZIP'), 'successZIPDelete');
 }
 
 if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && Form::validateToken()) {
@@ -250,7 +250,7 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                 );
             }
         } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successZIPAdd'), 'successZIPAdd');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
         }
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
@@ -280,7 +280,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
             $db->delete('tversandzuschlag', 'kVersandzuschlag', (int)$Zuschlag->kVersandzuschlag);
         }
         if (($kVersandzuschlag = $db->insert('tversandzuschlag', $Zuschlag)) > 0) {
-            $alertHelper->addAlert(Alert::TYPE_NOTE, __('successListAdd'), 'successListAdd');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successListAdd'), 'successListAdd');
         }
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
             $kVersandzuschlag = $Zuschlag->kVersandzuschlag;
@@ -434,7 +434,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         if ((int)$_POST['kVersandart'] === 0) {
             $kVersandart = $db->insert('tversandart', $Versandart);
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successShippingMethodCreate'), $Versandart->cName),
                 'successShippingMethodCreate'
             );
@@ -445,7 +445,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
             $db->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
             $db->delete('tversandartstaffel', 'kVersandart', $kVersandart);
             $alertHelper->addAlert(
-                Alert::TYPE_NOTE,
+                Alert::TYPE_SUCCESS,
                 sprintf(__('successShippingMethodChange'), $Versandart->cName),
                 'successShippingMethodChange'
             );

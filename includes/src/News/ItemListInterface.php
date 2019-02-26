@@ -6,7 +6,7 @@
 
 namespace JTL\News;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Interface ItemListInterface

@@ -8,7 +8,7 @@ namespace JTL\Filter;
 
 use JTL\Filter\Pagination\Info;
 use JTL\Catalog\Category\Kategorie;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Interface SearchResultsInterface

@@ -15,7 +15,7 @@ use JTL\Link\LinkGroupList;
 use JTL\Link\LinkGroupListInterface;
 use JTL\Link\LinkInterface;
 use JTL\Shop;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\first;
 use function Functional\first_index_of;
 
@@ -394,6 +394,7 @@ final class LinkService implements LinkServiceInterface
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
+                Shop::dbg($first, false, 'FOUND:');
                 $meta->cTitle    = $first->getMetaTitle();
                 $meta->cDesc     = $first->getMetaDescription();
                 $meta->cKeywords = $first->getMetaKeyword();

@@ -8,7 +8,7 @@ namespace JTL\Link;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\group;
 use function Functional\map;
 

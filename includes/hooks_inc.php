@@ -256,7 +256,7 @@ define('HOOK_NEWS_PAGE_DETAILANSICHT', 32);
  *
  * @file news.php
  * @param \JTL\News\Category category - since 5.0.0
- * @param Tightenco\Collect\Support\Collection items - since 5.0.0
+ * @param Illuminate\Support\Collection items - since 5.0.0
  */
 define('HOOK_NEWS_PAGE_NEWSUEBERSICHT', 33);
 
@@ -1647,7 +1647,7 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
 /**
  * @since 4.04
  * @file seite_inc.php
- * @param \Tightenco\Collect\Support\Collection - oNews_arr
+ * @param \Illuminate\Support\Collection - oNews_arr
  * @param array - cacheTags
  * @param bool  - cached
  */

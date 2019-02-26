@@ -12,6 +12,9 @@
         <tr>
             <td colspan="3" class="text-right word-break">
                 <strong class="price"></strong>
+                <p class="vat_info text-muted">
+                    <small>{include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}</small>
+                </p>
             </td>
         </tr>
         </tfoot>

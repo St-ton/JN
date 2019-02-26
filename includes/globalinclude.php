@@ -46,6 +46,8 @@ define(
 ); // DEPRECATED since 5.0.0
 define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
+new JTL\HandleExceptions();
+
 Profiler::start();
 
 $shop = Shop::getInstance();

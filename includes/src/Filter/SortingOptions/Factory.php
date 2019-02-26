@@ -8,7 +8,7 @@ namespace JTL\Filter\SortingOptions;
 
 use JTL\Filter\ProductFilter;
 use JTL\Mapper\SortingType;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Factory

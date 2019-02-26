@@ -6300,38 +6300,11 @@ class Artikel
             $description = $this->getMetaDescription($expandedCategories);
         }
 
-        $description          = \str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'], ' ', $description);
-        $description          = Text::htmlentitydecode(\strip_tags($description));
-        $confMinKeyLen        = (int)$this->conf['metaangaben']['global_meta_keywords_laenge'];
-        $cacheID              = 'meta_keywords_' . Shop::getLanguageID();
-        $_descriptionKeywords = \explode(' ', Text::removeDoubleSpaces(
-            \preg_replace('/[^a-zA-Z0-9üÜäÄöÖß-]/u', ' ', $description)
-        ));
-        $descriptionKeywords  = \array_filter($_descriptionKeywords, function ($value) use ($confMinKeyLen) {
-            return \mb_strlen($value) >= $confMinKeyLen;
-        });
+        $metaKeywords = Metadata::getTopMetaKeywords($description);
 
-        if (($excludeWords = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $exclude      = Shop::Container()->getDB()->select(
-                'texcludekeywords',
-                'cISOSprache',
-                Shop::getLanguageCode() ?? Sprache::getDefaultLanguage()->cISO
-            );
-            $excludeWords = isset($exclude->cKeywords)
-                ? \explode(' ', $exclude->cKeywords)
-                : [];
-            Shop::Container()->getCache()->set($cacheID, $excludeWords, [\CACHING_GROUP_OPTION]);
-        }
+        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => $metaKeywords]);
 
-        $keywords = \str_replace(
-            '"',
-            '',
-            \implode(',', \array_udiff(\array_unique($descriptionKeywords), $excludeWords, 'strcasecmp'))
-        );
-
-        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => $keywords]);
-
-        return $keywords;
+        return $metaKeywords;
     }
 
     /**

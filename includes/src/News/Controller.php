@@ -19,7 +19,7 @@ use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\every;
 use function Functional\map;
 

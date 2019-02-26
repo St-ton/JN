@@ -66,7 +66,7 @@ $oAccount = Shop::Container()->getAdminAccount();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
-Shop::Container()->setSingleton(CaptchaServiceInterface::class, function () {
+Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
     return new SimpleCaptchaService(true);
 });
 Shop::bootstrap();

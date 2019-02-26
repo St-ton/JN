@@ -6,6 +6,8 @@
 
 namespace JTL\Filesystem;
 
+use Generator;
+
 /**
  * Class Filesystem
  * @package Filesystem
@@ -37,14 +39,14 @@ class Filesystem implements IFilesystem
         return $this->adapter;
     }
 
-    public function getMeta($path)
+    public function getMeta($path) : FileInfo
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->getMeta($path);
     }
 
-    public function get($path, $mode = null)
+    public function get($path, $mode = null) :? string
     {
         $path = Path::clean($path);
         $mode = $mode ?: IFilesystem::FILE_PERM;
@@ -52,7 +54,7 @@ class Filesystem implements IFilesystem
         return $this->getAdapter()->get($path, $mode);
     }
 
-    public function put($path, $contents, $mode = null)
+    public function put($path, $contents, $mode = null) : bool
     {
         $path = Path::clean($path);
         $mode = $mode ?: IFilesystem::FILE_PERM;
@@ -60,35 +62,35 @@ class Filesystem implements IFilesystem
         return $this->getAdapter()->put($path, $contents, $mode);
     }
 
-    public function chown($path, $owner)
+    public function chown($path, $owner) : bool
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->chown($path, $owner);
     }
 
-    public function cwd()
+    public function cwd() :? string
     {
         $cwd = $this->getAdapter()->cwd();
 
         return Path::clean($cwd);
     }
 
-    public function chdir($path)
+    public function chdir($path) : bool
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->chdir($path);
     }
 
-    public function chgrp($path, $group)
+    public function chgrp($path, $group) : bool
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->chgrp($path, $group);
     }
 
-    public function chmod($path, $mode = null)
+    public function chmod($path, $mode = null) : bool
     {
         $path = Path::clean($path);
 
@@ -98,42 +100,42 @@ class Filesystem implements IFilesystem
         return $this->getAdapter()->chmod($path, $mode);
     }
 
-    public function copy($path, $target)
+    public function copy($path, $target) : bool
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->copy($path, $target);
     }
 
-    public function move($path, $target)
+    public function move($path, $target) : bool
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->move($path, $target);
     }
 
-    public function delete($path)
+    public function delete($path) : bool
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->delete($path);
     }
 
-    public function exists($path)
+    public function exists($path) : bool
     {
         $path = Path::clean($path);
 
         return $this->getAdapter()->exists($path);
     }
 
-    public function listContents($directory, $recursive = false)
+    public function listContents($directory, $recursive = false) : Generator
     {
         $directory = Path::clean($directory);
 
         return $this->getAdapter()->listContents($directory, $recursive);
     }
 
-    public function makeDirectory($path, $mode = null, $recursive = false)
+    public function makeDirectory($path, $mode = null, $recursive = false) : bool
     {
         $path = Path::clean($path);
         $mode = $mode ?: IFilesystem::DIR_PERM;
@@ -141,7 +143,7 @@ class Filesystem implements IFilesystem
         return $this->getAdapter()->makeDirectory($path, $mode, $recursive);
     }
 
-    public function moveDirectory($from, $to, $overwrite = false)
+    public function moveDirectory($from, $to, $overwrite = false) : bool
     {
         $from = Path::clean($from);
         $to   = Path::clean($to);
@@ -149,7 +151,7 @@ class Filesystem implements IFilesystem
         return $this->getAdapter()->moveDirectory($from, $to, $overwrite);
     }
 
-    public function copyDirectory($from, $to, $mode = null)
+    public function copyDirectory($from, $to, $mode = null) : bool
     {
         $from = Path::clean($from);
         $to   = Path::clean($to);
@@ -158,7 +160,7 @@ class Filesystem implements IFilesystem
         return $this->getAdapter()->copyDirectory($from, $to, $mode);
     }
 
-    public function deleteDirectory($directory, $preserve = false)
+    public function deleteDirectory($directory, $preserve = false) : bool
     {
         $directory = Path::clean($directory);
 

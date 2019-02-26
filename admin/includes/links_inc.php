@@ -10,12 +10,12 @@ use JTL\DB\ReturnType;
 /**
  * @param \JTL\Link\LinkGroupInterface $linkGroup
  * @param int                          $kVaterLink
- * @return \Tightenco\Collect\Support\Collection
+ * @return \Illuminate\Support\Collection
  */
 function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
 {
     $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
+    $oNew_arr   = new \Illuminate\Support\Collection();
     $lh         = Shop::Container()->getLinkService();
     foreach ($linkGroup->getLinks() as $link) {
         $link->setLevel(count($lh->getParentIDs($link->getID())));

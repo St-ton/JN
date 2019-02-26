@@ -46,6 +46,7 @@ function getWidgets(bool $bActive = true)
         $widget->bExpanded  = (int)$widget->bExpanded;
         $widget->bActive    = (int)$widget->bActive;
         $widget->bExtension = (int)$widget->bExtension;
+        $widget->plugin     = null;
 
         if ($widget->cPluginID !== null) {
             if (array_key_exists($widget->cPluginID, $plugins)) {
@@ -60,7 +61,9 @@ function getWidgets(bool $bActive = true)
                 $plugins[$widget->cPluginID] = $widget->plugin;
             }
 
-            $gettext->loadPluginLocale('widgets/' . $widget->cClass, $widget->plugin);
+            if ($widget->bExtension) {
+                $gettext->loadPluginLocale('widgets/' . $widget->cClass, $widget->plugin);
+            }
         } else {
             $gettext->loadAdminLocale('widgets/' . $widget->cClass);
             $widget->plugin = null;

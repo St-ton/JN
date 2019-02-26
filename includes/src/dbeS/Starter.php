@@ -160,6 +160,18 @@ class Starter
         $this->logger      = $log;
         $this->db          = $db;
         $this->cache       = $cache;
+        $this->checkPermissions();
+    }
+
+    private function checkPermissions(): void
+    {
+        $tmpDir = \PFAD_ROOT . \PFAD_DBES . \PFAD_SYNC_TMP;
+        if (!\is_writable($tmpDir)) {
+            \syncException(
+                'Fehler beim Abgleich: Das Verzeichnis ' . $tmpDir . ' ist nicht beschreibbar!',
+                \FREIDEFINIERBARER_FEHLER
+            );
+        }
     }
 
     /**
@@ -244,7 +256,7 @@ class Starter
             return;
         }
         require_once \PFAD_ROOT . \PFAD_DBES . 'NetSync_inc.php';
-        NetSyncHandler::create($mapping);
+        NetSyncHandler::create($mapping, $this->db, $this->logger);
         exit();
     }
 

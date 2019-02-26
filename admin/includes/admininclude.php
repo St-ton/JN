@@ -56,7 +56,7 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$db       = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$db       = Shop::Container()->getDB();
 $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );

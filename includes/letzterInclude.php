@@ -35,7 +35,7 @@ $shopURL    = Shop::getURL();
 $cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
 $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
-$link       = $linkHelper->getLinkByID(Shop::$kLink);
+$link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
 $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];

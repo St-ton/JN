@@ -324,7 +324,6 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     sprintf(__('successSearchBlacklist'), $kSuchanfrage_obj->cSuche),
                     'successSearchBlacklist'
                 );
-
             }
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');

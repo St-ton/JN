@@ -86,7 +86,7 @@ class Alert
     public const TYPE_NOTE  = 'note';
 
     public const FADE_FAST   = 3000;
-    public const FADE_SLOW   = 9000;
+    public const FADE_SLOW   = 8000;
     public const FADE_MEDIUM = 5000;
     public const FADE_NEVER  = 0;
 
@@ -152,7 +152,7 @@ class Alert
                 $this->setIcon(self::ICON_INFO);
                 break;
             case self::TYPE_SUCCESS:
-                $this->setFadeOut(self::FADE_MEDIUM)
+                $this->setFadeOut(self::FADE_SLOW)
                      ->setIcon(self::ICON_CHECK);
                 break;
             default:

@@ -128,5 +128,5 @@
             </nav>
             <div class="backend-content" id="content_wrapper">
 
-            {include file='snippets/alert_list.tpl'}n
+            {include file='snippets/alert_list.tpl'}
 {/if}

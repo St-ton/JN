@@ -264,8 +264,8 @@ if (Form::validateToken()) {
                     $smarty->assign('cTab', 'newslettervorlagen');
                     if ($kNewslettervorlage > 0) {
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
-                            printf(
+                            Alert::TYPE_SUCCESS,
+                            sprintf(
                                 __('successNewsletterTemplateEdit'),
                                 Text::filterXSS($_POST['cName'])
                             ),
@@ -273,8 +273,8 @@ if (Form::validateToken()) {
                         );
                     } else {
                         $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
-                            printf(
+                            Alert::TYPE_SUCCESS,
+                            sprintf(
                                 __('successNewsletterTemplateSave'),
                                 Text::filterXSS($_POST['cName'])
                             ),

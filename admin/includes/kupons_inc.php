@@ -661,7 +661,7 @@ function informCouponCustomers($coupon)
                 WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $productIDs = array_map(function ($e) {
+        $productIDs  = array_map(function ($e) {
             return (int)$e->kArtikel;
         }, $productData);
     }

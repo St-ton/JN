@@ -12008,9 +12008,6 @@ header,
   }
 }
 
-#evo-main-nav-wrapper {
-  /*  @include media-breakpoint-down(md) {*/
-}
 @media (min-width: 768px) {
   #evo-main-nav-wrapper {
     flex-flow: wrap;
@@ -12785,9 +12782,6 @@ ul.partlist-items {
 .gallery,
 .list {
   align-items: flex-end;
-  /* .product-wrapper:hover{
-     align-self: flex-start;
-   }*/
 }
 .gallery .image-wrapper .yousave,
 .list .image-wrapper .yousave {

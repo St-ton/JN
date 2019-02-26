@@ -275,7 +275,6 @@ header,
   }
 
 
-/*  @include media-breakpoint-down(md) {*/
   @include media-breakpoint-down(sm) {
     #nav-cart-collapse,
     #nav-account-collapse,
@@ -1000,13 +999,9 @@ ul.partlist-items {
   align-items: flex-end;
   .image-wrapper .yousave{
     position: absolute;
-    //margin-top: -32px;
     padding: $pagination-padding-y $pagination-padding-x;
     left: ($grid-gutter-width / 2);
   }
- /* .product-wrapper:hover{
-    align-self: flex-start;
-  }*/
 }
 .gallery .image-wrapper .yousave {
   margin-top: -(1 + (2 * map_get($spacers, 2)));

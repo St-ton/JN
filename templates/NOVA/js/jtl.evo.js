@@ -65,9 +65,9 @@
             } else {
                 evoSliderOptions.slidesToShow = 3;
             }
+
             //initialize "pushed-success"-slider for detailed customization
             $('#pushed-success .evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
-
 
             if ($('#content').hasClass('col-lg-9')) {
                 evoSliderOptions.slidesToShow = 3;
@@ -309,11 +309,12 @@
                 title: options.title, 
                 message: options.text,
                 keyboard: true,
-                tabindex: -1,
-                onShown: function() {
+                tabindex: -1})
+                .then(
+                 function() {
                     $.evo.generateSlickSlider();
                 }
-            });
+            );
         },
         
         renderCaptcha: function(parameters) {
@@ -347,28 +348,29 @@
                     message: html,
                     title: title,
                     keyboard: true,
-                    tabindex: -1,
-                    onShown:function () {
-                        //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
-                        var recaptcha = $('.tmp-modal-content .g-recaptcha');
-                        if (recaptcha.length === 1) {
-                            var siteKey = recaptcha.data('sitekey'),
-                                newRecaptcha = $('<div />');
-                            if (typeof  siteKey !== 'undefined') {
-                                //create empty recapcha div, give it a unique id and delete the old one
-                                newRecaptcha.attr('id', 'popup-recaptcha').addClass('g-recaptcha form-group');
-                                recaptcha.replaceWith(newRecaptcha);
-                                grecaptcha.render('popup-recaptcha', {
-                                    'sitekey' : siteKey,
-                                    'callback' : 'captcha_filled'
+                    tabindex: -1})
+                    .then(
+                        function () {
+                            //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
+                            var recaptcha = $('.tmp-modal-content .g-recaptcha');
+                            if (recaptcha.length === 1) {
+                                var siteKey = recaptcha.data('sitekey'),
+                                    newRecaptcha = $('<div />');
+                                if (typeof  siteKey !== 'undefined') {
+                                    //create empty recapcha div, give it a unique id and delete the old one
+                                    newRecaptcha.attr('id', 'popup-recaptcha').addClass('g-recaptcha form-group');
+                                    recaptcha.replaceWith(newRecaptcha);
+                                    grecaptcha.render('popup-recaptcha', {
+                                        'sitekey' : siteKey,
+                                        'callback' : 'captcha_filled'
 
-                                });
+                                    });
+                                }
                             }
+                            addValidationListener();
+                            $('.g-recaptcha-response').attr('required', true);
                         }
-                        addValidationListener();
-                        $('.g-recaptcha-response').attr('required', true);
-                    }
-                });
+                    );
                 return false;
             });
         },

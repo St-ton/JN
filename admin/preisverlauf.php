@@ -31,7 +31,7 @@ function checkeFarbCode($cFarbCode)
     if (preg_match('/#[A-Fa-f0-9]{6}/', $cFarbCode) == 1) {
         return $cFarbCode;
     }
-    $GLOBALS['cfehler'] = __('errorColorCode');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('errorColorCode'), 'errorColorCode');
 
     return '#000000';
 }

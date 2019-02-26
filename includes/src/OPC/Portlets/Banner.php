@@ -84,7 +84,6 @@ class Banner extends Portlet
     public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('kImageMap', \uniqid('', false));
-        $instance->addClass('img-responsive');
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
@@ -96,7 +95,6 @@ class Banner extends Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        $instance->addClass('img-responsive');
         $instance->addClass('banner');
 
         return $this->getFinalHtmlFromTpl($instance);

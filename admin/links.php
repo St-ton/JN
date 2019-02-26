@@ -165,7 +165,7 @@ if (isset($_POST['neu_link']) && (int)$_POST['neu_link'] === 1 && Form::validate
         if (isset($oPlausiVar_arr['nSpezialseite'])) {
             $fehler = __('isDuplicateSpecialLink');
         } else {
-            $fehler = 'Fehler: Bitte füllen Sie alle Pflichtangaben aus!';
+            $fehler = __('errorFillRequired');
         }
         $smarty->assign('xPlausiVar_arr', $oPlausiVar_arr)
                ->assign('xPostVar_arr', $oPlausiCMS->getPostVar());

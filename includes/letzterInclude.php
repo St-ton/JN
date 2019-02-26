@@ -30,7 +30,6 @@ use JTL\Filter\Metadata;
 $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
 $tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
-$shopLogo   = Shop::getLogo();
 $shopURL    = Shop::getURL();
 $cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
 $conf       = Shopsetting::getInstance()->getAll();
@@ -160,8 +159,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
        ->assign('bAjaxRequest', Request::isAjaxRequest())
        ->assign('jtl_token', Form::getTokenInput())
-       ->assign('ShopLogoURL', $shopLogo)
-       ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
+       ->assign('ShopLogoURL', Shop::getLogo(true))
        ->assign('nSeitenTyp', $pagetType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)

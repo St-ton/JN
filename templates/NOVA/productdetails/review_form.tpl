@@ -24,7 +24,7 @@
                     <span class="vmiddle">{$Artikel->cName}</span>
                 </div>
                 <hr>
-                {formgroup}
+                {formgroup label-for="stars" label="{lang key='productRating' section='product rating'}"}
                     {select name="nSterne" id="stars" required=true}
                         {$ratings = [5,4,3,2,1]}
                         {foreach $ratings as $rating}
@@ -39,12 +39,10 @@
                         {/foreach}
                     {/select}
                 {/formgroup}
-                {formgroup}
-                    <label for="headline">{lang key='headline' section='product rating'}</label>
+                {formgroup label-for="headline" label="{lang key='headline' section='product rating'}"}
                     {input type="text" name="cTitel" value=$oBewertung->cTitel|default:'' id="headline" required=true}
                 {/formgroup}
-                {formgroup}
-                    <label for="comment">{lang key='comment' section='product rating'}</label>
+                {formgroup label-for="comment" label="{lang key='comment' section='product rating'}"}
                     {textarea name="cText" cols="80" rows="8" id="comment" required=true}{$oBewertung->cText|default:""}{/textarea}
                 {/formgroup}
                 {input type="hidden" name="bfh" value="1"}

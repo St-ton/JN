@@ -875,13 +875,12 @@ ul.partlist-items {
         position: absolute;
         z-index: $zindex-dropdown - 1;
         left: 0;
-        top: 0;
+        bottom: 0;
         height: auto !important;
         min-height: 100%;
         width: 110%;
         margin-left: -5%;
-        padding-left: $grid-gutter-width / 2 + 10;
-        padding-right: $grid-gutter-width / 2 + 10;
+        padding: $grid-gutter-width $grid-gutter-width 0;
         transition: box-shadow 0.3s;
         background: #fff;
         box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
@@ -1000,7 +999,6 @@ ul.partlist-items {
   align-items: flex-end;
   .image-wrapper .yousave{
     position: absolute;
-    //margin-top: -32px;
     padding: $pagination-padding-y $pagination-padding-x;
     left: ($grid-gutter-width / 2);
   }
@@ -1889,6 +1887,7 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
+    white-space: nowrap;
   }
   svg {
     /* this is the check icon */

@@ -12660,13 +12660,12 @@ ul.partlist-items {
     position: absolute;
     z-index: 999;
     left: 0;
-    top: 0;
+    bottom: 0;
     height: auto !important;
     min-height: 100%;
     width: 110%;
     margin-left: -5%;
-    padding-left: 26px;
-    padding-right: 26px;
+    padding: 32px 32px 0;
     transition: box-shadow 0.3s;
     background: #fff;
     box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
@@ -13629,6 +13628,7 @@ footer .footer-logo {
   left: 0;
   width: 100%;
   height: 100%;
+  white-space: nowrap;
 }
 #add-to-cart .btn svg {
   /* this is the check icon */

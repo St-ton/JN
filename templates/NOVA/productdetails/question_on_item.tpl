@@ -11,13 +11,13 @@
         {/alert}
     {/if}
 {/if}
-{form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}index.php{/if}" method="post" id="article_question" class="evo-validate"}
+{form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}#tab-productquestion{/if}{else}{$ShopURL}/{/if}" method="post" id="article_question" class="evo-validate"}
     <fieldset>
         <legend>{lang key='contact'}</legend>
         {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
             {row}
                 {col md=6}
-                    {formgroup labelFor="salutation" label="{lang key='salutation' section='account data'}"}
+                    {formgroup label-for="salutation" label="{lang key='salutation' section='account data'}"}
                         {select name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix"}
                             <option value="" disabled selected>{lang key='salutation' section='account data'}</option>
                             <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
@@ -128,7 +128,7 @@
     <fieldset>
         <legend>{lang key='productQuestion' section='productDetails'}</legend>
 
-        {formgroup labelFor="question" label="{lang key='question' section='productDetails'}"}
+        {formgroup label-for="question" label="{lang key='question' section='productDetails'}"}
             {textarea name="nachricht" id="question" rows="8" required=true class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}
                 {if isset($Anfrage)}{$Anfrage->cNachricht}{/if}
             {/textarea}

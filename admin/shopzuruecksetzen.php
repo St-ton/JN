@@ -13,9 +13,8 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$db       = Shop::Container()->getDB();
+$alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
 if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form::validateToken()) {
     $cOption_arr = $_POST['cOption_arr'];
     if (is_array($cOption_arr) && count($cOption_arr) > 0) {
@@ -246,14 +245,12 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
         }
         Shop::Container()->getCache()->flushAll();
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
-        $cHinweis = __('successShopReturn');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShopReturn'), 'successShopReturn');
     } else {
-        $cFehler = __('errorChooseOption');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorChooseOption'), 'errorChooseOption');
     }
 
     executeHook(HOOK_BACKEND_SHOP_RESET_AFTER);
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->display('shopzuruecksetzen.tpl');
+$smarty->display('shopzuruecksetzen.tpl');

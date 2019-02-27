@@ -19,13 +19,12 @@ JTL\Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$fehler              = '';
-$hinweis             = '';
 $step                = 'uebersicht';
 $oSmartyError        = new stdClass();
 $oSmartyError->nCode = 0;
 $link                = null;
 $db                  = Shop::Container()->getDB();
+$alertHelper         = Shop::Container()->getAlertService();
 if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && Form::validateToken()) {
     $step = 'neuer Export';
 }
@@ -39,9 +38,9 @@ if (isset($_GET['kExportformat'])
 
     if (isset($_GET['err'])) {
         $smarty->assign('oSmartyError', $oSmartyError);
-        $fehler = __('smartySyntaxError') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('smartySyntaxError'), 'smartySyntaxError');
         if (is_array($_SESSION['last_error'])) {
-            $fehler .= $_SESSION['last_error']['message'];
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $_SESSION['last_error']['message'], 'last_error');
             unset($_SESSION['last_error']);
         }
     }
@@ -56,10 +55,18 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
             $revision      = new Revision($db);
             $revision->addRevision('export', $kExportformat);
             $ef->update();
-            $hinweis .= sprintf(__('successFormatEdit'), $ef->getName());
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successFormatEdit'), $ef->getName()),
+                'successFormatEdit'
+            );
         } else {
             $kExportformat = $ef->save();
-            $hinweis      .= sprintf(__('successFormatCreate'), $ef->getName());
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successFormatCreate'), $ef->getName()),
+                'successFormatCreate'
+            );
         }
 
         $db->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
@@ -94,8 +101,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $step  = 'uebersicht';
         $error = $ef->checkSyntax();
         if ($error !== false) {
-            $step   = 'neuer Export';
-            $fehler = $error;
+            $step = 'neuer Export';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'syntaxError');
         }
     } else {
         $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
@@ -103,8 +110,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', Text::filterXSS($_POST));
-        $step   = 'neuer Export';
-        $fehler = __('errorCheckInput');
+        $step = 'neuer Export';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
     }
 }
 $cAction       = null;
@@ -170,9 +177,9 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             );
 
             if ($bDeleted > 0) {
-                $hinweis = __('successFormatDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFormatDelete'), 'successFormatDelete');
             } else {
-                $fehler = __('errorFormatDelete');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatDelete'), 'errorFormatDelete');
             }
             break;
         case 'exported':
@@ -183,12 +190,24 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
                     || (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 if (empty($_GET['hasError'])) {
-                    $hinweis = sprintf(__('successFormatCreate'), $exportformat->cName);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_SUCCESS,
+                        sprintf(__('successFormatCreate'), $exportformat->cName),
+                        'successFormatCreate'
+                    );
                 } else {
-                    $fehler = sprintf(__('errorFormatCreate'), $exportformat->cName);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorFormatCreate'), $exportformat->cName),
+                        'errorFormatCreate'
+                    );
                 }
             } else {
-                $fehler = sprintf(__('errorFormatCreate'), $exportformat->cName);
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(__('errorFormatCreate'), $exportformat->cName),
+                    'errorFormatCreate'
+                );
             }
             break;
         default:
@@ -275,6 +294,4 @@ if ($step === 'neuer Export') {
 }
 
 $smarty->assign('step', $step)
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
        ->display('exportformate.tpl');

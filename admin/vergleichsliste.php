@@ -17,9 +17,8 @@ Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$cSetting = '(469, 470)';
+$cSetting    = '(469, 470)';
+$alertHelper = Shop::Container()->getAlertService();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
@@ -75,7 +74,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
         Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
     }
 
-    $cHinweis .= __('successConfigSave');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 
@@ -161,8 +160,6 @@ $smarty->assign('Letzten20Vergleiche', $last20)
        ->assign('TopVergleiche', $topComparisons)
        ->assign('oPagination', $oPagination)
        ->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('oConfig_arr', $oConfig_arr)
        ->display('vergleichsliste.tpl');
 

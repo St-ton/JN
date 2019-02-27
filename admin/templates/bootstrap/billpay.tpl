@@ -18,9 +18,7 @@
     <div class="container-fluid2">
         <div class="tab-content">
             <div id="overview" class="tab-pane fade{if isset($cTab) && $cTab === 'uebersicht'} active in{/if}">
-                {if isset($cFehlerBillpay) && $cFehlerBillpay|strlen > 0}
-                    <div class="alert alert-danger">{$cFehlerBillpay}</div>
-                {else}
+                {if !$alertError}
                     <div id="settings">
                         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                             {foreach $oItem_arr as $i => $oItem}

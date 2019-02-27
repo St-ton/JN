@@ -14,18 +14,23 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-
+$alertHelper = Shop::Container()->getAlertService();
 if (!file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && is_writable(PFAD_ROOT . PFAD_EXPORT)) {
     @touch(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml');
 }
 
 if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
-    $cFehler = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' .
-        __('errorSitemapCreatePermission');
+    $alertHelper->addAlert(
+        Alert::TYPE_ERROR,
+        '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' . __('errorSitemapCreatePermission'),
+        'errorSitemapCreatePermission'
+    );
 } elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
-    $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> ' . __('successSave');
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' . __('successSave'),
+        'successSubjectDelete'
+    );
 }
 // Tabs
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -33,7 +38,11 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-    $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_SITEMAP, $_POST),
+        'saveSettings'
+    );
 } elseif (Request::verifyGPCDataInt('download_edit') === 1) {
     $trackers = isset($_POST['kSitemapTracker'])
         ? array_map('\intval', $_POST['kSitemapTracker'])
@@ -46,8 +55,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             ReturnType::AFFECTED_ROWS
         );
     }
-
-    $cHinweis = __('successSitemapDLDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapDLDelete'), 'successSitemapDLDelete');
 } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
     $reports = isset($_POST['kSitemapReport'])
         ? array_map('\intval', $_POST['kSitemapReport'])
@@ -60,8 +68,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             ReturnType::AFFECTED_ROWS
         );
     }
-
-    $cHinweis = __('successSitemapReportDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapReportDelete'), 'successSitemapReportDelete');
 }
 
 $nYearDownloads = Request::verifyGPCDataInt('nYear_downloads');
@@ -73,7 +80,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
             WHERE YEAR(tsitemaptracker.dErstellt) = ' . $nYearDownloads,
         ReturnType::AFFECTED_ROWS
     );
-    $cHinweis       = sprintf(__('successSitemapDLDeleteByYear'), $nYearDownloads);
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        sprintf(__('successSitemapDLDeleteByYear'), $nYearDownloads),
+        'successSitemapDLDeleteByYear'
+    );
     $nYearDownloads = 0;
 }
 
@@ -83,7 +94,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && For
             WHERE YEAR(tsitemapreport.dErstellt) = ' . $nYearReports,
         ReturnType::AFFECTED_ROWS
     );
-    $cHinweis     = sprintf(__('successSitemapReportDeleteByYear'), $nYearReports);
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        sprintf(__('successSitemapReportDeleteByYear'), $nYearDownloads),
+        'successSitemapReportDeleteByYear'
+    );
     $nYearReports = 0;
 }
 
@@ -170,7 +185,5 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
        ->assign('oSitemapReportYears_arr', $oSitemapReportYears_arr)
        ->assign('oSitemapReportPagination', $oSitemapReportPagination)
        ->assign('oSitemapReport_arr', $oSitemapReport_arr)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('URL', Shop::getURL() . '/' . 'sitemap_index.xml')
        ->display('sitemapexport.tpl');

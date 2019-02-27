@@ -21,7 +21,7 @@ $action   = isset($_GET['action'])
 $step     = 'uebersicht';
 $messages = [
     'notice' => '',
-    'error'  => '',
+    'error'  => ''
 ];
 if (isset($action['erstellen']) && (int)$action['erstellen'] === 1 && Form::validateToken()) {
     $step = exportformatQueueActionErstellen($smarty);

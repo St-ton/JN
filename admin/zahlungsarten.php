@@ -29,11 +29,11 @@ Shop::Container()->getGetText()->loadConfigLocales(true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $db               = Shop::Container()->getDB();
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
-$hinweis          = '';
 $step             = 'uebersicht';
+$alertHelper      = Shop::Container()->getAlertService();
 if (Request::verifyGPCDataInt('checkNutzbar') === 1) {
     PaymentMethod::checkPaymentMethodAvailability();
-    $hinweis = __('successPaymentMethodCheck');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodCheck'), 'successPaymentMethodCheck');
 }
 // reset log
 if (($action = Request::verifyGPDataString('a')) !== ''
@@ -45,7 +45,11 @@ if (($action = Request::verifyGPDataString('a')) !== ''
 
     if (isset($method->cModulId) && mb_strlen($method->cModulId) > 0) {
         (new ZahlungsLog($method->cModulId))->loeschen();
-        $hinweis = sprintf(__('successLogReset'), $method->cName);
+        $alertHelper->addAlert(
+            Alert::TYPE_SUCCESS,
+            sprintf(__('successLogReset'), $method->cName),
+            'successLogReset'
+        );
     }
 }
 if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && Form::validateToken()) {
@@ -195,8 +199,8 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     }
 
     Shop::Container()->getCache()->flushAll();
-    $hinweis = __('successPaymentMethodSave');
-    $step    = 'uebersicht';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPaymentMethodSave'), 'successSave');
+    $step = 'uebersicht';
 }
 
 if ($step === 'einstellen') {
@@ -206,8 +210,8 @@ if ($step === 'einstellen') {
         Request::verifyGPCDataInt('kZahlungsart')
     );
     if ($zahlungsart === null) {
-        $step    = 'uebersicht';
-        $hinweis = __('errorPaymentMethodNotFound');
+        $step = 'uebersicht';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
         if ((int)$zahlungsart->nSOAP === 1 || (int)$zahlungsart->nCURL === 1 || (int)$zahlungsart->nSOCKETS === 1) {
@@ -395,5 +399,4 @@ if ($step === 'uebersicht') {
 }
 $smarty->assign('step', $step)
        ->assign('waehrung', $standardwaehrung->cName)
-       ->assign('cHinweis', $hinweis)
        ->display('zahlungsarten.tpl');

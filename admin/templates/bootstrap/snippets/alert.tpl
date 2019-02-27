@@ -8,6 +8,8 @@
     data-key="{$alert->getKey()}"
     {if $alert->getId()}id="{$alert->getId()}"{/if}
 >
+    {if $alert->getDismissable()}<div class="close">&times;</div>{/if}
+
     {if !empty($alert->getLinkHref()) && empty($alert->getLinkText())}
         <a href="{$alert->getLinkHref()}">{$alert->getMessage()}</a>
     {elseif !empty($alert->getLinkHref()) && !empty($alert->getLinkText())}
@@ -16,6 +18,4 @@
     {else}
         {$alert->getMessage()}
     {/if}
-
-    {if $alert->getDismissable()}<div class="close">&times;</div>{/if}
 </div>

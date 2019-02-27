@@ -28,14 +28,3 @@
         <p><strong>{__('description')}:</strong> {$pluginMeta->getDescription()}</p>
     {/if}
 </div>
-{if isset($cHinweis) && $cHinweis|strlen > 0}
-    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$cHinweis}</div>
-{elseif isset($hinweis) && $hinweis|strlen > 0}
-    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$hinweis}</div>
-{/if}
-
-{if isset($cFehler) && $cFehler|strlen > 0}
-    <div class="alert alert-danger"><i class="fa fa-warning"></i> {$cFehler}</div>
-{elseif isset($fehler) && $fehler|strlen > 0}
-    <div class="alert alert-danger"><i class="fa fa-warning"></i> {$fehler}</div>
-{/if}

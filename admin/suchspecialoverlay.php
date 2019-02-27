@@ -16,9 +16,8 @@ $oAccount->permission('DISPLAY_ARTICLEOVERLAYS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'suchspecialoverlay_uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
+$step        = 'suchspecialoverlay_uebersicht';
 
 setzeSprache();
 if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
@@ -30,9 +29,9 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
     ) {
         if (speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-            $cHinweis .= __('successConfigSave') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         } else {
-            $cFehler .= __('errorFillRequired') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
     }
     if ($oID > 0) {
@@ -54,7 +53,5 @@ $smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('oSuchspecialOverlay_arr', $overlays)
        ->assign('nSuchspecialOverlayAnzahl', count($overlays) + 1)
        ->assign('PFAD_SUCHSPECIALOVERLAY', PFAD_SUCHSPECIALOVERLAY_NORMAL)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('suchspecialoverlay.tpl');

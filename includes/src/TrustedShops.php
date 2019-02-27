@@ -615,7 +615,6 @@ class TrustedShops
                 $bForce = true;
             }
         }
-
         if ($this->dChecked === null || $bForce) {
             \ini_set('soap.wsdl_cache_enabled', '1');
 
@@ -639,13 +638,13 @@ class TrustedShops
                     'Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ' .
                     \print_r($returnValue, true)
                 );
-
                 $this->dChecked = \date('Y-m-d H:i:s');
                 if (!$bSaved) {
-                    Shop::Container()->getDB()->query(
-                        "UPDATE ttrustedshopszertifikat 
-                            SET dChecked = '{$this->dChecked}' 
-                            WHERE kTrustedShopsZertifikat = {$this->kTrustedShopsZertifikat}",
+                    Shop::Container()->getDB()->queryPrepared(
+                        'UPDATE ttrustedshopszertifikat 
+                            SET dChecked = :dc 
+                            WHERE kTrustedShopsZertifikat = :cid',
+                        ['dc' => $this->dChecked, 'cid' => $this->kTrustedShopsZertifikat],
                         ReturnType::AFFECTED_ROWS
                     );
                 }

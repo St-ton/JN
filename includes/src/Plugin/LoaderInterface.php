@@ -47,7 +47,7 @@ interface LoaderInterface
      * @param int  $id
      * @param bool $invalidateCache
      * @param int  $languageID
-     * @return LegacyPlugin|Plugin
+     * @return PluginInterface
      * @throws \InvalidArgumentException
      */
     public function init(int $id, bool $invalidateCache = false, int $languageID = null);

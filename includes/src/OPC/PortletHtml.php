@@ -129,7 +129,7 @@ trait PortletHtml
         $tplPath = $this->getTemplatePath() . $this->getClass() . '.tpl';
 
         if (\file_exists($tplPath) === false) {
-            $tplPath = \PFAD_ROOT . \PFAD_TEMPLATES . "Evo/portlets/OPC/GenericPortlet.tpl";
+            $tplPath = \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/OPC/GenericPortlet.tpl';
         }
 
         return $smarty
@@ -169,7 +169,7 @@ trait PortletHtml
 
         return $smarty->assign('portlet', $this)
                       ->assign('instance', $instance)
-                      ->fetch(\PFAD_ROOT . \PFAD_TEMPLATES . "Evo/portlets/OPC/config.$id.tpl");
+                      ->fetch(\PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/OPC/config.' . $id . '.tpl');
     }
 
     /**
@@ -460,7 +460,7 @@ trait PortletHtml
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        return "<$tag $attributes $dataAttribute >$innerHtml</$tag>";
+        return '<' . $tag . ' ' . $attributes . ' ' . $dataAttribute. '>' . $innerHtml . '</' . $tag . '>';
     }
 
     /**
@@ -476,7 +476,7 @@ trait PortletHtml
     ): string {
         $attributes = $instance->getAttributeString();
 
-        return "<$tag $attributes>$innerHtml</$tag>";
+        return '<' . $tag . ' ' . $attributes . '>' . $innerHtml . '</' . $tag . '>';
     }
 
     /**
@@ -485,7 +485,7 @@ trait PortletHtml
     final protected function getDefaultIconSvgUrl(): string
     {
         $path = $this->getTemplatePath() . 'icon.svg';
-        $url = $this->getTemplateUrl() . 'icon.svg';
+        $url  = $this->getTemplateUrl() . 'icon.svg';
 
         if (\file_exists($path) === false) {
             return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/OPC/generic.icon.svg';

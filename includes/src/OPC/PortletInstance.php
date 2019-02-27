@@ -88,6 +88,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(): string
     {
@@ -96,6 +97,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(): string
     {

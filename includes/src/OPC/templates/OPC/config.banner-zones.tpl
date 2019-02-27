@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <script src="../templates/Evo/portlets/OPC/config.banner-zones.js"></script>
+    <script src="../includes/src/OPC/templates/OPC/config.banner-zones.js"></script>
     <style>
         #area_wrapper {
             position: relative;

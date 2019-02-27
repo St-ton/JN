@@ -74,7 +74,7 @@ trait PortletHtml
             return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
         }
 
-        return \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
+        return \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
     }
 
     /**
@@ -89,7 +89,7 @@ trait PortletHtml
             return $plugin->getPaths()->getPortletsUrl() . $this->getClass() . '/';
         }
 
-        return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
+        return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
     }
 
     /**
@@ -129,7 +129,7 @@ trait PortletHtml
         $tplPath = $this->getTemplatePath() . $this->getClass() . '.tpl';
 
         if (\file_exists($tplPath) === false) {
-            $tplPath = \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/OPC/GenericPortlet.tpl';
+            $tplPath = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/GenericPortlet.tpl';
         }
 
         return $smarty
@@ -169,7 +169,7 @@ trait PortletHtml
 
         return $smarty->assign('portlet', $this)
                       ->assign('instance', $instance)
-                      ->fetch(\PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/OPC/config.' . $id . '.tpl');
+                      ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/config.' . $id . '.tpl');
     }
 
     /**
@@ -488,7 +488,7 @@ trait PortletHtml
         $url  = $this->getTemplateUrl() . 'icon.svg';
 
         if (\file_exists($path) === false) {
-            return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/OPC/generic.icon.svg';
+            return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/OPC/generic.icon.svg';
         }
 
         return $url;

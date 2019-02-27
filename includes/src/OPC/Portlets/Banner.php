@@ -73,7 +73,7 @@ class Banner extends Portlet
      */
     public function getPlaceholderImgUrl(): string
     {
-        return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
+        return $this->getTemplateUrl() . 'preview.banner.png';
     }
 
     /**

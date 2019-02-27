@@ -1,0 +1,5 @@
+msgid "SalesVolume_title"
+msgstr "Umsatz"
+
+msgid "SalesVolume_desc"
+msgstr "Umsatz-Statistik"

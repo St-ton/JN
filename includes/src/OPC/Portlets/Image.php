@@ -20,7 +20,7 @@ class Image extends Portlet
      */
     public function getRoundedProp(PortletInstance $instance)
     {
-        switch($instance->getProperty('shape')) {
+        switch ($instance->getProperty('shape')) {
             case 'normal':
                 return false;
             case 'rounded':

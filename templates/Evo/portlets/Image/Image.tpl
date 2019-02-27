@@ -1,7 +1,9 @@
 {if $isPreview}
     {assign var=data value=['portlet' => $instance->getDataAttribute()]}
 {/if}
+
 {assign var=imgAttribs value=$instance->getImageAttributes()}
+
 {image
     src=$imgAttribs.src
     srcset=$imgAttribs.srcset
@@ -11,5 +13,6 @@
     data=$data|default:null
     fluid=$instance->getProperty('responsive')
     style=$instance->getStyleString()
-    class=$instance->getProperty('shape')
+    rounded=$portlet->getRoundedProp($instance)
+    thumbnail=$portlet->getThumbnailProp($instance)
 }

@@ -16,6 +16,32 @@ use JTL\OPC\PortletInstance;
 class Image extends Portlet
 {
     /**
+     * @return bool|string
+     */
+    public function getRoundedProp(PortletInstance $instance)
+    {
+        switch($instance->getProperty('shape')) {
+            case 'normal':
+                return false;
+            case 'rounded':
+                return true;
+            case 'circle':
+                return 'circle';
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * @param PortletInstance $instance
+     * @return bool
+     */
+    public function getThumbnailProp(PortletInstance $instance): bool
+    {
+        return $instance->getProperty('shape') === 'thumbnail';
+    }
+
+    /**
      * @return string
      */
     public function getButtonHtml(): string
@@ -38,10 +64,10 @@ class Image extends Portlet
                 'label'      => 'Form',
                 'type'       => 'select',
                 'options'    => [
-                    '',
+                    'normal'    => 'normal',
                     'rounded'   => 'abgerundete Ecken',
-                    'rounded-circle'    => 'Kreis',
-                    'img-thumbnail' => 'mit Rahmen'
+                    'circle'    => 'Kreis',
+                    'thumbnail' => 'Als Thumbnail',
                 ],
                 'dspl_width' => 50,
             ],

@@ -15900,4 +15900,17 @@ table caption {
   vertical-align: middle;
 }
 
+.countdown {
+  padding: 20px;
+}
+.countdown .cntdwn-item {
+  font-size: 45px;
+  font-weight: 700;
+}
+.countdown .expired {
+  margin: 20px 0;
+  display: none;
+  font-size: x-large;
+}
+
 /*# sourceMappingURL=clear.css.map */

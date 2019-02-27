@@ -1105,7 +1105,7 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git",
-                "reference": "224f165d51a54eaad1f2b40c559dd96206727dbd"
+                "reference": "4b33c2f86ff790c3bb609c2551e74efe19b763d0"
             },
             "require": {
                 "jtlshop/scc": "dev-master",
@@ -1132,7 +1132,7 @@
             "keywords": [
                 "jtl-shop"
             ],
-            "time": "2019-02-21T15:59:46+00:00"
+            "time": "2019-02-27T15:38:40+00:00"
         },
         {
             "name": "jtlshop/semver",
@@ -4775,7 +4775,7 @@
                 },
                 {
                     "name": "Gert de Pagter",
-                    "email": "backendtea@gmail.com"
+                    "email": "BackEndTea@gmail.com"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",

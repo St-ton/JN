@@ -37,6 +37,8 @@
                         {link class="more float-right" href=$moreLink title=$moreTitle data-toggle="tooltip" data=["placement"=>"auto right"] aria=["label"=>$moreTitle]}
                             {$title}
                         {/link}
+                    {else}
+                        {$title}
                     {/if}
                 </div>
             {/if}

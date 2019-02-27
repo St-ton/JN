@@ -201,7 +201,7 @@ class Category implements CategoryInterface
             $this->previewImages[$langID]    = $groupLanguage->cPreviewImage;
             $this->isActive                  = (bool)$groupLanguage->nAktiv;
             $this->dateLastModified          = \date_create($groupLanguage->dLetzteAktualisierung);
-            $this->parentID                  = (int)$groupLanguage->kParent;
+            $this->parentID                  = (int)($groupLanguage->kParent ?? null);
             $this->level                     = (int)$groupLanguage->lvl;
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;

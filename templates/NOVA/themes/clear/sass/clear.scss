@@ -155,6 +155,10 @@ html {
 .text-nowrap   { white-space: nowrap !important; }
 .text-truncate { @include text-truncate; }
 
+.w-maxcon {
+  width: max-content;
+}
+
 .evo-slider {
   padding-bottom: $spacer;
   //border-bottom: 1px solid $gray-light;
@@ -279,6 +283,9 @@ header,
     #nav-cart-collapse,
     #nav-account-collapse,
     #nav-search-collapse {
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
       position: fixed;
       top: 60px;
       left: 0px;
@@ -1374,6 +1381,7 @@ $jqcloud-classes: 7;
       &.active {
         font-weight: bold;
         text-decoration: underline;
+        text-underline-color: $primary;
       }
       &:hover {
         text-decoration: underline;
@@ -1394,6 +1402,18 @@ $jqcloud-classes: 7;
         text-decoration: underline;
       }
     }*/
+  }
+}
+
+.pagination-wrapper {
+  a,
+  a i {
+    text-decoration: none;
+    &.active {
+      font-weight: bold;
+      text-decoration: underline;
+      text-underline-color: $primary;
+    }
   }
 }
 
@@ -1707,6 +1727,10 @@ footer {
 
 //moving underline
 .megamenu {
+  @include media-breakpoint-down(sm) {
+    max-height: 400px;
+    overflow-y: auto;
+  }
   text-align: center;
   .nav,
   .header-shop-nav {
@@ -1722,7 +1746,7 @@ footer {
       word-break: break-word;
       white-space: initial;
     }
-    &.active a{
+    &.active > a {
       font-weight: $font-weight-bold;
     }
   }
@@ -1908,6 +1932,7 @@ footer {
     transform: translateY(-100%);
   }
 }
+
 a.no-deco {
   text-decoration: none;
 }
@@ -2011,7 +2036,7 @@ table caption {
   border: 1px solid $card-border-color;
   border-bottom: 2px solid $primary;
   .nav-item {
-    padding: 0 0px 0 15px;
+    padding: 0 0 0 15px;
     @include media-breakpoint-up(md) {
       padding: 0 20px 0 30px;
     }

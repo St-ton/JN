@@ -29,7 +29,7 @@
             navBadgeAppend: '#shop-nav li.cart-menu',
             boxContainer: '#sidebox',
             boxContainerWish: '#sidebox',
-            quantity: 'input.quantity',
+            quantity: 'input.quantity'
         },
         modal: {
             id: 'modal-article-dialog',

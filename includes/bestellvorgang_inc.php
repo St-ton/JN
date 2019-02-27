@@ -1433,11 +1433,7 @@ function getPaymentSurchageDiscount($paymentMethod)
                 false,
                 'cGebuehrname'
             );
-            if (isset($name_spr->cGebuehrname)) {
-                $specialPosition->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname;
-            } else {
-                $specialPosition->cGebuehrname[$Sprache->cISO] = '';
-            }
+            $specialPosition->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname ?? '';
             if ($paymentMethod->cAufpreisTyp === 'prozent') {
                 if ($paymentMethod->fAufpreis > 0) {
                     $specialPosition->cGebuehrname[$Sprache->cISO] .= ' +';

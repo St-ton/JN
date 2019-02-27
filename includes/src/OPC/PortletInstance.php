@@ -427,7 +427,10 @@ class PortletInstance implements \JsonSerializable
                 $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
                     $constraint->aspectRatio();
                 });
-                $img->save(\PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name, $settings['bilder']['bilder_jpg_quali']);
+                $img->save(
+                    \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
+                    $settings['bilder']['bilder_jpg_quali']
+                );
             }
 
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';

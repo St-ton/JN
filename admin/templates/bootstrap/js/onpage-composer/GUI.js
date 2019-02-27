@@ -322,14 +322,17 @@ GUI.prototype = {
         for(var propname in configObject) {
             var propval   = configObject[propname];
             var propInput = $('[name="' + propname + '"]');
-            var propType  = propInput.data('prop-type');
 
-            if (propType === 'filter') {
-                propval = JSON.parse(propval);
-            } else if (propInput[0].type === 'radio') {
-                propval = Boolean(propval);
-            } else if (propInput[0].type === 'number') {
-                propval = parseInt(propval);
+            if (propInput.length > 0) {
+                var propType = propInput.data('prop-type');
+
+                if (propType === 'filter') {
+                    propval = JSON.parse(propval);
+                } else if (propInput[0].type === 'radio') {
+                    propval = Boolean(propval);
+                } else if (propInput[0].type === 'number') {
+                    propval = parseInt(propval);
+                }
             }
 
             configObject[propname] = propval;

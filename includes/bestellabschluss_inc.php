@@ -238,6 +238,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $oRechnungsadresse->cVorname      = $_SESSION['Kunde']->cVorname;
     $oRechnungsadresse->cNachname     = $_SESSION['Kunde']->cNachname;
     $oRechnungsadresse->cFirma        = $_SESSION['Kunde']->cFirma;
+    $oRechnungsadresse->cZusatz       = $_SESSION['Kunde']->cZusatz;
     $oRechnungsadresse->cStrasse      = $_SESSION['Kunde']->cStrasse;
     $oRechnungsadresse->cHausnummer   = $_SESSION['Kunde']->cHausnummer;
     $oRechnungsadresse->cAdressZusatz = $_SESSION['Kunde']->cAdressZusatz;

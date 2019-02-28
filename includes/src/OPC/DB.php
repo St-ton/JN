@@ -223,8 +223,8 @@ class DB
         $fromPlugin  = $isInstalled && (int)$portletDB->kPlugin > 0;
 
         if ($fromPlugin) {
-            $loader = new PluginLoader($this->shopDB, Shop::Container()->getCache());
-            $plugin = $loader->init((int)$portletDB->kPlugin);
+            $loader    = new PluginLoader($this->shopDB, Shop::Container()->getCache());
+            $plugin    = $loader->init((int)$portletDB->kPlugin);
             $fullClass = '\Plugin\\' . $plugin->getPluginID() . '\Portlets\\' . $class;
         } else {
             $fullClass = '\JTL\OPC\Portlets\\' . $class;

@@ -91,7 +91,7 @@ if (is_object($globalMetaData)) {
         null,
         (int)$conf['metaangaben']['global_meta_maxlaenge_description']
     );
-    if (empty($cMetaKeywords) && !empty($link->getContent())) {
+    if (empty($cMetaKeywords) && isset($link) && !empty($link->getContent())) {
         $cMetaKeywords = Metadata::getTopMetaKeywords($link->getContent());
     }
 }

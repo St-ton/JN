@@ -885,23 +885,13 @@
             if (this.isSingleArticle()) {
                 var that      = this,
                     container = $('#cfg-container'),
-                    sidebar   = $('#product-configuration-sidebar'),
+                    sidebar   = $('#cfg-sticky-sidebar'),
                     width,
                     form;
 
                 if (container.length === 0) {
                     return;
                 }
-
-               /* if (viewport.current() !== 'lg') {
-                    sidebar.removeClass('affix');
-                }
-
-                if (!sidebar.hasClass('affix')) {
-                    sidebar.css('width', '');
-                }*/
-
-                //sidebar.css('width', sidebar.width());
 
                 if (init) {
                     var top = $('#evo-main-nav-wrapper').outerHeight(true);
@@ -944,8 +934,6 @@
                     that.setStockInformation(result.cEstimatedDelivery);
 
                     $('#content .summary').html(result.cTemplate);
-
-                    // sidebar.affix('checkPosition');
 
                     // groups
                     for (i = 0; i < result.oKonfig_arr.length; i++) {

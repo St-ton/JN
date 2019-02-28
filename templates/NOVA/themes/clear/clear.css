@@ -14157,10 +14157,13 @@ ul.partlist-items {
   width: 100%;
 }
 
-#product-configuration-sidebar {
+#cfg-sticky-sidebar {
   z-index: 1019;
-  border: 2px solid #F8BF00;
   top: 3.1875rem;
+}
+
+#product-configuration-sidebar {
+  border: 2px solid #F8BF00;
   border-radius: 0.125rem;
 }
 #product-configuration-sidebar .cfg-toggle::before {
@@ -14177,35 +14180,21 @@ ul.partlist-items {
   height: initial;
   margin-left: -16px;
   padding: 0 14px;
-  top: -22px;
+  top: -20px;
   position: absolute;
 }
 #product-configuration-sidebar .cfg-toggle[aria-expanded=true]:before {
   content: "";
 }
 
-.cfg-sticky-price {
-  background: #fff;
-  z-index: 1019;
-  -webkit-box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
-}
-@media (max-width: 991.98px) {
-  .cfg-sticky-price {
-    top: 3.1875rem;
-  }
-}
-
 .btn[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down {
   transform: rotate(180deg);
 }
 
-@media (min-width: 768px) {
-  #product-configurator {
-    max-height: 35rem;
-    overflow-y: auto;
-  }
+#cfg-container .btn[data-toggle=collapse][aria-expanded=false] .fa-minus:before {
+  content: "";
 }
+
 ::-webkit-scrollbar {
   width: 8px;
   background-color: transparent;
@@ -14635,7 +14624,7 @@ ul.partlist-items {
     min-height: 100%;
     width: 110%;
     margin-left: -5%;
-    padding: 32px 32px 0;
+    padding: 32px;
     transition: box-shadow 0.3s;
     background: #fff;
     box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);

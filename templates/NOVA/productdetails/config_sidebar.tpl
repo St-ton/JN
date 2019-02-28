@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-<div id="product-configuration-sidebar" class="sticky-top mb-4 d-none d-md-block">
+<div id="product-configuration-sidebar">
     {button variant="link" class="cfg-toggle" block=true data=["toggle"=>"collapse", "target"=>"#configuration-table"]}
         <div class="h5 text-left">{lang key='yourConfiguration'}</div>
     {/button}

@@ -10,7 +10,7 @@
         {/col}
         {col cols=12}
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
-                <div class="actions btn-group btn-group-xs btn-group-justified">
+                <div class="actions btn-group btn-group-xs btn-group-justified" data-toggle="product-actions">
                     {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
                         {button name="Vergleichsliste" type="submit" class="compare badge mr-3 mt-3"
                         title="{lang key='addToCompare' section='productOverview'}"

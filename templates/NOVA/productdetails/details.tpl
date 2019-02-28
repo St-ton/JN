@@ -17,11 +17,6 @@
         {col cols=12 md=6 class="product-gallery"}
             {include file='productdetails/image.tpl'}
             {*{image src=$Artikel->Bilder[0]->cURLNormal fluid=true class="mx-auto d-block" alt="Responsive image"}*}
-            {if $Artikel->bHasKonfig}
-                {block name='productdetails-config-summary'}
-                    {include file='productdetails/config_sidebar.tpl'}
-                {/block}
-            {/if}
         {/col}
         {col cols=12 md=6 class="product-info"}
             <div class="h1 d-xs-block d-sm-none text-center">{$Artikel->cName}</div>
@@ -156,21 +151,12 @@
                         <!-- VARIATIONEN -->
                         {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                     {/block}
-                    {if $Artikel->bHasKonfig}
-                        {block name='productdetails-config'}
-                            {row id="product-configurator"}
-                                {include file='productdetails/config_container.tpl'}
-                            {/row}
-                        {/block}
-                    {/if}
 
-                    {row}
+                    {row class="mb-5"}
                         {block name='productdetails-info-price'}
-                            {if !$Artikel->bHasKonfig}
-                                {col cols=12}
-                                    {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
-                                {/col}
-                            {/if}
+                            {col cols=12}
+                                {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
+                            {/col}
                         {/block}
                         {block name='productdetails-info-stock'}
                             {col cols=12}
@@ -180,23 +166,23 @@
                     {/row}
                     {*UPLOADS product-specific files, e.g. for customization*}
                     {include file="snippets/uploads.tpl" tplscope='product'}
+
                     {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
-                    {include file='productdetails/basket.tpl'}
+                    {if !$Artikel->bHasKonfig}
+                        {include file='productdetails/basket.tpl'}
+                    {/if}
                     <hr>
                 </div>
             </div>{* /product-info-inner *}
             {/block}{* productdetails-info *}
         {/col}
-        {*{if $Artikel->bHasKonfig}
+        {if $Artikel->bHasKonfig}
             {block name='productdetails-config'}
-                {col id="product-configurator" cols=12}
-                    <div class="product-config mt-2">
-                        *}{*KONFIGURATOR*}{*
-                        {include file='productdetails/config.tpl'}
-                    </div>
-                {/col}
+                {row id="product-configurator"}
+                    {include file='productdetails/config_container.tpl'}
+                {/row}
             {/block}
-        {/if}*}
+        {/if}
     {/row}
     {block name='details-matrix'}
         {include file='productdetails/matrix.tpl'}

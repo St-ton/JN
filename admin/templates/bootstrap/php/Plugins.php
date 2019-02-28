@@ -9,12 +9,18 @@ namespace AdminTemplate;
 use JTL\Backend\Revision;
 use JTL\Catalog\Currency;
 use JTL\Shop;
+use DateTime;
+use JTL\Smarty\JTLSmarty;
 
+/**
+ * Class Plugins
+ * @package AdminTemplate
+ */
 class Plugins
 {
     /**
-     * @param array             $params
-     * @param \Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getRevisions(array $params, $smarty): string
@@ -56,8 +62,8 @@ class Plugins
     }
 
     /**
-     * @param array             $params
-     * @param \Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getCurrencyConversionTooltipButton(array $params, $smarty): string
@@ -67,8 +73,8 @@ class Plugins
         if (!isset($params['inputId'])) {
             return '';
         }
-        $inputId = $params['inputId'];
-        $button  = '<button type="button" class="btn btn-tooltip btn-info" id="' .
+        $inputId  = $params['inputId'];
+        $button   = '<button type="button" class="btn btn-tooltip btn-info" id="' .
             $inputId . 'Tooltip" data-html="true"';
         $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
         $button  .= '<i class="fa fa-eur"></i></button>';
@@ -77,13 +83,13 @@ class Plugins
     }
 
     /**
-     * @param array             $params
-     * @param \Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      */
     public function getCurrentPage($params, $smarty): void
     {
         $path = $_SERVER['SCRIPT_NAME'];
-        $page = basename($path, '.php');
+        $page = \basename($path, '.php');
 
         if (isset($params['assign'])) {
             $smarty->assign($params['assign'], $page);
@@ -91,8 +97,8 @@ class Plugins
     }
 
     /**
-     * @param array             $params
-     * @param \Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHelpDesc(array $params, $smarty): string
@@ -100,7 +106,7 @@ class Plugins
         $placement   = $params['placement'] ?? 'left';
         $cID         = !empty($params['cID']) ? $params['cID'] : null;
         $description = isset($params['cDesc'])
-            ? str_replace('"', '\'', $params['cDesc'])
+            ? \str_replace('"', '\'', $params['cDesc'])
             : null;
 
         return $smarty->assign('placement', $placement)
@@ -117,12 +123,12 @@ class Plugins
     {
         $ok = false;
         if (isset($_SESSION['AdminAccount'])) {
-            if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === ADMINGROUP) {
+            if ((int)$_SESSION['AdminAccount']->oGroup->kAdminlogingruppe === \ADMINGROUP) {
                 $ok = true;
             } else {
-                $orExpressions = explode('|', $cRecht);
+                $orExpressions = \explode('|', $cRecht);
                 foreach ($orExpressions as $flag) {
-                    $ok = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
+                    $ok = \in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true);
                     if ($ok) {
                         break;
                     }
@@ -134,15 +140,15 @@ class Plugins
     }
 
     /**
-     * @param array             $params
-     * @param \Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function SmartyConvertDate(array $params, $smarty)
     {
-        if (isset($params['date']) && mb_strlen($params['date']) > 0) {
-            $oDateTime = new \DateTime($params['date']);
-            if (isset($params['format']) && mb_strlen($params['format']) > 1) {
+        if (isset($params['date']) && \mb_strlen($params['date']) > 0) {
+            $oDateTime = new DateTime($params['date']);
+            if (isset($params['format']) && \mb_strlen($params['format']) > 1) {
                 $cDate = $oDateTime->format($params['format']);
             } else {
                 $cDate = $oDateTime->format('d.m.Y H:i:s');
@@ -161,8 +167,8 @@ class Plugins
     /**
      * Map marketplace categoryId to localized category name
      *
-     * @param array             $params
-     * @param \Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      */
     public function getExtensionCategory(array $params, $smarty): void
     {
@@ -196,7 +202,7 @@ class Plugins
             return null;
         }
 
-        return substr_replace((int)$params['value'], '.', 1, 0);
+        return \substr_replace((int)$params['value'], '.', 1, 0);
     }
 
     /**
@@ -216,18 +222,18 @@ class Plugins
     {
         $email = $params['email'] ?? null;
         if ($email === null) {
-            $email = JTLSUPPORT_EMAIL;
+            $email = \JTLSUPPORT_EMAIL;
         } else {
             unset($params['email']);
         }
 
-        $params = array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
+        $params = \array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
 
-        $url = 'https://www.gravatar.com/avatar/';
-        $url .= md5(mb_convert_case(trim($email), MB_CASE_LOWER));
-        $url .= '?' . http_build_query($params, '', '&');
+        $url  = 'https://www.gravatar.com/avatar/';
+        $url .= \md5(\mb_convert_case(\trim($email), \MB_CASE_LOWER));
+        $url .= '?' . \http_build_query($params, '', '&');
 
-        executeHook(HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
+        \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
             'url'          => &$url,
             'AdminAccount' => &$_SESSION['AdminAccount']
         ]);
@@ -236,8 +242,8 @@ class Plugins
     }
 
     /**
-     * @param array             $params
-     * @param \Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function captchaMarkup(array $params, $smarty): string

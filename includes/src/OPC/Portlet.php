@@ -14,7 +14,7 @@ use JTL\Shop;
  * Class Portlet
  * @package JTL\OPC
  */
-abstract class Portlet implements \JsonSerializable
+class Portlet implements \JsonSerializable
 {
     use PortletHtml;
     use PortletStyles;

@@ -45,9 +45,7 @@ class Portlets extends AbstractItem
                 }
                 \preg_match('/[a-zA-Z0-9\/_\-.]+/', $portlet['Class'], $hits1);
                 if (\mb_strlen($hits1[0]) === \mb_strlen($portlet['Class'])) {
-                    if (!\file_exists($dir .
-                        \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS . $portlet['Class'] . '/' .
-                        $portlet['Class'] . '.php')
+                    if (!\file_exists($dir . \PFAD_PLUGIN_PORTLETS . $portlet['Class'] . '.php')
                     ) {
                         return InstallCode::INVALID_PORTLET_CLASS_FILE;
                     }

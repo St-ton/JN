@@ -128,10 +128,11 @@
 
                 <div class="tab-pane active" id="portlets">
                     {foreach $opc->getPortletGroups() as $group}
-                        <a href="#collapse-{$group->getName()}" data-toggle="collapse" class="collapseGroup">
+                        {assign var="groupId" value=$group->getName()|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
+                        <a href="#collapse-{$groupId}" data-toggle="collapse" class="collapseGroup">
                             <i class="fa fa-plus-circle"></i> {$group->getName()}
                         </a>
-                        <div class="collapse" id="collapse-{$group->getName()}">
+                        <div class="collapse" id="collapse-{$groupId}">
                             <div class="row">
                                 {foreach $group->getPortlets() as $i => $portlet}
                                     {if $i > 0 && $i % 3 === 0}</div><div class="row">{/if}

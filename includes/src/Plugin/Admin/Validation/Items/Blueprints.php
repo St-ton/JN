@@ -30,7 +30,7 @@ class Blueprints extends AbstractItem
         ) {
             return InstallCode::MISSING_BLUEPRINTS;
         }
-        $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS;
+        $base = $dir . \PFAD_PLUGIN_BLUEPRINTS;
         foreach ($node['Blueprints'][0]['Blueprint'] as $i => $blueprint) {
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);

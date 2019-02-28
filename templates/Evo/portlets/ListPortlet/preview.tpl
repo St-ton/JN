@@ -1,1 +1,0 @@
-{include file='./list.tpl' isPreview=true}

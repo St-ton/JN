@@ -70,6 +70,11 @@ class Paths
     /**
      * @var string|null
      */
+    private $portletsUrl;
+
+    /**
+     * @var string|null
+     */
     private $exportPath;
 
     /**
@@ -246,6 +251,22 @@ class Paths
     public function setPortletsPath(?string $portletsPath): void
     {
         $this->portletsPath = $portletsPath;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPortletsUrl(): ?string
+    {
+        return $this->portletsUrl;
+    }
+
+    /**
+     * @param string|null $portletsUrl
+     */
+    public function setPortletsUrl(?string $portletsUrl): void
+    {
+        $this->portletsUrl = $portletsUrl;
     }
 
     /**

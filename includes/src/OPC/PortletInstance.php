@@ -88,6 +88,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(): string
     {
@@ -96,6 +97,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(): string
     {
@@ -291,11 +293,12 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return $this
+     * @return string
      */
-    public function updateAttributes(): self
+    public function getStyleString(): string
     {
         $styleString = '';
+
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
                 if (\mb_strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
@@ -313,7 +316,15 @@ class PortletInstance implements \JsonSerializable
             }
         }
 
-        $this->setAttribute('style', $styleString);
+        return $styleString;
+    }
+
+    /**
+     * @return $this
+     */
+    public function updateAttributes(): self
+    {
+        $this->setAttribute('style', $this->getStyleString());
 
         foreach ($this->getAnimations() as $aniName => $aniValue) {
             if ($aniName === 'animation-style' && !empty($aniValue)) {
@@ -363,7 +374,15 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttribute(): string
     {
-        return \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES);
+        return \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->jsonSerializeShort();
     }
 
     /**
@@ -408,7 +427,10 @@ class PortletInstance implements \JsonSerializable
                 $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
                     $constraint->aspectRatio();
                 });
-                $img->save(\PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name, $settings['bilder']['bilder_jpg_quali']);
+                $img->save(
+                    \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
+                    $settings['bilder']['bilder_jpg_quali']
+                );
             }
 
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';

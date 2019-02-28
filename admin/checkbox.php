@@ -19,8 +19,7 @@ $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis        = '';
-$cFehler         = '';
+$alertHelper     = Shop::Container()->getAlertService();
 $cStep           = 'uebersicht';
 $nAnzahlProSeite = 15;
 $oSprach_arr     = Sprache::getAllLanguages();
@@ -35,13 +34,13 @@ if (isset($_POST['erstellenShowButton'])) {
     $kCheckBox_arr = $_POST['kCheckBox'];
     if (isset($_POST['checkboxAktivierenSubmit'])) {
         $oCheckBox->aktivateCheckBox($kCheckBox_arr);
-        $cHinweis = __('successCheckboxActivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxActivate'), 'successCheckboxActivate');
     } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
         $oCheckBox->deaktivateCheckBox($kCheckBox_arr);
-        $cHinweis = __('successCheckboxDeactivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDeactivate'), 'successCheckboxDeactivate');
     } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
         $oCheckBox->deleteCheckBox($kCheckBox_arr);
-        $cHinweis = __('successCheckboxDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDelete'), 'successCheckboxDelete');
     }
 } elseif (Request::verifyGPCDataInt('edit') > 0) {
     $kCheckBox = Request::verifyGPCDataInt('edit');
@@ -55,9 +54,9 @@ if (isset($_POST['erstellenShowButton'])) {
     if (count($cPlausi_arr) === 0) {
         $oCheckBox = speicherCheckBox($_POST, $oSprach_arr);
         $cStep     = 'uebersicht';
-        $cHinweis  = __('successCheckboxCreate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxCreate'), 'successCheckboxCreate');
     } else {
-        $cFehler = __('errorFillRequired');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         $smarty->assign('cPost_arr', Text::filterXSS($_POST))
                ->assign('cPlausi_arr', $cPlausi_arr);
         if ($kCheckBox > 0) {
@@ -94,8 +93,6 @@ $smarty->assign('oCheckBox_arr', $oCheckBox_arr)
            ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('oCheckBoxFunktion_arr', $oCheckBox->getCheckBoxFunctions())
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('step', $cStep)
        ->assign('cTab', $cTab)
        ->display('checkbox.tpl');

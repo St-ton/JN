@@ -26,10 +26,9 @@ $mysqlVersion     = Shop::Container()->getDB()->query(
     ReturnType::SINGLE_OBJECT
 )->Value;
 $step             = 'einstellungen bearbeiten';
-$cHinweis         = '';
-$cFehler          = '';
 $Conf             = [];
 $createIndex      = false;
+$alertHelper      = Shop::Container()->getAlertService();
 
 Shop::Container()->getGetText()->loadAdminLocale('pages/einstellungen');
 
@@ -105,7 +104,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         }
 
         if ($res === 0) {
-            $cFehler      = __('errorIndexNotCreatable');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorIndexNotCreatable'), 'errorIndexNotCreatable');
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
 
@@ -122,14 +121,23 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
                 $shopSettings->reset();
             }
         } else {
-            $cHinweis = sprintf(__('successIndexCreate'), $index);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successIndexCreate'),
+                'successIndexCreate',
+                ['saveInSession' => true]
+            );
         }
     } else {
-        $cHinweis = sprintf(__('successIndexDelete'), $index);
+        $alertHelper->addAlert(
+            Alert::TYPE_SUCCESS,
+            __('successIndexDelete'),
+            'successIndexDelete',
+            ['saveInSession' => true]
+        );
     }
 
     header(Request::makeHTTPHeader(200), true);
-    echo json_encode((object)['error' => $cFehler, 'hinweis' => $cHinweis]);
     exit;
 }
 
@@ -144,7 +152,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
             $_POST['suche_fulltext'] = 'N';
-            $cFehler                 = __('errorFulltextSearchMYSQL');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
         } else {
             // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
             $oValue                     = Shop::Container()->getDB()->query(
@@ -156,7 +164,11 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
 
     $shopSettings = Shopsetting::getInstance();
-    $cHinweis    .= saveAdminSectionSettings($kSektion, $_POST);
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings($kSektion, $_POST),
+        'saveSettings'
+    );
 
     Shop::Container()->getCache()->flushTags(
         [CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]
@@ -186,9 +198,9 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
 
     if ($sucheFulltext && $fulltextChanged) {
-        $cHinweis .= __('successSearchActivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchActivate'), 'successSearchActivate');
     } elseif ($fulltextChanged) {
-        $cHinweis .= __('successSearchDeactivate');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeactivate'), 'successSearchDeactivate');
     }
 
     $conf = Shop::getSettings([$kSektion]);
@@ -204,8 +216,12 @@ if ($conf['artikeluebersicht']['suche_fulltext'] !== 'N'
         "SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
         ReturnType::SINGLE_OBJECT
     ))) {
-    $cFehler = __('errorCreateTime') .
-        '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';
+    $alertHelper->addAlert(
+        Alert::TYPE_ERROR,
+        __('errorCreateTime') .
+        '<a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>',
+        'errorCreateTime'
+    );
     Notification::getInstance()->add(
         NotificationEntry::TYPE_WARNING,
         __('indexCreate'),
@@ -223,7 +239,5 @@ $smarty->configLoad('german.conf', 'einstellungen')
        ->assign('step', $step)
        ->assign('supportFulltext', version_compare($mysqlVersion, '5.6', '>='))
        ->assign('createIndex', $createIndex)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('waehrung', $standardwaehrung->cName)
        ->display('sucheinstellungen.tpl');

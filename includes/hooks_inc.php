@@ -1002,6 +1002,7 @@ define('HOOK_SMARTY_INC', 133);
  * at the beginning of holeJobs()
  *
  * @file lastjobs.php
+ * @param array jobs - since 5.0.0
  */
 define('HOOK_LASTJOBS_HOLEJOBS', 134);
 

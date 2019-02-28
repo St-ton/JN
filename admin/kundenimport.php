@@ -59,22 +59,23 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
         $row      = 0;
         $fmt      = [];
         $formatId = -1;
-        $hinweis  = '';
+        $notice   = '';
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $hinweis .= __('checkHead');
-                $fmt      = checkformat($data, $format);
+                $notice .= __('checkHead');
+                $fmt     = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $hinweis .= __('errorFormatNotFound');
+                    $notice .= __('errorFormatNotFound');
                     break;
                 }
-                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
+                $notice .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
+                $notice .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
 
             $row++;
         }
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
         fclose($file);
     }
 }
@@ -85,7 +86,6 @@ $smarty->assign('sprachen', Sprache::getAllLanguages())
            ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('step', $step ?? null)
-       ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
 
 

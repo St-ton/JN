@@ -6,6 +6,7 @@
 
 namespace JTL\OPC;
 
+use JTL\Plugin\Plugin;
 use JTL\Shop;
 
 /**
@@ -17,14 +18,22 @@ trait PortletHtml
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    abstract public function getPreviewHtml(PortletInstance $instance): string;
+    public function getPreviewHtml(PortletInstance $instance): string
+    {
+        return $this->getPreviewHtmlFromTpl($instance);
+    }
 
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    abstract public function getFinalHtml(PortletInstance $instance): string;
+    public function getFinalHtml(PortletInstance $instance): string
+    {
+        return $this->getFinalHtmlFromTpl($instance);
+    }
 
     /**
      * @param PortletInstance $instance
@@ -59,11 +68,28 @@ trait PortletHtml
     final protected function getTemplatePath(): string
     {
         $plugin = $this->getPlugin();
+
         if ($plugin !== null) {
-            return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
+            /** @var Plugin $plugin */
+            return $plugin->getPaths()->getPortletsPath() . 'templates/';
         }
 
-        return \PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
+        return \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
+    }
+
+    /**
+     * @return string
+     */
+    final protected function getTemplateUrl(): string
+    {
+        $plugin = $this->getPlugin();
+
+        if ($plugin !== null) {
+            /** @var Plugin $plugin */
+            return $plugin->getPaths()->getPortletsUrl() . 'templates/';
+        }
+
+        return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
     }
 
     /**
@@ -73,10 +99,7 @@ trait PortletHtml
      */
     final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
-        return Shop::Smarty()
-                        ->assign('portlet', $this)
-                        ->assign('instance', $instance)
-                        ->fetch($this->getTemplatePath() . 'preview.tpl');
+        return $this->getHtmlFromTpl($instance, true);
     }
 
     /**
@@ -84,13 +107,31 @@ trait PortletHtml
      * @return string
      * @throws \Exception
      */
-    final protected function getFinalHtmlFromTpl($instance): string
+    final protected function getFinalHtmlFromTpl(PortletInstance $instance): string
     {
+        return $this->getHtmlFromTpl($instance, false);
+    }
 
-        return Shop::Smarty()
-                        ->assign('portlet', $this)
-                        ->assign('instance', $instance)
-                        ->fetch($this->getTemplatePath() . 'final.tpl');
+    /**
+     * @param PortletInstance $instance
+     * @param bool $isPreview
+     * @return string
+     * @throws \SmartyException
+     */
+    final protected function getHtmlFromTpl(PortletInstance $instance, bool $isPreview): string
+    {
+        $smarty  = $isPreview ? \getFrontendSmarty() : Shop::Smarty();
+        $tplPath = $this->getTemplatePath() . $this->getClass() . '.tpl';
+
+        if (\file_exists($tplPath) === false) {
+            $tplPath = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/GenericPortlet.tpl';
+        }
+
+        return $smarty
+            ->assign('isPreview', $isPreview)
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($tplPath);
     }
 
     /**
@@ -101,9 +142,9 @@ trait PortletHtml
     final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
         return Shop::Smarty()
-                        ->assign('portlet', $this)
-                        ->assign('instance', $instance)
-                        ->fetch($this->getTemplatePath() . 'configpanel.tpl');
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($this->getTemplatePath() . 'configpanel.tpl');
     }
 
     /**
@@ -121,9 +162,10 @@ trait PortletHtml
             $smarty->assign($name, $val);
         }
 
-        return $smarty->assign('portlet', $this)
-                      ->assign('instance', $instance)
-                      ->fetch(\PFAD_ROOT . \PFAD_TEMPLATES . "Evo/portlets/OPC/config.$id.tpl");
+        return $smarty
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/config.' . $id . '.tpl');
     }
 
     /**
@@ -156,7 +198,7 @@ trait PortletHtml
         }
 
         $res  = '';
-        $res .= "<ul class='nav nav-tabs'>";
+        $res .= '<ul class="nav nav-tabs">';
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
@@ -168,7 +210,7 @@ trait PortletHtml
         }
 
         $res .= '</ul>';
-        $res .= "<div class='tab-content'>";
+        $res .= '<div class="tab-content">';
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
@@ -210,7 +252,7 @@ trait PortletHtml
                                 });
                             </script>";
                     }
-                    $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
+                    $res .= '<div class="collapse" id="collapseContainer' . $cllpsID .'">';
                 }
 
                 $res .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
@@ -414,7 +456,7 @@ trait PortletHtml
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        return "<$tag $attributes $dataAttribute >$innerHtml</$tag>";
+        return '<' . $tag . ' ' . $attributes . ' ' . $dataAttribute. '>' . $innerHtml . '</' . $tag . '>';
     }
 
     /**
@@ -430,7 +472,7 @@ trait PortletHtml
     ): string {
         $attributes = $instance->getAttributeString();
 
-        return "<$tag $attributes>$innerHtml</$tag>";
+        return '<' . $tag . ' ' . $attributes . '>' . $innerHtml . '</' . $tag . '>';
     }
 
     /**
@@ -438,6 +480,13 @@ trait PortletHtml
      */
     final protected function getDefaultIconSvgUrl(): string
     {
-        return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
+        $path = $this->getTemplatePath() . 'icon.svg';
+        $url  = $this->getTemplateUrl() . 'icon.svg';
+
+        if (\file_exists($path) === false) {
+            return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/OPC/generic.icon.svg';
+        }
+
+        return $url;
     }
 }

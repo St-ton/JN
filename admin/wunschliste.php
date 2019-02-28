@@ -14,13 +14,13 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis    = '';
+$alertHelper = Shop::Container()->getAlertService();
 $settingsIDs = [442, 443, 440, 439, 445, 446, 1460];
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
 }
 $oWunschlistePos     = Shop::Container()->getDB()->query(
     'SELECT COUNT(tWunsch.kWunschliste) AS nAnzahl
@@ -111,5 +111,4 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->assign('CWunschlisteVersand_arr', $sentWishLists)
        ->assign('CWunschliste_arr', $wishLists)
        ->assign('CWunschlistePos_arr', $wishListPositions)
-       ->assign('hinweis', $cHinweis)
        ->display('wunschliste.tpl');

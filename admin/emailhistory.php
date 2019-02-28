@@ -12,26 +12,25 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis        = '';
-$cFehler         = '';
 $step            = 'uebersicht';
 $nAnzahlProSeite = 30;
 $oEmailhistory   = new Emailhistory();
 $cAction         = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
+$alertHelper     = Shop::Container()->getAlertService();
 
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {
         if ($oEmailhistory->deleteAll() !== true) {
-            $cFehler = __('errorHistoryDelete');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
         }
     } elseif (isset($_POST['kEmailhistory'])
         && is_array($_POST['kEmailhistory'])
         && count($_POST['kEmailhistory']) > 0
     ) {
         $oEmailhistory->deletePack($_POST['kEmailhistory']);
-        $cHinweis = __('successHistoryDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successHistoryDelete'), 'successHistoryDelete');
     } else {
-        $cFehler = __('errorSelectEntry');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSelectEntry'), 'errorSelectEntry');
     }
 }
 
@@ -43,7 +42,5 @@ if ($step === 'uebersicht') {
            ->assign('oEmailhistory_arr', $oEmailhistory->getAll(' LIMIT ' . $oPagination->getLimitSQL()));
 }
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->display('emailhistory.tpl');

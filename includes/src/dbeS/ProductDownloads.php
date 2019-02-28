@@ -13,13 +13,6 @@ namespace JTL\dbeS;
 class ProductDownloads extends NetSyncHandler
 {
     /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
      * @param int $request
      */
     protected function request($request)
@@ -28,7 +21,7 @@ class ProductDownloads extends NetSyncHandler
             case NetSyncRequest::DOWNLOADFOLDERS:
                 self::throwResponse(
                     NetSyncResponse::OK,
-                    \getFolderStruct((int)$_POST['bPreview'] ? \PFAD_DOWNLOADS_PREVIEW : \PFAD_DOWNLOADS)
+                    $this->getFolderStruct((int)$_POST['bPreview'] ? \PFAD_DOWNLOADS_PREVIEW : \PFAD_DOWNLOADS)
                 );
                 break;
 
@@ -39,7 +32,7 @@ class ProductDownloads extends NetSyncHandler
                 }
                 $basePath = $_POST['cBasePath'];
                 if (\is_dir($basePath)) {
-                    self::throwResponse(NetSyncResponse::OK, \getFilesStruct($basePath, $preview));
+                    self::throwResponse(NetSyncResponse::OK, $this->getFilesStruct($basePath, $preview));
                 } else {
                     self::throwResponse(NetSyncResponse::FOLDERNOTEXISTS);
                 }

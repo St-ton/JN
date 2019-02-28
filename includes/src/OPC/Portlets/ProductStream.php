@@ -34,7 +34,7 @@ class ProductStream extends Portlet
         $style         = $instance->getProperty('listStyle');
 
         return '<div ' . $attributes . ' ' . $dataAttribute . '>'
-            . '<img alt="" src="' . \PFAD_TEMPLATES . 'Evo/portlets/ProductStream/preview.' . $style . '.png" '
+            . '<img alt="" src="' . $this->getTemplateUrl() . 'preview.' . $style . '.png" '
             . 'style="width:98%;filter:grayscale(50%) opacity(60%)">'
             . '<div style="color:#5cbcf6;font-size:40px;font-weight:bold;margin: -1em 0 0 0;line-height:1em;">
                 Produktliste</div>'

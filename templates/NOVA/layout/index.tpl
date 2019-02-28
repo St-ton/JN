@@ -15,7 +15,7 @@
 
     {block name='content'}
         {if $opcPageService->getCurPage()->isReplace()}
-            {*{include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}*}
+            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
         {else}
             {if !empty($Link->getTitle())}
                 <h1>{$Link->getTitle()}</h1>

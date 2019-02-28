@@ -638,183 +638,22 @@ class Frontend extends AbstractSession
             $lang = first(Sprache::getAllLanguages(), function ($l) use ($langISO) {
                 return $l->cISO === $langISO;
             });
-            if ($lang !== null) {
-                $_SESSION['cISOSprache'] = $lang->cISO;
-                $_SESSION['kSprache']    = (int)$lang->kSprache;
-                Shop::setLanguage($lang->kSprache, $lang->cISO);
-                unset($_SESSION['Suche']);
-                self::setSpecialLinks();
-                if (isset($_SESSION['Wunschliste'])) {
-                    self::getWishList()->umgebungsWechsel();
-                }
-                if (isset($_SESSION['Vergleichsliste'])) {
-                    self::getCompareList()->umgebungsWechsel();
-                }
-                $_SESSION['currentLanguage'] = clone $lang;
-                unset($_SESSION['currentLanguage']->cURL);
-            } else {
-                $kArtikel              = Request::verifyGPCDataInt('a');
-                $kKategorie            = Request::verifyGPCDataInt('k');
-                $kSeite                = Request::verifyGPCDataInt('s');
-                $kVariKindArtikel      = Request::verifyGPCDataInt('a2');
-                $kHersteller           = Request::verifyGPCDataInt('h');
-                $kSuchanfrage          = Request::verifyGPCDataInt('l');
-                $kMerkmalWert          = Request::verifyGPCDataInt('m');
-                $kTag                  = Request::verifyGPCDataInt('t');
-                $kSuchspecial          = Request::verifyGPCDataInt('q');
-                $kNews                 = Request::verifyGPCDataInt('n');
-                $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
-                $kNewsKategorie        = Request::verifyGPCDataInt('nk');
-                $kUmfrage              = Request::verifyGPCDataInt('u');
-                $seo                   = '';
-                \http_response_code(301);
-                if ($kArtikel > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kArtikel',
-                        'kKey',
-                        $kArtikel,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kKategorie > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kKategorie',
-                        'kKey',
-                        $kKategorie,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kSeite > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kLink',
-                        'kKey',
-                        $kSeite,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kVariKindArtikel > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kArtikel',
-                        'kKey',
-                        $kVariKindArtikel,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kHersteller > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kHersteller',
-                        'kKey',
-                        $kHersteller,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kSuchanfrage > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kSuchanfrage',
-                        'kKey',
-                        $kSuchanfrage,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kMerkmalWert > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kMerkmalWert',
-                        'kKey',
-                        $kMerkmalWert,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kTag > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kTag',
-                        'kKey',
-                        $kTag,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kSuchspecial > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kSuchspecial',
-                        'kKey',
-                        $kSuchspecial,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kNews > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kNews',
-                        'kKey',
-                        $kNews,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kNewsMonatsUebersicht > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kNewsMonatsUebersicht',
-                        'kKey',
-                        $kNewsMonatsUebersicht,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kNewsKategorie > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kNewsKategorie',
-                        'kKey',
-                        $kNewsKategorie,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                } elseif ($kUmfrage > 0) {
-                    $dbRes = Shop::Container()->getDB()->select(
-                        'tseo',
-                        'cKey',
-                        'kUmfrage',
-                        'kKey',
-                        $kUmfrage,
-                        'kSprache',
-                        Shop::getLanguageID()
-                    );
-                    $seo   = $dbRes->cSeo;
-                }
-                \header('Location: ' . Shop::getURL() . '/' . $seo, true, 301);
-                exit;
+            if ($lang === null) {
+                self::urlFallback();
             }
+            $_SESSION['cISOSprache'] = $lang->cISO;
+            $_SESSION['kSprache']    = (int)$lang->kSprache;
+            Shop::setLanguage($lang->kSprache, $lang->cISO);
+            unset($_SESSION['Suche']);
+            self::setSpecialLinks();
+            if (isset($_SESSION['Wunschliste'])) {
+                self::getWishList()->umgebungsWechsel();
+            }
+            if (isset($_SESSION['Vergleichsliste'])) {
+                self::getCompareList()->umgebungsWechsel();
+            }
+            $_SESSION['currentLanguage'] = clone $lang;
+            unset($_SESSION['currentLanguage']->cURL);
         }
 
         $currencyCode = Request::verifyGPDataString('curr');
@@ -842,6 +681,78 @@ class Frontend extends AbstractSession
             }
         }
         Sprache::getInstance()->autoload();
+    }
+
+    private static function urlFallback(): void
+    {
+        $kArtikel              = Request::verifyGPCDataInt('a');
+        $kKategorie            = Request::verifyGPCDataInt('k');
+        $kSeite                = Request::verifyGPCDataInt('s');
+        $kVariKindArtikel      = Request::verifyGPCDataInt('a2');
+        $kHersteller           = Request::verifyGPCDataInt('h');
+        $kSuchanfrage          = Request::verifyGPCDataInt('l');
+        $kMerkmalWert          = Request::verifyGPCDataInt('m');
+        $kTag                  = Request::verifyGPCDataInt('t');
+        $kSuchspecial          = Request::verifyGPCDataInt('q');
+        $kNews                 = Request::verifyGPCDataInt('n');
+        $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
+        $kNewsKategorie        = Request::verifyGPCDataInt('nk');
+        $kUmfrage              = Request::verifyGPCDataInt('u');
+        $key                   = 'kArtikel';
+        $val                   = 0;
+        \http_response_code(301);
+        if ($kArtikel > 0) {
+            $key = 'kArtikel';
+            $val = $kArtikel;
+        } elseif ($kKategorie > 0) {
+            $key = 'kKategorie';
+            $val = $kKategorie;
+        } elseif ($kSeite > 0) {
+            $key = 'kLink';
+            $val = $kSeite;
+        } elseif ($kVariKindArtikel > 0) {
+            $key = 'kArtikel';
+            $val = $kVariKindArtikel;
+        } elseif ($kHersteller > 0) {
+            $key = 'kHersteller';
+            $val = $kHersteller;
+        } elseif ($kSuchanfrage > 0) {
+            $key = 'kSuchanfrage';
+            $val = $kSuchanfrage;
+        } elseif ($kMerkmalWert > 0) {
+            $key = 'kMerkmalWert';
+            $val = $kMerkmalWert;
+        } elseif ($kTag > 0) {
+            $key = 'kTag';
+            $val = $kTag;
+        } elseif ($kSuchspecial > 0) {
+            $key = 'kSuchspecial';
+            $val = $kSuchspecial;
+        } elseif ($kNews > 0) {
+            $key = 'kNews';
+            $val = $kNews;
+        } elseif ($kNewsMonatsUebersicht > 0) {
+            $key = 'kNewsMonatsUebersicht';
+            $val = $kNewsMonatsUebersicht;
+        } elseif ($kNewsKategorie > 0) {
+            $key = 'kNewsKategorie';
+            $val = $kNewsKategorie;
+        } elseif ($kUmfrage > 0) {
+            $key = 'kUmfrage';
+            $val = $kUmfrage;
+        }
+        $dbRes = Shop::Container()->getDB()->select(
+            'tseo',
+            'cKey',
+            'kUmfrage',
+            $key,
+            $val,
+            'kSprache',
+            Shop::getLanguageID()
+        );
+        $seo   = $dbRes->cSeo ?? '';
+        \header('Location: ' . Shop::getURL() . '/' . $seo, true, 301);
+        exit;
     }
 
     /**

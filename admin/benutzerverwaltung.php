@@ -15,7 +15,7 @@ $oAccount->permission('ACCOUNT_VIEW', true, true);
 $cAction  = 'account_view';
 $messages = [
     'notice' => '',
-    'error'  => '',
+    'error'  => ''
 ];
 
 if (isset($_REQUEST['action']) && Form::validateToken()) {

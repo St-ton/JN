@@ -188,8 +188,8 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
         $paths->setLicencePath($basePath . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
-        $paths->setPortletsPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
-        $paths->setPortletsUrl($baseURL . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setPortletsPath($basePath . \PFAD_PLUGIN_PORTLETS);
+        $paths->setPortletsUrl($baseURL . \PFAD_PLUGIN_PORTLETS);
         $paths->setExportPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
 
         return $paths;
@@ -247,7 +247,7 @@ abstract class AbstractLoader implements LoaderInterface
 
             return $menu;
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $extension->getID(), '*', 'nSort'));
-        $menus = collect($menus);
+        $menus = \collect($menus);
         $this->addMarkdownToAdminMenu($extension, $menus);
 
         $adminMenu = new AdminMenu();

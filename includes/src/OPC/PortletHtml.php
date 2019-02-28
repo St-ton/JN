@@ -71,7 +71,7 @@ trait PortletHtml
 
         if ($plugin !== null) {
             /** @var Plugin $plugin */
-            return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
+            return $plugin->getPaths()->getPortletsPath() . 'templates/';
         }
 
         return \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
@@ -86,7 +86,7 @@ trait PortletHtml
 
         if ($plugin !== null) {
             /** @var Plugin $plugin */
-            return $plugin->getPaths()->getPortletsUrl() . $this->getClass() . '/';
+            return $plugin->getPaths()->getPortletsUrl() . 'templates/';
         }
 
         return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
@@ -120,12 +120,7 @@ trait PortletHtml
      */
     final protected function getHtmlFromTpl(PortletInstance $instance, bool $isPreview): string
     {
-        if ($isPreview) {
-            $smarty = getFrontendSmarty();
-        } else {
-            $smarty = Shop::Smarty();
-        }
-
+        $smarty  = $isPreview ? \getFrontendSmarty() : Shop::Smarty();
         $tplPath = $this->getTemplatePath() . $this->getClass() . '.tpl';
 
         if (\file_exists($tplPath) === false) {
@@ -167,9 +162,10 @@ trait PortletHtml
             $smarty->assign($name, $val);
         }
 
-        return $smarty->assign('portlet', $this)
-                      ->assign('instance', $instance)
-                      ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/config.' . $id . '.tpl');
+        return $smarty
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/config.' . $id . '.tpl');
     }
 
     /**
@@ -202,7 +198,7 @@ trait PortletHtml
         }
 
         $res  = '';
-        $res .= "<ul class='nav nav-tabs'>";
+        $res .= '<ul class="nav nav-tabs">';
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
@@ -214,7 +210,7 @@ trait PortletHtml
         }
 
         $res .= '</ul>';
-        $res .= "<div class='tab-content'>";
+        $res .= '<div class="tab-content">';
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
@@ -256,7 +252,7 @@ trait PortletHtml
                                 });
                             </script>";
                     }
-                    $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
+                    $res .= '<div class="collapse" id="collapseContainer' . $cllpsID .'">';
                 }
 
                 $res .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);

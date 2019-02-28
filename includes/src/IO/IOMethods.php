@@ -496,14 +496,12 @@ class IOMethods
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if (\get_class($childBox) === Wishlist::class) {
-                            $renderer = new DefaultRenderer($smarty, $childBox);
-
+                            $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (\get_class($box) === Wishlist::class) {
-                    $renderer = new DefaultRenderer($smarty, $box);
-
+                    $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
@@ -546,14 +544,12 @@ class IOMethods
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if ($childBox->getType() === Wishlist::class) {
-                            $renderer = new DefaultRenderer($smarty, $childBox);
-
+                            $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (\get_class($box) === Wishlist::class) {
-                    $renderer = new DefaultRenderer($smarty, $box);
-
+                    $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }

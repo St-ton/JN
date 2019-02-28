@@ -13931,6 +13931,10 @@ button.bg-info:focus {
   white-space: nowrap;
 }
 
+.w-maxcon {
+  width: max-content;
+}
+
 .evo-slider {
   padding-bottom: 1rem;
 }
@@ -14052,6 +14056,9 @@ header,
   #evo-main-nav-wrapper #nav-cart-collapse,
 #evo-main-nav-wrapper #nav-account-collapse,
 #evo-main-nav-wrapper #nav-search-collapse {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: fixed;
     top: 60px;
     left: 0px;
@@ -15129,10 +15136,22 @@ aside .badge-light {
 .list-pageinfo .pagination a i.active {
   font-weight: bold;
   text-decoration: underline;
+  text-underline-color: #F8BF00;
 }
 .list-pageinfo .pagination a:hover,
 .list-pageinfo .pagination a i:hover {
   text-decoration: underline;
+}
+
+.pagination-wrapper a,
+.pagination-wrapper a i {
+  text-decoration: none;
+}
+.pagination-wrapper a.active,
+.pagination-wrapper a i.active {
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-color: #F8BF00;
 }
 
 .row.gallery .product-wrapper {
@@ -15412,6 +15431,12 @@ footer .footer-logo {
 .megamenu {
   text-align: center;
 }
+@media (max-width: 767.98px) {
+  .megamenu {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+}
 .megamenu .nav,
 .megamenu .header-shop-nav {
   position: relative;
@@ -15427,7 +15452,7 @@ footer .footer-logo {
   word-break: break-word;
   white-space: initial;
 }
-.megamenu .nav-item.active a {
+.megamenu .nav-item.active > a {
   font-weight: 700;
 }
 .megamenu .dropdown {
@@ -15716,7 +15741,7 @@ table caption {
   border-bottom: 2px solid #F8BF00;
 }
 .nav-wizard .nav-item {
-  padding: 0 0px 0 15px;
+  padding: 0 0 0 15px;
   margin: 0;
   height: 46px;
   line-height: 46px;

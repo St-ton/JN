@@ -163,7 +163,7 @@
                                 {navbarnav class="megamenu show"}
                                     {include file='snippets/categories_mega.tpl'}
                                 {/navbarnav}
-                                <span class="TabNav_Indicator"></span>
+                                <span class="TabNav_Indicator d-none d-md-block"></span>
                             </div>
                         {/col}
                         {col cols=12 md=5 order=6 order-md=2}

@@ -11,6 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 $return = 3;
 $kKunde = 0;
+$res    = '';
 if (auth()) {
     checkFile();
     $return  = 2;
@@ -25,7 +26,9 @@ if (auth()) {
         }
         if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
             $return = 0;
-            foreach ($list as $zip) {
+
+            if (count($list) === 1) {
+                $zip = array_shift($list);
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
                         filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
@@ -33,6 +36,10 @@ if (auth()) {
                 $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
                 $xml = XML_unserialize($d);
                 $res = bearbeite($xml);
+            } else {
+                $errMsg = 'Error : Es kann nur ein Kunde pro Aufruf verarbeitet werden!';
+                Jtllog::writeLog($errMsg, JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
+                syncException($errMsg);
             }
         } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
             Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
@@ -109,17 +116,17 @@ function bearbeite($xml)
         // Kunde wird aktualisiert bzw. seine KdGrp wird geändert
         if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) { // KUNDENAKTUALSIERUNG
             //Angaben vom alten Kunden übernehmen
-            $Kunde->kKunde       = $kInetKunde;
-            $Kunde->cAbgeholt    = 'Y';
-            $Kunde->cAktiv       = 'Y';
-            $Kunde->dVeraendert  = 'now()';
+            $Kunde->kKunde      = $kInetKunde;
+            $Kunde->cAbgeholt   = 'Y';
+            $Kunde->cAktiv      = 'Y';
+            $Kunde->dVeraendert = 'now()';
             
             if ($Kunde->cMail !== $oKundeAlt->cMail) {
                 // E-Mail Adresse geändert - Verwendung prüfen!
                 if (!valid_email($Kunde->cMail) || pruefeEmailblacklist($Kunde->cMail) || Shop::DB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null) {
                     // E-Mail ist invalid, blacklisted bzw. wird bereits im Shop verwendet - die Änderung wird zurückgewiesen.
                     $res_obj['keys']['tkunde attr']['kKunde'] = 0;
-                    $res_obj['keys']['tkunde']   = '';
+                    $res_obj['keys']['tkunde']                = '';
 
                     return $res_obj;
                 }
@@ -198,7 +205,12 @@ function bearbeite($xml)
 
                 unset($xml_obj['kunden']['tkunde'][0]['cPasswort']);
                 $xml_obj['kunden']['tkunde']['0 attr']             = buildAttributes($xml_obj['kunden']['tkunde'][0]);
-                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::DB()->query("SELECT * FROM tkundenattribut WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'], 9);
+                $xml_obj['kunden']['tkunde'][0]['tkundenattribut'] = Shop::DB()->query(
+                    "SELECT *
+                        FROM tkundenattribut
+                        WHERE kKunde = " . (int)$xml_obj['kunden']['tkunde']['0 attr']['kKunde'],
+                    9
+                );
                 $kundenattribute_anz                               = count($xml_obj['kunden']['tkunde'][0]['tkundenattribut']);
                 for ($o = 0; $o < $kundenattribute_anz; $o++) {
                     $xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o . ' attr'] = buildAttributes($xml_obj['kunden']['tkunde'][0]['tkundenattribut'][$o]);
@@ -274,9 +286,17 @@ function bearbeite($xml)
                         $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
                         $kInetLieferadresse       = DBinsert('tlieferadresse', $Lieferadresse);
                         if ($kInetLieferadresse > 0) {
-                            $res_obj['keys']['tkunde']['tadresse'][$nr . ' attr']['kAdresse']     = $xml['tkunde']['tadresse'][$i . ' attr']['kAdresse'];
-                            $res_obj['keys']['tkunde']['tadresse'][$nr . ' attr']['kInetAdresse'] = $kInetLieferadresse;
-                            $res_obj['keys']['tkunde']['tadresse'][$nr]                           = '';
+                            if (!is_array($res_obj['keys']['tkunde'])) {
+                                $res_obj['keys']['tkunde'] = [
+                                    'tadresse' => []
+                                ];
+                            }
+                            $res_obj['keys']['tkunde']['tadresse'][$nr . ' attr'] = [
+                                'kAdresse'     => $xml['tkunde']['tadresse'][$i . ' attr']['kAdresse'],
+                                'kInetAdresse' => $kInetLieferadresse,
+                            ];
+                            $res_obj['keys']['tkunde']['tadresse'][$nr]           = '';
+
                             $nr++;
                         }
                     }
@@ -316,9 +336,13 @@ function bearbeite($xml)
                     $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
                     $kInetLieferadresse       = DBinsert('tlieferadresse', $Lieferadresse);
                     if ($kInetLieferadresse > 0) {
-                        $res_obj['keys']['tkunde']['tadresse attr']['kAdresse']     = $xml['tkunde']['tadresse attr']['kAdresse'];
-                        $res_obj['keys']['tkunde']['tadresse attr']['kInetAdresse'] = $kInetLieferadresse;
-                        $res_obj['keys']['tkunde']['tadresse']                      = '';
+                        $res_obj['keys']['tkunde'] = [
+                            'tadresse attr' => [
+                                'kAdresse'     => $xml['tkunde']['tadresse attr']['kAdresse'],
+                                'kInetAdresse' => $kInetLieferadresse,
+                            ],
+                            'tadresse' => '',
+                        ];
                     }
                 }
             }

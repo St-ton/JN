@@ -73,8 +73,8 @@
             var $buttonIncrement = $inputGroup.find(".btn-increment")
             var $input = $inputGroup.find("input")
 
-            var min = parseFloat($original.prop("min")) || 0
-            var max = isNaN($original.prop("max")) || $original.prop("max") === "" ? Infinity : parseFloat($original.prop("max"))
+            /*var min = parseFloat($original.prop("min")) || 0
+            var max = isNaN($original.prop("max")) || $original.prop("max") === "" ? Infinity : parseFloat($original.prop("max"))*/
             var step = parseFloat($original.prop("step")) || 1
             var stepMax = parseInt($original.attr("data-step-max")) || 0
             var decimals = parseInt($original.attr("data-decimals")) || 0
@@ -144,6 +144,8 @@
                     value = 0
                 } else {
                     newValue = parseFloat(newValue)
+                    var min = parseFloat($original.prop("min")) || 0
+                    var max = isNaN($original.prop("max")) || $original.prop("max") === "" ? Infinity : parseFloat($original.prop("max"))
                     newValue = Math.min(Math.max(newValue, min), max)
                     newValue = Math.round(newValue * Math.pow(10, decimals)) / Math.pow(10, decimals)
                     $original[0].value = newValue

@@ -391,11 +391,13 @@ ul.partlist-items {
     width: 100%;
   }
 }
+#cfg-sticky-sidebar{
+  z-index: $zindex-sticky - 1;
+  top: ($nav-link-height + $highlight-border-size + $navbar-padding-y);
+}
 
 #product-configuration-sidebar {
-  z-index: $zindex-sticky - 1;
   border: 2px solid $primary;
-  top: ($nav-link-height + $highlight-border-size + $navbar-padding-y);
   @include border-radius($dropdown-border-radius);
   .cfg-toggle{
     &::before {
@@ -412,7 +414,7 @@ ul.partlist-items {
       height: initial;
       margin-left: -16px;
       padding: 0 14px;
-      top: -22px;
+      top: -20px;
       position: absolute;
     }
     &[aria-expanded=true]:before {
@@ -421,25 +423,14 @@ ul.partlist-items {
   }
 }
 
-.cfg-sticky-price {
-  background: $card-bg;
-  z-index: ($zindex-sticky - 1);
-  @include box-shadow(0 8px 10px -5px rgba(0, 0, 0, 0.15));
-  @include media-breakpoint-down(md) {
-    top: ($nav-link-height + $highlight-border-size + $navbar-padding-y);
-  }
-}
-
 .btn[data-toggle="collapse"][aria-expanded=true] {
   i.fa-chevron-down {
     transform: rotate(180deg);
   }
 }
-@include media-breakpoint-up(md) {
-  #product-configurator {
-    max-height: 35rem;
-    overflow-y: auto;
-  }
+
+#cfg-container .btn[data-toggle="collapse"][aria-expanded=false] .fa-minus:before {
+  content: "\f067";
 }
 
 ::-webkit-scrollbar {
@@ -888,7 +879,7 @@ ul.partlist-items {
         min-height: 100%;
         width: 110%;
         margin-left: -5%;
-        padding: $grid-gutter-width $grid-gutter-width 0;
+        padding: $grid-gutter-width;
         transition: box-shadow 0.3s;
         background: #fff;
         box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);

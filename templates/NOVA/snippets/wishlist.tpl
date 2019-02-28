@@ -185,6 +185,7 @@
                                             {/if}
                                             {if $isCurrenctCustomer === true}
                                                 {button
+                                                    type="submit"
                                                     name="remove" value=$wlPosition->kWunschlistePos
                                                     title="{lang key='wishlistremoveItem' section='login'}"
                                                 }

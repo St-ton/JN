@@ -49,7 +49,7 @@
             {/block}
         </strong>
         {if $tplscope === 'detail'}
-            <div class="price-note">
+            <div class="price-note mb-3">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
                     <span class="price_label per_unit"> {lang key='vpePer'} 1 {$Artikel->cEinheit}</span>
                 {/if}

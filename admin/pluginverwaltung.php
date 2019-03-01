@@ -312,20 +312,20 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 foreach (Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
-                    $cISO                  = mb_convert_case($lang->cISO, MB_CASE_UPPER);
-                    $idx                   = $kPluginSprachvariable . '_' . $cISO;
+                    $iso                   = mb_convert_case($lang->cISO, MB_CASE_UPPER);
+                    $idx                   = $kPluginSprachvariable . '_' . $iso;
                     if (!isset($_POST[$idx])) {
                         continue;
                     }
                     $db->delete(
                         'tpluginsprachvariablecustomsprache',
                         ['kPlugin', 'cSprachvariable', 'cISO'],
-                        [$kPlugin, $cSprachvariable, $cISO]
+                        [$kPlugin, $cSprachvariable, $iso]
                     );
                     $customLang                        = new stdClass();
                     $customLang->kPlugin               = $kPlugin;
                     $customLang->cSprachvariable       = $cSprachvariable;
-                    $customLang->cISO                  = $cISO;
+                    $customLang->cISO                  = $iso;
                     $customLang->kPluginSprachvariable = $kPluginSprachvariable;
                     $customLang->cName                 = $_POST[$idx];
                     $match                             = first(

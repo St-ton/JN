@@ -200,7 +200,6 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                         case InstallCode::WRONG_PARAM:
                             $errorMsg = __('errorAtLeastOnePlugin');
                             break;
-                        // @todo: 3 is never returned
                         case InstallCode::SQL_ERROR:
                             $errorMsg = __('errorPluginDeleteSQL');
                             break;
@@ -299,14 +298,14 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 'SELECT * FROM tsprache',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $original = $db->query(
+            $original  = $db->query(
                 'SELECT * FROM shop4_normal.tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
                     WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $original = group($original, function ($e) {
+            $original  = group($original, function ($e) {
                 return (int)$e->kPluginSprachvariable;
             });
             foreach ($languages as $lang) {
@@ -329,9 +328,14 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                     $customLang->cISO                  = $cISO;
                     $customLang->kPluginSprachvariable = $kPluginSprachvariable;
                     $customLang->cName                 = $_POST[$idx];
-                    $match = first(select($original[$kPluginSprachvariable], function ($e) use ($customLang) {
-                        return $e->cISO === $customLang->cISO;
-                    }));
+                    $match                             = first(
+                        select(
+                            $original[$kPluginSprachvariable],
+                            function ($e) use ($customLang) {
+                                return $e->cISO === $customLang->cISO;
+                            }
+                        )
+                    );
                     if (isset($match->cName) && $match->cName === $customLang->cName) {
                         continue;
                     }
@@ -399,7 +403,7 @@ if ($reload === true) {
     exit();
 }
 
-$hasAuth = !!$db->query("SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL", 3);
+$hasAuth = !!$db->query('SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL', 3);
 
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');

@@ -481,8 +481,8 @@ final class Installer
             $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
             $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
-            $customLangVars = $this->db->queryPrepared('
-                SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
+            $customLangVars = $this->db->queryPrepared(
+                'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
                     tpluginsprachvariablecustomsprache.kPluginSprachvariable AS oldID, tpluginsprachvariable.cName
                     FROM tpluginsprachvariablecustomsprache
                     JOIN tpluginsprachvariable

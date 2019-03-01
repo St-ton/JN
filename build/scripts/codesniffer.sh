@@ -3,7 +3,7 @@
 export REPO_DIR=$1
 
 echo "Execute composer install"
-composer install -a -o -q -d ${REPO_DIR}
+composer install -o -q -d ${REPO_DIR}
 echo ""
 
 if [[ -f ${REPO_DIR}/includes/vendor/bin/phpcs ]]; then

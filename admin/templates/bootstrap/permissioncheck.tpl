@@ -1,19 +1,18 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="permissioncheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#permissioncheck# cBeschreibung=#permissioncheckDesc# cDokuURL=#permissioncheckURL#}
-
+{config_load file="$lang.conf" section='permissioncheck'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('permissioncheck') cBeschreibung=__('permissioncheckDesc') cDokuURL=__('permissioncheckURL')}
 <div id="content" class="container-fluid">
     <div id="pageCheck">
         {if isset($cDirAssoc_arr) && $cDirAssoc_arr|@count > 0}
             <div id="contentCheck">
                 <div class="alert alert-info">
-                    <strong>Anzahl Verzeichnisse:</strong> {$oStat->nCount}<br />
-                    <strong>Anzahl nicht beschreibbarer Verzeichnisse:</strong> {$oStat->nCountInValid}
+                    <strong>{__('dirCount')}</strong> {$oStat->nCount}<br />
+                    <strong>{__('dirCountNotWriteable')}</strong> {$oStat->nCountInValid}
                 </div>
                 {if $oStat->nCountInValid > 0}
                     <p>
-                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-"></i> Alle anzeigen</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-default viewModified" value="Modifizierte anzeigen"><i class="fa fa-warning"></i> Modifizierte anzeigen</button>
+                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="{__('showAll')}"><i class="fa fa-"></i> {__('showAll')}</button>
+                        <button id="viewModified" name="viewModified" type="button" class="btn btn-default viewModified" value="{__('showModified')}"><i class="fa fa-warning"></i> {__('showModified')}</button>
                     </p>
                     <br />
                 {/if}
@@ -33,7 +32,7 @@
 <script>
     {literal}
     $(document).ready(function () {
-        $('#viewAll').click(function () {
+        $('#viewAll').on('click', function () {
             $('#viewAll').hide();
             $('#viewModified').show().removeClass('hide');
             $('.unmodified').show();
@@ -41,7 +40,7 @@
             colorLines();
         });
 
-        $('#viewModified').click(function () {
+        $('#viewModified').on('click', function () {
             $('#viewAll').show().removeClass('hide');
             $('#viewModified').hide();
             $('.unmodified').hide();

@@ -2,24 +2,29 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- * @global AdminAccount $oAccount
- * @global JTLSmarty $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
  */
+
+use JTL\Helpers\Form;
+use JTL\Update\DBMigrationHelper;
+use JTL\Shop;
+use JTL\Helpers\Text;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
-$cHinweis          = '';
-$cFehler           = '';
-$cDBError_arr      = [];
-$cDBFileStruct_arr = getDBFileStruct();
+$errorMsg          = '';
+$dbErrors          = [];
+$dbFileStruct      = getDBFileStruct();
 $maintenanceResult = null;
 $engineUpdate      = null;
 $fulltextIndizes   = null;
 
-if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 'script' && FormHelper::validateToken()) {
+if (isset($_POST['update']) && Text::filterXSS($_POST['update']) === 'script' && Form::validateToken()) {
     $scriptName = 'innodb_and_utf8_update_'
         . str_replace('.', '_', Shop::Container()->getDB()->getConfig()['host']) . '_'
         . Shop::Container()->getDB()->getConfig()['database'] . '_'
@@ -27,47 +32,50 @@ if (isset($_POST['update']) && StringHandler::filterXSS($_POST['update']) === 's
 
     header('Content-Type: text/plain');
     header('Content-Disposition: attachment; filename="' . $scriptName . '"');
-    echo doEngineUpdateScript($scriptName, array_keys($cDBFileStruct_arr));
+    echo doEngineUpdateScript($scriptName, array_keys($dbFileStruct));
 
     exit;
 }
 
-$cDBStruct_arr = getDBStruct(true);
-$Einstellungen = Shop::getSettings([
+$dbStruct = getDBStruct(true, true);
+$conf     = Shop::getSettings([
     CONF_GLOBAL,
-    CONF_ARTIKELUEBERSICHT,
+    CONF_ARTIKELUEBERSICHT
 ]);
 
 if (!empty($_POST['action']) && !empty($_POST['check'])) {
     $maintenanceResult = doDBMaintenance($_POST['action'], $_POST['check']);
 }
 
-if (empty($cDBFileStruct_arr)) {
-    $cFehler = 'Fehler beim Lesen der Struktur-Datei.';
+if (empty($dbFileStruct)) {
+    $errorMsg = __('errorReadStructureFile');
 }
 
-if (strlen($cFehler) === 0) {
-    $cDBError_arr = compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr);
+if ($errorMsg === '') {
+    $dbErrors = compareDBStruct($dbFileStruct, $dbStruct);
 }
 
-if (count($cDBError_arr) > 0) {
-    $cEngineError = array_filter($cDBError_arr, function ($item) {
-        return strpos($item, 'keine InnoDB-Tabelle') !== false;
+if (count($dbErrors) > 0) {
+    $engineErrors = array_filter($dbErrors, function ($item) {
+        return mb_strpos($item, __('errorNoInnoTable')) !== false
+            || mb_strpos($item, __('errorWrongCollation')) !== false
+            || mb_strpos($item, __('errorDatatTypeInRow')) !== false;
     });
-    if (count($cEngineError) > 5) {
-        $engineUpdate    = determineEngineUpdate($cDBStruct_arr);
+    if (count($engineErrors) > 5) {
+        $engineUpdate    = determineEngineUpdate($dbStruct);
         $fulltextIndizes = DBMigrationHelper::getFulltextIndizes();
     }
 }
 
-$smarty->assign('cFehler', $cFehler)
-       ->assign('cDBFileStruct_arr', $cDBFileStruct_arr)
-       ->assign('cDBStruct_arr', $cDBStruct_arr)
-       ->assign('cDBError_arr', $cDBError_arr)
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorDBCheck');
+
+$smarty->assign('cDBFileStruct_arr', $dbFileStruct)
+       ->assign('cDBStruct_arr', $dbStruct)
+       ->assign('cDBError_arr', $dbErrors)
        ->assign('maintenanceResult', $maintenanceResult)
        ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
-       ->assign('tab', isset($_REQUEST['tab']) ? StringHandler::filterXSS($_REQUEST['tab']) : '')
-       ->assign('Einstellungen', $Einstellungen)
+       ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
+       ->assign('Einstellungen', $conf)
        ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
        ->assign('FulltextIndizes', $fulltextIndizes)
        ->assign('engineUpdate', $engineUpdate)

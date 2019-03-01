@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class NavigationURLs
- * @package Filter
+ * @package JTL\Filter
  */
 class NavigationURLs implements NavigationURLsInterface
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array

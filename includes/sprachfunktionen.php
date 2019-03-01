@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\Cart\Warenkorb;
+
 /**
  * @param Warenkorb $warenkorb
  * @return string
@@ -47,7 +52,10 @@ function lang_warenkorb_warenkorbLabel(Warenkorb $warenkorb)
     return Shop::Lang()->get('basket', 'checkout') .
         ' (' .
         Preise::getLocalizedPriceString(
-            $warenkorb->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], !Session::CustomerGroup()->isMerchant())
+            $warenkorb->gibGesamtsummeWarenExt(
+                [C_WARENKORBPOS_TYP_ARTIKEL],
+                !\JTL\Session\Frontend::getCustomerGroup()->isMerchant()
+            )
         ) . ')';
 }
 
@@ -155,7 +163,7 @@ function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, int $kKonfi
     }
     $cName = $Artikel->cName;
     if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
-        $cName = (new Konfigitem($kKonfigitem))->getName();
+        $cName = (new \JTL\Extensions\Konfigitem($kKonfigitem))->getName();
     }
 
     return Shop::Lang()->get('product') . ' &quot;' . $cName . '&quot; ' .

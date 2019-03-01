@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Row
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Row extends \OPC\Portlet
+class Row extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -129,7 +130,6 @@ class Row extends \OPC\Portlet
                     'lg' => $sumLG === 0 ? false : ($sumLG % 12 === 0),
                 ],
             ];
-
         }
 
         return $colLayouts;

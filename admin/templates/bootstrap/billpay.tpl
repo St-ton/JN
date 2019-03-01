@@ -1,31 +1,24 @@
-{**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- *}
-
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='einstellungen'}
-{config_load file="$lang.conf" section="billpay"}
+{config_load file="$lang.conf" section='billpay'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#billpay# cBeschreibung=#billpayDesc# cDokuURL=#billpayURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('billpay') cBeschreibung=__('billpayDesc') cDokuURL=__('billpayURL')}
 <div id="content">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#overview">{#billpayOverview#}</a>
+            <a data-toggle="tab" role="tab" href="#overview">{__('overview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'log'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#log">{#billpayLog#}</a>
+            <a data-toggle="tab" role="tab" href="#log">{__('billpayLog')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">{#billpayConfig#}</a>
+            <a data-toggle="tab" role="tab" href="#config">{__('settings')}</a>
         </li>
     </ul>
     <div class="container-fluid2">
         <div class="tab-content">
             <div id="overview" class="tab-pane fade{if isset($cTab) && $cTab === 'uebersicht'} active in{/if}">
-                {if isset($cFehlerBillpay) && $cFehlerBillpay|strlen > 0}
-                    <div class="alert alert-danger">{$cFehlerBillpay}</div>
-                {else}
+                {if !$alertError}
                     <div id="settings">
                         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                             {foreach $oItem_arr as $i => $oItem}
@@ -50,35 +43,35 @@
             </div>
             <div id="log" class="tab-pane fade{if isset($cTab) && $cTab === 'log'} active in{/if}">
                 {if !isset($oLog_arr) || $oLog_arr|@count === 0}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {else}
                     {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLog cAnchor='log'}
                     <div class="container-fluid2 table-responsive">
                         <table class="list table">
                             <thead>
                             <tr>
-                                <th class="text-left">Meldung</th>
-                                <th class="text-center">Typ</th>
-                                <th class="text-center">Datum</th>
+                                <th class="text-left">{__('notice')}</th>
+                                <th class="text-center">{__('type')}</th>
+                                <th class="text-center">{__('date')}</th>
                                 <th></th>
                             </tr>
                             </thead>
                             <tbody>
-                            {foreach from=$oLog_arr item="oLog"}
+                            {foreach $oLog_arr as $oLog}
                                 <tr class="text-vcenter">
                                     <td>{$oLog->cLog}</td>
                                     <td class="text-center">
                                         <h4 class="label-wrap">
                                         {if $oLog->nLevel == 1}
-                                            <span class="label label-danger logError">{#logError#}</span>
+                                            <span class="label label-danger logError">{__('logError')}</span>
                                         {elseif $oLog->nLevel == 2}
-                                            <span class="label label-info logNotice">{#logNotice#}</span>
+                                            <span class="label label-info logNotice">{__('logNotice')}</span>
                                         {else}
-                                            <span class="label label-default logDebug">{#logDebug#}</span>
+                                            <span class="label label-default logDebug">{__('logDebug')}</span>
                                         {/if}
                                         </h4>
                                     </td>
-                                    <td class="text-center">{$oLog->dDatum|date_format:"%d.%m.%Y - %H:%M:%S"}</td>
+                                    <td class="text-center">{$oLog->dDatum|date_format:'%d.%m.%Y - %H:%M:%S'}</td>
                                     <td class="text-center" style="width:24px">
                                         {if $oLog->cLogData|strlen > 0}
                                             <a href="#" onclick="$('#data{$oLog->kZahlunglog}').toggle();return false;" class="btn btn-default btn-sm"><i class="fa fa-bars"></i></a>
@@ -86,16 +79,16 @@
                                     </td>
                                 </tr>
                                 {if $oLog->cLogData|strlen > 0}
-                                    {assign var="oKunde" value=$oLog->cLogData|unserialize}
+                                    {assign var=oKunde value=$oLog->cLogData|unserialize}
                                     <tr class="hidden" id="data{$oLog->kZahlunglog}">
                                         <td colspan="4">
                                             {if $oKunde->kKunde > 0}
-                                                <p><strong>Kdn:</strong> {$oKunde->kKunde}</p>
+                                                <p><strong>{__('customerNumberShort')}:</strong> {$oKunde->kKunde}</p>
                                             {/if}
-                                            <p><strong>Name:</strong> {$oKunde->cVorname} {$oKunde->cNachname}</p>
-                                            <p><strong>Stra&szlig;e:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
-                                            <p><strong>Ort:</strong> {$oKunde->cPLZ} {$oKunde->cOrt}</p>
-                                            <p><strong>E-Mail:</strong> {$oKunde->cMail}</p>
+                                            <p><strong>{__('name')}:</strong> {$oKunde->cVorname} {$oKunde->cNachname}</p>
+                                            <p><strong>{__('street')}:</strong> {$oKunde->cStrasse} {$oKunde->cHausnummer}</p>
+                                            <p><strong>{__('city')}:</strong> {$oKunde->cPLZ} {$oKunde->cOrt}</p>
+                                            <p><strong>{__('email')}:</strong> {$oKunde->cMail}</p>
                                         </td>
                                     </tr>
                                 {/if}
@@ -107,7 +100,7 @@
             </div>
             <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'config'} active in{/if}">
                 {if isset($saved) && $saved}
-                    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {#settingsSaved#}</div>
+                    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {__('settingsSaved')}</div>
                 {/if}
                 {include file='tpl_inc/einstellungen_bearbeiten.tpl' action='billpay.php?tab=config'}
             </div>

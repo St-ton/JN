@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 /**
  * Interface RuleInterface
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 interface RuleInterface
 {
@@ -18,5 +18,5 @@ interface RuleInterface
      * @param mixed $value
      * @return RuleResult
      */
-    public function validate($value);
+    public function validate($value): RuleResult;
 }

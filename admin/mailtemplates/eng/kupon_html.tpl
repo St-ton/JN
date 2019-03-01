@@ -4,7 +4,7 @@ Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
 <br>
 we are happy to tell you that you may use the following coupon ({$Kupon->AngezeigterName}) in our online shop:<br>
 <br>
-{if $Kupon->cKuponTyp=="standard"}
+{if $Kupon->cKuponTyp==$couponTypes.standard}
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 	<tr>
 		<td class="column mobile-left" width="25%" align="right" valign="top">
@@ -80,7 +80,7 @@ we are happy to tell you that you may use the following coupon ({$Kupon->Angezei
 	</tr>
 </table><br>
 {/if}
-{if $Kupon->cKuponTyp=="versandkupon"}
+{if $Kupon->cKuponTyp==$couponTypes.shipping}
 	You will get free shipping with this coupon!<br>
     This coupon is valid for the following shipping countries: {$Kupon->cLieferlaender|upper}<br>
 	<br>
@@ -110,7 +110,7 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
 <br>
 {if count($Kupon->Artikel)>0}This coupon can be used for the following products:<br>
     {foreach name=art from=$Kupon->Artikel item=Artikel}
-        <a href="{$Artikel->cURL}">{$Artikel->cName}</a><br>
+        <a href="{$Artikel->cURLFull}">{$Artikel->cName}</a><br>
     {/foreach}
 {/if}<br>
 <br>

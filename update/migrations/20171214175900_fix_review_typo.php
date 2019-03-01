@@ -1,6 +1,9 @@
 <?php
 /** fix typo in lang var */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *

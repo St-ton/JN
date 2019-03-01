@@ -1,11 +1,17 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class Firma
+ * @package JTL
  */
 class Firma
 {
@@ -115,24 +121,22 @@ class Firma
     }
 
     /**
-     * Setzt Firma mit Daten aus der DB mit spezifiziertem Primary Key
-     *
      * @return $this
      */
     public function loadFromDB(): self
     {
-        $obj = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', \DB\ReturnType::SINGLE_OBJECT);
-        foreach (get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
+        $obj = Shop::Container()->getDB()->query('SELECT * FROM tfirma LIMIT 1', ReturnType::SINGLE_OBJECT);
+        if ($obj !== false) {
+            foreach (\get_object_vars($obj) as $k => $v) {
+                $this->$k = $v;
+            }
         }
-        executeHook(HOOK_FIRMA_CLASS_LOADFROMDB);
+        \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this]);
 
         return $this;
     }
 
     /**
-     * Updatet Daten in der DB. Betroffen ist der Datensatz mit gleichem Primary Key
-     *
      * @return int
      */
     public function updateInDB(): int

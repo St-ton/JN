@@ -3,6 +3,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Sitemap\Config\DefaultConfig;
+use JTL\Sitemap\Export;
+use JTL\Sitemap\ItemRenderers\DefaultRenderer;
+use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sitemapexport.php';
 
@@ -10,7 +19,17 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'sitemapexport.php';
 
 $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 
-generateSitemapXML();
+$db           = Shop::Container()->getDB();
+$config       = Shop::getSettings([CONF_GLOBAL, CONF_SITEMAP]);
+$exportConfig = new DefaultConfig($db, $config, Shop::getURL() . '/', Shop::getImageBaseURL());
+$exporter     = new Export(
+    $db,
+    Shop::Container()->getLogService(),
+    new DefaultRenderer(),
+    new DefaultSchemaRenderer(),
+    $config
+);
+$exporter->generate([Kundengruppe::getDefaultGroupID()], Sprache::getAllLanguages(), $exportConfig->getFactories());
 
 if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     header('Location: sitemapexport.php?update=1');

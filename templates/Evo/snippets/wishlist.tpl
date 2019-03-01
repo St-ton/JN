@@ -8,19 +8,12 @@
 
 {block name='content'}
     <h1>{$CWunschliste->cName}{if $isCurrenctCustomer === false && isset($CWunschliste->oKunde->cVorname)} {lang key='from' section='product rating' alt_section='login,productDetails,productOverview,global,'} {$CWunschliste->oKunde->cVorname}{/if}</h1>
-    
-    {if !empty($cHinweis)}
-        <div class="alert alert-info">{$cHinweis}</div>
-    {/if}
-    {if !empty($cFehler)}
-        <div class="alert alert-danger">{$cFehler}</div>
-    {/if}
+
+    {include file='snippets/extension.tpl'}
+
     {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
         {*{include file='account/wishlist_email_form.tpl'}*}
         <h1>{lang key='wishlistViaEmail' section='login'}</h1>
-        {if !empty($cHinweis)}
-            <p class="alert alert-info">{$cHinweis}</p>
-        {/if}
         <div class="row">
             <div class="col-xs-12">
                 {block name='wishlist-email-form'}
@@ -140,7 +133,7 @@
                                     <td></td>
                                     <td class="text-right">
                                         <div class="btn-group-vertical">
-                                            <button href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
+                                            <button type="submit" href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
                                                class="btn btn-default"
                                                title="{lang key='wishlistremoveItem' section='login'}">
                                                 <span class="fa fa-trash-o"></span>

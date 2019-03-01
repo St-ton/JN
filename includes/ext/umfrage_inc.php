@@ -5,7 +5,7 @@
  */
 
 /**
- * @param \Survey\SurveyQuestion[] $oUmfrageFrage_arr
+ * @param \JTL\Survey\SurveyQuestion[] $oUmfrageFrage_arr
  * @return int
  * @deprecated since 5.0.0
  */
@@ -15,7 +15,7 @@ function bestimmeAnzahlSeiten($oUmfrageFrage_arr)
 }
 
 /**
- * @param \Survey\SurveyQuestion[] $oUmfrageFrage_arr
+ * @param \JTL\Survey\SurveyQuestion[] $oUmfrageFrage_arr
  * @return array
  * @deprecated since 5.0.0
  */
@@ -132,11 +132,11 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
 }
 
 /**
- * @param int            $kUmfrage
- * @param \Survey\Survey $oUmfrage
- * @param array          $oUmfrageFrageTMP_arr
- * @param array          $oNavi_arr
- * @param int            $nAktuelleSeite
+ * @param int                $kUmfrage
+ * @param \JTL\Survey\Survey $oUmfrage
+ * @param array              $oUmfrageFrageTMP_arr
+ * @param array              $oNavi_arr
+ * @param int                $nAktuelleSeite
  * @deprecated since 5.0.0
  */
 function bearbeiteUmfrageDurchfuehrung(int $kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_arr, &$oNavi_arr, &$nAktuelleSeite)

@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * If the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded
  * into to the table $target or call a function for each row to be imported. Call this function before you read the
@@ -23,7 +28,7 @@
  */
 function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
-    if (FormHelper::validateToken() && RequestHelper::verifyGPDataString('importcsv') === $importerId) {
+    if (Form::validateToken() && Request::verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) &&
             (
                 $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||
@@ -41,18 +46,17 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
             }
 
             if (count($fields) === 0) {
-                $row    = fgetcsv($fs, 0, $cDelim);
-                $fields = $row;
+                $fields = fgetcsv($fs, 0, $cDelim);
             }
 
             if (isset($_REQUEST['importType'])) {
-                $importType = RequestHelper::verifyGPCDataInt('importType');
+                $importType = Request::verifyGPCDataInt('importType');
             }
 
             if ($importType === 0 && is_string($target)) {
-                Shop::Container()->getDB()->query("TRUNCATE $target", \DB\ReturnType::AFFECTED_ROWS);
+                Shop::Container()->getDB()->query('TRUNCATE ' . $target, ReturnType::AFFECTED_ROWS);
             }
-
+            $importDeleteDone = false;
             while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
                 $obj = new stdClass();
 
@@ -62,7 +66,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
                 }
 
                 if (is_callable($target)) {
-                    $res = $target($obj, $importType);
+                    $res = $target($obj, $importDeleteDone, $importType);
 
                     if ($res === false) {
                         ++$nErrors;

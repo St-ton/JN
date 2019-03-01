@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Trait PortletAnimations
- * @package OPC
+ * @package JTL\OPC
  */
 trait PortletAnimations
 {
@@ -19,7 +19,7 @@ trait PortletAnimations
     {
         return [
             'animation-style'    => [
-                'label'      => 'animation-style',
+                'label'      => __('Animation style'),
                 'type'       => 'select',
                 'options'    => [
                     'optgroup1' => [
@@ -111,27 +111,27 @@ trait PortletAnimations
                 'dspl_width' => 50,
             ],
             'data-wow-duration'  => [
-                'label'       => 'duration',
-                'help'        => 'Change the animation duration.',
+                'label'       => __('Duration'),
+                'help'        => __('Change the animation duration (e.g. 2s)'),
                 'placeholder' => '1s',
                 'dspl_width'  => 50,
             ],
             'data-wow-delay'     => [
-                'label'      => 'Delay',
-                'help'       => 'Delay before the animation starts.',
+                'label'      => __('Delay'),
+                'help'       => __('Delay before the animation starts'),
                 'dspl_width' => 50,
             ],
             'data-wow-offset'    => [
-                'label'       => 'Offset',
+                'label'       => __('Offset (px)'),
                 'type'        => 'number',
                 'placeholder' => 200,
-                'help'        => 'Distance to start the animation.',
+                'help'        => __('Distance to start the animation (related to the browser bottom)'),
                 'dspl_width'  => 50,
             ],
             'data-wow-Iteration' => [
-                'label'      => 'iteration',
+                'label'      => __('Iteration'),
                 'type'       => 'number',
-                'help'       => 'The animation number times is repeated.',
+                'help'       => __('Number of times the animation is repeated'),
                 'dspl_width' => 50,
             ]
         ];

@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#cache# cBeschreibung=#objectcacheDesc# cDokuURL=#cacheURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('cache') cBeschreibung=__('objectcacheDesc') cDokuURL=__('cacheURL')}
 <script type="text/javascript">
     var disabledMethods      = {$non_available_methods},
         disFunctionalMethods = {$disfunctional_methods};
@@ -11,17 +11,17 @@
                 if (disabledMethods.indexOf(elem.val()) >= 0) {ldelim}
                     elem.attr('disabled', 'disabled');
                 {rdelim} else if (disFunctionalMethods.indexOf(elem.val()) >= 0) {ldelim}
-                    elem.text(elem.text() + ' {#configurationError#}');
+                    elem.text(elem.text() + ' {__('configurationError')}');
                 {rdelim}
             {rdelim});
         {rdelim}
-        $('#massaction-main-switch').click(function () {ldelim}
+        $('#massaction-main-switch').on('click', function () {ldelim}
             var checkboxes = $('.massaction-checkbox'),
                 checked = $(this).prop('checked');
             checkboxes.prop('checked', checked);
         {rdelim});
 
-        $('#btn_toggle_cache').click(function () {ldelim}
+        $('#btn_toggle_cache').on('click', function () {ldelim}
             $("#row_toggle_cache").slideToggle('slow', 'linear');
         {rdelim});
     {rdelim});
@@ -29,16 +29,16 @@
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#massaction">{#management#}</a>
+            <a data-toggle="tab" role="tab" href="#massaction">{__('management')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'stats'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#stats">{#stats#}</a>
+            <a data-toggle="tab" role="tab" href="#stats">{__('stats')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'benchmark'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#benchmark">{#benchmark#}</a>
+            <a data-toggle="tab" role="tab" href="#benchmark">{__('benchmark')}</a>
         </li>
         <li class="tab{if isset($tab) && $tab === 'settings'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#settings">{#settings#}</a>
+            <a data-toggle="tab" role="tab" href="#settings">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -47,7 +47,7 @@
                 {$jtl_token}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#management#}</h3>
+                        <h3 class="panel-title">{__('management')}</h3>
                     </div>
                     <div class="table-responsive">
                     <table id="cache-type-status" class="table list">
@@ -56,33 +56,33 @@
                             <th class="tleft">
                                 <input type="checkbox" class="massaction-checkbox" id="massaction-main-switch" />
                             </th>
-                            <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{#type#}</label></th>
-                            <th class="tleft">{#description#}</th>
-                            <th class="tleft">{#entries#}</th>
-                            <th class="tleft">{#status#}</th>
+                            <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
+                            <th class="tleft">{__('description')}</th>
+                            <th class="tleft">{__('entries')}</th>
+                            <th class="tleft">{__('status')}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=cgfe from=$caching_groups item=cg}
-                            <tr class="{if ($smarty.foreach.cgfe.index % 2) === 0}even{else}odd{/if}">
+                        {foreach $caching_groups as $cg}
+                            <tr class="{if ($cg@index % 2) === 0}even{else}odd{/if}">
                                 <td>
-                                    <input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$smarty.foreach.cgfe.index}">
+                                    <input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$cg@index}">
                                 </td>
                                 <td>
                                     {assign var=nicename value=$cg.nicename}
-                                    <label for="group-cb-{$smarty.foreach.cgfe.index}">{$smarty.config.$nicename}</label>
+                                    <label for="group-cb-{$cg@index}">{__($nicename)}</label>
                                 </td>
                                 <td>
                                     {assign var=description value=$cg.description}
-                                    {$smarty.config.$description}
+                                    {__($description)}
                                 </td>
                                 <td>{$cg.key_count}</td>
                                 <td>
                                     <h4 class="label-wrap">
                                         {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}
-                                            <span class="label label-danger inactive">{#inactive#}</span>
+                                            <span class="label label-danger inactive">{__('inactive')}</span>
                                         {else}
-                                            <span class="label label-success active">{#active#}</span>
+                                            <span class="label label-success active">{__('active')}</span>
                                         {/if}
                                     </h4>
                                 </td>
@@ -95,17 +95,17 @@
                         <div class="input-container" style="max-width: 50%;">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="cache-action">Aktion</label>
+                                    <label for="cache-action">{__('action')}</label>
                                 </span>
                                 <span class="input-group-wrap">
                                     <select class="form-control" name="cache-action" id="cache-action">
-                                        <option name="flush" value="flush">{#empty#}</option>
-                                        <option name="deaktivieren" value="deactivate">{#deactivate#}</option>
-                                        <option name="aktivieren" value="activate">{#activate#}</option>
+                                        <option name="flush" value="flush">{__('empty')}</option>
+                                        <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
+                                        <option name="aktivieren" value="activate">{__('activate')}</option>
                                     </select>
                                 </span>
                                 <span class="input-group-btn">
-                                    <button type="submit" value="{#submit#}" class="btn btn-primary">{#submit#}</button>
+                                    <button type="submit" value="{__('submit')}" class="btn btn-primary">{__('submit')}</button>
                                 </span>
                             </div>
                             <input name="a" type="hidden" value="cacheMassAction" />
@@ -114,8 +114,8 @@
                             <form method="post" action="cache.php" class="submit-form">
                                 {$jtl_token}
                                 <span class="submit_wrap btn-group">
-                                    <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fa fa-trash"></i>&nbsp;{#clearObjectCache#}</button>
-                                    <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{#clearTemplateCache#}</button>
+                                    <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fa fa-trash"></i>&nbsp;{__('clearObjectCache')}</button>
+                                    <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{__('clearTemplateCache')}</button>
                                 </span>
                             </form>
                         </div>
@@ -128,33 +128,33 @@
             {if is_array($stats) && $stats|@count > 0}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#objectcache#}</h3>
+                        <h3 class="panel-title">{__('objectcache')}</h3>
                     </div>
                     <table class="table">
                         {if isset($stats.uptime_h) && $stats.uptime_h !== null}
                             <tr class="cache-row">
-                                <td>Uptime:</td>
+                                <td>{__('uptime')}:</td>
                                 <td>{$stats.uptime_h}</td>
                             </tr>
                         {/if}
                         {if isset($stats.mem) && $stats.mem !== null}
                             <tr class="cache-row">
-                                <td>Komplette Gr&ouml;&szlig;e:</td>
-                                <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:"%.2f"} MB){/if}</td>
+                                <td>{__('fullSize')}:</td>
+                                <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
                             </tr>
                         {/if}
                         {if isset($stats.entries) && $stats.entries !== null}
                             <tr class="cache-row">
-                                <td>Anzahl Eintr&auml;ge:</td>
+                                <td>{__('entriesCount')}:</td>
                                 <td>{$stats.entries}</td>
                             </tr>
                         {/if}
                         {if isset($stats.misses) && $stats.misses !== null}
                             <tr class="cache-row">
-                                <td>Misses:</td>
+                                <td>{__('misses')}:</td>
                                 <td>{$stats.misses}
                                     {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.mps|string_format:"%.2f"} Misses/s)</span>
+                                        <span class="inline"> ({$stats.mps|string_format:'%.2f'} {__('misses')}/s)</span>
                                     {/if}
                                 </td>
                             </tr>
@@ -164,14 +164,14 @@
                                 <td>Hits:</td>
                                 <td>{$stats.hits}
                                     {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.hps|string_format:"%.2f"} Hits/s)</span>
+                                        <span class="inline"> ({$stats.hps|string_format:'%.2f'} {__('hits')}/s)</span>
                                     {/if}
                                 </td>
                             </tr>
                         {/if}
                         {if isset($stats.inserts) && $stats.inserts !== null}
                             <tr class="cache-row">
-                                <td>Inserts:</td>
+                                <td>{__('inserts')}:</td>
                                 <td>{$stats.inserts}</td>
                             </tr>
                         {/if}
@@ -180,11 +180,11 @@
                 {if isset($stats.slow) && is_array($stats.slow)}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Slowlog</h3>
+                            <h3 class="panel-title">{__('slowlog')}</h3>
                         </div>
                         {if $stats.slow|@count > 0}
                             <table class="table">
-                                {foreach name=slowlog from=$stats.slow key=type item=slow}
+                                {foreach $stats.slow as $slow}
                                     <tr>
                                         <td>{$slow.date}</td>
                                         <td>{$slow.cmd} ({$slow.exec_time}s)</td>
@@ -193,13 +193,13 @@
                             </table>
                         {else}
                             <div class="panel-body">
-                                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                             </div>
                         {/if}
                     </div>
                 {/if}
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
             {if $opcache_stats !== null}
                 <div class="panel panel-default">
@@ -208,42 +208,42 @@
                     </div>
                     <table class="table cache-stats" id="opcache-stats">
                         <tr class="cache-row">
-                            <td>Aktiviert:</td>
+                            <td>{__('activated')}:</td>
                             <td class="value">{if $opcache_stats->enabled === true}ja{else}nein{/if}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Belegter Speicher:</td>
+                            <td>{__('busySpace')}:</td>
                             <td class="value">{$opcache_stats->memoryUsed} MB</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Freier Speicher:</td>
+                            <td>{__('emptySpace')}:</td>
                             <td class="value">{$opcache_stats->memoryFree} MB</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Anzahl Skripte im Cache:</td>
+                            <td>{__('scriptCountInCache')}:</td>
                             <td class="value">{$opcache_stats->numberScrips}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Anzahl Keys im Cache:</td>
+                            <td>{__('keyCountInCache')}:</td>
                             <td class="value">{$opcache_stats->numberKeys}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Hits:</td>
+                            <td>{__('hits')}:</td>
                             <td class="value">{$opcache_stats->hits}</td>
                         </tr>
                         <tr class="cache-row">
-                            <td>Misses:</td>
+                            <td>{__('misses')}:</td>
                             <td class="value">{$opcache_stats->misses}</td>
                         </tr>
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
-                            <td>Hit-Rate:</td>
+                            <td>{__('hitRate')}:</td>
                             <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fa fa-info-circle right"></i></td>
                         </tr>
                         <tr class="cache-row">
                             <td colspan="2" style="padding: 0">
                                 <div id="hitRateDetail" class="panel-collapse collapse">
                                     <table class="table cache-stats">
-                                        {foreach name=scripts from=$opcache_stats->scripts item=script}
+                                        {foreach $opcache_stats->scripts as $script}
                                             <tr class="cache-row">
                                                 <td class="file-path">{$script.full_path}</td>
                                                 <td class="value">{$script.hits} Hits</td>
@@ -259,11 +259,11 @@
             {if $tplcacheStats !== null}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Template Cache</h3>
+                        <h3 class="panel-title">{__('templateCache')}</h3>
                     </div>
                     <table class="table cache-stats" id="tplcache-stats">
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
-                            <td>Dateien Frontend:</td>
+                            <td>{__('files')} {__('frontend')}</td>
                             <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
                         </tr>
                         {if $tplcacheStats->frontend|count > 0}
@@ -271,7 +271,7 @@
                             <td colspan="2" style="padding: 0">
                                 <div id="cachefilesFrontendDetail" class="panel-collapse collapse">
                                     <table class="table cache-stats">
-                                        {foreach name=frontend from=$tplcacheStats->frontend item=file}
+                                        {foreach $tplcacheStats->frontend as $file}
                                             <tr class="cache-row">
                                                 <td class="file-path">{$file->fullname}</td>
                                             </tr>
@@ -282,7 +282,7 @@
                         </tr>
                         {/if}
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
-                            <td>Dateien Backend:</td>
+                            <td>{__('files')} {__('backend')}</td>
                             <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
                         </tr>
                         {if $tplcacheStats->backend|count > 0}
@@ -290,7 +290,7 @@
                             <td colspan="2" style="padding: 0">
                                 <div id="cachefilesBackendDetail" class="panel-collapse collapse">
                                     <table class="table cache-stats">
-                                        {foreach name=backend from=$tplcacheStats->backend item=file}
+                                        {foreach $tplcacheStats->backend as $file}
                                             <tr class="cache-row">
                                                 <td class="file-path">{$file->fullname}</td>
                                             </tr>
@@ -308,26 +308,26 @@
             {if !empty($all_methods) && $all_methods|@count > 0}
                 <div class="panel panel-default settings">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{#config#}</h3>
+                        <h3 class="panel-title">{__('settings')}</h3>
                     </div>
                     <form method="post" action="cache.php">
                         {$jtl_token}
                         <div class="panel-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="runcount">Durchl&auml;ufe</label>
+                                    <label for="runcount">{__('runs')}</label>
                                 </span>
                                 <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="repeat">Wiederholungen</label>
+                                    <label for="repeat">{__('repeats')}</label>
                                 </span>
                                 <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="testdata">Testdaten</label>
+                                    <label for="testdata">{__('testData')}</label>
                                 </span>
                                 <span class="input-group-wrap">
                                     <select class="form-control" name="testdata" id="testdata">
@@ -339,10 +339,10 @@
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="methods">Methoden</label>
+                                    <label for="methods">{__('methods')}</label>
                                 </span>
                                 <select class="form-control" name="methods[]" id="methods" multiple>
-                                    {foreach from=$all_methods item=method}
+                                    {foreach $all_methods as $method}
                                         <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
                                     {/foreach}
                                 </select>
@@ -350,7 +350,7 @@
                             <input name="a" type="hidden" value="benchmark" />
                         </div>
                         <div class="panel-footer">
-                            <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary">{#startBenchmark#}</button>
+                            <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary">{__('startBenchmark')}</button>
                         </div>
                     </form>
                 </div>
@@ -363,20 +363,20 @@
                                         <h3 class="panel-title">{$result.method}</h3>
                                     </div>
                                     <div class="panel-body">
-                                    <p><span class="opt">Status: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
-                                    <p><span class="opt">Zeit get: </span>
+                                    <p><span class="opt">{__('status')}: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
+                                    <p><span class="opt">{__('time')} get: </span>
                                         {if $result.status !== 'failed' && $result.status !== 'invalid'}
                                             <span class="text">{$result.timings.get}s</span>
-                                            <span class="text">({$result.rps.get} Eintr&auml;ge/s)</span>
+                                            <span class="text">({$result.rps.get} {__('entries')}/s)</span>
                                         {else}
                                             <span class="text">-</span>
                                         {/if}
                                     </p>
 
-                                    <p><span class="opt">Zeit set: </span>
+                                    <p><span class="opt">{__('time')} set: </span>
                                         {if $result.status !== 'failed' && $result.status !== 'invalid'}
                                             <span class="text">{$result.timings.set}s</span>
-                                            <span class="text">({$result.rps.set} Eintr&auml;ge/s)</span>
+                                            <span class="text">({$result.rps.set} {__('entries')}/s)</span>
                                         {else}
                                             <span class="text">-</span>
                                         {/if}
@@ -386,11 +386,11 @@
                             {/if}
                         {/foreach}
                     {else}
-                        <div class="alert alert-warning">Konnte Benchmark nicht ausf&uuml;hren.</div>
+                        <div class="alert alert-warning">{__('errorBenchmark')}</div>
                     {/if}
                 {/if}
             {else}
-                <div class="alert alert-warning">Keine Methoden gefunden.</div>
+                <div class="alert alert-warning">{__('errorMethodNotFound')}</div>
             {/if}
         </div>
         <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'settings'} active in{/if}">
@@ -401,10 +401,10 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Allgemein</h3>
+                        <h3 class="panel-title">{__('general')}</h3>
                     </div>
                     <div class="panel-body">
-                        {foreach name=conf from=$settings item=setting}
+                        {foreach $settings as $setting}
                             {if $setting->cConf === 'Y'}
                                 <div class="input-group">
                                     <span class="input-group-addon">
@@ -413,7 +413,7 @@
                                     <span class="input-group-wrap">
                                         {if $setting->cInputTyp === 'selectbox'}
                                             <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
-                                                {foreach name=selectfor from=$setting->ConfWerte item=wert}
+                                                {foreach $setting->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
@@ -433,15 +433,15 @@
                         {/foreach}
                     </div>
                 </div>
-                <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{#showAdvanced#}</a>
+                <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{__('showAdvanced')}</a>
 
                 <div id="row_toggle_cache" style="display: none;">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Erweitert</h3>
+                            <h3 class="panel-title">{__('extended')}</h3>
                         </div>
                         <div class="panel-body">
-                            {foreach name=conf from=$advanced_settings item=setting}
+                            {foreach $advanced_settings as $setting}
                                 {if $setting->cConf === 'Y'}
                                     <div class="input-group">
                                         <span class="input-group-addon">
@@ -450,7 +450,7 @@
                                         <span class="input-group-wrap">
                                             {if $setting->cInputTyp === 'selectbox'}
                                                 <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
-                                                    {foreach name=selectfor from=$setting->ConfWerte item=wert}
+                                                    {foreach $setting->ConfWerte as $wert}
                                                         <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                     {/foreach}
                                                 </select>
@@ -472,7 +472,7 @@
                     </div>
                 </div>
                 <p class="submit">
-                    <button name="speichern" type="submit" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </p>
             </form>
         </div>

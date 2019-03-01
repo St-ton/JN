@@ -42,13 +42,14 @@ function SearchPicker(options)
 
     $(function () {
         $searchModal.on('show.bs.modal', self.onShow);
+        $searchModal.on('shown.bs.modal', () => $searchInput.focus());
         $searchModal.on('hide.bs.modal', self.onHide);
-        $searchInput.keyup(self.onChangeSearchInput);
-        $applyButton.click(self.onApply);
-        $cancelButton.click(self.onCancel);
-        $resetButton.click(self.onResetSearchInput);
-        $selectAllButton.click(self.selectAllShownItems.bind(self, true));
-        $unselectAllButton.click(self.selectAllShownItems.bind(self, false));
+        $searchInput.on('keyup', self.onChangeSearchInput);
+        $applyButton.on('click', self.onApply);
+        $cancelButton.on('click', self.onCancel);
+        $resetButton.on('click', self.onResetSearchInput);
+        $selectAllButton.on('click', self.selectAllShownItems.bind(self, true));
+        $unselectAllButton.on('click', self.selectAllShownItems.bind(self, false));
         self.init();
     });
 
@@ -156,7 +157,7 @@ function SearchPicker(options)
                 .addClass('list-group-item' + (self.isSelected(key) ? ' active' : ''))
                 .attr('id', searchPickerName + '-' + cleanKey)
                 .css('cursor', 'pointer')
-                .click(function () { self.select(key, !self.isSelected(key)); })
+                .on('click', function () { self.select(key, !self.isSelected(key)); })
                 .html(getRenderedItem(item))
                 .appendTo($searchResultList);
         });

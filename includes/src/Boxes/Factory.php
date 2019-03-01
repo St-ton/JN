@@ -4,51 +4,49 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes;
+namespace JTL\Boxes;
 
-
-use Boxes\Items\{BestsellingProducts,
-    BoxInterface,
-    Cart,
-    CompareList,
-    Container,
-    DirectPurchase,
-    FilterAttribute,
-    FilterCategory,
-    FilterItem,
-    FilterManufacturer,
-    FilterPricerange,
-    FilterRating,
-    FilterSearch,
-    FilterTag,
-    GlobalAttributes,
-    LinkGroup,
-    Login,
-    Manufacturer,
-    NewProducts,
-    NewsCategories,
-    NewsCurrentMonth,
-    Plain,
-    Plugin,
-    Poll,
-    PriceRadar,
-    ProductCategories,
-    RecentlyViewedProducts,
-    SearchCloud,
-    SpecialOffers,
-    TagCloud,
-    TopOffers,
-    TopRatedProducts,
-    TrustedShopsReviews,
-    TrustedShopsSeal,
-    UpcomingProducts,
-    Wishlist
-};
+use JTL\Boxes\Items\BestsellingProducts;
+use JTL\Boxes\Items\BoxDefault;
+use JTL\Boxes\Items\BoxInterface;
+use JTL\Boxes\Items\Cart;
+use JTL\Boxes\Items\CompareList;
+use JTL\Boxes\Items\Container;
+use JTL\Boxes\Items\DirectPurchase;
+use JTL\Boxes\Items\Extension;
+use JTL\Boxes\Items\FilterAttribute;
+use JTL\Boxes\Items\FilterCategory;
+use JTL\Boxes\Items\FilterItem;
+use JTL\Boxes\Items\FilterManufacturer;
+use JTL\Boxes\Items\FilterPricerange;
+use JTL\Boxes\Items\FilterRating;
+use JTL\Boxes\Items\FilterSearch;
+use JTL\Boxes\Items\FilterTag;
+use JTL\Boxes\Items\GlobalAttributes;
+use JTL\Boxes\Items\LinkGroup;
+use JTL\Boxes\Items\Login;
+use JTL\Boxes\Items\Manufacturer;
+use JTL\Boxes\Items\NewProducts;
+use JTL\Boxes\Items\NewsCategories;
+use JTL\Boxes\Items\NewsCurrentMonth;
+use JTL\Boxes\Items\Plain;
+use JTL\Boxes\Items\Plugin;
+use JTL\Boxes\Items\Poll;
+use JTL\Boxes\Items\ProductCategories;
+use JTL\Boxes\Items\RecentlyViewedProducts;
+use JTL\Boxes\Items\SearchCloud;
+use JTL\Boxes\Items\SpecialOffers;
+use JTL\Boxes\Items\TagCloud;
+use JTL\Boxes\Items\TopOffers;
+use JTL\Boxes\Items\TopRatedProducts;
+use JTL\Boxes\Items\TrustedShopsReviews;
+use JTL\Boxes\Items\TrustedShopsSeal;
+use JTL\Boxes\Items\UpcomingProducts;
+use JTL\Boxes\Items\Wishlist;
 
 /**
  * Class Factory
- *
- * @package Boxes
+ * @package JTL\Boxes
  */
 class Factory implements FactoryInterface
 {
@@ -70,7 +68,7 @@ class Factory implements FactoryInterface
     /**
      * @inheritdoc
      */
-    public function getBoxByBaseType(int $baseType, bool $isPlugin): BoxInterface
+    public function getBoxByBaseType(int $baseType, string $type = null): BoxInterface
     {
         switch ($baseType) {
             case \BOX_BESTSELLER:
@@ -114,8 +112,6 @@ class Factory implements FactoryInterface
                 return new LinkGroup($this->config);
             case \BOX_UMFRAGE:
                 return new Poll($this->config);
-            case \BOX_PREISRADAR:
-                return new PriceRadar($this->config);
             case \BOX_HERSTELLER:
                 return new Manufacturer($this->config);
             case \BOX_FILTER_MERKMALE:
@@ -143,7 +139,14 @@ class Factory implements FactoryInterface
             case \BOX_SUCHWOLKE:
                 return new SearchCloud($this->config);
             default:
-                return $isPlugin ? new Plugin($this->config) : new Items\BoxDefault($this->config);
+                if ($type === Type::PLUGIN) {
+                    return new Plugin($this->config);
+                }
+                if ($type === Type::EXTENSION) {
+                    return new Extension($this->config);
+                }
+
+                return new BoxDefault($this->config);
         }
     }
 }

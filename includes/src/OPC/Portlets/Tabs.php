@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Tabs
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Tabs extends \OPC\Portlet
+class Tabs extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -39,7 +40,7 @@ class Tabs extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Tabs';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Tabs';
     }
 
     /**
@@ -55,7 +56,7 @@ class Tabs extends \OPC\Portlet
             ],
             'uniqid' => [
                 'type'    => 'hidden',
-                'default' => uniqid('', false),
+                'default' => \uniqid('', false),
             ]
         ];
     }

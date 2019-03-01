@@ -384,7 +384,7 @@ function reloadFavs() {
 }
 
 function switchCouponTooltipVisibility() {
-    $('#cWertTyp').change(function() {
+    $('#cWertTyp').on('change', function() {
         if($(this).val() === 'prozent') {
             $('#fWertTooltip').parent().hide();
         } else {
@@ -394,7 +394,7 @@ function switchCouponTooltipVisibility() {
 }
 
 function tristateInit() {
-    $("input[type=checkbox].tristate").click(tristate(this));
+    $("input[type=checkbox].tristate").on('click', tristate(this));
 }
 
 function tristate(cb) {
@@ -409,7 +409,7 @@ $(document).ready(function () {
     switchCouponTooltipVisibility();
     $('.collapse').removeClass('in');
 
-    $('.accordion-toggle').click(function () {
+    $('.accordion-toggle').on('click', function () {
         var self = this;
         $(self).find('i').toggleClass('fa-minus fa-plus');
         $('.accordion-toggle').each(function () {
@@ -455,7 +455,7 @@ $(document).ready(function () {
 
     });
 
-    $('#fav-add').click(function() {
+    $('#fav-add').on('click', function() {
         var title = $('.content-header h1').text();
         var url = window.location.href;
         ioCall('addFav', [title, url], function() {
@@ -471,7 +471,7 @@ $(document).ready(function () {
     $('button.blue, input[type=submit].blue').addClass('btn btn-primary');
     $('button.orange, input[type=submit].orange').addClass('btn btn-default');
 
-    $(window).scroll(function () {
+    $(window).on('scroll', function () {
         if ($(this).scrollTop() > 100) {
             $('#scroll-top').fadeIn();
         } else {
@@ -479,7 +479,7 @@ $(document).ready(function () {
         }
     });
     //Click event to scroll to top
-    $('#scroll-top').click(function () {
+    $('#scroll-top').on('click', function () {
         $('html, body').animate({scrollTop: 0}, 800);
         return false;
     });
@@ -491,7 +491,7 @@ $(document).ready(function () {
         $('body a[href="' + location.hash + '"]').tab('show');
     }
     //Checkboxen de-/aktivieren die über der Einstellung liegen und in der gleichen Klasse sind
-    $(".Boxen").click(function () {
+    $(".Boxen").on('click', function () {
         var checkbox = $(this).parent().parent().find("input:not(.Boxen)");
         var activitem = $(this).prop("checked");
         $(checkbox).each(function (id, item) {
@@ -516,13 +516,25 @@ $(document).ready(function () {
     });
 
     // Massenerstellung von Kupons de-/aktivieren
-    $("#couponCreation").change(function () {
+    $("#couponCreation").on('change', function () {
         massCreationCoupons();
     });
 
+    /*
+     * alert actions
+     */
+    $('.alert .close').on('click', function (){
+        $(this).parent().fadeOut(1000);
+    });
+
+    $('.alert').each(function(){
+        if ($(this).data('fade-out') > 0) {
+            $(this).fadeOut($(this).data('fade-out'));
+        }
+    });
 
     $("input[type=checkbox].tristate").prop("indeterminate", true).prop("readonly", true);
-    $("input[type=checkbox].tristate").change(function(e){
+    $("input[type=checkbox].tristate").on('change', function(e){
         tristate(e.target);
     });
 });
@@ -710,11 +722,22 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect)
                 }
             }
         )
-        .bind('typeahead:select', onSelect)
+        .on('typeahead:select', onSelect)
     ;
 }
 
 function selectAllItems(elm, enable)
 {
     $(elm).closest('form').find('input[type=checkbox]').prop('checked', enable);
+}
+
+function openElFinder(callback, type)
+{
+    window.elfinder = {getFileCallback: callback};
+
+    window.open(
+        'elfinder.php?token=' + JTL_TOKEN + '&mediafilesType=' + type,
+        'elfinderWindow',
+        'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
+    );
 }

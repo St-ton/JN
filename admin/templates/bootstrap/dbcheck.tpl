@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="dbcheck"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#dbcheck# cBeschreibung=#dbcheckDesc# cDokuURL=#dbcheckURL#}
+{config_load file="$lang.conf" section='dbcheck'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbcheck') cBeschreibung=__('dbcheckDesc') cDokuURL=__('dbcheckURL')}
 <div id="content" class="container-fluid">
     {if $maintenanceResult !== null}
         {if $maintenanceResult|is_array}
@@ -12,7 +12,7 @@
                 {/foreach}
             </ul>
         {else}
-            <div class="alert alert-info">Konnte Aktion nicht ausf&uuml;hren.</div>
+            <div class="alert alert-info">{__('errorDoAction')}</div>
         {/if}
     {/if}
     <div id="pageCheck">
@@ -20,11 +20,11 @@
             {if isset($engineUpdate)}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
-                <div class="alert alert-info"><strong>Anzahl Tabellen:</strong> {$cDBFileStruct_arr|@count}<br /><strong>Anzahl modifizierter Tabellen:</strong> {$cDBError_arr|@count}</div>
+                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|@count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|@count}</div>
                 {if $cDBError_arr|@count > 0}
                     <p>
-                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> Alle anzeigen</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fa fa-warning"></i> Modifizierte anzeigen</button>
+                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
+                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fa fa-warning"></i> {__('showModified')}</button>
                     </p>
                     <br />
                 {/if}
@@ -32,18 +32,18 @@
             <form action="dbcheck.php" method="post">
                 <div id="contentCheck" class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">DB-Struktur</h3>
+                        <h3 class="panel-title">{__('databaseStructure')}</h3>
                     </div>
                     <table class="table req">
                         <thead>
                         <tr>
-                            <th>Tabelle</th>
-                            <th>Engine</th>
-                            <th>Kollation</th>
-                            <th class="centered">Zeilen</th>
-                            <th class="centered">Daten</th>
-                            <th>Status</th>
-                            <th class="centered">Aktion</th>
+                            <th>{__('table')}</th>
+                            <th>{__('engine')}</th>
+                            <th>{__('collation')}</th>
+                            <th class="centered">{__('rows')}</th>
+                            <th class="centered">{__('data')}</th>
+                            <th>{__('status')}</th>
+                            <th class="centered">{__('action')}</th>
                         </tr>
                         </thead>
                         {foreach name=datei from=$cDBFileStruct_arr key=cTable item=oDatei}
@@ -67,25 +67,25 @@
                                     {/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:",":"."}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->TABLE_ROWS|number_format:0:',':'.'}{/if}
                                 </td>
                                 <td class="centered">
-                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatSize:"%.0f"|upper|strip:"&nbsp;"}{/if}
+                                    {if $cTable|array_key_exists:$cDBStruct_arr}{$cDBStruct_arr.$cTable->DATA_SIZE|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}{/if}
                                 </td>
                                 <td>
                                     {if $hasError}
                                         <span class="badge red">{$cDBError_arr[$cTable]}</span>
                                     {else}
-                                        <span class="badge green">OK</span>
+                                        <span class="badge green">{__('ok')}</span>
                                     {/if}
                                 </td>
                                 <td class="centered">
                                     {if isset($cDBStruct_arr.$cTable)}
                                         {if $cDBStruct_arr.$cTable->Locked}
                                             <span title="Tabelle in Benutzung"><i class="fa fa-cog fa-spin fa-2x fa-fw"></i></span>
-                                        {elseif ($cDBStruct_arr.$cTable->ENGINE !== 'InnoDB' || $cDBStruct_arr.$cTable->TABLE_COLLATION|strpos:'utf8' === false) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
-                                        {elseif (isset($cDBError_arr.$cTable) && $cDBError_arr.$cTable|strpos:'Inkonsistente Kollation' === 0) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                         {elseif !$hasError}
                                             <input id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
@@ -98,17 +98,17 @@
                     <div class="panel-footer">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <input type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">alle markieren</label>
+                                <input type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">{__('markAll')}</label>
                             </span>
                             <select name="action" class="form-control">
-                                <option value="">Aktion</option>
-                                <option value="optimize">optimieren</option>
-                                <option value="repair">reparieren</option>
-                                <option value="analyze">analysieren</option>
-                                <option value="check">pr&uuml;fen</option>
+                                <option value="">{__('action')}</option>
+                                <option value="optimize">{__('optimize')}</option>
+                                <option value="repair">{__('repair')}</option>
+                                <option value="analyze">{__('analyse')}</option>
+                                <option value="check">{__('check')}</option>
                             </select>
                             <div class="input-group-btn">
-                                <button type="submit" class="btn btn-primary">absenden</button>
+                                <button type="submit" class="btn btn-primary">{__('send')}</button>
                             </div>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
             </div>
             <div class="modal-footer">
                 <div class="btn-group">
-                    <button id="cancelWait" class="btn btn-danger"><i class="fa fa-close"></i>&nbsp;Migration abbrechen</button>
+                    <button id="cancelWait" class="btn btn-danger"><i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}</button>
                 </div>
             </div>
         </div>
@@ -139,7 +139,7 @@
 <script>
     {literal}
     $(document).ready(function () {
-        $('#viewAll').click(function () {
+        $('#viewAll').on('click', function () {
             $('#viewAll').hide();
             $('#viewModified').show().removeClass('hide');
             $('.unmodified').show();
@@ -147,7 +147,7 @@
             colorLines();
         });
 
-        $('#viewModified').click(function () {
+        $('#viewModified').on('click', function () {
             $('#viewAll').show().removeClass('hide');
             $('#viewModified').hide();
             $('.unmodified').hide();
@@ -155,7 +155,7 @@
             colorLines();
         });
 
-        $('*[data-action="migrate"]').click(function (e) {
+        $('*[data-action="migrate"]').on('click', function (e) {
             var $this = $(this);
 
             e.preventDefault();
@@ -163,7 +163,7 @@
             doSingleMigration($this.data('table'), $this.data('step'), $this.closest('tr'));
         });
 
-        $('#cancelWait').click(function (e) {
+        $('#cancelWait').on('click', function (e) {
             cancelWait(true);
             e.preventDefault();
         });
@@ -241,7 +241,7 @@
             step = 1;
         }
         if (typeof table !== 'undefined' && table !== '') {
-            updateModalWait('Migrieren von ' + table + ' - Schritt ' + step);
+            updateModalWait('{/literal}{__('migrationOf')}{literal}' + table + ' - {/literal}{__('step')}{literal}' + step);
         }
         ioCall('migrateToInnoDB_utf8', ['migrate', table, step],
             function (data, context) {
@@ -255,12 +255,12 @@
                         closeModalWait();
                     }
                 } else {
-                    window.alert('Bei der Migration der Tabelle ' + table + ' ist ein Fehler aufgetreten!');
+                    window.alert('{/literal}{__('errorMigrationTableOne')}{literal}' + table + '{/literal}{__('errorMigrationTableTwo')}{literal}');
                     window.location.reload(true);
                 }
             },
             function (responseJSON) {
-                window.alert('Bei der Migration der Tabelle ' + table + ' ist ein Fehler aufgetreten!');
+                window.alert('{/literal}{__('errorMigrationTableOne')}{literal}' + table + '{/literal}{__('errorMigrationTableTwo')}{literal}');
                 window.location.reload(true);
             },
             {}
@@ -271,7 +271,7 @@
         if ($cols.length > 0) {
             $($cols[1]).html('<span class="badge alert-info">InnoDB</span>');
             $($cols[2]).html('<span class="badge alert-info">utf8_general_ci</span>');
-            $($cols[5]).html('<span class="badge green">OK</span>');
+            $($cols[5]).html('<span class="badge green">{/literal}{__('migrationCancel')}{literal}</span>');
             $($cols[6]).html('');
         }
     }

@@ -1,6 +1,6 @@
 {config_load file="$lang.conf" section='umfrage'}
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/seite_header.tpl' cTitel=#umfrage# cBeschreibung=#umfrageDesc# cDokuURL=#umfrageURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('poll') cBeschreibung=__('umfrageDesc') cDokuURL=__('umfrageURL')}
 {if $step === 'umfrage_erstellen' || $step === 'umfrage_editieren'}
     {include file='tpl_inc/umfrage_erstellen.tpl'}
 {elseif $step === 'umfrage_uebersicht'}

@@ -3,14 +3,18 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
-$cFehler  = '';
-$cHinweis = '';
+$alertHelper = Shop::Container()->getAlertService();
 
-if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && FormHelper::validateToken()) {
+if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
     $passwordService = Shop::Container()->getPasswordService();
     $passInfo        = $passwordService->getInfo($_POST['wawi-pass']);
     $upd             = new stdClass();
@@ -26,14 +30,13 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && FormHelper::validateToken
             cName = :cName,
             cPass = :cPass',
         ['cName' => $upd->cName, 'cPass' => $upd->cPass],
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
 
-    $cHinweis = 'Erfolgreich gespeichert.';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
 }
 
 $user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
 $smarty->assign('wawiuser', $user->cName)
-       ->assign('cHinweis', $cHinweis)
        ->assign('wawipass', $user->cPass)
        ->display('wawisync.tpl');

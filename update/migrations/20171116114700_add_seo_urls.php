@@ -6,6 +6,11 @@
  * @created Thu, 16 Nov 2017 11:47:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+use JTL\Sprache;
+
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 /**
@@ -77,7 +82,8 @@ class Migration_20171116114700 extends Migration implements IMigration
                   ON tseo.cKey = 'kLink' AND tseo.kKey = tlink.kLink
                 LEFT JOIN tsprache
                   ON tsprache.kSprache = tseo.kSprache
-                WHERE tlink.nLinkart = " . $linkType);
+                WHERE tlink.nLinkart = " . $linkType
+        );
         if (empty($links) || $links->cSeo === null) {
             $link = new stdClass();
             if (empty($links)) {
@@ -109,7 +115,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                 foreach ($this->languages as $language) {
                     $seo->kSprache = $language->kSprache;
                     if ($language->cISO === 'ger') {
-                        $seo->cSeo = checkSeo(getSeo($seoGER));
+                        $seo->cSeo = \JTL\Helpers\Seo::checkSeo(\JTL\Helpers\Seo::getSeo($seoGER));
                         Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;
@@ -118,7 +124,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                             Shop::Container()->getDB()->insert('tlinksprache', $langObj);
                         }
                     } elseif ($language->cISO === 'eng') {
-                        $seo->cSeo = checkSeo(getSeo($seoENG));
+                        $seo->cSeo = \JTL\Helpers\Seo::checkSeo(\JTL\Helpers\Seo::getSeo($seoENG));
                         Shop::Container()->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;

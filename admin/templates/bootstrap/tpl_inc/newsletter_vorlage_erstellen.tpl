@@ -14,7 +14,7 @@ function neu() {ldelim}
 {rdelim}
 
 function checkNewsletterSend() {ldelim}
-    var bCheck = confirm("{#newsletterSendAuthentication#}");
+    var bCheck = confirm("{__('newsletterSendAuthentication')}");
     if(bCheck) {ldelim}
         var input1 = document.createElement('input');
         input1.type = 'hidden';
@@ -27,7 +27,7 @@ function checkNewsletterSend() {ldelim}
 </script>
 
 <div id="page">
-   {include file='tpl_inc/seite_header.tpl' cTitel=#newsletterdraft# cBeschreibung=#newsletterdraftdesc#}
+   {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterdraft') cBeschreibung=__('newsletterdraftdesc')}
     <div id="content" class="container-fluid">
         <form name="formnewslettervorlage" id="formnewslettervorlage" method="post" action="newsletter.php">
             {$jtl_token}
@@ -39,48 +39,48 @@ function checkNewsletterSend() {ldelim}
             {/if}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Vorlage erstellen</h3>
+                    <h3 class="panel-title">{__('newsletterdraftcreate')}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cName">{#newsletterdraftname#}</label>
+                            <label for="cName">{__('newsletterdraftname')}</label>
                         </span>
                         <input id="cName" name="cName" type="text" class="form-control {if isset($cPlausiValue_arr.cName)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewsletterVorlage->cName)}{$oNewsletterVorlage->cName}{/if}">
-                        {if isset($cPlausiValue_arr.cName)}<font class="fillout">{#newsletterdraftFillOut#}</font>{/if}
+                        {if isset($cPlausiValue_arr.cName)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cBetreff">{#newsletterdraftsubject#}</label>
+                            <label for="cBetreff">{__('subject')}</label>
                         </span>
                         <input id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}">
-                        {if isset($cPlausiValue_arr.cBetreff)}<font class="fillout">{#newsletterdraftFillOut#}</font>{/if}
+                        {if isset($cPlausiValue_arr.cBetreff)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kKundengruppe">{#newslettercustomergrp#}</label>
+                            <label for="kKundengruppe">{__('newslettercustomergrp')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}">
                                 <option value="0"
                                         {if isset($kKundengruppe_arr)}
-                                            {foreach name=kkundengruppen from=$kKundengruppe_arr item=kKundengruppe}
-                                                {if $kKundengruppe == "0"}selected{/if}
+                                            {foreach $kKundengruppe_arr as $kKundengruppe}
+                                                {if $kKundengruppe == '0'}selected{/if}
                                             {/foreach}
                                         {elseif isset($cPostVar_arr.kKundengruppe)}
-                                            {foreach name=kkundengruppen from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
-                                                {if $kKundengruppe == "0"}selected{/if}
+                                            {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
+                                                {if $kKundengruppe == '0'}selected{/if}
                                             {/foreach}
                                         {/if}
-                                        >Newsletterempf&auml;nger ohne Kundenkonto</option>
-                                {foreach name=kundengruppen from=$oKundengruppe_arr item=oKundengruppe}
+                                        >{__('newsletterNoAccount')}</option>
+                                {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}"
                                             {if isset($kKundengruppe_arr)}
-                                                {foreach name=kkundengruppen from=$kKundengruppe_arr item=kKundengruppe}
+                                                {foreach $kKundengruppe_arr as $kKundengruppe}
                                                     {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {elseif isset($cPostVar_arr.kKundengruppe)}
-                                                {foreach name=kkundengruppen from=$cPostVar_arr.kKundengruppe item=kKundengruppe}
+                                                {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
                                                     {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
                                                 {/foreach}
                                             {/if}
@@ -88,30 +88,30 @@ function checkNewsletterSend() {ldelim}
                                 {/foreach}
                             </select>
                         </span>
-                        {if isset($cPlausiValue_arr.kKundengruppe_arr)}<font class="fillout">{#newsletterdraftFillOut#}</font>{/if}
+                        {if isset($cPlausiValue_arr.kKundengruppe_arr)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cArt">{#newsletterdraftcharacter#}</label>
+                            <label for="cArt">{__('newsletterdraftcharacter')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="cArt" name="cArt" class="form-control combo">
-                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text/html'}selected{/if}>text/html</option>
-                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text'}selected{/if}>text</option>
+                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text/html'}selected{/if}>{__('textHtml')}</option>
+                                <option {if isset($oNewsletterVorlage->cArt) && $oNewsletterVorlage->cArt === 'text'}selected{/if}>{__('text')}</option>
                             </select>
                         </span>
                     </div>
                     <div class="input-group input-group-select">
                         <span class="input-group-addon">
-                            <label for="cArt">{#newsletterdraftdate#}</label>
+                            <label for="cArt">{__('newsletterdraftdate')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select name="dTag" class="form-control combo" style="width:100%;">
                                 {section name=dTag start=1 loop=32 step=1}
                                     {if $smarty.section.dTag.index < 10}
-                                        <option value="0{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:"%d" == $smarty.section.dTag.index} selected{/if}{/if}>0{$smarty.section.dTag.index}</option>
+                                        <option value="0{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'%d' == $smarty.section.dTag.index} selected{/if}{/if}>0{$smarty.section.dTag.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:"%d" == $smarty.section.dTag.index} selected{/if}{/if}>{$smarty.section.dTag.index}</option>
+                                        <option value="{$smarty.section.dTag.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'%d' == $smarty.section.dTag.index} selected{/if}{/if}>{$smarty.section.dTag.index}</option>
                                     {/if}
                                 {/section}
                             </select>
@@ -120,18 +120,18 @@ function checkNewsletterSend() {ldelim}
                             <select name="dMonat" class="form-control combo" style="width:100%;">
                                 {section name=dMonat start=1 loop=13 step=1}
                                     {if $smarty.section.dMonat.index < 10}
-                                        <option value="0{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:"%m" == $smarty.section.dMonat.index} selected{/if}{/if}>0{$smarty.section.dMonat.index}</option>
+                                        <option value="0{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'%m' == $smarty.section.dMonat.index} selected{/if}{/if}>0{$smarty.section.dMonat.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:"%m" == $smarty.section.dMonat.index} selected{/if}{/if}>{$smarty.section.dMonat.index}</option>
+                                        <option value="{$smarty.section.dMonat.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'%m' == $smarty.section.dMonat.index} selected{/if}{/if}>{$smarty.section.dMonat.index}</option>
                                     {/if}
                                 {/section}
                             </select>
                         </span>
                         <span class="input-group-wrap">
                             <select name="dJahr" class="form-control combo" style="width:100%;">
-                                {$Y = $smarty.now|date_format:"%Y"}
+                                {$Y = $smarty.now|date_format:'%Y'}
                                 {section name=dJahr start=$Y loop=($Y+2) step=1}
-                                    <option value="{$smarty.section.dJahr.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:"%Y" == $smarty.section.dJahr.index} selected{/if}{/if}>{$smarty.section.dJahr.index}</option>
+                                    <option value="{$smarty.section.dJahr.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:'%Y' == $smarty.section.dJahr.index} selected{/if}{/if}>{$smarty.section.dJahr.index}</option>
                                 {/section}
                             </select>
                         </span>
@@ -139,9 +139,9 @@ function checkNewsletterSend() {ldelim}
                             <select name="dStunde" class="form-control combo" style="width:100%;">
                                 {section name=dStunde start=0 loop=24 step=1}
                                     {if $smarty.section.dStunde.index < 10}
-                                        <option value="0{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:"%H" == $smarty.section.dStunde.index} selected{/if}{/if}>0{$smarty.section.dStunde.index}</option>
+                                        <option value="0{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'%H' == $smarty.section.dStunde.index} selected{/if}{/if}>0{$smarty.section.dStunde.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:"%H" == $smarty.section.dStunde.index} selected{/if}{/if}>{$smarty.section.dStunde.index}</option>
+                                        <option value="{$smarty.section.dStunde.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'%H' == $smarty.section.dStunde.index} selected{/if}{/if}>{$smarty.section.dStunde.index}</option>
                                     {/if}
                                 {/section}
                             </select>
@@ -150,23 +150,23 @@ function checkNewsletterSend() {ldelim}
                             <select name="dMinute" class="form-control combo" style="width:100%;">
                                 {section name=dMinute start=0 loop=60 step=1}
                                     {if $smarty.section.dMinute.index < 10}
-                                        <option value="0{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:"%M" == $smarty.section.dMinute.index} selected{/if}{/if}>0{$smarty.section.dMinute.index}</option>
+                                        <option value="0{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'%M' == $smarty.section.dMinute.index} selected{/if}{/if}>0{$smarty.section.dMinute.index}</option>
                                     {else}
-                                        <option value="{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:"%M" == $smarty.section.dMinute.index} selected{/if}{/if}>{$smarty.section.dMinute.index}</option>
+                                        <option value="{$smarty.section.dMinute.index}"{if isset($oNewsletterVorlage->oZeit->cZeit_arr) && $oNewsletterVorlage->oZeit->cZeit_arr|@count > 0}{if $oNewsletterVorlage->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'%M' == $smarty.section.dMinute.index} selected{/if}{/if}>{$smarty.section.dMinute.index}</option>
                                     {/if}
                                 {/section}
                             </select>
                         </span>
-                        <span class="input-group-addon">{#newsletterdraftformat#}</span>
+                        <span class="input-group-addon">{__('newsletterdraftformat')}</span>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kKampagne">{#newslettercampaign#}</label>
+                            <label for="kKampagne">{__('campaign')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control " id="kKampagne" name="kKampagne">
                                 <option value="0"></option>
-                                {foreach name="Kampagnen" from=$oKampagne_arr item=oKampagne}
+                                {foreach $oKampagne_arr as $oKampagne}
                                     <option value="{$oKampagne->kKampagne}"{if isset($oNewsletterVorlage->kKampagne) && $oKampagne->kKampagne == $oNewsletterVorlage->kKampagne || (isset($cPostVar_arr.kKampagne) && isset($oKampagne->kKampagne) && $cPostVar_arr.kKampagne == $oKampagne->kKampagne)} selected{/if}>{$oKampagne->cName}</option>
                                 {/foreach}
                             </select>
@@ -174,8 +174,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='articlePicker'
-                        modalTitle='Artikel ausw&auml;hlen'
-                        searchInputLabel='Suche nach Artikelnamen'
+                        modalTitle="{__('chooseProduct')}"
+                        searchInputLabel="{__('searchProductName')}"
                     }
                     <script>
                         $(function () {
@@ -192,14 +192,14 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedArticles(selected)
                         {
                             $('#articleSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Artikel' : '');
+                                .val(selected.length > 0 ? selected.length + {__('product')} : '');
                             $('#cArtikel')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="articleSelectionInfo">{#newsletterartnr#}</label>
+                            <label for="articleSelectionInfo">{__('newsletterartnr')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="articleSelectionInfo">
@@ -215,8 +215,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='manufacturerPicker'
-                        modalTitle='Hersteller ausw&auml;hlen'
-                        searchInputLabel='Suche nach Herstellernamen'
+                        modalTitle="{__('chooseManufacturer')}"
+                        searchInputLabel="{__('searchManufacturerName')}"
                     }
                     <script>
                         $(function () {
@@ -233,14 +233,14 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedManufacturers(selected)
                         {
                             $('#manufacturerSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Hersteller' : '');
+                                .val(selected.length > 0 ? selected.length + {__('manufacturer')} : '');
                             $('#cHersteller')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="manufacturerSelectionInfo">{#newslettermanufacturer#}</label>
+                            <label for="manufacturerSelectionInfo">{__('manufacturer')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="manufacturerSelectionInfo">
@@ -256,8 +256,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle='Kategorien ausw&auml;hlen'
-                        searchInputLabel='Suche nach Kategorienamen'
+                        modalTitle="{__('chooseCatgeory')}"
+                        searchInputLabel="{__('searchCatgeoryName')}"
                     }
                     <script>
                         $(function () {
@@ -274,14 +274,14 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedCategories(selected)
                         {
                             $('#categorySelectionInfo')
-                                .val(selected.length > 0 ? selected.length + ' Kategorien' : '');
+                                .val(selected.length > 0 ? selected.length + {__('category')} : '');
                             $('#cKategorie')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
                     </script>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="categorySelectionInfo">{#newslettercategory#}</label>
+                            <label for="categorySelectionInfo">{__('categories')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" readonly="readonly" id="categorySelectionInfo">
@@ -297,24 +297,24 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cHtml">{#newsletterHtml#}</label>
+                            <label for="cHtml">{__('newsletterHtml')}</label>
                         </span>
                         <textarea class="codemirror smarty form-control" id="cHtml" name="cHtml" style="width: 750px; height: 400px;">{if isset($cPostVar_arr.cHtml)}{$cPostVar_arr.cHtml}{elseif isset($oNewsletterVorlage->cInhaltHTML)}{$oNewsletterVorlage->cInhaltHTML}{/if}</textarea>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cText">{#newsletterText#}</label>
+                            <label for="cText">{__('newsletterText')}</label>
                         </span>
                         <textarea class="codemirror smarty form-control" id="cText" name="cText" style="width: 750px; height: 400px;">{if isset($cPostVar_arr.cText)}{$cPostVar_arr.cText}{elseif isset($oNewsletterVorlage->cInhaltText)}{$oNewsletterVorlage->cInhaltText}{/if}</textarea>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button class="btn btn-primary" name="speichern" type="submit" value="{#newsletterdraftsave#}"><i class="fa fa-save"></i> {#newsletterdraftsave#}</button>
+                        <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                         {if $cOption !== 'editieren'}
-                            <button class="btn btn-warning" name="speichern_und_senden" type="button" value="{#newsletterdraftsaveandsend#}" onclick="checkNewsletterSend();">{#newsletterdraftsaveandsend#}</button>
+                            <button class="btn btn-warning" name="speichern_und_senden" type="button" value="{__('newsletterdraftsaveandsend')}" onclick="checkNewsletterSend();">{__('newsletterdraftsaveandsend')}</button>
                         {/if}
-                        <button class="btn btn-default" name="speichern_und_testen" type="submit" value="{#newsletterdraftsaveandtest#}">{#newsletterdraftsaveandtest#}</button>
+                        <button class="btn btn-default" name="speichern_und_testen" type="submit" value="{__('newsletterdraftsaveandtest')}">{__('newsletterdraftsaveandtest')}</button>
                     </div>
                 </div>
             </div>
@@ -323,7 +323,7 @@ function checkNewsletterSend() {ldelim}
             {$jtl_token}
             <input name="tab" type="hidden" value="newslettervorlagen" />
             <p>
-                <button class="btn btn-default" name="back" type="submit" value="{#newsletterback#}"><i class="fa fa-angle-double-left"></i> {#newsletterback#}</button>
+                <button class="btn btn-default" name="back" type="submit" value="{__('back')}"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
             </p>
         </form>
         {if !empty($oNewsletterVorlage->kNewsletterVorlage)}

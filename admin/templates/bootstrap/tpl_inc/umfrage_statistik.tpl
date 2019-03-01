@@ -3,39 +3,39 @@
         <h2 class="txtBlack">{$oUmfrageStats->cName}</h2>
         <div class="row">
             <div class="col-md-3">
-                <strong>{#umfrageValidation#}:</strong><br/>
+                <strong>{__('umfrageValidation')}:</strong><br/>
                 {$oUmfrageStats->dGueltigVon_de}<br/>
-                -{if $oUmfrageStats->dGueltigBis === null}{#umfrageInfinite#}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
+                -{if $oUmfrageStats->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
             </div>
             <div class="col-md-3">
-                <strong>{#umfrageCustomerGrp#}:</strong><br/>
+                <strong>{__('customerGroup')}:</strong><br/>
                 {foreach $oUmfrageStats->cKundengruppe_arr as $cKundengruppe}
                     {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                 {/foreach}
             </div>
             <div class="col-md-3">
-                <strong>{#umfrageActive#}:</strong><br/>
+                <strong>{__('active')}:</strong><br/>
                 {$oUmfrageStats->nAktiv}
             </div>
             <div class="col-md-3">
-                <strong>{#umfrageTryCount#}:</strong><br/>
+                <strong>{__('umfrageTryCount')}:</strong><br/>
                 {$oUmfrageStats->nAnzahlDurchfuehrung}
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <strong>{#umfrageText#}:</strong><br/>
+                <strong>{__('description')}:</strong><br/>
                 {$oUmfrageStats->cBeschreibung}
             </div>
         </div>
 
         {if isset($oUmfrageStats->oUmfrageFrage_arr) && $oUmfrageStats->oUmfrageFrage_arr|@count > 0}
             <div>
-                <h3>{#umfrageQ#}:</h3>
+                <h3>{__('umfrageQ')}:</h3>
                 {foreach $oUmfrageStats->oUmfrageFrage_arr as $oUmfrageFrage}
                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
-                        {if $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE
-                        || $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}
+                        {if $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE
+                        || $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}
@@ -45,7 +45,7 @@
                                         <div id="tabellenLivesuche" class="table-responsive">
                                             <table class="table table-striped">
                                                 <tr>
-                                                    <th class="th-1" style="width: 5%;">{#umfrageQASing#}</th>
+                                                    <th class="th-1" style="width: 5%;">{__('umfrageQASing')}</th>
                                                     {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
                                                         {assign var=maxbreite value=95}
                                                         {assign var=anzahloption value=$oUmfrageFrage->oUmfrageMatrixOption_arr|@count}
@@ -88,10 +88,10 @@
                                         <div id="tabellenLivesuche">
                                             <table class="table table-responsive table-striped">
                                                 <tr>
-                                                    <th class="th-1" style="width: 20%;">{#umfrageQASing#}</th>
+                                                    <th class="th-1" style="width: 20%;">{__('umfrageQASing')}</th>
                                                     <th class="th-2" style="width: 60%;"></th>
-                                                    <th class="th-3" style="width: 10%;">{#umfrageQResPercent#}</th>
-                                                    <th class="th-4" style="width: 10%;">{#umfrageQResCount#}</th>
+                                                    <th class="th-3" style="width: 10%;">{__('umfrageQResPercent')}</th>
+                                                    <th class="th-4" style="width: 10%;">{__('umfrageQResCount')}</th>
                                                 </tr>
                                                 {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
                                                     <tr>
@@ -113,7 +113,7 @@
                                                     {if $oUmfrageFrageAntwort@last}
                                                         <tr>
                                                             <td></td>
-                                                            <td colspan="2" align="right">{#umfrageQMax#}</td>
+                                                            <td colspan="2" align="right">{__('umfrageQMax')}</td>
                                                             <td align="center">{$oUmfrageFrage->nAnzahlAntworten}</td>
                                                         </tr>
                                                     {/if}

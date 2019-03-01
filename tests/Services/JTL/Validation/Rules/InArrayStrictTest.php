@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
+
+use JTL\Services\JTL\Validation\Rules\InArrayStrict;
+use Tests\BaseTestCase;
 
 /**
  * Class InArrayStrictTest
  * @package Services\JTL\Validation\Rules
  */
-class InArrayStrictTest extends \PHPUnit_Framework_TestCase
+class InArrayStrictTest extends BaseTestCase
 {
     public function test()
     {

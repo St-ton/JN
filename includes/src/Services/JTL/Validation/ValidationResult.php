@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 use function Functional\none;
 
 /**
  * Class ValidationResult
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 class ValidationResult implements ValidationResultInterface
 {
@@ -30,7 +30,7 @@ class ValidationResult implements ValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function addRuleResult(RuleResultInterface $ruleResult)
+    public function addRuleResult(RuleResultInterface $ruleResult): void
     {
         $this->ruleResults[] = $ruleResult;
     }
@@ -38,7 +38,7 @@ class ValidationResult implements ValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function getRuleResults()
+    public function getRuleResults(): array
     {
         return $this->ruleResults;
     }
@@ -46,7 +46,7 @@ class ValidationResult implements ValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return none($this->ruleResults, function (RuleResultInterface $item) {
             return !$item->isValid();
@@ -56,7 +56,7 @@ class ValidationResult implements ValidationResultInterface
     /**
      * @inheritdoc
      */
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }

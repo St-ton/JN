@@ -3,152 +3,162 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-$smarty             = \Smarty\JTLSmarty::getInstance(false, true);
+
+use JTL\Backend\AdminTemplate;
+use JTL\Backend\Notification;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\ContextType;
+use JTL\Plugin\State;
+
+require_once __DIR__ . '/admin_menu.php';
+
+$smarty             = JTLSmarty::getInstance(false, ContextType::BACKEND);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
 $shopURL            = Shop::getURL();
+$db                 = Shop::Container()->getDB();
 $currentTemplateDir = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
     && $config['template']['general']['use_minify'] === 'Y');
-$oAccount           = new AdminAccount();
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;
-// Einstellungen
-$configSections = Shop::Container()->getDB()->query(
-    "SELECT teinstellungensektion.*, COUNT(teinstellungenconf.kEinstellungenSektion) AS anz
-        FROM teinstellungensektion 
-        LEFT JOIN teinstellungenconf
-            ON teinstellungenconf.kEinstellungenSektion = teinstellungensektion.kEinstellungenSektion
-            AND teinstellungenconf.cConf = 'Y'        
-        GROUP BY teinstellungensektion.kEinstellungenSektion
-        ORDER BY teinstellungensektion.cName",
-    \DB\ReturnType::ARRAY_OF_OBJECTS
-);
-foreach ($configSections as $configSection) {
-    $configSection->kEinstellungenSektion = (int)$configSection->kEinstellungenSektion;
-    $configSection->kAdminmenueGruppe     = (int)$configSection->kAdminmenueGruppe;
-    $configSection->nSort                 = (int)$configSection->nSort;
-    $configSection->anz                   = (int)$configSection->anz;
-    $configSection->cLinkname             = $configSection->cName;
-    $configSection->cURL                  = 'einstellungen.php?kSektion=' . $configSection->kEinstellungenSektion;
-}
-$mainGroups = Shop::Container()->getDB()->selectAll(
+$mainGroups         = $db->selectAll(
     'tadminmenugruppe',
     'kAdminmenueOberGruppe',
     0,
     '*',
     'nSort'
 );
+
 // JTL Search Plugin aktiv?
-$oPluginSearch = Shop::Container()->getDB()->query(
+$oPluginSearch = $db->query(
     "SELECT kPlugin, cName
         FROM tplugin
         WHERE cPluginID = 'jtl_search'",
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
-foreach ($mainGroups as $mainGroup) {
-    $mainGroup->kAdminmenueGruppe     = (int)$mainGroup->kAdminmenueGruppe;
-    $mainGroup->kAdminmenueOberGruppe = (int)$mainGroup->kAdminmenueOberGruppe;
-    $mainGroup->nSort                 = (int)$mainGroup->nSort;
-    $mainGroup->oLinkGruppe_arr       = [];
-    $mainGroup->oLink_arr             = [];
 
-    $childLinks = Shop::Container()->getDB()->selectAll(
-        'tadminmenugruppe',
-        'kAdminmenueOberGruppe',
-        (int)$mainGroup->kAdminmenueGruppe,
-        '*',
-        'cName, nSort'
-    );
-    foreach ($childLinks as $link) {
-        $link->kAdminmenueGruppe     = (int)$link->kAdminmenueGruppe;
-        $link->kAdminmenueOberGruppe = (int)$link->kAdminmenueOberGruppe;
-        $link->nSort                 = (int)$link->nSort;
-        $link->oLink_arr             = $oAccount->getVisibleMenu($adminLoginGruppe, $link->kAdminmenueGruppe);
-        foreach ($configSections as $_k => $_configSection) {
-            $_configSection->kEinstellungenSektion = (int)$_configSection->kEinstellungenSektion;
-            $_configSection->kAdminmenueGruppe     = (int)$_configSection->kAdminmenueGruppe;
-            $_configSection->nSort                 = (int)$_configSection->nSort;
-            $_configSection->anz                   = (int)$_configSection->anz;
-            if ($_configSection->kAdminmenueGruppe === $link->kAdminmenueGruppe
-                && $oAccount->permission($_configSection->cRecht)
-            ) {
-                $link->oLink_arr[] = $_configSection;
-                unset($configSections[$_k]);
+$curScriptFileName  = basename($_SERVER['PHP_SELF']);
+$currentToplevel    = 0;
+$currentSecondLevel = 0;
+$currentThirdLevel  = 0;
+$mainGroups         = [];
+$rootKey            = 0;
+
+foreach ($adminMenu as $rootName => $rootEntry) {
+    $mainGroup = (object)[
+        'cName'           => $rootName,
+        'oLink_arr'       => [],
+        'oLinkGruppe_arr' => [],
+        'key'             => (string)$rootKey,
+    ];
+
+    $secondKey = 0;
+
+    foreach ($rootEntry as $secondName => $secondEntry) {
+        $linkGruppe = (object)[
+            'cName'     => $secondName,
+            'oLink_arr' => [],
+            'key'       => "$rootKey.$secondKey",
+        ];
+
+        if ($secondEntry === 'DYNAMIC_PLUGINS') {
+            $pluginLinks = $db->queryPrepared(
+                'SELECT DISTINCT p.kPlugin, p.cName, p.cPluginID, p.nPrio
+                    FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
+                        ON p.kPlugin = pam.kPlugin
+                    WHERE p.nStatus = :state
+                    ORDER BY p.nPrio, p.cName',
+                ['state' => State::ACTIVATED],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            foreach ($pluginLinks as $pluginLink) {
+                $pluginLink->kPlugin = (int)$pluginLink->kPlugin;
+
+                $link = (object)[
+                    'cLinkname' => $pluginLink->cName,
+                    'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginLink->kPlugin,
+                    'cRecht'    => 'PLUGIN_ADMIN_VIEW',
+                    'key'       => "$rootKey.$secondKey." . $pluginLink->kPlugin,
+                ];
+
+                $linkGruppe->oLink_arr[] = $link;
+            }
+        } else {
+            $thirdKey = 0;
+
+            foreach ($secondEntry as $thirdName => $thirdEntry) {
+                if ($thirdEntry === 'DYNAMIC_JTL_SEARCH'
+                    && isset($oPluginSearch->kPlugin)
+                    && $oPluginSearch->kPlugin > 0
+                ) {
+                    $link = (object)[
+                        'cLinkname' => 'JTL Search',
+                        'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $oPluginSearch->kPlugin,
+                        'cRecht'    => 'PLUGIN_ADMIN_VIEW',
+                        'key'       => "$rootKey.$secondKey.$thirdKey",
+                    ];
+                } elseif (is_object($thirdEntry)) {
+                    $link = (object)[
+                        'cLinkname' => $thirdName,
+                        'cURL'      => $thirdEntry->link,
+                        'cRecht'    => $thirdEntry->rights,
+                        'key'       => "$rootKey.$secondKey.$thirdKey",
+                    ];
+                } else {
+                    continue;
+                }
+
+                $urlParts             = parse_url($link->cURL);
+                $urlParts['basename'] = basename($urlParts['path']);
+
+                if (empty($urlParts['query'])) {
+                    $urlParts['query'] = [];
+                } else {
+                    mb_parse_str($urlParts['query'], $urlParts['query']);
+                }
+
+                if ($link->cURL === $curScriptFileName
+                    || $curScriptFileName === 'einstellungen.php'
+                    && $urlParts['basename'] === 'einstellungen.php'
+                    && Request::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
+                    || $curScriptFileName === 'statistik.php'
+                    && $urlParts['basename'] === 'statistik.php'
+                    && isset($urlParts['query']['s'])
+                    && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
+                ) {
+                    $currentToplevel    = $mainGroup->key;
+                    $currentSecondLevel = $linkGruppe->key;
+                    $currentThirdLevel  = $link->key;
+                }
+
+                $linkGruppe->oLink_arr[] = $link;
+                $thirdKey++;
             }
         }
-    }
-    $mainGroup->oLinkGruppe_arr = $childLinks;
-    // Plugin Work Around
-    if ((int)$mainGroup->kAdminmenueGruppe === LINKTYP_BACKEND_PLUGINS && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
-        $pluginLinks = Shop::Container()->getDB()->queryPrepared(
-            'SELECT DISTINCT tplugin.kPlugin, tplugin.cName, tplugin.cPluginID, tplugin.nPrio
-                FROM tplugin INNER JOIN tpluginadminmenu
-                    ON tplugin.kPlugin = tpluginadminmenu.kPlugin
-                WHERE tplugin.nStatus = :state
-                ORDER BY tplugin.nPrio, tplugin.cName',
-            ['state' => Plugin::PLUGIN_ACTIVATED],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($pluginLinks as $pluginLink) {
-            $pluginLink->kPlugin   = (int)$pluginLink->kPlugin;
-            $pluginLink->nPrio     = (int)$pluginLink->nPrio;
-            $pluginLink->cLinkname = $pluginLink->cName;
-            $pluginLink->cURL      = $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginLink->kPlugin;
-            $pluginLink->cRecht    = 'PLUGIN_ADMIN_VIEW';
-        }
-        $mainGroup->oLinkGruppe_arr   = [];
-        $pluginManager                = new stdClass();
-        $pluginManager->cName         = 'Übersicht';
-        $pluginManager->break         = false;
-        $pluginManager->oLink_arr     = Shop::Container()->getDB()->selectAll(
-            'tadminmenu',
-            'kAdminmenueGruppe',
-            (int)$mainGroup->kAdminmenueGruppe,
-            '*',
-            'cLinkname'
-        );
-        $pluginManager->oLink_arr     = \Functional\map($pluginManager->oLink_arr, function ($e) {
-            $e->kAdminmenu        = (int)$e->kAdminmenu;
-            $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
-            $e->nSort             = (int)$e->nSort;
 
-            return $e;
-        });
-        $mainGroup->oLinkGruppe_arr[] = $pluginManager;
-        $pluginCount                  = count($pluginLinks);
-        $maxEntries                   = $pluginCount > 24 ? 10 : 6;
-        $pluginListChunks             = array_chunk($pluginLinks, $maxEntries);
-        foreach ($pluginListChunks as $_chunk) {
-            $pluginList                   = new stdClass();
-            $pluginList->cName            = 'Plugins';
-            $pluginList->oLink_arr        = $_chunk;
-            $mainGroup->oLinkGruppe_arr[] = $pluginList;
-        }
-        if ($pluginCount > 12) {
-            //make the submenu full-width if more then 12 plugins are listed
-            $mainGroup->class = 'yamm-fw';
-        }
-    } elseif ((int)$mainGroup->kAdminmenueGruppe === 17 && $oAccount->permission('PLUGIN_ADMIN_VIEW')) {
-        if (isset($oPluginSearch->kPlugin) && $oPluginSearch->kPlugin > 0) {
-            $oPluginSearch->cLinkname = 'JTL Search';
-            $oPluginSearch->cURL      = $shopURL . '/' . PFAD_ADMIN .
-                'plugin.php?kPlugin=' . $oPluginSearch->kPlugin;
-            $oPluginSearch->cRecht    = 'PLUGIN_ADMIN_VIEW';
+        $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
+        $secondKey++;
+    }
 
-            $nI                     = count($mainGroup->oLink_arr);
-            $mainGroup->oLink_arr[] = $oPluginSearch;
-            ObjectHelper::sortBy($mainGroup->oLink_arr, 'cLinkname');
-        }
-    } else {
-        $mainGroup->oLink_arr = $oAccount->getVisibleMenu($adminLoginGruppe, $mainGroup->kAdminmenueGruppe);
-    }
-    if (empty($mainGroup->oLinkGruppe_arr) && empty($mainGroup->oLink_arr)) {
-        unset($mainGroup);
-    }
+    $mainGroups[] = $mainGroup;
+    $rootKey++;
 }
+
+if (isset($_SESSION['AdminAccount']->kSprache)) {
+    $smarty->assign(
+        'language',
+        $db->select('tsprache', 'kSprache', $_SESSION['AdminAccount']->kSprache)
+    );
+}
+
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
@@ -158,7 +168,7 @@ if (empty($template->version)) {
     $adminTplVersion = $template->version;
 }
 $smarty->assign('URL_SHOP', $shopURL)
-       ->assign('jtl_token', FormHelper::getTokenInput())
+       ->assign('jtl_token', Form::getTokenInput())
        ->assign('shopURL', $shopURL)
        ->assign('adminTplVersion', $adminTplVersion)
        ->assign('PFAD_ADMIN', PFAD_ADMIN)
@@ -171,11 +181,12 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('admin_js', $resourcePaths['js'])
        ->assign('account', $oAccount->account())
        ->assign('PFAD_CKEDITOR', $shopURL . '/' . PFAD_CKEDITOR)
-       ->assign('PFAD_KCFINDER', $shopURL . '/' . PFAD_KCFINDER)
        ->assign('PFAD_CODEMIRROR', $shopURL . '/' . PFAD_CODEMIRROR)
        ->assign('Einstellungen', $config)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
-       ->assign('SektionenEinstellungen', $configSections)
+       ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
        ->assign('notifications', Notification::getInstance())
+       ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('favorites', $oAccount->favorites())
+       ->assign('languages', Shop::Lang()->getInstalled())
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

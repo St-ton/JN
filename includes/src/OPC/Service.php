@@ -4,18 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use Filter\AbstractFilter;
-use Filter\Config;
-use Filter\Option;
-use Filter\Items\Attribute;
-use Filter\Items\ItemAttribute;
-use Filter\Type;
+use JTL\Backend\AdminIO;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\Config;
+use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\PriceRange;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\Type;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\OPC\Portlets\MissingPortlet;
+use JTL\Shop;
 
 /**
  * Class Service
- * @package OPC
+ * @package JTL\OPC
  */
 class Service
 {
@@ -65,17 +71,32 @@ class Service
     }
 
     /**
-     * @param \AdminIO $io
+     * @param AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io)
+    public function registerAdminIOFunctions(AdminIO $io): void
     {
-        $this->adminName = $io->getAccount()->account()->cLogin;
+        $adminAccount = $io->getAccount();
+
+        if ($adminAccount === null) {
+            throw new \Exception('Admin account was not set on AdminIO.');
+        }
+
+        $this->adminName = $adminAccount->account()->cLogin;
 
         foreach ($this->getIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
+    }
+
+    /**
+     * @return null|string
+     * @throws \Exception
+     */
+    public function getAdminSessionToken(): ?string
+    {
+        return Shop::getAdminSessionToken();
     }
 
     /**
@@ -110,9 +131,7 @@ class Service
      */
     public function getBlueprint(int $id): Blueprint
     {
-        $blueprint = (new Blueprint())
-            ->setId($id);
-
+        $blueprint = (new Blueprint())->setId($id);
         $this->db->loadBlueprint($blueprint);
 
         return $blueprint;
@@ -143,22 +162,18 @@ class Service
      * @param array $data
      * @throws \Exception
      */
-    public function saveBlueprint($name, $data)
+    public function saveBlueprint($name, $data): void
     {
-        $blueprint = (new Blueprint())
-            ->deserialize(['name' => $name, 'content' => $data]);
-
+        $blueprint = (new Blueprint())->deserialize(['name' => $name, 'content' => $data]);
         $this->db->saveBlueprint($blueprint);
     }
 
     /**
      * @param int $id
      */
-    public function deleteBlueprint($id)
+    public function deleteBlueprint($id): void
     {
-        $blueprint = (new Blueprint())
-            ->setId($id);
-
+        $blueprint = (new Blueprint())->setId($id);
         $this->db->deleteBlueprint($blueprint);
     }
 
@@ -169,7 +184,13 @@ class Service
      */
     public function createPortletInstance($class): PortletInstance
     {
-        return new PortletInstance($this->db->getPortlet($class));
+        $portlet = $this->db->getPortlet($class);
+
+        if ($portlet instanceof MissingPortlet) {
+            return new MissingPortletInstance($portlet, $portlet->getMissingClass());
+        }
+
+        return new PortletInstance($portlet);
     }
 
     /**
@@ -179,6 +200,11 @@ class Service
      */
     public function getPortletInstance($data): PortletInstance
     {
+        if ($data['class'] === 'MissingPortlet') {
+            return $this->createPortletInstance($data['missingClass'])
+                ->deserialize($data);
+        }
+
         return $this->createPortletInstance($data['class'])
             ->deserialize($data);
     }
@@ -195,13 +221,18 @@ class Service
 
     /**
      * @param string $portletClass
+     * @param string $missingClass
      * @param array $props
      * @return string
      * @throws \Exception
      */
-    public function getConfigPanelHtml($portletClass, $props): string
+    public function getConfigPanelHtml($portletClass, $missingClass, $props): string
     {
-        return $this->getPortletInstance(['class' => $portletClass, 'properties' => $props])->getConfigPanelHtml();
+        return $this->getPortletInstance([
+            'class'        => $portletClass,
+            'missingClass' => $missingClass,
+            'properties'   => $props,
+        ])->getConfigPanelHtml();
     }
 
     /**
@@ -209,7 +240,7 @@ class Service
      */
     public function isEditMode(): bool
     {
-        return \RequestHelper::verifyGPDataString('opcEditMode') === 'yes';
+        return Request::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -225,7 +256,7 @@ class Service
      */
     public function getEditedPageKey(): int
     {
-        return \RequestHelper::verifyGPCDataInt('opcEditedPageKey');
+        return Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
@@ -234,12 +265,12 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        \TaxHelper::setTaxRates();
+        Tax::setTaxRates();
 
-        $productFilter    = new \Filter\ProductFilter(
+        $productFilter    = new ProductFilter(
             Config::getDefault(),
-            \Shop::Container()->getDB(),
-            \Shop::Container()->getCache()
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache()
         );
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];
@@ -249,7 +280,7 @@ class Service
             /** @var AbstractFilter $newFilter **/
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND);
-            if ($newFilter instanceof \Filter\Items\PriceRange) {
+            if ($newFilter instanceof PriceRange) {
                 $productFilter->addActiveFilter($newFilter, (string)$enabledFilter['value']);
             } else {
                 $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);

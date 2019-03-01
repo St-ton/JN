@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
 /**
  * Class GivenAnswer
- * @package Survey
+ * @package JTL\Survey
  */
 class GivenAnswer
 {
@@ -40,7 +40,7 @@ class GivenAnswer
                 return false;
             }
             foreach ($this->answer as $item) {
-                list($answerOption, $matrixOption) = \explode('_', $item);
+                [$answerOption, $matrixOption] = \explode('_', $item);
                 if ((int)$answerOption === $answerID && (int)$matrixOption === $matrixID) {
                     return true;
                 }
@@ -76,7 +76,7 @@ class GivenAnswer
     /**
      * @param int $questionID
      */
-    public function setQuestionID(int $questionID)
+    public function setQuestionID(int $questionID): void
     {
         $this->questionID = $questionID;
     }
@@ -95,15 +95,15 @@ class GivenAnswer
     /**
      * @param mixed $answer
      */
-    public function setAnswer($answer)
+    public function setAnswer($answer): void
     {
         $this->answer = $answer;
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getQuestionType()
+    public function getQuestionType(): ?string
     {
         return $this->questionType;
     }
@@ -111,7 +111,7 @@ class GivenAnswer
     /**
      * @param mixed $questionType
      */
-    public function setQuestionType($questionType)
+    public function setQuestionType($questionType): void
     {
         $this->questionType = $questionType;
     }

@@ -6,11 +6,13 @@
  * @since         5.0
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
+
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class CaptchaService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class CaptchaService implements CaptchaServiceInterface
 {
@@ -55,7 +57,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string
@@ -78,7 +80,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getBodyMarkup($smarty): string

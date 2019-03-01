@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#newsCommentEdit#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('newsCommentEdit')}
 <div id="content" class="container-fluid2">
     <form name="umfrage" method="post" action="news.php" class="navbar-form">
         {$jtl_token}
@@ -11,32 +11,37 @@
             <input name="nFZ" type="hidden" value="1">
         {/if}
         {if isset($cSeite)}
-            <input type="hidden" name="{if isset($cTab) && $cTab == 'aktiv'}s2{else}s1{/if}" value="{$cSeite}" />
+            <input type="hidden" name="{if isset($cTab) && $cTab === 'aktiv'}s2{else}s1{/if}" value="{$cSeite}" />
         {/if}
-        <input type="hidden" name="kNews" value="{$oNewsKommentar->kNews}" />
-        <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->kNewsKommentar}" />
+        <input type="hidden" name="kNews" value="{$oNewsKommentar->getNewsID()}" />
+        <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{$oNewsKommentar->cName} - {#newsCommentEdit#}</h3>
+                <h3 class="panel-title">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</h3>
             </div>
             <div class="table-responsive">
                 <table class="list table" id="formtable">
                     <tr>
-                        <td><label for="cName">{#newsHeadline#}</label></td>
-                        <td><input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->cName}" /></td>
+                        <td><label for="cName">{__('visitors')}</label></td>
+                        <td>
+                            <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
+                            {if $oNewsKommentar->getCustomerID() === 0}
+                                &nbsp;({$oNewsKommentar->getMail()})
+                            {/if}
+                        </td>
                     </tr>
                     <tr>
-                        <td><label for="cKommentar">{#newsText#}</label></td>
+                        <td><label for="cKommentar">{__('text')}</label></td>
                         <td>
-                            <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->cKommentar}</textarea>
+                            <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->getText()}</textarea>
                         </td>
                     </tr>
                 </table>
             </div>
             <div class="panel-footer">
                 <span class="btn-group">
-                    <button name="newskommentarsavesubmit" type="submit" value="{#newsSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
-                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> Abbrechen</a>
+                    <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
                 </span>
             </div>
         </div>

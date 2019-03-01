@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+
 /**
  * @param float $fPreis
  * @param float $fSteuersatz
@@ -115,7 +119,7 @@ function gibGesetzteVersandklassen($cVersandklassen)
             FROM tversandklasse
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')  
             ORDER BY kVersandklasse',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     ));
     foreach ($PVersandklassen as $vk) {
         $gesetzteVK[$vk->kVersandklasse] = in_array($vk->kVersandklasse, $cVKarr, true);
@@ -148,7 +152,7 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
             FROM tversandklasse 
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')
             ORDER BY kVersandklasse',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     ));
     foreach ($PVersandklassen as $vk) {
         if (in_array($vk->kVersandklasse, $cVKarr, true)) {
@@ -160,27 +164,25 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
 }
 
 /**
- * @param string $cKundengruppen
+ * @param string $customerGroupsString
  * @return array
  */
-function gibGesetzteKundengruppen($cKundengruppen)
+function gibGesetzteKundengruppen($customerGroupsString)
 {
-    $bGesetzteKG_arr   = [];
-    $cKG_arr           = explode(';', trim($cKundengruppen));
-    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+    $activeGroups = [];
+    $groups       = Text::parseSSK($customerGroupsString);
+    $groupData    = Shop::Container()->getDB()->query(
         'SELECT kKundengruppe
             FROM tkundengruppe
             ORDER BY kKundengruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oKundengruppe_arr as $oKundengruppe) {
-        $bGesetzteKG_arr[$oKundengruppe->kKundengruppe] = in_array($oKundengruppe->kKundengruppe, $cKG_arr);
+    foreach ($groupData as $group) {
+        $activeGroups[(int)$group->kKundengruppe] = in_array($group->kKundengruppe, $groups);
     }
-    if ($cKundengruppen === '-1') {
-        $bGesetzteKG_arr['alle'] = true;
-    }
+    $activeGroups['alle'] = $customerGroupsString === '-1';
 
-    return $bGesetzteKG_arr;
+    return $activeGroups;
 }
 
 /**
@@ -238,12 +240,12 @@ function getZuschlagNames(int $kVersandzuschlag)
  */
 function getShippingByName(string $cSearch)
 {
-    $cSearch_arr        = explode(',', $cSearch);
-    $allShippingsByName = [];
-    foreach ($cSearch_arr as $cSearchPos) {
+    $byName = [];
+    $db     = Shop::Container()->getDB();
+    foreach (explode(',', $cSearch) as $cSearchPos) {
         $cSearchPos = trim($cSearchPos);
-        if (strlen($cSearchPos) > 2) {
-            $shippingByName_arr = Shop::Container()->getDB()->queryPrepared(
+        if (mb_strlen($cSearchPos) > 2) {
+            $shippingByName_arr = $db->queryPrepared(
                 'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
@@ -252,21 +254,21 @@ function getShippingByName(string $cSearch)
                     WHERE va.cName LIKE :search
                     OR vs.cName LIKE :search',
                 ['search' => '%' . $cSearchPos . '%'],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {
                     foreach ($shippingByName_arr as $shippingByName) {
-                        $allShippingsByName[$shippingByName->kVersandart] = $shippingByName;
+                        $byName[$shippingByName->kVersandart] = $shippingByName;
                     }
                 } else {
-                    $allShippingsByName[$shippingByName_arr[0]->kVersandart] = $shippingByName_arr[0];
+                    $byName[$shippingByName_arr[0]->kVersandart] = $shippingByName_arr[0];
                 }
             }
         }
     }
 
-    return $allShippingsByName;
+    return $byName;
 }
 
 /**
@@ -278,7 +280,6 @@ function getCombinations(array $shipClasses, int $length)
 {
     $baselen = count($shipClasses);
     if ($baselen === 0) {
-
         return [];
     }
     if ($length === 1) {
@@ -346,13 +347,11 @@ function getMissingShippingClassCombi()
 
     // if a shipping method is valid for all classes return
     if (in_array('-1', $combinationInUse, false)) {
-
         return [];
     }
 
     $len = count($shipClasses);
     if ($len > SHIPPING_CLASS_MAX_VALIDATION_COUNT) {
-
         return -1;
     }
 

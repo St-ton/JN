@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Customer\KundenwerbenKunden;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * @param array $post
  * @return bool
@@ -11,7 +15,8 @@
  */
 function pruefeEingabe(array $post)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use KundenwerbenKunden::checkInputData() instead.', E_USER_DEPRECATED);
+    trigger_error(__FUNCTION__ . ' is deprecated. ' .
+        'Use KundenwerbenKunden::checkInputData() instead.', E_USER_DEPRECATED);
     return KundenwerbenKunden::checkInputData($post);
 }
 
@@ -45,7 +50,7 @@ function gibBestandskundeGutbaben(int $kKunde, $fGuthaben)
                 'bal' => (float)$fGuthaben,
                 'cid' => $kKunde
             ],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         return true;

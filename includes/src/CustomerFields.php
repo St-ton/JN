@@ -1,13 +1,20 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- * @package jtl-shop
- * @since 5.0
+ * @license       http://jtl-url.de/jtlshoplicense
+ * @package       jtl-shop
+ * @since         5.0
  */
+
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
+use stdClass;
 
 /**
  * Class CustomerFields
+ * @package JTL
  */
 class CustomerFields
 {
@@ -19,7 +26,7 @@ class CustomerFields
     /**
      * @var object[]
      */
-    protected $customerFields;
+    protected $customerFields = [];
 
     /**
      * @var int
@@ -28,6 +35,7 @@ class CustomerFields
 
     /**
      * CustomerFields constructor.
+     *
      * @param int $langID
      */
     public function __construct(int $langID)
@@ -37,10 +45,10 @@ class CustomerFields
     }
 
     /**
-     * @param null|int $langID
-     * @return static
+     * @param null $langID
+     * @return CustomerFields
      */
-    public static function getInstance($langID = null)
+    public static function getInstance($langID = null): self
     {
         if ($langID === null || (int)$langID === 0) {
             $langID = (int)$_SESSION['kSprache'];
@@ -58,10 +66,16 @@ class CustomerFields
     /**
      * @param int $langID
      */
-    protected function loadFields(int $langID)
+    protected function loadFields(int $langID): void
     {
         $this->customerFields = [];
-        $customerFields       = Shop::Container()->getDB()->selectAll('tkundenfeld', 'kSprache', $langID, '*', 'nSort ASC');
+        $customerFields       = Shop::Container()->getDB()->selectAll(
+            'tkundenfeld',
+            'kSprache',
+            $langID,
+            '*',
+            'nSort ASC'
+        );
 
         foreach ($customerFields as $item) {
             $this->prepare($item);
@@ -87,9 +101,9 @@ class CustomerFields
     /**
      * @return object[]
      */
-    public function getCustomerFields()
+    public function getCustomerFields(): array
     {
-        return ObjectHelper::deepCopy($this->customerFields);
+        return GeneralObject::deepCopy($this->customerFields);
     }
 
     /**
@@ -105,7 +119,7 @@ class CustomerFields
      * @param object $customerField
      * @return null|object[]
      */
-    public function getCustomerFieldValues($customerField)
+    public function getCustomerFieldValues($customerField): ?array
     {
         $this->prepare($customerField);
 
@@ -146,12 +160,13 @@ class CustomerFields
     }
 
     /**
-     * @param int $kCustomerField
+     * @param int   $kCustomerField
      * @param array $customerFieldValues
      */
-    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues)
+    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues): void
     {
-        Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
+        $db = Shop::Container()->getDB();
+        $db->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
 
         foreach ($customerFieldValues as $customerFieldValue) {
             $entitie              = new stdClass();
@@ -159,11 +174,11 @@ class CustomerFields
             $entitie->cWert       = $customerFieldValue['cWert'];
             $entitie->nSort       = (int)$customerFieldValue['nSort'];
 
-            Shop::Container()->getDB()->insert('tkundenfeldwert', $entitie);
+            $db->insert('tkundenfeldwert', $entitie);
         }
 
         // Delete all customer values that are not in value list
-        Shop::Container()->getDB()->executeQueryPrepared(
+        $db->executeQueryPrepared(
             "DELETE tkundenattribut
                     FROM tkundenattribut
                     INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
@@ -176,12 +191,12 @@ class CustomerFields
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
             ['kKundenfeld' => $kCustomerField],
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
 
     /**
-     * @param object $customerField
+     * @param object     $customerField
      * @param null|array $customerFieldValues
      * @return bool
      */
@@ -220,7 +235,7 @@ class CustomerFields
 	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
                             ['kKundenfeld' => $key],
-                            \DB\ReturnType::AFFECTED_ROWS
+                            ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'datum':
@@ -230,7 +245,7 @@ class CustomerFields
 	                            cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
                             ['kKundenfeld' => $key],
-                            \DB\ReturnType::AFFECTED_ROWS
+                            ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'text':
@@ -240,7 +255,6 @@ class CustomerFields
                 }
             }
         } else {
-            // insert...
             $key = Shop::Container()->getDB()->insert('tkundenfeld', $customerField);
 
             if ($key > 0) {
@@ -252,7 +266,7 @@ class CustomerFields
         }
 
         if ($ret) {
-            if ($customerField->cTyp === 'auswahl' && is_array($customerFieldValues)) {
+            if ($customerField->cTyp === 'auswahl' && \is_array($customerFieldValues)) {
                 $this->updateCustomerFieldValues($key, $customerFieldValues);
             }
         } else {

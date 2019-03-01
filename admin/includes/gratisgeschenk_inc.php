@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Helpers\Date;
+use JTL\Catalog\Product\Artikel;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * @param string $cSQL
  * @return array
@@ -12,13 +17,13 @@ function holeAktiveGeschenke($cSQL): array
 {
     $data = [];
     $res  = [];
-    if (strlen($cSQL) > 0) {
+    if (mb_strlen($cSQL) > 0) {
         $data = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikelattribut
                 WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
                 ORDER BY CAST(cWert AS SIGNED) DESC " . $cSQL,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
     if (count($data) > 0) {
@@ -44,7 +49,7 @@ function holeHaeufigeGeschenke($cSQL): array
 {
     $res  = [];
     $data = [];
-    if (strlen($cSQL) > 0) {
+    if (mb_strlen($cSQL) > 0) {
         $data = Shop::Container()->getDB()->query(
             'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
                 MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
@@ -53,7 +58,7 @@ function holeHaeufigeGeschenke($cSQL): array
                     ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
                 GROUP BY tgratisgeschenk.kArtikel
                 ORDER BY nAnzahl DESC, lastOrdered DESC ' . $cSQL,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -65,12 +70,12 @@ function holeHaeufigeGeschenke($cSQL): array
             $product->fuelleArtikel($oHaeufigGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = $oHaeufigGeschenkTMP->nAnzahl;
-                $dateParts          = DateHelper::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
+                $dateParts          = Date::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
                 $lastOrdered        = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
                     $dateParts['cJahr'] . ' ' .
                     $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
                 $res[]              = (object)[
-                    'Artikel'       => $product,
+                    'artikel'       => $product,
                     'lastOrdered'   => $lastOrdered,
                     'avgOrderValue' => $oHaeufigGeschenkTMP->avgOrderValue
                 ];
@@ -89,14 +94,14 @@ function holeLetzten100Geschenke($cSQL): array
 {
     $res  = [];
     $data = [];
-    if (strlen($cSQL) > 0) {
+    if (mb_strlen($cSQL) > 0) {
         $data = Shop::Container()->getDB()->query(
             'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
                 FROM tgratisgeschenk
                   LEFT JOIN tbestellung 
                       ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
                 ORDER BY tbestellung.dErstellt DESC ' . $cSQL,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -108,12 +113,12 @@ function holeLetzten100Geschenke($cSQL): array
             $product->fuelleArtikel($oLetzten100GeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $product->nGGAnzahl = $oLetzten100GeschenkTMP->nAnzahl;
-                $dateParts          = DateHelper::getDateParts($oLetzten100GeschenkTMP->orderCreated);
+                $dateParts          = Date::getDateParts($oLetzten100GeschenkTMP->orderCreated);
                 $orderCreated       = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
                     $dateParts['cJahr'] . ' ' .
                     $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
                 $res[]              = (object)[
-                    'Artikel'      => $product,
+                    'artikel'      => $product,
                     'orderCreated' => $orderCreated,
                     'orderValue'   => $oLetzten100GeschenkTMP->fGesamtsumme
                 ];
@@ -133,7 +138,7 @@ function gibAnzahlAktiverGeschenke(): int
         "SELECT COUNT(*) AS nAnzahl
             FROM tartikelattribut
             WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'",
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }
 
@@ -146,7 +151,7 @@ function gibAnzahlHaeufigGekaufteGeschenke(): int
         'SELECT COUNT(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
             WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }
 
@@ -160,6 +165,6 @@ function gibAnzahlLetzten100Geschenke(): int
             FROM twarenkorbpos
             WHERE nPosTyp = ' . C_WARENKORBPOS_TYP_GRATISGESCHENK . '
             LIMIT 100',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }

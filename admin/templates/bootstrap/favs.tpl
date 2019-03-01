@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/seite_header.tpl' cTitel="Favoriten" cBeschreibung="Verwalten Sie Ihre Favoriten"}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('favorites') cBeschreibung=__('manageFavorites')}
 
 <script type="text/javascript">
     function addItem() {
@@ -68,8 +68,8 @@
                 <table class="list table table-hover" id="favs">
                     <thead>
                     <tr>
-                        <th class="text-left">Titel</th>
-                        <th class="text-left">Link</th>
+                        <th class="text-left">{__('title')}</th>
+                        <th class="text-left">{__('link')}</th>
                         <th width="30"></th>
                         <th width="50"></th>
                     </tr>
@@ -86,12 +86,11 @@
             <div class="panel-footer">
                 <div class="save btn-group">
                     <button type="submit" name="action" value="save" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {#save#}
+                        <i class="fa fa-save"></i> {__('save')}
                     </button>
                 </div>
             </div>
         </div>
     </form>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

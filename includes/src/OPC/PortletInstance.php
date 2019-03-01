@@ -4,11 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Media\Image;
+use Intervention\Image\ImageManager;
+use JTL\Shop;
 
 /**
  * Class PortletInstance
- * @package OPC
+ * @package JTL\OPC
  */
 class PortletInstance implements \JsonSerializable
 {
@@ -16,11 +20,11 @@ class PortletInstance implements \JsonSerializable
      * @var array
      */
     protected static $dirSizes = [
-        '.xs/' => WIDTH_OPC_IMAGE_XS,
-        '.sm/' => WIDTH_OPC_IMAGE_SM,
-        '.md/' => WIDTH_OPC_IMAGE_MD,
-        '.lg/' => WIDTH_OPC_IMAGE_LG,
-        '.xl/' => WIDTH_OPC_IMAGE_XL,
+        '.xs/' => \WIDTH_OPC_IMAGE_XS,
+        '.sm/' => \WIDTH_OPC_IMAGE_SM,
+        '.md/' => \WIDTH_OPC_IMAGE_MD,
+        '.lg/' => \WIDTH_OPC_IMAGE_LG,
+        '.xl/' => \WIDTH_OPC_IMAGE_XL,
     ];
 
     /**
@@ -84,6 +88,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(): string
     {
@@ -92,6 +97,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(): string
     {
@@ -100,6 +106,7 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getConfigPanelHtml(): string
     {
@@ -161,7 +168,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return null|AreaList
      */
-    public function getSubareaList()
+    public function getSubareaList(): ?AreaList
     {
         return $this->subareaList;
     }
@@ -170,7 +177,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $id
      * @return Area
      */
-    public function getSubarea($id)
+    public function getSubarea($id): Area
     {
         return $this->subareaList->getArea($id);
     }
@@ -286,34 +293,42 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @return $this
+     * @return string
      */
-    public function updateAttributes(): self
+    public function getStyleString(): string
     {
         $styleString = '';
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (\strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
+                if (\mb_strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
                     $this->addClass($styleName);
-                } elseif (\stripos($styleName, 'margin-') !== false
-                    || \stripos($styleName, 'padding-') !== false
-                    || \stripos($styleName, 'border-width') !== false
-                    || \stripos($styleName, '-width') !== false
-                    || \stripos($styleName, '-height') !== false
+                } elseif (\mb_stripos($styleName, 'margin-') !== false
+                    || \mb_stripos($styleName, 'padding-') !== false
+                    || \mb_stripos($styleName, 'border-width') !== false
+                    || \mb_stripos($styleName, '-width') !== false
+                    || \mb_stripos($styleName, '-height') !== false
                 ) {
-                    $styleString .= "$styleName:" . \htmlspecialchars($styleValue, \ENT_QUOTES) . "px; ";
+                    $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . 'px; ';
                 } else {
-                    $styleString .= "$styleName:" . \htmlspecialchars($styleValue, \ENT_QUOTES) . "; ";
+                    $styleString .= $styleName . ':' . \htmlspecialchars($styleValue, \ENT_QUOTES) . '; ';
                 }
             }
         }
 
-        $this->setAttribute('style', $styleString);
+        return $styleString;
+    }
+
+    /**
+     * @return $this
+     */
+    public function updateAttributes(): self
+    {
+        $this->setAttribute('style', $this->getStyleString());
 
         foreach ($this->getAnimations() as $aniName => $aniValue) {
             if ($aniName === 'animation-style' && !empty($aniValue)) {
-                $this->addClass("wow " . $aniValue);
+                $this->addClass('wow ' . $aniValue);
             } elseif (!empty($aniValue)) {
                 $this->setAttribute($aniName, $aniValue);
             }
@@ -351,7 +366,23 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttributeString(): string
     {
-        return 'data-portlet="' . \htmlspecialchars(\json_encode($this->jsonSerializeShort()), \ENT_QUOTES) . '"';
+        return 'data-portlet="' . $this->getDataAttribute() . '"';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataAttribute(): string
+    {
+        return \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->jsonSerializeShort();
     }
 
     /**
@@ -359,6 +390,7 @@ class PortletInstance implements \JsonSerializable
      * @param string $alt
      * @param string $title
      * @param int    $divisor
+     * @param string $default
      * @return array
      */
     public function getImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): array
@@ -370,7 +402,7 @@ class PortletInstance implements \JsonSerializable
         $srcsizes = '';
 
         if (empty($src)) {
-            $src = $default ?? \Shop::getURL() . '/gfx/keinBild.gif';
+            $src = $default ?? Shop::getURL() . '/gfx/keinBild.gif';
 
             return [
                 'srcset'   => $srcset,
@@ -382,32 +414,31 @@ class PortletInstance implements \JsonSerializable
         }
 
         $widthHeuristics = $this->widthHeuristics;
-        $settings        = \Shop::getSettings([CONF_BILDER]);
-        $name            = basename($src);
+        $settings        = Shop::getSettings([\CONF_BILDER]);
+        $name            = \basename($src);
 
         foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
-
+            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
             if (!\file_exists($sizedImgPath) === true) {
-                $image     = new \Imanee\Imanee(PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $name);
-                $imageSize = $image->getSize();
-                $factor    = $width / $imageSize['width'];
-
-                $image
-                    ->resize((int)$width, (int)($imageSize['height'] * $factor))
-                    ->write(
-                        PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
-                        $settings['bilder']['bilder_jpg_quali']
-                    );
+                $manager = new ImageManager(['driver' => Image::getImageDriver()]);
+                // to finally create image instances
+                $img    = $manager->make($sizedImgPath);
+                $factor = $width / $img->getWidth();
+                $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                $img->save(
+                    \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
+                    $settings['bilder']['bilder_jpg_quali']
+                );
             }
 
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
-        $srcset = \substr($srcset, 0, -1); // remove trailing comma
+        $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
 
         if (\is_array($widthHeuristics)) {
-
             foreach ($widthHeuristics as $breakpoint => $col) {
                 if (!empty($col)) {
                     $factor = 1;
@@ -457,10 +488,20 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @param null $src
+     * @param null $alt
+     * @param null $title
+     * @param int  $divisor
+     * @param null $default
      * @return string
      */
-    public function getImageAttributeString($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
-    {
+    public function getImageAttributeString(
+        $src = null,
+        $alt = null,
+        $title = null,
+        $divisor = 1,
+        $default = null
+    ): string {
         $imgAttribs = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
 
         return "srcset='{$imgAttribs['srcset']}' srcsizes='{$imgAttribs['srcsizes']}' src='{$imgAttribs['src']}'
@@ -472,9 +513,10 @@ class PortletInstance implements \JsonSerializable
      * @param string $alt
      * @param string $title
      * @param int    $divisor
+     * @param null   $default
      * @return $this
      */
-    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null)
+    public function setImageAttributes($src = null, $alt = null, $title = null, $divisor = 1, $default = null): self
     {
         $imageAttributes = $this->getImageAttributes($src, $alt, $title, $divisor, $default);
 
@@ -490,6 +532,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @param array $data
      * @return $this
+     * @throws \Exception
      */
     public function deserialize($data)
     {

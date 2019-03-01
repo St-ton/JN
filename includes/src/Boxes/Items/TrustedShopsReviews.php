@@ -4,12 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\TrustedShops;
+use stdClass;
 
 /**
  * Class TrustedShopsReviews
- * @package Boxes
+ *
+ * @package JTL\Boxes\Items
  */
 final class TrustedShopsReviews extends AbstractBox
 {
@@ -19,7 +24,7 @@ final class TrustedShopsReviews extends AbstractBox
     private $imagePath = '';
 
     /**
-     * @var \stdClass|null
+     * @var stdClass|null
      */
     private $stats;
 
@@ -29,22 +34,22 @@ final class TrustedShopsReviews extends AbstractBox
     private $imageURL = '';
 
     /**
-     * DirectPurchase constructor.
+     * TrustedShopsReviews constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('oStatistik', 'Stats');
-        parent::addMapping('cBildPfadURL', 'ImageURL');
-        parent::addMapping('cBildPfad', 'ImagePath');
+        $this->addMapping('oStatistik', 'Stats');
+        $this->addMapping('cBildPfadURL', 'ImageURL');
+        $this->addMapping('cBildPfad', 'ImagePath');
         $this->setShow(false);
         $validISOCodes = ['de', 'en', 'fr', 'es', 'pl'];
-        $langCode            = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
+        $langCode      = Text::convertISO2ISO639(Shop::getLanguageCode());
         if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $validISOCodes, true)) {
-            $ts       = new \TrustedShops(-1, $langCode);
+            $ts       = new TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \strlen($tsRating->cTSID) > 0) {
+            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \mb_strlen($tsRating->cTSID) > 0) {
                 $localizedURLs = [
                     'de' => 'https://www.trustedshops.com/bewertung/info_' . $tsRating->cTSID . '.html',
                     'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tsRating->cTSID . '.html',
@@ -53,14 +58,14 @@ final class TrustedShopsReviews extends AbstractBox
                     'pl' => ''
                 ];
                 $this->setShow(true);
-                if (!$this->cachecheck($filename = $tsRating->cTSID . '.gif', 10800)) {
+                if (!$this->cachecheck($filename = $tsRating->cTSID . '.gif')) {
                     if (!$ts::ladeKundenbewertungsWidgetNeu($filename)) {
                         $this->setShow(false);
                     }
                     // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
                     $ts->pruefeZertifikat($langCode);
                 }
-                $this->setImagePath(\Shop::getImageBaseURL() . \PFAD_GFX_TRUSTEDSHOPS . $filename);
+                $this->setImagePath(Shop::getImageBaseURL() . \PFAD_GFX_TRUSTEDSHOPS . $filename);
                 $this->setImageURL($localizedURLs[$langCode]);
                 $this->setStats($ts->gibKundenbewertungsStatistik());
             }
@@ -92,15 +97,15 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param string $path
      */
-    public function setImagePath(string $path)
+    public function setImagePath(string $path): void
     {
         $this->imagePath = $path;
     }
 
     /**
-     * @return null|\stdClass
+     * @return null|stdClass
      */
-    public function getStats()
+    public function getStats(): ?stdClass
     {
         return $this->stats;
     }
@@ -108,7 +113,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param null|\stdClass $stats
      */
-    public function setStats($stats)
+    public function setStats($stats): void
     {
         $this->stats = $stats;
     }
@@ -124,7 +129,7 @@ final class TrustedShopsReviews extends AbstractBox
     /**
      * @param string $imageURL
      */
-    public function setImageURL(string $imageURL)
+    public function setImageURL(string $imageURL): void
     {
         $this->imageURL = $imageURL;
     }

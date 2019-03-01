@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Gallery
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Gallery extends \OPC\Portlet
+class Gallery extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -104,7 +105,7 @@ class Gallery extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Gallery';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Gallery';
     }
 
     /**

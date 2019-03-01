@@ -4,27 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
-
-use Filter\SortingOptions\Availability;
-use Filter\SortingOptions\Bestseller;
-use Filter\SortingOptions\DateCreated;
-use Filter\SortingOptions\DateOfIssue;
-use Filter\SortingOptions\EAN;
-use Filter\SortingOptions\NameASC;
-use Filter\SortingOptions\NameDESC;
-use Filter\SortingOptions\None;
-use Filter\SortingOptions\PriceASC;
-use Filter\SortingOptions\PriceDESC;
-use Filter\SortingOptions\ProductNumber;
-use Filter\SortingOptions\RatingDESC;
-use Filter\SortingOptions\SortDefault;
-use Filter\SortingOptions\Weight;
+use JTL\Filter\SortingOptions\Availability;
+use JTL\Filter\SortingOptions\Bestseller;
+use JTL\Filter\SortingOptions\DateCreated;
+use JTL\Filter\SortingOptions\DateOfIssue;
+use JTL\Filter\SortingOptions\EAN;
+use JTL\Filter\SortingOptions\NameASC;
+use JTL\Filter\SortingOptions\NameDESC;
+use JTL\Filter\SortingOptions\None;
+use JTL\Filter\SortingOptions\PriceASC;
+use JTL\Filter\SortingOptions\PriceDESC;
+use JTL\Filter\SortingOptions\ProductNumber;
+use JTL\Filter\SortingOptions\RatingDESC;
+use JTL\Filter\SortingOptions\SortDefault;
+use JTL\Filter\SortingOptions\Weight;
 
 /**
  * Class SortingType
- * @package Mapper
+ * @package JTL\Mapper
  */
 class SortingType
 {
@@ -32,7 +31,7 @@ class SortingType
      * @param int $type
      * @return string|null
      */
-    public function mapSortTypeToClassName(int $type)
+    public function mapSortTypeToClassName(int $type): ?string
     {
         switch ($type) {
             case \SEARCH_SORT_NONE:
@@ -78,7 +77,7 @@ class SortingType
             return (int)$sort;
         }
         // Usersortierung ist ein String aus einem Kategorieattribut
-        switch (\strtolower($sort)) {
+        switch (\mb_convert_case($sort, \MB_CASE_LOWER)) {
             case \SEARCH_SORT_CRITERION_NAME:
             case \SEARCH_SORT_CRITERION_NAME_ASC:
                 return \SEARCH_SORT_NAME_ASC;

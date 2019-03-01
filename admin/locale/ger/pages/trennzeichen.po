@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Trennzeichen"
+msgstr "Zahlenformate"
+
+msgid "trennzeichenURL"
+msgstr "https://jtl-url.de/xiepq"
+
+msgid "trennzeichenDesc"
+msgstr " "
+
+msgid "errorWeightDecimals"
+msgstr "Fehler: Die Anzahl an Dezimalstellen für das Gewicht darf nicht größer als 4 sein."
+
+msgid "errorAmountDecimals"
+msgstr "Fehler: Die Anzahl an Dezimalstellen für die Menge darf nicht größer als 2 sein."
+
+msgid "countDecimals"
+msgstr "Anzahl Dezimalstellen"
+
+msgid "thousandDivider"
+msgstr "Tausendertrennzeichen"

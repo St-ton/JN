@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Class PortletGroup
- * @package OPC
+ * @package JTL\OPC
  */
 class PortletGroup
 {
@@ -29,7 +29,11 @@ class PortletGroup
      */
     public function __construct($name)
     {
-        $this->name = $name;
+        if ($name === '') {
+            $this->name = 'No Group';
+        } else {
+            $this->name = $name;
+        }
     }
 
     /**

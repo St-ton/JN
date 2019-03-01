@@ -2,7 +2,7 @@
 {$corruptedPicsTypes = []}
 {$corruptedPics = false}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#bilderverwaltung# cBeschreibung=#bilderverwaltungDesc# cDokuURL=#bilderverwaltungURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('bilderverwaltung') cBeschreibung=__('bilderverwaltungDesc') cDokuURL=__('bilderverwaltungURL')}
 <div id="content">
     {if isset($success)}
         <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$success}</div>
@@ -11,16 +11,16 @@
         <table class="list table" id="cache-items">
             <thead>
             <tr>
-                <th class="tleft">{#headlineTyp#}</th>
-                <th class="text-center">{#headlineTotal#}</th>
-                <th class="text-center abbr">{#headlineCache#}</th>
-                <th class="text-center">{#headlineCorrupted#}</th>
-                <th class="text-center" width="125">{#headlineSize#}</th>
-                <th class="text-center" width="200">{#headlineAction#}</th>
+                <th class="tleft">{__('headlineTyp')}</th>
+                <th class="text-center">{__('headlineTotal')}</th>
+                <th class="text-center abbr">{__('headlineCache')}</th>
+                <th class="text-center">{__('faulty')}</th>
+                <th class="text-center" width="125">{__('headlineSize')}</th>
+                <th class="text-center" width="200">{__('actions')}</th>
             </tr>
             </thead>
             <tbody>
-            {foreach from=$items item="item"}
+            {foreach $items as $item}
                 {$corruptedPicsTypes[{$item->type}] = $item->stats->corrupted}
                 <tr data-type="{$item->type}">
                     <td class="item-name">{$item->name}</td>
@@ -47,8 +47,8 @@
                     </td>
                     <td class="text-center action-buttons">
                         <div class="btn-group btn-group-xs" role="group">
-                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{#deleteCachedPics#}</a>
-                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{#generatePics#}</a>
+                            <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{__('deleteCachedPics')}</a>
+                            <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{__('generatePics')}</a>
                         </div>
                     </td>
                 </tr>
@@ -58,7 +58,7 @@
     </div>
 
     <div class="footnote small text-muted">
-        <p>{#fallbackNote#}</p>
+        <p>{__('fallbackNote')}</p>
     </div>
 
     {foreach $corruptedPicsTypes as $corruptedPicsType}
@@ -69,31 +69,30 @@
 
     {if $corruptedPics}
         <h3 class="top40">
-            {#currentCorruptedPics#}
+            {__('currentCorruptedPics')}
         </h3>
-        <p class="small text-muted">{#corruptedPicsNote#}</p>
+        <p class="small text-muted">{__('corruptedPicsNote')}</p>
         <table class="list table table-condensed">
             {foreach $corruptedImagesByType as $corruptedImages}
                 <thead>
                 <tr>
-                    <th>{#articlePic#}</th>
-                    <th>{#articlenr#}</th>
+                    <th>{__('articlePic')}</th>
+                    <th>{__('articlenr')}</th>
                 </tr>
                 </thead>
                 <tbody>
-                {foreach from=$corruptedImages key=key item="corruptedImage"}
+                {foreach from=$corruptedImages key=key item='corruptedImage'}
                     <tr>
                         <td class="col-xs-7 word-break-all">{$corruptedImage->picture}</td>
                         <td class="col-xs-5">
                             {$moreCorruptedImages = false}
                             <div class="input-group">
-                                {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                    {if $smarty.foreach.corruptedImageArticle.iteration <= 3}
+                                {foreach $corruptedImage->article as $article}
+                                    {if $article@iteration <= 3}
                                         <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
                                             {$article->articleNr}
                                         </a>
-                                        {if !$smarty.foreach.corruptedImageArticle.last
-                                        && $smarty.foreach.corruptedImageArticle.iteration < 3} |{/if}
+                                        {if !$article@last && $article@iteration < 3} |{/if}
                                     {else}
                                         {$moreCorruptedImages = true}
                                         {$moreCorruptedImage = $key}
@@ -104,15 +103,15 @@
                                     <a class="btn btn-default btn-xs" data-toggle="collapse"
                                         href="#dropdownCorruptedImages-{$moreCorruptedImage}"
                                         aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                        {#more#} <span class="caret"></span>
+                                        {__('more')} <span class="caret"></span>
                                     </a>
                                     <div class="collapse" id="dropdownCorruptedImages-{$moreCorruptedImage}">
-                                        {foreach name='corruptedImageArticle' from=$corruptedImage->article item="article"}
-                                            {if $smarty.foreach.corruptedImageArticle.iteration > 3}
+                                        {foreach $corruptedImage->article as $article}
+                                            {if $article@iteration > 3}
                                                 <a href="{$article->articleURLFull}" rel="nofollow" target="_blank">
                                                     {$article->articleNr}
                                                 </a>
-                                                {if !$smarty.foreach.corruptedImageArticle.last} |{/if}
+                                                {if !$article@last} |{/if}
                                             {/if}
                                         {/foreach}
                                     </div>
@@ -162,7 +161,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden aufger&auml;umt', 'L&ouml;sche Bilder...');
+        notify = showGenerateNotify('{/literal}{__('pendingImageCleanup')}{literal}', '{/literal}{__('successImageDelete')}{literal}');
         $('.action-buttons a').attr('disabled', true);
         doCleanup(0);
     }
@@ -177,9 +176,9 @@
 
         notify.update({
             progress: 100,
-            message: 'Insgesamt ' + result.deletedImages + ' Bilder gel&ouml;scht.',
+            message: result.deletedImages + '{/literal}{__('successImageDelete')}{literal}',
             type: 'success',
-            title: 'Bilder erfolgreich aufger&auml;umt'
+            title: '{/literal}{__('successImageCleanup')}{literal}'
         });
     }
 
@@ -256,7 +255,7 @@
         running = true;
         lastResults = [];
         lastTick = new Date();
-        notify = showGenerateNotify('Bilder werden generiert', 'Statistiken werden berechnet...');
+        notify = showGenerateNotify('{/literal}{__('pendingImageGenerate')}{literal}', '{/literal}{__('pendingStatisticCalc')}{literal}');
 
         $('.action-buttons a').attr('disabled', true);
         doGenerate(type, 0);
@@ -275,7 +274,7 @@
             progress: 100,
             message: '&nbsp;',
             type: 'success',
-            title: 'Bilder erfolgreich generiert'
+            title: '{/literal}{__('successImageGenerate')}{literal}'
         });
     }
 
@@ -374,7 +373,7 @@
     }
 
     $(function () {
-        $('[data-callback]').click(function (e) {
+        $('[data-callback]').on('click', function (e) {
             e.preventDefault();
             var $element = $(this);
             if ($element.attr('disabled') !== undefined) {

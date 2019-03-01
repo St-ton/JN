@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>OnPage Composer</title>
+    <title>{__('onPageComposer')}</title>
 
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
@@ -17,8 +17,8 @@
 
     <link rel="stylesheet" href="{$templateUrl}css/onpage-composer/host.css">
 
-    <script src="{$templateUrl}js/jquery-1.12.4.min.js"></script>
-    <script src="{$templateUrl}js/jquery-ui-1.11.4.min.js"></script>
+    <script src="{$templateUrl}js/jquery-3.3.1.min.js"></script>
+    <script src="{$templateUrl}js/jquery-ui.min.js"></script>
     <script src="{$templateUrl}js/bootstrap.min.js"></script>
 
     <script src="{$templateUrl}js/global.js"></script>
@@ -45,7 +45,6 @@
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
-            kcfinderUrl: '{$PFAD_KCFINDER}',
             pageKey:     {$pageKey},
             error:       {$error|json_encode},
         });
@@ -59,10 +58,10 @@
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                             data-target="#top-navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
+                        <span class="sr-only">{__('toggleNavigation')}</span>
                         <i class="fa fa-bars"></i>
                     </button>
-                    <a class="navbar-brand" href="#">OnPage Composer</a>
+                    <a class="navbar-brand" href="#">{__('onPageComposer')}</a>
                 </div>
                 <div class="collapse navbar-collapse" id="top-navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
@@ -72,42 +71,39 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="#" id="btnImport" data-toggle="tooltip" data-placement="right"
-                                       title="Import">
-                                        <i class="fa fa-upload"></i> Import
+                                    <a href="#" id="btnImport" data-toggle="tooltip" data-placement="right">
+                                        <i class="fa fa-upload"></i> {__('Import')}
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="#" id="btnExport" data-toggle="tooltip" data-placement="right"
-                                       title="Export">
-                                        <i class="fa fa-download"></i> Export
+                                    <a href="#" id="btnExport" data-toggle="tooltip" data-placement="right">
+                                        <i class="fa fa-download"></i> {__('Export')}
                                     </a>
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right"
-                                       title="Help">
-                                        <i class="fa fa-question-circle"></i> Hilfe
+                                    <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right">
+                                        <i class="fa fa-question-circle"></i> {__('help')}
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li>
                             <a href="#" id="btnPublish" data-toggle="tooltip" data-placement="bottom"
-                               title="Veröffentlichen">
+                               title="{__('Publicate')}">
                                 <i class="fa fa-newspaper-o fa-fw"></i>
                             </a>
                         </li>
                         <li>
                             <a href="#" id="btnSave" data-toggle="tooltip" data-placement="bottom"
-                               title="Seite speichern">
+                               title="{__('Save page')}">
                                 <i class="fa fa-save"></i>
                             </a>
                         </li>
                         <li>
                             <a href="#" id="btnClose" data-toggle="tooltip" data-placement="bottom"
-                               title="Editor schließen">
+                               title="{__('Close OnPage-Composer')}">
                                 <i class="fa fa-close"></i>
                             </a>
                         </li>
@@ -117,10 +113,14 @@
         </nav>
 
         <ul id="composer-tabs" class="nav nav-tabs">
-            <li class="active"><a href="#portlets" data-toggle="tab">Portlets</a></li>
-            <li><a href="#blueprints" data-toggle="tab">Vorlagen</a></li>
-            <li><a href="#revisions" data-toggle="tab">Versionen</a></li>
-            <li><a href="#pagetree" data-toggle="tab" title="Seitenstruktur"><i class="fa fa-sitemap"></i></a></li>
+            <li class="active"><a href="#portlets" data-toggle="tab">{__('Portlets')}</a></li>
+            <li><a href="#blueprints" data-toggle="tab">{__('Blueprints')}</a></li>
+            <li><a href="#revisions" data-toggle="tab">{__('Revisions')}</a></li>
+            <li>
+                <a href="#pagetree" data-toggle="tab" title="{__('Page structure')}">
+                    <i class="fa fa-sitemap"></i>
+                </a>
+            </li>
         </ul>
 
         <div id="sidebarInnerPanel" class="container-fluid">
@@ -128,10 +128,11 @@
 
                 <div class="tab-pane active" id="portlets">
                     {foreach $opc->getPortletGroups() as $group}
-                        <a href="#collapse-{$group->getName()}" data-toggle="collapse" class="collapseGroup">
+                        {assign var="groupId" value=$group->getName()|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
+                        <a href="#collapse-{$groupId}" data-toggle="collapse" class="collapseGroup">
                             <i class="fa fa-plus-circle"></i> {$group->getName()}
                         </a>
-                        <div class="collapse" id="collapse-{$group->getName()}">
+                        <div class="collapse" id="collapse-{$groupId}">
                             <div class="row">
                                 {foreach $group->getPortlets() as $i => $portlet}
                                     {if $i > 0 && $i % 3 === 0}</div><div class="row">{/if}
@@ -152,7 +153,7 @@
                         <div id="blueprintList"></div>
                         <div class="list-group-item">
                             <a href="#" class="blueprintButton btn" id="btnImportBlueprint">
-                                <i class="fa fa-upload"></i> <span>Importiere Vorlage</span>
+                                <i class="fa fa-upload"></i> <span>{__('Import blueprint')}</span>
                             </a>
                         </div>
                     </div>
@@ -161,10 +162,10 @@
                 <div class="tab-pane" id="revisions">
                     <div class="list-group">
                         <a class="list-group-item revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
-                            <i>Ungespeicherte Version</i>
+                            <i>{__('Unsaved revision')}</i>
                         </a>
                         <a class="list-group-item revisionBtn" href="#" data-revision-id="0">
-                            Aktuelle Version
+                            {__('Current revision')}
                         </a>
                         <div id="revisionList"></div>
                     </div>
@@ -210,7 +211,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Bitte warten...</h4>
+                    <h4 class="modal-title">{__('Please wait...')}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="progress">
@@ -226,11 +227,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Fehler</h4>
+                    <h4 class="modal-title">{__('error')}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-danger" id="errorAlert">
-                        Something happened
+                        {__('somethingHappend')}
                     </div>
                 </div>
             </div>
@@ -244,15 +245,18 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <i class="fa fa-lg fa-times"></i>
                     </button>
-                    <h4 class="modal-title" id="configModalTitle">Portlet bearbeiten</h4>
+                    <h4 class="modal-title" id="configModalTitle">{__('Edit Portlet')}</h4>
                 </div>
                 <form id="configForm">
                     <div class="modal-body" id="configModalBody"></div>
                     <div class="modal-footer">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary">Speichern</button>
+                        <div class="btn-group" id="stdConfigButtons">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
+                            <button class="btn btn-primary">{__('Save')}</button>
                         </div>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="missingConfigButtons">
+                            {__('OK')}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -263,20 +267,20 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Portlet als Vorlage speichern</h4>
+                    <h4 class="modal-title">{__('Save this Portlet as a blueprint')}</h4>
                 </div>
                 <form id="blueprintForm">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="blueprintName">Vorlagen-Name</label>
+                            <label for="blueprintName">{__('Blueprint name')}</label>
                             <input type="text" class="form-control" id="blueprintName" name="blueprintName"
                                    value="Neue Vorlage">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary">Speichern</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
+                            <button class="btn btn-primary">{__('Save')}</button>
                         </div>
                     </div>
                 </form>
@@ -288,14 +292,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Vorlage löschen?</h4>
+                    <h4 class="modal-title">{__('Delete Blueprint?')}</h4>
                 </div>
                 <form id="blueprintDeleteForm">
                     <div class="modal-footer">
                         <div class="btn-group">
                             <input type="hidden" id="blueprintDeleteId" name="id" value="">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                            <button class="btn btn-primary">Löschen</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('cancel')}</button>
+                            <button class="btn btn-primary">{__('delete')}</button>
                         </div>
                     </div>
                 </form>
@@ -307,26 +311,21 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Hilfe</h4>
+                    <h4 class="modal-title">{__('help')}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-xs-12">
-                            Du findest neben den, nachfolgend aufgelisteten, Touren auch ausführliche Informationen in
-                            unserem
-                            <a href="https://guide.jtl-software.de" target="_blank"><i class="fa fa-external-link"></i>
-                                Guide
-                            </a>.
-
+                            {__('noteInfoInGuide')}
                             <form id="tourForm">
                                 <div class="radio">
                                     <label class="tour-label">
                                         <input type="radio" name="help-tour" id="helpTour1" value="ht1" checked
                                                class="hidden">
                                         <div class="panel panel-default">
-                                            <div class="panel-heading">Allgemeine Einführung</div>
+                                            <div class="panel-heading">{__('generalIntroduction')}</div>
                                             <div class="panel-body">
-                                                lerne den Composer kennen und lege dein erstes Portlet an
+                                                {__('getToKnowComposer')}
                                             </div>
                                         </div>
                                     </label>
@@ -336,9 +335,9 @@
                                         <input type="radio" name="help-tour" id="helpTour2" value="ht2"
                                                class="hidden">
                                         <div class="panel panel-default">
-                                            <div class="panel-heading">Animation</div>
+                                            <div class="panel-heading">{__('animation')}</div>
                                             <div class="panel-body">
-                                                du möchtest etwas Bewegung auf deinen Seiten, lerne hier wie`s geht
+                                                {__('noteMovementOnPage')}
                                             </div>
                                         </div>
                                     </label>
@@ -348,12 +347,9 @@
                                         <input type="radio" name="help-tour" id="helpTour3" value="ht3"
                                                class="hidden">
                                         <div class="panel panel-default">
-                                            <div class="panel-heading">Vorlagen</div>
+                                            <div class="panel-heading">{__('templates')}</div>
                                             <div class="panel-body">
-                                                Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden
-                                                möchtest?<br>
-                                                Leg' sie doch als Vorlage an und greife so einfach immer wieder darauf
-                                                zu.
+                                                {__('noteSaveAsTemplate')}
                                             </div>
                                         </div>
                                     </label>
@@ -363,16 +359,14 @@
                                         <input type="radio" name="help-tour" id="helpTour4" value="ht4"
                                                class="hidden">
                                         <div class="panel panel-default">
-                                            <div class="panel-heading">Einstellungen (Vertiefung)</div>
-                                            <div class="panel-body">
-                                                Lerne hier ein paar Tricks um deine Seiten für die verschiedenen Displayformate fit zu machen.
-                                            </div>
+                                            <div class="panel-heading">{__('settingsMore')}</div>
+                                            <div class="panel-body">{__('noteTricks')}</div>
                                         </div>
                                     </label>
                                 </div>
                                 <div class="btn-group pull-right">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
-                                    <button class="btn btn-primary">Tour starten</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
+                                    <button class="btn btn-primary">{__('startTour')}</button>
                                 </div>
                             </form>
                         </div>
@@ -386,30 +380,30 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Diesen Entwurf veröffentlichen...</h4>
+                    <h4 class="modal-title"></h4>
                 </div>
                 <form id="publishForm">
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="draftName">Interner Name des Entwurfes</label>
+                            <label for="draftName">{__('draftName')}</label>
                             <input type="text" class="form-control" id="draftName" name="draftName" value="">
                         </div>
                         <div class="form-group">
                             <label>
-                                <input type="checkbox" id="publishFromEnabled"> Veröffentlichen ab
+                                <input type="checkbox" id="publishFromEnabled">{__('publicFrom')}
                             </label>
                             <input type="text" class="form-control" id="publishFrom" name="publishFrom">
                         </div>
                         <div class="form-group">
                             <label>
-                                <input type="checkbox" id="publishToEnabled"> Veröffentlichen bis
+                                <input type="checkbox" id="publishToEnabled">{__('publicTill')}
                             </label>
                             <input type="text" class="form-control" id="publishTo" name="publishTo">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Abbrechen</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{__('cancel')}</button>
                             <button class="btn btn-primary">Übernehmen</button>
                         </div>
                     </div>
@@ -422,20 +416,20 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Lokale Änderungen wiederherstellen?</h4>
+                    <h4 class="modal-title">{__('restoreChanges')}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-info" id="errorAlert">
-                        Dieser Entwurf hat lokal ungespeicherte Änderungen. Wollen Sie diese wiederherstellen?
+                        {__('restoreUnsaved')}
                     </div>
                 </div>
                 <form id="restoreUnsavedForm">
                     <div class="modal-footer">
                         <div class="btn-group">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">
-                                Nein, Aktuelle Version bearbeiten!
+                                {__('noCurrent')}
                             </button>
-                            <button class="btn btn-primary">Ja, wiederherstellen!</button>
+                            <button class="btn btn-primary">{__('yesRestore')}</button>
                         </div>
                     </div>
                 </form>
@@ -445,33 +439,33 @@
 
     <div id="portletToolbar" class="opc-portlet-toolbar btn-group" style="display:none">
         <button type="button" class="btn btn-default btn-sm opc-label" id="portletLabel">
-            Portlet-Label
+            {__('portletLabel')}
         </button>
-        <button type="button" class="btn btn-default btn-sm" id="btnConfig" title="Einstellungen bearbeiten">
-            <i class="fa fa-pencil"></i>
+        <button type="button" class="btn btn-default btn-sm" id="btnConfig" title="{__('editSettings')}">
+            <i class="fa fa-edit"></i>
         </button>
-        <button type="button" class="btn btn-default btn-sm" id="btnClone" title="Auswahl kopieren">
+        <button type="button" class="btn btn-default btn-sm" id="btnClone" title="{__('copySelect')}">
             <i class="fa fa-clone"></i>
         </button>
-        <button type="button" class="btn btn-default btn-sm" id="btnBlueprint" title="Auswahl als Vorlage speichern">
+        <button type="button" class="btn btn-default btn-sm" id="btnBlueprint" title="{__('saveTemplate')}">
             <i class="fa fa-star"></i>
         </button>
-        <button type="button" class="btn btn-default btn-sm" id="btnParent" title="Gehe eine Ebene höher">
-            <i class="fa fa-level-up"></i>
+        <button type="button" class="btn btn-default btn-sm" id="btnParent" title="{__('goUp')}">
+            <i class="fa fa-level-up fas fa-level-up-alt"></i>
         </button>
-        <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="Auswahl löschen [Entf]">
+        <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="{__('deleteSelect')}">
             <i class="fa fa-trash"></i>
         </button>
     </div>
 
     <div id="portletPreviewLabel" class="opc-label" style="display:none">
-        Portlet-Preview-Label
+        {__('portletPreviewLabel')}
     </div>
 
     {*blueprint for blueprint entry*}
     <div class="list-group-item" style="display:none" id="blueprintBtnBlueprint">
         <a href="#" class="blueprintButton btn" draggable="true" data-blueprint-id="42">
-            <i class="fa fa-puzzle-piece"></i> <span>Vorlagen-Titel</span>
+            <i class="fa fa-puzzle-piece"></i> <span>{__('templateTitle')}</span>
         </a>
         <div class="btn-group pull-right">
             <a href="#" class="blueprintExport btn" data-blueprint-id="999">

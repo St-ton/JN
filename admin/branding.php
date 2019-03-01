@@ -3,26 +3,35 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Media\MediaImage;
+use JTL\DB\ReturnType;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'branding_uebersicht';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$step        = 'branding_uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
-if (RequestHelper::verifyGPCDataInt('branding') === 1) {
+if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
-    if (isset($_POST['speicher_einstellung']) && (int)$_POST['speicher_einstellung'] === 1 && FormHelper::validateToken()) {
-        if (speicherEinstellung(RequestHelper::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
-            $cHinweis .= 'Ihre Einstellung wurde erfolgreich gespeichert.<br />';
+    if (isset($_POST['speicher_einstellung'])
+        && (int)$_POST['speicher_einstellung'] === 1
+        && Form::validateToken()
+    ) {
+        if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         } else {
-            $cFehler .= 'Fehler: Bitte füllen Sie alle Felder komplett aus.<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
     }
     // Hole bestimmtes branding
-    if (RequestHelper::verifyGPCDataInt('kBranding') > 0) {
-        $smarty->assign('oBranding', gibBranding(RequestHelper::verifyGPCDataInt('kBranding')));
+    if (Request::verifyGPCDataInt('kBranding') > 0) {
+        $smarty->assign('oBranding', gibBranding(Request::verifyGPCDataInt('kBranding')));
     }
 } else {
     $smarty->assign('oBranding', gibBranding(1));
@@ -31,8 +40,6 @@ if (RequestHelper::verifyGPCDataInt('branding') === 1) {
 $smarty->assign('cRnd', time())
        ->assign('oBranding_arr', gibBrandings())
        ->assign('PFAD_BRANDINGBILDER', PFAD_BRANDINGBILDER)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('branding.tpl');
 
@@ -58,7 +65,7 @@ function gibBranding(int $kBranding)
             WHERE tbranding.kBranding = :bid
             GROUP BY tbranding.kBranding',
         ['bid' => $kBranding],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 }
 
@@ -77,7 +84,7 @@ function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
     $oBrandingEinstellung->dTransparenz = $cPost_arr['dTransparenz'];
     $oBrandingEinstellung->dGroesse     = $cPost_arr['dGroesse'];
 
-    if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
+    if (mb_strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
         $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding .
             mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
     } else {
@@ -92,13 +99,13 @@ function speicherEinstellung(int $kBranding, $cPost_arr, $cFiles_arr)
     }
 
     if ($oBrandingEinstellung->kBranding > 0
-        && strlen($oBrandingEinstellung->cPosition) > 0
-        && strlen($oBrandingEinstellung->cBrandingBild) > 0
+        && mb_strlen($oBrandingEinstellung->cPosition) > 0
+        && mb_strlen($oBrandingEinstellung->cBrandingBild) > 0
     ) {
         // Alte Einstellung loeschen
         Shop::Container()->getDB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
 
-        if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
+        if (mb_strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
             loescheBrandingBild($oBrandingEinstellung->kBranding);
             speicherBrandingBild($cFiles_arr, $oBrandingEinstellung->kBranding);
         }

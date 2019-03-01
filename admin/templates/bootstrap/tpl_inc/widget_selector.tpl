@@ -1,4 +1,4 @@
-{foreach from=$oAvailableWidget_arr item=oAvailableWidget}
+{foreach $oAvailableWidget_arr as $oAvailableWidget}
     <div class="media widget">
         <div class="media-body">
             <h4 class="media-heading">{$oAvailableWidget->cTitle}</h4>
@@ -13,6 +13,6 @@
 {/foreach}
 {if $oAvailableWidget_arr|@count == 0}
     <div class="widget_item">
-        <p class="title">Keine weiteren Widgets vorhanden.</p>
+        <p class="title">{__('noMoreWidgets')}</p>
     </div>
 {/if}

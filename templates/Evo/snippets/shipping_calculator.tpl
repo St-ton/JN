@@ -107,7 +107,4 @@
             </div>
         </div>
     {/block}
-    {if !empty($cErrorVersandkosten)}
-        <div class="alert alert-info">{$cErrorVersandkosten}</div>
-    {/if}
 {/if}

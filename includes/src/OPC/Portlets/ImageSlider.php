@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class ImageSlider
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class ImageSlider extends \OPC\Portlet
+class ImageSlider extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -37,7 +38,7 @@ class ImageSlider extends \OPC\Portlet
         if (!empty($images[0]['url'])) {
             return
                 '<div ' . $instance->getAttributeString() . $instance->getDataAttributeString() .
-                '><img src="' . $images[0]['url'] .
+                '><img alt="" src="' . $images[0]['url'] .
                 '" style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
                 '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
                 'Slider</p></div>';
@@ -138,7 +139,7 @@ class ImageSlider extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Image Slider';
+        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Image Slider';
     }
 
     /**

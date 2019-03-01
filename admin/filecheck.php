@@ -7,28 +7,72 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
 $oAccount->permission('FILECHECK_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis     = '';
-$cFehler      = '';
-$oDatei_arr   = [];
-$nStat_arr    = [];
-$nReturnValue = getAllFiles($oDatei_arr, $nStat_arr);
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$modifiedFilesError         = '';
+$orphanedFilesError         = '';
+$modifiedFiles              = [];
+$orphanedFiles              = [];
+$errorsCounModifiedFiles    = 0;
+$errorsCountOrphanedFiles   = 0;
+$validateModifiedFilesState = getAllModifiedFiles($modifiedFiles, $errorsCounModifiedFiles);
+$validateOrphanedFilesState = getAllOrphanedFiles($orphanedFiles, $errorsCountOrphanedFiles);
+$alertHelper                = Shop::Container()->getAlertService();
 
-if ($nReturnValue !== 1) {
-    switch ($nReturnValue) {
+if ($validateModifiedFilesState !== 1) {
+    switch ($validateModifiedFilesState) {
         case 2:
-            $cFehler = 'Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht.';
+            $modifiedFilesError = __('errorFileNotFound');
             break;
         case 3:
-            $cFehler = 'Fehler: Die Datei mit der aktuellen Dateiliste ist leer.';
+            $modifiedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $cFehler = '';
+            $modifiedFilesError = '';
             break;
     }
 }
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('oDatei_arr', $oDatei_arr)
-       ->assign('nStat_arr', $nStat_arr)
+if ($validateOrphanedFilesState !== 1) {
+    switch ($validateOrphanedFilesState) {
+        case 2:
+            $orphanedFilesError = __('errorFileNotFound');
+            break;
+        case 3:
+            $orphanedFilesError = __('errorFileListEmpty');
+            break;
+        default:
+            $orphanedFilesError = '';
+            break;
+    }
+}
+$modifiedFilesCheck = !empty($modifiedFilesError) || count($modifiedFiles) > 0;
+$orphanedFilesCheck = !empty($orphanedFilesError) || count($orphanedFiles) > 0;
+if (!$modifiedFilesCheck && !$orphanedFilesCheck) {
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        __('fileCheckNoneModifiedOrphanedFiles'),
+        'fileCheckNoneModifiedOrphanedFiles'
+    );
+}
+
+$alertHelper->addAlert(
+    Alert::TYPE_ERROR,
+    $modifiedFilesError,
+    'modifiedFilesError',
+    ['showInAlertListTemplate' => false]
+);
+$alertHelper->addAlert(
+    Alert::TYPE_ERROR,
+    $orphanedFilesError,
+    'orphanedFilesError',
+    ['showInAlertListTemplate' => false]
+);
+
+$smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
+       ->assign('orphanedFilesError', $orphanedFilesError !== '')
+       ->assign('modifiedFiles', $modifiedFiles)
+       ->assign('orphanedFiles', $orphanedFiles)
+       ->assign('modifiedFilesCheck', $modifiedFilesCheck)
+       ->assign('orphanedFilesCheck', $orphanedFilesCheck)
+       ->assign('errorsCounModifiedFiles', $errorsCounModifiedFiles)
+       ->assign('errorsCountOrphanedFiles', $errorsCountOrphanedFiles)
        ->display('filecheck.tpl');

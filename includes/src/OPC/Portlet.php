@@ -4,13 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\PluginLoader;
+use JTL\Shop;
 
 /**
  * Class Portlet
- * @package OPC
+ * @package JTL\OPC
  */
-abstract class Portlet implements \JsonSerializable
+class Portlet implements \JsonSerializable
 {
     use PortletHtml;
     use PortletStyles;
@@ -22,7 +26,7 @@ abstract class Portlet implements \JsonSerializable
     protected $id = 0;
 
     /**
-     * @var null|\Plugin
+     * @var PluginInterface
      */
     protected $plugin;
 
@@ -48,9 +52,24 @@ abstract class Portlet implements \JsonSerializable
 
     /**
      * Portlet constructor.
+     * @param string $class
+     * @param int    $id
+     * @param int    $pluginId
      */
-    final public function __construct()
+    final public function __construct(string $class, int $id, int $pluginId)
     {
+        $this->class = $class;
+        $this->id    = $id;
+        if ($pluginId > 0) {
+            $loader       = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
+            $this->plugin = $loader->init($pluginId);
+        }
+
+        if ($this->plugin === null) {
+            Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
+        } else {
+            Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
+        }
     }
 
     /**
@@ -96,7 +115,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getPluginId(): int
     {
-        return $this->plugin === null ? 0 : $this->plugin->kPlugin;
+        return $this->plugin === null ? 0 : $this->plugin->getID();
     }
 
     /**
@@ -104,7 +123,7 @@ abstract class Portlet implements \JsonSerializable
      */
     public function getTitle(): string
     {
-        return $this->title;
+        return __($this->title);
     }
 
     /**
@@ -132,30 +151,8 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @param int $id
-     * @return Portlet
-     */
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @param int $pluginId
-     * @return Portlet
-     */
-    public function setPluginId(int $pluginId): self
-    {
-        $this->plugin = $pluginId > 0 ? new \Plugin($pluginId) : null;
-
-        return $this;
-    }
-
-    /**
      * @param string $title
-     * @return Portlet
+     * @return self
      */
     public function setTitle(string $title): self
     {
@@ -165,19 +162,8 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @param string $class
-     * @return Portlet
-     */
-    public function setClass(string $class): self
-    {
-        $this->class = $class;
-
-        return $this;
-    }
-
-    /**
      * @param string $group
-     * @return Portlet
+     * @return self
      */
     public function setGroup(string $group): self
     {
@@ -187,9 +173,9 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return \Plugin|null
+     * @return PluginInterface|null
      */
-    public function getPlugin()
+    public function getPlugin(): ?PluginInterface
     {
         return $this->plugin;
     }

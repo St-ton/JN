@@ -4,12 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
-
+namespace JTL\Filter;
 
 /**
- * Class NavigationURLs
- * @package Filter
+ * Interface NavigationURLsInterface
+ * @package JTL\Filter
  */
 interface NavigationURLsInterface
 {

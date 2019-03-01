@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-
-use DB\DbInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class Checker
- * @package Cron
+ * @package JTL\Cron
  */
 class Checker
 {
@@ -33,25 +33,25 @@ class Checker
      */
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        $this->db      = $db;
-        $this->logger  = $logger;
+        $this->db     = $db;
+        $this->logger = $logger;
     }
 
     /**
-     * @return array
+     * @return \stdClass[]
      */
     public function check(): array
     {
         $jobs = $this->db->query(
-            "SELECT tcron.*
+            'SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
-                    ON tjobqueue.kCron = tcron.kCron
-                WHERE ((tcron.dLetzterStart IS NULL OR tcron.dLetzterStart = '1970-01-01 00:00:00') 
-                    OR (UNIX_TIMESTAMP(NOW()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
-                    AND tcron.dStart < NOW()
-                    AND tjobqueue.kJobQueue IS NULL",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ON tjobqueue.cronID = tcron.cronID
+                WHERE (tcron.lastStart IS NULL 
+                    OR (NOW() > ADDDATE(tcron.lastStart, INTERVAL tcron.frequency HOUR)))
+                    AND tcron.startDate < NOW()
+                    AND tjobqueue.jobQueueID IS NULL',
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $this->logger->debug('Found ' . \count($jobs) . ' new cron jobs.');
 

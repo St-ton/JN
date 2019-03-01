@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Checkout\Zahlungsart;
+use JTL\DB\ReturnType;
+
 /**
  * @param int $kZahlungsart
  * @return array
@@ -117,7 +121,7 @@ function getPaymentMethodsByName($cSearch)
         // Leerzeichen löschen
         trim($cSearchPos);
         // Nur Eingaben mit mehr als 2 Zeichen
-        if (strlen($cSearchPos) > 2) {
+        if (mb_strlen($cSearchPos) > 2) {
             $paymentMethodsByName_arr = Shop::Container()->getDB()->queryPrepared(
                 'SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za
@@ -127,7 +131,7 @@ function getPaymentMethodsByName($cSearch)
                     WHERE za.cName LIKE :search 
                     OR zs.cName LIKE :search',
                 ['search' => '%' . $cSearchPos . '%'],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             // Berücksichtige keine fehlerhaften Eingaben
             if (!empty($paymentMethodsByName_arr)) {

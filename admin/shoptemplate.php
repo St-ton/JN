@@ -3,175 +3,190 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Helpers\Overlay;
+use JTL\Helpers\Request;
+use JTL\Helpers\Template as TemplateHelper;
+use JTL\LessParser;
+use JTL\SimpleCSS;
+use JTL\Shop;
+use JTL\Template;
+use JTL\DB\ReturnType;
+
 /**
- * @global JTLSmarty $smarty
+ * @global \JTL\Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
 
-$cHinweis       = '';
-$cFehler        = '';
+$alertHelper    = Shop::Container()->getAlertService();
 $lessVars_arr   = [];
 $lessVarsSkin   = [];
 $lessColors_arr = [];
 $lessColorsSkin = [];
-$oTemplate      = Template::getInstance();
+$template       = Template::getInstance();
+$db             = Shop::Container()->getDB();
+$admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
-$admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
-/** @global JTLSmarty $smarty */
 if (isset($_POST['key'], $_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
-    $response = new stdClass();
-    $response->status = 'FAILED';
+    $response = (object)['status' => 'FAILED'];
     if (file_exists($file) && is_file($file)) {
         $delete = unlink($file);
         if ($delete === true) {
             $response->status = 'OK';
-            $upload = explode('/', $_POST['upload']);
-            $oTemplate->setConfig($upload[0], 'theme', $_POST['cName'], '');
+            $upload           = explode('/', $_POST['upload']);
+            $template->setConfig($upload[0], 'theme', $_POST['cName'], '');
         }
     }
     die(json_encode($response));
 }
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
-        $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } elseif ($_GET['check'] === 'false') {
-        $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 }
 if (isset($_GET['uploadError'])) {
-    $cFehler .= 'Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen.';
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileUpload'), 'errorFileUpload');
 }
-if (isset($_POST['type']) && $_POST['type'] === 'layout' && FormHelper::validateToken()) {
-    $oCSS           = new SimpleCSS();
-    $cOrdner        = basename($_POST['ordner']);
-    $cCustomCSSFile = $oCSS->getCustomCSSFile($cOrdner);
-    $bReset         = isset($_POST['reset']) && (int)$_POST['reset'] === 1;
-    if ($bReset) {
-        $bOk = false;
-        if (file_exists($cCustomCSSFile)) {
-            $bOk = is_writable($cCustomCSSFile);
-        }
-        if ($bOk) {
-            $cHinweis = 'Layout wurde erfolgreich zurückgesetzt.';
+if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
+    $scss      = new SimpleCSS();
+    $dir       = basename($_POST['ordner']);
+    $customCSS = $scss->getCustomCSSFile($dir);
+    if (isset($_POST['reset']) && (int)$_POST['reset'] === 1) {
+        if (file_exists($customCSS) && is_writable($customCSS)) {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutReset'), 'successLayoutReset');
         } else {
-            $cFehler = 'Layout konnte nicht zurückgesetzt werden.';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLayoutReset'), 'errorLayoutReset');
         }
     } else {
-        $cSelector_arr  = $_POST['selector'];
-        $cAttribute_arr = $_POST['attribute'];
-        $cValue_arr     = $_POST['value'];
-        $oCSS           = new SimpleCSS();
-        $selectorCount  = count($cSelector_arr);
+        $selectors     = $_POST['selector'];
+        $attributes    = $_POST['attribute'];
+        $values        = $_POST['value'];
+        $scss          = new SimpleCSS();
+        $selectorCount = count($selectors);
         for ($i = 0; $i < $selectorCount; $i++) {
-            $oCSS->addCSS($cSelector_arr[$i], $cAttribute_arr[$i], $cValue_arr[$i]);
+            $scss->addCSS($selectors[$i], $attributes[$i], $values[$i]);
         }
-        $cCSS   = $oCSS->renderCSS();
-        $nCheck = file_put_contents($cCustomCSSFile, $cCSS);
-        if ($nCheck === false) {
-            $cFehler = 'Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateirechte von ' . $cCustomCSSFile . '.';
+        if (file_put_contents($customCSS, $scss->renderCSS()) === false) {
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorStyleFilePermission') . $customCSS . '.',
+                'errorLayoutReset'
+            );
         } else {
-            $cHinweis = 'Layout wurde erfolgreich angepasst.';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutSave'), 'successLayoutSave');
         }
     }
 }
-if (isset($_POST['type']) && $_POST['type'] === 'settings' && FormHelper::validateToken()) {
-    $cOrdner      = Shop::Container()->getDB()->escape($_POST['ordner']);
+if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToken()) {
+    $dir          = $db->escape($_POST['ordner']);
     $parentFolder = null;
-    $tplXML       = $oTemplate->leseXML($cOrdner);
+    $tplXML       = $template->leseXML($dir);
     if (!empty($tplXML->Parent)) {
         $parentFolder = (string)$tplXML->Parent;
-        $parentTplXML = $oTemplate->leseXML($parentFolder);
+        $parentTplXML = $template->leseXML($parentFolder);
     }
-    $tplConfXML   = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
+    $tplConfXML   = $template->leseEinstellungenXML($dir, $parentFolder);
     $sectionCount = count($_POST['cSektion']);
     $uploadError  = '';
     for ($i = 0; $i < $sectionCount; $i++) {
-        $cSektion = Shop::Container()->getDB()->escape($_POST['cSektion'][$i]);
-        $cName    = Shop::Container()->getDB()->escape($_POST['cName'][$i]);
-        $cWert    = Shop::Container()->getDB()->escape($_POST['cWert'][$i]);
-        //for uploads, the value of an input field is the $_FILES index of the uploaded file
-        if (strpos($cWert, 'upload-') === 0) {
-            //all upload fields have to start with "upload-" - so check for that
-            if (!empty($_FILES[$cWert]['name']) && $_FILES[$cWert]['error'] === UPLOAD_ERR_OK) {
-                //we have an upload field and the file is set in $_FILES array
-                $file  = $_FILES[$cWert];
-                $cWert = basename($_FILES[$cWert]['name']);
+        $section = $db->escape($_POST['cSektion'][$i]);
+        $name    = $db->escape($_POST['cName'][$i]);
+        $value   = $db->escape($_POST['cWert'][$i]);
+        // for uploads, the value of an input field is the $_FILES index of the uploaded file
+        if (mb_strpos($value, 'upload-') === 0) {
+            // all upload fields have to start with "upload-" - so check for that
+            if (!empty($_FILES[$value]['name']) && $_FILES[$value]['error'] === UPLOAD_ERR_OK) {
+                // we have an upload field and the file is set in $_FILES array
+                $file  = $_FILES[$value];
+                $value = basename($_FILES[$value]['name']);
                 $break = false;
                 foreach ($tplConfXML as $_section) {
-                    if (isset($_section->oSettings_arr)) {
-                        foreach ($_section->oSettings_arr as $_setting) {
-                            if (isset($_setting->cKey, $_setting->rawAttributes['target'])
-                                && $_setting->cKey === $cName
-                            ) {
-                                //target folder
-                                $base = PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'];
-                                //optional target file name + extension
-                                if (isset($_setting->rawAttributes['targetFileName'])) {
-                                    $cWert = $_setting->rawAttributes['targetFileName'];
-                                }
-                                $targetFile = $base . $cWert;
-                                if (strpos($targetFile, $base) !== 0 || !move_uploaded_file($file['tmp_name'], $targetFile)) {
-                                    $uploadError = '&uploadError=true';
-                                }
-                                $break = true;
-                                break;
-                            }
+                    if (!isset($_section->oSettings_arr)) {
+                        continue;
+                    }
+                    foreach ($_section->oSettings_arr as $_setting) {
+                        if (!isset($_setting->cKey, $_setting->rawAttributes['target']) || $_setting->cKey !== $name) {
+                            continue;
                         }
+                        // target folder
+                        $base = PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' .
+                            $_setting->rawAttributes['target'];
+                        // optional target file name + extension
+                        if (isset($_setting->rawAttributes['targetFileName'])) {
+                            $value = $_setting->rawAttributes['targetFileName'];
+                        }
+                        $targetFile = $base . $value;
+                        if (mb_strpos($targetFile, $base) !== 0
+                            || !move_uploaded_file($file['tmp_name'], $targetFile)
+                        ) {
+                            $uploadError = '&uploadError=true';
+                        }
+                        $break = true;
+                        break;
                     }
                     if ($break === true) {
                         break;
                     }
                 }
             } else {
-                //no file uploaded, ignore
+                // no file uploaded, ignore
                 continue;
             }
         }
-        $oTemplate->setConfig($cOrdner, $cSektion, $cName, $cWert);
+        $template->setConfig($dir, $section, $name, $value);
     }
     $bCheck = __switchTemplate($_POST['ordner'], $_POST['eTyp']);
     if ($bCheck) {
-        $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } else {
-        $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-    //re-init smarty with new template - problematic because of re-including functions.php
+
+    if (Request::verifyGPCDataInt('activate') === 1) {
+        $overlayHelper = new Overlay($db);
+        $overlayHelper->loadOverlaysFromTemplateFolder($_POST['ordner']);
+    }
+
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+    // re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
         ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
 }
-if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::validateToken()) {
-    $cOrdner      = Shop::Container()->getDB()->escape($_GET['settings']);
-    $oTpl         = $templateHelper->getData($cOrdner, $admin);
-    $tplXML       = $templateHelper->getXML($cOrdner, false);
+if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
+    $dir          = $db->escape($_GET['settings']);
+    $oTpl         = $templateHelper->getData($dir, $admin);
+    $tplXML       = $templateHelper->getXML($dir, false);
     $preview      = [];
     $parentFolder = null;
     if (!empty($tplXML->Parent)) {
         $parentFolder = (string)$tplXML->Parent;
         $parentTplXML = $templateHelper->getXML($parentFolder, false);
     }
-    $tplConfXML       = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
-    $tplLessXML       = $oTemplate->leseLessXML($cOrdner);
-    $currentSkin      = $oTemplate->getSkin();
-    $frontendTemplate = PFAD_ROOT . PFAD_TEMPLATES . $oTemplate->getFrontendTemplate();
+    $tplConfXML       = $template->leseEinstellungenXML($dir, $parentFolder);
+    $tplLessXML       = $template->leseLessXML($dir);
+    $currentSkin      = $template->getSkin();
+    $frontendTemplate = PFAD_ROOT . PFAD_TEMPLATES . $template->getFrontendTemplate();
     $lessStack        = null;
     $shopURL          = Shop::getURL() . '/';
     if ($admin === true) {
         $oTpl->eTyp = 'admin';
-        $bCheck     = __switchTemplate($cOrdner, $oTpl->eTyp);
+        $bCheck     = __switchTemplate($dir, $oTpl->eTyp);
         if ($bCheck) {
-            $cHinweis = 'Template und Einstellungen wurden erfolgreich geändert.';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
         } else {
-            $cFehler = 'Template bzw. Einstellungen konnten nicht geändert werden.';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
-        Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
-        //re-init smarty with new template - problematic because of re-including functions.php
+        $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
+        // re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
         // iterate over each "Section"
@@ -180,27 +195,31 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
             foreach ($_conf->oSettings_arr as $_setting) {
                 if ($_setting->cType === 'upload'
                     && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
-                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target']
+                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' . $_setting->rawAttributes['target']
                         . $_setting->rawAttributes['targetFileName'])
                 ) {
-
                     $_setting->cValue = null;
                 }
             }
-            if (isset($_conf->cKey, $_conf->oSettings_arr) && $_conf->cKey === 'theme' && count($_conf->oSettings_arr) > 0) {
+            if (isset($_conf->cKey, $_conf->oSettings_arr)
+                && $_conf->cKey === 'theme'
+                && count($_conf->oSettings_arr) > 0
+            ) {
                 foreach ($_conf->oSettings_arr as $_themeConf) {
-                    if (isset($_themeConf->cKey, $_themeConf->oOptions_arr) &&
-                        $_themeConf->cKey === 'theme_default' &&
-                        count($_themeConf->oOptions_arr) > 0
+                    if (isset($_themeConf->cKey, $_themeConf->oOptions_arr)
+                        && $_themeConf->cKey === 'theme_default'
+                        && count($_themeConf->oOptions_arr) > 0
                     ) {
                         foreach ($_themeConf->oOptions_arr as $_theme) {
                             $previewImage = isset($_theme->cOrdner)
-                                ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
-                                : PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                                ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' .
+                                $_theme->cValue . '/preview.png'
+                                : PFAD_ROOT . PFAD_TEMPLATES . $dir . '/themes/' . $_theme->cValue . '/preview.png';
                             if (file_exists($previewImage)) {
+                                $base                     = $shopURL . PFAD_TEMPLATES;
                                 $preview[$_theme->cValue] = isset($_theme->cOrdner)
-                                    ? $shopURL . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
-                                    : $shopURL . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                                    ? $base . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                    : $base . $dir . '/themes/' . $_theme->cValue . '/preview.png';
                             }
                         }
                         break;
@@ -238,20 +257,17 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && FormHelper::val
            ->assign('themesLessColorsSkin', $lessColorsSkin)
            ->assign('themesLessColorsJSON', json_encode($lessColors_arr))
            ->assign('oEinstellungenXML', $tplConfXML);
-} elseif (isset($_GET['switch']) && strlen($_GET['switch']) > 0) {
-    $bCheck = __switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'));
-    if ($bCheck) {
-        $cHinweis = 'Template wurde erfolgreich geändert.';
+} elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
+    if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } else {
-        $cFehler = 'Template konnte nicht geändert werden.';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())
        ->assign('oAdminTemplate_arr', $templateHelper->getAdminTemplates())
        ->assign('oStoredTemplate_arr', $templateHelper->getStoredTemplates())
-       ->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis)
        ->display('shoptemplate.tpl');

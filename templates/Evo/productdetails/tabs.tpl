@@ -14,15 +14,15 @@
     {$showShippingWeight = true}
 {/if}
 {$dimension = $Artikel->getDimension()}
+{$funcAttr = $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]|default:0}
 {$showAttributesTable = ($Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'
     && !empty($Artikel->oMerkmale_arr) || $showProductWeight || $showShippingWeight
     || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
     && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
     || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0
     && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
-    || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN])
-    && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute))}
+    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $funcAttr == 1)
+    && !empty($Artikel->Attribute))}
 {$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
     && !empty($Artikel->cMedienTyp_arr))}
@@ -31,7 +31,7 @@
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
 {$useQuestionOnItem = $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'Y'}
 {$usePriceFlow = ($Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && $bPreisverlauf)}
-{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y')}
+{$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung === 1)}
 {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
     && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
     && !empty($Artikel->cMedienTyp_arr))}
@@ -132,7 +132,7 @@
             {/if}
             {if $useMediaGroup}
                 {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                    {$cMedienTypId = $cMedienTyp|@seofy}
                     <li role="presentation"
                         {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
@@ -244,7 +244,7 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang section='productDownloads' key='downloadSection'}</h3>
+                        <h3 class="panel-title">{lang key='Votes'}</h3>
                     </div>
                     <div class="panel-body" id="tab-votes">
             {/if}
@@ -315,7 +315,7 @@
         {/if}
         {if $useMediaGroup}
             {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                {$cMedienTypId = $cMedienTyp|@seofy}
                 {if $tabanzeige}
                     <div role="tabpanel"
                         class="tab-pane fade{if $setActiveClass.mediaGroup && $cMedienTyp@first} in active{/if}"

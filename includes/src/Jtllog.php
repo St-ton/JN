@@ -1,11 +1,17 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 
 /**
  * Class Jtllog
+ * @package JTL
  */
 class Jtllog
 {
@@ -41,6 +47,7 @@ class Jtllog
 
     /**
      * Jtllog constructor.
+     *
      * @param int $kLog
      */
     public function __construct(int $kLog = 0)
@@ -58,7 +65,7 @@ class Jtllog
     {
         $oObj = Shop::Container()->getDB()->select('tjtllog', 'kLog', $kLog);
         if (isset($oObj->kLog) && $oObj->kLog > 0) {
-            foreach (get_object_vars($oObj) as $k => $v) {
+            foreach (\get_object_vars($oObj) as $k => $v) {
                 $this->$k = $v;
             }
         }
@@ -67,13 +74,13 @@ class Jtllog
     }
 
     /**
-     * @param bool $bPrim
-     * @return bool|int
+     * @return bool
      * @deprecated since 5.0.0
      */
-    public function save(bool $bPrim = true)
+    public function save(): bool
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return false;
     }
 
@@ -83,7 +90,8 @@ class Jtllog
      */
     public function update(): int
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return 0;
     }
 
@@ -97,9 +105,10 @@ class Jtllog
      * @return bool|int
      * @deprecated since 5.0.0
      */
-    public function write($cLog, $nLevel = JTLLOG_LEVEL_ERROR, $bForce = false, $cKey = '', $kKey = '', $bPrim = true)
+    public function write($cLog, $nLevel = \JTLLOG_LEVEL_ERROR, $bForce = false, $cKey = '', $kKey = '', $bPrim = true)
     {
-        trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
+
         return self::writeLog($cLog, $nLevel, $bForce, $cKey, $kKey);
     }
 
@@ -108,9 +117,10 @@ class Jtllog
      * @return bool
      * @deprecated since 5.0.0
      */
-    public static function doLog($nLevel = JTLLOG_LEVEL_ERROR): bool
+    public static function doLog($nLevel = \JTLLOG_LEVEL_ERROR): bool
     {
-        trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
+
         return $nLevel >= self::getSytemlogFlag();
     }
 
@@ -119,18 +129,19 @@ class Jtllog
      * @param int    $nLevel
      * @param bool   $bForce
      * @param string $cKey
-     * @param string $kKey
+     * @param int    $kKey
      * @return bool
+     * @deprecated since 5.0.0
      */
     public static function writeLog(
         $cLog,
-        $nLevel = JTLLOG_LEVEL_ERROR,
+        $nLevel = \JTLLOG_LEVEL_ERROR,
         $bForce = false,
         $cKey = '',
         $kKey = 0
     ): bool {
-        trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', E_USER_DEPRECATED);
-        if (strlen($cLog) > 0 && ($bForce || self::doLog($nLevel))) {
+        \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
+        if (\mb_strlen($cLog) > 0 && ($bForce || self::doLog($nLevel))) {
             $logger = Shop::Container()->getLogService();
             if ($cKey !== '') {
                 $logger = $logger->withName($cKey);
@@ -153,10 +164,10 @@ class Jtllog
      */
     public static function getLog(string $cFilter = '', int $nLevel = 0, int $nLimitN = 0, int $nLimitM = 1000): array
     {
-        $oJtllog_arr = [];
-        $conditions  = [];
-        $values      = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
-        if (strlen($cFilter) > 0) {
+        $logs       = [];
+        $conditions = [];
+        $values     = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
+        if (\mb_strlen($cFilter) > 0) {
             $conditions[]   = 'cLog LIKE :clog';
             $values['clog'] = '%' . $cFilter . '%';
         }
@@ -164,25 +175,25 @@ class Jtllog
             $conditions[]     = 'nLevel = :nlevel';
             $values['nlevel'] = $nLevel;
         }
-        $cSQLWhere = count($conditions) > 0
-            ? ' WHERE ' . implode(' AND ', $conditions)
+        $where = \count($conditions) > 0
+            ? ' WHERE ' . \implode(' AND ', $conditions)
             : '';
-        $oLog_arr  = Shop::Container()->getDB()->queryPrepared(
+        $data  = Shop::Container()->getDB()->queryPrepared(
             'SELECT kLog
                 FROM tjtllog
-                ' . $cSQLWhere . '
+                ' . $where . '
                 ORDER BY dErstellt DESC, kLog DESC
-                LIMIT :limitfrom, :limitto', 
+                LIMIT :limitfrom, :limitto',
             $values,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oLog_arr as $oLog) {
+        foreach ($data as $oLog) {
             if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
-                $oJtllog_arr[] = new self($oLog->kLog);
+                $logs[] = new self($oLog->kLog);
             }
         }
 
-        return $oJtllog_arr;
+        return $logs;
     }
 
     /**
@@ -195,10 +206,10 @@ class Jtllog
         return Shop::Container()->getDB()->query(
             'SELECT *
                 FROM tjtllog' .
-                ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
-                ' ORDER BY dErstellt DESC ' .
-                ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
+            ' ORDER BY dErstellt DESC ' .
+            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -212,8 +223,8 @@ class Jtllog
         $cSQLWhere = $nLevel > 0
             ? ' WHERE nLevel = ' . $nLevel
             : '';
-        if (strlen($cFilter) > 0) {
-            if (strlen($cSQLWhere) === 0) {
+        if (\mb_strlen($cFilter) > 0) {
+            if (\mb_strlen($cSQLWhere) === 0) {
                 $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
             } else {
                 $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
@@ -222,8 +233,8 @@ class Jtllog
         $oLog = Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nAnzahl 
                 FROM tjtllog' .
-                $cSQLWhere,
-            \DB\ReturnType::SINGLE_OBJECT
+            $cSQLWhere,
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)($oLog->nAnzahl ?? 0);
@@ -232,24 +243,24 @@ class Jtllog
     /**
      *
      */
-    public static function truncateLog()
+    public static function truncateLog(): void
     {
         Shop::Container()->getDB()->query(
             'DELETE FROM tjtllog 
                 WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         $oObj = Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nCount 
                 FROM tjtllog',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oObj->nCount) && (int)$oObj->nCount > JTLLOG_MAX_LOGSIZE) {
-            $nLimit = (int)$oObj->nCount - JTLLOG_MAX_LOGSIZE;
+        if (isset($oObj->nCount) && (int)$oObj->nCount > \JTLLOG_MAX_LOGSIZE) {
+            $nLimit = (int)$oObj->nCount - \JTLLOG_MAX_LOGSIZE;
             Shop::Container()->getDB()->query(
                 'DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . $nLimit,
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             );
         }
     }
@@ -261,8 +272,8 @@ class Jtllog
     public static function deleteIDs(array $ids): int
     {
         return Shop::Container()->getDB()->query(
-            'DELETE FROM tjtllog WHERE kLog IN (' . implode(',', array_map('intval', $ids)) . ')',
-            \DB\ReturnType::AFFECTED_ROWS
+            'DELETE FROM tjtllog WHERE kLog IN (' . \implode(',', \array_map('\intval', $ids)) . ')',
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -271,7 +282,7 @@ class Jtllog
      */
     public static function deleteAll(): int
     {
-        return Shop::Container()->getDB()->query('TRUNCATE TABLE tjtllog', \DB\ReturnType::AFFECTED_ROWS);
+        return Shop::Container()->getDB()->query('TRUNCATE TABLE tjtllog', ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -311,7 +322,7 @@ class Jtllog
      */
     public function setcLog(string $cLog, bool $bFilter = true): self
     {
-        $this->cLog = $bFilter ? StringHandler::filterXSS($cLog) : $cLog;
+        $this->cLog = $bFilter ? Text::filterXSS($cLog) : $cLog;
 
         return $this;
     }
@@ -350,14 +361,14 @@ class Jtllog
     }
 
     /**
-     * @param array $nFlag_arr
      * @return int
      * @deprecated since 5.0.0
      */
-    public static function setBitFlag($nFlag_arr): int
+    public static function setBitFlag(): int
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-        return JTLLOG_LEVEL_NOTICE;
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
+        return \JTLLOG_LEVEL_NOTICE;
     }
 
     /**
@@ -377,23 +388,23 @@ class Jtllog
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getcLog()
+    public function getcLog(): ?string
     {
         return $this->cLog;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getcKey()
+    public function getcKey(): ?string
     {
         return $this->cKey;
     }
 
     /**
-     * @return int|string
+     * @return int|string|null
      */
     public function getkKey()
     {
@@ -401,9 +412,9 @@ class Jtllog
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
@@ -416,7 +427,8 @@ class Jtllog
      */
     public static function isBitFlagSet($nVal, $nFlag): bool
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return false;
     }
 
@@ -428,7 +440,8 @@ class Jtllog
      */
     public static function cronLog(string $string, int $level = 1): bool
     {
-        trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return false;
     }
 
@@ -439,7 +452,7 @@ class Jtllog
      */
     public static function getSytemlogFlag(bool $cache = true): int
     {
-        $conf = Shop::getSettings([CONF_GLOBAL]);
+        $conf = Shop::getSettings([\CONF_GLOBAL]);
         if ($cache === true && isset($conf['global']['systemlog_flag'])) {
             return (int)$conf['global']['systemlog_flag'];
         }
@@ -447,7 +460,7 @@ class Jtllog
             "SELECT cWert 
                 FROM teinstellungen 
                 WHERE cName = 'systemlog_flag'",
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return isset($conf->cWert) ? (int)$conf->cWert : 0;

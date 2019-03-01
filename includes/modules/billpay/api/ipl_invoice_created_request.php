@@ -12,7 +12,7 @@ class ipl_invoice_created_request extends ipl_xml_request
     /**
      * @var array
      */
-    private $_invoice_params      = [];
+    private $_invoice_params = [];
 
     /**
      * @var array
@@ -22,7 +22,7 @@ class ipl_invoice_created_request extends ipl_xml_request
     /**
      * @var array
      */
-    private $_article_data        = [];
+    private $_article_data = [];
 
     /**
      * @var
@@ -284,7 +284,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_base_amount()
     {
-        return (int) $this->base_amount;
+        return (int)$this->base_amount;
     }
 
     /**
@@ -293,7 +293,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_cart_amount()
     {
-        return (int) $this->cart_amount;
+        return (int)$this->cart_amount;
     }
 
     /**
@@ -302,7 +302,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_surcharge()
     {
-        return (int) $this->surcharge;
+        return (int)$this->surcharge;
     }
 
     /**
@@ -312,7 +312,7 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function get_interest()
     {
-        return (int) $this->interest;
+        return (int)$this->interest;
     }
 
     /**
@@ -329,11 +329,20 @@ class ipl_invoice_created_request extends ipl_xml_request
      * @param int    $shipping_price_gross
      * @param int    $cart_total_price
      */
-    public function set_invoice_params($carttotalgross, $currency, $reference,
-                $delayindays = 0, $is_partial = 0, $invoice_number = 0,
-                $rebate = 0, $rebate_gross = 0, $shipping_name = "", $shipping_price = 0,
-                $shipping_price_gross = 0, $cart_total_price = 0)
-    {
+    public function set_invoice_params(
+        $carttotalgross,
+        $currency,
+        $reference,
+        $delayindays = 0,
+        $is_partial = 0,
+        $invoice_number = 0,
+        $rebate = 0,
+        $rebate_gross = 0,
+        $shipping_name = '',
+        $shipping_price = 0,
+        $shipping_price_gross = 0,
+        $cart_total_price = 0
+    ) {
         $this->_invoice_params['carttotalgross'] = $carttotalgross;
         $this->_invoice_params['currency']       = $currency;
         $this->_invoice_params['reference']      = $reference;
@@ -359,9 +368,14 @@ class ipl_invoice_created_request extends ipl_xml_request
      * @param $article_price
      * @param $article_price_gross
      */
-    public function add_article($articleid, $articlequantity, $articlename, $articledescription,
-            $article_price, $article_price_gross)
-    {
+    public function add_article(
+        $articleid,
+        $articlequantity,
+        $articlename,
+        $articledescription,
+        $article_price,
+        $article_price_gross
+    ) {
         $article                       = [];
         $article['articleid']          = $articleid;
         $article['articlequantity']    = $articlequantity;
@@ -379,8 +393,8 @@ class ipl_invoice_created_request extends ipl_xml_request
      */
     public function set_payment_info_params($showhtmlinfo, $showplaininfo)
     {
-        $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? "1" : "0";
-        $this->_payment_info_params['plaininfo'] = $showplaininfo ? "1" : "0";
+        $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? '1' : '0';
+        $this->_payment_info_params['plaininfo'] = $showplaininfo ? '1' : '0';
     }
 
     /**

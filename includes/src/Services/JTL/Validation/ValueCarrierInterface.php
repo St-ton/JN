@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 /**
  * Interface ValueCarrierInterface
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 interface ValueCarrierInterface
 {
@@ -20,9 +20,9 @@ interface ValueCarrierInterface
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return void
      */
-    public function setValue($value);
+    public function setValue($value): void;
 
     /**
      * Get the untransformed value (e.g. to redisplay the incorrect value to the user)

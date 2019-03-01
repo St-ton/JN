@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Divider
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Divider extends \OPC\Portlet
+class Divider extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -30,14 +31,6 @@ class Divider extends \OPC\Portlet
     public function getFinalHtml(PortletInstance $instance): string
     {
         return '<hr ' . $instance->getAttributeString(). '>';
-    }
-
-    /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Trennlinie';
     }
 
     /**

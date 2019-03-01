@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#trustedshops# cDokuURL=#trustedshopsURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('trustedshops') cDokuURL=__('trustedshopsURL')}
 <div id="content" class="container-fluid">
     {if $bSOAP}
         <div class="block">
@@ -7,12 +7,12 @@
                 <input type="hidden" name="sprachwechsel" value="1" />
                 <div class="p25 left input-group">
                     <span class="input-group-addon">
-                        <label for="ts-change-language">{#changeLanguage#}:</label>
+                        <label for="ts-change-language">{__('changeLanguage')}:</label>
                     </span>
                     <span class="input-group-wrap last">
                         <select id="ts-change-language" name="cISOSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach name=sprachen from=$Sprachen item=sprache}
-                                <option value="{$sprache->cISOSprache}" {if $sprache->cISOSprache==$smarty.session.TrustedShops->oSprache->cISOSprache}selected{/if}>{$sprache->cNameSprache}</option>
+                            {foreach $Sprachen as $sprache}
+                                <option value="{$sprache->cISOSprache}" {if $sprache->cISOSprache == $smarty.session.TrustedShops->oSprache->cISOSprache}selected{/if}>{$sprache->cNameSprache}</option>
                             {/foreach}
                         </select>
                     </span>
@@ -25,7 +25,7 @@
             <input type="hidden" name="kaeuferschutzeinstellungen" value="1" />
             <div class="settings panel panel-default">
                 {assign var=open value=false}
-                {foreach name=conf from=$oConfig_arr item=oConfig}
+                {foreach $oConfig_arr as $oConfig}
                     {if $oConfig->cWertName !== 'trustedshops_kundenbewertung_anzeigen'}
                         {if $oConfig->cConf === 'Y'}
                             <div class="input-group">
@@ -35,14 +35,14 @@
                                 <span class="input-group-wrap">
                                     {if $oConfig->cInputTyp === 'selectbox'}
                                         <select class="form-control" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}">
-                                            {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                            {foreach $oConfig->ConfWerte as $wert}
                                                 <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>
                                     {elseif $oConfig->cInputTyp === 'listbox'}
                                         <select class="form-control" name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}">
-                                            {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
-                                                <option value="{$wert->kKundengruppe}" {foreach name=werte from=$oConfig->gesetzterWert item=gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
+                                            {foreach $oConfig->ConfWerte as $wert}
+                                                <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>
                                     {elseif $oConfig->cInputTyp === 'number'}
@@ -63,7 +63,7 @@
 
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="eType">Trusted Shops K&auml;uferschutz Typ</label>
+                        <label for="eType">Trusted Shops Käuferschutz Typ</label>
                     </span>
                     <span class="input-group-wrap">
                         <select class="form-control" name="eType" id="eType">
@@ -72,7 +72,7 @@
                             </option>
                         </select>
                     </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc="Trusted Shops K&auml;uferschutzvariante."}</span>
+                    <span class="input-group-addon">{getHelpDesc cDesc="Trusted Shops Käuferschutzvariante."}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
@@ -98,14 +98,14 @@
                     <span class="input-group-addon">{getHelpDesc cDesc="Das vom Shopbetreiber eingegebene Passwort"}</span>
                 </div>
                 {if isset($oZertifikat->nAktiv) && $oZertifikat->nAktiv|strlen > 0 && $oZertifikat->nAktiv == 0}
-                    <div class="alert alert-danger">{#tsDeaktiviated#}</div>
+                    <div class="alert alert-danger">{__('tsDeaktiviated')}</div>
                 {/if}
                 <input type="hidden" name="kSprache" value="0" />
             </div>
             <div class="panel-footer">
                 <div class="btn-group">
-                    <button name="saveSettings" type="submit" value="{#settingsSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#settingsSave#}</button>
-                    <button name="delZertifikat" type="submit" value="{#tsDelCertificate#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#tsDelCertificate#}</button>
+                    <button name="saveSettings" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                    <button name="delZertifikat" type="submit" value="{__('tsDelCertificate')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('tsDelCertificate')}</button>
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
             <form method="post" action="trustedshops.php" class="container-fluid">
                 {$jtl_token}
                 <input type="hidden" name="kaeuferschutzupdate" value="1" />
-                <button name="tsupdate" type="submit" value="{#updateProduct#}" class="btn btn-default button reset"><i class="fa fa-refresh"></i> {#updateProduct#}</button>
+                <button name="tsupdate" type="submit" value="{__('updateProduct')}" class="btn btn-default button reset"><i class="fa fa-refresh"></i> {__('updateProduct')}</button>
                 <br />
                 <br />
             </form>
@@ -123,11 +123,11 @@
         {if isset($oKaeuferschutzProdukteDB->item) && $oKaeuferschutzProdukteDB->item|@count > 0}
             <table class="table table-striped">
                 <tr>
-                    <th class="th-1">{#tsProduct#}</th>
-                    <th class="th-2">{#tsCoverage#}</th>
-                    <th class="th-3">{#tsCurrency#}</th>
+                    <th class="th-1">{__('tsProduct')}</th>
+                    <th class="th-2">{__('tsCoverage')}</th>
+                    <th class="th-3">{__('currency')}</th>
                 </tr>
-                {foreach name=kaeuferschutzprodukte from=$oKaeuferschutzProdukteDB->item item=oKaeuferschutzProdukt}
+                {foreach $oKaeuferschutzProdukteDB->item as $oKaeuferschutzProdukt}
                     <tr>
                         <td>{$oKaeuferschutzProdukt->cProduktID}</td>
                         <td>{$oKaeuferschutzProdukt->nWert}</td>
@@ -140,11 +140,11 @@
             <div class="alert alert-info">
                 {assign var=sessionSprachISO value=$smarty.session.TrustedShops->oSprache->cISOSprache}
                 <p>
-                    <a href="trustedshops.php?whatisrating=1">{#tsWhatIsRating#}</a>
+                    <a href="trustedshops.php?whatisrating=1">{__('tsWhatIsRating')}</a>
                 </p>
                 {if $Sprachen[$sessionSprachISO]->cURLKundenBewertung|strlen > 0}
                     <p>
-                        <a href="{$Sprachen[$sessionSprachISO]->cURLKundenBewertung}" target="_blank"><i class="fa fa-external-link"></i> {#tsRatingForm#}</a>
+                        <a href="{$Sprachen[$sessionSprachISO]->cURLKundenBewertung}" target="_blank"><i class="fa fa-external-link"></i> {__('tsRatingForm')}</a>
                     </p>
                 {/if}
             </div>
@@ -153,11 +153,11 @@
                     {$jtl_token}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#tsRatingConfig#}</h3>
+                            <h3 class="panel-title">{__('tsRatingConfig')}</h3>
                         </div>
                         <div class="panel-body">
                             <input type="hidden" name="kundenbewertungeinstellungen" value="1" />
-                            {foreach name=conf from=$oConfig_arr item=oConfig}
+                            {foreach $oConfig_arr as $oConfig}
                                 {if $oConfig->cConf === 'Y' && $oConfig->cWertName === 'trustedshops_kundenbewertung_anzeigen'}
                                     <div class="input-group">
                                         <span class="input-group-addon">
@@ -166,7 +166,7 @@
                                         <span class="input-group-wrap">
                                             {if $oConfig->cInputTyp === 'selectbox'}
                                                 <select class="form-control" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}">
-                                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                                    {foreach $oConfig->ConfWerte as $wert}
                                                         <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                     {/foreach}
                                                 </select>
@@ -187,11 +187,11 @@
                                 <span class="input-group-addon">{getHelpDesc cDesc="Die vom Shopbetreiber eingegebene Zertifikats-ID"}</span>
                             </div>
                             {if isset($Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht) && $Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht|strlen > 0}
-                                <strong><a href="{$Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht}" target="_blank" style="text-decoration: underline;">{#tsRatingOverview#}</a></strong>
+                                <strong><a href="{$Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht}" target="_blank" style="text-decoration: underline;">{__('tsRatingOverview')}</a></strong>
                             {/if}
                         </div>
                         <div class="panel-footer">
-                            <button type="submit" value="{#settingsSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#settingsSave#}</button>
+                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         </div>
                     </div>
                 </form>
@@ -201,18 +201,18 @@
                             {$jtl_token}
                             <input type="hidden" name="kundenbewertungupdate" value="1" />
                             {if isset($oTrustedShopsKundenbewertung->cTSID) && isset($oTrustedShopsKundenbewertung->nStatus) && $oTrustedShopsKundenbewertung->cTSID|strlen > 0 && $oTrustedShopsKundenbewertung->nStatus == 1}
-                                <button class="btn btn-default" name="tsKundenbewertungDeActive" type="submit">{#tsRatingDeActivate#}</button>
+                                <button class="btn btn-default" name="tsKundenbewertungDeActive" type="submit">{__('tsRatingDeActivate')}</button>
                             {elseif isset($oTrustedShopsKundenbewertung->cTSID) && isset($oTrustedShopsKundenbewertung->nStatus) && $oTrustedShopsKundenbewertung->cTSID|strlen > 0 && $oTrustedShopsKundenbewertung->nStatus == 0}
-                                <button class="btn btn-default" name="tsKundenbewertungActive" type="submit">{#tsRatingActivate#}</button>
+                                <button class="btn btn-default" name="tsKundenbewertungActive" type="submit">{__('tsRatingActivate')}</button>
                             {/if}
                         </form>
                     </div>
                 {/if}
             </div>
         {else}
-            <div class="alert alert-danger">{#tsNoTSCustomerRatingError#}:<br /><br />{#noCURLAndFopenError#}</div>
+            <div class="alert alert-danger">{__('tsNoTSCustomerRatingError')}:<br /><br />{__('noCURLAndFopenError')}</div>
         {/if}
     {else}
-        <div class="alert alert-danger">{#tsNoTSError#}:<br /><br />{#noSOAPError#}</div>
+        <div class="alert alert-danger">{__('tsNoTSError')}:<br /><br />{__('noSOAPError')}</div>
     {/if}
 </div>

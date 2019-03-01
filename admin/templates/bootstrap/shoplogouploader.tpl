@@ -1,12 +1,12 @@
 {config_load file="$lang.conf" section='shoplogouploader'}
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/seite_header.tpl' cTitel=#shoplogouploader# cBeschreibung=#shoplogouploaderDesc# cDokuURL=#shoplogouploaderURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('shoplogouploader') cBeschreibung=__('shoplogouploaderDesc') cDokuURL=__('shoplogouploaderURL')}
 <div id="content" class="container-fluid">
     <form name="uploader" method="post" action="shoplogouploader.php" enctype="multipart/form-data">
         {$jtl_token}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Ihr Logo</h3>
+                <h3 class="panel-title">{__('yourLogo')}</h3>
             </div>
             <div class="panel-body">
                 <input type="hidden" name="upload" value="1" />
@@ -42,8 +42,8 @@
                             {rdelim}
                         {rdelim});
                     </script>
-                    <div id="logo-upload-success" class="alert alert-info hidden">Logo erfolgreich hochgeladen.</div>
-                    <div id="logo-upload-error" class="alert alert-danger hidden">Logo konnte nicht hochgeladen werden.</div>
+                    <div id="logo-upload-success" class="alert alert-info hidden">{__('successLogoUpload')}</div>
+                    <div id="logo-upload-error" class="alert alert-danger hidden">{__('errorLogoUpload')}</div>
                 </div>
             </div>
         </div>

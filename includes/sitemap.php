@@ -3,6 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Visitor;
+use JTL\DB\ReturnType;
+
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';
 
@@ -15,7 +22,7 @@ if ($cDatei === null) {
     header('Retry-After: 86400');
     exit;
 }
-$cIP              = RequestHelper::getRealIP();
+$cIP              = Request::getRealIP();
 $nFloodProtection = Shop::Container()->getDB()->queryPrepared(
     'SELECT * 
         FROM `tsitemaptracker` 
@@ -23,7 +30,7 @@ $nFloodProtection = Shop::Container()->getDB()->queryPrepared(
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
         ORDER BY `dErstellt` DESC',
     ['ip' => $cIP],
-    \DB\ReturnType::AFFECTED_ROWS
+    ReturnType::AFFECTED_ROWS
 );
 if ($nFloodProtection === 0) {
     // Track request
@@ -31,7 +38,7 @@ if ($nFloodProtection === 0) {
     $oSitemapTracker->cSitemap     = basename($cDatei);
     $oSitemapTracker->kBesucherBot = getRequestBot();
     $oSitemapTracker->cIP          = $cIP;
-    $oSitemapTracker->cUserAgent   = StringHandler::filterXSS($_SERVER['HTTP_USER_AGENT']);
+    $oSitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
     $oSitemapTracker->dErstellt    = 'NOW()';
 
     Shop::Container()->getDB()->insert('tsitemaptracker', $oSitemapTracker);
@@ -45,7 +52,7 @@ sendRequestFile($cDatei);
 function getRequestBot(): int
 {
     foreach (array_keys(Visitor::getSpiders()) as $agent) {
-        if (stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
+        if (mb_stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
             $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
 
             return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
@@ -56,23 +63,23 @@ function getRequestBot(): int
 }
 
 /**
- * @param string $cDatei
+ * @param string $file
  * @return null|string
  */
-function getRequestFile($cDatei)
+function getRequestFile($file)
 {
-    $cDateiInfo_arr = pathinfo($cDatei);
+    $pathInfo = pathinfo($file);
 
-    if (!isset($cDateiInfo_arr['extension']) || !in_array($cDateiInfo_arr['extension'], ['xml', 'txt', 'gz'], true)) {
+    if (!isset($pathInfo['extension']) || !in_array($pathInfo['extension'], ['xml', 'txt', 'gz'], true)) {
         return null;
     }
-    if ($cDatei !== $cDateiInfo_arr['basename']) {
+    if ($file !== $pathInfo['basename']) {
         return null;
     }
-    $cDatei = $cDateiInfo_arr['basename'];
+    $file = $pathInfo['basename'];
 
-    return file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)
-        ? $cDatei
+    return file_exists(PFAD_ROOT . PFAD_EXPORT . $file)
+        ? $file
         : null;
 }
 
@@ -85,7 +92,7 @@ function sendRequestFile($cFile)
     $cAbsoluteFile  = PFAD_ROOT . PFAD_EXPORT . basename($cFile);
     $cFileExtension = pathinfo($cAbsoluteFile, PATHINFO_EXTENSION);
 
-    switch (strtolower($cFileExtension)) {
+    switch (mb_convert_case($cFileExtension, MB_CASE_LOWER)) {
         case 'xml':
             $cContentType = 'application/xml';
             break;

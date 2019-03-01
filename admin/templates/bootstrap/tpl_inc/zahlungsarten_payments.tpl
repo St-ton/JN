@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#payments#|cat:$oZahlungsart->cName cBeschreibung=#paymentsDesc# cDokuURL=#paymentsURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('payments')|cat:$oZahlungsart->cName cBeschreibung=__('paymentsDesc') cDokuURL=__('paymentsURL')}
 <div id="content" class="container-fluid">
     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['a'=>'payments',
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart]}
@@ -15,13 +15,13 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Datum/Zeit</th>
-                                <th>Bestell-Nr.</th>
-                                <th>Kunde</th>
-                                <th>Gezahlter Betrag</th>
-                                <th>Zahlungsgeb&uuml;hr</th>
-                                <th>W&auml;hrung</th>
-                                <th>Abgeholt durch Wawi</th>
+                                <th>{__('date')}/{__('time')}</th>
+                                <th>{__('orderNumberShort')}</th>
+                                <th>{__('customer')}</th>
+                                <th>{__('amountPayed')}</th>
+                                <th>{__('paymentDue')}</th>
+                                <th>{__('currency')}</th>
+                                <th>{__('syncedWithWawi')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,23 +60,23 @@
                         <tfoot>
                             <tr>
                                 <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);"></td>
-                                <td colspan="7"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
+                                <td colspan="7"><label for="ALLMSGS">{__('selectAllShown')}</label></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">
-                    {#noDataAvailable#}
+                    {__('noDataAvailable')}
                 </div>
             {/if}
             <div class="panel-footer">
                 <div class="btn-group">
                     <button type="submit" name="action" value="paymentwawireset" class="btn btn-danger">
                         <i class="fa fa-refresh"></i>
-                        Wawi-Abholung zur&uuml;cksetzen
+                        {__('wawiSyncReset')}
                     </button>
-                    <a class="btn btn-primary" href="zahlungsarten.php">{#goBack#}</a>
+                    <a class="btn btn-primary" href="zahlungsarten.php">{__('goBack')}</a>
                 </div>
             </div>
         </div>

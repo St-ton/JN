@@ -4,7 +4,7 @@ Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{e
 
 wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dürfen:
 
-{if $Kupon->cKuponTyp=="standard"}Kuponwert: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}Rabatt auf den gesamten Einkauf{/if}{/if}{if $Kupon->cKuponTyp=="versandkupon"}Mit diesem Kupon können Sie versandkostenfrei bei uns einkaufen!
+{if $Kupon->cKuponTyp==$couponTypes.standard}Kuponwert: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}Rabatt auf den gesamten Einkauf{/if}{/if}{if $Kupon->cKuponTyp==$couponTypes.shipping}Mit diesem Kupon können Sie versandkostenfrei bei uns einkaufen!
 Er gilt für folgende Lieferländer: {$Kupon->cLieferlaender|upper}{/if}
 
 Kuponcode: {$Kupon->cCode}
@@ -34,7 +34,7 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->c
 
 {foreach name=art from=$Kupon->Artikel item=Artikel}
 {$Artikel->cName} >
-{$Artikel->cURL}
+{$Artikel->cURLFull}
 {/foreach}{/if}
 
 

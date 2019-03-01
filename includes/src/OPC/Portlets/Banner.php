@@ -1,18 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\Catalog\Product\Artikel;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
+use JTL\Shop;
 
 /**
  * Class Banner
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Banner extends \OPC\Portlet
+class Banner extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -20,7 +23,7 @@ class Banner extends \OPC\Portlet
      */
     public function getImageMap(PortletInstance $instance)
     {
-        $oImageMap = (object)[
+        $imageMap = (object)[
             'cTitel'    => $instance->getProperty('kImageMap'),
             'cBildPfad' => $instance->getProperty('src'),
             'oArea_arr' => !empty($instance->getProperty('zones'))
@@ -28,59 +31,59 @@ class Banner extends \OPC\Portlet
                 : [],
         ];
 
-        if (empty($oImageMap->cBildPfad)) {
-            return $oImageMap;
+        if (empty($imageMap->cBildPfad)) {
+            return $imageMap;
         }
 
-        $cBildPfad            = PFAD_ROOT . PFAD_MEDIAFILES . 'Bilder/' . basename($instance->getProperty('src'));
-        $oImageMap->cBildPfad = \Shop::getURL() . $oImageMap->cBildPfad;
-        $cParse_arr           = \parse_url($oImageMap->cBildPfad);
-        $oImageMap->cBild     = \substr($cParse_arr['path'], \strrpos($cParse_arr['path'], '/') + 1);
-        list($width, $height) = \getimagesize($cBildPfad);
-        $oImageMap->fWidth    = $width;
-        $oImageMap->fHeight   = $height;
-        $defaultOptions       = \Artikel::getDefaultOptions();
+        $imgPath             = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . \basename($instance->getProperty('src'));
+        $parsed              = \parse_url($imageMap->cBildPfad);
+        $imageMap->cBildPfad = Shop::getURL() . $imageMap->cBildPfad;
+        $imageMap->cBild     = \mb_substr($parsed['path'], \mb_strrpos($parsed['path'], '/') + 1);
+        [$width, $height]    = \getimagesize($imgPath);
+        $imageMap->fWidth    = $width;
+        $imageMap->fHeight   = $height;
+        $defaultOptions      = Artikel::getDefaultOptions();
 
-        if (!empty($oImageMap->oArea_arr)) {
-            foreach ($oImageMap->oArea_arr as &$oArea) {
-                $oArea->oArtikel = null;
+        if (!empty($imageMap->oArea_arr)) {
+            foreach ($imageMap->oArea_arr as &$area) {
+                $area->oArtikel = null;
 
-                if ((int)$oArea->kArtikel > 0) {
-                    $oArea->oArtikel = new \Artikel();
-                    $oArea->oArtikel->fuelleArtikel($oArea->kArtikel, $defaultOptions);
+                if ((int)$area->kArtikel > 0) {
+                    $area->oArtikel = new Artikel();
+                    $area->oArtikel->fuelleArtikel((int)$area->kArtikel, $defaultOptions);
 
-                    if ($oArea->cTitel === '') {
-                        $oArea->cTitel = $oArea->oArtikel->cName;
+                    if ($area->cTitel === '') {
+                        $area->cTitel = $area->oArtikel->cName;
                     }
-                    if ($oArea->cUrl === '') {
-                        $oArea->cUrl = $oArea->oArtikel->cURL;
+                    if ($area->cUrl === '') {
+                        $area->cUrl = $area->oArtikel->cURL;
                     }
-                    if ($oArea->cBeschreibung === '') {
-                        $oArea->cBeschreibung = $oArea->oArtikel->cKurzBeschreibung;
+                    if ($area->cBeschreibung === '') {
+                        $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
                     }
                 }
             }
         }
 
-        return $oImageMap;
+        return $imageMap;
     }
 
     /**
      * @return string
      */
-    public function getPlaceholderImgUrl()
+    public function getPlaceholderImgUrl(): string
     {
-        return \Shop::getURL() . '/' . PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
+        return $this->getTemplateUrl() . 'preview.banner.png';
     }
 
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('kImageMap', \uniqid('', false));
-        $instance->addClass('img-responsive');
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
@@ -92,18 +95,9 @@ class Banner extends \OPC\Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        $instance->addClass('img-responsive');
         $instance->addClass('banner');
 
         return $this->getFinalHtmlFromTpl($instance);
-    }
-
-    /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Banner';
     }
 
     /**
@@ -113,28 +107,27 @@ class Banner extends \OPC\Portlet
     {
         return [
             'src'   => [
-                'label'      => 'Bild',
+                'label'      => __('Image'),
                 'type'       => 'image',
                 'default'    => '',
                 'dspl_width' => 50,
                 'required'   => true,
             ],
             'zones' => [
-                'label'   => 'Zonen',
+                'label'   => __('Zones'),
                 'type'    => 'banner-zones',
                 'default' => '[]',
             ],
             'class' => [
-                'label' => 'CSS Class',
+                'label' => __('CSS class'),
             ],
             'alt'   => [
-                'label' => 'Altenativtext',
+                'label' => __('Altenativ text'),
             ],
             'title' => [
-                'label' => 'Titel'
+                'label' => __('Title')
             ],
         ];
-
     }
 
     /**
@@ -143,8 +136,8 @@ class Banner extends \OPC\Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

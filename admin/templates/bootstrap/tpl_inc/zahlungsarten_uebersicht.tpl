@@ -1,25 +1,25 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#paymentmethods# cBeschreibung=#installedPaymentmethods# cDokuURL=#paymentmethodsURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('paymentmethods') cBeschreibung=__('installedPaymentmethods') cDokuURL=__('paymentmethodsURL')}
 <div id="content" class="container-fluid">
     <form method="post" action="zahlungsarten.php" class="top" style="margin-bottom: 15px;">
         {$jtl_token}
         <input type="hidden" name="checkNutzbar" value="1" />
-        <button name="checkSubmit" type="submit" value="{#paymentmethodsCheckAll#}" class="btn btn-info button"><i class="fa fa-refresh"></i> {#paymentmethodsCheckAll#}</button>
+        <button name="checkSubmit" type="submit" value="{__('paymentmethodsCheckAll')}" class="btn btn-info button"><i class="fa fa-refresh"></i> {__('paymentmethodsCheckAll')}</button>
     </form>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Installierte Zahlungsarten</h3>
+            <h3 class="panel-title">{__('installedPaymentTypes')}</h3>
         </div>
         <div class="panel-body table-responsive">
             <table class="list table">
                 <thead>
                     <tr>
-                        <th>{#name#}</th>
+                        <th>{__('name')}</th>
                         <th></th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {foreach name=zahlungsarten from=$zahlungsarten item=zahlungsart}
+                    {foreach $zahlungsarten as $zahlungsart}
                         <tr class="text-vcenter">
                             <td class="text-left">
                                 <h4>{$zahlungsart->cName}
@@ -42,7 +42,7 @@
                                               {else}
                                                     btn-default disabled
                                               {/if}"
-                                       title="{#viewLog#}">
+                                       title="{__('viewLog')}">
                                         <i class="fa
                                                   {if $zahlungsart->nLogCount > 0}
                                                         {if $zahlungsart->nErrorLogCount}fa-warning{else}fa-bars{/if}
@@ -52,11 +52,11 @@
                                     </a>
                                     <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
                                        class="btn btn-default {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
-                                       title="Zahlungseing&auml;nge">
+                                       title="Zahlungseingänge">
                                         <i class="fa fa-money"></i>
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-default btn-sm" title="{#edit#}">
+                                       class="btn btn-default btn-sm" title="{__('edit')}">
                                         <i class="fa fa-edit"></i>
                                     </a>
                                 </div>

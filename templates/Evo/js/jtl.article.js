@@ -29,7 +29,7 @@
             navBadgeAppend: '#shop-nav li.cart-menu',
             boxContainer: 'section#sidebox',
             boxContainerWish: 'section#sidebox',
-            quantity: 'input.quantity',
+            quantity: 'input.quantity'
         },
         modal: {
             id: 'modal-article-dialog',
@@ -81,7 +81,7 @@
 
         getCurrent: function($item) {
             var $current = $item.hasClass('variation') ? $item : $item.closest('.variation');
-            if ($current.context.tagName === 'SELECT') {
+            if ($current.tagName === 'SELECT') {
                 $current = $item.find('option:selected');
             }
 
@@ -194,13 +194,6 @@
                         that.variationSwitch($(this), false, wrapper);
                     });
                 });
-
-            if (isTouchCapable()) {
-                $('.variations .swatches .variation', $wrapper)
-                    .on('mouseover', function() {
-                        $(this).trigger('click');
-                    });
-            }
 
             // ie11 fallback
             if (typeof document.body.style.msTransform === 'string') {
@@ -369,13 +362,7 @@
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
-            if (this.isSingleArticle()) {
-                if ($('.switch-variations .form-group', $wrapper).length === 1) {
-                    var wrapper = '#' + $($wrapper).attr('id');
-                    this.variationSwitch($('.switch-variations', $wrapper), false, wrapper);
-                }
-            }
-            else {
+            if (!this.isSingleArticle()) {
                 var that = this;
 
                 $('.product-cell.hover-enabled')
@@ -391,15 +378,6 @@
                             }
                         }
                     })
-                    .on('mouseenter', function (event) {
-                        var $this = $(this),
-                            wrapper = '#' + $this.attr('id');
-
-                        if (!$this.data('varLoaded') && $('.switch-variations .form-group', $this).length === 1) {
-                            that.variationSwitch($('.switch-variations', $this), false, wrapper);
-                        }
-                        $this.data('varLoaded', true);
-                    });
             }
 
             this.registerProductActions($('#sidepanel_left'));
@@ -1147,42 +1125,43 @@
         },
 
         removeStockInfo: function($item) {
-            if (this.isSingleArticle()) {
-                var type = $item.attr('data-type'),
-                    elem,
-                    label,
-                    wrapper;
+            var type = $item.attr('data-type'),
+                elem,
+                label,
+                wrapper;
 
-                switch (type) {
-                    case 'option':
-                        label = $item.data('content');
-                        wrapper = $('<div />').append(label);
-                        $(wrapper)
-                            .find('.label-not-available')
-                            .remove();
-                        label = $(wrapper).html();
-                        $item.data('content', label)
-                            .attr('data-content', label);
-
-                        break;
-                    case 'radio':
-                        elem = $item.find('.label-not-available');
-                        if (elem.length === 1) {
-                            $(elem).remove();
-                        }
-                        break;
-                    case 'swatch':
+            switch (type) {
+                case 'option':
+                    label = $item.data('content');
+                    wrapper = $('<div />').append(label);
+                    $(wrapper)
+                        .find('.label-not-available')
+                        .remove();
+                    label = $(wrapper).html();
+                    $item.data('content', label)
+                        .attr('data-content', label);
+                    break;
+                case 'radio':
+                    elem = $item.find('.label-not-available');
+                    if (elem.length === 1) {
+                        $(elem).remove();
+                    }
+                    break;
+                case 'swatch':
+                    if ($item.data('bs.tooltip')) {
                         $item.tooltip('destroy');
-                        break;
-                }
-
-                $item.removeAttr('data-stock');
+                        $item.attr('title', $item.attr('data-title'));
+                    }
+                    break;
             }
+
+            $item.removeAttr('data-stock');
         },
 
-        variationInfo: function(value, status, note) {
-            var $item = $('[data-value="' + value + '"].variation'),
-                type = $item.attr('data-type'),
+        variationInfo: function(value, status, note, wrapper) {
+            var $wrapper = this.getWrapper(wrapper),
+                $item    = $('[data-value="' + value + '"].variation', $wrapper),
+                type     = $item.attr('data-type'),
                 text,
                 content,
                 $wrapper,
@@ -1224,11 +1203,14 @@
                     $item.append(label);
                     break;
                 case 'swatch':
-                    $item.tooltip({
-                        title: note,
-                        trigger: 'hover',
-                        container: 'body'
-                    });
+                    $item.attr('title', note);
+                    window.setTimeout(function () {
+                        $item.tooltip({
+                            title: note,
+                            trigger: 'hover',
+                            container: 'body'
+                        });
+                    }, 300);
                     break;
             }
         },
@@ -1349,7 +1331,6 @@
 
         variationDispose: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
-
             $('[role="tooltip"]', $wrapper).remove();
         }
     };

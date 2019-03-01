@@ -4,17 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Link\LinkGroupCollection;
-use Link\LinkGroupInterface;
-use Link\LinkInterface;
-use Tightenco\Collect\Support\Collection;
-
+use JTL\Link\LinkGroupCollection;
+use JTL\Link\LinkGroupInterface;
+use JTL\Link\LinkInterface;
+use Illuminate\Support\Collection;
 
 /**
- * Class LinkService
- * @package Link
+ * Interface LinkServiceInterface
+ * @package JTL\Services\JTL
  */
 interface LinkServiceInterface
 {
@@ -42,13 +41,13 @@ interface LinkServiceInterface
      * @param int $id
      * @return LinkInterface|null
      */
-    public function getLinkByID(int $id);
+    public function getLinkByID(int $id): ?LinkInterface;
 
     /**
      * @param int $id
      * @return LinkInterface|null
      */
-    public function getParentForID(int $id);
+    public function getParentForID(int $id): ?LinkInterface;
 
     /**
      * @param int $id
@@ -66,7 +65,7 @@ interface LinkServiceInterface
      * @param int $id
      * @return int|null
      */
-    public function getRootID(int $id);
+    public function getRootID(int $id): ?int;
 
     /**
      * @param int $parentLinkID
@@ -86,7 +85,7 @@ interface LinkServiceInterface
      * @param int $nLinkart
      * @return LinkInterface|null
      */
-    public function getSpecialPage(int $nLinkart);
+    public function getSpecialPage(int $nLinkart): ?LinkInterface;
 
     /**
      * @former gibLinkKeySpecialSeite()
@@ -109,13 +108,13 @@ interface LinkServiceInterface
      * @param bool   $filtered
      * @return LinkGroupInterface|null
      */
-    public function getLinkGroupByName(string $name, bool $filtered);
+    public function getLinkGroupByName(string $name, bool $filtered = true): ?LinkGroupInterface;
 
     /**
      * @param int $id
      * @return LinkGroupInterface|null
      */
-    public function getLinkGroupByID(int $id);
+    public function getLinkGroupByID(int $id): ?LinkGroupInterface;
 
     /**
      * @param string      $id
@@ -141,7 +140,7 @@ interface LinkServiceInterface
      * @param int $id
      * @return LinkInterface|null
      */
-    public function getPageLinkLanguage(int $id);
+    public function getPageLinkLanguage(int $id): ?LinkInterface;
 
     /**
      * for compatability only
@@ -149,7 +148,7 @@ interface LinkServiceInterface
      * @param int $id
      * @return LinkInterface|null
      */
-    public function getPageLink(int $id);
+    public function getPageLink(int $id): ?LinkInterface;
 
     /**
      * for compatability only
@@ -157,7 +156,7 @@ interface LinkServiceInterface
      * @param int $id
      * @return LinkInterface|null
      */
-    public function getLinkObject(int $id);
+    public function getLinkObject(int $id): ?LinkInterface;
 
     /**
      * for compatability only
@@ -166,7 +165,7 @@ interface LinkServiceInterface
      * @param int $pluginID
      * @return LinkInterface|null
      */
-    public function findCMSLinkInSession(int $id, int $pluginID = 0);
+    public function findCMSLinkInSession(int $id, int $pluginID = 0): ?LinkInterface;
 
     /**
      * for compatability only
@@ -183,7 +182,7 @@ interface LinkServiceInterface
      * @param int $id
      * @return int|null
      */
-    public function getRootLink(int $id);
+    public function getRootLink(int $id): ?int;
 
     /**
      * for compatability only
@@ -200,14 +199,13 @@ interface LinkServiceInterface
      * @param int $id
      * @return LinkInterface|null
      */
-    public function getParent(int $id);
+    public function getParent(int $id): ?LinkInterface;
 
     /**
-     * @param int         $type
-     * @param string|null $cISOSprache
+     * @param int $type
      * @return \stdClass
      */
-    public function buildSpecialPageMeta(int $type, string $cISOSprache = null): \stdClass;
+    public function buildSpecialPageMeta(int $type): \stdClass;
 
     /**
      * @return bool

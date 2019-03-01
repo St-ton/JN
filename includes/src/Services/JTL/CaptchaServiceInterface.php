@@ -6,11 +6,13 @@
  * @since         5.0
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
+
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Interface CaptchaService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 interface CaptchaServiceInterface
 {
@@ -25,13 +27,13 @@ interface CaptchaServiceInterface
     public function isEnabled(): bool;
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getHeadMarkup($smarty): string;
 
     /**
-     * @param \JTLSmarty $smarty
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function getBodyMarkup($smarty): string;

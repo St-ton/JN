@@ -22,7 +22,7 @@ require_once('OFC/OFC_Chart.php');
 
 $chart = new OFC_Chart();
 
-$title = new OFC_Elements_Title(date("D M d Y"));
+$title = new OFC_Elements_Title(date('D M d Y'));
 $chart->set_title($title);
 
 $scatter = new OFC_Charts_Scatter('#FFD600', 10);
@@ -30,7 +30,7 @@ $scatter->set_values(
     array(
         new OFC_Charts_Scatter_Value(0, 0)
         )
-    );
+);
 
 $chart->add_element($scatter);
 
@@ -39,12 +39,13 @@ $chart->add_element($scatter);
 // plot a circle
 //
 $s2 = new OFC_Charts_Scatter('#D600FF', 3);
-$v = array();
+$v  = array();
 
-for ($i=0; $i<360; $i+=5) {
+for ($i = 0; $i < 360; $i += 5) {
     $v[] = new OFC_Charts_Scatter_Value(
         number_format(sin(deg2rad($i)), 2, '.', ''),
-        number_format(cos(deg2rad($i)), 2, '.', ''));
+        number_format(cos(deg2rad($i)), 2, '.', '')
+    );
 }
 $s2->set_values($v);
 $chart->add_element($s2);

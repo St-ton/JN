@@ -20,11 +20,11 @@
                                                 name="{$oFilter->getId()}_{$oField->getId()}_op"
                                                 id="{$oFilter->getId()}_{$oField->getId()}_op">
                                             {if $oField->getDataType() == 0}
-                                                <option value="1"{if $oField->getTestOp() == 1} selected{/if}>enth&auml;lt</option>
-                                                <option value="2"{if $oField->getTestOp() == 2} selected{/if}>beginnt mit</option>
-                                                <option value="3"{if $oField->getTestOp() == 3} selected{/if}>endet mit</option>
-                                                <option value="4"{if $oField->getTestOp() == 4} selected{/if}>ist gleich</option>
-                                                <option value="9"{if $oField->getTestOp() == 9} selected{/if}>ist ungleich</option>
+                                                <option value="1"{if $oField->getTestOp() == 1} selected{/if}>{__('contains')}</option>
+                                                <option value="2"{if $oField->getTestOp() == 2} selected{/if}>{__('startsWith')}</option>
+                                                <option value="3"{if $oField->getTestOp() == 3} selected{/if}>{__('endsWith')}</option>
+                                                <option value="4"{if $oField->getTestOp() == 4} selected{/if}>{__('isEqual')}</option>
+                                                <option value="9"{if $oField->getTestOp() == 9} selected{/if}>{__('isNotEqual')}</option>
                                             {elseif $oField->getDataType() == 1}
                                                 <option value="4"{if $oField->getTestOp() == 4} selected{/if}>=</option>
                                                 <option value="9"{if $oField->getTestOp() == 9} selected{/if}>!=</option>
@@ -142,7 +142,7 @@
                             <i class="fa fa-search"></i>
                         </button>
                         <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter"
-                                title="Filter zur&uuml;cksetzen" id="{$oFilter->getId()}_btn_resetfilter">
+                                title="Filter zurücksetzen" id="{$oFilter->getId()}_btn_resetfilter">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </div>

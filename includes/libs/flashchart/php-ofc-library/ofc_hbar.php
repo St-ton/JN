@@ -2,10 +2,10 @@
 
 class hbar_value
 {
-    public function __construct($left, $right=null)
+    public function __construct($left, $right = null)
     {
         if (isset($right)) {
-            $this->left = $left;
+            $this->left  = $left;
             $this->right = $right;
         } else {
             $this->right = $left;
@@ -27,8 +27,8 @@ class hbar
 {
     public function __construct($colour)
     {
-        $this->type      = "hbar";
-        $this->values    = array();
+        $this->type   = 'hbar';
+        $this->values = array();
         $this->set_colour($colour);
     }
     
@@ -52,7 +52,7 @@ class hbar
     public function set_key($text, $size)
     {
         $this->text = $text;
-        $tmp = 'font-size';
+        $tmp        = 'font-size';
         $this->$tmp = $size;
     }
     

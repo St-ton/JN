@@ -4,7 +4,7 @@
     @param string importerId - the id string for this CSV importer
     @param bool bCustomStrategy - Show modal dialog to choose the import strategy (default: false)
 *}
-{assign var='bCustomStrategy' value=$bCustomStrategy|default:true}
+{assign var=bCustomStrategy value=$bCustomStrategy|default:true}
 <script>
     var $form_{$importerId} = null;
     var $fileInput_{$importerId} = null;
@@ -16,7 +16,7 @@
 
         $fileInput_{$importerId} = $('<input>', { type: 'file', name: 'csvfile', accept: '.csv,.slf' });
         $fileInput_{$importerId}.hide();
-        $fileInput_{$importerId}.change(function () {
+        $fileInput_{$importerId}.on('change', function () {
             {if $bCustomStrategy === true}
                 $('#modal-{$importerId}').modal('show');
             {else}
@@ -62,23 +62,23 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">{#importCsvChooseType#}</h4>
+                    <h4 class="modal-title">{__('importCsvChooseType')}</h4>
                 </div>
                 <div class="modal-body">
-                    <label for="importType-{$importerId}" class="sr-only">{#importCsvChooseType#}</label>
+                    <label for="importType-{$importerId}" class="sr-only">{__('importCsvChooseType')}</label>
                     <select class="form-control" name="importType" id="importType-{$importerId}">
-                        <option value="0">{#importCsvType0#}</option>
-                        <option value="1">{#importCsvType1#}</option>
-                        <option value="2">{#importCsvType2#}</option>
+                        <option value="0">{__('importCsvType0')}</option>
+                        <option value="1">{__('importCsvType1')}</option>
+                        <option value="2">{__('importCsvType2')}</option>
                     </select>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger" onclick="onModalCancel_{$importerId}();">
-                            <i class="fa fa-times"></i> {#cancel#}
+                            <i class="fa fa-times"></i> {__('cancel')}
                         </button>
                         <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
-                            <i class="fa fa-upload"></i> {#importCsv#}
+                            <i class="fa fa-upload"></i> {__('importCsv')}
                         </button>
                     </div>
                 </div>
@@ -87,5 +87,5 @@
     </div>
 {/if}
 <button type="button" class="btn btn-default" onclick="onClickCsvImport_{$importerId}()">
-    <i class="fa fa-upload"></i> {#importCsv#}
+    <i class="fa fa-upload"></i> {__('importCsv')}
 </button>

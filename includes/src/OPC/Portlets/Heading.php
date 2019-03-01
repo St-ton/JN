@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Heading
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Heading extends \OPC\Portlet
+class Heading extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -20,7 +21,11 @@ class Heading extends \OPC\Portlet
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        return $this->getPreviewRootHtml($instance, 'h' . $instance->getProperty('level'), $instance->getProperty('text'));
+        return $this->getPreviewRootHtml(
+            $instance,
+            'h' . $instance->getProperty('level'),
+            $instance->getProperty('text')
+        );
     }
 
     /**
@@ -29,7 +34,11 @@ class Heading extends \OPC\Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        return $this->getFinalRootHtml($instance, 'h' . $instance->getProperty('level'), $instance->getProperty('text'));
+        return $this->getFinalRootHtml(
+            $instance,
+            'h' . $instance->getProperty('level'),
+            $instance->getProperty('text')
+        );
     }
 
     /**
@@ -37,7 +46,7 @@ class Heading extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-header"></i><br>Überschrift';
+        return $this->getFontAwesomeButtonHtml('header');
     }
 
     /**
@@ -47,7 +56,7 @@ class Heading extends \OPC\Portlet
     {
         return [
             'level' => [
-                'label'      => 'Level',
+                'label'      => __('Level'),
                 'type'       => 'select',
                 'options'    => [
                     '1' => '1',
@@ -62,9 +71,9 @@ class Heading extends \OPC\Portlet
                 'dspl_width' => 50,
             ],
             'text'  => [
-                'label'      => 'Text',
+                'label'      => __('Text'),
                 'type'       => 'text',
-                'default'    => 'Heading',
+                'default'    => __('Heading'),
                 'dspl_width' => 50,
             ],
         ];
@@ -76,8 +85,8 @@ class Heading extends \OPC\Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

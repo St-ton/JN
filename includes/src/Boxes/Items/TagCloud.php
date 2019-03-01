@@ -4,35 +4,36 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Helpers\URL;
+use JTL\Shop;
 
 /**
  * Class TagCloud
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class TagCloud extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * TagCloud constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('Tagbegriffe', 'Items');
+        $this->addMapping('Tagbegriffe', 'Items');
         $limit     = (int)$config['boxen']['boxen_tagging_count'];
         $limitSQL  = ($limit > 0) ? ' LIMIT ' . $limit : '';
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
         $cached    = true;
-        $langID    = \Shop::getLanguageID();
+        $langID    = Shop::getLanguageID();
         $cacheID   = 'bx_tgcld_' . $langID . '_' . $limit;
-        if (($tagCloud = \Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($tagCloud = Shop::Container()->getCache()->get($cacheID)) === false) {
             $tagCloud = [];
             $cached   = false;
-            $tags     = \Shop::Container()->getDB()->queryPrepared(
+            $tags     = Shop::Container()->getDB()->queryPrepared(
                 "SELECT ttag.kTag,ttag.cName, tseo.cSeo,sum(ttagartikel.nAnzahlTagging) AS Anzahl 
                     FROM ttag
                     JOIN ttagartikel 
@@ -56,13 +57,13 @@ final class TagCloud extends AbstractBox
                         $tagwolke->Klasse   = ($prio_step < 1) ?
                             \rand(1, 10) :
                             (\round(($tagwolke->Anzahl - $tags[$count - 1]->Anzahl) / $prio_step) + 1);
-                        $tagwolke->cURL     = \UrlHelper::buildURL($tagwolke, \URLART_TAG);
-                        $tagwolke->cURLFull = \UrlHelper::buildURL($tagwolke, \URLART_TAG, true);
+                        $tagwolke->cURL     = URL::buildURL($tagwolke, \URLART_TAG);
+                        $tagwolke->cURLFull = URL::buildURL($tagwolke, \URLART_TAG, true);
                         $tagCloud[]         = $tagwolke;
                     }
                 }
             }
-            \Shop::Container()->getCache()->set($cacheID, $tagCloud, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $tagCloud, $cacheTags);
         }
 
         if (\count($tagCloud) > 0) {

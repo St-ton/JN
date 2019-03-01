@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Visitor;
+
 /**
  * @param string $szUserAgent
  * @param string $szIp
@@ -24,7 +26,7 @@ function dbLookupVisitor($szUserAgent, $szIp)
  * @return object
  * @deprecated since 5.0.0
  */
-function updateVisitorObject($oVisitor, int $visitorId,  $szUserAgent, $kBesucherBot)
+function updateVisitorObject($oVisitor, int $visitorId, $szUserAgent, $kBesucherBot)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Visitor::updateVisitorObject($oVisitor, $visitorId, $szUserAgent, $kBesucherBot);

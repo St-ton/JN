@@ -11,7 +11,7 @@
     ymin        - string
 *}
 
-{config_load file="$lang.conf" section="statistics"}
+{config_load file="$lang.conf" section='statistics'}
  
 {if $linechart->getActive()}
     <div id="{$id}" style="width: {$width}; height: {$height};"></div>
@@ -83,5 +83,5 @@
         });
     </script>
 {else}
-    <div class="alert alert-info" role="alert">{#statisticNoData#}</div>
+    <div class="alert alert-info" role="alert">{__('statisticNoData')}</div>
 {/if}

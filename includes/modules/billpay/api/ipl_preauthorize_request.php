@@ -473,7 +473,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_base_amount()
     {
-        return (int) $this->base_amount;
+        return (int)$this->base_amount;
     }
 
     /**
@@ -482,7 +482,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_cart_amount()
     {
-        return (int) $this->cart_amount;
+        return (int)$this->cart_amount;
     }
 
     /**
@@ -491,7 +491,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_surcharge()
     {
-        return (int) $this->surcharge;
+        return (int)$this->surcharge;
     }
 
     /**
@@ -501,7 +501,7 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function get_interest()
     {
-        return (int) $this->interest;
+        return (int)$this->interest;
     }
 
     /**
@@ -533,10 +533,27 @@ class ipl_preauthorize_request extends ipl_xml_request
      * @param $ip
      * @param $customerGroup
      */
-    public function set_customer_details($customer_id, $customer_type, $salutation, $title,
-        $first_name, $last_name, $street, $street_no, $address_addition, $zip,
-        $city, $country, $email, $phone, $cell_phone, $birthday, $language, $ip, $customerGroup)
-    {
+    public function set_customer_details(
+        $customer_id,
+        $customer_type,
+        $salutation,
+        $title,
+        $first_name,
+        $last_name,
+        $street,
+        $street_no,
+        $address_addition,
+        $zip,
+        $city,
+        $country,
+        $email,
+        $phone,
+        $cell_phone,
+        $birthday,
+        $language,
+        $ip,
+        $customerGroup
+    ) {
         $this->_customer_details['customerid']      = $customer_id;
         $this->_customer_details['customertype']    = $customer_type;
         $this->_customer_details['salutation']      = $salutation;
@@ -573,9 +590,21 @@ class ipl_preauthorize_request extends ipl_xml_request
      * @param null $phone
      * @param null $cell_phone
      */
-    public function set_shipping_details($use_billing_address, $salutation = null, $title = null, $first_name = null, $last_name = null,
-        $street = null, $street_no = null, $address_addition = null, $zip = null, $city = null, $country = null, $phone = null, $cell_phone = null)
-    {
+    public function set_shipping_details(
+        $use_billing_address,
+        $salutation = null,
+        $title = null,
+        $first_name = null,
+        $last_name = null,
+        $street = null,
+        $street_no = null,
+        $address_addition = null,
+        $zip = null,
+        $city = null,
+        $country = null,
+        $phone = null,
+        $cell_phone = null
+    ) {
         $this->_shippping_details['useBillingAddress'] = $use_billing_address ? '1' : '0';
         $this->_shippping_details['salutation']        = $salutation;
         $this->_shippping_details['title']             = $title;
@@ -599,9 +628,14 @@ class ipl_preauthorize_request extends ipl_xml_request
      * @param $article_price
      * @param $article_price_gross
      */
-    public function add_article($articleid, $articlequantity, $articlename, $articledescription,
-        $article_price, $article_price_gross)
-    {
+    public function add_article(
+        $articleid,
+        $articlequantity,
+        $articlename,
+        $articledescription,
+        $article_price,
+        $article_price_gross
+    ) {
         $article                       = [];
         $article['articleid']          = $articleid;
         $article['articlequantity']    = $articlequantity;
@@ -621,8 +655,8 @@ class ipl_preauthorize_request extends ipl_xml_request
     public function add_order_history_attributes($iMerchantCustomerLimit, $iRepeatCustomer)
     {
         $this->_order_history_attr = [
-            'merchant_customer_limit' => (int) $iMerchantCustomerLimit,
-            'repeat_customer'         => (int) $iRepeatCustomer,
+            'merchant_customer_limit' => (int)$iMerchantCustomerLimit,
+            'repeat_customer'         => (int)$iRepeatCustomer,
         ];
 
         return $this;
@@ -661,10 +695,18 @@ class ipl_preauthorize_request extends ipl_xml_request
      * @param        $reference
      * @param string $reference2
      */
-    public function set_total($rebate, $rebate_gross, $shipping_name, $shipping_price,
-            $shipping_price_gross, $cart_total_price, $cart_total_price_gross,
-            $currency, $reference, $reference2 = "")
-    {
+    public function set_total(
+        $rebate,
+        $rebate_gross,
+        $shipping_name,
+        $shipping_price,
+        $shipping_price_gross,
+        $cart_total_price,
+        $cart_total_price_gross,
+        $currency,
+        $reference,
+        $reference2 = ''
+    ) {
         $this->_totals['shippingname']        = $shipping_name;
         $this->_totals['shippingprice']       = $shipping_price;
         $this->_totals['shippingpricegross']  = $shipping_price_gross;
@@ -736,8 +778,8 @@ class ipl_preauthorize_request extends ipl_xml_request
      */
     public function set_payment_info_params($showhtmlinfo, $showplaininfo)
     {
-        $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? "1" : "0";
-        $this->_payment_info_params['plaininfo'] = $showplaininfo ? "1" : "0";
+        $this->_payment_info_params['htmlinfo']  = $showhtmlinfo ? '1' : '0';
+        $this->_payment_info_params['plaininfo'] = $showplaininfo ? '1' : '0';
     }
 
     /**

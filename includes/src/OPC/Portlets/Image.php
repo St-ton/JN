@@ -4,55 +4,41 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Image
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Image extends \OPC\Portlet
+class Image extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @param bool            $preview
-     * @return string
+     * @return bool|string
      */
-    public function getHtml(PortletInstance $instance, $preview = false): string
+    public function getRoundedProp(PortletInstance $instance)
     {
-        $instance->setImageAttributes();
-
-        if (!empty($instance->getProperty('responsive'))) {
-            $instance->addClass('img-responsive');
+        switch ($instance->getProperty('shape')) {
+            case 'normal':
+                return false;
+            case 'rounded':
+                return true;
+            case 'circle':
+                return 'circle';
+            default:
+                return false;
         }
-
-        if (!empty($instance->getProperty('shape'))) {
-            $instance->addClass($instance->getProperty('shape'));
-        }
-
-        return '<img '
-            . $instance->getAttributeString()
-            . ($preview ? ' ' . $instance->getDataAttributeString() : '')
-            . '>';
     }
 
     /**
      * @param PortletInstance $instance
-     * @return string
+     * @return bool
      */
-    public function getPreviewHtml(PortletInstance $instance): string
+    public function getThumbnailProp(PortletInstance $instance): bool
     {
-        return $this->getHtml($instance, true);
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        return $this->getHtml($instance);
+        return $instance->getProperty('shape') === 'thumbnail';
     }
 
     /**
@@ -60,7 +46,7 @@ class Image extends \OPC\Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-image"></i><br> Bild';
+        return $this->getFontAwesomeButtonHtml('image');
     }
 
     /**
@@ -78,15 +64,15 @@ class Image extends \OPC\Portlet
                 'label'      => 'Form',
                 'type'       => 'select',
                 'options'    => [
-                    '',
-                    'img-rounded' => 'abgerundete Ecken',
-                    'img-circle' => 'Kreis',
-                    'img-thumbnail' => 'mit Rahmen'
+                    'normal'    => 'normal',
+                    'rounded'   => 'abgerundete Ecken',
+                    'circle'    => 'Kreis',
+                    'thumbnail' => 'Als Thumbnail',
                 ],
                 'dspl_width' => 50,
             ],
             'responsive' => [
-                'label'      => 'responsives Bild?',
+                'label'      => 'Responsives Bild?',
                 'type'       => 'radio',
                 'options'    => [
                     true  => 'ja',
@@ -99,9 +85,6 @@ class Image extends \OPC\Portlet
             'alt'        => [
                 'label' => 'Alternativtext',
             ],
-            'title'      => [
-                'label' => 'title',
-            ]
         ];
     }
 

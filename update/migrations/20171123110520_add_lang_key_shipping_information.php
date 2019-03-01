@@ -6,6 +6,9 @@
  * @created Thu, 23 Nov 2017 11:05:20 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20171123110520 extends Migration implements IMigration
 {
-    protected $author = 'Mirko';
+    protected $author      = 'Mirko';
     protected $description = 'add_lang_key_shipping_information';
 
     public function up()

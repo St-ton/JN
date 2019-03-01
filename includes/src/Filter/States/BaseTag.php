@@ -4,26 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Items\Tag;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\StateSQL;
-use Filter\Type;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Items\Tag;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\Filter\Type;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class BaseTag
- * @package Filter\States
+ * @package JTL\Filter\States
  */
 class BaseTag extends AbstractFilter
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -41,7 +42,7 @@ class BaseTag extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setFrontendName(\Shop::Lang()->get('tags'))
+        $this->setFrontendName(Shop::Lang()->get('tags'))
              ->setIsCustom(false)
              ->setUrlParam('t');
     }
@@ -141,7 +142,8 @@ class BaseTag extends AbstractFilter
         if ($this->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] === 'N') {
             return $options;
         }
-        $state = $this->productFilter->getCurrentStateData($this->getType() === Type::OR
+        $state = $this->productFilter->getCurrentStateData(
+            $this->getType() === Type::OR
             ? $this->getClassName()
             : null
         );
@@ -178,14 +180,14 @@ class BaseTag extends AbstractFilter
             return $this->options;
         }
         $tags             = $this->productFilter->getDB()->query(
-            "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
+            'SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, 
                 COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
-                    FROM (" . $baseQuery . ") AS ssMerkmal
+                    FROM (' . $baseQuery . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'
-                    AND tseo.kSprache = " . $this->getLanguageID() . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . '
                 GROUP BY ssMerkmal.kTag
-                ORDER BY nAnzahl DESC LIMIT 0, " .
+                ORDER BY nAnzahl DESC LIMIT 0, ' .
             (int)$this->getConfig('navigationsfilter')['tagfilter_max_anzeige'],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -218,7 +220,7 @@ class BaseTag extends AbstractFilter
                 ->setCount((int)$tag->nAnzahl);
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

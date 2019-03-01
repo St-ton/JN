@@ -3,47 +3,77 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Checkout\Versandart;
+use JTL\Checkout\ZipValidator;
+use JTL\DB\ReturnType;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global JTLSmarty $smarty */
-TaxHelper::setTaxRates();
-$standardwaehrung   = Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+Tax::setTaxRates();
+$db                 = Shop::Container()->getDB();
+$standardwaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;
-$cHinweis           = '';
-$cFehler            = '';
 $step               = 'uebersicht';
 $Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
+$alertHelper        = Shop::Container()->getAlertService();
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
 $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
 
-if (isset($_POST['neu'], $_POST['kVersandberechnung']) &&
-    (int)$_POST['neu'] === 1 &&
-    (int)$_POST['kVersandberechnung'] > 0 &&
-    FormHelper::validateToken()
+if (isset($_POST['neu'], $_POST['kVersandberechnung'])
+    && (int)$_POST['neu'] === 1
+    && (int)$_POST['kVersandberechnung'] > 0
+    && Form::validateToken()
 ) {
     $step = 'neue Versandart';
 }
-if (isset($_POST['kVersandberechnung']) && (int)$_POST['kVersandberechnung'] > 0 && FormHelper::validateToken()) {
-    $versandberechnung = Shop::Container()->getDB()->select('tversandberechnung', 'kVersandberechnung', (int)$_POST['kVersandberechnung']);
+if (isset($_POST['kVersandberechnung']) && (int)$_POST['kVersandberechnung'] > 0 && Form::validateToken()) {
+    $versandberechnung = $db->select('tversandberechnung', 'kVersandberechnung', (int)$_POST['kVersandberechnung']);
 }
 
-//we need to flush the options caching group because of gibVersandkostenfreiAb(), baueVersandkostenfreiLaenderString() etc.
-if (isset($_POST['del']) && (int)$_POST['del'] > 0 && FormHelper::validateToken() && Versandart::deleteInDB($_POST['del'])) {
-    $cHinweis .= 'Versandart erfolgreich gelöscht!';
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+if (isset($_POST['del'])
+    && (int)$_POST['del'] > 0
+    && Form::validateToken()
+    && Versandart::deleteInDB($_POST['del'])
+) {
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShippingMethodDelete'), 'successShippingMethodDelete');
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 }
-if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && Form::validateToken()) {
     $step                        = 'neue Versandart';
-    $Versandart                  = Shop::Container()->getDB()->select('tversandart', 'kVersandart', (int)$_POST['edit']);
-    $VersandartZahlungsarten     = Shop::Container()->getDB()->selectAll('tversandartzahlungsart', 'kVersandart', (int)$_POST['edit'], '*', 'kZahlungsart');
-    $VersandartStaffeln          = Shop::Container()->getDB()->selectAll('tversandartstaffel', 'kVersandart', (int)$_POST['edit'], '*', 'fBis');
-    $versandberechnung           = Shop::Container()->getDB()->select('tversandberechnung', 'kVersandberechnung', (int)$Versandart->kVersandberechnung);
+    $Versandart                  = $db->select('tversandart', 'kVersandart', (int)$_POST['edit']);
+    $VersandartZahlungsarten     = $db->selectAll(
+        'tversandartzahlungsart',
+        'kVersandart',
+        (int)$_POST['edit'],
+        '*',
+        'kZahlungsart'
+    );
+    $VersandartStaffeln          = $db->selectAll(
+        'tversandartstaffel',
+        'kVersandart',
+        (int)$_POST['edit'],
+        '*',
+        'fBis'
+    );
+    $versandberechnung           = $db->select(
+        'tversandberechnung',
+        'kVersandberechnung',
+        (int)$Versandart->kVersandberechnung
+    );
     $Versandart->cVersandklassen = trim($Versandart->cVersandklassen);
 
     $smarty->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
@@ -52,71 +82,72 @@ if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && FormHelper::validateToke
            ->assign('gewaehlteLaender', explode(' ', $Versandart->cLaender));
 }
 
-if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && Form::validateToken()) {
     $step = 'uebersicht';
     if (Versandart::cloneShipping($_POST['clone'])) {
-        $cHinweis .= 'Versandart wurde erfolgreich dupliziert';
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        $alertHelper->addAlert(
+            Alert::TYPE_SUCCESS,
+            __('successShippingMethodDuplicated'),
+            'successShippingMethodDuplicated'
+        );
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
-        $cFehler .= 'Versandart konnte nicht dupliziert werden!';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorShippingMethodDuplicated'), 'errorShippingMethodDuplicated');
     }
 }
 
 if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
     && (int)$_GET['zuschlag'] === 1
-    && (int)$_GET['kVersandart'] > 0 && FormHelper::validateToken()
+    && (int)$_GET['kVersandart'] > 0 && Form::validateToken()
 ) {
     $step = 'Zuschlagsliste';
 }
 
-if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && FormHelper::validateToken()) {
+if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken()) {
     $step = 'Zuschlagsliste';
-    Shop::Container()->getDB()->queryPrepared(
+    $db->queryPrepared(
         'DELETE tversandzuschlag, tversandzuschlagsprache
             FROM tversandzuschlag
             LEFT JOIN tversandzuschlagsprache
               ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
             WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag',
         ['kVersandzuschlag' => $_GET['delzus']],
-        \DB\ReturnType::DEFAULT
+        ReturnType::DEFAULT
     );
-    Shop::Container()->getDB()->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $cHinweis .= 'Zuschlagsliste erfolgreich gelöscht!';
+    $db->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteSurchargeList'), 'successlistDelete');
 }
 // Zuschlagliste editieren
-if (RequestHelper::verifyGPCDataInt('editzus') > 0 && FormHelper::validateToken()) {
-    $kVersandzuschlag = RequestHelper::verifyGPCDataInt('editzus');
-    $cISO             = StringHandler::convertISO6392ISO(RequestHelper::verifyGPDataString('cISO'));
-
-    if ($kVersandzuschlag > 0 && (strlen($cISO) > 0 && $cISO !== 'noISO')) {
-        $step             = 'Zuschlagsliste';
-        $oVersandzuschlag = Shop::Container()->getDB()->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
-        if (isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0) {
-            $oVersandzuschlag->oVersandzuschlagSprache_arr = [];
-            $oVersandzuschlagSprache_arr                   = Shop::Container()->getDB()->selectAll(
+if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
+    $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
+    $cISO             = Text::convertISO6392ISO(Request::verifyGPDataString('cISO'));
+    if ($kVersandzuschlag > 0 && (mb_strlen($cISO) > 0 && $cISO !== 'noISO')) {
+        $step = 'Zuschlagsliste';
+        $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
+        if (isset($fee->kVersandzuschlag) && $fee->kVersandzuschlag > 0) {
+            $fee->oVersandzuschlagSprache_arr = [];
+            $oVersandzuschlagSprache_arr      = $db->selectAll(
                 'tversandzuschlagsprache',
                 'kVersandzuschlag',
-                (int)$oVersandzuschlag->kVersandzuschlag
+                (int)$fee->kVersandzuschlag
             );
-            if (is_array($oVersandzuschlagSprache_arr) && count($oVersandzuschlagSprache_arr) > 0) {
-                foreach ($oVersandzuschlagSprache_arr as $oVersandzuschlagSprache) {
-                    $oVersandzuschlag->oVersandzuschlagSprache_arr[$oVersandzuschlagSprache->cISOSprache] = $oVersandzuschlagSprache;
-                }
+            foreach ($oVersandzuschlagSprache_arr as $localized) {
+                $fee->oVersandzuschlagSprache_arr[$localized->cISOSprache] = $localized;
             }
         }
-        $smarty->assign('oVersandzuschlag', $oVersandzuschlag);
+        $smarty->assign('oVersandzuschlag', $fee);
     }
 }
 
-if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && FormHelper::validateToken()) {
+if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && Form::validateToken()) {
     $step = 'Zuschlagsliste';
-    Shop::Container()->getDB()->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
-    Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $cHinweis .= 'PLZ/PLZ-Bereich erfolgreich gelöscht.';
+    $db->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteZIP'), 'successZIPDelete');
 }
 
-if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && Form::validateToken()) {
     $step          = 'Zuschlagsliste';
     $oZipValidator = new ZipValidator($_POST['cISO']);
     $ZuschlagPLZ   = new stdClass();
@@ -135,16 +166,17 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
         }
     }
 
-    $versandzuschlag = Shop::Container()->getDB()->select('tversandzuschlag', 'kVersandzuschlag', (int)$ZuschlagPLZ->kVersandzuschlag);
+    $versandzuschlag = $db->select('tversandzuschlag', 'kVersandzuschlag', (int)$ZuschlagPLZ->kVersandzuschlag);
 
     if (!empty($ZuschlagPLZ->cPLZ) || !empty($ZuschlagPLZ->cPLZAb)) {
         //schaue, ob sich PLZ ueberschneiden
         if (!empty($ZuschlagPLZ->cPLZ)) {
-            $plz_x = Shop::Container()->getDB()->queryPrepared(
+            $plz_x = $db->queryPrepared(
                 'SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
                     WHERE (tversandzuschlagplz.cPLZ = :surchargeZip
-                        OR :surchargeZip BETWEEN tversandzuschlagplz.cPLZAb AND tversandzuschlagplz.cPLZBis)
+                        OR :surchargeZip BETWEEN tversandzuschlagplz.cPLZAb
+                        AND tversandzuschlagplz.cPLZBis)
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                         AND tversandzuschlag.cISO = :surchargeISO
                         AND tversandzuschlag.kVersandart = :surchargeShipmentMode',
@@ -153,14 +185,15 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         } else {
-            $plz_x = Shop::Container()->getDB()->queryPrepared(
+            $plz_x = $db->queryPrepared(
                 'SELECT tversandzuschlagplz.*
                     FROM tversandzuschlagplz, tversandzuschlag
                     WHERE (tversandzuschlagplz.cPLZ BETWEEN :surchargeZipFrom AND :surchargeZipTo
-                        OR :surchargeZipTo >= tversandzuschlagplz.cPLZAb AND tversandzuschlagplz.cPLZBis >= :surchargeZipFrom)
+                        OR :surchargeZipTo >= tversandzuschlagplz.cPLZAb
+                        AND tversandzuschlagplz.cPLZBis >= :surchargeZipFrom)
                         AND tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                         AND tversandzuschlag.cISO = :surchargeISO
                         AND tversandzuschlag.kVersandart = :surchargeShipmentMode',
@@ -170,57 +203,71 @@ if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && 
                     'surchargeISO'          => $versandzuschlag->cISO,
                     'surchargeShipmentMode' => (int)$versandzuschlag->kVersandart
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         }
         // (string-)merge the possible resulting 'overlaps'
         // (multiple single ZIP or multiple ZIP-ranges)
         $szPLZ = $szPLZRange = $szOverlap = '';
         foreach ($plz_x as $oResult) {
-            if (!empty($oResult->cPLZ) && (0 < strlen($szPLZ))) {
+            if (!empty($oResult->cPLZ) && (0 < mb_strlen($szPLZ))) {
                 $szPLZ .= ', ' . $oResult->cPLZ;
-            } elseif (!empty($oResult->cPLZ) && (0 === strlen($szPLZ))) {
+            } elseif (!empty($oResult->cPLZ) && (mb_strlen($szPLZ) === 0)) {
                 $szPLZ = $oResult->cPLZ;
             }
-            if (!empty($oResult->cPLZAb) && (0 < strlen($szPLZRange))) {
+            if (!empty($oResult->cPLZAb) && 0 < mb_strlen($szPLZRange)) {
                 $szPLZRange .= ', ' . $oResult->cPLZAb . '-' . $oResult->cPLZBis;
-            } elseif (!empty($oResult->cPLZAb) && (0 === strlen($szPLZRange))) {
+            } elseif (!empty($oResult->cPLZAb) && mb_strlen($szPLZRange) === 0) {
                 $szPLZRange = $oResult->cPLZAb . '-' . $oResult->cPLZBis;
             }
         }
-        if ((0 < strlen($szPLZ)) && (0 < strlen($szPLZRange))) {
+        if ((0 < mb_strlen($szPLZ)) && (0 < mb_strlen($szPLZRange))) {
             $szOverlap = $szPLZ . ' und ' . $szPLZRange;
         } else {
-            $szOverlap = (0 < strlen($szPLZ)) ? $szPLZ : $szPLZRange;
+            $szOverlap = (0 < mb_strlen($szPLZ)) ? $szPLZ : $szPLZRange;
         }
         // form an error-string, if there are any errors, or insert the input into the DB
-        if (0 < strlen($szOverlap)) {
-            $cFehler = '&nbsp;';
+        if (0 < mb_strlen($szOverlap)) {
             if (!empty($ZuschlagPLZ->cPLZ)) {
-                $cFehler .= "Die PLZ $ZuschlagPLZ->cPLZ";
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(
+                        __('errorZIPOverlap'),
+                        $ZuschlagPLZ->cPLZ,
+                        $szOverlap
+                    ),
+                    'errorZIPOverlap'
+                );
             } else {
-                $cFehler .= "Der PLZ-Bereich $ZuschlagPLZ->cPLZAb-$ZuschlagPLZ->cPLZBis";
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(
+                        __('errorZIPAreaOverlap'),
+                        $ZuschlagPLZ->cPLZAb . '-' . $ZuschlagPLZ->cPLZBis,
+                        $szOverlap
+                    ),
+                    'errorZIPAreaOverlap'
+                );
             }
-            $cFehler .= " überschneidet sich mit $szOverlap.<br>Bitte geben Sie eine andere PLZ / PLZ Bereich an.";
-        } elseif (Shop::Container()->getDB()->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
-            $cHinweis .= 'PLZ wurde erfolgreich hinzugefügt.';
+        } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         $szErrorString = $oZipValidator->getError();
-        if ('' !== $szErrorString) {
-            $cFehler .= $szErrorString;
+        if ($szErrorString !== '') {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $szErrorString, 'errorZIPValidator');
         } else {
-            $cFehler .= 'Sie müssen eine PLZ oder einen PLZ-Bereich angeben!';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPMissing'), 'errorZIPMissing');
         }
     }
 }
 
-if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form::validateToken()) {
     $step     = 'Zuschlagsliste';
     $Zuschlag = new stdClass();
-    if (RequestHelper::verifyGPCDataInt('kVersandzuschlag') > 0) {
-        $Zuschlag->kVersandzuschlag = RequestHelper::verifyGPCDataInt('kVersandzuschlag');
+    if (Request::verifyGPCDataInt('kVersandzuschlag') > 0) {
+        $Zuschlag->kVersandzuschlag = Request::verifyGPCDataInt('kVersandzuschlag');
     }
 
     $Zuschlag->kVersandart = (int)$_POST['kVersandart'];
@@ -230,10 +277,10 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
     if ($Zuschlag->cName && $Zuschlag->fZuschlag != 0) {
         $kVersandzuschlag = 0;
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
-            Shop::Container()->getDB()->delete('tversandzuschlag', 'kVersandzuschlag', (int)$Zuschlag->kVersandzuschlag);
+            $db->delete('tversandzuschlag', 'kVersandzuschlag', (int)$Zuschlag->kVersandzuschlag);
         }
-        if (($kVersandzuschlag = Shop::Container()->getDB()->insert('tversandzuschlag', $Zuschlag)) > 0) {
-            $cHinweis .= 'Zuschlagsliste wurde erfolgreich hinzugefügt.';
+        if (($kVersandzuschlag = $db->insert('tversandzuschlag', $Zuschlag)) > 0) {
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successListAdd'), 'successListAdd');
         }
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
             $kVersandzuschlag = $Zuschlag->kVersandzuschlag;
@@ -249,25 +296,25 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
                 $zuschlagSprache->cName = $_POST['cName_' . $sprache->cISO];
             }
 
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'tversandzuschlagsprache',
                 ['kVersandzuschlag', 'cISOSprache'],
                 [(int)$kVersandzuschlag, $sprache->cISO]
             );
-            Shop::Container()->getDB()->insert('tversandzuschlagsprache', $zuschlagSprache);
+            $db->insert('tversandzuschlagsprache', $zuschlagSprache);
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
     } else {
         if (!$Zuschlag->cName) {
-            $cFehler .= 'Bitte geben Sie der Zuschlagsliste einen Namen! ';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListNameMissing'), 'errorListNameMissing');
         }
         if (!$Zuschlag->fZuschlag) {
-            $cFehler .= 'Bitte geben Sie einen Preis für den Zuschlag ein! ';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListPriceMissing'), 'errorListPriceMissing');
         }
     }
 }
 
-if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && FormHelper::validateToken()) {
+if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form::validateToken()) {
     $Versandart                           = new stdClass();
     $Versandart->cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $Versandart->kVersandberechnung       = (int)$_POST['kVersandberechnung'];
@@ -282,7 +329,8 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
     $Versandart->eSteuer                  = $_POST['eSteuer'];
     $Versandart->fPreis                   = (float)str_replace(',', '.', $_POST['fPreis'] ?? 0);
     // Versandkostenfrei ab X
-    $Versandart->fVersandkostenfreiAbX = (isset($_POST['versandkostenfreiAktiv']) && (int)$_POST['versandkostenfreiAktiv'] === 1)
+    $Versandart->fVersandkostenfreiAbX = (isset($_POST['versandkostenfreiAktiv'])
+        && (int)$_POST['versandkostenfreiAktiv'] === 1)
         ? (float)$_POST['fVersandkostenfreiAbX']
         : 0;
     // Deckelung
@@ -304,7 +352,11 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
             $versandartzahlungsart               = new stdClass();
             $versandartzahlungsart->kZahlungsart = $kZahlungsart;
             if ($_POST['fAufpreis_' . $kZahlungsart] != 0) {
-                $versandartzahlungsart->fAufpreis    = (float)str_replace(',', '.', $_POST['fAufpreis_' . $kZahlungsart]);
+                $versandartzahlungsart->fAufpreis    = (float)str_replace(
+                    ',',
+                    '.',
+                    $_POST['fAufpreis_' . $kZahlungsart]
+                );
                 $versandartzahlungsart->cAufpreisTyp = $_POST['cAufpreisTyp_' . $kZahlungsart];
             }
             $VersandartZahlungsarten[] = $versandartzahlungsart;
@@ -326,15 +378,15 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         }
         //preisstaffel beachten
         if (!isset($_POST['bis'][0])
-            || strlen($_POST['bis'][0]) === 0
+            || mb_strlen($_POST['bis'][0]) === 0
             || !isset($_POST['preis'][0])
-            || strlen($_POST['preis'][0]) === 0
+            || mb_strlen($_POST['preis'][0]) === 0
         ) {
             $staffelDa = false;
         }
         if (is_array($_POST['bis']) && is_array($_POST['preis'])) {
             foreach ($_POST['bis'] as $i => $fBis) {
-                if (isset($_POST['preis'][$i]) && strlen($fBis) > 0) {
+                if (isset($_POST['preis'][$i]) && mb_strlen($fBis) > 0) {
                     unset($oVersandstaffel);
                     $oVersandstaffel         = new stdClass();
                     $oVersandstaffel->fBis   = (float)str_replace(',', '.', $fBis);
@@ -346,7 +398,9 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
             }
         }
         // Dummy Versandstaffel hinzufuegen, falls Versandart nach Warenwert und Versandkostenfrei ausgewaehlt wurde
-        if ($versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' && $Versandart->fVersandkostenfreiAbX > 0) {
+        if ($versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl'
+            && $Versandart->fVersandkostenfreiAbX > 0
+        ) {
             $oVersandstaffel         = new stdClass();
             $oVersandstaffel->fBis   = 999999999;
             $oVersandstaffel->fPreis = 0.0;
@@ -370,30 +424,41 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         ? ' ' . $_POST['kVersandklasse'] . ' '
         : '-1');
 
-    if (count($_POST['land']) >= 1 && count($_POST['kZahlungsart']) >= 1
-        && $Versandart->cName && $staffelDa && $bVersandkostenfreiGueltig
+    if (count($_POST['land']) >= 1
+        && count($_POST['kZahlungsart']) >= 1
+        && $Versandart->cName
+        && $staffelDa
+        && $bVersandkostenfreiGueltig
     ) {
         $kVersandart = 0;
         if ((int)$_POST['kVersandart'] === 0) {
-            $kVersandart = Shop::Container()->getDB()->insert('tversandart', $Versandart);
-            $cHinweis   .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich hinzugefügt. ";
+            $kVersandart = $db->insert('tversandart', $Versandart);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successShippingMethodCreate'), $Versandart->cName),
+                'successShippingMethodCreate'
+            );
         } else {
             //updaten
             $kVersandart = (int)$_POST['kVersandart'];
-            Shop::Container()->getDB()->update('tversandart', 'kVersandart', $kVersandart, $Versandart);
-            Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
-            Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $kVersandart);
-            $cHinweis .= "Die Versandart <strong>$Versandart->cName</strong> wurde erfolgreich geändert.";
+            $db->update('tversandart', 'kVersandart', $kVersandart, $Versandart);
+            $db->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
+            $db->delete('tversandartstaffel', 'kVersandart', $kVersandart);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successShippingMethodChange'), $Versandart->cName),
+                'successShippingMethodChange'
+            );
         }
         if ($kVersandart > 0) {
             foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
                 $versandartzahlungsart->kVersandart = $kVersandart;
-                Shop::Container()->getDB()->insert('tversandartzahlungsart', $versandartzahlungsart);
+                $db->insert('tversandartzahlungsart', $versandartzahlungsart);
             }
 
             foreach ($VersandartStaffeln as $versandartstaffel) {
                 $versandartstaffel->kVersandart = $kVersandart;
-                Shop::Container()->getDB()->insert('tversandartstaffel', $versandartstaffel);
+                $db->insert('tversandartstaffel', $versandartstaffel);
             }
             $sprachen       = Sprache::getAllLanguages();
             $versandSprache = new stdClass();
@@ -403,11 +468,19 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
                 $versandSprache->cISOSprache = $sprache->cISO;
                 $versandSprache->cName       = $Versandart->cName;
                 if ($_POST['cName_' . $sprache->cISO]) {
-                    $versandSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $versandSprache->cName = htmlspecialchars(
+                        $_POST['cName_' . $sprache->cISO],
+                        ENT_COMPAT | ENT_HTML401,
+                        JTL_CHARSET
+                    );
                 }
                 $versandSprache->cLieferdauer = '';
                 if ($_POST['cLieferdauer_' . $sprache->cISO]) {
-                    $versandSprache->cLieferdauer = htmlspecialchars($_POST['cLieferdauer_' . $sprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $versandSprache->cLieferdauer = htmlspecialchars(
+                        $_POST['cLieferdauer_' . $sprache->cISO],
+                        ENT_COMPAT | ENT_HTML401,
+                        JTL_CHARSET
+                    );
                 }
                 $versandSprache->cHinweistext = '';
                 if ($_POST['cHinweistext_' . $sprache->cISO]) {
@@ -417,35 +490,49 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
                 if ($_POST['cHinweistextShop_' . $sprache->cISO]) {
                     $versandSprache->cHinweistextShop = $_POST['cHinweistextShop_' . $sprache->cISO];
                 }
-                Shop::Container()->getDB()->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $sprache->cISO]);
-                Shop::Container()->getDB()->insert('tversandartsprache', $versandSprache);
+                $db->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $sprache->cISO]);
+                $db->insert('tversandartsprache', $versandSprache);
             }
             $step = 'uebersicht';
         }
-        Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     } else {
         $step = 'neue Versandart';
         if (!$Versandart->cName) {
-            $cFehler .= '<p>Bitte geben Sie dieser Versandart einen Namen!</p>';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorShippingMethodNameMissing'),
+                'errorShippingMethodNameMissing'
+            );
         }
         if (count($_POST['land']) < 1) {
-            $cFehler .= '<p>Bitte mindestens ein Versandland ankreuzen!</p>';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorShippingMethodCountryMissing'),
+                'errorShippingMethodCountryMissing'
+            );
         }
         if (count($_POST['kZahlungsart']) < 1) {
-            $cFehler .= '<p>Bitte mindestens eine akzeptierte Zahlungsart auswählen!</p>';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorShippingMethodPaymentMissing'),
+                'errorShippingMethodPaymentMissing'
+            );
         }
         if (!$staffelDa) {
-            $cFehler .= '<p>Bitte mindestens einen Staffelpreis angeben!</p>';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorShippingMethodPriceMissing'),
+                'errorShippingMethodPriceMissing'
+            );
         }
         if (!$bVersandkostenfreiGueltig) {
-            $cFehler .= '<p>Ihr Versandkostenfrei Wert darf maximal ' . $fMaxVersandartStaffelBis . ' sein!</p>';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorShippingFreeMax'), 'errorShippingFreeMax');
         }
         if ((int)$_POST['kVersandart'] > 0) {
-            $Versandart = Shop::Container()->getDB()->select('tversandart', 'kVersandart', (int)$_POST['kVersandart']);
+            $Versandart = $db->select('tversandart', 'kVersandart', (int)$_POST['kVersandart']);
         }
-        $smarty->assign('cHinweis', $cHinweis)
-               ->assign('cFehler', $cFehler)
-               ->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
+        $smarty->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
                ->assign('VersandartStaffeln', $VersandartStaffeln)
                ->assign('Versandart', $Versandart)
                ->assign('gewaehlteLaender', explode(' ', $Versandart->cLaender));
@@ -453,9 +540,9 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
 }
 
 if ($step === 'neue Versandart') {
-    $versandlaender = Shop::Container()->getDB()->query(
-        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch', 
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+    $versandlaender = $db->query(
+        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch',
+        ReturnType::ARRAY_OF_OBJECTS
     );
     if ($versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
         $smarty->assign('einheit', 'kg');
@@ -466,8 +553,15 @@ if ($step === 'neue Versandart') {
     if ($versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
         $smarty->assign('einheit', 'Stück');
     }
-    $zahlungsarten      = Shop::Container()->getDB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, nSort, cName');
-    $oVersandklasse_arr = Shop::Container()->getDB()->selectAll('tversandklasse', [], [], '*', 'kVersandklasse');
+    // prevent "unusable" payment methods from displaying them in the config section (mainly the null-payment)
+    $zahlungsarten      = $db->selectAll(
+        'tzahlungsart',
+        ['nActive', 'nNutzbar'],
+        [1, 1],
+        '*',
+        'cAnbieter, nSort, cName'
+    );
+    $oVersandklasse_arr = $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse');
     $smarty->assign('versandKlassen', $oVersandklasse_arr);
     $kVersandartTMP = 0;
     if (isset($Versandart->kVersandart) && $Versandart->kVersandart > 0) {
@@ -480,9 +574,9 @@ if ($step === 'neue Versandart') {
            ->assign('versandlaender', $versandlaender)
            ->assign('versandberechnung', $versandberechnung)
            ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('kundengruppen', Shop::Container()->getDB()->query(
+           ->assign('kundengruppen', $db->query(
                'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-               \DB\ReturnType::ARRAY_OF_OBJECTS
+               ReturnType::ARRAY_OF_OBJECTS
            ))
            ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($kVersandartTMP, $sprachen))
            ->assign('gesetzteVersandklassen', isset($Versandart->cVersandklassen)
@@ -494,124 +588,110 @@ if ($step === 'neue Versandart') {
 }
 
 if ($step === 'uebersicht') {
-    $oKundengruppen_arr  = Shop::Container()->getDB()->query(
+    $oKundengruppen_arr  = $db->query(
         'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    $versandberechnungen = Shop::Container()->getDB()->query(
+    $versandberechnungen = $db->query(
         'SELECT * FROM tversandberechnung ORDER BY cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    $versandarten        = Shop::Container()->getDB()->query(
+    $versandarten        = $db->query(
         'SELECT * FROM tversandart ORDER BY nSort, cName',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    $vCount              = count($versandarten);
-    for ($i = 0; $i < $vCount; $i++) {
-        $versandarten[$i]->versandartzahlungsarten = Shop::Container()->getDB()->query(
+    foreach ($versandarten as $method) {
+        $method->versandartzahlungsarten = $db->query(
             'SELECT tversandartzahlungsart.*
                 FROM tversandartzahlungsart
-                JOIN tzahlungsart 
+                JOIN tzahlungsart
                     ON tzahlungsart.kZahlungsart = tversandartzahlungsart.kZahlungsart
-                WHERE tversandartzahlungsart.kVersandart = ' . (int)$versandarten[$i]->kVersandart . '
+                WHERE tversandartzahlungsart.kVersandart = ' . (int)$method->kVersandart . '
                 ORDER BY tzahlungsart.cAnbieter, tzahlungsart.nSort, tzahlungsart.cName',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $count = count($versandarten[$i]->versandartzahlungsarten);
-        for ($o = 0; $o < $count; $o++) {
-            $versandarten[$i]->versandartzahlungsarten[$o]->zahlungsart = Shop::Container()->getDB()->select(
+        foreach ($method->versandartzahlungsarten as $smp) {
+            $smp->zahlungsart  = $db->select(
                 'tzahlungsart',
                 'kZahlungsart',
-                (int)$versandarten[$i]->versandartzahlungsarten[$o]->kZahlungsart,
+                (int)$smp->kZahlungsart,
                 'nActive',
                 1
             );
-            if ($versandarten[$i]->versandartzahlungsarten[$o]->cAufpreisTyp === 'prozent') {
-                $versandarten[$i]->versandartzahlungsarten[$o]->cAufpreisTyp = '%';
-            } else {
-                $versandarten[$i]->versandartzahlungsarten[$o]->cAufpreisTyp = '';
-            }
+            $smp->cAufpreisTyp = $smp->cAufpreisTyp === 'prozent' ? '%' : '';
         }
-        $versandarten[$i]->versandartstaffeln = Shop::Container()->getDB()->selectAll(
+        $method->versandartstaffeln         = $db->selectAll(
             'tversandartstaffel',
             'kVersandart',
-            (int)$versandarten[$i]->kVersandart,
+            (int)$method->kVersandart,
             '*',
             'fBis'
         );
-        // Berechne Brutto
-        $versandarten[$i]->fPreisBrutto               = berechneVersandpreisBrutto(
-            $versandarten[$i]->fPreis,
+        $method->fPreisBrutto               = berechneVersandpreisBrutto(
+            $method->fPreis,
             $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]]
         );
-        $versandarten[$i]->fVersandkostenfreiAbXNetto = berechneVersandpreisNetto(
-            $versandarten[$i]->fVersandkostenfreiAbX,
+        $method->fVersandkostenfreiAbXNetto = berechneVersandpreisNetto(
+            $method->fVersandkostenfreiAbX,
             $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]]
         );
-        $versandarten[$i]->fDeckelungBrutto           = berechneVersandpreisBrutto(
-            $versandarten[$i]->fDeckelung,
+        $method->fDeckelungBrutto           = berechneVersandpreisBrutto(
+            $method->fDeckelung,
             $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]]
         );
-
-        if (is_array($versandarten[$i]->versandartstaffeln) && count($versandarten[$i]->versandartstaffeln) > 0) {
-            foreach ($versandarten[$i]->versandartstaffeln as $j => $oVersandartstaffeln) {
-                $versandarten[$i]->versandartstaffeln[$j]->fPreisBrutto = berechneVersandpreisBrutto(
-                    $oVersandartstaffeln->fPreis,
-                    $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]]
-                );
-            }
+        foreach ($method->versandartstaffeln as $j => $oVersandartstaffeln) {
+            $method->versandartstaffeln[$j]->fPreisBrutto = berechneVersandpreisBrutto(
+                $oVersandartstaffeln->fPreis,
+                $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]]
+            );
         }
 
-        $versandarten[$i]->versandberechnung = Shop::Container()->getDB()->select(
+        $method->versandberechnung = $db->select(
             'tversandberechnung',
             'kVersandberechnung',
-            (int)$versandarten[$i]->kVersandberechnung
+            (int)$method->kVersandberechnung
         );
-        $versandarten[$i]->versandklassen    = gibGesetzteVersandklassenUebersicht($versandarten[$i]->cVersandklassen);
-        if ($versandarten[$i]->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
-            $versandarten[$i]->einheit = 'kg';
+        $method->versandklassen    = gibGesetzteVersandklassenUebersicht($method->cVersandklassen);
+        if ($method->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
+            $method->einheit = 'kg';
         }
-        if ($versandarten[$i]->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl') {
-            $versandarten[$i]->einheit = $standardwaehrung->cName;
+        if ($method->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl') {
+            $method->einheit = $standardwaehrung->cName;
         }
-        if ($versandarten[$i]->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
-            $versandarten[$i]->einheit = 'Stück';
+        if ($method->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
+            $method->einheit = 'Stück';
         }
-        $versandarten[$i]->land_arr = explode(' ', $versandarten[$i]->cLaender);
-        $count                      = count($versandarten[$i]->land_arr);
-        for ($o = 0; $o < $count; $o++) {
-            unset($zuschlag);
-            $zuschlag = Shop::Container()->getDB()->select(
+        $method->land_arr = explode(' ', $method->cLaender);
+        $count            = count($method->land_arr);
+        foreach ($method->land_arr as $country) {
+            $zuschlag = $db->select(
                 'tversandzuschlag',
                 'cISO',
-                $versandarten[$i]->land_arr[$o],
+                $country,
                 'kVersandart',
-                (int)$versandarten[$i]->kVersandart
+                (int)$method->kVersandart
             );
             if (isset($zuschlag->kVersandart) && $zuschlag->kVersandart > 0) {
-                $versandarten[$i]->zuschlag_arr[$versandarten[$i]->land_arr[$o]] = '(Zuschlag)';
+                $method->zuschlag_arr[$country] = '(Zuschlag)';
             }
         }
-        $versandarten[$i]->cKundengruppenName_arr  = [];
-        $kKundengruppe_arr                         = explode(';', $versandarten[$i]->cKundengruppen);
-        $versandarten[$i]->oVersandartSprachen_arr = Shop::Container()->getDB()->selectAll(
+        $method->cKundengruppenName_arr  = [];
+        $kKundengruppe_arr               = Text::parseSSK($method->cKundengruppen);
+        $method->oVersandartSprachen_arr = $db->selectAll(
             'tversandartsprache',
             'kVersandart',
-            (int)$versandarten[$i]->kVersandart,
+            (int)$method->kVersandart,
             'cName',
             'cISOSprache'
         );
-
-        if (is_array($kKundengruppe_arr)) {
-            foreach ($kKundengruppe_arr as $kKundengruppe) {
-                if ($kKundengruppe == '-1') {
-                    $versandarten[$i]->cKundengruppenName_arr[] = 'Alle';
-                } else {
-                    foreach ($oKundengruppen_arr as $oKundengruppen) {
-                        if ($oKundengruppen->kKundengruppe == $kKundengruppe) {
-                            $versandarten[$i]->cKundengruppenName_arr[] = $oKundengruppen->cName;
-                        }
+        foreach ($kKundengruppe_arr as $kKundengruppe) {
+            if ((int)$kKundengruppe === -1) {
+                $method->cKundengruppenName_arr[] = __('all');
+            } else {
+                foreach ($oKundengruppen_arr as $oKundengruppen) {
+                    if ((int)$oKundengruppen->kKundengruppe === (int)$kKundengruppe) {
+                        $method->cKundengruppenName_arr[] = $oKundengruppen->cName;
                     }
                 }
             }
@@ -620,53 +700,49 @@ if ($step === 'uebersicht') {
 
     $missingShippingClassCombis = getMissingShippingClassCombi();
     if (!empty($missingShippingClassCombis)) {
-        $cFehler .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
+        $errorMissingShippingClassCombis .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
                            ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
     }
 
     $smarty->assign('versandberechnungen', $versandberechnungen)
            ->assign('versandarten', $versandarten)
-           ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('cHinweis', $cHinweis)
-           ->assign('cFehler', $cFehler);
+           ->assign('waehrung', $standardwaehrung->cName);
 }
 
 if ($step === 'Zuschlagsliste') {
-    $cISO = isset($_GET['cISO']) ? Shop::Container()->getDB()->escape($_GET['cISO']) : null;
+    $cISO = isset($_GET['cISO']) ? $db->escape($_GET['cISO']) : null;
     if (isset($_POST['cISO'])) {
-        $cISO = Shop::Container()->getDB()->escape($_POST['cISO']);
+        $cISO = $db->escape($_POST['cISO']);
     }
     $kVersandart = isset($_GET['kVersandart']) ? (int)$_GET['kVersandart'] : 0;
     if (isset($_POST['kVersandart'])) {
         $kVersandart = (int)$_POST['kVersandart'];
     }
-    $Versandart = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
-    $Zuschlaege = Shop::Container()->getDB()->selectAll(
+    $Versandart = $db->select('tversandart', 'kVersandart', $kVersandart);
+    $Zuschlaege = $db->selectAll(
         'tversandzuschlag',
         ['kVersandart', 'cISO'],
-        [(int)$Versandart->kVersandart , $cISO],
+        [(int)$Versandart->kVersandart, $cISO],
         '*',
         'fZuschlag'
     );
-    $zCount     = count($Zuschlaege);
-    for ($i = 0; $i < $zCount; $i++) {
-        $Zuschlaege[$i]->zuschlagplz     = Shop::Container()->getDB()->selectAll(
+    foreach ($Zuschlaege as $item) {
+        $item->zuschlagplz     = $db->selectAll(
             'tversandzuschlagplz',
             'kVersandzuschlag',
-            $Zuschlaege[$i]->kVersandzuschlag
+            $item->kVersandzuschlag
         );
-        $Zuschlaege[$i]->angezeigterName = getZuschlagNames($Zuschlaege[$i]->kVersandzuschlag);
+        $item->angezeigterName = getZuschlagNames($item->kVersandzuschlag);
     }
     $smarty->assign('Versandart', $Versandart)
            ->assign('Zuschlaege', $Zuschlaege)
            ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('Land', Shop::Container()->getDB()->select('tland', 'cISO', $cISO))
-           ->assign('cHinweis', $cHinweis)
-           ->assign('cFehler', $cFehler)
+           ->assign('Land', $db->select('tland', 'cISO', $cISO))
            ->assign('sprachen', Sprache::getAllLanguages());
 }
 
 $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]])
-       ->assign('oWaehrung', Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y'))
+       ->assign('oWaehrung', $db->select('twaehrung', 'cStandard', 'Y'))
        ->assign('step', $step)
        ->display('versandarten.tpl');

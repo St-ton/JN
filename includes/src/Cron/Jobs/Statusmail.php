@@ -4,58 +4,29 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
-use DB\DbInterface;
-use Psr\Log\LoggerInterface;
-
-require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-require_once \PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
-require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
 
 /**
  * Class Statusmail
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class Statusmail extends Job
 {
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function hydrate($data)
     {
-        parent::__construct($db, $logger);
+        parent::hydrate($data);
         if (\JOBQUEUE_LIMIT_M_STATUSEMAIL > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_STATUSEMAIL);
         }
-    }
 
-    /**
-     * @param string $dateStart
-     * @param string $interval - one of 'hour', 'day', 'week', 'month', 'year'
-     * @return bool
-     */
-    public function isIntervalExceeded($dateStart, $interval): bool
-    {
-        if (empty($dateStart) || $dateStart === '0000-00-00 00:00:00') {
-            return true;
-        }
-        $oStartTime = \date_create($dateStart);
-
-        if ($oStartTime === false) {
-            return false;
-        }
-
-        $oEndTime = $oStartTime->modify('+1 ' . $interval);
-        if ($oEndTime === false) {
-            return false;
-        }
-
-        return \date_create()->format('YmdHis') >= $oEndTime->format('YmdHis');
+        return $this;
     }
 
     /**
@@ -66,9 +37,15 @@ class Statusmail extends Job
         parent::start($queueEntry);
         $jobData = $this->getJobData();
         if ($jobData === null) {
+            $this->setFinished(true);
+
             return $this;
         }
-        $statusMail = new \Statusmail($this->db);
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
+
+        $statusMail = new \JTL\Statusmail($this->db);
         $this->setFinished($statusMail->send($jobData));
 
         return $this;

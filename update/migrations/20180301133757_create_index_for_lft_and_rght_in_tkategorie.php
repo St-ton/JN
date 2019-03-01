@@ -6,6 +6,9 @@
  * @created Thu, 01 Mar 2018 13:37:57 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -52,16 +55,16 @@ class Migration_20180301133757 extends Migration implements IMigration
         }
 
         $this->execute(
-            "ALTER TABLE `tkategorie` 
-                ADD INDEX `idx_tkategorie_lft_rght` (`lft` ASC, `rght` ASC);"
+            'ALTER TABLE `tkategorie` 
+                ADD INDEX `idx_tkategorie_lft_rght` (`lft` ASC, `rght` ASC);'
         );
     }
 
     public function down()
     {
         $this->execute(
-            "ALTER TABLE `tkategorie` 
-                DROP INDEX `idx_tkategorie_lft_rght`"
+            'ALTER TABLE `tkategorie` 
+                DROP INDEX `idx_tkategorie_lft_rght`'
         );
     }
 }

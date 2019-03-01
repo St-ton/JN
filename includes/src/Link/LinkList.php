@@ -1,21 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use Illuminate\Support\Collection;
 use function Functional\group;
 use function Functional\map;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkList
- * @package Link
+ * @package JTL\Link
  */
 final class LinkList implements LinkListInterface
 {
@@ -83,9 +82,9 @@ final class LinkList implements LinkListInterface
                     ON tspezialseite.nLinkart = tlink.nLinkart
                 LEFT JOIN tplugin
                     ON tplugin.kPlugin = tlink.kPlugin
-                WHERE tlink.kLink IN (" . \implode(',', $this->linkIDs) . ")
+                WHERE tlink.kLink IN (" . \implode(',', $this->linkIDs) . ')
                 GROUP BY tlink.kLink, tseo.kSprache
-                ORDER BY tlink.nSort, tlink.cName",
+                ORDER BY tlink.nSort, tlink.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $links         = map(group($linkLanguages, function ($e) {
@@ -115,7 +114,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function setLinks(Collection $links)
+    public function setLinks(Collection $links): void
     {
         $this->links = $links;
     }
@@ -123,7 +122,7 @@ final class LinkList implements LinkListInterface
     /**
      * @inheritdoc
      */
-    public function addLink(LinkInterface $link)
+    public function addLink(LinkInterface $link): void
     {
         $this->links->push($link);
     }

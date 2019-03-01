@@ -4,15 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
-
-use Services\JTL\Validation\RuleInterface;
-use Services\JTL\Validation\RuleResult;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class Numeric
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates, that $value is numeric
  *
@@ -21,10 +20,9 @@ use Services\JTL\Validation\RuleResult;
 class Numeric implements RuleInterface
 {
     /**
-     * @param mixed $value
-     * @return RuleResult
+     * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return \is_numeric($value)
             ? new RuleResult(true, '', $value)

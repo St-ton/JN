@@ -2,14 +2,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
-{if !empty($hinweis)}
-    <div class="alert alert-info">{$hinweis}</div>
-{/if}
-{if !empty($fehlendeAngaben) && !$hinweis}
-    <div class="alert alert-danger">{lang key='yourDataDesc' section='account data'}</div>
+{if !empty($fehlendeAngaben) && !$alertNote}
+    <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
 {/if}
 {if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}
     <div class="alert alert-danger">{lang key='emailAlreadyExists' section='account data'}</div>

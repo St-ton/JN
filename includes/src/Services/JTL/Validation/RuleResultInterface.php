@@ -4,23 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
 
 /**
  * Interface ValidationResultInterface
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 interface RuleResultInterface
 {
     /**
      * @return bool
      */
-    public function isValid();
+    public function isValid(): bool;
 
     /**
      * @return string
      */
-    public function getMessageId();
+    public function getMessageId(): string;
 
     /**
      * @return mixed

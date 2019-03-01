@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "filecheck"
+msgstr "Shopdateien-Check"
+
+msgid "filecheckDesc"
+msgstr "Hier können Sie sehen, ob alle Shopdateien korrekt und vollständig hochgeladen wurden. Es wird pro Datei geprüft, ob die Prüfsumme der Datei mit der Prüfsumme der Originaldatei übereinstimmt. Ist dies der Fall, so steht unter Status \"OK\". Wurde eine Shopdatei geändert, fehlerhaft übertragen oder gelöscht, dann wird dies mit \"modifiziert\" kenntlich gemacht."
+
+msgid "filecheckURL"
+msgstr "https://jtl-url.de/o9a4l"
+
+msgid "fileCheckNoneModifiedOrphanedFiles"
+msgstr "Derzeit gibt es keine modifizierten oder verwaisten Dateien."
+
+msgid "fileCheckModifiedFilesHeadline"
+msgstr "Modifizierte Dateien"
+
+msgid "fileCheckModifiedFilesNote"
+msgstr "Die folgenden Dateien sind nicht identisch mit den Dateien aus dem Release."
+
+msgid "fileCheckOrphanedFilesHeadline"
+msgstr "Verwaiste Dateien"
+
+msgid "fileCheckOrphanedFilesNote"
+msgstr "Die folgenden Dateien sind in früheren Versionen von JTL-Shop gelöscht worden und jetzt nicht mehr in Gebrauch. Daher können diese Dateien entfernt werden."
+
+msgid "fileCheckNumberModifiedFiles"
+msgstr "Anzahl modifizierter Dateien"
+
+msgid "fileCheckNumberOrphanedFiles"
+msgstr "Anzahl verwaister Dateien"
+
+msgid "errorFileNotFound"
+msgstr "Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht."
+
+msgid "errorFileListEmpty"
+msgstr "Fehler: Die Datei mit der aktuellen Dateiliste ist leer."

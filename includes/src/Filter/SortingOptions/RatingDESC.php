@@ -4,30 +4,30 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class RatingDESC
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class RatingDESC extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * RatingDESC constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tbewertung.nSterne DESC, tartikel.cName';
+        $this->setOrderBy('AVG(tbewertung.nSterne) DESC, tartikel.cName');
         $this->join->setComment('join from SORT by rating')
                    ->setType('LEFT JOIN')
                    ->setTable('tbewertung')
                    ->setOn('tbewertung.kArtikel = tartikel.kArtikel');
-        $this->setName(\Shop::Lang()->get('rating'));
+        $this->setName(Shop::Lang()->get('rating'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bewertung']);
         $this->setValue(\SEARCH_SORT_RATING);
     }

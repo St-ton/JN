@@ -9,7 +9,7 @@
         // for all found licenses..
         for (var key in vLicenses) {
             // ..bind a click-handler to the plugins checkbox
-            $('input[id="plugin-check-'+key+'"]').click(function(event) {
+            $('input[id="plugin-check-'+key+'"]').on('click', function(event) {
                 // grab the element, which was rising that click-event (click to the checkbox)
                 var oTemp = $(event.currentTarget);
                 szPluginName = oTemp.val();
@@ -41,13 +41,13 @@
 {/literal}
 
 <div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active in{/if}">
-    {if isset($PluginVerfuebar_arr) && $PluginVerfuebar_arr|@count > 0}
+    {if $pluginsAvailable->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#pluginListNotInstalled#}</h3>
+                    <h3 class="panel-title">{__('pluginListNotInstalled')}</h3>
                 </div>
                 <div class="table-responsive">
 
@@ -58,15 +58,15 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">License Plugin</h4>
+                                    <h4 class="modal-title">{__('licensePlugin')}</h4>
                                 </div>
                                 <div class="modal-body">
                                     {* license.md content goes here via js *}
                                 </div>
                                 <div class="modal-footer">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;Ok</button>
-                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;Abbrechen</button>
+                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;{__('ok')}</button>
+                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('Cancel')}</button>
                                     </div>
                                 </div>
                             </div>
@@ -78,42 +78,50 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{#pluginName#}</th>
-                            <th>{#pluginVersion#}</th>
-                            <th>{#pluginFolder#}</th>
+                            <th class="tleft">{__('pluginName')}</th>
+                            <th>{__('pluginVersion')}</th>
+                            <th>{__('pluginFolder')}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name="verfuergbareplugins" from=$PluginVerfuebar_arr item=PluginVerfuebar}
-                            <tr>
-                                <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$PluginVerfuebar->cVerzeichnis}" value="{$PluginVerfuebar->cVerzeichnis}" /></td>
-                                <td>
-                                    <label for="plugin-check-{$PluginVerfuebar->cVerzeichnis}">{$PluginVerfuebar->cName}</label>
-                                    <p>{$PluginVerfuebar->cDescription}</p>
-                                    {if isset($PluginVerfuebar->shop4compatible) && $PluginVerfuebar->shop4compatible === false}
-                                        <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen.</div>
+                        {foreach $pluginsAvailable->toArray() as $listingItem}
+                            <tr class="plugin">
+                                <td class="check">
+                                    <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                    {if $listingItem->isShop5Compatible() === false}
+                                        {if $listingItem->isShop4Compatible() === false}
+                                            <span title="{__('dangerPluginNotCompatible')}" class="label warning label-danger"><i class="fa fa-warning"></i></span>
+                                        {else}
+                                            <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                        {/if}
                                     {/if}
                                 </td>
-                                <td class="tcenter">{$PluginVerfuebar->cVersion}</td>
-                                <td class="tcenter">{$PluginVerfuebar->cVerzeichnis}</td>
+                                <td>
+                                    <label for="plugin-check-{$listingItem->getDir()}">{$listingItem->getName()}</label>
+                                    <p>{$listingItem->getDescription()}</p>
+                                    {if $listingItem->isShop4Compatible() === false && $listingItem->isShop5Compatible() === false}
+                                        <div class="alert alert-info">{__('dangerPluginNotCompatible')}</div>
+                                    {/if}
+                                </td>
+                                <td class="tcenter">{$listingItem->getVersion()}</td>
+                                <td class="tcenter">{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>
                         <tfoot>
                         <tr>
-                            {*<td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" /></td>*}
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
-                            <td colspan="5"><label for="ALLMSGS4">{#pluginSelectAll#}</label></td>
+                            <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {#pluginBtnInstall#}</button>
+                    <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnInstall')}</button>
                 </div>
             </div>
         </form>
     {else}
-        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>

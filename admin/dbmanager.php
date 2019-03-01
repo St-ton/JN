@@ -3,11 +3,17 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Update\DBManager;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $tables = DBManager::getStatus(DB_NAME);
 $smarty->assign('tables', $tables);
 
@@ -34,7 +40,12 @@ function exec_query($query)
 $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
-    $columns                = array_map(function($n) { return null; }, $columns);
+    $columns                = array_map(
+        function ($n) {
+            return null;
+        },
+        $columns
+    );
     $jsTypo->tables[$table] = $columns;
 }
 $smarty->assign('jsTypo', $jsTypo);
@@ -57,7 +68,7 @@ switch (true) {
     case isset($_GET['select']):
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !FormHelper::validateToken()) {
+        if (!preg_match('/^\w+$/i', $table, $m) || !Form::validateToken()) {
             die('Not allowed.');
         }
 
@@ -88,7 +99,7 @@ switch (true) {
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery = "SELECT * FROM " . $table;
+        $baseQuery = 'SELECT * FROM ' . $table;
 
         // query parts
         $queryParams = [];
@@ -96,13 +107,13 @@ switch (true) {
 
         // where
         if (isset($filter['where']['col'])) {
-            $whereParts = [];
+            $whereParts  = [];
             $columnCount = count($filter['where']['col']);
             for ($i = 0; $i < $columnCount; $i++) {
                 if (!empty($filter['where']['col'][$i]) && !empty($filter['where']['op'][$i])) {
                     $col = $filter['where']['col'][$i];
                     $val = $filter['where']['val'][$i];
-                    $op  = strtoupper($filter['where']['op'][$i]);
+                    $op  = mb_convert_case($filter['where']['op'][$i], MB_CASE_UPPER);
                     if ($op === 'LIKE %%') {
                         $op  = 'LIKE';
                         $val = sprintf('%%%s%%', trim($val, '%'));
@@ -118,7 +129,7 @@ switch (true) {
 
         // count without limit
         $query = implode(' ', $queryParts);
-        $count = Shop::Container()->getDB()->queryPrepared($query, $queryParams, \DB\ReturnType::AFFECTED_ROWS);
+        $count = Shop::Container()->getDB()->queryPrepared($query, $queryParams, ReturnType::AFFECTED_ROWS);
         $pages = (int)ceil($count / $filter['limit']);
 
         // limit
@@ -131,7 +142,7 @@ switch (true) {
         $data  = Shop::Container()->getDB()->queryPrepared(
             $query,
             $queryParams,
-            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS,
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS,
             false,
             false,
             function ($o) use (&$info) {
@@ -161,7 +172,7 @@ switch (true) {
             $query = $_POST['sql_query_edit'];
         }
 
-        if ($query !== null && FormHelper::validateToken()) {
+        if ($query !== null && Form::validateToken()) {
             try {
                 $parser = new SqlParser\Parser($query);
 
@@ -180,7 +191,7 @@ switch (true) {
                     if ($dbname !== null && strcasecmp($dbname, DB_NAME) !== 0) {
                         throw new \Exception(sprintf('Well, at least u tried :)'));
                     }
-                    if (in_array(strtolower($table), $restrictedTables, true)) {
+                    if (in_array(mb_convert_case($table, MB_CASE_LOWER), $restrictedTables, true)) {
                         throw new \Exception(sprintf('Permission denied for table `%s`', $table));
                     }
                 }

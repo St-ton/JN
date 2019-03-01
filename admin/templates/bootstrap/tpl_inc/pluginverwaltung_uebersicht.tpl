@@ -1,7 +1,7 @@
 <script type="text/javascript">
 function ackCheck(kPlugin, hash)
 {
-    var bCheck = confirm('Wollen Sie das Plugin wirklich updaten?');
+    var bCheck = confirm('{__('sureResetLangVar')}');
     var href = '';
 
     if (bCheck) {
@@ -18,28 +18,76 @@ function ackCheck(kPlugin, hash)
 {/if}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#pluginverwaltung# cBeschreibung=#pluginverwaltungDesc# cDokuURL=#pluginverwaltungURL#}
+{*include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')*}
+
+<div id="content" class="container-fluid" style="padding-top: 10px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="heading-body"><h4 class="panel-title">{__('pluginverwaltung')}</h4></div>
+            <div class="heading-right">
+                {if $hasAuth}
+                    <a href="store.php" class="btn btn-xs btn-danger"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
+                {else}
+                    <a href="store.php" class="btn btn-xs btn-default"><i class="fa fa-link"></i> {__('storeLink')}</a>
+                {/if}
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                {if $hasAuth}
+                    <div class="col-md-4 border-right">
+                        <div class="text-center">
+                            <h2 style="margin-bottom: 0px;margin-top: 0;">2</h2>
+                            <p style="color:#666;">{__('storeUpdatesAvailable')}</p>
+                            <a class="btn btn-xs btn-default" href="#">{__('storeListUpdates')}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 border-right">
+                        <div class="text-center">
+                            <h2 style="margin-bottom: 0px;margin-top: 0;">3</h2>
+                            <p style="color:#666;">{__('storePlugins')}</p>
+                            <a class="btn btn-xs btn-default" href="#">{__('storeListAll')}</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h2 style="margin-bottom: 0px;margin-top: 0;">{$smarty.now|date_format}</h2>
+                            <p style="color:#666;">{__('storeLastUpdate')}</p>
+                            <a class="btn btn-xs btn-default" href="#">{__('storeUpdateNow')}</a>
+                        </div>
+                    </div>
+                {else}
+                    <div class="col-md-12">
+                        <div class="alert alert-default" role="alert">{__('storeNotLinkedDesc')}</div>
+                        <a href="store.php" class="btn btn-primary">{__('storeLink')}</a>
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="content" class="container-fluid">
     <div id="settings">
-        {if $PluginInstalliertByStatus_arr|@count > 0}
+        {if $pluginsByState|@count > 0}
             <ul class="nav nav-tabs" role="tablist">
                 <li class="tab{if !isset($cTab) || $cTab === 'aktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#aktiviert">Aktiviert <span class="badge">{$PluginInstalliertByStatus_arr.status_2|@count}</span></a>
+                    <a data-toggle="tab" role="tab" href="#aktiviert">{__('activated')} <span class="badge">{$pluginsByState.status_2|@count}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'deaktiviert'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#deaktiviert">Deaktiviert <span class="badge">{$PluginInstalliertByStatus_arr.status_1|@count}</span></a>
+                    <a data-toggle="tab" role="tab" href="#deaktiviert">{__('deactivated')} <span class="badge">{$pluginsByState.status_1|@count}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'probleme'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#probleme">Probleme <span class="badge">{$PluginErrorCount}</span></a>
+                    <a data-toggle="tab" role="tab" href="#probleme">{__('problems')} <span class="badge">{$PluginErrorCount}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'verfuegbar'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#verfuegbar">Verf&uuml;gbar <span class="badge">{if isset($PluginVerfuebar_arr)}{$PluginVerfuebar_arr|@count}{else}0{/if}</span></a>
+                    <a data-toggle="tab" role="tab" href="#verfuegbar">{__('existing')} <span class="badge">{$pluginsAvailable->count()}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#fehlerhaft">Fehlerhaft <span class="badge">{if isset($PluginFehlerhaft_arr)}{$PluginFehlerhaft_arr|@count}{else}0{/if}</span></a>
+                    <a data-toggle="tab" role="tab" href="#fehlerhaft">{__('faulty')} <span class="badge">{$pluginsErroneous->count()}</span></a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'upload'} active{/if}">
-                    <a data-toggle="tab" role="tab" href="#upload">Upload</a>
+                    <a data-toggle="tab" role="tab" href="#upload">{__('upload')}</a>
                 </li>
             </ul>
             <div class="tab-content">
@@ -90,8 +138,8 @@ function ackCheck(kPlugin, hash)
                                 fi.fileinput('enable');
                         {rdelim});
                     </script>
-                    <div id="plugin-upload-success" class="alert alert-info hidden">Plugin erfolgreich hochgeladen.</div>
-                    <div id="plugin-upload-error" class="alert alert-danger hidden">Plugin konnte nicht hochgeladen werden.</div>
+                    <div id="plugin-upload-success" class="alert alert-info hidden">{__('surePluginUpdate')}</div>
+                    <div id="plugin-upload-error" class="alert alert-danger hidden">{__('errorPluginUpload')}</div>
                 </div>
             </div>
         {/if}

@@ -1,29 +1,29 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='wawisync'}
-{include file='tpl_inc/seite_header.tpl' cTitel=#wawisync# cBeschreibung=#wawisyncDesc# cDokuURL=#wawisyncURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('wawisync') cBeschreibung=__('wawisyncDesc') cDokuURL=__('wawisyncURL')}
 <div id="content" class="container-fluid">
     <form action="wawisync.php" method="post">
         {$jtl_token}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Benutzername/Passwort &auml;ndern</h3>
+                <h3 class="panel-title">{__('username')}/{__('password')} {__('change')}</h3>
             </div>
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="wawi-user">Benutzer</label>
+                        <label for="wawi-user">{__('user')}</label>
                     </span>
                     <input id="wawi-user" name="wawi-user" class="form-control" type="text" value="{$wawiuser}" />
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="wawi-pass">Passwort</label>
+                        <label for="wawi-pass">{__('password')}</label>
                     </span>
                     <input id="wawi-pass" name="wawi-pass" class="form-control" type="password" value="{$wawipass}" />
                 </div>
             </div>
             <div class="panel-footer">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>
     </form>

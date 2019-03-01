@@ -4,7 +4,7 @@ Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 we are happy to inform you that you may use the following coupon ({$Kupon->AngezeigterName}) in our online shop:
 
-{if $Kupon->cKuponTyp=="standard"}Value of coupon: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}discount{/if}{/if}{if $Kupon->cKuponTyp=="versandkupon"}>You will get free shipping with this coupon!
+{if $Kupon->cKuponTyp==$couponTypes.standard}Value of coupon: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}discount{/if}{/if}{if $Kupon->cKuponTyp==$couponTypes.shipping}>You will get free shipping with this coupon!
     This coupon is valid for the following shipping countries: {$Kupon->cLieferlaender|upper}{/if}
 
 Coupon code: {$Kupon->cCode}
@@ -34,7 +34,7 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
 
     {foreach name=art from=$Kupon->Artikel item=Artikel}
         {$Artikel->cName} >
-        {$Artikel->cURL}
+        {$Artikel->cURLFull}
     {/foreach}{/if}
 
 You need to type in the coupon code in the checkout process to use it.

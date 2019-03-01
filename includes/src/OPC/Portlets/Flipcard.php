@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Flipcard
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Flipcard extends \OPC\Portlet
+class Flipcard extends Portlet
 {
     /**
      * @param PortletInstance $instance

@@ -1,15 +1,15 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#tagging# cBeschreibung=#taggingDesc# cDokuURL=#taggingURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('tagging') cBeschreibung=__('taggingDesc') cDokuURL=__('taggingURL')}
 <div id="content" class="container-fluid">
     <div class="block">
         <form name="sprache" method="post" action="tagging.php" class="inline_block">
             {$jtl_token}
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="input-group p25 left">
-                <span class="input-group-addon"><label for="kSprache">{#changeLanguage#}</label></span>
+                <span class="input-group-addon"><label for="kSprache">{__('changeLanguage')}</label></span>
                 <span class="input-group-wrap last">
                     <select id="kSprache" name="kSprache" class="selectBox form-control" onchange="document.sprache.submit();">
-                        {foreach name=sprachen from=$Sprachen item=sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                        {foreach $Sprachen as $sprache}
+                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -18,13 +18,13 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'freischalten' || $cTab === 'tags'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#freischalten">{#tags#}</a>
+            <a data-toggle="tab" role="tab" href="#freischalten">{__('tags')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'mapping'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#mapping">{#mapping#}</a>
+            <a data-toggle="tab" role="tab" href="#mapping">{__('mapping')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{#taggingSettings#}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -37,18 +37,18 @@
                     <input type="hidden" name="tab" value="tags" />
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#tags#}</h3>
+                            <h3 class="panel-title">{__('tags')}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
-                                    <th class="tleft">{#tag#}</th>
-                                    <th class="th-3">{#tagcount#}</th>
-                                    <th class="th-4">{#active#}</th>
-                                    <th class="th-5">{#mapping#}</th>
+                                    <th class="tleft">{__('tag')}</th>
+                                    <th class="th-3">{__('tagcount')}</th>
+                                    <th class="th-4">{__('active')}</th>
+                                    <th class="th-5">{__('mapping')}</th>
                                 </tr>
-                                {foreach name=tags from=$Tags item=tag}
+                                {foreach $Tags as $tag}
                                     <tr>
                                         <td>
                                             <input type="checkbox" name="kTag[]" value="{$tag->kTag}" />
@@ -70,14 +70,14 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="update" type="submit" value="{#update#}" class="btn btn-default"><i class="fa fa-refresh"></i> {#update#}</button>
-                                <button name="delete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                                <button name="update" type="submit" value="{__('update')}" class="btn btn-default"><i class="fa fa-refresh"></i> {__('update')}</button>
+                                <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="mapping" class="tab-pane fade{if isset($cTab) && $cTab === 'mapping'} active in{/if}">
@@ -89,16 +89,16 @@
                     <input type="hidden" name="tab" value="mapping" />
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{#mapping#}</h3>
+                            <h3 class="panel-title">{__('mapping')}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <tr>
                                     <th class="th-1"></th>
-                                    <th class="th-2">{#tag#}</th>
-                                    <th class="th-3">{#tagnew#}</th>
+                                    <th class="th-2">{__('tag')}</th>
+                                    <th class="th-3">{__('tagnew')}</th>
                                 </tr>
-                                {foreach name=tagsmapping from=$Tagmapping item=tagmapping}
+                                {foreach $Tagmapping as $tagmapping}
                                     <tr>
                                         <td>
                                             <input name="kTagMapping[]" type="checkbox" value="{$tagmapping->kTagMapping}" />
@@ -111,21 +111,28 @@
                                     <td class="check">
                                         <input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
                                     </td>
-                                    <td colspan="2"><label for="ALLMSGS1">{#globalSelectAll#}</label></td>
+                                    <td colspan="2"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
                                 </tr>
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button name="delete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#delete#}</button>
+                            <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                         </div>
                     </div>
                 </form>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='tagging.php' buttonCaption=#save# title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl'
+                config=$oConfig_arr
+                name='einstellen'
+                a='saveSettings'
+                action='tagging.php'
+                buttonCaption=__('save')
+                title=__('settings')
+                tab='einstellungen'}
         </div>
     </div>
 </div>

@@ -1,7 +1,6 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="trennzeichen"}
-
-{include file='tpl_inc/seite_header.tpl' cTitel=#Trennzeichen# cBeschreibung=#trennzeichenDesc# cDokuURL=#trennzeichenURL#}
+{config_load file="$lang.conf" section='trennzeichen'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('Trennzeichen') cBeschreibung=__('trennzeichenDesc') cDokuURL=__('trennzeichenURL')}
 <div id="content" class="container-fluid">
     <div class="block">
         {if isset($Sprachen) && $Sprachen|@count > 1}
@@ -10,12 +9,12 @@
                 <input type="hidden" name="sprachwechsel" value="1" />
                 <div class="input-group p25 left">
                     <span class="input-group-addon">
-                        <label for="{#changeLanguage#}">{#changeLanguage#}</label>
+                        <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
                     </span>
                     <span class="input-group-wrap last">
-                        <select id="{#changeLanguage#}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach name=sprachen from=$Sprachen item=sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                        <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
+                            {foreach $Sprachen as $sprache}
+                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
                             {/foreach}
                         </select>
                     </span>
@@ -28,15 +27,15 @@
         <input type="hidden" name="save" value="1" />
         <div id="settings">
             <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">Trennzeichen</h3></div>
+                <div class="panel-heading"><h3 class="panel-title">{__('divider')}</h3></div>
                 <div class="panel-body table-responsive">
                     <table class="list table">
                     <thead>
                     <tr>
-                        <th class="tleft">Einheit</th>
-                        <th class="tcenter">Anzahl Dezimalstellen</th>
-                        <th class="tcenter">Dezimaltrennzeichen</th>
-                        <th class="tcenter">Tausendertrennzeichen</th>
+                        <th class="tleft">{__('unit')}</th>
+                        <th class="tcenter">{__('countDecimals')}</th>
+                        <th class="tcenter">{__('decimalsDivider')}</th>
+                        <th class="tcenter">{__('thousandDivider')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -47,7 +46,7 @@
                         {if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT])}
                             <input type="hidden" name="kTrennzeichen_{$smarty.const.JTL_SEPARATOR_WEIGHT}" value="{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT]->getTrennzeichen()}" />
                         {/if}
-                        <td class="tleft">Gewicht</td>
+                        <td class="tleft">{__('weight')}</td>
                         <td class="widthheight tcenter">
                             <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_WEIGHT}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_weight])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_weight])}{$xPostVar_arr[$nDezimal_weight]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT]->getDezimalstellen()}{/if}{/if}" />
                         </td>
@@ -65,7 +64,7 @@
                         {if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT])}
                             <input type="hidden" name="kTrennzeichen_{$smarty.const.JTL_SEPARATOR_AMOUNT}" value="{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT]->getTrennzeichen()}" />
                         {/if}
-                        <td class="tleft">Menge</td>
+                        <td class="tleft">{__('quantity')}</td>
                         <td class="widthheight tcenter">
                             <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_AMOUNT}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_amount])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_amount])}{$xPostVar_arr[$nDezimal_amount]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT]->getDezimalstellen()}{/if}{/if}" />
                         </td>
@@ -99,11 +98,10 @@
                 </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{#trennzeichenSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#trennzeichenSave#}</button>
+                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </div>
     </form>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

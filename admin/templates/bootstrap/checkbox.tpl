@@ -31,14 +31,14 @@
     {/literal}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#checkbox# cBeschreibung=#checkboxDesc# cDokuURL=#checkboxURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('checkbox') cBeschreibung=__('checkboxDesc') cDokuURL=__('checkboxURL')}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#uebersicht">{#checkboxOverview#}</a>
+            <a data-toggle="tab" role="tab" href="#uebersicht">{__('overview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'erstellen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#erstellen">{#checkboxCreate#}</a>
+            <a data-toggle="tab" role="tab" href="#erstellen">{__('create')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -52,50 +52,50 @@
                         <input type="hidden" name="tab" value="uebersicht" />
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Vorhandene Checkboxen</h3>
+                                <h3 class="panel-title">{__('AvailableCheckboxes')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="th-1">{#checkboxName#}</th>
-                                        <th class="th-2">{#checkboxLink#}</th>
-                                        <th class="th-3">{#checkboxLocation#}</th>
-                                        <th class="th-4">{#checkboxFunction#}</th>
-                                        <th class="th-4">{#checkboxRequired#}</th>
-                                        <th class="th-5">{#checkboxActive#}</th>
-                                        <th class="th-5">{#checkboxLogging#}</th>
-                                        <th class="th-6">{#checkboxSort#}</th>
-                                        <th class="th-7">{#checkboxGroup#}</th>
-                                        <th class="th-8" colspan="2">{#checkboxDate#}</th>
+                                        <th class="th-1">{__('name')}</th>
+                                        <th class="th-2">{__('checkboxLink')}</th>
+                                        <th class="th-3">{__('checkboxLocation')}</th>
+                                        <th class="th-4">{__('checkboxFunction')}</th>
+                                        <th class="th-4">{__('requiredEntry')}</th>
+                                        <th class="th-5">{__('active')}</th>
+                                        <th class="th-5">{__('checkboxLogging')}</th>
+                                        <th class="th-6">{__('sorting')}</th>
+                                        <th class="th-7">{__('customerGroup')}</th>
+                                        <th class="th-8" colspan="2">{__('checkboxDate')}</th>
                                     </tr>
-                                    {foreach name=checkboxen from=$oCheckBox_arr item=oCheckBoxUebersicht}
+                                    {foreach $oCheckBox_arr as $oCheckBoxUebersicht}
                                         <tr>
                                             <td>
-                                                <input name="kCheckBox[]" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
+                                                <input name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
                                             </td>
-                                            <td>{$oCheckBoxUebersicht->cName}</td>
-                                            <td>{if isset($oCheckBoxUebersicht->oLink->cName)}{$oCheckBoxUebersicht->oLink->cName}{/if}</td>
+                                            <td><label for="cb-check-{$oCheckBoxUebersicht@index}">{$oCheckBoxUebersicht->cName}</label></td>
+                                            <td>{if $oCheckBoxUebersicht->oLink !== null}{$oCheckBoxUebersicht->oLink->getName()}{/if}</td>
                                             <td>
-                                                {foreach name="anzeigeortAusgabe" from=$oCheckBoxUebersicht->kAnzeigeOrt_arr item=kAnzeigeOrt}
-                                                    {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$smarty.foreach.anzeigeortAusgabe.last}, {/if}
+                                                {foreach $oCheckBoxUebersicht->kAnzeigeOrt_arr as $kAnzeigeOrt}
+                                                    {$cAnzeigeOrt_arr[$kAnzeigeOrt]}{if !$kAnzeigeOrt@last}, {/if}
                                                 {/foreach}
                                             </td>
                                             <td>{if isset($oCheckBoxUebersicht->oCheckBoxFunktion->cName)}{$oCheckBoxUebersicht->oCheckBoxFunktion->cName}{/if}</td>
 
-                                            <td>{if $oCheckBoxUebersicht->nPflicht}{#yes#}{else}{#no#}{/if}</td>
-                                            <td>{if $oCheckBoxUebersicht->nAktiv}{#yes#}{else}{#no#}{/if}</td>
-                                            <td>{if $oCheckBoxUebersicht->nLogging}{#yes#}{else}{#no#}{/if}</td>
+                                            <td>{if $oCheckBoxUebersicht->nPflicht}{__('yes')}{else}{__('no')}{/if}</td>
+                                            <td>{if $oCheckBoxUebersicht->nAktiv}{__('yes')}{else}{__('no')}{/if}</td>
+                                            <td>{if $oCheckBoxUebersicht->nLogging}{__('yes')}{else}{__('no')}{/if}</td>
                                             <td>{$oCheckBoxUebersicht->nSort}</td>
                                             <td>
-                                                {foreach name="kundengruppe" from=$oCheckBoxUebersicht->cKundengruppeAssoc_arr item=cKundengruppeAssoc}
-                                                    {$cKundengruppeAssoc}{if !$smarty.foreach.kundengruppe.last}, {/if}
+                                                {foreach $oCheckBoxUebersicht->kKundengruppe_arr as $id}
+                                                    {Kundengruppe::getNameByID($id)}{if !$id@last}, {/if}
                                                 {/foreach}
                                             </td>
                                             <td>{$oCheckBoxUebersicht->dErstellt_DE}</td>
                                             <td>
                                                 <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{#modify#}">
+                                                   class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                             </td>
@@ -105,34 +105,34 @@
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
-                                        <td colspan="11"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                                        <td colspan="11"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-footer">
                                 <div class="btn-group submit">
-                                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen">neue Checkbox erstellen</button>
-                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{#checkboxActivate#}">{#checkboxActivate#}</button>
-                                    <button name="checkboxDeaktivierenSubmit" class="btn btn-warning" type="submit" value="{#checkboxDeactivate#}">{#checkboxDeactivate#}</button>
-                                    <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{#checkboxDelete#}"><i class="fa fa-trash"></i> {#checkboxDelete#}</button>
+                                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
+                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{__('activate')}"><i class="fa fa-check"></i> {__('activate')}</button>
+                                    <button name="checkboxDeaktivierenSubmit" class="btn btn-warning" type="submit" value="{__('deactivate')}"><i class="fa fa-close"></i> {__('deactivate')}</button>
+                                    <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
             {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 <form method="post" action="checkbox.php">
                     {$jtl_token}
                     <input name="tab" type="hidden" value="erstellen" />
-                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> neue Checkbox erstellen</button>
+                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
                 </form>
             {/if}
         </div>
         <div id="erstellen" class="tab-pane fade {if isset($cTab) && $cTab === 'erstellen'} active in{/if}">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{#edit#}{else}{#checkboxCreate#}{/if}</h3>
+                    <h3 class="panel-title">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</h3>
                 </div>
                 <div class="panel-body">
                     <form method="post" action="checkbox.php" >
@@ -148,35 +148,35 @@
                         <div class="settings">
                             <div class="input-group{if isset($cPlausi_arr.cName)} error{/if}">
                                 <span class="input-group-addon">
-                                    <label for="cName">Name{if isset($cPlausi_arr.cName)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                    <label for="cName">{__('name')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                 </span>
                                 <input id="cName" name="cName" type="text" placeholder="Name" class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}" value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oCheckBox->cName)}{$oCheckBox->cName}{/if}">
-                                <span class="input-group-addon">{getHelpDesc cDesc="Name der Checkbox"}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxName')}</span>
                             </div>
                             {if isset($oSprache_arr) && $oSprache_arr|@count > 0}
-                                {foreach name="textsprache" from=$oSprache_arr item=oSprache}
+                                {foreach $oSprache_arr as $oSprache}
                                     {assign var=cISO value=$oSprache->cISO}
                                     {assign var=kSprache value=$oSprache->kSprache}
                                     {assign var=cISOText value="cText_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cText)} error{/if}">
                                         <span class="input-group-addon">
-                                            <label for="cText_{$oSprache->cISO}">Text ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cText)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                            <label for="cText_{$oSprache->cISO}">{__('text')} ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cText)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
                                         <textarea id="cText_{$oSprache->cISO}" placeholder="Text ({$oSprache->cNameDeutsch})" class="form-control {if isset($cPlausi_arr.cText)}fieldfillout{else}field{/if}" name="cText_{$oSprache->cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
-                                        <span class="input-group-addon">{getHelpDesc cDesc="Welcher Text soll hinter der Checkbox stehen?"}</span>
+                                        <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxText')}</span>
                                     </div>
                                 {/foreach}
 
-                                {foreach name="beschreibungsprache" from=$oSprache_arr item=oSprache}
+                                {foreach $oSprache_arr as $oSprache}
                                     {assign var=cISO value=$oSprache->cISO}
                                     {assign var=kSprache value=$oSprache->kSprache}
                                     {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cBeschreibung)} error{/if}">
                                         <span class="input-group-addon">
-                                            <label for="cBeschreibung_{$oSprache->cISO}">Beschreibung ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                            <label for="cBeschreibung_{$oSprache->cISO}">{__('description')} ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
                                         <textarea id="cBeschreibung_{$oSprache->cISO}" class="form-control {if isset($cPlausi_arr.cBeschreibung)}fieldfillout{else}field{/if}" name="cBeschreibung_{$oSprache->cISO}">{if isset($cPost_arr.$cISOBeschreibung)}{$cPost_arr.$cISOBeschreibung}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung}{/if}</textarea>
-                                        <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox eine Beschreibung erhalten?"}</span>
+                                        <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxDescription')}</span>
                                     </div>
                                 {/foreach}
                             {/if}
@@ -184,52 +184,52 @@
                             {if isset($oLink_arr) && $oLink_arr|@count > 0}
                                 <div class="input-group{if isset($cPlausi_arr.kLink)} error{/if}">
                                     <span class="input-group-addon">
-                                        <label for="nLink">Interner Link{if isset($cPlausi_arr.kLink)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                        <label for="nLink">{__('internalLink')}{if isset($cPlausi_arr.kLink)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                     </span>
                                     <div class="input-group-wrap">
                                         <div class="form-group">
                                             <div class="col-xs-3 group-radio">
                                                 <label>
                                                 <input id="nLink" name="nLink" type="radio" class="{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || isset($cPlausi_arr.kLink) && $cPost_arr.nLink == -1} checked="checked"{/if} />
-                                                Kein Link
+                                                    {__('noLink')}
                                                 </label>
                                             </div>
                                             <div class="col-xs-3 group-radio">
                                                 <label>
                                                     <input id="nLink2" name="nLink" type="radio" class="form-control2{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="1" onClick="aenderAnzeigeLinks(true);"{if (isset($cPost_arr.nLink) && $cPost_arr.nLink == 1) || (isset($oCheckBox->kLink) && $oCheckBox->kLink > 0)} checked="checked"{/if} />
-                                                    Interner Link
+                                                    {__('internalLink')}
                                                 </label>
                                             </div>
                                             <div id="InterneLinks" style="display: none;" class="input-group-wrap col-xs-6">
                                                 <select name="kLink" class="form-control">
-                                                    {foreach name="links" from=$oLink_arr item=oLink}
+                                                    {foreach $oLink_arr as $oLink}
                                                         <option value="{$oLink->kLink}"{if (isset($cPost_arr.kLink) && $cPost_arr.kLink == $oLink->kLink) || (isset($oCheckBox->kLink) && $oCheckBox->kLink == $oLink->kLink)} selected{/if}>{$oLink->cName}</option>
                                                     {/foreach}
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
-                                    <span class="input-group-addon">{getHelpDesc cDesc="Interne Shop CMS Seite. Einstellbar unter Inhalt->CMS"}</span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc=__('hintInternalPage')}</span>
                                 </div>
                             {/if}
 
                             <div class="input-group{if isset($cPlausi_arr.cAnzeigeOrt)} error{/if}">
                                 <span class="input-group-addon">
-                                    <label for="cAnzeigeOrt">Anzeigeort{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                    <label for="cAnzeigeOrt">Anzeigeort{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                 </span>
                                 <select id="cAnzeigeOrt" name="cAnzeigeOrt[]" class="form-control{if isset($cPlausi_arr.cAnzeigeOrt)} fieldfillout{/if}" multiple onClick="checkFunctionDependency();">
-                                    {foreach name="anzeigeortarr" from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
+                                    {foreach name=anzeigeortarr from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
                                         {assign var=bAOSelect value=false}
                                         {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $CHECKBOX_ORT_REGISTRIERUNG}
                                             {assign var=bAOSelect value=true}
                                         {elseif isset($oCheckBox->kAnzeigeOrt_arr) && $oCheckBox->kAnzeigeOrt_arr|@count > 0}
-                                            {foreach name=boxenanzeigeort from=$oCheckBox->kAnzeigeOrt_arr item=kAnzeigeOrt}
+                                            {foreach $oCheckBox->kAnzeigeOrt_arr as $kAnzeigeOrt}
                                                 {if $key == $kAnzeigeOrt}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
                                             {/foreach}
                                         {elseif isset($cPost_arr.cAnzeigeOrt) && $cPost_arr.cAnzeigeOrt|@count > 0}
-                                            {foreach name=boxenanzeigeort from=$cPost_arr.cAnzeigeOrt item=cBoxAnzeigeOrt}
+                                            {foreach $cPost_arr.cAnzeigeOrt as $cBoxAnzeigeOrt}
                                                 {if $cBoxAnzeigeOrt == $key}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
@@ -238,103 +238,103 @@
                                         <option value="{$key}"{if $bAOSelect} selected="selected"{/if}>{$cAnzeigeOrt}</option>
                                     {/foreach}
                                 </select>
-                                <span class="input-group-addon">{getHelpDesc cDesc="Stelle im Shopfrontend an der die Checkboxen angezeigt werden (Mehrfachauswahl mit STRG m&ouml;glich)."}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('hintPlaceToShowCheckbox')}</span>
                             </div>
 
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="nPflicht">Pflichtangabe:</label>
+                                    <label for="nPflicht">{__('requiredEntry')}:</label>
                                 </span>
                                 <span class="input-group-wrap">
                                     <select id="nPflicht" name="nPflicht" class="form-control">
                                         <option value="Y"{if (isset($cPost_arr.nPflicht) && $cPost_arr.nPflicht === 'Y') || (isset($oCheckBox->nPflicht) && $oCheckBox->nPflicht == 1)} selected{/if}>
-                                            Ja
+                                            {__('yes')}
                                         </option>
                                         <option value="N"{if (isset($cPost_arr.nPflicht) && $cPost_arr.nPflicht === 'N') || (isset($oCheckBox->nPflicht) && $oCheckBox->nPflicht == 0)} selected{/if}>
-                                            Nein
+                                            {__('no')}
                                         </option>
                                     </select>
                                 </span>
-                                <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox gepr&uuml;ft werden, ob diese aktiviert wurde?"}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckCheckboxActivation')}</span>
                             </div>
 
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="nAktiv">Aktiv:</label>
+                                    <label for="nAktiv">{__('active')}:</label>
                                 </span>
                                 <span class="input-group-wrap">
                                     <select id="nAktiv" name="nAktiv" class="form-control">
                                         <option value="Y"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv === 'Y') || (isset($oCheckBox->nAktiv) && $oCheckBox->nAktiv == 1)} selected{/if}>
-                                            Ja
+                                            {__('yes')}
                                         </option>
                                         <option value="N"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv === 'N') || (isset($oCheckBox->nAktiv) && $oCheckBox->nAktiv == 0)} selected{/if}>
-                                            Nein
+                                            {__('no')}
                                         </option>
                                     </select>
                                 </span>
-                                <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxActive')}</span>
                             </div>
 
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="nLogging">Checkbox Logging</label>
+                                    <label for="nLogging">{__('checkboxLogging')}</label>
                                 </span>
                                 <span class="input-group-wrap">
                                     <select id="nLogging" name="nLogging" class="form-control">
                                         <option value="Y"{if (isset($cPost_arr.nLogging) && $cPost_arr.nLogging === 'Y') || (isset($oCheckBox->nLogging) && $oCheckBox->nLogging == 1)} selected{/if}>
-                                            Ja
+                                            {__('yes')}
                                         </option>
                                         <option value="N"{if (isset($cPost_arr.nLogging) && $cPost_arr.nLogging === 'N') || (isset($oCheckBox->nLogging) && $oCheckBox->nLogging == 0)} selected{/if}>
-                                            Nein
+                                            {__('no')}
                                         </option>
                                     </select>
                                 </span>
-                                <span class="input-group-addon">{getHelpDesc cDesc="Soll die Eingabe der Checkbox protokolliert werden?"}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxLogActivate')}</span>
                             </div>
 
                             <div class="input-group{if isset($cPlausi_arr.nSort)} error{/if}">
                                 <span class="input-group-addon">
-                                    <label for="nSort">Sortierung (h&ouml;her = weiter unten){if isset($cPlausi_arr.nSort)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                    <label for="nSort">{__('sortHigherBottom')}{if isset($cPlausi_arr.nSort)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                 </span>
                                 <input id="nSort" name="nSort" type="text" class="form-control{if isset($cPlausi_arr.nSort)} fieldfillout{/if}" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
-                                <span class="input-group-addon">{getHelpDesc cDesc="Anzeigereihenfolge von Checkboxen."}</span>
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxOrder')}</span>
                             </div>
 
                             {if isset($oCheckBoxFunktion_arr) && $oCheckBoxFunktion_arr|@count > 0}
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="kCheckBoxFunktion">Spezielle Shopfunktion:</label>
+                                        <label for="kCheckBoxFunktion">{__('specialShopFunction')}:</label>
                                     </span>
                                     <span class="input-group-wrap">
                                         <select class="form-control" id="kCheckBoxFunktion" name="kCheckBoxFunktion" onclick="checkFunctionDependency();">
                                             <option value="0"></option>
-                                            {foreach name="checkboxfunktion" from=$oCheckBoxFunktion_arr item=oCheckBoxFunktion}
+                                            {foreach $oCheckBoxFunktion_arr as $oCheckBoxFunktion}
                                                 <option value="{$oCheckBoxFunktion->kCheckBoxFunktion}"{if (isset($cPost_arr.kCheckBoxFunktion) && $cPost_arr.kCheckBoxFunktion == $oCheckBoxFunktion->kCheckBoxFunktion) || (isset($oCheckBox->kCheckBoxFunktion) && $oCheckBox->kCheckBoxFunktion == $oCheckBoxFunktion->kCheckBoxFunktion)} selected{/if}>{$oCheckBoxFunktion->cName}</option>
                                             {/foreach}
                                         </select>
                                     </span>
-                                    <span class="input-group-addon">{getHelpDesc cDesc="Soll die Checkbox eine Funktion ausf&uuml;hren, wenn sie aktiviert wurde?"}</span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxFunction')}</span>
                                 </div>
                             {/if}
 
                             {if isset($oKundengruppe_arr) && $oKundengruppe_arr|@count > 0}
                                 <div class="input-group{if isset($cPlausi_arr.kKundengruppe)} error{/if}">
                                     <span class="input-group-addon">
-                                        <label for="kKundengruppe">Kundengruppe{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{#FillOut#}</span>{/if}</label>
+                                        <label for="kKundengruppe">Kundengruppe{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                     </span>
                                     <select id="kKundengruppe" name="kKundengruppe[]" class="form-control{if isset($cPlausi_arr.kKundengruppe)} fieldfillout{/if}" multiple>
-                                        {foreach name="kundengruppen" from=$oKundengruppe_arr key=key item=oKundengruppe}
+                                        {foreach name=kundengruppen from=$oKundengruppe_arr key=key item=oKundengruppe}
                                             {assign var=bKGSelect value=false}
                                             {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $oKundengruppe->cStandard === 'Y'}
                                                 {assign var=bKGSelect value=true}
                                             {elseif isset($oCheckBox->kKundengruppe_arr) && $oCheckBox->kKundengruppe_arr|@count > 0}
-                                                {foreach name=boxenkundengruppe from=$oCheckBox->kKundengruppe_arr item=kKundengruppe}
+                                                {foreach $oCheckBox->kKundengruppe_arr as $kKundengruppe}
                                                     {if $kKundengruppe == $oKundengruppe->kKundengruppe}
                                                         {assign var=bKGSelect value=true}
                                                     {/if}
                                                 {/foreach}
                                             {elseif isset($cPost_arr.kKundengruppe) && $cPost_arr.kKundengruppe|@count > 0}
-                                                {foreach name=boxenkundengruppe from=$cPost_arr.kKundengruppe item=kKundengruppe}
+                                                {foreach $cPost_arr.kKundengruppe as $kKundengruppe}
                                                     {if $kKundengruppe == $oKundengruppe->kKundengruppe}
                                                         {assign var=bKGSelect value=true}
                                                     {/if}
@@ -343,13 +343,13 @@
                                             <option value="{$oKundengruppe->kKundengruppe}"{if $bKGSelect} selected{/if}>{$oKundengruppe->cName}</option>
                                         {/foreach}
                                     </select>
-                                    <span class="input-group-addon">{getHelpDesc cDesc="F&uuml;r welche Kundengruppen soll die Checkbox sichtbar sein (Mehrfachauswahl mit STRG m&ouml;glich)?"}</span>
+                                    <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxCustomerGroup')}</span>
                                 </div>
                             {/if}
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button name="speichern" type="submit" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                        <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </form>
             </div>
@@ -362,5 +362,4 @@
         aenderAnzeigeLinks(true);
     </script>
 {/if}
-
 {include file='tpl_inc/footer.tpl'}

@@ -4,16 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
+use JTL\TrustedShops;
 
 /**
  * Class TSRating
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class TSRating extends Job
 {
@@ -23,15 +23,15 @@ class TSRating extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $cValidSprachISO_arr = ['de', 'en', 'fr', 'pl', 'es'];
-        foreach ($cValidSprachISO_arr as $cValidSprachISO) {
-            $ts     = new \TrustedShops(-1, $cValidSprachISO);
-            $rating = $ts->holeKundenbewertungsstatus($cValidSprachISO);
-            if ((int)$rating->nStatus === 1 && \strlen($rating->cTSID) > 0) {
+        $validLanguageCodes = ['de', 'en', 'fr', 'pl', 'es'];
+        foreach ($validLanguageCodes as $languageCode) {
+            $ts     = new TrustedShops(-1, $languageCode);
+            $rating = $ts->holeKundenbewertungsstatus($languageCode);
+            if ((int)$rating->nStatus === 1 && \mb_strlen($rating->cTSID) > 0) {
                 $res = $ts->aenderKundenbewertungsstatus(
                     $rating->cTSID,
                     1,
-                    $cValidSprachISO
+                    $languageCode
                 );
                 if ($res !== 1) {
                     $ts->aenderKundenbewertungsstatusDB(

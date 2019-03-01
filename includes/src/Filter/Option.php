@@ -4,13 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
-
+namespace JTL\Filter;
 
 /**
  * Class Option
  *
- * @package Filter
+ * @package JTL\Filter
  *
  * @property $kHersteller
  * @property $nAnzahlTagging
@@ -93,7 +92,7 @@ class Option extends AbstractFilter
      * @param string $value
      * @return string|null
      */
-    private static function getMapping($value)
+    private static function getMapping($value): ?string
     {
         return self::$mapping[$value] ?? null;
     }
@@ -149,9 +148,9 @@ class Option extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getURL()
+    public function getURL(): ?string
     {
         return $this->url;
     }

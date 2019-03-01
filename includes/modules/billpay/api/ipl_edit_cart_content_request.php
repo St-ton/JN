@@ -2,18 +2,18 @@
 
 require_once __DIR__. '/ipl_xml_request.php';
 
-/** 
+/**
  * class ipl_edit_cart_content_request
  * @author Jan Wehrs (jan.wehrs@billpay.de)
  * @copyright Copyright 2010 Billpay GmbH
- * @license commercial 
+ * @license commercial
  */
 class ipl_edit_cart_content_request extends ipl_xml_request
 {
     /**
      * @var array
      */
-    private $_totals       = [];
+    private $_totals = [];
 
     /**
      * @var array
@@ -177,9 +177,15 @@ class ipl_edit_cart_content_request extends ipl_xml_request
      * @param        $article_price_gross
      * @param string $invoice_number
      */
-    public function add_article($articleid, $articlequantity, $articlename, $articledescription,
-        $article_price, $article_price_gross, $invoice_number = "")
-    {
+    public function add_article(
+        $articleid,
+        $articlequantity,
+        $articlename,
+        $articledescription,
+        $article_price,
+        $article_price_gross,
+        $invoice_number = ''
+    ) {
         if ($articlequantity < 1) {
             return; // we don't send empty records
         }
@@ -207,10 +213,16 @@ class ipl_edit_cart_content_request extends ipl_xml_request
      * @param $currency
      * @param $invoice_number
      */
-    public function add_invoice($rebate, $rebate_gross, $shipping_price, $shipping_price_gross,
-                                $cart_total_price, $cart_total_price_gross,
-                                $currency, $invoice_number)
-    {
+    public function add_invoice(
+        $rebate,
+        $rebate_gross,
+        $shipping_price,
+        $shipping_price_gross,
+        $cart_total_price,
+        $cart_total_price_gross,
+        $currency,
+        $invoice_number
+    ) {
         $invoice                              = [];
         $invoice['rebate']                    = $rebate;
         $invoice['rebategross']               = $rebate_gross;
@@ -234,10 +246,17 @@ class ipl_edit_cart_content_request extends ipl_xml_request
      * @param $currency
      * @param $reference
      */
-    public function set_total($rebate, $rebate_gross, $shipping_name, $shipping_price,
-            $shipping_price_gross, $cart_total_price, $cart_total_price_gross,
-            $currency, $reference)
-    {
+    public function set_total(
+        $rebate,
+        $rebate_gross,
+        $shipping_name,
+        $shipping_price,
+        $shipping_price_gross,
+        $cart_total_price,
+        $cart_total_price_gross,
+        $currency,
+        $reference
+    ) {
         $this->_totals['shippingname']        = $shipping_name;
         $this->_totals['shippingprice']       = $shipping_price;
         $this->_totals['shippingpricegross']  = $shipping_price_gross;

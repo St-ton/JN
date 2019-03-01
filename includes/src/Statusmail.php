@@ -4,22 +4,46 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+namespace JTL;
+
+use DateTime;
+use function Functional\first;
+use function Functional\map;
+use InvalidArgumentException;
+use JTL\Cron\LegacyCron;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use SmartyException;
+use stdClass;
+
+/**
+ * Class Statusmail
+ * @package JTL
+ */
 class Statusmail
 {
     /**
-     * @var \DB\DbInterface
+     * @var DbInterface
      */
     private $db;
 
+    /**
+     * @var string
+     */
     private $dateStart;
 
+    /**
+     * @var string
+     */
     private $dateEnd;
 
     /**
      * Statusmail constructor.
-     * @param \DB\DbInterface $db
+     *
+     * @param DbInterface $db
      */
-    public function __construct(\DB\DbInterface $db)
+    public function __construct(DbInterface $db)
     {
         $this->db = $db;
     }
@@ -30,27 +54,27 @@ class Statusmail
     public function updateConfig(): bool
     {
         if ((int)$_POST['nAktiv'] === 0
-            || (StringHandler::filterEmailAddress($_POST['cEmail']) !== false
-                && is_array($_POST['cIntervall_arr'])
-                && count($_POST['cIntervall_arr']) > 0
-                && is_array($_POST['cInhalt_arr'])
-                && count($_POST['cInhalt_arr']) > 0)
+            || (Text::filterEmailAddress($_POST['cEmail']) !== false
+                && \is_array($_POST['cIntervall_arr'])
+                && \count($_POST['cIntervall_arr']) > 0
+                && \is_array($_POST['cInhalt_arr'])
+                && \count($_POST['cInhalt_arr']) > 0)
         ) {
-            $this->db->query('TRUNCATE TABLE tstatusemail', \DB\ReturnType::DEFAULT);
+            $this->db->query('TRUNCATE TABLE tstatusemail', ReturnType::DEFAULT);
             $this->db->query(
                 "DELETE tcron, tjobqueue
                     FROM tcron
                     LEFT JOIN tjobqueue 
                         ON tjobqueue.kCron = tcron.kCron
                     WHERE tcron.cJobArt = 'statusemail'",
-                \DB\ReturnType::DEFAULT
+                ReturnType::DEFAULT
             );
             foreach ($_POST['cIntervall_arr'] as $interval) {
                 $interval              = (int)$interval;
                 $statusMail            = new stdClass();
                 $statusMail->cEmail    = $_POST['cEmail'];
                 $statusMail->nInterval = $interval;
-                $statusMail->cInhalt   = StringHandler::createSSK($_POST['cInhalt_arr']);
+                $statusMail->cInhalt   = Text::createSSK($_POST['cInhalt_arr']);
                 $statusMail->nAktiv    = (int)$_POST['nAktiv'];
                 $statusMail->dLastSent = 'NOW()';
 
@@ -74,7 +98,7 @@ class Statusmail
         $d = new DateTime();
         $d->modify('+1 days');
         $d->setTime(0, 0, 0);
-        $oCron = new Cron(
+        $oCron = new LegacyCron(
             0,
             $id,
             $nAlleXStunden,
@@ -96,17 +120,17 @@ class Statusmail
     {
         $data = $this->db->query(
             'SELECT * FROM tstatusemail',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $first                        = \Functional\first($data);
+        $first                        = first($data);
         $conf                         = new stdClass();
         $conf->cIntervallMoeglich_arr = $this->getPossibleIntervals();
         $conf->cInhaltMoeglich_arr    = $this->getPossibleContentTypes();
-        $conf->nIntervall_arr         = \Functional\map($data, function ($e) {
+        $conf->nIntervall_arr         = map($data, function ($e) {
             return (int)$e->nInterval;
         });
-        $conf->nInhalt_arr            = StringHandler::parseSSK($first->cInhalt ?? '');
+        $conf->nInhalt_arr            = Text::parseSSK($first->cInhalt ?? '');
         $conf->cEmail                 = $first->cEmail ?? '';
         $conf->nAktiv                 = (int)($first->nAktiv ?? 0);
 
@@ -170,7 +194,7 @@ class Statusmail
         // Hole alle Kundengruppen im Shop
         $customerGroups = $this->db->query(
             'SELECT kKundengruppe, cName FROM tkundengruppe',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($customerGroups as $oKundengruppe) {
             $productData            = $this->db->queryPrepared(
@@ -181,7 +205,7 @@ class Statusmail
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL',
                 ['cgid' => (int)$oKundengruppe->kKundengruppe],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             $product                = new stdClass();
             $product->nAnzahl       = (int)$productData->nAnzahl;
@@ -209,7 +233,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$oKunde->nAnzahl;
@@ -234,7 +258,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$customerData->nAnzahl;
@@ -256,7 +280,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$orderData->nAnzahl;
@@ -281,7 +305,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$orderData->nAnzahl;
@@ -295,16 +319,16 @@ class Statusmail
     private function getIncomingPaymentsCount(): int
     {
         $orderData = $this->db->queryPrepared(
-            "SELECT COUNT(*) AS nAnzahl
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
-                    AND tbestellung.dBezahltDatum IS NOT NULL",
+                    AND tbestellung.dBezahltDatum IS NOT NULL',
             [
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$orderData->nAnzahl;
@@ -327,7 +351,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$orderData->nAnzahl;
@@ -350,7 +374,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$visitorData->nAnzahl;
@@ -373,7 +397,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$visitorData->nAnzahl;
@@ -396,7 +420,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$ratingData->nAnzahl;
@@ -419,7 +443,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$ratingData->nAnzahl;
@@ -445,7 +469,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0) {
@@ -476,7 +500,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$tagData->nAnzahl;
@@ -501,7 +525,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$tagData->nAnzahl;
@@ -523,7 +547,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$oKwK->nAnzahl;
@@ -547,7 +571,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$oKwK->nAnzahl;
@@ -569,7 +593,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$wishlistData->nAnzahl;
@@ -591,7 +615,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$surveyData->nAnzahl;
@@ -614,7 +638,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$newsCommentData->nAnzahl;
@@ -637,7 +661,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$newsCommentData->nAnzahl;
@@ -659,7 +683,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$availabilityData->nAnzahl;
@@ -681,7 +705,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$inquiryData->nAnzahl;
@@ -703,7 +727,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$comparisonData->nAnzahl;
@@ -725,7 +749,7 @@ class Statusmail
                 'from' => $this->dateStart,
                 'to'   => $this->dateEnd
             ],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         return (int)$couponData->nAnzahl;
@@ -737,19 +761,19 @@ class Statusmail
      */
     public function getLogEntries(array $logLevels): array
     {
-        return \Functional\map(
+        return map(
             $this->db->queryPrepared(
                 'SELECT *
                     FROM tjtllog
                     WHERE dErstellt >= :from
                         AND dErstellt < :to
-                        AND nLevel IN (' . implode(',', array_map('intval', $logLevels)) . ')
+                        AND nLevel IN (' . \implode(',', \array_map('\intval', $logLevels)) . ')
                     ORDER BY dErstellt DESC',
                 [
                     'from' => $this->dateStart,
                     'to'   => $this->dateEnd
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             ),
             function ($e) {
                 $e->kLog   = (int)$e->kLog;
@@ -772,10 +796,10 @@ class Statusmail
     {
         $this->dateStart = $dateStart;
         $this->dateEnd   = $dateEnd;
-        if (!is_array($statusMail->nInhalt_arr)
+        if (!\is_array($statusMail->nInhalt_arr)
             || empty($dateStart)
             || empty($dateEnd)
-            || count($statusMail->nInhalt_arr) === 0
+            || \count($statusMail->nInhalt_arr) === 0
         ) {
             return false;
         }
@@ -783,7 +807,7 @@ class Statusmail
         $mailType = $this->db->select(
             'temailvorlage',
             'cModulId',
-            MAILTEMPLATE_STATUSEMAIL,
+            \MAILTEMPLATE_STATUSEMAIL,
             null,
             null,
             null,
@@ -898,37 +922,43 @@ class Statusmail
                     $mail->nAnzahlVersendeterBestellungen = $this->getShippedOrdersCount();
                     break;
                 case 25:
-                    $logLevels[] = JTLLOG_LEVEL_ERROR;
-                    $logLevels[] = JTLLOG_LEVEL_CRITICAL;
-                    $logLevels[] = JTLLOG_LEVEL_ALERT;
-                    $logLevels[] = JTLLOG_LEVEL_EMERGENCY;
+                    $logLevels[] = \JTLLOG_LEVEL_ERROR;
+                    $logLevels[] = \JTLLOG_LEVEL_CRITICAL;
+                    $logLevels[] = \JTLLOG_LEVEL_ALERT;
+                    $logLevels[] = \JTLLOG_LEVEL_EMERGENCY;
                     break;
                 case 26:
-                    $logLevels[] = JTLLOG_LEVEL_NOTICE;
+                    $logLevels[] = \JTLLOG_LEVEL_NOTICE;
                     break;
                 case 27:
-                    $logLevels[] = JTLLOG_LEVEL_DEBUG;
+                    $logLevels[] = \JTLLOG_LEVEL_DEBUG;
                     break;
             }
         }
 
-        if (count($logLevels) > 0) {
-            $mail->oLogEntry_arr    = $this->getLogEntries($logLevels);
-            $cLogFilePath           = tempnam(sys_get_temp_dir(), 'jtl');
-            $fileStream             = fopen($cLogFilePath, 'w');
-            $oAttachment            = new stdClass();
-            $oAttachment->cFilePath = $cLogFilePath;
-            $smarty                 = Shop::Smarty()->assign('oMailObjekt', $mail);
+        if (\count($logLevels) > 0) {
+            $mail->oLogEntry_arr   = $this->getLogEntries($logLevels);
+            $cLogFilePath          = \tempnam(\sys_get_temp_dir(), 'jtl');
+            $fileStream            = \fopen($cLogFilePath, 'w');
+            $attachment            = new stdClass();
+            $attachment->cFilePath = $cLogFilePath;
+            $smarty                = Shop::Smarty()->assign('oMailObjekt', $mail);
             if ($mailType === 'text') {
-                fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
-                $oAttachment->cName = 'jtl-log-digest.txt';
+                 \fwrite(
+                     $fileStream,
+                     $smarty->fetch(\PFAD_ROOT . \PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl')
+                 );
+                $attachment->cName = 'jtl-log-digest.txt';
             } else {
-                fwrite($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl'));
-                $oAttachment->cName = 'jtl-log-digest.html';
+                 \fwrite(
+                     $fileStream,
+                     $smarty->fetch(\PFAD_ROOT . \PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl')
+                 );
+                $attachment->cName = 'jtl-log-digest.html';
             }
 
-            fclose($fileStream);
-            $mail->mail->oAttachment_arr = [$oAttachment];
+            \fclose($fileStream);
+            $mail->mail->oAttachment_arr = [$attachment];
         }
 
         $mail->mail->toEmail = $statusMail->cEmail;
@@ -962,7 +992,7 @@ class Statusmail
         if ($statusMail === null) {
             $statusMail = $this->db->select('tstatusemail', 'nAktiv', 1);
         }
-        $statusMail->nInhalt_arr = StringHandler::parseSSK($statusMail->cInhalt);
+        $statusMail->nInhalt_arr = Text::parseSSK($statusMail->cInhalt);
         $nIntervall              = (int)$statusMail->nInterval;
         switch ($nIntervall) {
             case 1:
@@ -984,19 +1014,19 @@ class Statusmail
 
         $mail = $this->generate(
             $statusMail,
-            date_create()->modify('-1 ' . $interval)->format('Y-m-d H:i:s'),
-            date_create()->format('Y-m-d H:i:s')
+            \date_create()->modify('-1 ' . $interval)->format('Y-m-d H:i:s'),
+            \date_create()->format('Y-m-d H:i:s')
         );
 
         if ($mail) {
-            $mail->cIntervall = (JTL_CHARSET !== 'utf-8'
-                    ? StringHandler::convertISO($intervalLoc)
+            $mail->cIntervall = (\JTL_CHARSET !== 'utf-8'
+                    ? Text::convertISO($intervalLoc)
                     : $intervalLoc) . ' Status-Email';
 
-            $sent = sendeMail(MAILTEMPLATE_STATUSEMAIL, $mail, $mail->mail) !== false;
+            $sent = \sendeMail(\MAILTEMPLATE_STATUSEMAIL, $mail, $mail->mail) !== false;
 
             if (isset($mail->mail->oAttachment_arr)) {
-                unlink($mail->mail->oAttachment_arr[0]->cFilePath);
+                \unlink($mail->mail->oAttachment_arr[0]->cFilePath);
             }
         }
 

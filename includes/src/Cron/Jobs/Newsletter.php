@@ -4,31 +4,33 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Jobs;
+namespace JTL\Cron\Jobs;
 
-
-use Cron\Job;
-use Cron\JobInterface;
-use Cron\QueueEntry;
-use DB\DbInterface;
-use DB\ReturnType;
-use Psr\Log\LoggerInterface;
+use JTL\Cron\Job;
+use JTL\Cron\JobInterface;
+use JTL\Cron\QueueEntry;
+use JTL\DB\ReturnType;
+use JTL\Kampagne;
+use JTL\Customer\Kunde;
+use JTL\Shop;
 
 /**
  * Class Newsletter
- * @package Cron\Jobs
+ * @package JTL\Cron\Jobs
  */
 class Newsletter extends Job
 {
     /**
      * @inheritdoc
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function hydrate($data)
     {
-        parent::__construct($db, $logger);
+        parent::hydrate($data);
         if (\JOBQUEUE_LIMIT_M_NEWSLETTER > 0) {
             $this->setLimit((int)\JOBQUEUE_LIMIT_M_NEWSLETTER);
         }
+
+        return $this;
     }
 
     /**
@@ -41,52 +43,34 @@ class Newsletter extends Job
         if ($oNewsletter === null) {
             return $this;
         }
-        $conf            = \Shop::getSettings([\CONF_NEWSLETTER]);
+        $oNewsletter->kNewsletter = (int)$oNewsletter->kNewsletter;
+        $oNewsletter->kSprache    = (int)$oNewsletter->kSprache;
+        $oNewsletter->kKampagne   = (int)$oNewsletter->kKampagne;
+        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'newsletter_inc.php';
+        $conf            = Shop::getSettings([\CONF_NEWSLETTER]);
         $smarty          = \bereiteNewsletterVor($conf);
         $productIDs      = \gibAHKKeys($oNewsletter->cArtikel, true);
         $manufacturerIDs = \gibAHKKeys($oNewsletter->cHersteller);
         $categoryIDs     = \gibAHKKeys($oNewsletter->cKategorie);
         $customerGroups  = \gibAHKKeys($oNewsletter->cKundengruppe);
-        $campaign        = new \Kampagne($oNewsletter->kKampagne);
+        $campaign        = new Kampagne($oNewsletter->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->kKey);
+            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
 
             return $this;
         }
         $products   = [];
         $categories = [];
-        $cSQL       = '';
-        if (\is_array($customerGroups) && \count($customerGroups) > 0) {
-            foreach ($customerGroups as $kKundengruppe) {
-                $products[$kKundengruppe]   = \gibArtikelObjekte(
-                    $productIDs,
-                    $campaign,
-                    $kKundengruppe,
-                    $oNewsletter->kSprache
-                );
-                $categories[$kKundengruppe] = \gibKategorieObjekte($categoryIDs, $campaign);
-            }
-
-            $cSQL = 'AND (';
-            foreach ($customerGroups as $i => $kKundengruppe) {
-                if ($i > 0) {
-                    $cSQL .= ' OR tkunde.kKundengruppe = ' . (int)$kKundengruppe;
-                } else {
-                    $cSQL .= 'tkunde.kKundengruppe = ' . (int)$kKundengruppe;
-                }
-            }
+        foreach ($customerGroups as $groupID) {
+            $products[$groupID]   = \gibArtikelObjekte($productIDs, $campaign, $groupID, (int)$oNewsletter->kSprache);
+            $categories[$groupID] = \gibKategorieObjekte($categoryIDs, $campaign);
         }
-
-        if (\in_array('0', \explode(';', $oNewsletter->cKundengruppe))) {
-            if (\is_array($customerGroups) && \count($customerGroups) > 0) {
-                $cSQL .= ' OR tkunde.kKundengruppe IS NULL';
-            } else {
-                $cSQL .= 'tkunde.kKundengruppe IS NULL';
-            }
+        $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
+        if (\in_array(0, $customerGroups, true)) {
+            $cgSQL .= ' OR tkunde.kKundengruppe IS NULL';
         }
-        $cSQL .= ')';
-
+        $cgSQL        .= ')';
         $manufacturers = \gibHerstellerObjekte($manufacturerIDs, $campaign, $oNewsletter->kSprache);
         $recipients    = $this->db->query(
             'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, 
@@ -98,50 +82,46 @@ class Newsletter extends Job
                 LEFT JOIN tkunde 
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
                 WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
-                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL . '
+                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
                 ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->nLimitN . ', ' . $queueEntry->nLimitM,
+                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit,
             ReturnType::ARRAY_OF_OBJECTS
         );
-
         if (\count($recipients) > 0) {
-            $shopURL = \Shop::getURL();
-            foreach ($recipients as $oNewsletterEmpfaenger) {
-                unset($oKunde);
-                $oNewsletterEmpfaenger->cLoeschURL = $shopURL . '/newsletter.php?lang=' .
-                    $oNewsletterEmpfaenger->cISO . '&lc=' . $oNewsletterEmpfaenger->cLoeschCode;
-                if ($oNewsletterEmpfaenger->kKunde > 0) {
-                    $oKunde = new \Kunde($oNewsletterEmpfaenger->kKunde);
-                }
-                $kKundengruppeTMP = (int)$oNewsletterEmpfaenger->kKundengruppe > 0
-                    ? (int)$oNewsletterEmpfaenger->kKundengruppe
+            $shopURL = Shop::getURL();
+            foreach ($recipients as $recipient) {
+                $recipient->cLoeschURL = $shopURL . '/newsletter.php?lang=' .
+                    $recipient->cISO . '&lc=' . $recipient->cLoeschCode;
+                $customer              = $recipient->kKunde > 0
+                    ? new Kunde($recipient->kKunde)
+                    : null;
+                $cgID                  = (int)$recipient->kKundengruppe > 0
+                    ? (int)$recipient->kKundengruppe
                     : 0;
 
                 \versendeNewsletter(
                     $smarty,
                     $oNewsletter,
                     $conf,
-                    $oNewsletterEmpfaenger,
-                    $products[$kKundengruppeTMP],
+                    $recipient,
+                    $products[$cgID],
                     $manufacturers,
-                    $categories[$kKundengruppeTMP],
+                    $categories[$cgID],
                     $campaign,
-                    $oKunde ?? null
+                    $customer ?? null
                 );
-                $upd                     = new \stdClass();
-                $upd->dLetzterNewsletter = \date('Y-m-d H:m:s');
                 $this->db->update(
                     'tnewsletterempfaenger',
                     'kNewsletterEmpfaenger',
-                    (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger,
-                    $upd
+                    (int)$recipient->kNewsletterEmpfaenger,
+                    (object)['dLetzterNewsletter' => \date('Y-m-d H:m:s')]
                 );
-                ++$queueEntry->nLimitN;
+                ++$queueEntry->taskLimit;
             }
             $this->setFinished(false);
         } else {
             $this->setFinished(true);
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->kKey);
+            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
         }
 
         return $this;

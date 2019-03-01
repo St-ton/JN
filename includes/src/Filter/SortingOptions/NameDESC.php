@@ -4,26 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class NameDESC
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class NameDESC extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * NameDESC constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tartikel.cName DESC';
-        $this->setName(\Shop::Lang()->get('sortNameDesc'));
+        $this->setOrderBy('tartikel.cName DESC');
+        $this->setName(Shop::Lang()->get('sortNameDesc'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_name_ab']);
         $this->setValue(\SEARCH_SORT_NAME_DESC);
     }

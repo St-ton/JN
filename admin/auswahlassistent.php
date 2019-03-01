@@ -3,92 +3,112 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Extensions\AuswahlAssistent;
+use JTL\Extensions\AuswahlAssistentFrage;
+use JTL\Extensions\AuswahlAssistentGruppe;
+use JTL\Nice;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('EXTENSION_SELECTIONWIZARD_VIEW', true, true);
-$cFehler  = '';
-$cHinweis = '';
-$step     = '';
-$oNice    = Nice::getInstance();
-$cTab     = 'uebersicht';
-if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
+$step        = '';
+$nice        = Nice::getInstance();
+$tab         = 'uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
+
+JTL\Shop::Container()->getGetText()->loadConfigLocales();
+
+if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $step = 'uebersicht';
     setzeSprache();
 
-    if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-        $cTab = RequestHelper::verifyGPDataString('tab');
+    if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+        $tab = Request::verifyGPDataString('tab');
     }
-    if (isset($_POST['a']) && FormHelper::validateToken()) {
+    if (isset($_POST['a']) && Form::validateToken()) {
         if ($_POST['a'] === 'newGrp') {
             $step = 'edit-group';
         } elseif ($_POST['a'] === 'newQuest') {
             $step = 'edit-question';
         } elseif ($_POST['a'] === 'addQuest') {
-            $oAuswahlAssistentFrage                          = new AuswahlAssistentFrage();
-            $oAuswahlAssistentFrage->cFrage                  = htmlspecialchars(
+            $question                          = new AuswahlAssistentFrage();
+            $question->cFrage                  = htmlspecialchars(
                 $_POST['cFrage'],
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             );
-            $oAuswahlAssistentFrage->kMerkmal                = (int)$_POST['kMerkmal'];
-            $oAuswahlAssistentFrage->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
-            $oAuswahlAssistentFrage->nSort                   = (int)$_POST['nSort'];
-            $oAuswahlAssistentFrage->nAktiv                  = (int)$_POST['nAktiv'];
+            $question->kMerkmal                = (int)$_POST['kMerkmal'];
+            $question->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
+            $question->nSort                   = (int)$_POST['nSort'];
+            $question->nAktiv                  = (int)$_POST['nAktiv'];
 
             $cPlausi_arr = [];
             if (isset($_POST['kAuswahlAssistentFrage']) && (int)$_POST['kAuswahlAssistentFrage'] > 0) {
-                $oAuswahlAssistentFrage->kAuswahlAssistentFrage = (int)$_POST['kAuswahlAssistentFrage'];
-                $cPlausi_arr                                    = $oAuswahlAssistentFrage->updateQuestion();
+                $question->kAuswahlAssistentFrage = (int)$_POST['kAuswahlAssistentFrage'];
+                $cPlausi_arr                      = $question->updateQuestion();
             } else {
-                $cPlausi_arr = $oAuswahlAssistentFrage->saveQuestion();
+                $cPlausi_arr = $question->saveQuestion();
             }
 
             if ((!is_array($cPlausi_arr) && $cPlausi_arr) || count($cPlausi_arr) === 0) {
-                $cHinweis = 'Ihre Frage wurde erfolgreich gespeichert.';
-                $cTab     = 'uebersicht';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionSaved'), 'successQuestionSaved');
+                $tab = 'uebersicht';
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
-                $cFehler = 'Fehler: Bitte füllen Sie alle Felder korrekt aus.';
-                $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+                $smarty->assign('cPost_arr', Text::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
-                       ->assign('kAuswahlAssistentFrage',
-                           (isset($_POST['kAuswahlAssistentFrage']) ? (int)$_POST['kAuswahlAssistentFrage'] : 0));
+                       ->assign('kAuswahlAssistentFrage', (int)($_POST['kAuswahlAssistentFrage'] ?? 0));
             }
         }
-    } elseif (isset($_GET['a'], $_GET['q']) && $_GET['a'] === 'delQuest' && (int)$_GET['q'] > 0 && FormHelper::validateToken()) {
+    } elseif (isset($_GET['a'], $_GET['q'])
+        && $_GET['a'] === 'delQuest'
+        && (int)$_GET['q'] > 0
+        && Form::validateToken()
+    ) {
         if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
-            $cHinweis = 'Ihre ausgewählte Frage wurden erfolgreich gelöscht.';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDeleted'), 'successQuestionDeleted');
         } else {
-            $cFehler = 'Fehler: Ihre ausgewählte Frage konnten nicht gelöscht werden.';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorQuestionDeleted'), 'errorQuestionDeleted');
         }
-    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && FormHelper::validateToken()) {
+    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && Form::validateToken()) {
         $step = 'edit-question';
         $smarty->assign('oFrage', new AuswahlAssistentFrage((int)$_GET['q'], false));
     }
 
-    if (isset($_POST['a']) && FormHelper::validateToken()) {
+    if (isset($_POST['a']) && Form::validateToken()) {
         if ($_POST['a'] === 'addGrp') {
-            $oAuswahlAssistentGruppe                = new AuswahlAssistentGruppe();
-            $oAuswahlAssistentGruppe->kSprache      = (int)$_SESSION['kSprache'];
-            $oAuswahlAssistentGruppe->cName         = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401,
-                JTL_CHARSET);
-            $oAuswahlAssistentGruppe->cBeschreibung = $_POST['cBeschreibung'];
-            $oAuswahlAssistentGruppe->nAktiv        = (int)$_POST['nAktiv'];
+            $group                = new AuswahlAssistentGruppe();
+            $group->kSprache      = (int)$_SESSION['kSprache'];
+            $group->cName         = htmlspecialchars(
+                $_POST['cName'],
+                ENT_COMPAT | ENT_HTML401,
+                JTL_CHARSET
+            );
+            $group->cBeschreibung = $_POST['cBeschreibung'];
+            $group->nAktiv        = (int)$_POST['nAktiv'];
 
             $cPlausi_arr = [];
             if (isset($_POST['kAuswahlAssistentGruppe']) && (int)$_POST['kAuswahlAssistentGruppe'] > 0) {
-                $oAuswahlAssistentGruppe->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
-                $cPlausi_arr                                      = $oAuswahlAssistentGruppe->updateGroup($_POST);
+                $group->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
+                $cPlausi_arr                    = $group->updateGroup($_POST);
             } else {
-                $cPlausi_arr = $oAuswahlAssistentGruppe->saveGroup($_POST);
+                $cPlausi_arr = $group->saveGroup($_POST);
             }
             if ((!is_array($cPlausi_arr) && $cPlausi_arr) || count($cPlausi_arr) === 0) {
-                $step     = 'uebersicht';
-                $cHinweis = 'Ihre Gruppe wurde erfolgreich gespeichert.';
-                $cTab     = 'uebersicht';
+                $step = 'uebersicht';
+                $tab  = 'uebersicht';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successGroupSaved'), 'successGroupSaved');
             } elseif (is_array($cPlausi_arr) && count($cPlausi_arr) > 0) {
-                $step    = 'edit-group';
-                $cFehler = 'Fehler: Bitte füllen Sie alle Felder korrekt aus.';
-                $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST))
+                $step = 'edit-group';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+                $smarty->assign('cPost_arr', Text::filterXSS($_POST))
                        ->assign('cPlausi_arr', $cPlausi_arr)
                        ->assign('kAuswahlAssistentGruppe', (isset($_POST['kAuswahlAssistentGruppe'])
                            ? (int)$_POST['kAuswahlAssistentGruppe']
@@ -96,21 +116,31 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
         } elseif ($_POST['a'] === 'delGrp') {
             if (AuswahlAssistentGruppe::deleteGroup($_POST)) {
-                $cHinweis = 'Ihre ausgewählten Gruppen wurden erfolgreich gelöscht.';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successGroupDeleted'), 'successGroupDeleted');
             } else {
-                $cFehler = 'Fehler: Ihre ausgewählten Gruppen konnten nicht gelöscht werden.';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorGroupDeleted'), 'errorGroupDeleted');
             }
         } elseif ($_POST['a'] === 'saveSettings') {
             $step = 'uebersicht';
-            $cHinweis .= saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST),
+                'saveSettings'
+            );
         }
-    } elseif (isset($_GET['a'], $_GET['g']) && $_GET['a'] === 'editGrp' && (int)$_GET['g'] > 0 && FormHelper::validateToken()) {
+    } elseif (isset($_GET['a'], $_GET['g'])
+        && $_GET['a'] === 'editGrp'
+        && (int)$_GET['g'] > 0
+        && Form::validateToken()
+    ) {
         $step = 'edit-group';
         $smarty->assign('oGruppe', new AuswahlAssistentGruppe($_GET['g'], false, false, true));
     }
     if ($step === 'uebersicht') {
-        $smarty->assign('oAuswahlAssistentGruppe_arr',
-            AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
+        $smarty->assign(
+            'oAuswahlAssistentGruppe_arr',
+            AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true)
+        );
     } elseif ($step === 'edit-group') {
         $smarty->assign('oLink_arr', AuswahlAssistent::getLinks());
     } elseif ($step === 'edit-question') {
@@ -122,25 +152,25 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $cSQLJoin   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = ' . (int)$_SESSION['kSprache'];
         }
-        $oMerkmal_arr = Shop::Container()->getDB()->query(
+        $attributes = Shop::Container()->getDB()->query(
             'SELECT ' . $cSQLSelect . '
                 FROM tmerkmal
                 ' . $cSQLJoin . '
                 ORDER BY tmerkmal.nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
-        $smarty->assign('oMerkmal_arr', $oMerkmal_arr)
-               ->assign('oAuswahlAssistentGruppe_arr',
-                   AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
+        $smarty->assign('oMerkmal_arr', $attributes)
+               ->assign(
+                   'oAuswahlAssistentGruppe_arr',
+                   AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true)
+               );
     }
 } else {
     $smarty->assign('noModule', true);
 }
 $smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('step', $step)
-       ->assign('cTab', $cTab)
+       ->assign('cTab', $tab)
        ->assign('AUSWAHLASSISTENT_ORT_STARTSEITE', AUSWAHLASSISTENT_ORT_STARTSEITE)
        ->assign('AUSWAHLASSISTENT_ORT_KATEGORIE', AUSWAHLASSISTENT_ORT_KATEGORIE)
        ->assign('AUSWAHLASSISTENT_ORT_LINK', AUSWAHLASSISTENT_ORT_LINK)

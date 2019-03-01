@@ -6,6 +6,10 @@
  * @created Thu, 20 Apr 2017 09:49:22 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Update\MigrationHelper;
+
 /**
  * Migration
  *
@@ -28,15 +32,11 @@ class Migration_20170420094922 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute(
-            "CREATE INDEX idx_tkategorie_nLevel ON tkategorie (nLevel)"
-        );
+        MigrationHelper::createIndex('tkategorie', ['nLevel'], 'idx_tkategorie_nLevel');
     }
 
     public function down()
     {
-        $this->execute(
-            "DROP INDEX idx_tkategorie_nLevel ON tkategorie"
-        );
+        MigrationHelper::dropIndex('tkategorie', 'idx_tkategorie_nLevel');
     }
 }

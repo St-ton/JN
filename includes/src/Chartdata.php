@@ -1,11 +1,16 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use Exception;
 
 /**
  * Class Chartdata
+ * @package JTL
  */
 class Chartdata
 {
@@ -44,7 +49,7 @@ class Chartdata
      */
     public function __construct(array $options = null)
     {
-        if (is_array($options)) {
+        if (\is_array($options)) {
             $this->setOptions($options);
         }
     }
@@ -58,7 +63,7 @@ class Chartdata
     public function __set($name, $value)
     {
         $method = 'set' . $name;
-        if (('mapper' === $name) || !method_exists($this, $method)) {
+        if ($name === 'mapper' || !\method_exists($this, $method)) {
             throw new Exception('Invalid Query property');
         }
         $this->$method($value);
@@ -74,7 +79,7 @@ class Chartdata
     public function __get($name)
     {
         $method = 'get' . $name;
-        if (('mapper' === $name) || !method_exists($this, $method)) {
+        if ($name === 'mapper' || !\method_exists($this, $method)) {
             throw new Exception('Invalid Query property');
         }
 
@@ -87,10 +92,10 @@ class Chartdata
      */
     public function setOptions(array $options): self
     {
-        $methods = get_class_methods($this);
+        $methods = \get_class_methods($this);
         foreach ($options as $key => $value) {
-            $method = 'set' . ucfirst($key);
-            if (in_array($method, $methods, true)) {
+            $method = 'set' . \ucfirst($key);
+            if (\in_array($method, $methods, true)) {
                 $this->$method($value);
             }
         }
@@ -104,9 +109,9 @@ class Chartdata
     public function toArray(): array
     {
         $array   = [];
-        $members = array_keys(get_object_vars($this));
+        $members = \array_keys(\get_object_vars($this));
         foreach ($members as $member) {
-            $array[substr($member, 1)] = $this->$member;
+            $array[\mb_substr($member, 1)] = $this->$member;
         }
 
         return $array;
@@ -159,7 +164,7 @@ class Chartdata
     /**
      * @return string|null
      */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->_url;
     }
@@ -167,7 +172,7 @@ class Chartdata
     /**
      * @return bool|null
      */
-    public function getActive()
+    public function getActive(): ?bool
     {
         return $this->_bActive;
     }
@@ -183,7 +188,7 @@ class Chartdata
     /**
      * @return array|null
      */
-    public function getSeries()
+    public function getSeries(): ?array
     {
         return $this->_series;
     }
@@ -191,7 +196,7 @@ class Chartdata
     /**
      * @return string|null
      */
-    public function getAxisJSON()
+    public function getAxisJSON(): ?string
     {
         return $this->_xAxisJSON;
     }
@@ -199,7 +204,7 @@ class Chartdata
     /**
      * @return string|null
      */
-    public function getSeriesJSON()
+    public function getSeriesJSON(): ?string
     {
         return $this->_seriesJSON;
     }
@@ -209,8 +214,8 @@ class Chartdata
      */
     public function memberToJSON(): self
     {
-        $this->_seriesJSON = json_encode($this->_series);
-        $this->_xAxisJSON  = json_encode($this->_xAxis);
+        $this->_seriesJSON = \json_encode($this->_series);
+        $this->_xAxisJSON  = \json_encode($this->_xAxis);
 
         return $this;
     }

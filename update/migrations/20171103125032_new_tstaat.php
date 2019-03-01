@@ -6,6 +6,10 @@
  * @created Fri, 03 Nov 2017 12:50:32 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+
 /**
  * Migration
  *
@@ -22,7 +26,7 @@
  */
 class Migration_20171103125032 extends Migration implements IMigration
 {
-    protected $author = 'cr';
+    protected $author      = 'cr';
     protected $description = 're-create the table tstaat, transfer to valid ISO 3166-2';
 
     /**
@@ -33,7 +37,7 @@ class Migration_20171103125032 extends Migration implements IMigration
      */
     public function up()
     {
-		$szSql = <<<SQL
+        $szSql = <<<SQL
 
 DROP TABLE IF EXISTS `tstaat`;
 
@@ -1254,13 +1258,13 @@ SET NAMES latin1;
 
 SQL;
 
-		/*$this->execute($szSql);  see above for explanation*/
+        /*$this->execute($szSql);  see above for explanation*/
         Shop::Container()->getDB()->executeQuery($szSql, 3);
     }
 
     public function down()
     {
-		$szSql = <<<SQL
+        $szSql = <<<SQL
 
 DROP TABLE IF EXISTS `tstaat`;
 
@@ -1767,7 +1771,6 @@ VALUES
     , (486,'FR','Französisch-Guayana','973')
 SQL;
 
-		$this->execute($szSql);
+        $this->execute($szSql);
     }
 }
-

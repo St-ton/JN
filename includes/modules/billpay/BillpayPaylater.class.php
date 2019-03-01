@@ -3,6 +3,12 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Session\Frontend;
+
 include_once __DIR__ . '/Billpay.class.php';
 
 /**
@@ -33,8 +39,8 @@ class BillpayPaylater extends Billpay
         $oPaymentEx = $_SESSION['za_billpay_jtl']['oOrderEx'] ?? null;
 
         if ($oPaymentEx === null) {
-            BPHelper::log("canceled capture, invalid session information");
-            header("location: bestellvorgang.php?editZahlungsart=1");
+            BPHelper::log('canceled capture, invalid session information');
+            header('location: bestellvorgang.php?editZahlungsart=1');
         }
 
         $oCustomer = $_SESSION['Kunde'];
@@ -54,26 +60,26 @@ class BillpayPaylater extends Billpay
 
             // set order status to paid
             if ($this->getCoreSetting('aspaid') === 'Y') {
-                $oIncomingPayment = new stdClass();
+                $oIncomingPayment          = new stdClass();
                 $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS] + $oBasket->gibGesamtsummeWarenExt([
                         C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
                         C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR
                     ], true);
-                $oIncomingPayment->cISO = $oBasketInfo->cCurrency->cISO;
+                $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->cISO;
                 $this->addIncomingPayment($oOrder, $oIncomingPayment);
                 $this->setOrderStatusToPaid($oOrder);
             }
 
             unset($_SESSION['za_billpay_jtl']['oOrderEx']);
 
-            $session = \Session\Session::getInstance();
+            $session = Frontend::getInstance();
             $session->cleanUp();
         }
 
         Shop::Smarty()->assign('oOrder', $oOrder)
             ->assign('oPaymentEx', $oPaymentEx)
             ->assign('nPaymentType', IPL_CORE_PAYMENT_TYPE_PAY_LATER)
-            ->assign('nSSL', RequestHelper::checkSSL())
+            ->assign('nSSL', Request::checkSSL())
             ->assign('nState', $nState);
     }
 

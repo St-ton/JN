@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#emailhistory# cBeschreibung=#emailhistoryDesc# cDokuURL=#emailhistoryURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('emailhistory') cBeschreibung=__('emailhistoryDesc') cDokuURL=__('emailhistoryURL')}
 <div id="content" class="container-fluid">
     {if $oEmailhistory_arr|@count > 0 && $oEmailhistory_arr}
         {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
@@ -23,15 +23,15 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Achtung!</h4>
+                            <h4 class="modal-title">{__('danger')}!</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Wollen Sie wirklich das komplette eMail-Log l&ouml;schen?</p>
+                            <p>{__('sureEmailDelete')}</p>
                         </div>
                         <div class="modal-footer">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fa fa-check"></i>&nbsp;Ok</button>
-                                <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;Abbrechen</button>
+                                <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fa fa-check"></i>&nbsp;{__('ok')}</button>
+                                <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
                             </div>
                             </div>
                         </div>
@@ -42,23 +42,23 @@
             <input name="a" type="hidden" value="delete" />
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#emailhistory#}</h3>
+                    <h3 class="panel-title">{__('emailhistory')}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-striped">
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{#subject#}</th>
-                            <th class="tleft">{#fromname#}</th>
-                            <th class="tleft">{#fromemail#}</th>
-                            <th class="tleft">{#toname#}</th>
-                            <th class="tleft">{#toemail#}</th>
-                            <th class="tleft">{#date#}</th>
+                            <th class="tleft">{__('subject')}</th>
+                            <th class="tleft">{__('fromname')}</th>
+                            <th class="tleft">{__('fromemail')}</th>
+                            <th class="tleft">{__('toname')}</th>
+                            <th class="tleft">{__('toemail')}</th>
+                            <th class="tleft">{__('date')}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {foreach name=emailhistory from=$oEmailhistory_arr item=oEmailhistory}
+                        {foreach $oEmailhistory_arr as $oEmailhistory}
                             <tr>
                                 <td class="check">
                                     <input type="checkbox" name="kEmailhistory[]" value="{$oEmailhistory->getEmailhistory()}" />
@@ -76,20 +76,20 @@
                         <tr>
                             <td class="check">
                                 <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="8"><label for="ALLMSGS">Alle ausw&auml;hlen</label></td>
+                            <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>
                 </div>
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
-                        <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fa fa-trash"></i> {#deleteAll#}</button>
+                        <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                        <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fa fa-trash"></i> {__('deleteAll')}</button>
                     </div>
                 </div>
             </div>
         </form>
     {else}
-        <div class="alert alert-info">{#nodata#}</div>
+        <div class="alert alert-info">{__('nodata')}</div>
     {/if}
 </div>

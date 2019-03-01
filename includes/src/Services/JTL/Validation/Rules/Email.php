@@ -4,15 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
-
-use Services\JTL\Validation\RuleResult;
-use Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class Email
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates, that $value is string containing a valid email
  *
@@ -23,7 +22,7 @@ class Email implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return \filter_var($value, \FILTER_VALIDATE_EMAIL)
             ? new RuleResult(true, '', $value)

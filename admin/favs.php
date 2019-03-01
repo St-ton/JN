@@ -4,9 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Backend\AdminFavorite;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+
 /**
- * @global JTLSmarty $smarty
- * @global AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -14,8 +18,8 @@ $oAccount->redirectOnFailure();
 
 $kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 if (isset($_POST['title'], $_POST['url'])
-    && FormHelper::validateToken()
-    && RequestHelper::verifyGPDataString('action') === 'save'
+    && Form::validateToken()
+    && Request::verifyGPDataString('action') === 'save'
 ) {
     $titles = $_POST['title'];
     $urls   = $_POST['url'];

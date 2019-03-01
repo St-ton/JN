@@ -94,7 +94,7 @@ Page.prototype = {
 
     loadFromImport: function(loadCB)
     {
-        this.jq('<input type="file" accept=".json">').change(this.onImportChosen.bind(this, loadCB)).click();
+        this.jq('<input type="file" accept=".json">').on('change', this.onImportChosen.bind(this, loadCB)).click();
     },
 
     loadPageFromWebStorage: function(loadCB)
@@ -263,6 +263,10 @@ Page.prototype = {
         var data     = portlet.data('portlet');
         var result   = {"class": data.class, title: data.title, properties: data.properties, subareas: {}};
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
+
+        if (data.class === 'MissingPortlet') {
+            result.missingClass = data.missingClass;
+        }
 
         for(var i=0; i<subareas.length; i++) {
             var subarea     = this.jq(subareas[i]);

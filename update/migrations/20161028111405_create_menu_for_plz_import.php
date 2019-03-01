@@ -6,6 +6,10 @@
  * @created Fri, 28 Oct 2016 11:14:05 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Update\MigrationHelper;
+
 /**
  * Migration
  *
@@ -29,11 +33,11 @@ class Migration_20161028111405 extends Migration implements IMigration
      */
     protected function reorderMenu($kAdminmenueGruppe)
     {
-        $this->execute("SET @SortStart = 0");
+        $this->execute('SET @SortStart = 0');
         $this->execute(
-            "UPDATE tadminmenu SET nSort = @SortStart:=@SortStart + 10
-                WHERE kAdminmenueGruppe = " . (int)$kAdminmenueGruppe . " 
-                ORDER BY nSort;"
+            'UPDATE tadminmenu SET nSort = @SortStart:=@SortStart + 10
+                WHERE kAdminmenueGruppe = ' . (int)$kAdminmenueGruppe . ' 
+                ORDER BY nSort;'
         );
     }
 
@@ -54,28 +58,19 @@ class Migration_20161028111405 extends Migration implements IMigration
         );
         $this->reorderMenu(11);
 
+        MigrationHelper::createIndex('tplz', ['cLandISO', 'cPLZ', 'cOrt'], 'PLZ_ORT_UNIQUE');
         $this->execute(
-            "DROP INDEX PLZ_ORT_UNIQUE ON tplz"
-        );
-        $this->execute(
-            "CREATE INDEX PLZ_ORT_UNIQUE ON tplz (cLandISO, cPLZ, cOrt)"
-        );
-        $this->execute(
-            "CREATE TABLE tplz_backup LIKE tplz"
+            'CREATE TABLE tplz_backup LIKE tplz'
         );
     }
 
     public function down()
     {
         $this->execute(
-            "DROP TABLE IF EXISTS tplz_backup"
+            'DROP TABLE IF EXISTS tplz_backup'
         );
-        $this->execute(
-            "DROP INDEX PLZ_ORT_UNIQUE ON tplz"
-        );
-        $this->execute(
-            "CREATE INDEX PLZ_ORT_UNIQUE  ON tplz (cPLZ, cOrt)"
-        );
+
+        MigrationHelper::createIndex('tplz', ['cPLZ', 'cOrt'], 'PLZ_ORT_UNIQUE');
 
         $this->execute(
             "DELETE FROM tadminmenu WHERE cURL = 'plz_ort_import.php'"

@@ -4,12 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache;
-
+namespace JTL\Cache;
 
 /**
  * Interface ICachingMethod
- * @package Cache
+ * @package JTL\Cache
  */
 interface ICachingMethod
 {
@@ -76,7 +75,7 @@ interface ICachingMethod
     /**
      * removes cache IDs associated with given tags from cache
      *
-     * @param array $tags
+     * @param array|string $tags
      * @return int
      */
     public function flushTags($tags): int;
@@ -142,12 +141,12 @@ interface ICachingMethod
     /**
      * @return string|null
      */
-    public function getJournalID();
+    public function getJournalID(): ?string;
 
     /**
      * @param string $id
      */
-    public function setJournalID($id);
+    public function setJournalID($id): void;
 
     /**
      * @return string
@@ -156,6 +155,7 @@ interface ICachingMethod
 
     /**
      * @param string $error
+     * @return JTLCacheInterface
      */
     public function setError(string $error);
 }

@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-
-use Filter\Pagination\Info;
-use Tightenco\Collect\Support\Collection;
+use JTL\Filter\Pagination\Info;
+use JTL\Catalog\Category\Kategorie;
+use Illuminate\Support\Collection;
 
 /**
- * Class SearchResults
- * @package Filter
+ * Interface SearchResultsInterface
+ * @package JTL\Filter
  */
 interface SearchResultsInterface
 {
@@ -44,12 +44,12 @@ interface SearchResultsInterface
     public function setProductKeys(Collection $keys): SearchResultsInterface;
 
     /**
-     * @return \Tightenco\Collect\Support\Collection()
+     * @return Collection
      */
     public function getProducts(): Collection;
 
     /**
-     * @param \Tightenco\Collect\Support\Collection() $products
+     * @param Collection $products
      * @return $this
      */
     public function setProducts($products): SearchResultsInterface;
@@ -112,7 +112,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getSearchTerm();
+    public function getSearchTerm(): ?string;
 
     /**
      * @param string $searchTerm
@@ -121,9 +121,9 @@ interface SearchResultsInterface
     public function setSearchTerm($searchTerm): SearchResultsInterface;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSearchTermWrite();
+    public function getSearchTermWrite(): ?string;
 
     /**
      * @param string $searchTerm
@@ -244,7 +244,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getTagFilterJSON();
+    public function getTagFilterJSON(): ?string;
 
     /**
      * @param string $json
@@ -255,7 +255,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getSearchFilterJSON();
+    public function getSearchFilterJSON(): ?string;
 
     /**
      * @param string $json
@@ -266,7 +266,7 @@ interface SearchResultsInterface
     /**
      * @return string|null
      */
-    public function getError();
+    public function getError(): ?string;
 
     /**
      * @param string $error
@@ -302,9 +302,9 @@ interface SearchResultsInterface
     public function getAllFilterOptions(): array;
 
     /**
-     * @param ProductFilter   $productFilter
-     * @param null|\Kategorie $currentCategory
-     * @param bool            $selectionWizard
+     * @param ProductFilter  $productFilter
+     * @param null|Kategorie $currentCategory
+     * @param bool           $selectionWizard
      * @return $this
      */
     public function setFilterOptions(

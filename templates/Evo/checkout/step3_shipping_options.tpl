@@ -2,14 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($hinweis)}
-    <div class="alert alert-danger">
-        {$hinweis}
-    </div>
-{/if}
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
 <div class="row">
     <div class="col-xs-12">
         {if !isset($Versandarten)}
@@ -116,7 +108,7 @@
                 <div class="text-right">
                     <input type="hidden" name="versandartwahl" value="1" />
                     <input type="hidden" name="zahlungsartwahl" value="1" />
-                    <input type="submit" value="{lang key='continueOrder' section='account data'}" class="submit btn btn-lg submit-once btn-primary hidden" />
+                    <input type="submit" value="{lang key='continueOrder' section='account data'}" class="submit btn btn-lg submit_once btn-primary hidden" />
                 </div>
                 {/if}
             </form>

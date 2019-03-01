@@ -6,6 +6,10 @@
  * @created Tue, 16 May 2017 15:30:34 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Update\MigrationHelper;
+
 /**
  * Migration
  *
@@ -28,11 +32,11 @@ class Migration_20170516153034 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("CREATE INDEX idx_tartikel_kStueckliste ON tartikel (kStueckliste)");
+        MigrationHelper::createIndex('tartikel', ['kStueckliste'], 'idx_tartikel_kStueckliste');
     }
 
     public function down()
     {
-        $this->execute("DROP INDEX idx_tartikel_kStueckliste ON tartikel");
+        MigrationHelper::dropIndex('tartikel', 'idx_tartikel_kStueckliste');
     }
 }

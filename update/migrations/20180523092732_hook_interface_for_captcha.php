@@ -6,6 +6,10 @@
  * @created Wed, 23 May 2018 09:27:32 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Shop;
+
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 
 /**
@@ -45,7 +49,7 @@ class Migration_20180523092732 extends Migration implements IMigration
         $this->setLocalization('ger', 'global', 'captcha_code_active', 'Spamschutz aktiv');
         $this->setLocalization('eng', 'global', 'captcha_code_active', 'Spam protection active');
 
-        Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
+        Shop::Container()->getCache()->flushTags(CACHING_GROUP_OPTION);
     }
 
     /**
@@ -75,6 +79,6 @@ class Migration_20180523092732 extends Migration implements IMigration
 
         $this->removeLocalization('captcha_code_active');
 
-        Shop::Cache()->flushTags(CACHING_GROUP_OPTION);
+        Shop::Container()->getCache()->flushTags(CACHING_GROUP_OPTION);
     }
 }

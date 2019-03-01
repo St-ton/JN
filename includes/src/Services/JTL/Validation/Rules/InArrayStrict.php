@@ -4,20 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace JTL\Services\JTL\Validation\Rules;
 
-
-use Services\JTL\Validation\RuleInterface;
-use Services\JTL\Validation\RuleResult;
+use JTL\Services\JTL\Validation\RuleInterface;
+use JTL\Services\JTL\Validation\RuleResult;
 
 /**
  * Class WhitelistStrict
- * @package Services\JTL\Validation\Rules
+ * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates, that $value is in a specified list of items
  */
 class InArrayStrict implements RuleInterface
 {
+    /**
+     * @var array|mixed[]
+     */
     protected $whitelist;
 
     /**
@@ -32,7 +34,7 @@ class InArrayStrict implements RuleInterface
     /**
      * @inheritdoc
      */
-    public function validate($value)
+    public function validate($value): RuleResult
     {
         return \in_array($value, $this->whitelist, true)
             ? new RuleResult(true, '', $value)

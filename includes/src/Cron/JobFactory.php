@@ -4,16 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-
-use DB\DbInterface;
-use Mapper\JobTypeToJob;
+use JTL\DB\DbInterface;
+use JTL\Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class JobFactory
- * @package Cron
+ * @package JTL\Cron
  */
 class JobFactory
 {
@@ -45,23 +44,10 @@ class JobFactory
     public function create(QueueEntry $data): JobInterface
     {
         $mapper = new JobTypeToJob();
-        $class = $mapper->map($data->cJobArt);
-        $job   = new $class($this->db, $this->logger);
+        $class  = $mapper->map($data->jobType);
+        $job    = new $class($this->db, $this->logger, new JobHydrator());
         /** @var JobInterface $job */
-        $job->setType($data->cJobArt);
-        $job->setTable($data->cTabelle);
-        $job->setForeignKey($data->cKey);
-        $job->setForeignKeyID((int)$data->kKey);
-        $job->setCronID((int)$data->kCron);
-        // @todo: setID vs. setCrontID
-        $job->setID((int)$data->kCron);
-        $job->setQueueID((int)$data->kJobQueue);
-        if ($data->nLimitM > 0) {
-            $job->setLimit((int)$data->nLimitM);
-        }
-        if ($data->nLimitN > 0) {
-            $job->setExecuted((int)$data->nLimitN);
-        }
+        $job->hydrate($data);
 
         return $job;
     }

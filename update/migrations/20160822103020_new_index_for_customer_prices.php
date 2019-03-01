@@ -6,6 +6,10 @@
  * @created Mon, 22 Aug 2016 10:30:20 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Update\MigrationHelper;
+
 /**
  * Migration
  *
@@ -24,15 +28,11 @@ class Migration_20160822103020 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute(
-            "CREATE INDEX idx_tpreis_kKunde ON tpreis (kKunde)"
-        );
+        MigrationHelper::createIndex('tpreis', ['kKunde'], 'idx_tpreis_kKunde');
     }
 
     public function down()
     {
-        $this->execute(
-            "DROP INDEX idx_tpreis_kKunde ON tpreis"
-        );
+        MigrationHelper::dropIndex('tpreis', 'idx_tpreis_kKunde');
     }
 }

@@ -1,20 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
+use Illuminate\Support\Collection;
 use function Functional\group;
-use Tightenco\Collect\Support\Collection;
 
 /**
  * Class LinkGroupList
- * @package Filter
+ * @package JTL\Link
  */
 final class LinkGroupList implements LinkGroupListInterface
 {
@@ -99,7 +100,7 @@ final class LinkGroupList implements LinkGroupListInterface
 
             $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
         }
-        $this->applyVisibilityFilter(\Session::CustomerGroup()->getID(), \Session::Customer()->getID());
+        $this->applyVisibilityFilter(Frontend::getCustomerGroup()->getID(), Frontend::getCustomer()->getID());
 
         return $this;
     }
@@ -344,7 +345,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setLinkGroups(Collection $linkGroups)
+    public function setLinkGroups(Collection $linkGroups): void
     {
         $this->linkGroups = $linkGroups;
     }
@@ -360,7 +361,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups)
+    public function setVisibleLinkGroups(LinkGroupCollection $linkGroups): void
     {
         $this->visibleLinkGroups = $linkGroups;
     }
@@ -390,7 +391,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getLinkgroupByTemplate(string $name, $filtered = true)
+    public function getLinkgroupByTemplate(string $name, $filtered = true): ?LinkGroupInterface
     {
         $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 
@@ -400,7 +401,7 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @inheritdoc
      */
-    public function getLinkgroupByID(int $id, $filtered = true)
+    public function getLinkgroupByID(int $id, $filtered = true): ?LinkGroupInterface
     {
         $source = $filtered ? $this->visibleLinkGroups : $this->linkGroups;
 

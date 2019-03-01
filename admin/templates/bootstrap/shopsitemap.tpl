@@ -1,7 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='shopsitemap'}
-
-{include file='tpl_inc/seite_header.tpl' cTitel=#shopsitemap# cBeschreibung=#shopsitemapDesc# cDokuURL=#shopsitemapURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('shopsitemap') cBeschreibung=__('shopsitemapDesc') cDokuURL=__('shopsitemapURL')}
 <div id="content" class="container-fluid">
     <form name="einstellen" method="post" action="shopsitemap.php" id="einstellen">
         {$jtl_token}
@@ -9,10 +8,10 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#settings#}</h3>
+                    <h3 class="panel-title">{__('settings')}</h3>
                 </div>
                 <div class="panel-body">
-                    {foreach name=conf from=$oConfig_arr item=cnf}
+                    {foreach $oConfig_arr as $cnf}
                         {if $cnf->cConf === 'Y'}
                             <div class="input-group item{if isset($cnf->kEinstellungenConf) && isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
                                 <span class="input-group-addon">
@@ -21,8 +20,8 @@
                                 {if $cnf->cInputTyp === 'selectbox'}
                                     <span class="input-group-wrap">
                                         <select class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                            {foreach name=selectfor from=$cnf->ConfWerte item=wert}
-                                                <option value="{$wert->cWert}" {if $cnf->gesetzterWert==$wert->cWert}selected{/if}>{$wert->cName}</option>
+                                            {foreach $cnf->ConfWerte as $wert}
+                                                <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                             {/foreach}
                                         </select>
                                     </span>
@@ -41,7 +40,7 @@
                     {/foreach}
                 </div>
                 <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{#shopsitemapSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#shopsitemapSave#}</button>
+                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </div>

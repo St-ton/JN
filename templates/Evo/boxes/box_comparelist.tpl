@@ -30,7 +30,8 @@
             {if $itemCount > 1}
                 <hr>
                 <a class="btn btn-default btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"
-                   href="{get_static_route id='vergleichsliste.php'}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if}>{lang key='gotToCompare'}</a>
+                    href="{get_static_route id='vergleichsliste.php'}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'}
+                    target="_blank"{/if}>{lang key='gotToCompare'}</a>
             {/if}
         </div>
     </section>

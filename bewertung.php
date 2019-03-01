@@ -3,80 +3,104 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Request;
+use JTL\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\Shop;
+use JTL\Session\Frontend;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_INCLUDES . 'bewertung_inc.php';
 
-$AktuelleSeite = 'BEWERTUNG';
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
-$cParameter_arr = Shop::getParameters();
-$Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
-
-// Bewertung in die Datenbank speichern
+$params        = Shop::getParameters();
+$conf          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
+$ratingAllowed = true;
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
-    speicherBewertung(
-        $cParameter_arr['kArtikel'],
-        Session::Customer()->getID(),
-        Shop::getLanguage(),
-        RequestHelper::verifyGPDataString('cTitel'),
-        RequestHelper::verifyGPDataString('cText'),
-        $cParameter_arr['nSterne']
+    $messageSaveRating = speicherBewertung(
+        $params['kArtikel'],
+        Frontend::getCustomer()->getID(),
+        Shop::getLanguageID(),
+        Request::verifyGPDataString('cTitel'),
+        Request::verifyGPDataString('cText'),
+        $params['nSterne']
     );
-} elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) { // Hilfreich abspeichern
+    header('Location: ' . $messageSaveRating . '#alert-list', true, 303);
+    exit;
+} elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
     speicherHilfreich(
-        $cParameter_arr['kArtikel'],
-        Session::Customer()->getID(),
-        Shop::getLanguage(),
-        RequestHelper::verifyGPCDataInt('btgseite'),
-        RequestHelper::verifyGPCDataInt('btgsterne')
+        $params['kArtikel'],
+        Frontend::getCustomer()->getID(),
+        Shop::getLanguageID(),
+        Request::verifyGPCDataInt('btgseite'),
+        Request::verifyGPCDataInt('btgsterne')
     );
-} elseif (RequestHelper::verifyGPCDataInt('bfa') === 1) {
-    // Prüfe, ob Kunde eingeloggt
-    if (empty($_SESSION['Kunde']->kKunde)) {
+} elseif (Request::verifyGPCDataInt('bfa') === 1) {
+    if (Frontend::getCustomer()->getID() <= 0) {
         $helper = Shop::Container()->getLinkService();
-        header('Location: ' . $helper->getStaticRoute('jtl.php') .
-                '?a=' . RequestHelper::verifyGPCDataInt('a') .
+        header(
+            'Location: ' . $helper->getStaticRoute('jtl.php') .
+                '?a=' . Request::verifyGPCDataInt('a') .
                 '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
             true,
             303
         );
         exit();
     }
-    // hole aktuellen Artikel
     $AktuellerArtikel = new Artikel();
-    $AktuellerArtikel->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
-    //falls kein Artikel vorhanden, zurück zum Shop
+    $AktuellerArtikel->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());
     if (!$AktuellerArtikel->kArtikel) {
         header('Location: ' . Shop::getURL() . '/', true, 303);
         exit;
     }
-    $AufgeklappteKategorien = new KategorieListe();
     if ($AktuellerArtikel->Bewertungen === null) {
         $AktuellerArtikel->holeBewertung(
-            Shop::getLanguage(),
-            $Einstellungen['bewertung']['bewertung_anzahlseite'],
+            Shop::getLanguageID(),
+            $conf['bewertung']['bewertung_anzahlseite'],
             0,
             -1,
-            $Einstellungen['bewertung']['bewertung_freischalten'],
-            $cParameter_arr['nSortierung']
+            $conf['bewertung']['bewertung_freischalten'],
+            $params['nSortierung']
         );
-        $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
+        $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
+    }
+    if (!Frontend::getCustomer()->isLoggedIn()) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('loginFirst', 'product rating'),
+            'loginFirst',
+            ['showInAlertListTemplate' => false]
+        );
+        $ratingAllowed = false;
+    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, Frontend::getCustomer()) === false) {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_DANGER,
+            Shop::Lang()->get('productNotBuyed', 'product rating'),
+            'productNotBuyed',
+            ['showInAlertListTemplate' => false]
+        );
+        $ratingAllowed = false;
     }
 
-    if ($Einstellungen['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
-        Shop::Smarty()->assign('nArtikelNichtGekauft', pruefeKundeArtikelGekauft(
+    Shop::Smarty()->assign(
+        'BereitsBewertet',
+        pruefeKundeArtikelBewertet(
             $AktuellerArtikel->kArtikel,
-            $_SESSION['Kunde']->kKunde)
-        );
-    }
-    Shop::Smarty()->assign('BereitsBewertet', pruefeKundeArtikelBewertet(
-        $AktuellerArtikel->kArtikel,
-        $_SESSION['Kunde']->kKunde))
+            $_SESSION['Kunde']->kKunde
+        )
+    )
         ->assign('Artikel', $AktuellerArtikel)
-        ->assign('oBewertung', Shop::Container()->getDB()->select(
-            'tbewertung',
-            ['kArtikel', 'kKunde'],
-            [$AktuellerArtikel->kArtikel, Session::Customer()->getID()]));
+        ->assign('ratingAllowed', $ratingAllowed)
+        ->assign(
+            'oBewertung',
+            Shop::Container()->getDB()->select(
+                'tbewertung',
+                ['kArtikel', 'kKunde'],
+                [$AktuellerArtikel->kArtikel, Frontend::getCustomer()->getID()]
+            )
+        );
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     Shop::Smarty()->display('productdetails/review_form.tpl');

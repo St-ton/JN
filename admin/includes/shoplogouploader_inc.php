@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+
 /**
  * Speichert das aktuelle ShopLogo
  *
@@ -20,7 +22,7 @@ function saveShopLogo(array $cFiles_arr): int
         mkdir(PFAD_ROOT . PFAD_SHOPLOGO);
     }
     // Prüfe Dateiname
-    if (strlen($cFiles_arr['shopLogo']['name']) > 0) {
+    if (mb_strlen($cFiles_arr['shopLogo']['name']) > 0) {
         // Prüfe Dateityp
         if ($cFiles_arr['shopLogo']['type'] !== 'image/jpeg'
             && $cFiles_arr['shopLogo']['type'] !== 'image/pjpeg'
@@ -42,7 +44,7 @@ function saveShopLogo(array $cFiles_arr): int
             $option->cName                 = 'shop_logo';
             $option->cWert                 = $cFiles_arr['shopLogo']['name'];
             Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
             return 1; // Alles O.K.
         }

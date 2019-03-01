@@ -6,6 +6,9 @@
  * @created Tue, 17 Jul 2018 16:24:14 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180717162414 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Change teinstellungenconf stock descriptions';
 
     public function up()
@@ -48,5 +51,4 @@ class Migration_20180717162414 extends Migration implements IMigration
         $this->execute("UPDATE teinstellungenconf SET cBeschreibung='Ab diesem Lagerbestand steht die Lagerampel auf grün. Zwischen diesem Wert und Lagerampel grün steht die Ampel auf gelb.' WHERE kEinstellungenConf = 112");
         $this->execute("UPDATE teinstellungenconf SET cBeschreibung='Bis zu diesem Lagerbestand steht die Lagerampel auf rot. Zwischen diesem Wert und Lagerampel grün steht die Ampel auf gelb.' WHERE kEinstellungenConf = 111");
     }
-
 }

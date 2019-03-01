@@ -3,12 +3,12 @@
         {if $oWert_arr|@count > 0}
             <button type="submit" class="btn btn-primary" name="action" value="saveall">
                 <i class="fa fa-save"></i>
-                {#save#}
+                {__('save')}
             </button>
         {/if}
         <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
             <i class="fa fa-share"></i>
-            {#btnAddVar#}
+            {__('btnAddVar')}
         </a>
         {if $oWert_arr|@count > 0}
             {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
@@ -16,9 +16,9 @@
         {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
     </div>
 {/function}
-{include file='tpl_inc/seite_header.tpl' cTitel=#lang# cBeschreibung=#langDesc# cDokuURL=#langURL#}
-{assign var="cSearchString" value=$oFilter->getField(1)->getValue()}
-{assign var="bAllSections" value=((int)$oFilter->getField(0)->getValue() === 0)}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
+{assign var=cSearchString value=$oFilter->getField(1)->getValue()}
+{assign var=bAllSections value=((int)$oFilter->getField(0)->getValue() === 0)}
 <script>
     function toggleTextarea(kSektion, cWertName)
     {
@@ -39,7 +39,7 @@
             <input type="hidden" name="sprachwechsel" value="1">
             <div class="input-group p25">
                 <div class="input-group-addon">
-                    <label for="kSprache">Sprache:</label>
+                    <label for="kSprache">{__('language')}:</label>
                 </div>
                 <select id="kSprache" name="kSprache" class="form-control" onchange="this.form.submit();">
                     {foreach $oSprache_arr as $oSprache}
@@ -47,7 +47,7 @@
                                 {if (int)$smarty.session.kSprache === (int)$oSprache->kSprache}selected{/if}
                                 {if !$oSprache->bImported}class="alert-success"{/if}>
                             {$oSprache->cNameDeutsch}
-                            {if $oSprache->cShopStandard === 'Y'}(Standard){/if}
+                            {if $oSprache->cShopStandard === 'Y'}({__('standard')}){/if}
                         </option>
                     {/foreach}
                 </select>
@@ -56,10 +56,10 @@
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab {if $tab === 'variables'}active{/if}">
-            <a data-toggle="tab" href="#variables">{#langVars#}</a>
+            <a data-toggle="tab" href="#variables">{__('langVars')}</a>
         </li>
         <li class="tab {if $tab === 'notfound'}active{/if}">
-            <a data-toggle="tab" href="#notfound">{#notFoundVars#}</a>
+            <a data-toggle="tab" href="#notfound">{__('notFoundVars')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -76,9 +76,9 @@
                             <table class="list table">
                                 <thead>
                                     <tr>
-                                        {if $bAllSections}<th>{#section#}</th>{/if}
-                                        <th>{#variableName#}</th>
-                                        <th>{#variableContent#}</th>
+                                        {if $bAllSections}<th>{__('section')}</th>{/if}
+                                        <th>{__('variableName')}</th>
+                                        <th>{__('content')}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -135,9 +135,9 @@
                             </table>
                         </div>
                     {elseif $bSpracheAktiv}
-                        <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
+                        <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                     {else}
-                        <div class="alert alert-info" role="alert">{#notImportedYet#}</div>
+                        <div class="alert alert-info" role="alert">{__('notImportedYet')}</div>
                     {/if}
                     <div class="panel-footer">
                         {sprache_buttons}
@@ -151,8 +151,8 @@
                     <table class="list table">
                         <thead>
                             <tr>
-                                <th>{#section#}</th>
-                                <th>{#variableName#}</th>
+                                <th>{__('section')}</th>
+                                <th>{__('variableName')}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -164,7 +164,7 @@
                                     <td>
                                         <div class="btn-group right">
                                             <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
-                                               class="btn btn-default" title="erstellen">
+                                               class="btn btn-default" title="{__('create')}">
                                                 <i class="fa fa-plus"></i>
                                             </a>
                                         </div>
@@ -174,13 +174,13 @@
                         </tbody>
                     </table>
                 {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
                         <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
                             <i class="fa fa-refresh"></i>
-                            {#btnResetLog#}
+                            {__('btnResetLog')}
                         </a>
                     </div>
                 </div>

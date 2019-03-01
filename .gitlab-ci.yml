@@ -1,12 +1,271 @@
 stages:
+  - codeQuality
   - test
+  - cleanUpTest
   - build
+  - deploy
+  - cleanUp
+  - stagingPre
+  - staging
 
-archive:
-  stage: build
+.codeQualityScripts: &codeQualityScripts |
+  function codeQualityCheck() {
+    export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
+
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    echo "Code quality check of projekt in docker image codesniffer..."
+
+    docker run \
+      -v $(pwd):/code \
+      -w /code \
+      --name="$CI_CONTAINER_NAME" \
+      $CI_REGISTRY_IMAGE/codesniffer \
+      sh -c "bash build/scripts/global-codesniffer.sh /code"
+
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
+
+    echo "Code quality check finished"
+  }
+
+.testingScript: &testingScript |
+  export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+
+  function testing() {
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
+
+    docker run \
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME" \
+      $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
+      sh -c "cp -r /dockerBuild/. /build; bash build/scripts/tests.sh"
+
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
+
+    echo "Tests finished"
+  }
+
+.cleanUpTesting: &cleanUpTesting |
+  function failedTesting() {
+    export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+    export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
+
+    if [[ ! -z "$running" ]]; then
+      docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
+    fi
+  }
+
+.preBuildDeployScripts: &preBuildDeployScripts |
+  export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_build_deploy_$CI_COMMIT_SHA
+  export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+  export BUILD_SCRIPT_PATH=build/scripts/build.sh
+  export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
+
+  function dockerLogin() {
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
+      echo ""
+    fi
+  }
+  function codeQuality() {
+    docker run \
+      --env SOURCE_CODE="$PWD" \
+      --volume "$PWD":/code \
+      --volume /var/run/docker.sock:/var/run/docker.sock \
+      -i \
+      "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
+
+    cat gl-code-quality-report.json
+  }
+  function buildProcess() {
+    export RAND_CHAR=$(date +%s|sha256sum|head -c 6)
+    export DB_NAME="build_$RAND_CHAR"
+    export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
+    export DB_HOST="${DB_HOST_NET::-3}"
+
+    echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
+    docker run \
+      --volume $CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE:$CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE \
+      --volume $(pwd):/dockerBuild \
+      --name="$CI_CONTAINER_NAME" \
+      --network mysql-php-network \
+      $CI_REGISTRY_IMAGE/build-deploy \
+      sh -c "cp -r /dockerBuild/. /build; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
+
+    echo "Build finished"
+  }
+  function deployProcess() {
+    echo "Deploying archive to build server..."
+    docker start $CI_CONTAINER_NAME
+
+    docker exec \
+      $CI_CONTAINER_NAME \
+      /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
+
+    docker cp $CI_CONTAINER_NAME:/archive/. $CI_BUILD_SERVER_ARCHIVE_PATH
+    docker network disconnect mysql-php-network $CI_CONTAINER_NAME
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
+  }
+
+.postBuildDeployScripts: &postBuildDeployScripts |
+  function dockerLogout() {
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logout from GitLab Container Registry with CI credentials..."
+      docker logout "$CI_REGISTRY"
+      echo ""
+    fi
+  }
+
+.cleanUpScript: &cleanUpScript |
+  function failedScript() {
+    export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_build_deploy_$CI_COMMIT_SHA
+    export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
+
+    if [[ ! -z "$running" ]]; then
+      docker network disconnect mysql-php-network $CI_CONTAINER_NAME
+      docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
+    fi
+  }
+
+.devCheckoutScripts: &devCheckoutScripts |
+  export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+  export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
+
+  function downloadProcess() {
+    export RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
+    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+
+    curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $RUNNER_PATH_ZIP -d $EXTRACTION_PATH
+    rm $RUNNER_PATH_ZIP
+  }
+  function deployProcess() {
+    export PHP_VERSION=$1;
+    export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
+
+    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH;
+
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
+
+    if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
+      php -r "
+      require_once '$DEPLOY_PATH/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+          foreach (\$migrations as \$migration) { \
+              echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
+          } \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
+      ";
+    fi
+  }
+
+code_quality:
+  stage: codeQuality
   script:
-    - $CI_PROJECT_DIR/tools/create_version_string.sh "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA" "$CI_PROJECT_DIR"
-    - buildscript pipeline:shop "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_PROJECT_URL" "$CI_COMMIT_SHA"
+    - *codeQualityScripts
+    - codeQualityCheck
+  artifacts:
+    paths: [code-quality-report.txt]
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+
+test_PHP_7.2:
+  stage: test
+  variables:
+    PHP_VERSION_TEST_STEP: '7.2'
+  script:
+    - *testingScript
+    - testing
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+
+test_PHP_7.3:
+  stage: test
+  variables:
+    PHP_VERSION_TEST_STEP: '7.3'
+  script:
+    - *testingScript
+    - testing
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - build
+
+removeContainerPHP7.2:
+  stage: cleanUpTest
+  variables:
+    PHP_VERSION_TEST_STEP: '7.2'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
+
+removeContainerPHP7.3:
+  stage: cleanUpTest
+  variables:
+    PHP_VERSION_TEST_STEP: '7.3'
+  script:
+    - *cleanUpTesting
+    - failedTesting
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
+  tags:
+    - build
+
+build:
+  stage: build
+  before_script:
+    - *preBuildDeployScripts
+    - dockerLogin
+  script:
+    - buildProcess
+  after_script:
+    - *postBuildDeployScripts
+    - dockerLogout
   only:
     - master
     - /^release\/.*$/
@@ -14,35 +273,78 @@ archive:
   tags:
     - build
 
-testphp70:
-  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php70
-  stage: test
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - *preBuildDeployScripts
+    - dockerLogin
   script:
-    - cd includes
-    - php /root/composer.phar install
-    - cd ../
-    - includes/vendor/bin/phpunit tests
+    - deployProcess
+    - buildscript pipeline:shop5up "$CI_PROJECT_DIR" "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
+  after_script:
+    - *postBuildDeployScripts
+    - dockerLogout
+  only:
+    - master
+    - /^release\/.*$/
+    - tags
+  when: on_success
   tags:
-      - docker
+    - build
 
-testphp71:
-  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php71
-  stage: test
+removeContainer:
+  stage: cleanUp
   script:
-    - cd includes
-    - php /root/composer.phar install
-    - cd ../
-    - includes/vendor/bin/phpunit tests
+    - *cleanUpScript
+    - failedScript
+  only:
+    - master
+    - /^release\/.*$/
+    - tags
+  when: on_failure
   tags:
-      - docker
+    - build
 
-testphp72:
-  image: gitlab.jtl-software.de:4567/jtlshop/shop4/php72
-  stage: test
+stagingPreDeploy:
+  stage: stagingPre
+  variables:
+    GIT_STRATEGY: none
   script:
-    - cd includes
-    - php /root/composer.phar install
-    - cd ../
-    - includes/vendor/bin/phpunit tests
+    - *devCheckoutScripts
+    - downloadProcess
+  only:
+    - master
   tags:
-      - docker
+    - dev-checkout
+
+stagingDevPhp72:
+  stage: staging
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - deployProcess 72
+  environment:
+    name: staging master php 7.2
+    url: https://$STAGING_USER-72-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout
+
+stagingDevPhp73:
+  stage: staging
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - deployProcess 73
+  environment:
+    name: staging master php 7.3
+    url: https://$STAGING_USER-73-master.$STAGING_DOMAIN
+  only:
+    - master
+  tags:
+    - dev-checkout

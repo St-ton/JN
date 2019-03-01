@@ -3,18 +3,25 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
+
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$cSetting = '(469, 470)';
-// Tabs
-if (strlen(RequestHelper::verifyGPDataString('tab')) > 0) {
-    $smarty->assign('cTab', RequestHelper::verifyGPDataString('tab'));
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$cSetting    = '(469, 470)';
+$alertHelper = Shop::Container()->getAlertService();
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+    $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-// Zeitfilter
 if (!isset($_SESSION['Vergleichsliste'])) {
     $_SESSION['Vergleichsliste'] = new stdClass();
 }
@@ -29,17 +36,17 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
         : 0;
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && FormHelper::validateToken()) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
     $oConfig_arr = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconf
             WHERE (
-                kEinstellungenConf IN " . $cSetting . " 
-                OR kEinstellungenSektion = " . CONF_VERGLEICHSLISTE . "
+                kEinstellungenConf IN ' . $cSetting . ' 
+                OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . "
                 )
                 AND cConf = 'Y'
             ORDER BY nSort",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
@@ -56,7 +63,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
                 $aktWert->cWert = (int)$aktWert->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                 break;
         }
         Shop::Container()->getDB()->delete(
@@ -67,7 +74,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
         Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
     }
 
-    $cHinweis .= 'Ihre Einstellungen wurden übernommen.';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 
@@ -79,7 +86,7 @@ $oConfig_arr = Shop::Container()->getDB()->query(
                 OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
                )
         ORDER BY nSort',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
@@ -91,8 +98,9 @@ for ($i = 0; $i < $configCount; $i++) {
             '*',
             'nSort'
         );
+        Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
     }
-    $oSetValue = Shop::Container()->getDB()->select(
+    $oSetValue                      = Shop::Container()->getDB()->select(
         'teinstellungen',
         'kEinstellungenSektion',
         (int)$oConfig_arr[$i]->kEinstellungenSektion,
@@ -100,65 +108,60 @@ for ($i = 0; $i < $configCount; $i++) {
         $oConfig_arr[$i]->cWertName
     );
     $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
+    Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
 }
 
-$smarty->assign('oConfig_arr', $oConfig_arr);
-// Max Anzahl Vergleiche
 $oVergleichAnzahl = Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tvergleichsliste',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
-// Pagination
-$oPagination = (new Pagination())
+$oPagination      = (new Pagination())
     ->setItemCount($oVergleichAnzahl->nAnzahl)
     ->assemble();
-// Letzten 20 Vergleiche
-$oLetzten20Vergleichsliste_arr = Shop::Container()->getDB()->query(
+$last20           = Shop::Container()->getDB()->query(
     "SELECT kVergleichsliste, DATE_FORMAT(dDate, '%d.%m.%Y  %H:%i') AS Datum
         FROM tvergleichsliste
         ORDER BY dDate DESC
         LIMIT " . $oPagination->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
-if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste_arr) > 0) {
-    $oLetzten20VergleichslistePos_arr = [];
-    foreach ($oLetzten20Vergleichsliste_arr as $oLetzten20Vergleichsliste) {
-        $oLetzten20VergleichslistePos_arr = Shop::Container()->getDB()->selectAll(
+if (is_array($last20) && count($last20) > 0) {
+    $positions = [];
+    foreach ($last20 as $oLetzten20Vergleichsliste) {
+        $positions                                                   = Shop::Container()->getDB()->selectAll(
             'tvergleichslistepos',
             'kVergleichsliste',
             (int)$oLetzten20Vergleichsliste->kVergleichsliste,
             'kArtikel, cArtikelName'
         );
-        $oLetzten20Vergleichsliste->oLetzten20VergleichslistePos_arr = $oLetzten20VergleichslistePos_arr;
+        $oLetzten20Vergleichsliste->oLetzten20VergleichslistePos_arr = $positions;
     }
 }
-// Top Vergleiche
-$oTopVergleichsliste_arr = Shop::Container()->getDB()->query(
+$topComparisons = Shop::Container()->getDB()->query(
     'SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
         tvergleichslistepos.cArtikelName, COUNT(tvergleichslistepos.kArtikel) AS nAnzahl
         FROM tvergleichsliste
         JOIN tvergleichslistepos 
             ON tvergleichsliste.kVergleichsliste = tvergleichslistepos.kVergleichsliste
-        WHERE DATE_SUB(NOW(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) < tvergleichsliste.dDate
+        WHERE DATE_SUB(NOW(), INTERVAL ' . (int)$_SESSION['Vergleichsliste']->nZeitFilter . ' DAY) 
+            < tvergleichsliste.dDate
         GROUP BY tvergleichslistepos.kArtikel
         ORDER BY nAnzahl DESC
         LIMIT ' . (int)$_SESSION['Vergleichsliste']->nAnzahl,
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
-// Top Vergleiche Graph
-if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {
-    erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr);
+if (is_array($topComparisons) && count($topComparisons) > 0) {
+    erstelleDiagrammTopVergleiche($topComparisons);
 }
 
-$smarty->assign('Letzten20Vergleiche', $oLetzten20Vergleichsliste_arr)
-    ->assign('TopVergleiche', $oTopVergleichsliste_arr)
-    ->assign('oPagination', $oPagination)
-    ->assign('sprachen', Sprache::getAllLanguages())
-    ->assign('hinweis', $cHinweis)
-    ->assign('fehler', $cFehler)
-    ->display('vergleichsliste.tpl');
+$smarty->assign('Letzten20Vergleiche', $last20)
+       ->assign('TopVergleiche', $topComparisons)
+       ->assign('oPagination', $oPagination)
+       ->assign('sprachen', Sprache::getAllLanguages())
+       ->assign('oConfig_arr', $oConfig_arr)
+       ->display('vergleichsliste.tpl');
 
 /**
  * @param array $oTopVergleichsliste_arr
@@ -188,7 +191,7 @@ function erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr)
         if (count($nYmax_arr) > 0) {
             $fMax = (float)max($nYmax_arr);
             if ($fMax > 10) {
-                $temp  = pow(10, floor(log10($fMax)));
+                $temp  = 10 ** floor(log10($fMax));
                 $nYmax = ceil($fMax / $temp) * $temp;
             } else {
                 $nYmax = 10;
@@ -211,9 +214,9 @@ function checkName($cName)
 {
     $cName = stripslashes(trim(str_replace([';', '_', '#', '%', '$', ':', '"'], '', $cName)));
 
-    if (strlen($cName) > 20) {
+    if (mb_strlen($cName) > 20) {
         // Wenn der String laenger als 20 Zeichen ist
-        $cName = substr($cName, 0, 20) . '...';
+        $cName = mb_substr($cName, 0, 20) . '...';
     }
 
     return $cName;

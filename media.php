@@ -3,9 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Request;
+use JTL\Media\Media;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 set_exception_handler(function ($e) {
-    header(RequestHelper::makeHTTPHeader(404));
+    header(Request::makeHTTPHeader(404));
     echo $e->getMessage();
     exit;
 });
@@ -18,4 +22,4 @@ if (!isset($_GET['img'], $_GET['a']) || !is_array($_GET['img'])) {
     throw new InvalidArgumentException('Missing arguments');
 }
 
-Shop::Media();
+Media::getInstance();

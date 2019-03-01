@@ -4,20 +4,45 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation;
+namespace JTL\Services\JTL\Validation;
+
+use Exception;
+use InvalidArgumentException;
 
 /**
  * Class ValidationService
- * @package Services\JTL\Validation
+ * @package JTL\Services\JTL\Validation
  */
 class ValidationService implements ValidationServiceInterface
 {
+    /**
+     * @var array
+     */
     protected $ruleSets = [];
+
+    /**
+     * @var array
+     */
     protected $fieldDefinitions = [];
+
+    /**
+     * @var array
+     */
     protected $classDefinitions = [];
 
+    /**
+     * @var array
+     */
     protected $get;
+
+    /**
+     * @var array
+     */
     protected $post;
+
+    /**
+     * @var array
+     */
     protected $cookie;
 
     /**
@@ -36,7 +61,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function getRuleSet(string $name)
+    public function getRuleSet(string $name): RuleSet
     {
         return $this->ruleSets[$name];
     }
@@ -44,7 +69,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function setRuleSet(string $name, RuleSet $ruleSet)
+    public function setRuleSet(string $name, RuleSet $ruleSet): void
     {
         $this->ruleSets[$name] = $ruleSet;
     }
@@ -52,17 +77,17 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    public function validate($value, $ruleSet)
+    public function validate($value, $ruleSet): ValidationResultInterface
     {
         if ($ruleSet instanceof RuleSet) {
-            return $this->_validate($value, $ruleSet);
+            return $this->validateRuleSet($value, $ruleSet);
         }
 
         if (isset($this->ruleSets[$ruleSet])) {
-            return $this->_validate($value, $this->ruleSets[$ruleSet]);
+            return $this->validateRuleSet($value, $this->ruleSets[$ruleSet]);
         }
 
-        throw new \InvalidArgumentException('Invalid RuleSet');
+        throw new InvalidArgumentException('Invalid RuleSet');
     }
 
     /**
@@ -70,7 +95,7 @@ class ValidationService implements ValidationServiceInterface
      * @param RuleSet $ruleSet
      * @return ValidationResult
      */
-    protected function _validate($value, RuleSet $ruleSet)
+    protected function validateRuleSet($value, RuleSet $ruleSet): ValidationResult
     {
         $result        = new ValidationResult($value);
         $filteredValue = $value;
@@ -192,11 +217,11 @@ class ValidationService implements ValidationServiceInterface
     {
         $keyDiff = \array_diff(\array_keys($set), \array_keys($rulesConfig));
         if (!empty($keyDiff)) {
-            throw new \Exception("RulesConfig/Set mismatch detected");
+            throw new Exception('RulesConfig/Set mismatch detected');
         }
         foreach ($set as $index => $value) {
             if (\is_array($value) || \is_object($value)) {
-                throw new \Exception("Nested sets are not supported right now");
+                throw new Exception('Nested sets are not supported right now');
             }
         }
 
@@ -237,7 +262,7 @@ class ValidationService implements ValidationServiceInterface
     /**
      * @inheritdoc
      */
-    protected function createMissingResult()
+    protected function createMissingResult(): ValidationResult
     {
         $result = new ValidationResult(null);
         $result->setValue(null);

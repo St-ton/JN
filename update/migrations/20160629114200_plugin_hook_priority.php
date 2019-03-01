@@ -6,6 +6,9 @@
  * @created Wed, 29 Jun 2016 11:42:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,11 +29,11 @@ class Migration_20160629114200 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tpluginhook` ADD COLUMN `nPriority` INT(10) NULL DEFAULT 5");
+        $this->execute('ALTER TABLE `tpluginhook` ADD COLUMN `nPriority` INT(10) NULL DEFAULT 5');
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tpluginhook` DROP COLUMN `nPriority`");
+        $this->execute('ALTER TABLE `tpluginhook` DROP COLUMN `nPriority`');
     }
 }

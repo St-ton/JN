@@ -4,12 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\TrustedShops;
 
 /**
  * Class TrustedShopsSeal
- * @package Boxes
+ *
+ * @package JTL\Boxes\Items
  */
 final class TrustedShopsSeal extends AbstractBox
 {
@@ -34,22 +38,22 @@ final class TrustedShopsSeal extends AbstractBox
     private $backGroundImageURL = '';
 
     /**
-     * DirectPurchase constructor.
+     * TrustedShopsSeal constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
         parent::__construct($config);
-        parent::addMapping('cLogoURL', 'LogoURL');
-        parent::addMapping('cLogoSiegelBoxURL', 'LogoSealURL');
-        parent::addMapping('cBild', 'ImageURL');
-        parent::addMapping('cBGBild', 'BackGroundImageURL');
+        $this->addMapping('cLogoURL', 'LogoURL');
+        $this->addMapping('cLogoSiegelBoxURL', 'LogoSealURL');
+        $this->addMapping('cBild', 'ImageURL');
+        $this->addMapping('cBGBild', 'BackGroundImageURL');
         $this->setShow(false);
         if ($config['trustedshops']['trustedshops_nutzen'] === 'Y') {
-            $langISO = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
-            $shopURL = \Shop::getURL(true) . '/';
-            $ts      = new \TrustedShops(-1, $langISO);
-            if ((int)$ts->nAktiv === 1 && !empty($ts->cLogoURL) && \strlen($ts->tsId) > 0) {
+            $langISO = Text::convertISO2ISO639(Shop::getLanguageCode());
+            $shopURL = Shop::getURL(true) . '/';
+            $ts      = new TrustedShops(-1, $langISO);
+            if ((int)$ts->nAktiv === 1 && !empty($ts->cLogoURL) && \mb_strlen($ts->tsId) > 0) {
                 $this->setShow(true);
                 $this->setLogoURL($ts->cLogoURL);
                 $this->setLogoSealURL($ts->cLogoSiegelBoxURL[$langISO]);
@@ -70,7 +74,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $logoURL
      */
-    public function setLogoURL(string $logoURL)
+    public function setLogoURL(string $logoURL): void
     {
         $this->logoURL = $logoURL;
     }
@@ -86,7 +90,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $logoSealURL
      */
-    public function setLogoSealURL(string $logoSealURL)
+    public function setLogoSealURL(string $logoSealURL): void
     {
         $this->logoSealURL = $logoSealURL;
     }
@@ -102,7 +106,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $imageURL
      */
-    public function setImageURL(string $imageURL)
+    public function setImageURL(string $imageURL): void
     {
         $this->imageURL = $imageURL;
     }
@@ -118,7 +122,7 @@ final class TrustedShopsSeal extends AbstractBox
     /**
      * @param string $backGroundImageURL
      */
-    public function setBackGroundImageURL(string $backGroundImageURL)
+    public function setBackGroundImageURL(string $backGroundImageURL): void
     {
         $this->backGroundImageURL = $backGroundImageURL;
     }

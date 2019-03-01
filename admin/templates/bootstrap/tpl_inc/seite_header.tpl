@@ -17,25 +17,14 @@
                         <i class="fa fa-medkit" aria-hidden="true"></i>
                     </a>
                 {/if}
-                <a href="favs.php" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zu Favoriten hinzuf&uuml;gen" id="fav-add"><i class="fa fa-star" aria-hidden="true"></i></a>
+                <a href="favs.php" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zu Favoriten hinzufügen" id="fav-add"><i class="fa fa-star" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
-    {if isset($oPlugin)}
-        <p><strong>{#pluginAuthor#}:</strong> {$oPlugin->cAutor}</p>
-        <p><strong>{#pluginHomepage#}:</strong> <a href="{$oPlugin->cURL}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {$oPlugin->cURL}</a></p>
-        <p><strong>{#pluginVersion#}:</strong> {$oPlugin->nVersion}</p>
-        <p><strong>{#pluginDesc#}:</strong> {$oPlugin->cBeschreibung}</p>
+    {if isset($pluginMeta)}
+        <p><strong>{__('pluginAuthor')}:</strong> {$pluginMeta->getAuthor()}</p>
+        <p><strong>{__('pluginHomepage')}:</strong> <a href="{$pluginMeta->getURL()}" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> {$pluginMeta->getURL()}</a></p>
+        <p><strong>{__('pluginVersion')}:</strong> {$pluginMeta->getVersion()}</p>
+        <p><strong>{__('description')}:</strong> {$pluginMeta->getDescription()}</p>
     {/if}
 </div>
-{if isset($cHinweis) && $cHinweis|strlen > 0}
-    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$cHinweis}</div>
-{elseif isset($hinweis) && $hinweis|strlen > 0}
-    <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$hinweis}</div>
-{/if}
-
-{if isset($cFehler) && $cFehler|strlen > 0}
-    <div class="alert alert-danger"><i class="fa fa-warning"></i> {$cFehler}</div>
-{elseif isset($fehler) && $fehler|strlen > 0}
-    <div class="alert alert-danger"><i class="fa fa-warning"></i> {$fehler}</div>
-{/if}

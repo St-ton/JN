@@ -4,17 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
+use JTL\Catalog\Product\Artikel;
+use JTL\Session\Frontend;
 
 /**
  * Class RecentlyViewedProducts
- * @package Boxes
+ * @package JTL\Boxes\Items
  */
 final class RecentlyViewedProducts extends AbstractBox
 {
     /**
-     * Cart constructor.
+     * RecentlyViewedProducts constructor.
      * @param array $config
      */
     public function __construct(array $config)
@@ -24,12 +26,12 @@ final class RecentlyViewedProducts extends AbstractBox
         if (isset($_SESSION['ZuletztBesuchteArtikel'])
             && \is_array($_SESSION['ZuletztBesuchteArtikel'])
             && \count($_SESSION['ZuletztBesuchteArtikel']) > 0
-            && \Session::CustomerGroup()->mayViewCategories()
+            && Frontend::getCustomerGroup()->mayViewCategories()
         ) {
             $products       = [];
-            $defaultOptions = \Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $oArtikel) {
-                $product = new \Artikel();
+                $product = new Artikel();
                 $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                 if ($product->kArtikel > 0) {
                     $products[$i] = $product;

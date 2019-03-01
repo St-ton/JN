@@ -10,7 +10,7 @@ define('IPL_CORE_HTTP_REQUEST_CHAR_SET', 'UTF-8');
 
 # HTTP_CLIENT may be defined by TestRunner
 if (!defined('IPL_CORE_HTTP_CLIENT')) {
-    define('IPL_CORE_HTTP_CLIENT', "curl");
+    define('IPL_CORE_HTTP_CLIENT', 'curl');
 }
 
 define('IPL_CORE_XML_PARSER', 'xmlParser');
@@ -225,8 +225,8 @@ function ipl_core_send_socket_request($requestUrl, $requestData, $basicAuthParam
         fwrite($socket, "User-Agent: Billpay PHP core client\r\n");
         fwrite($socket, "Host: $host\r\n");
         fwrite($socket, "Accept: text/xml\r\n");
-        fwrite($socket, "Content-type: text/xml; charset=" . IPL_CORE_HTTP_REQUEST_CHAR_SET . "\r\n");
-        fwrite($socket, "Content-length: " . strlen($requestData) . "\r\n");
+        fwrite($socket, 'Content-type: text/xml; charset=' . IPL_CORE_HTTP_REQUEST_CHAR_SET . "\r\n");
+        fwrite($socket, 'Content-length: ' . strlen($requestData) . "\r\n");
 
         if ($basicAuthParams !== null) {
             $user = $basicAuthParams['username'];
@@ -363,13 +363,13 @@ function ipl_core_parse_result($responseData, $requestData, $redirects = 0)
                         if ($line === false || strlen($line) === 0) {
                             break;
                         } else {
-                            $chunk .= $line;
+                            $chunk      .= $line;
                             $readLength -= strlen($line);
                         }
                     }
 
                     $chunk .= @fgets($socket);
-                    $data .= $chunk;
+                    $data  .= $chunk;
                 } while ($chunksize > 0);
 
                 $data = ipl_core_decode_chunked_body($data);
@@ -383,7 +383,7 @@ function ipl_core_parse_result($responseData, $requestData, $redirects = 0)
                         break;
                     } else {
                         $readLength -= strlen($chunk);
-                        $data .= $chunk;
+                        $data       .= $chunk;
                     }
                 }
             } else {
@@ -437,7 +437,7 @@ function ipl_core_extract_headers($response_str)
             break;
         }
 
-        if (preg_match("|^([\w-]+):\s+(.+)|", $line, $m)) {
+        if (preg_match('|^([\w-]+):\s+(.+)|', $line, $m)) {
             unset($last_header);
             $h_name  = strtolower($m[1]);
             $h_value = $m[2];
@@ -452,10 +452,10 @@ function ipl_core_extract_headers($response_str)
                 $headers[$h_name] = $h_value;
             }
             $last_header = $h_name;
-        } elseif ($last_header !== null && preg_match("|^\s+(.+)$|", $line, $m)) {
+        } elseif ($last_header !== null && preg_match('|^\s+(.+)$|', $line, $m)) {
             if (is_array($headers[$last_header])) {
                 end($headers[$last_header]);
-                $last_header_key = key($headers[$last_header]);
+                $last_header_key                          = key($headers[$last_header]);
                 $headers[$last_header][$last_header_key] .= $m[1];
             } else {
                 $headers[$last_header] .= $m[1];
@@ -479,7 +479,7 @@ function ipl_core_decode_chunked_body($body)
         $cut    = strlen($m[0]);
 
         $decBody .= substr($body, $cut, $length);
-        $body = substr($body, $cut + $length + 2);
+        $body     = substr($body, $cut + $length + 2);
     }
 
     return $decBody;
@@ -502,7 +502,6 @@ function ipl_core_load_xml($xmlDataString)
 
     switch (IPL_CORE_XML_PARSER) {
         case 'simpleXml':
-
             if (!function_exists('simplexml_load_string')) {
                 $ipl_core_error_code = 15;
                 $ipl_core_error_msg  = 'simpleXml lib has not been loaded';
@@ -721,7 +720,7 @@ function ipl_core_build_attr_list_tag($tagName, $attributes, $childTagName, $chi
 function ipl_core_build_list($tagName, $attributes)
 {
     $list = '';
-    foreach ((array) $attributes as $attribute) {
+    foreach ((array)$attributes as $attribute) {
         $list .= '<' . $tagName . ' ' . ipl_core_build_attr_string($attribute) . '/>';
     }
 
@@ -735,11 +734,11 @@ function ipl_core_build_list($tagName, $attributes)
  */
 function ipl_core_build_attr_string($a)
 {
-    $attr_str = "";
+    $attr_str = '';
 
     if (count($a) > 0) {
         foreach ($a as $key => $value) {
-            $attr_str = "$attr_str$key=\"" . ipl_core_xml_escape($value) . "\" ";
+            $attr_str = "$attr_str$key=\"" . ipl_core_xml_escape($value) . '" ';
         }
     }
 
@@ -755,12 +754,12 @@ function ipl_core_build_request_xml($attributes, $content)
 {
     $attributes['api_version'] = IPL_CORE_API_VERSION;
 
-    $xml = "<data";
+    $xml = '<data';
     foreach ($attributes as $name => $value) {
-        $xml .= " $name=\"" . ipl_core_get_attribute_value($value) . "\"";
+        $xml .= " $name=\"" . ipl_core_get_attribute_value($value) . '"';
     }
 
-    $xml .= ">" . implode('', $content) . "</data>";
+    $xml .= '>' . implode('', $content) . '</data>';
 
     return IPL_CORE_XML_PROLOG . $xml;
 }
@@ -772,8 +771,8 @@ function ipl_core_build_request_xml($attributes, $content)
  */
 function ipl_core_xml_escape($value)
 {
-    $search  = ["&", "\"", "<", ">", "'"];
-    $replace = ["&amp;", "&quot;", "&lt;", "&gt;", "&apos;"];
+    $search  = ['&', '"', '<', '>', "'"];
+    $replace = ['&amp;', '&quot;', '&lt;', '&gt;', '&apos;'];
 
     return str_replace($search, $replace, $value);
 }
@@ -830,7 +829,7 @@ function ipl_core_build_closed_ctag($tagName, $a)
  */
 function ipl_core_build_ctag_string($a)
 {
-    return "<![CDATA[" . $a . "]]>";
+    return '<![CDATA[' . $a . ']]>';
 }
 
 /**
@@ -841,7 +840,7 @@ function ipl_core_build_ctag_string($a)
 function ipl_core_build_open_tag($sTagName, $aAttributes = [])
 {
     if (empty($aAttributes)) {
-        $sAttributes = "";
+        $sAttributes = '';
     } else {
         $sAttributes = ' ' . ipl_core_build_attr_string($aAttributes);
     }
@@ -1507,13 +1506,13 @@ function ipl_core_parse_instalment_information($xml, $data)
         $instalmentPlan             = $xml->instl_plan[0];
         $data['instalment_count']   = (int)$instalmentPlan->tagAttrs['num_inst'];
         $data['duration']           = (int)$instalmentPlan->calc[0]->duration[0]->tagData;
-        $data['fee_percent']        = (float) $instalmentPlan->calc[0]->fee_percent[0]->tagData;
+        $data['fee_percent']        = (float)$instalmentPlan->calc[0]->fee_percent[0]->tagData;
         $data['fee_total']          = (int)$instalmentPlan->calc[0]->fee_total[0]->tagData;
         $data['pre_payment_amount'] = (int)$instalmentPlan->calc[0]->pre_payment[0]->tagData;
         $data['total_amount']       = (int)$instalmentPlan->calc[0]->total_amount[0]->tagData;
-        $data['effective_annual']   = (float) $instalmentPlan->calc[0]->eff_anual[0]->tagData;
+        $data['effective_annual']   = (float)$instalmentPlan->calc[0]->eff_anual[0]->tagData;
         // TODO: this should be (int)round(100*float) to be consistent
-        $data['nominal_annual'] = (float) $instalmentPlan->calc[0]->nominal[0]->tagData;
+        $data['nominal_annual'] = (float)$instalmentPlan->calc[0]->nominal[0]->tagData;
         // TODO: response should include surcharge, base_amount and cart_amount to be consistent
 
         // parse the instalment list
@@ -1629,16 +1628,16 @@ function ipl_core_parse_get_billpay_bank_data_response($xml)
     $data = [];
     switch (IPL_CORE_XML_PARSER) {
         case 'simpleXml';
-        if ($xml->invoice_bank_account) {
-            $invoiceAttr                  = $xml->invoice_bank_account->attributes();
-            $data['account_holder']       = (string)$invoiceAttr->account_holder;
-            $data['account_number']       = (string)$invoiceAttr->account_number;
-            $data['bank_code']            = (string)$invoiceAttr->bank_code;
-            $data['bank_name']            = (string)$invoiceAttr->bank_name;
-            $data['invoice_reference']    = (string)$invoiceAttr->invoice_reference;
-            $data['invoice_duedate']      = (string)$invoiceAttr->invoice_duedate;
-            $data['activation_performed'] = (int)$invoiceAttr->activation_performed;
-        }
+            if ($xml->invoice_bank_account) {
+                $invoiceAttr                  = $xml->invoice_bank_account->attributes();
+                $data['account_holder']       = (string)$invoiceAttr->account_holder;
+                $data['account_number']       = (string)$invoiceAttr->account_number;
+                $data['bank_code']            = (string)$invoiceAttr->bank_code;
+                $data['bank_name']            = (string)$invoiceAttr->bank_name;
+                $data['invoice_reference']    = (string)$invoiceAttr->invoice_reference;
+                $data['invoice_duedate']      = (string)$invoiceAttr->invoice_duedate;
+                $data['activation_performed'] = (int)$invoiceAttr->activation_performed;
+            }
             break;
         case 'xmlParser';
             if (isset($xml->bank_account)) {
@@ -1881,7 +1880,7 @@ function ipl_core_parse_transaction_credit_option($optionTag)
 function ipl_core_send_module_config_request($requestUrlBase, $aTraceData, $defaultParams, $locale)
 {
     $sTraceDataXml    = ipl_core_build_closed_tag('trace', $aTraceData);
-    $defaultParamsXml = ipl_core_build_closed_tag("default_params", $defaultParams);
+    $defaultParamsXml = ipl_core_build_closed_tag('default_params', $defaultParams);
     $localeXml        = ipl_core_build_closed_tag('locale', $locale);
 
     return ipl_core_generic_send_request(
@@ -1917,9 +1916,24 @@ function ipl_core_send_module_config_request($requestUrlBase, $aTraceData, $defa
  * @param $asyncCaptureParams
  * @return array|bool
  */
-function ipl_core_send_preauthorize_request($requestUrlBase, $attributes, $aTraceData, $defaultParams, $preauthParams,
-    $customerDetails, $shippingDetails, $bankAccount, $totals, $articleData, $orderHistoryData, $orderHistoryDataContent,
-    $rateRequestData, $companyDetails, $paymentInfoParams, $fraudDetectionParams, $asyncCaptureParams
+function ipl_core_send_preauthorize_request(
+    $requestUrlBase,
+    $attributes,
+    $aTraceData,
+    $defaultParams,
+    $preauthParams,
+    $customerDetails,
+    $shippingDetails,
+    $bankAccount,
+    $totals,
+    $articleData,
+    $orderHistoryData,
+    $orderHistoryDataContent,
+    $rateRequestData,
+    $companyDetails,
+    $paymentInfoParams,
+    $fraudDetectionParams,
+    $asyncCaptureParams
 ) {
     $sTraceDataXml      = ipl_core_build_closed_tag('trace', $aTraceData);
     $defaultParamsXml   = ipl_core_build_closed_tag('default_params', $defaultParams);
@@ -1937,9 +1951,9 @@ function ipl_core_send_preauthorize_request($requestUrlBase, $attributes, $aTrac
         'order_history',
         $orderHistoryDataContent
     );
-    $paymentInfoXml    = ipl_core_build_closed_tag('payment_info', $paymentInfoParams);
-    $fraudDetectionXml = ipl_core_build_closed_tag('fraud_detection', $fraudDetectionParams);
-    $asyncCaptureXml   = ipl_core_build_list_ctag('async_capture_request', $asyncCaptureParams);
+    $paymentInfoXml     = ipl_core_build_closed_tag('payment_info', $paymentInfoParams);
+    $fraudDetectionXml  = ipl_core_build_closed_tag('fraud_detection', $fraudDetectionParams);
+    $asyncCaptureXml    = ipl_core_build_list_ctag('async_capture_request', $asyncCaptureParams);
 
     return ipl_core_generic_send_request(
         $requestUrlBase,
@@ -1981,9 +1995,20 @@ function ipl_core_send_preauthorize_request($requestUrlBase, $attributes, $aTrac
  * @param $fraudDetectionParams
  * @return array|bool
  */
-function ipl_core_send_prescore_request($requestUrlBase, $attributes, $aTraceData, $defaultParams, $customerDetails,
-        $shippingDetails, $totals, $articleData, $orderHistoryData, $orderHistoryDataContent,
-        $companyDetails, $paymentInfoParams, $fraudDetectionParams
+function ipl_core_send_prescore_request(
+    $requestUrlBase,
+    $attributes,
+    $aTraceData,
+    $defaultParams,
+    $customerDetails,
+    $shippingDetails,
+    $totals,
+    $articleData,
+    $orderHistoryData,
+    $orderHistoryDataContent,
+    $companyDetails,
+    $paymentInfoParams,
+    $fraudDetectionParams
 ) {
     $sTraceDataXml      = ipl_core_build_closed_tag('trace', $aTraceData);
     $defaultParamsXml   = ipl_core_build_closed_tag('default_params', $defaultParams);
@@ -1998,14 +2023,14 @@ function ipl_core_send_prescore_request($requestUrlBase, $attributes, $aTraceDat
         'order_history',
         $orderHistoryDataContent
     );
-    $paymentInfoXml    = ipl_core_build_closed_tag('payment_info', $paymentInfoParams);
-    $fraudDetectionXml = ipl_core_build_closed_tag('fraud_detection', $fraudDetectionParams);
+    $paymentInfoXml     = ipl_core_build_closed_tag('payment_info', $paymentInfoParams);
+    $fraudDetectionXml  = ipl_core_build_closed_tag('fraud_detection', $fraudDetectionParams);
 
     return ipl_core_generic_send_request(
-            $requestUrlBase,
-            'prescore',
-            $attributes,
-            [
+        $requestUrlBase,
+        'prescore',
+        $attributes,
+        [
                     $sTraceDataXml,
                     $defaultParamsXml,
                     $customerDetailsXml,
@@ -2017,7 +2042,7 @@ function ipl_core_send_prescore_request($requestUrlBase, $attributes, $aTraceDat
                     $paymentInfoXml,
                     $fraudDetectionXml
             ],
-            'ipl_core_parse_prescore_response'
+        'ipl_core_parse_prescore_response'
     );
 }
 
@@ -2029,8 +2054,12 @@ function ipl_core_send_prescore_request($requestUrlBase, $attributes, $aTraceDat
  * @param $shipppingDetails
  * @return array|bool
  */
-function ipl_core_send_validation_request($requestUrlBase, $aTraceData, $defaultParams, $customerDetails,
-        $shipppingDetails
+function ipl_core_send_validation_request(
+    $requestUrlBase,
+    $aTraceData,
+    $defaultParams,
+    $customerDetails,
+    $shipppingDetails
 ) {
     $sTraceDataXml      = ipl_core_build_closed_tag('trace', $aTraceData);
     $defaultParamsXml   = ipl_core_build_closed_tag('default_params', $defaultParams);
@@ -2089,9 +2118,14 @@ function ipl_core_send_capture_request($requestUrlBase, $aTraceData, $defaultPar
  * @param null|array $articleData
  * @return array|bool
  */
-function ipl_core_send_invoice_request($requestUrlBase, $aTraceData, $defaultParams, $invoiceParams, $paymentInfoParams,
-        $articleData = null)
-{
+function ipl_core_send_invoice_request(
+    $requestUrlBase,
+    $aTraceData,
+    $defaultParams,
+    $invoiceParams,
+    $paymentInfoParams,
+    $articleData = null
+) {
     $sTraceDataXml        = ipl_core_build_closed_tag('trace', $aTraceData);
     $defaultParamsXml     = ipl_core_build_closed_tag('default_params', $defaultParams);
     $invoiceParamsXml     = ipl_core_build_closed_tag('invoice_params', $invoiceParams);
@@ -2218,8 +2252,12 @@ function ipl_core_send_get_billpay_bank_data_request($requestUrlBase, $aTraceDat
  * @param $cancelledArticles
  * @return array|bool
  */
-function ipl_core_send_partialcancel_request($requestUrlBase, $aTraceData, $defaultParams, $cancelParams,
-        $cancelledArticles
+function ipl_core_send_partialcancel_request(
+    $requestUrlBase,
+    $aTraceData,
+    $defaultParams,
+    $cancelParams,
+    $cancelledArticles
 ) {
     $sTraceDataXml        = ipl_core_build_closed_tag('trace', $aTraceData);
     $defaultParamsXml     = ipl_core_build_closed_tag('default_params', $defaultParams);
@@ -2278,8 +2316,13 @@ function ipl_core_send_calculate_rates_request($requestUrlBase, $aTraceData, $de
  * @param null|array $invoiceList
  * @return array|bool
  */
-function ipl_core_send_edit_cart_content_request($requestUrlBase, $aTraceData, $defaultParams, $totals, $articleData,
-        $invoiceList = null
+function ipl_core_send_edit_cart_content_request(
+    $requestUrlBase,
+    $aTraceData,
+    $defaultParams,
+    $totals,
+    $articleData,
+    $invoiceList = null
 ) {
     $sTraceDataXml    = ipl_core_build_closed_tag('trace', $aTraceData);
     $defaultParamsXml = ipl_core_build_closed_tag('default_params', $defaultParams);
@@ -2753,7 +2796,7 @@ class XMLTag
 
         //If there are no children and it contains no data, end it off with a />
         if (empty($this->tagChildren) && empty($this->tagData)) {
-            $out .= " />";
+            $out .= ' />';
         }
 
         //Otherwise...

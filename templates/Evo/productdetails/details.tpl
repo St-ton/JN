@@ -2,35 +2,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($boxes)}{* only available in shop versions > 3.19 *}
-    {has_boxes position='left' assign='hasLeftBox'}
-{/if}
-{if !empty($hinweis)}
-    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-        {include file='productdetails/pushed_success.tpl'}
-    {else}
-        <div class="alert alert-success">
-            {$hinweis}
-        </div>
-    {/if}
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">
-        {$fehler}
-    </div>
-{/if}
-{if !empty($ProdukttagHinweis)}
-    <div class="alert alert-success">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        {$ProdukttagHinweis}
-    </div>
-{/if}
-{if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-    {foreach $PositiveFeedback as $feedback}
-        <div class="alert alert-success">{$feedback}</div>
-    {/foreach}
+{has_boxes position='left' assign='hasLeftBox'}
+{if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+    {include file='productdetails/pushed_success.tpl'}
+{else}
+    {$alertList->displayAlertByKey('productNote')}
 {/if}
 {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
     {foreach $Artikelhinweise as $Artikelhinweis}
@@ -45,10 +21,10 @@
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate">
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
-        <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
+        <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
             {include file='productdetails/image.tpl'}
         </div>
-        <div class="product-info{if $hasLeftBox} col-sm-7{else} col-sm-6{/if}">
+        <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
             {block name='productdetails-info'}
             <div class="product-info-inner">
                 {block name='productdetails-info-manufacturer-wrapper'}

@@ -19,11 +19,11 @@
         <div class="col-sm-2">
             {if $nPage === 0}
                 {if $oBox->getFilter($nPage) === true}
-                    sichtbar auf allen Seiten
+                    {__('visibleOnAllPages')}
                 {elseif empty($oBox->getFilter($nPage))}
-                   auf allen Seiten deaktiviert
+                    {__('deactivatedOnAllPages')}
                 {else}
-                    sichtbar auf manchen Seiten
+                    {__('visibleOnSomePages')}
                 {/if}
             {else}
                 <ul class="box-active-filters" id="box-active-filters-{$oBox->getID()}">
@@ -48,25 +48,25 @@
         <div class="col-sm-2 col-xs-6 btn-group">
             <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"
-               title="{#remove#}"
+               title="{__('remove')}"
                class="btn btn-danger">
                 <i class="fa fa-trash"></i>
             </a>
             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
-               title="{#edit#}"
-               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \Boxes\Type::TEXT && $oBox->getType() !== \Boxes\Type::LINK && $oBox->getType() !== \Boxes\Type::CATBOX)} disabled{/if}">
+               title="{__('edit')}"
+               class="btn btn-default{if empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">
                 <i class="fa fa-edit"></i>
             </a>
             {if $oBox->getContainerID() === 0}
                 {if $nPage === $smarty.const.PAGE_ARTIKEL || $nPage === $smarty.const.PAGE_ARTIKELLISTE || $nPage === $smarty.const.PAGE_HERSTELLER || $nPage === $smarty.const.PAGE_EIGENE}
                     {if $nPage === $smarty.const.PAGE_ARTIKEL}
-                        {assign var='picker' value='articlePicker'}
+                        {assign var=picker value='articlePicker'}
                     {elseif $nPage === $smarty.const.PAGE_ARTIKELLISTE}
-                        {assign var='picker' value='categoryPicker'}
+                        {assign var=picker value='categoryPicker'}
                     {elseif $nPage === $smarty.const.PAGE_HERSTELLER}
-                        {assign var='picker' value='manufacturerPicker'}
+                        {assign var=picker value='manufacturerPicker'}
                     {elseif $nPage === $smarty.const.PAGE_EIGENE}
-                        {assign var='picker' value='pagePicker'}
+                        {assign var=picker value='pagePicker'}
                     {/if}
                     {if !is_array($oBox->getFilter($nPage)) || \Functional\true($oBox->getFilter())}
                         <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" value="">

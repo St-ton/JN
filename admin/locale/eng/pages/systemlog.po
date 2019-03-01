@@ -1,0 +1,81 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "systemlog"
+msgstr "Systemlog"
+
+msgid "systemlogDesc"
+msgstr "Im Systemlog werden sämtliche Fehlermeldungen und Hinweise festgehalten, die der Shop produziert."
+
+msgid "systemlogURL"
+msgstr "https://jtl-url.de/3tvdu"
+
+msgid "systemlogLog"
+msgstr "Log"
+
+msgid "systemlogConfig"
+msgstr "Einstellungen"
+
+msgid "systemlogLevel"
+msgstr "Loglevel"
+
+msgid "systemlogLevelDesc"
+msgstr "Welche Arten von Logtypen sollen gespeichert werden?"
+
+msgid "systemlogWarning"
+msgstr "Warnung"
+
+msgid "systemlogError"
+msgstr "Fehler"
+
+msgid "systemlogNotice"
+msgstr "Hinweis"
+
+msgid "systemlogDebug"
+msgstr "Debug"
+
+msgid "systemlogBTNSearch"
+msgstr "Suchen"
+
+msgid "systemlogSearch"
+msgstr "Suchtext"
+
+msgid "systemlogEntry"
+msgstr "Eintrag"
+
+msgid "systemlogReset"
+msgstr "Log zurücksetzen"
+
+msgid "successSystemLogReset"
+msgstr "Ihr Systemlog wurde erfolgreich gelöscht."
+
+msgid "successEntriesDelete"
+msgstr " markierte Log-Einträge wurden gelöscht."
+
+msgid "minLogLevel"
+msgstr "Min. Loglevel"
+
+msgid "logLevelEmergency"
+msgstr "Emergency"
+
+msgid "logLevelAlert"
+msgstr "Alert"
+
+msgid "logLevelCritical"
+msgstr "Critical"
+
+msgid "logLevelError"
+msgstr "Error"
+
+msgid "logLevelWarning"
+msgstr "Warning"
+
+msgid "logLevelNotice"
+msgstr "Notice"
+
+msgid "logLevelInfo"
+msgstr "Info"
+
+msgid "logLevelDebug"
+msgstr "Debug"

@@ -4,30 +4,30 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class Bestseller
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class Bestseller extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * Bestseller constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tbestseller.fAnzahl DESC, tartikel.cName';
+        $this->setOrderBy('tbestseller.fAnzahl DESC, tartikel.cName');
         $this->join->setComment('join from SORT by bestseller')
                    ->setType('LEFT JOIN')
                    ->setTable('tbestseller')
                    ->setOn('tartikel.kArtikel = tbestseller.kArtikel');
-        $this->setName(\Shop::Lang()->get('bestseller'));
+        $this->setName(Shop::Lang()->get('bestseller'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_bestseller']);
         $this->setValue(\SEARCH_SORT_BESTSELLER);
     }

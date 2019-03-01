@@ -3,26 +3,41 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Exportformat;
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 @ini_set('max_execution_time', 0);
 
-if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !FormHelper::validateToken()) {
+if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !Form::validateToken()) {
     die('0');
 }
-
-$queue = Shop::Container()->getDB()->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
+$db    = Shop::Container()->getDB();
+$queue = $db->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
-$ef = new Exportformat($queue->kExportformat);
+$ef = new Exportformat($queue->kExportformat, $db);
 if (!$ef->isOK()) {
     die('2');
 }
+$queue->jobQueueID    = $queue->kExportqueue;
+$queue->cronID        = 0;
+$queue->foreignKeyID  = 0;
+$queue->taskLimit     = $queue->nLimit_m;
+$queue->tasksExecuted = $queue->nLimit_n;
+$queue->lastProductID = $queue->nLastArticleID;
+$queue->jobType       = 'exportformat';
+$queue->tableName     = null;
+$queue->foreignKey    = 'kExportformat';
+$queue->foreignKeyID  = $queue->kExportformat;
 
 $ef->startExport(
-    $queue,
+    new \JTL\Cron\QueueEntry($queue),
     isset($_GET['ajax']),
     isset($_GET['back']) && $_GET['back'] === 'admin',
     false,

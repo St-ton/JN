@@ -9,10 +9,10 @@ class candle_value
      */
     public function __construct($high, $open, $close, $low)
     {
-        $this->high = $high;
-        $this->top = $open;
+        $this->high   = $high;
+        $this->top    = $open;
         $this->bottom = $close;
-        $this->low = $low;
+        $this->low    = $low;
     }
     
     public function set_colour($colour)
@@ -28,9 +28,9 @@ class candle_value
 
 class candle extends bar_base
 {
-    public function __construct($colour, $negative_colour=null)
+    public function __construct($colour, $negative_colour = null)
     {
-        $this->type      = "candle";
+        $this->type = 'candle';
         parent::__construct();
         
         $this->set_colour($colour);

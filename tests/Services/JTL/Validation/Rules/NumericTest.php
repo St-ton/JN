@@ -4,13 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
+
+use JTL\Services\JTL\Validation\Rules\Numeric;
+use Tests\BaseTestCase;
 
 /**
  * Class NumericTest
  * @package Services\JTL\Validation\Rules
  */
-class NumericTest extends \PHPUnit_Framework_TestCase
+class NumericTest extends BaseTestCase
 {
     public function test()
     {

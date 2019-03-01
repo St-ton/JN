@@ -22,7 +22,7 @@
                            autocomplete="off">
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" id="{$searchPickerName}-reset-btn"
-                                title="Eingabe l&ouml;schen">
+                                title="Eingabe löschen">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </span>
@@ -33,11 +33,11 @@
                 <div class="btn-group">
                     <button type="button" class="btn btn-xs btn-primary" id="{$searchPickerName}-select-all-btn">
                         <i class="fa fa-check-square-o"></i>
-                        {#selectAllShown#}
+                        {__('selectAllShown')}
                     </button>
                     <button type="button" class="btn btn-xs btn-danger" id="{$searchPickerName}-unselect-all-btn">
                         <i class="fa fa-square-o"></i>
-                        {#unselectAllShown#}
+                        {__('unselectAllShown')}
                     </button>
                 </div>
             </div>
@@ -45,11 +45,11 @@
                 <div class="btn-group">
                     <button type="button" class="btn btn-danger" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
                         <i class="fa fa-times"></i>
-                        {#cancel#}
+                        {__('cancel')}
                     </button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal" id="{$searchPickerName}-apply-btn">
                         <i class="fa fa-save"></i>
-                        {#apply#}
+                        {__('apply')}
                     </button>
                 </div>
             </div>

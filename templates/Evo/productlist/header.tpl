@@ -6,13 +6,6 @@
     <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
 
-{if !empty($hinweis)}
-    <div class="alert alert-success">{$hinweis}</div>
-{/if}
-{if !empty($fehler)}
-    <div class="alert alert-danger">{$fehler}</div>
-{/if}
-
 {if $Suchergebnisse->getSearchUnsuccessful() == true}
     <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
     <form id="suche2" action="{$ShopURL}" method="get" class="form">
@@ -32,13 +25,13 @@
 
 {include file='snippets/extension.tpl'}
 
-{block name='productlist-header'}
+{block name='productlist-header-navinfo'}
 {if $oNavigationsinfo->hasData()}
     <div class="title">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
     <div class="desc clearfix">
         {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
           <div class="img pull-left">
-            <img class="img-responsive" src="{$imageBaseURL}/{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
+            <img class="img-responsive" src="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'

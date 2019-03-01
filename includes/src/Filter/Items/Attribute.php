@@ -4,18 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-
-use DB\ReturnType;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\States\BaseAttribute;
-use Filter\StateSQL;
-use Filter\StateSQLInterface;
-use Filter\Type;
+use JTL\DB\ReturnType;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\States\BaseAttribute;
+use JTL\Filter\StateSQL;
+use JTL\Filter\StateSQLInterface;
+use JTL\Filter\Type;
+use JTL\Catalog\Category\Kategorie;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
+use JTL\Sprache;
+use stdClass;
 use function Functional\every;
 use function Functional\first;
 use function Functional\group;
@@ -23,11 +27,11 @@ use function Functional\map;
 
 /**
  * Class Attribute
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class Attribute extends BaseAttribute
 {
-    use \MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var int
@@ -150,7 +154,6 @@ class Attribute extends BaseAttribute
 
             return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
                         ->setSeo($this->getAvailableLanguages());
-
         }
 
         return $this->setValue($value)->setSeo($this->getAvailableLanguages());
@@ -162,7 +165,7 @@ class Attribute extends BaseAttribute
     public function setSeo(array $languages): FilterInterface
     {
         $value         = $this->getValue();
-        $oSeo_arr      = $this->batchAttributeData[$value]
+        $seoData       = $this->batchAttributeData[$value]
             ?? $this->productFilter->getDB()->queryPrepared(
                 'SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal, 
                     tmerkmalwertsprache.cSeo, tmerkmalwertsprache.kSprache
@@ -176,14 +179,14 @@ class Attribute extends BaseAttribute
         $currentLangID = $this->productFilter->getFilterConfig()->getLanguageID();
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($oSeo_arr as $oSeo) {
-                $oSeo->kSprache = (int)$oSeo->kSprache;
-                if ($language->kSprache === $oSeo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+            foreach ($seoData as $seo) {
+                $seo->kSprache = (int)$seo->kSprache;
+                if ($language->kSprache === $seo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $seo->cSeo;
                     if ($language->kSprache === $currentLangID) {
-                        $this->setAttributeID($oSeo->kMerkmal)
-                             ->setName($oSeo->cWert)
-                             ->setFrontendName($oSeo->cWert);
+                        $this->setAttributeID($seo->kMerkmal)
+                             ->setName($seo->cWert)
+                             ->setFrontendName($seo->cWert);
                     }
                     break;
                 }
@@ -196,7 +199,7 @@ class Attribute extends BaseAttribute
     /**
      * @param array $data
      */
-    private function setBatchAttributeData(array $data)
+    private function setBatchAttributeData(array $data): void
     {
         $this->batchAttributeData = $data;
     }
@@ -241,7 +244,8 @@ class Attribute extends BaseAttribute
      */
     public function attributeValueIsActive($kMerkmalWert): bool
     {
-        return \array_reduce($this->productFilter->getAttributeFilter(),
+        return \array_reduce(
+            $this->productFilter->getAttributeFilter(),
             function ($a, $b) use ($kMerkmalWert) {
                 /** @var Attribute $b */
                 return $a || $b->getValue() === $kMerkmalWert;
@@ -251,10 +255,10 @@ class Attribute extends BaseAttribute
     }
 
     /**
-     * @param \Kategorie|null $category
+     * @param Kategorie|null $category
      * @return StateSQLInterface
      */
-    protected function getState(\Kategorie $category = null): StateSQLInterface
+    protected function getState(Kategorie $category = null): StateSQLInterface
     {
         $base  = $this->productFilter->getCurrentStateData(self::class);
         $state = (new StateSQL())->from($base);
@@ -285,7 +289,7 @@ class Attribute extends BaseAttribute
             ->setOrigin(__CLASS__));
 
         $langID           = $this->getLanguageID();
-        $kStandardSprache = \Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
         if ($langID !== $kStandardSprache) {
             $state->setSelect([
                 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName',
@@ -346,6 +350,10 @@ class Attribute extends BaseAttribute
                     $activeAndFilterIDs[] = $values;
                 }
             }
+            $productFilter = $this->productFilter->showChildProducts()
+                ? '(innerProduct.kVaterArtikel > 0 OR innerProduct.nIstVater = 0)'
+                : 'innerProduct.kVaterArtikel = 0';
+
             if (\count($activeAndFilterIDs) > 0) {
                 $state->addJoin((new Join())
                     ->setComment('join active AND filters from ' . __METHOD__)
@@ -360,16 +368,23 @@ class Attribute extends BaseAttribute
                     ->setOrigin(__CLASS__));
             }
             if (\count($activeOrFilterIDs) > 0) {
-                $state->addSelect('IF(tartikel.kArtikel IN (SELECT im1.kArtikel
-                             FROM tartikelmerkmal AS im1
-                                WHERE im1.kMerkmalWert IN (' . \implode(', ',
-                        \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
-                             GROUP BY im1.kArtikel
-                             HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
-                                                           FROM tartikelmerkmal im2
-                                                           WHERE im2.kMerkmalWert IN
-                                                                 (' . \implode(', ', \array_merge($activeOrFilterIDs,
-                        ['tartikelmerkmal.kMerkmalWert'])) . '))), tartikel.kArtikel, NULL) AS kArtikel');
+                $state->addSelect(
+                    'IF(EXISTS (SELECT 1
+                     FROM tartikelmerkmal AS im1
+                     INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im1.kArtikel
+                        WHERE ' . $productFilter . ' AND im1.kMerkmalWert IN (' .
+                        \implode(', ', \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])) . ')
+                            AND im1.kArtikel = tartikel.kArtikel
+                        GROUP BY innerProduct.kArtikel
+                        HAVING COUNT(im1.kArtikel) = (SELECT COUNT(DISTINCT im2.kMerkmal)
+                           FROM tartikelmerkmal im2
+                           INNER JOIN tartikel AS innerProduct ON innerProduct.kArtikel = im2.kArtikel
+                           WHERE ' . $productFilter . ' AND im2.kMerkmalWert IN (' .
+                                \implode(
+                                    ', ',
+                                    \array_merge($activeOrFilterIDs, ['tartikelmerkmal.kMerkmalWert'])
+                                ) . '))), tartikel.kArtikel, NULL) AS kArtikel'
+                );
             } else {
                 $state->addSelect('tartikel.kArtikel AS kArtikel');
             }
@@ -394,11 +409,11 @@ class Attribute extends BaseAttribute
             );
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
-                        $catAttributeFilters,
-                        function ($e) {
-                            return '"' . $e . '"';
-                        }
-                    )) . ')');
+                    $catAttributeFilters,
+                    function ($e) {
+                        return '"' . $e . '"';
+                    }
+                )) . ')');
             }
         }
 
@@ -436,12 +451,12 @@ class Attribute extends BaseAttribute
             return $this->options;
         }
         $qryRes                    = $this->productFilter->getDB()->executeQuery(
-            "SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+            'SELECT ssMerkmal.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
             ssMerkmal.nMehrfachauswahl, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, 
             ssMerkmal.cMMBildPfad, COUNT(DISTINCT ssMerkmal.kArtikel) AS nAnzahl
-                FROM (" . $baseQry . ") AS ssMerkmal
+                FROM (' . $baseQry . ') AS ssMerkmal
                 GROUP BY ssMerkmal.kMerkmalWert
-                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert",
+                ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $currentAttributeValue     = $this->productFilter->getAttributeValue()->getValue();
@@ -451,14 +466,14 @@ class Attribute extends BaseAttribute
         });
         foreach ($attributeFilterCollection as $attributeID => $attributeValues) {
             $first                                   = first($attributeValues);
-            $attribute                               = new \stdClass();
+            $attribute                               = new stdClass();
             $attribute->kMerkmal                     = (int)$first->kMerkmal;
             $attribute->nMehrfachauswahl             = (int)$first->nMehrfachauswahl;
             $attribute->cName                        = $first->cName;
             $attribute->cMMBildPfad                  = $first->cMMBildPfad;
             $attribute->cTyp                         = $first->cTyp;
             $attribute->attributeValues              = map($attributeValues, function ($e) {
-                $av               = new \stdClass();
+                $av               = new stdClass();
                 $av->kMerkmal     = (int)$e->kMerkmal;
                 $av->kMerkmalWert = (int)$e->kMerkmalWert;
                 $av->cMMWBildPfad = $e->cMMWBildPfad;
@@ -469,14 +484,14 @@ class Attribute extends BaseAttribute
             });
             $attributeFilterCollection[$attributeID] = $attribute;
         }
-        $imageBaseURL       = \Shop::getImageBaseURL();
+        $imageBaseURL       = Shop::getImageBaseURL();
         $filterURLGenerator = $this->productFilter->getFilterURL();
         $i                  = 0;
         foreach ($attributeFilterCollection as $attributeFilter) {
-            $baseSrcSmall  = \strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcSmall  = \mb_strlen($attributeFilter->cMMBildPfad) > 0
                 ? \PFAD_MERKMALBILDER_KLEIN . $attributeFilter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
-            $baseSrcNormal = \strlen($attributeFilter->cMMBildPfad) > 0
+            $baseSrcNormal = \mb_strlen($attributeFilter->cMMBildPfad) > 0
                 ? \PFAD_MERKMALBILDER_NORMAL . $attributeFilter->cMMBildPfad
                 : \BILD_KEIN_MERKMALBILD_VORHANDEN;
 
@@ -502,10 +517,10 @@ class Attribute extends BaseAttribute
             foreach ($attributeFilter->attributeValues as $filterValue) {
                 $filterValue->kMerkmalWert = (int)$filterValue->kMerkmalWert;
                 $attributeValue            = new Option();
-                $baseSrcSmall              = \strlen($filterValue->cMMWBildPfad) > 0
+                $baseSrcSmall              = \mb_strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_KLEIN . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-                $baseSrcNormal             = \strlen($filterValue->cMMWBildPfad) > 0
+                $baseSrcNormal             = \mb_strlen($filterValue->cMMWBildPfad) > 0
                     ? \PFAD_MERKMALWERTBILDER_NORMAL . $filterValue->cMMWBildPfad
                     : \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                 $attributeValue->setData('kMerkmalWert', $filterValue->kMerkmalWert)
@@ -570,7 +585,7 @@ class Attribute extends BaseAttribute
     /**
      * @param Option $option
      */
-    protected function sortNumeric(Option $option)
+    protected function sortNumeric(Option $option): void
     {
         $options = $option->getOptions();
         \usort($options, function (Option $a, Option $b) {
@@ -582,7 +597,7 @@ class Attribute extends BaseAttribute
     /**
      * @param Option $option
      */
-    protected function sortByCountDesc(Option $option)
+    protected function sortByCountDesc(Option $option): void
     {
         $options = $option->getOptions();
         \usort($options, function (Option $a, Option $b) {
@@ -595,7 +610,7 @@ class Attribute extends BaseAttribute
      * @param Option $option
      * @param int    $attributeValueLimit
      */
-    protected function applyOptionLimit(Option $option, int $attributeValueLimit)
+    protected function applyOptionLimit(Option $option, int $attributeValueLimit): void
     {
         if ($attributeValueLimit <= 0 || $attributeValueLimit >= \count($option->getOptions())) {
             return;
@@ -617,12 +632,12 @@ class Attribute extends BaseAttribute
             return (int)$row->kMerkmalWert;
         }, $attributeValues));
         $queryResult       = $this->productFilter->getDB()->query(
-            "SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
+            'SELECT tmerkmalwertsprache.cWert, tmerkmalwertsprache.kMerkmalWert, 
             tmerkmalwertsprache.cSeo, tmerkmalwert.kMerkmal, tmerkmalwertsprache.kSprache
                 FROM tmerkmalwertsprache
                 JOIN tmerkmalwert 
                     ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                WHERE tmerkmalwertsprache.kMerkmalWert IN (" . $attributeValueIDs . ")",
+                WHERE tmerkmalwertsprache.kMerkmalWert IN (' . $attributeValueIDs . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $result            = [];

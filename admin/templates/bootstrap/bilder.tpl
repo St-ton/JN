@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="bilder"}
+{config_load file="$lang.conf" section='bilder'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#bilder# cBeschreibung=#bilderDesc# cDokuURL=#bilderURL#}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('imageTitle') cBeschreibung=__('bilderDesc') cDokuURL=__('bilderURL')}
 <div id="content">
     <form method="post" action="bilder.php">
         {$jtl_token}
@@ -9,22 +9,22 @@
         <div id="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Bildgr&ouml;&szlig;en</h3>
+                    <h3 class="panel-title">{__('imageSizes')}</h3>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-images">
                         <thead>
                         <tr>
-                            <th class="tleft">Typ</th>
-                            <th class="tcenter">Mini <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Klein <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Normal <small>(Breite x H&ouml;he)</small></th>
-                            <th class="tcenter">Gro&szlig; <small>(Breite x H&ouml;he)</small></th>
+                            <th class="tleft">{__('type')}</th>
+                            <th class="tcenter">{__('xs')}<small>{__('widthXHeight')}</small></th>
+                            <th class="tcenter">{__('sm')}<small>{__('widthXHeight')}</small></th>
+                            <th class="tcenter">{__('md')}<small>{__('widthXHeight')}</small></th>
+                            <th class="tcenter">{__('lg')}<small>{__('widthXHeight')}</small></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td class="tleft">Kategorien</td>
+                            <td class="tleft">{__('category')}</td>
                             <td class="tcenter"></td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
@@ -36,7 +36,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Variationen</td>
+                            <td class="tleft">{__('variations')}</td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_variationen_mini_breite" value="{$oConfig.bilder_variationen_mini_breite}" />
                                 <span class="cross-sign left">x</span>
@@ -56,7 +56,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Produkte</td>
+                            <td class="tleft">{__('product')}</td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_artikel_mini_breite" value="{$oConfig.bilder_artikel_mini_breite}" />
                                 <span class="cross-sign left">x</span>
@@ -80,7 +80,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Hersteller</td>
+                            <td class="tleft">{__('manufacturer')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_hersteller_klein_breite" value="{$oConfig.bilder_hersteller_klein_breite}" />
@@ -96,7 +96,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Merkmale</td>
+                            <td class="tleft">{__('attributes')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_merkmal_klein_breite" value="{$oConfig.bilder_merkmal_klein_breite}" />
@@ -112,7 +112,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Merkmalwerte</td>
+                            <td class="tleft">{__('attributeValues')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_klein_breite" value="{$oConfig.bilder_merkmalwert_klein_breite}" />
@@ -128,7 +128,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">Konfiggruppe</td>
+                            <td class="tleft">{__('configGroup')}</td>
                             <td class="tcenter"></td>
                             <td class="widthheight tcenter">
                                 <input size="4" class="form-control left" type="number" name="bilder_konfiggruppe_klein_breite" value="{$oConfig.bilder_konfiggruppe_klein_breite}" />
@@ -144,7 +144,7 @@
                 </div>
             </div>
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=cnf}
+            {foreach $oConfig_arr as $cnf}
             {if $cnf->kEinstellungenConf == 267 || $cnf->kEinstellungenConf == 268 || $cnf->kEinstellungenConf == 269 || $cnf->kEinstellungenConf == 1135 || $cnf->kEinstellungenConf == 1421 || $cnf->kEinstellungenConf == 172 || $cnf->kEinstellungenConf == 161  || $cnf->kEinstellungenConf == 1483  || $cnf->kEinstellungenConf == 1484 || $cnf->kEinstellungenConf == 1485}
                 {if $cnf->cConf === 'Y'}
                     <div class="input-group item{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
@@ -154,8 +154,8 @@
                         {if $cnf->cInputTyp === 'selectbox'}
                             <span class="input-group-wrap">
                                 <select class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                    {foreach name=selectfor from=$cnf->ConfWerte item=wert}
-                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert==$wert->cWert}selected{/if}>{$wert->cName}</option>
+                                    {foreach $cnf->ConfWerte as $wert}
+                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                     {/foreach}
                                 </select>
                             </span>
@@ -204,7 +204,7 @@
                             <h3 class="panel-title">{$cnf->cName}
                             <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
-                                <span class="path"><strong>{#settingspath#}:</strong> {$cnf->cSektionsPfad}</span>
+                                <span class="path"><strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}
                             </h3>
                         </div>
@@ -218,7 +218,7 @@
             </div><!-- /.panel -->
             {/if}
             <p class="submit">
-                <button name="speichern" type="submit" value="{#bilderSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#bilderSave#}</button>
+                <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </p>
         </div>
     </form>

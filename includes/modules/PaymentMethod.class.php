@@ -4,6 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Checkout\Bestellung;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Cart\Warenkorb;
+use JTL\Checkout\ZahlungsLog;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
+
 /**
  * Class PaymentMethod
  *
@@ -84,8 +93,7 @@ class PaymentMethod
      */
     public function init($nAgainCheckout = 0)
     {
-        $this->name = '';
-        // Fetch Caption/Name and Image from DB
+        $this->name           = '';
         $result               = Shop::Container()->getDB()->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->caption        = $result->cName ?? null;
         $this->duringCheckout = isset($result->nWaehrendBestellung)
@@ -95,7 +103,9 @@ class PaymentMethod
         if ((int)$nAgainCheckout === 1) {
             $this->duringCheckout = 0;
         }
-
+        if ($this->cModulId === 'za_null_jtl' || $this->moduleID === 'za_null_jtl') {
+            $this->kZahlungsart = $result->kZahlungsart;
+        }
         return $this;
     }
 
@@ -107,8 +117,8 @@ class PaymentMethod
     {
         $orderId = isset($order->kBestellung)
             ? Shop::Container()->getDB()->query(
-                "SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung,
-                \DB\ReturnType::SINGLE_OBJECT
+                'SELECT cId FROM tbestellid WHERE kBestellung = ' . (int)$order->kBestellung,
+                ReturnType::SINGLE_OBJECT
             )
             : null;
 
@@ -123,17 +133,18 @@ class PaymentMethod
      */
     public function getReturnURL($order)
     {
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0) {
+        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
+            && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
+        ) {
             return Shop::getURL() . '/bestellvorgang.php';
         }
-        global $Einstellungen;
-        if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
+        if (Shop::getSettings([CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
             // Abschlussseite
             $oZahlungsID = Shop::Container()->getDB()->query(
-                'SELECT cId 
-                    FROM tbestellid 
+                'SELECT cId
+                    FROM tbestellid
                     WHERE kBestellung = ' . (int)$order->kBestellung,
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (is_object($oZahlungsID)) {
                 return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
@@ -199,32 +210,25 @@ class PaymentMethod
      */
     public function sendErrorMail($body)
     {
-        global $Einstellungen;
-        // Load Mail Settings
-        if (!isset($Einstellungen['emails'])) {
-            $Einstellungen = Shop::getSettings([CONF_EMAILS]);
-        }
-        $mail = new stdClass();
-        // Content
-        $mail->toEmail   = $Einstellungen['emails']['email_master_absender'];
-        $mail->toName    = $Einstellungen['emails']['email_master_absender_name'];
-        $mail->fromEmail = $mail->toEmail;
-        $mail->fromName  = $mail->toName;
-        $mail->subject   = sprintf(
+        $conf                = Shop::getSettings([CONF_EMAILS]);
+        $mail                = new stdClass();
+        $mail->toEmail       = $conf['emails']['email_master_absender'];
+        $mail->toName        = $conf['emails']['email_master_absender_name'];
+        $mail->fromEmail     = $mail->toEmail;
+        $mail->fromName      = $mail->toName;
+        $mail->subject       = sprintf(
             Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
-            $Einstellungen['global']['global_meta_title']
+            $conf['global']['global_meta_title']
         );
-        $mail->bodyText  = $body;
-        // Method
-        $mail->methode       = $Einstellungen['eMails']['eMail_methode'];
-        $mail->sendMail_pfad = $Einstellungen['eMails']['eMail_sendMail_pfad'];
-        $mail->smtp_hostname = $Einstellungen['eMails']['eMail_smtp_hostname'];
-        $mail->smtp_port     = $Einstellungen['eMails']['eMail_smtp_port'];
-        $mail->smtp_auth     = $Einstellungen['eMails']['eMail_smtp_auth'];
-        $mail->smtp_user     = $Einstellungen['eMails']['eMail_smtp_user'];
-        $mail->smtp_pass     = $Einstellungen['eMails']['eMail_smtp_pass'];
-        $mail->SMTPSecure    = $Einstellungen['emails']['email_smtp_verschluesselung'];
-        // Send
+        $mail->bodyText      = $body;
+        $mail->methode       = $conf['eMails']['eMail_methode'];
+        $mail->sendMail_pfad = $conf['eMails']['eMail_sendMail_pfad'];
+        $mail->smtp_hostname = $conf['eMails']['eMail_smtp_hostname'];
+        $mail->smtp_port     = $conf['eMails']['eMail_smtp_port'];
+        $mail->smtp_auth     = $conf['eMails']['eMail_smtp_auth'];
+        $mail->smtp_user     = $conf['eMails']['eMail_smtp_user'];
+        $mail->smtp_pass     = $conf['eMails']['eMail_smtp_pass'];
+        $mail->SMTPSecure    = $conf['emails']['email_smtp_verschluesselung'];
         include_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
         verschickeMail($mail);
 
@@ -241,15 +245,19 @@ class PaymentMethod
     public function generateHash($order, $length = 40)
     {
         $hash = null;
-        if ($this->duringCheckout == 1) {
+        if ((int)$this->duringCheckout === 1) {
             if (!isset($_SESSION['IP'])) {
                 $_SESSION['IP'] = new stdClass();
             }
-            $_SESSION['IP']->cIP = RequestHelper::getIP(true);
+            $_SESSION['IP']->cIP = Request::getRealIP();
         }
 
         if ($order->kBestellung !== null) {
-            $oBestellID                = Shop::Container()->getDB()->select('tbestellid', 'kBestellung', (int)$order->kBestellung);
+            $oBestellID                = Shop::Container()->getDB()->select(
+                'tbestellid',
+                'kBestellung',
+                (int)$order->kBestellung
+            );
             $hash                      = $oBestellID->cId;
             $oZahlungsID               = new stdClass();
             $oZahlungsID->kBestellung  = $order->kBestellung;
@@ -296,7 +304,7 @@ class PaymentMethod
             'cZahlungsanbieter' => empty($order->cZahlungsartName) ? $this->name : $order->cZahlungsartName,
             'fBetrag'           => 0,
             'fZahlungsgebuehr'  => 0,
-            'cISO'              => Session::Currency()->getCode(),
+            'cISO'              => Frontend::getCurrency()->getCode(),
             'cEmpfaenger'       => '',
             'cZahler'           => '',
             'dZeit'             => 'NOW()',
@@ -400,7 +408,7 @@ class PaymentMethod
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
                         AND kKunde = " . (int)$kKunde,
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
             if (isset($oBestellung->nAnzahl) && count($oBestellung->nAnzahl) > 0) {
@@ -416,15 +424,7 @@ class PaymentMethod
      */
     public function loadSettings()
     {
-        global $Einstellungen;
-
-        if (!is_array($Einstellungen)) {
-            $Einstellungen = [];
-        }
-        if (!array_key_exists('zahlungsarten', $Einstellungen) || $Einstellungen['zahlungsarten'] === null) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_ZAHLUNGSARTEN]));
-        }
-        $this->paymentConfig = $Einstellungen['zahlungsarten'];
+        $this->paymentConfig = Shop::getSettings([CONF_ZAHLUNGSARTEN])['zahlungsarten'];
 
         return $this;
     }
@@ -435,10 +435,10 @@ class PaymentMethod
      */
     public function getSetting($key)
     {
-        $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
+        $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
 
-        return $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
-            ?? ($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key] ?? null);
+        return $conf['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
+            ?? ($conf['pluginzahlungsarten'][$this->moduleID . '_' . $key] ?? null);
     }
 
     /**
@@ -451,20 +451,23 @@ class PaymentMethod
     {
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $res = Shop::Container()->getDB()->query("
-                  SELECT COUNT(*) AS cnt 
-                      FROM tbestellung 
-                      WHERE kKunde = " . (int) $customer->kKunde . " 
-                          AND (
-                                cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "' 
-                                OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT .
-                            "')",
-                    \DB\ReturnType::SINGLE_OBJECT
+                $res   = Shop::Container()->getDB()->executeQueryPrepared(
+                    'SELECT COUNT(*) AS cnt
+                        FROM tbestellung
+                        WHERE kKunde = :cid
+                        AND (cStatus = :stp OR cStatus = :sts)',
+                    [
+                        'cid' => (int)$customer->kKunde,
+                        'stp' => BESTELLUNG_STATUS_BEZAHLT,
+                        'sts' => BESTELLUNG_STATUS_VERSANDT
+                    ],
+                    ReturnType::SINGLE_OBJECT
                 );
                 $count = (int)$res->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
-                    ZahlungsLog::add($this->moduleID,
-                        'Bestellanzahl ' . $count . ' ist kleiner als der Mindestanzahl von ' .
+                    ZahlungsLog::add(
+                        $this->moduleID,
+                        'Bestellanzahl ' . $count . ' ist kleiner als die Mindestanzahl von ' .
                             $this->getSetting('min_bestellungen'),
                         null,
                         LOGLEVEL_NOTICE
@@ -473,14 +476,15 @@ class PaymentMethod
                     return false;
                 }
             } else {
-                ZahlungsLog::add($this->moduleID, "Es ist kein kKunde vorhanden", null, LOGLEVEL_NOTICE);
+                ZahlungsLog::add($this->moduleID, 'Es ist kein kKunde vorhanden', null, LOGLEVEL_NOTICE);
 
                 return false;
             }
         }
 
         if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(true) <= $this->getSetting('min')) {
-            ZahlungsLog::add($this->moduleID,
+            ZahlungsLog::add(
+                $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                     ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min'),
                 null,
@@ -491,7 +495,8 @@ class PaymentMethod
         }
 
         if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(true) >= $this->getSetting('max')) {
-            ZahlungsLog::add($this->moduleID,
+            ZahlungsLog::add(
+                $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
                     ' ist groesser als der maximale Bestellwert von ' . $this->getSetting('max'),
                 null,
@@ -654,7 +659,7 @@ class PaymentMethod
     public function sendMail($kBestellung, $nType, $oAdditional = null)
     {
         $oOrder = new Bestellung($kBestellung);
-        $oOrder->fuelleBestellung(0);
+        $oOrder->fuelleBestellung(false);
         $oCustomer = new Kunde($oOrder->kKunde);
         $oMail     = new stdClass();
 
@@ -731,16 +736,19 @@ class PaymentMethod
         global $oPlugin;
         $oTmpPlugin    = $oPlugin;
         $paymentMethod = null;
-        // Zahlungsart als Plugin
-        $kPlugin = Plugin::getIDByModuleID($moduleId);
-        if ($kPlugin > 0) {
-            $oPlugin            = new Plugin($kPlugin);
+        $pluginID      = \JTL\Plugin\Helper::getIDByModuleID($moduleId);
+        if ($pluginID > 0) {
+            $loader = \JTL\Plugin\Helper::getLoaderByPluginID($pluginID);
+            try {
+                $oPlugin = $loader->init($pluginID);
+            } catch (InvalidArgumentException $e) {
+                $oPlugin = null;
+            }
             $GLOBALS['oPlugin'] = $oPlugin;
 
-            if ($oPlugin->kPlugin > 0) {
-                $classFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
-                    PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
-                    PFAD_PLUGIN_PAYMENTMETHOD . $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad;
+            if ($oPlugin !== null && isset($oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad)) {
+                $classFile = $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
+                    $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad;
                 if (file_exists($classFile)) {
                     require_once $classFile;
                     $className               = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassName;
@@ -748,6 +756,9 @@ class PaymentMethod
                     $paymentMethod->cModulId = $moduleId;
                 }
             }
+        } elseif ($moduleId === 'za_null_jtl') {
+            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
+            $paymentMethod = new FallBackPayment('za_null_jtl');
         } elseif ($moduleId === 'za_sofortueberweisung_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
             $paymentMethod = new SofortUeberweisung($moduleId);

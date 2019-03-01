@@ -4,20 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Smarty;
+namespace JTL\Smarty;
 
-
-require_once \PFAD_ROOT . \PFAD_INCLUDES . 'browsererkennung.php';
-require_once \PFAD_ROOT . \PFAD_PHPQUERY . 'phpquery.class.php';
+use JTL\Backend\AdminTemplate;
+use JTL\Cache\JTLCacheInterface;
+use JTL\Events\Dispatcher;
+use JTL\Plugin\Helper;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Template;
 
 /**
  * Class JTLSmarty
+ * @package \JTL\Smarty
  * @method JTLSmarty assign(string $variable, mixed $value)
  */
 class JTLSmarty extends \SmartyBC
 {
     /**
-     * @var \Cache\JTLCacheInterface
+     * @var JTLCacheInterface
      */
     public $jtlCache;
 
@@ -32,14 +37,14 @@ class JTLSmarty extends \SmartyBC
     public $_cache_include_info;
 
     /**
-     * @var \Template
+     * @var Template
      */
     public $template;
 
     /**
      * @var JTLSmarty|null
      */
-    public static $_instance;
+    public static $instance;
 
     /**
      * @var string
@@ -59,40 +64,56 @@ class JTLSmarty extends \SmartyBC
     /**
      * modified constructor with custom initialisation
      *
-     * @param bool   $fast_init - set to true when init from backend to avoid setting session data
-     * @param bool   $isAdmin
-     * @param bool   $tplCache
+     * @param bool   $fast - set to true when init from backend to avoid setting session data
      * @param string $context
      */
-    public function __construct(bool $fast_init = false, bool $isAdmin = false, bool $tplCache = true, string $context = 'frontend')
+    public function __construct(bool $fast = false, string $context = ContextType::FRONTEND)
     {
         parent::__construct();
         \Smarty::$_CHARSET = \JTL_CHARSET;
-        if (\defined('SMARTY_USE_SUB_DIRS') && \is_bool(SMARTY_USE_SUB_DIRS)) {
-            $this->setUseSubDirs(SMARTY_USE_SUB_DIRS);
-        }
         $this->setErrorReporting(\SMARTY_LOG_LEVEL)
-             ->setForceCompile(\SMARTY_FORCE_COMPILE ? true : false)
-             ->setDebugging(\SMARTY_DEBUG_CONSOLE ? true : false);
+             ->setForceCompile(\SMARTY_FORCE_COMPILE)
+             ->setDebugging(\SMARTY_DEBUG_CONSOLE)
+             ->setUseSubDirs(\SMARTY_USE_SUB_DIRS);
+        $this->context = $context;
+        $this->config  = Shop::getSettings([\CONF_TEMPLATE, \CONF_CACHING, \CONF_GLOBAL]);
 
-        $this->config = \Shop::getSettings([\CONF_TEMPLATE, \CONF_CACHING, \CONF_GLOBAL]);
-        $template     = $isAdmin ? \AdminTemplate::getInstance() : \Template::getInstance();
-        $cTemplate    = $template->getDir();
-        $parent       = null;
-        if ($isAdmin === false) {
-            $parent      = $template->getParent();
-            $_compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $cTemplate . '/';
-            if (!\file_exists($_compileDir)) {
-                \mkdir($_compileDir);
+        $parent = $this->initTemplate();
+        if ($fast === false) {
+            $this->init($parent);
+        }
+        if ($context === ContextType::FRONTEND || $context === ContextType::BACKEND) {
+            self::$instance = $this;
+        }
+        if ($fast === false && $context !== ContextType::BACKEND) {
+            \executeHook(\HOOK_SMARTY_INC, ['smarty' => $this]);
+        }
+    }
+
+    /**
+     * @return string|null
+     */
+    private function initTemplate(): ?string
+    {
+        $parent         = null;
+        $this->template = $this->context === ContextType::BACKEND
+            ? AdminTemplate::getInstance()
+            : Template::getInstance();
+        $tplDir         = $this->template->getDir();
+        if ($this->context !== ContextType::BACKEND) {
+            $parent     = $this->template->getParent();
+            $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';
+            if (!\file_exists($compileDir)) {
+                \mkdir($compileDir);
             }
-            $templatePaths[$this->context] = \PFAD_ROOT . \PFAD_TEMPLATES . $cTemplate . '/';
-            foreach (\Plugin::getTemplatePaths() as $moduleId => $path) {
+            $templatePaths[$this->context] = \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/';
+            foreach (Helper::getTemplatePaths() as $moduleId => $path) {
                 $templateKey                 = 'plugin_' . $moduleId;
                 $templatePaths[$templateKey] = $path;
             }
             $this->setTemplateDir($templatePaths)
-                 ->setCompileDir($_compileDir)
-                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $cTemplate . '/' . 'page_cache/')
+                 ->setCompileDir($compileDir)
+                 ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
                  ->setPluginsDir(\SMARTY_PLUGINS_DIR);
 
             if ($parent !== null) {
@@ -102,57 +123,53 @@ class JTLSmarty extends \SmartyBC
                      ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/');
             }
         } else {
-            $_compileDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR;
-            if (!\file_exists($_compileDir)) {
-                \mkdir($_compileDir);
+            $compileDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR;
+            if (!\file_exists($compileDir)) {
+                \mkdir($compileDir);
             }
-            $this->context = 'backend';
             $this->setCaching(false)
-                 ->setDebugging(\SMARTY_DEBUG_CONSOLE ? true : false)
-                 ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $cTemplate])
-                 ->setCompileDir($_compileDir)
-                 ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $cTemplate . '/lang/')
+                 ->setDebugging(\SMARTY_DEBUG_CONSOLE)
+                 ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
+                 ->setCompileDir($compileDir)
+                 ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir . '/lang/')
                  ->setPluginsDir(\SMARTY_PLUGINS_DIR)
                  ->configLoad('german.conf', 'global');
-            unset($this->config['caching']['page_cache']);
         }
-        $this->template = $template;
 
-        if ($fast_init === false) {
-            $pluginCollection = new PluginCollection($this->config, \Sprache::getInstance());
-            $this->registerPlugin('function', 'lang', [$pluginCollection, 'translate'])
-                 ->registerPlugin('modifier', 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
-                 ->registerPlugin('modifier', 'count_characters', [$pluginCollection, 'countCharacters'])
-                 ->registerPlugin('modifier', 'string_format', [$pluginCollection, 'stringFormat'])
-                 ->registerPlugin('modifier', 'string_date_format', [$pluginCollection, 'dateFormat'])
-                 ->registerPlugin('modifiercompiler', 'default', [$pluginCollection, 'compilerModifierDefault'])
-                 ->registerPlugin('modifier', 'truncate', [$pluginCollection, 'truncate']);
+        return $parent;
+    }
 
-            if ($isAdmin === false) {
-                $this->cache_lifetime = 86400;
-                $this->template_class = \SHOW_TEMPLATE_HINTS > 0
-                    ? JTLSmartyTemplateHints::class
-                    : JTLSmartyTemplateClass::class;
-            }
-            if (!$isAdmin) {
-                $this->setCachingParams($this->config);
-            }
-            $_tplDir = $this->getTemplateDir($this->context);
-            global $smarty;
-            $smarty = $this;
-            if (\file_exists($_tplDir . 'php/functions_custom.php')) {
-                require_once $_tplDir . 'php/functions_custom.php';
-            } elseif (\file_exists($_tplDir . 'php/functions.php')) {
-                require_once $_tplDir . 'php/functions.php';
-            } elseif ($parent !== null && \file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/php/functions.php')) {
-                require_once \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/php/functions.php';
-            }
+    /**
+     * @param null $parent
+     * @throws \SmartyException
+     */
+    private function init($parent = null): void
+    {
+        $pluginCollection = new PluginCollection($this->config, Sprache::getInstance());
+        $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'string_format', [$pluginCollection, 'stringFormat'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'string_date_format', [$pluginCollection, 'dateFormat'])
+             ->registerPlugin(self::PLUGIN_MODIFIERCOMPILER, 'default', [$pluginCollection, 'compilerModifierDefault'])
+             ->registerPlugin(self::PLUGIN_MODIFIER, 'truncate', [$pluginCollection, 'truncate']);
+
+        if ($this->context !== ContextType::BACKEND) {
+            $this->cache_lifetime = 86400;
+            $this->template_class = \SHOW_TEMPLATE_HINTS > 0
+                ? JTLSmartyTemplateHints::class
+                : JTLSmartyTemplateClass::class;
+            $this->setCachingParams($this->config);
         }
-        if ($context === 'frontend' || $context === 'backend') {
-            self::$_instance = $this;
-        }
-        if ($isAdmin === false && $fast_init === false) {
-            \executeHook(\HOOK_SMARTY_INC);
+        $tplDir = $this->getTemplateDir($this->context);
+        global $smarty;
+        $smarty = $this;
+        if (\file_exists($tplDir . 'php/functions_custom.php')) {
+            require_once $tplDir . 'php/functions_custom.php';
+        } elseif (\file_exists($tplDir . 'php/functions.php')) {
+            require_once $tplDir . 'php/functions.php';
+        } elseif ($parent !== null && \file_exists(\PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/php/functions.php')) {
+            require_once \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/php/functions.php';
         }
     }
 
@@ -164,10 +181,7 @@ class JTLSmarty extends \SmartyBC
      */
     public function setCachingParams(array $config = null): self
     {
-        // instantiate new cache - we use different options here
-        if ($config === null) {
-            $config = \Shop::getSettings([\CONF_CACHING]);
-        }
+        $config = $config ?? Shop::getSettings([\CONF_CACHING]);
 
         return $this->setCaching(self::CACHING_OFF)
                     ->setCompileCheck(!(isset($config['caching']['compile_check'])
@@ -175,13 +189,13 @@ class JTLSmarty extends \SmartyBC
     }
 
     /**
-     * @param bool $fast_init
-     * @param bool $isAdmin
+     * @param bool   $fast
+     * @param string $context
      * @return JTLSmarty
      */
-    public static function getInstance(bool $fast_init = false, bool $isAdmin = false): self
+    public static function getInstance(bool $fast = false, string $context = ContextType::FRONTEND): self
     {
-        return self::$_instance ?? new self($fast_init, $isAdmin);
+        return self::$instance ?? new self($fast, $context);
     }
 
     /**
@@ -202,21 +216,22 @@ class JTLSmarty extends \SmartyBC
      */
     public function outputFilter(string $tplOutput): string
     {
-        $hookList = \Plugin::getHookList();
+        $hookList = Helper::getHookList();
         if ((isset($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \is_array($hookList[\HOOK_SMARTY_OUTPUTFILTER])
                 && \count($hookList[\HOOK_SMARTY_OUTPUTFILTER]) > 0)
-                || \count(\EventDispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
+                || \count(Dispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
         ) {
+            require_once \PFAD_ROOT . \PFAD_PHPQUERY . 'phpquery.class.php';
             $this->unregisterFilter('output', [$this, 'outputFilter']);
             $doc = \phpQuery::newDocumentHTML($tplOutput, \JTL_CHARSET);
-            \executeHook(\HOOK_SMARTY_OUTPUTFILTER);
+            \executeHook(\HOOK_SMARTY_OUTPUTFILTER, ['smarty' => $this, 'document' => $doc]);
             $tplOutput = $doc->htmlOuter();
         }
 
         return isset($this->config['template']['general']['minify_html'])
         && $this->config['template']['general']['minify_html'] === 'Y'
-            ? $this->minify_html(
+            ? $this->minifyHTML(
                 $tplOutput,
                 isset($this->config['template']['general']['minify_html_css'])
                 && $this->config['template']['general']['minify_html_css'] === 'Y',
@@ -268,7 +283,7 @@ class JTLSmarty extends \SmartyBC
      * @param bool   $minifyJS
      * @return string
      */
-    private function minify_html(string $html, bool $minifyCSS = false, bool $minifyJS = false): string
+    private function minifyHTML(string $html, bool $minifyCSS = false, bool $minifyJS = false): string
     {
         $options = [];
         if ($minifyCSS === true) {
@@ -299,15 +314,15 @@ class JTLSmarty extends \SmartyBC
             // disabled on child templates for now
             return $filename;
         }
-        $cFile       = \basename($filename, '.tpl');
-        $cSubPath    = \dirname($filename);
-        $cCustomFile = \strpos($cSubPath, \PFAD_ROOT) === false
-            ? $this->getTemplateDir($this->context) . (($cSubPath === '.')
+        $file   = \basename($filename, '.tpl');
+        $dir    = \dirname($filename);
+        $custom = \mb_strpos($dir, \PFAD_ROOT) === false
+            ? $this->getTemplateDir($this->context) . (($dir === '.')
                 ? ''
-                : ($cSubPath . '/')) . $cFile . '_custom.tpl'
-            : ($cSubPath . '/' . $cFile . '_custom.tpl');
+                : ($dir . '/')) . $file . '_custom.tpl'
+            : ($dir . '/' . $file . '_custom.tpl');
 
-        return \file_exists($cCustomFile) ? $cCustomFile : $filename;
+        return \file_exists($custom) ? $custom : $filename;
     }
 
     /**
@@ -334,13 +349,13 @@ class JTLSmarty extends \SmartyBC
      */
     public function fetch($template = null, $cacheID = null, $compileID = null, $parent = null): string
     {
-        $_debug = !empty($this->_debug->template_data)
+        $debug = !empty($this->_debug->template_data)
             ? $this->_debug->template_data
             : null;
-        $res    = parent::fetch($this->getResourceName($template), $cacheID, $compileID, $parent);
-        if ($_debug !== null) {
+        $res   = parent::fetch($this->getResourceName($template), $cacheID, $compileID, $parent);
+        if ($debug !== null) {
             // fetch overwrites the old debug data so we have to merge it with our previously saved data
-            $this->_debug->template_data = \array_merge($_debug, $this->_debug->template_data);
+            $this->_debug->template_data = \array_merge($debug, $this->_debug->template_data);
         }
 
         return $res;
@@ -384,12 +399,12 @@ class JTLSmarty extends \SmartyBC
     public function getResourceName(string $resourceName): string
     {
         $transform = false;
-        if (\strpos($resourceName, 'string:') === 0) {
+        if (\mb_strpos($resourceName, 'string:') === 0) {
             return $resourceName;
         }
-        if (\strpos($resourceName, 'file:') === 0) {
+        if (\mb_strpos($resourceName, 'file:') === 0) {
             $resourceName = \str_replace('file:', '', $resourceName);
-            $transform     = true;
+            $transform    = true;
         }
         $resource_custom_name = $this->getCustomFile($resourceName);
         $resource_cfb_name    = $resource_custom_name;
@@ -402,23 +417,19 @@ class JTLSmarty extends \SmartyBC
             'transform' => $transform
         ]);
 
-        if ($this->context === 'frontend'
+        if ($this->context === ContextType::FRONTEND
             && $resourceName === $resource_cfb_name
-            && \file_exists($this->getTemplateDir('frontend') . $resource_cfb_name)
+            && \file_exists($this->getTemplateDir(ContextType::FRONTEND) . $resource_cfb_name)
         ) {
             $pluginTemplateExtends = [];
-
-            foreach (\Plugin::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
+            foreach (Helper::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
                 $templateKey = 'plugin_' . $moduleId;
                 $templateVar = 'oPlugin_' . $moduleId;
-
                 if ($this->getTemplateVars($templateVar) === null) {
-                    $oPlugin = \Plugin::getPluginById($moduleId);
+                    $oPlugin = Helper::getPluginById($moduleId);
                     $this->assign($templateVar, $oPlugin);
                 }
-
-                $file = $this->_realpath($pluginTemplatePath . $resource_cfb_name, true);
-                if (\file_exists($file)) {
+                if (\file_exists($this->_realpath($pluginTemplatePath . $resource_cfb_name, true))) {
                     $pluginTemplateExtends[] = \sprintf('[%s]%s', $templateKey, $resource_cfb_name);
                 }
             }

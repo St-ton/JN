@@ -6,6 +6,9 @@
  * @created Wed, 01 Feb 2017 16:13:22 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -32,7 +35,7 @@ class Migration_20170201161322 extends Migration implements IMigration
     public function up()
     {
         // The up-function will only be executed if Migration_20161216110237 is installed.
-        $oMigration = $this->fetchOne("SELECT kMigration FROM tmigration WHERE kMigration = 20161216110237");
+        $oMigration = $this->fetchOne('SELECT kMigration FROM tmigration WHERE kMigration = 20161216110237');
 
         if (isset($oMigration) && (int)$oMigration->kMigration === 20161216110237) {
             $this->removeConfig('addDeliveryDayOnSaturday');

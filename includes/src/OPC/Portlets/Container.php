@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use function Functional\unique;
-use OPC\PortletInstance;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
+use JTL\Shop;
 
 /**
  * Class Container
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class Container extends \OPC\Portlet
+class Container extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -30,11 +31,11 @@ class Container extends \OPC\Portlet
 
             $instance->setStyle(
                 'background',
-                'url("' . \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name . '")'
+                'url("' . Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name . '")'
             );
 
             $instance->setStyle('background-size', 'cover');
-            $instance->getImageAttributes(\Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+            $instance->getImageAttributes(Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
         if ($instance->getProperty('background-flag') === 'video') {
             $instance->setStyle('overflow', 'hidden');
@@ -45,10 +46,11 @@ class Container extends \OPC\Portlet
 
             $instance->setProperty(
                 'video-poster-url',
-                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+                Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name
+            );
         }
-        if (!empty($instance->getProperty("class"))) {
-            $instance->addClass($instance->getProperty("class"));
+        if (!empty($instance->getProperty('class'))) {
+            $instance->addClass($instance->getProperty('class'));
         }
 
 
@@ -70,12 +72,12 @@ class Container extends \OPC\Portlet
             $instance->addClass('parallax-window');
             $instance->setAttribute('data-parallax', 'scroll');
             $instance->setAttribute('data-z-index', '1');
-            $instance->setAttribute('data-image-src', \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.lg/' . $name);
+            $instance->setAttribute('data-image-src', Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.lg/' . $name);
 
-            $instance->getImageAttributes(\Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+            $instance->getImageAttributes(Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
-        if (!empty($instance->getProperty("class"))) {
-            $instance->addClass($instance->getProperty("class"));
+        if (!empty($instance->getProperty('class'))) {
+            $instance->addClass($instance->getProperty('class'));
         }
         if ($instance->getProperty('background-flag') === 'video') {
             $instance->setStyle('overflow', 'hidden');
@@ -85,14 +87,16 @@ class Container extends \OPC\Portlet
 
             $instance->setProperty(
                 'video-poster-url',
-                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
+                Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name
+            );
 
             $name = \explode('/', $instance->getProperty('video-src'));
             $name = \end($name);
 
             $instance->setProperty(
                 'video-src-url',
-                \Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Videos/' . $name);
+                Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Videos/' . $name
+            );
         }
 
 
@@ -134,7 +138,7 @@ class Container extends \OPC\Portlet
                 'showOnProp'           => 'background-flag',
                 'showOnPropValue'      => 'image',
                 'dspl_width'           => 50,
-                'collapseControlEnd' => true,
+                'collapseControlEnd'   => true,
             ],
             'min-height'      => [
                 'label'              => 'Mindesthöhe in px',

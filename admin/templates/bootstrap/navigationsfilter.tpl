@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section="navigationsfilter"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#navigationsfilter# cBeschreibung=#navigationsfilterDesc#
-         cDokuURL=#navigationsfilterUrl#}
+{config_load file="$lang.conf" section='navigationsfilter'}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('navigationsfilter') cBeschreibung=__('navigationsfilterDesc')
+         cDokuURL=__('navigationsfilterUrl')}
 
 <script>
     var bManuell = false;
@@ -9,8 +9,8 @@
     $(function()
     {
         $('#einstellen').submit(validateFormData);
-        $('#btn-add-range').click(function() { addPriceRange(); });
-        $('.btn-remove-range').click(removePriceRange);
+        $('#btn-add-range').on('click', function() { addPriceRange(); });
+        $('.btn-remove-range').on('click', removePriceRange);
 
         selectCheck(document.getElementById('preisspannenfilter_anzeige_berechnung'));
 
@@ -30,14 +30,14 @@
             '<div class="price-row">' +
                 '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
                     '<i class="fa fa-trash"></i></button> ' +
-                '<label for="nVon_' + n + '">{#navigationsfilterFrom#}:</label> ' +
+                '<label for="nVon_' + n + '">{__('from')}:</label> ' +
                 '<input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
-                '<label for="nBis_' + n + '">{#navigationsfilterTo#}:</label> ' +
+                '<label for="nBis_' + n + '">{__('to')}:</label> ' +
                 '<input id="nBis_' + n + '" class="form-control" name="nBis[]" type="text" value="' + nBis + '">' +
             '</div>'
         );
 
-        $('.btn-remove-range').off('click').click(removePriceRange);
+        $('.btn-remove-range').off('click').on('click', removePriceRange);
     }
 
     function removePriceRange()
@@ -88,13 +88,13 @@
                 $row.removeClass('has-error');
 
                 if(nVon === '' || nBis === '') {
-                    cFehler += 'Ein oder mehrere Felder sind nicht gesetzt.<br>';
+                    cFehler += '{__('errorFillRequired')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' ist ung&uuml;tig.<br>';
+                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('isInvalid')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += 'Die Preisspanne ' + fVon + ' bis ' + fBis + ' &uuml;berschneidet sich mit anderen.<br>';
+                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('overlapps')}' + '<br>';
                     $row.addClass('has-error');
                 }
 
@@ -115,7 +115,7 @@
         <input type="hidden" name="speichern" value="1"/>
         <div id="settings">
             {assign var=open value=false}
-            {foreach name=conf from=$oConfig_arr item=oConfig}
+            {foreach $oConfig_arr as $oConfig}
                 {if $oConfig->cConf === 'Y'}
                     <div class="item input-group">
                         <span class="input-group-addon">
@@ -128,7 +128,7 @@
                                         {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
                                             onChange="selectCheck(this);"
                                         {/if}>
-                                    {foreach name=selectfor from=$oConfig->ConfWerte item=wert}
+                                    {foreach $oConfig->ConfWerte as $wert}
                                         <option value="{$wert->cWert}"
                                                 {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
                                             {$wert->cName}
@@ -189,11 +189,10 @@
             {/if}
         </div>
         <p class="submit">
-            <button name="speichern" class="btn btn-primary" type="submit" value="{#navigationsfilterSave#}">
-                <i class="fa fa-save"></i> {#navigationsfilterSave#}
+            <button name="speichern" class="btn btn-primary" type="submit" value="{__('save')}">
+                <i class="fa fa-save"></i> {__('save')}
             </button>
         </p>
     </form>
 </div>
-
 {include file='tpl_inc/footer.tpl'}

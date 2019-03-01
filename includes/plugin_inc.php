@@ -4,6 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Events\Dispatcher;
+use JTL\Plugin\Helper;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\State;
+use JTL\Profiler;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * @param int   $hookID
  * @param array $args_arr
@@ -11,84 +19,83 @@
 function executeHook(int $hookID, $args_arr = [])
 {
     global $smarty;
+    $timer = Shop::Container()->getDebugBar()->getTimer();
+    $timer->startMeasure('shop.hook.' . $hookID);
+    Dispatcher::getInstance()->fire('shop.hook.' . $hookID, array_merge((array)$hookID, $args_arr));
 
-    EventDispatcher::getInstance()->fire("shop.hook.{$hookID}", array_merge((array)$hookID, $args_arr));
-
-    $hookList = Plugin::getHookList();
+    $hookList = Helper::getHookList();
     if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
+        $timer->stopMeasure('shop.hook.' . $hookID);
         return;
     }
-    foreach ($hookList[$hookID] as $oPluginTmp) {
-        //try to get plugin instance from registry
-        $oPlugin = Shop::get('oplugin_' . $oPluginTmp->kPlugin);
-        //not found in registry - create new
+    $db    = JTL\Shop::Container()->getDB();
+    $cache = JTL\Shop::Container()->getCache();
+    foreach ($hookList[$hookID] as $item) {
+        $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {
-            $oPlugin = new Plugin($oPluginTmp->kPlugin);
-            if (!$oPlugin->kPlugin) {
+            $loader  = new LegacyPluginLoader($db, $cache);
+            $oPlugin = $loader->init((int)$item->kPlugin);
+            if ($oPlugin === null) {
                 continue;
             }
-            //license check is only executed once per plugin
-            if (!Plugin::licenseCheck($oPlugin)) {
+            if (!Helper::licenseCheck($oPlugin)) {
                 continue;
             }
-            //save to registry
-            Shop::set('oplugin_' . $oPluginTmp->kPlugin, $oPlugin);
+            Shop::set('oplugin_' . $item->kPlugin, $oPlugin);
         }
         if ($smarty !== null) {
-            $smarty->assign('oPlugin_' . $oPlugin->cPluginID, $oPlugin);
+            $smarty->assign('oPlugin_' . $oPlugin->getPluginID(), $oPlugin);
         }
-        $cDateiname = $oPluginTmp->cDateiname;
-        // Welcher Hook wurde aufgerufen?
+        $file                 = $item->cDateiname;
         $oPlugin->nCalledHook = $hookID;
-        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $cDateiname === PLUGIN_SEITENHANDLER) {
-            // Work Around, falls der Hook auf geht => Frontend Link
+        if ($hookID === HOOK_SEITE_PAGE_IF_LINKART && $file === PLUGIN_SEITENHANDLER) {
             include PFAD_ROOT . PFAD_INCLUDES . PLUGIN_SEITENHANDLER;
         } elseif ($hookID === HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION) {
-            // Work Around, falls der Hook auf geht => CheckBox Trigger Special Function
-            if ((int)$oPlugin->kPlugin === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
-                include $oPlugin->cFrontendPfad . $cDateiname;
+            if ($oPlugin->getID() === (int)$args_arr['oCheckBox']->oCheckBoxFunktion->kPlugin) {
+                include $oPlugin->getPaths()->getFrontendPath() . $file;
             }
-        } elseif (is_file($oPlugin->cFrontendPfad . $cDateiname)) {
+        } elseif (is_file($oPlugin->getPaths()->getFrontendPath() . $file)) {
             $start = microtime(true);
-            include $oPlugin->cFrontendPfad . $cDateiname;
+            include $oPlugin->getPaths()->getFrontendPath() . $file;
             if (PROFILE_PLUGINS === true) {
                 $runData = [
                     'runtime'   => microtime(true) - $start,
                     'timestamp' => microtime(true),
                     'hookID'    => $hookID,
                     'runcount'  => 1,
-                    'file'      => $oPlugin->cFrontendPfad . $cDateiname
+                    'file'      => $oPlugin->getPaths()->getFrontendPath() . $file
                 ];
                 Profiler::setPluginProfile($runData);
             }
         }
         if ($smarty !== null) {
-            $smarty->clearAssign('oPlugin_' . $oPlugin->cPluginID);
+            $smarty->clearAssign('oPlugin_' . $oPlugin->getPluginID());
         }
     }
+    $timer->stopMeasure('shop.hook.' . $hookID);
 }
 
 /**
- * @param Plugin $oPlugin
- * @param array  $xParam_arr
+ * @param \JTL\Plugin\LegacyPlugin $oPlugin
+ * @param array                    $params
  * @return bool
  * @deprecated since 5.0.0
  */
-function pluginLizenzpruefung(Plugin $oPlugin, array $xParam_arr = []): bool
+function pluginLizenzpruefung($oPlugin, array $params = []): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::licenseCheck($oPlugin, $xParam_arr);
+    return Helper::licenseCheck($oPlugin, $params);
 }
 
 /**
- * @param Plugin $oPlugin
- * @param int    $nStatus
+ * @param \JTL\Plugin\LegacyPlugin $oPlugin
+ * @param int                      $nStatus
  * @deprecated since 5.0.0
  */
 function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Plugin::updatePaymentMethodState($oPlugin, $nStatus);
+    Helper::updatePaymentMethodState($oPlugin, $nStatus);
 }
 
 /**
@@ -99,7 +106,7 @@ function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
 function gibPluginEinstellungen(int $kPlugin)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::getConfigByID($kPlugin);
+    return Helper::getConfigByID($kPlugin);
 }
 
 /**
@@ -111,7 +118,7 @@ function gibPluginEinstellungen(int $kPlugin)
 function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::getLanguageVariablesByID($kPlugin, $cISO);
+    return Helper::getLanguageVariablesByID($kPlugin, $cISO);
 }
 
 /**
@@ -123,7 +130,7 @@ function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
 function aenderPluginStatus(int $nStatus, int $kPlugin): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::updateStatusByID($nStatus, $kPlugin);
+    return Helper::updateStatusByID($nStatus, $kPlugin);
 }
 
 /**
@@ -135,7 +142,7 @@ function aenderPluginStatus(int $nStatus, int $kPlugin): bool
 function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::getModuleIDByPluginID($kPlugin, $cNameZahlungsmethode);
+    return Helper::getModuleIDByPluginID($kPlugin, $cNameZahlungsmethode);
 }
 
 /**
@@ -146,7 +153,7 @@ function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
 function gibkPluginAuscModulId(string $cModulId): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::getIDByModuleID($cModulId);
+    return Helper::getIDByModuleID($cModulId);
 }
 
 /**
@@ -157,7 +164,7 @@ function gibkPluginAuscModulId(string $cModulId): int
 function gibkPluginAuscPluginID(string $cPluginID): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Plugin::getIDByPluginID($cPluginID);
+    return Helper::getIDByPluginID($cPluginID);
 }
 
 /**
@@ -167,25 +174,25 @@ function gibkPluginAuscPluginID(string $cPluginID): int
 function gibPluginExtendedTemplates(): array
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cTemplate_arr = [];
-    $oTemplate_arr = Shop::Container()->getDB()->queryPrepared(
+    $templates = [];
+    $data      = Shop::Container()->getDB()->queryPrepared(
         'SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
             FROM tplugintemplate
             JOIN tplugin 
                 ON tplugintemplate.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state 
             ORDER BY tplugin.nPrio DESC',
-        ['state' => Plugin::PLUGIN_ACTIVATED],
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ['state' => State::ACTIVATED],
+        ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oTemplate_arr as $oTemplate) {
-        $cTemplatePfad = PFAD_ROOT . PFAD_PLUGIN . $oTemplate->cVerzeichnis . '/' .
-            PFAD_PLUGIN_VERSION . $oTemplate->nVersion . '/' .
-            PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $oTemplate->cTemplate;
-        if (file_exists($cTemplatePfad)) {
-            $cTemplate_arr[] = $cTemplatePfad;
+    foreach ($data as $tpl) {
+        $path = PFAD_ROOT . PFAD_PLUGIN . $tpl->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $tpl->nVersion . '/' .
+            PFAD_PLUGIN_FRONTEND . PFAD_PLUGIN_TEMPLATE . $tpl->cTemplate;
+        if (file_exists($path)) {
+            $templates[] = $path;
         }
     }
 
-    return $cTemplate_arr;
+    return $templates;
 }

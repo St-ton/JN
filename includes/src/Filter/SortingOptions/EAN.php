@@ -4,26 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class EAN
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class EAN extends AbstractSortingOption
 {
     /**
-     * SortDefault constructor.
+     * EAN constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->orderBy = 'tartikel.cBarcode, tartikel.cName';
-        $this->setName(\Shop::Lang()->get('sortEan'));
+        $this->setOrderBy('tartikel.cBarcode, tartikel.cName');
+        $this->setName(Shop::Lang()->get('sortEan'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_ean']);
         $this->setValue(\SEARCH_SORT_EAN);
     }

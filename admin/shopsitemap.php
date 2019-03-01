@@ -3,68 +3,43 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-/** @global JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings([CONF_SITEMAP]);
-$cHinweis      = '';
-$cFehler       = '';
-
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
-if (isset($_POST['speichern']) && FormHelper::validateToken()) {
-    $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
+if (isset($_POST['speichern']) && Form::validateToken()) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_SITEMAP, $_POST),
+        'saveSettings'
+    );
     if (isset($_POST['nVon'])
         && is_array($_POST['nVon'])
-        && count($_POST['nVon']) > 0
         && is_array($_POST['nBis'])
+        && count($_POST['nVon']) > 0
         && count($_POST['nBis']) > 0
     ) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', \DB\ReturnType::AFFECTED_ROWS);
+        Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
         for ($i = 0; $i < 10; $i++) {
-            // Neue Werte in die DB einfuegen
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
-                $oPreisspannenfilter       = new stdClass();
-                $oPreisspannenfilter->nVon = (int)$_POST['nVon'][$i];
-                $oPreisspannenfilter->nBis = (int)$_POST['nBis'][$i];
+                $filter       = new stdClass();
+                $filter->nVon = (int)$_POST['nVon'][$i];
+                $filter->nBis = (int)$_POST['nBis'][$i];
 
-                Shop::Container()->getDB()->insert('tpreisspannenfilter', $oPreisspannenfilter);
+                Shop::Container()->getDB()->insert('tpreisspannenfilter', $filter);
             }
         }
     }
 }
 
-$oConfig_arr = Shop::Container()->getDB()->selectAll(
-    'teinstellungenconf',
-    'kEinstellungenSektion',
-    CONF_SITEMAP,
-    '*',
-    'nSort'
-);
-$configCount = count($oConfig_arr);
-for ($i = 0; $i < $configCount; $i++) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-    }
-    $oSetValue = Shop::Container()->getDB()->select(
-        'teinstellungen',
-        'kEinstellungenSektion',
-        CONF_SITEMAP,
-        'cName',
-        $oConfig_arr[$i]->cWertName
-    );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-}
-
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
        ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->display('shopsitemap.tpl');

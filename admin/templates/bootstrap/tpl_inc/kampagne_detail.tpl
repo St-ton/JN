@@ -28,7 +28,7 @@
     {rdelim}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#kampagneDetailStats#|cat:' '|cat:$oKampagne->cName}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStats')|cat:' '|cat:$oKampagne->cName}
 
 <div id="content" class="panel panel-default container-fluid">
 
@@ -44,14 +44,14 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nAnsicht">{#kampagneDetailView#}</label>
+                            <label for="nAnsicht">{__('kampagneDetailView')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAnsicht" name="nAnsicht" class="form-control combo" onChange="changeSelect(this);">
-                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{#kampagneStatYear#}</option>
-                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{#kampagneStatMonth#}</option>
-                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{#kampagneStatWeek#}</option>
-                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{#kampagneStatDay#}</option>
+                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__('annual')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__('monthly')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{__('weekly')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{__('daily')}</option>
                             </select>
                         </span>
                     </div>
@@ -59,12 +59,12 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kKampagne">{#kampagneSingle#}</label>
+                            <label for="kKampagne">{__('kampagneSingle')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="kKampagne" name="kKampagne" class="form-control combo" onChange="selectSubmit(this);">
                                 {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0}
-                                    {foreach name=kampagnen from=$oKampagne_arr item=oKampagneTMP}
+                                    {foreach $oKampagne_arr as $oKampagneTMP}
                                         <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->cName}</option>
                                     {/foreach}
                                 {/if}
@@ -75,7 +75,7 @@
                 <div class="col-sm-5">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="SelectFromDay">{#kampagneDateFrom#}</label>
+                            <label for="SelectFromDay">{__('from')}</label>
                         </span>
 
                         <select name="cFromDay" class="form-control combo" id="SelectFromDay">
@@ -89,22 +89,22 @@
 
                         <span class="input-group-wrap">
                             <select name="cFromMonth" class="form-control combo">
-                                <option value="1"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 1} selected{/if}>Januar</option>
-                                <option value="2"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 2} selected{/if}>Februar</option>
-                                <option value="3"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 3} selected{/if}>M&auml;rz</option>
-                                <option value="4"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 4} selected{/if}>April</option>
-                                <option value="5"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 5} selected{/if}>Mai</option>
-                                <option value="6"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 6} selected{/if}>Juni</option>
-                                <option value="7"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 7} selected{/if}>Juli</option>
-                                <option value="8"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 8} selected{/if}>August</option>
-                                <option value="9"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 9} selected{/if}>September</option>
-                                <option value="10"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 10} selected{/if}>Oktober</option>
-                                <option value="11"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 11} selected{/if}>November</option>
-                                <option value="12"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 12} selected{/if}>Dezember</option>
+                                <option value="1"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 1} selected{/if}>{__('january')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 2} selected{/if}>{__('february')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 3} selected{/if}>{__('march')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 4} selected{/if}>{__('april')}</option>
+                                <option value="5"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 5} selected{/if}>{__('may')}</option>
+                                <option value="6"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 6} selected{/if}>{__('june')}</option>
+                                <option value="7"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 7} selected{/if}>{__('july')}</option>
+                                <option value="8"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 8} selected{/if}>{__('august')}</option>
+                                <option value="9"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 9} selected{/if}>{__('september')}</option>
+                                <option value="10"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 10} selected{/if}>{__('october')}</option>
+                                <option value="11"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 11} selected{/if}>{__('november')}</option>
+                                <option value="12"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 12} selected{/if}>{__('december')}</option>
                             </select>
                         </span>
                         <span class="input-group-wrap">
-                            {assign var=cJahr value=$smarty.now|date_format:"%Y"}
+                            {assign var=cJahr value=$smarty.now|date_format:'%Y'}
                             <select name="cFromYear" class="form-control combo">
                                 {section name=fromYear loop=$cJahr+1 start=2005 step=1}
                                     <option value="{$smarty.section.fromYear.index}"
@@ -119,7 +119,7 @@
                 <div class="col-sm-5 col-xs-10">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="SelectToDay">{#kampagneDateTill#}</label>
+                            <label for="SelectToDay">{__('kampagneDateTill')}</label>
                         </span>
                         <select name="cToDay" class="form-control combo" id="SelectToDay">
                             {section name=toDay loop=32 start=1 step=1}
@@ -131,21 +131,21 @@
                         </select>
                         <span class="input-group-wrap">
                             <select name="cToMonth" class="form-control combo">
-                                <option value="1"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 1} selected{/if}>Januar</option>
-                                <option value="2"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 2} selected{/if}>Februar</option>
-                                <option value="3"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 3} selected{/if}>M&auml;rz</option>
-                                <option value="4"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 4} selected{/if}>April</option>
-                                <option value="5"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 5} selected{/if}>Mai</option>
-                                <option value="6"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 6} selected{/if}>Juni</option>
-                                <option value="7"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 7} selected{/if}>Juli</option>
-                                <option value="8"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 8} selected{/if}>August</option>
-                                <option value="9"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 9} selected{/if}>September</option>
-                                <option value="10"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 10} selected{/if}>Oktober</option>
-                                <option value="11"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 11} selected{/if}>November</option>
-                                <option value="12"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 12} selected{/if}>Dezember</option>
+                                <option value="1"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 1} selected{/if}>{__('january')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 2} selected{/if}>{__('february')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 3} selected{/if}>{__('march')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 4} selected{/if}>{__('april')}</option>
+                                <option value="5"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 5} selected{/if}>{__('may')}</option>
+                                <option value="6"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 6} selected{/if}>{__('june')}</option>
+                                <option value="7"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 7} selected{/if}>{__('july')}</option>
+                                <option value="8"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 8} selected{/if}>{__('august')}</option>
+                                <option value="9"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 9} selected{/if}>{__('september')}</option>
+                                <option value="10"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 10} selected{/if}>{__('october')}</option>
+                                <option value="11"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 11} selected{/if}>{__('november')}</option>
+                                <option value="12"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 12} selected{/if}>{__('december')}</option>
                             </select>
                         </span>
-                        {assign var=cJahr value=$smarty.now|date_format:"%Y"}
+                        {assign var=cJahr value=$smarty.now|date_format:'%Y'}
                         <span class="input-group-wrap">
                             <select name="cToYear" class="form-control combo">
                                 {section name=toYear loop=$cJahr+1 start=2005 step=1}
@@ -159,8 +159,8 @@
                     </div>
                 </div>
                 <div class="col-sm-2 col-xs-2">
-                    <button name="submitZeitraum" type="submit" value="{#kampagneDetailStatsBTN#}" class="btn btn-info"
-                            title="{#kampagneDetailStatsBTN#}">
+                    <button name="submitZeitraum" type="submit" value="{__('kampagneDetailStatsBTN')}" class="btn btn-info"
+                            title="{__('kampagneDetailStatsBTN')}">
                         <i class="fa fa-refresh"></i>
                     </button>
                 </div>
@@ -169,10 +169,10 @@
         </form>
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($cTab) || $cTab === 'detailansicht'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#detailansicht">{#kampagneDetailStats#}</a>
+                <a data-toggle="tab" role="tab" href="#detailansicht">{__('kampagneDetailStats')}</a>
             </li>
             <li class="tab{if isset($cTab) && $cTab === 'detailgraphen'} active{/if}">
-                <a data-toggle="tab" role="tab" href="#detailgraphen">{#kampagneDetailGraph#}</a>
+                <a data-toggle="tab" role="tab" href="#detailgraphen">{__('kampagneDetailGraph')}</a>
             </li>
         </ul>
         <div class="tab-content">
@@ -182,19 +182,19 @@
                         <table class="table table-striped">
                             <tr>
                                 <th class="th-1"></th>
-                                {foreach name="kampagnendefs" from=$oKampagneDef_arr item=oKampagneDef}
+                                {foreach $oKampagneDef_arr as $oKampagneDef}
                                     <th class="th-2">{$oKampagneDef->cName}</th>
                                 {/foreach}
                             </tr>
 
-                            {foreach name="kampagnenstats" from=$oKampagneStat_arr key=kKey item=oKampagneStatDef_arr}
-                                {if $kKey != "Gesamt"}
+                            {foreach name='kampagnenstats' from=$oKampagneStat_arr key=kKey item=oKampagneStatDef_arr}
+                                {if $kKey !== 'Gesamt'}
                                     <tr>
                                         {if isset($oKampagneStat_arr[$kKey].cDatum)}
                                             <td>{$oKampagneStat_arr[$kKey].cDatum}</td>
                                         {/if}
-                                        {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
-                                            {if $kKampagneDef != "cDatum"}
+                                        {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
+                                            {if $kKampagneDef !== 'cDatum'}
                                                 <td style="text-align: center;">
                                                     <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
                                                         {$oKampagneStat_arr[$kKey][$kKampagneDef]}
@@ -206,8 +206,8 @@
                                 {/if}
                             {/foreach}
                             <tr>
-                                <td>{#kampagneOverall#}</td>
-                                {foreach name="kampagnendefs" from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
+                                <td>{__('kampagneOverall')}</td>
+                                {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
                                     <td style="text-align: center;">
                                         {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
                                     </td>
@@ -216,7 +216,7 @@
                         </table>
                     </div>
                 {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
             <div id="detailgraphen" class="tab-pane fade{if isset($cTab) && $cTab === 'detailgraphen'} active in{/if}">
@@ -236,14 +236,14 @@
                         {include file='tpl_inc/linechart_inc.tpl' linechart=$Chart headline=$hl id=$key width='100%' height='400px' ylabel=$ylabel href=false legend=false ymin='0'}
                     {/foreach}
                 {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
         </div>
         
     </div>
     <div class="panel-footer">
-        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {#kampagneBackBTN#}</a>
+        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
 </div>
 

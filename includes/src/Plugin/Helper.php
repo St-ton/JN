@@ -382,8 +382,8 @@ class Helper
         foreach ($langVars as $lv) {
             if (!isset($new[$lv['kPluginSprachvariable']])) {
                 $var                                   = new stdClass();
-                $var->kPluginSprachvariable            = $lv['kPluginSprachvariable'];
-                $var->kPlugin                          = $lv['kPlugin'];
+                $var->kPluginSprachvariable            = (int)$lv['kPluginSprachvariable'];
+                $var->kPlugin                          = (int)$lv['kPlugin'];
                 $var->cName                            = $lv['cName'];
                 $var->cBeschreibung                    = $lv['cBeschreibung'];
                 $var->oPluginSprachvariableSprache_arr = [$lv['cISO'] => $lv['customValue']];

@@ -24,6 +24,9 @@ use JTL\Plugin\InstallCode;
 use JTL\Mapper\PluginState as StateMapper;
 use JTL\Mapper\PluginValidation as ValidationMapper;
 use JTL\XMLParser;
+use function Functional\select;
+use function Functional\group;
+use function Functional\first;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -197,7 +200,6 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                         case InstallCode::WRONG_PARAM:
                             $errorMsg = __('errorAtLeastOnePlugin');
                             break;
-                        // @todo: 3 is never returned
                         case InstallCode::SQL_ERROR:
                             $errorMsg = __('errorPluginDeleteSQL');
                             break;
@@ -292,30 +294,51 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $errorMsg = __('errorLangVarNotFound');
             }
         } else { // Editieren
-            $oSprache_arr = $db->query(
+            $languages = $db->query(
                 'SELECT * FROM tsprache',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($oSprache_arr as $oSprache) {
+            $original  = $db->query(
+                'SELECT * FROM tpluginsprachvariable
+                    JOIN tpluginsprachvariablesprache
+                    ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
+                    WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $original  = group($original, function ($e) {
+                return (int)$e->kPluginSprachvariable;
+            });
+            foreach ($languages as $lang) {
                 foreach (Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
-                    $cISO                  = mb_convert_case($oSprache->cISO, MB_CASE_UPPER);
-                    $idx                   = $kPluginSprachvariable . '_' . $cISO;
+                    $iso                   = mb_convert_case($lang->cISO, MB_CASE_UPPER);
+                    $idx                   = $kPluginSprachvariable . '_' . $iso;
                     if (!isset($_POST[$idx])) {
                         continue;
                     }
                     $db->delete(
                         'tpluginsprachvariablecustomsprache',
                         ['kPlugin', 'cSprachvariable', 'cISO'],
-                        [$kPlugin, $cSprachvariable, $cISO]
+                        [$kPlugin, $cSprachvariable, $iso]
                     );
                     $customLang                        = new stdClass();
                     $customLang->kPlugin               = $kPlugin;
                     $customLang->cSprachvariable       = $cSprachvariable;
-                    $customLang->cISO                  = $cISO;
+                    $customLang->cISO                  = $iso;
                     $customLang->kPluginSprachvariable = $kPluginSprachvariable;
                     $customLang->cName                 = $_POST[$idx];
+                    $match                             = first(
+                        select(
+                            $original[$kPluginSprachvariable],
+                            function ($e) use ($customLang) {
+                                return $e->cISO === $customLang->cISO;
+                            }
+                        )
+                    );
+                    if (isset($match->cName) && $match->cName === $customLang->cName) {
+                        continue;
+                    }
 
                     $db->insert('tpluginsprachvariablecustomsprache', $customLang);
                 }
@@ -380,7 +403,7 @@ if ($reload === true) {
     exit();
 }
 
-$hasAuth = !!$db->query("SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL", 3);
+$hasAuth = !!$db->query('SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL', 3);
 
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');

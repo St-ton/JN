@@ -108,15 +108,14 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
         $data         = $this->db->queryPrepared(
-            'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
-            COALESCE(c.cISO, o.cISO)  AS cISO,
-            COALESCE(c.cName, o.cName) AS customValue
+            'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
+                COALESCE(c.cName, o.cName) AS customValue
             FROM tpluginsprachvariable AS l
             JOIN tpluginsprachvariablesprache AS o
                 ON o.kPluginSprachvariable = l.kPluginSprachvariable
             LEFT JOIN tpluginsprachvariablecustomsprache AS c
                 ON c.kPluginSprachvariable = l.kPluginSprachvariable
-                AND o.cISO = COALESCE(c.cISO, o.cISO)
+                AND o.cISO = c.cISO
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
             ['pid' => $id],

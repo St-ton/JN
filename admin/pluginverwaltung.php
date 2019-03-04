@@ -299,7 +299,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $original  = $db->query(
-                'SELECT * FROM shop4_normal.tpluginsprachvariable
+                'SELECT * FROM tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
                     WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,

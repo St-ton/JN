@@ -258,6 +258,8 @@ function lazyLoadMenu(viewport){
                 });
             });
         });
+
+        $('#evo-nav-wrapper .nav-item.dropdown .nav-link').attr('data-toggle','');
     }
 }
 

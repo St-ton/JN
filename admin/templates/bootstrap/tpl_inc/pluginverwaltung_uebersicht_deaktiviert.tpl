@@ -43,9 +43,9 @@
                                         {foreach $allPluginItems as $p}
                                             {if $p->getID() === $plugin->getPluginID()}
                                                 {if $p->isShop5Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {elseif $p->isShop5Compatible() === false && $p->isShop4Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {/if}
                                                 {break}
                                             {/if}

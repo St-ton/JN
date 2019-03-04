@@ -111,10 +111,8 @@
             {/row}
         {/foreach}
     {else}
-        <div class="h4 section-heading">{lang key='filesUploaded'}</div>
-        {*{alert variant="info"}
-            {lang key='maxUploadSize'}: <strong>{$cMaxUploadSize}</strong>
-        {/alert}*}
+        <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
+        <hr class="mt-0 mb-2">
         {foreach $oUploadSchema_arr as $oUploadSchema}
             <div>
                 <p>

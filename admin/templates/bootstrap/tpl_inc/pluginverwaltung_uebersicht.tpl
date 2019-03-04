@@ -1,7 +1,7 @@
 <script type="text/javascript">
 function ackCheck(kPlugin, hash)
 {
-    var bCheck = confirm('{__('sureResetLangVar')}');
+    var bCheck = confirm('{__('surePluginUpdate')}');
     var href = '';
 
     if (bCheck) {
@@ -138,7 +138,7 @@ function ackCheck(kPlugin, hash)
                                 fi.fileinput('enable');
                         {rdelim});
                     </script>
-                    <div id="plugin-upload-success" class="alert alert-info hidden">{__('surePluginUpdate')}</div>
+                    <div id="plugin-upload-success" class="alert alert-info hidden">{__('successPluginUpload')}</div>
                     <div id="plugin-upload-error" class="alert alert-danger hidden">{__('errorPluginUpload')}</div>
                 </div>
             </div>

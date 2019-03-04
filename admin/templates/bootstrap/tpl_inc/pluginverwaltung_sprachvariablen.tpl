@@ -1,7 +1,7 @@
 <script type="text/javascript">
     function ackCheck(kPluginSprachvariable, kPlugin)
     {
-        var bCheck = confirm('{__('surePluginUpdate')}');
+        var bCheck = confirm('{__('sureResetLangVar')}');
 
         if(bCheck) {
             window.location.href = 'pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +

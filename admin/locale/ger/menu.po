@@ -31,8 +31,8 @@ msgid "Template"
 msgstr "Templates"
 
 # Menu Item
-msgid "Evo-Template settings"
-msgstr "Evo-Template-Einstellungen"
+msgid "Template settings"
+msgstr "Template-Einstellungen"
 
 # Mid Menu
 msgid "Images"

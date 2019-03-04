@@ -10,7 +10,7 @@
 $adminMenu = [
     __('Presentation')   => [
         __('Template') => [
-            __('Evo-Template settings') => (object)[
+            __('Template settings') => (object)[
                 'link'   => 'shoptemplate.php',
                 'rights' => 'DISPLAY_TEMPLATE_VIEW',
             ],

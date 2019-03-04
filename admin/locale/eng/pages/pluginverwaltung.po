@@ -176,8 +176,11 @@ msgstr "Plugin konnte nicht hochgeladen werden."
 msgid "sureResetLangVar"
 msgstr "Wollen Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br><br> *Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren."
 
-msgid "dangerPluginNotCompatible"
+msgid "dangerPluginNotCompatibleShop5"
 msgstr "Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen."
+
+msgid "dangerPluginNotCompatibleShop4"
+msgstr "Achtung: Plugin ist nicht vollständig Shop4-kompatibel! Es können daher Probleme beim Betrieb entstehen."
 
 msgid "licensePlugin"
 msgstr "Plugin Lizenz"

@@ -8,6 +8,7 @@ $enable-transitions:        true;
 $enable-grid-classes:       true;
 $enable-print-styles:       true;
 */
+/* pagination */
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
@@ -4348,23 +4349,23 @@ input[type=button].btn-block {
   position: relative;
   display: block;
   padding: 0.5rem 0.75rem;
-  margin-left: -1px;
+  margin-left: 0;
   line-height: 1.25;
   color: #525252;
-  background-color: #f8f8f8;
-  border: 1px solid #dee2e6;
+  background-color: transparent;
+  border: 0 solid #dee2e6;
 }
 .page-link:hover {
   z-index: 2;
   color: #525252;
   text-decoration: none;
-  background-color: #e9ecef;
+  background-color: transparent;
   border-color: #dee2e6;
 }
 .page-link:focus {
   z-index: 2;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(248, 191, 0, 0.25);
+  box-shadow: none;
 }
 
 .page-item:first-child .page-link {
@@ -4378,15 +4379,15 @@ input[type=button].btn-block {
 }
 .page-item.active .page-link {
   z-index: 1;
-  color: #f8f8f8;
-  background-color: #F8BF00;
-  border-color: #F8BF00;
+  color: #525252;
+  background-color: transparent;
+  border-color: transparent;
 }
 .page-item.disabled .page-link {
-  color: #707070;
+  color: #ebebeb;
   pointer-events: none;
   cursor: auto;
-  background-color: #f8f8f8;
+  background-color: transparent;
   border-color: #dee2e6;
 }
 
@@ -15098,56 +15099,6 @@ aside .badge-light {
   padding: 0 0 15px;
 }
 
-.list-pageinfo {
-  margin: 1rem 0 2rem;
-  border-top: 1px solid #ebebeb;
-  border-bottom: 1px solid #ebebeb;
-  padding: 0.5rem 0;
-}
-.list-pageinfo .pagination {
-  margin: 0;
-  /*> li > a {
-    float: none;
-    background: transparent;
-    border: none;
-  }
-
-  > .active > a,
-  > .active > span {
-    &,
-    &:hover,
-    &:focus {
-      font-weight: bold;
-      text-decoration: underline;
-    }
-  }*/
-}
-.list-pageinfo .pagination a,
-.list-pageinfo .pagination a i {
-  text-decoration: none;
-}
-.list-pageinfo .pagination a.active,
-.list-pageinfo .pagination a i.active {
-  font-weight: bold;
-  text-decoration: underline;
-  text-underline-color: #F8BF00;
-}
-.list-pageinfo .pagination a:hover,
-.list-pageinfo .pagination a i:hover {
-  text-decoration: underline;
-}
-
-.pagination-wrapper a,
-.pagination-wrapper a i {
-  text-decoration: none;
-}
-.pagination-wrapper a.active,
-.pagination-wrapper a i.active {
-  font-weight: bold;
-  text-decoration: underline;
-  text-underline-color: #F8BF00;
-}
-
 .row.gallery .product-wrapper {
   border-bottom: none;
   border-right: none;
@@ -15938,6 +15889,93 @@ table caption {
   margin: 20px 0;
   display: none;
   font-size: x-large;
+}
+
+/* pagination */
+.pagination {
+  justify-content: space-between;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .pagination {
+    justify-content: normal;
+  }
+  .pagination .dropdown > .btn {
+    display: none;
+  }
+  .pagination .dropdown-menu {
+    position: static !important;
+    transform: none !important;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .pagination .dropdown-item {
+    width: auto;
+    display: inline-block;
+    padding: 0;
+  }
+  .pagination .dropdown-item.active {
+    background-color: transparent;
+    color: #525252;
+  }
+  .pagination .dropdown-item:hover {
+    background-color: transparent;
+  }
+  .pagination .pagination-site {
+    display: none;
+  }
+}
+@media (max-width: 767.98px) {
+  .pagination .dropdown-item {
+    padding: 0;
+  }
+  .pagination .dropdown-item.active .page-link, .pagination .dropdown-item:active .page-link {
+    color: #f8f8f8;
+  }
+}
+
+.page-link {
+  text-decoration: none;
+}
+@media (min-width: 768px) {
+  .page-link:hover {
+    font-weight: 700;
+  }
+}
+
+@media (min-width: 768px) {
+  .page-item.active .page-link {
+    font-weight: 700;
+  }
+  .page-item.active .page-link:after {
+    content: "";
+    position: absolute;
+    bottom: 0.3rem;
+    left: 0.75rem;
+    width: calc(100% - 2 * 0.75rem);
+    border-bottom: 3px solid #F8BF00;
+  }
+}
+
+/* productlist navigation */
+.productlist-page-nav {
+  align-items: center;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  border-top: 1px solid #ebebeb;
+  border-bottom: 1px solid #ebebeb;
+}
+.productlist-page-nav .pagination {
+  margin: 0;
+}
+
+@media (max-width: 767.98px) {
+  .productlist-item-info {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
 }
 
 /*# sourceMappingURL=clear.css.map */

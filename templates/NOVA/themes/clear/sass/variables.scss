@@ -89,3 +89,18 @@ $spacers: (
 
 $url-0: url(../base/images/loading.gif);
 $url-1: url(../base/images/loading-sm.gif);
+
+/* pagination */
+
+$pagination-border-width:       0;
+$pagination-bg:                 transparent;
+
+$pagination-hover-bg:           transparent;
+
+$pagination-active-bg:          transparent;
+$pagination-active-color:       $link-color;
+
+$pagination-focus-box-shadow:   none;
+
+$pagination-disabled-color:     $sand;
+$pagination-disabled-bg:        transparent;

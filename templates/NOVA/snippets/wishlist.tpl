@@ -7,14 +7,6 @@
 {/block}
 
 {block name='content'}
-    <div class="h1">
-        {if $isCurrenctCustomer === false && isset($CWunschliste->oKunde->cVorname)}
-            {$CWunschliste->cName} {lang key='from' section='product rating' alt_section='login,productDetails,productOverview,global,'} {$CWunschliste->oKunde->cVorname}
-        {else}
-            {lang key='myWishlists'}
-        {/if}
-    </div>
-
     {include file='snippets/extension.tpl'}
 
     {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
@@ -22,8 +14,7 @@
         {row}
         {col cols=12}
         {block name='wishlist-email-form'}
-            {card}
-                <div class="h3">{block name='wishlist-email-form-title'}{$CWunschliste->cName}{/block}</div>
+            <div class="h3">{block name='wishlist-email-form-title'}{$CWunschliste->cName}{/block}</div>
             {block name='wishlist-email-form-body'}
                 {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
                     {input type="hidden" name="wlvm" value="1"}
@@ -44,14 +35,21 @@
                     {/row}
                 {/form}
             {/block}
-            {/card}
         {/block}
         {/col}
         {/row}
     {else}
+        <div class="h1">
+            {if $isCurrenctCustomer === false && isset($CWunschliste->oKunde->cVorname)}
+                {$CWunschliste->cName} {lang key='from' section='product rating' alt_section='login,productDetails,productOverview,global,'} {$CWunschliste->oKunde->cVorname}
+            {else}
+                {lang key='myWishlists'}
+            {/if}
+        </div>
+
         {if $isCurrenctCustomer === true}
             {row}
-                {col cols=1}
+                {col cols=2 md=1}
                     {dropdown variant="light" text="<i class='fas fa-ellipsis-v'></i>"}
                         {dropdownitem}
                             {button variant='light' data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
@@ -117,7 +115,7 @@
                         {/dropdownitem}
                     {/dropdown}
                 {/col}
-                {col cols=5}
+                {col cols=10 md=5}
                     {dropdown id='wlName' variant='light' text=$CWunschliste->cName}
                     {foreach $oWunschliste_arr as $wishlist}
                         {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
@@ -126,7 +124,7 @@
                     {/foreach}
                     {/dropdown}
                 {/col}
-                {col cols=6}
+                {col cols=12 md=6}
                 {if $hasItems === true || !empty($wlsearch)}
                     <div id="wishlist-search">
                         {form
@@ -162,7 +160,7 @@
             {/row}
             <hr class="mt-2 mb-2">
             {row}
-                {col cols=10}
+                {col cols=8 md=10}
                     {form method="post" action="{get_static_route id='wunschliste.php'}"}
                         {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                         {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
@@ -176,7 +174,7 @@
                             }
                                 <i class="fa fa-eye-slash"></i>
                             {/button}
-                            {lang key='wishlistNoticePublic' section='login'}&nbsp;
+                            <span class="d-none d-sm-inline">{lang key='wishlistNoticePublic' section='login'}</span>
                         {elseif $CWunschliste->nOeffentlich == 0}
                             {button
                             type="submit"
@@ -187,11 +185,11 @@
                             }
                                 <i class="fa fa-eye"></i>
                             {/button}
-                            {lang key='wishlistNoticePrivate' section='login'}&nbsp;
+                            <span class="d-none d-sm-inline">{lang key='wishlistNoticePrivate' section='login'}</span>
                         {/if}
                     {/form}
                 {/col}
-                {col cols=2}
+                {col cols=4 md=2 class='align-bottom text-right'}
                     {count($CWunschliste->CWunschlistePos_arr)} {lang key='products'}
                 {/col}
             {/row}
@@ -223,7 +221,7 @@
                             {/if}
                             {/inputgroup}
                         {/form}
-                        {/col}
+                    {/col}
                 {/row}
             {/if}
 
@@ -291,83 +289,83 @@
             {if !empty($CWunschliste->CWunschlistePos_arr)}
                 {foreach $CWunschliste->CWunschlistePos_arr as $wlPosition}
                     {row class='row-table mb-3'}
-                    {col cols=12 md=2 class="text-center d-none d-sm-block"}
-                    {link href=$wlPosition->Artikel->cURLFull}
-                    {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->cVorschaubildURL fluid=true}
-                    {/link}
+                    {col cols=12 md=2 class="text-center d-none d-sm-block pr-1"}
+                        {link href=$wlPosition->Artikel->cURLFull}
+                            {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->cVorschaubildURL fluid=true}
+                        {/link}
                     {/col}
                     {col cols=12 md=4 class="product-detail text-center text-md-left"}
-                    {link href=$wlPosition->Artikel->cURL}{$wlPosition->cArtikelName}{/link}
-                    {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
-                        <p>{lang key='productOutOfStock' section='productDetails'}</p>
-                    {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-                        <p>{lang key='priceOnApplication' section='global'}</p>
-                    {else}
-                        {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='wishlist'}
-                    {/if}
-                    {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
-                        {if $CWunschlistePosEigenschaft->cFreifeldWert}
-                            <p>
-                            <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
-                            {$CWunschlistePosEigenschaft->cFreifeldWert}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}</p>{/if}
+                        {link href=$wlPosition->Artikel->cURL}{$wlPosition->cArtikelName}{/link}
+                        {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+                            <p>{lang key='productOutOfStock' section='productDetails'}</p>
+                        {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                            <p>{lang key='priceOnApplication' section='global'}</p>
                         {else}
-                            <p>
-                            <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
-                            {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}</p>{/if}
+                            {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='wishlist'}
                         {/if}
-                    {/foreach}
+                        {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
+                            {if $CWunschlistePosEigenschaft->cFreifeldWert}
+                                <p>
+                                <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
+                                {$CWunschlistePosEigenschaft->cFreifeldWert}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}</p>{/if}
+                            {else}
+                                <p>
+                                <b>{$CWunschlistePosEigenschaft->cEigenschaftName}:</b>
+                                {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}</p>{/if}
+                            {/if}
+                        {/foreach}
                     {/col}
                     {col cols=12 md=4}
-                    {textarea readonly=($isCurrenctCustomer !== true) rows="4" name="Kommentar_{$wlPosition->kWunschlistePos}"}{$wlPosition->cKommentar}{/textarea}
+                        {textarea readonly=($isCurrenctCustomer !== true) rows="4" name="Kommentar_{$wlPosition->kWunschlistePos}"}{$wlPosition->cKommentar}{/textarea}
                     {/col}
                     {if $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                         {col class='text-right'}
-                        {link
-                        href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
-                        class="btn btn-secondary"
-                        title="{lang key='wishlistremoveItem' section='login'}"
-                        }
-                            <span class="fa fa-trash"></span>
-                        {/link}
-                        {/col}
-                    {else}
-                        {col md=1}
-                        {input
-                        readonly=($isCurrenctCustomer !== true)
-                        name="Anzahl_{$wlPosition->kWunschlistePos}"
-                        class="wunschliste_anzahl" type="text"
-                        size="1"
-                        value="{$wlPosition->fAnzahl|replace_delim}"
-                        }
-                            <br/>{$wlPosition->Artikel->cEinheit}
-                        {/col}
-                        {col md=1 class='text-right'}
-                        {buttongroup vertical=true}
-                        {if $wlPosition->Artikel->bHasKonfig}
-                            {link href=$wlPosition->Artikel->cURLFull class="btn btn-primary"
-                            title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
-                                <span class="fa fa-cogs"></span>
-                            {/link}
-                        {else}
-                            {button
-                            name="addToCart"
-                            value=$wlPosition->kWunschlistePos
-                            variant="primary"
-                            title="{lang key='wishlistaddToCart' section='login'}"
-                            }
-                                <span class="fas fa-shopping-cart"></span>
-                            {/button}
-                        {/if}
-                        {if $isCurrenctCustomer === true}
-                            {button
-                            type="submit"
-                            name="remove" value=$wlPosition->kWunschlistePos
+                            {link
+                            href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
+                            class="btn btn-secondary"
                             title="{lang key='wishlistremoveItem' section='login'}"
                             }
                                 <span class="fa fa-trash"></span>
-                            {/button}
-                        {/if}
-                        {/buttongroup}
+                            {/link}
+                        {/col}
+                    {else}
+                        {col md=1}
+                            {input
+                            readonly=($isCurrenctCustomer !== true)
+                            name="Anzahl_{$wlPosition->kWunschlistePos}"
+                            class="wunschliste_anzahl" type="text"
+                            size="1"
+                            value="{$wlPosition->fAnzahl|replace_delim}"
+                            }
+                                <br/>{$wlPosition->Artikel->cEinheit}
+                        {/col}
+                        {col md=1 class='text-right'}
+                            {buttongroup vertical=true}
+                            {if $wlPosition->Artikel->bHasKonfig}
+                                {link href=$wlPosition->Artikel->cURLFull class="btn btn-primary"
+                                title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
+                                    <span class="fa fa-cogs"></span>
+                                {/link}
+                            {else}
+                                {button
+                                name="addToCart"
+                                value=$wlPosition->kWunschlistePos
+                                variant="primary"
+                                title="{lang key='wishlistaddToCart' section='login'}"
+                                }
+                                    <span class="fas fa-shopping-cart"></span>
+                                {/button}
+                            {/if}
+                            {if $isCurrenctCustomer === true}
+                                {button
+                                type="submit"
+                                name="remove" value=$wlPosition->kWunschlistePos
+                                title="{lang key='wishlistremoveItem' section='login'}"
+                                }
+                                    <span class="fa fa-trash"></span>
+                                {/button}
+                            {/if}
+                            {/buttongroup}
                         {/col}
                     {/if}
                     {/row}

@@ -52,9 +52,7 @@
                 {col cols=2 md=1}
                     {dropdown variant="light" text="<i class='fas fa-ellipsis-v'></i>"}
                         {dropdownitem}
-                            {button variant='light' data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
-                                {lang key='rename'}
-                            {/button}
+                            {input type="submit" value="{lang key='rename'}" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
                         {/dropdownitem}
                         {dropdownitem}
                             {form
@@ -64,9 +62,8 @@
                             }
                                 {input type="hidden" name="wla" value="1"}
                                 {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                {button type="submit" variant="light" name="action" value="removeAll"}
-                                    {lang key='wlRemoveAllProducts' section='wishlist'}
-                                {/button}
+                                {input type="hidden" name="action" value="removeAll"}
+                                {input type="submit"  value="{lang key='wlRemoveAllProducts' section='wishlist'}"}
                             {/form}
                         {/dropdownitem}
                         {dropdownitem}
@@ -77,18 +74,16 @@
                             }
                                 {input type="hidden" name="wla" value="1"}
                                 {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                {button type="submit" variant="light" name="action" value="addAllToCart"}
-                                    {lang key='wishlistAddAllToCart' section='login'}
-                                {/button}
+                                {input type="hidden" name="action" value="addAllToCart"}
+                                {input type="submit" value="{lang key='wishlistAddAllToCart' section='login'}"}
                             {/form}
                         {/dropdownitem}
                         {dropdownitem}
                             {form method="post" action="{get_static_route id='wunschliste.php'}"}
                                 {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
-                                {button type="submit" variant="light" name="action" value="delete"}
-                                    {lang key='wlDelete' section='wishlist'}
-                                {/button}
+                                {input type="hidden" name="action" value="delete"}
+                                {input type="submit" value="{lang key='wlDelete' section='wishlist'}"}
                             {/form}
                         {/dropdownitem}
                         {if $CWunschliste->nStandard != 1}
@@ -96,22 +91,17 @@
                                 {form method="post" action="{get_static_route id='wunschliste.php'}"}
                                     {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                     {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
-                                    {button type="submit"
-                                    name="action"
-                                    variant="light"
-                                    value="setAsDefault"
+                                    {input type="hidden" name="action" value="setAsDefault"}
+                                    {input type="submit"
+                                    value="{lang key='activate'}"
                                     title="{lang key='setAsStandardWishlist' section='wishlist'}"
                                     data=["toggle" => "tooltip", "placement" => "bottom"]
                                     }
-                                        {lang key='activate'}
-                                    {/button}
                                 {/form}
                             {/dropdownitem}
                         {/if}
                         {dropdownitem}
-                            {button variant='light' data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]}
-                                {lang key='wishlistAddNew' section='login'}
-                            {/button}
+                            {input type="submit" value="{lang key='wishlistAddNew' section='login'}" data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]}
                         {/dropdownitem}
                     {/dropdown}
                 {/col}

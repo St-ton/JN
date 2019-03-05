@@ -28,7 +28,7 @@
                 {else}
                     <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="d-none">
                         <span itemprop="name">{$meta_publisher}</span>
-                        <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}" />
+                        <meta itemprop="logo" content="{$ShopLogoURL}" />
                     </div>
                     <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time><span class="creation-date">{$oNewsArchiv->getDateValidFrom()->format('Y-m-d H:i:s')}</span>
                 {/if}

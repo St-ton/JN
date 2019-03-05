@@ -32,8 +32,8 @@
             <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
             <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
         {else}
-            <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
-            <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
+            <meta itemprop="image" content="{$ShopLogoURL}" />
+            <meta property="og:image" content="{$ShopLogoURL}" />
         {/if}
     {/block}
 
@@ -133,7 +133,7 @@
                                 <div class="navbar-brand" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
-                                    <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
+                                    <meta itemprop="logo" content="{$ShopLogoURL}">
 
                                     {link href=$ShopURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}

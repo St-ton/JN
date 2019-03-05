@@ -656,7 +656,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding
@@ -668,7 +669,8 @@
                                     title: response.cTitle,
                                     message: response.cNotification,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                         }
@@ -700,7 +702,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding
@@ -732,7 +735,8 @@
                     size: 'lg',
                     url: url,
                     keyboard: true,
-                    tabindex: -1
+                    tabindex: -1,
+                    buttons: false
                 });
                 e.stopPropagation();
 
@@ -774,7 +778,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding
@@ -786,7 +791,8 @@
                                     title: response.cTitle,
                                     message: response.cNotification,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                         }
@@ -818,7 +824,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding

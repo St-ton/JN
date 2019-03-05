@@ -540,7 +540,8 @@ class Cart
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('configError', 'productDetails'),
-                'configError'
+                'configError',
+                ['dismissable' => false]
             );
             Shop::Smarty()->assign('aKonfigerror_arr', $errors)
                 ->assign('aKonfigitemerror_arr', $itemErrors);
@@ -573,7 +574,8 @@ class Cart
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('compareMaxlimit', 'errorMessages'),
-                'compareMaxlimit'
+                'compareMaxlimit',
+                ['dismissable' => false]
             );
 
             return false;
@@ -640,7 +642,8 @@ class Cart
                             $alertHelper->addAlert(
                                 Alert::TYPE_ERROR,
                                 Shop::Lang()->get('comparelistProductexists', 'messages'),
-                                'comparelistProductexists'
+                                'comparelistProductexists',
+                                ['dismissable' => false]
                             );
                         }
                     }
@@ -750,7 +753,7 @@ class Cart
                             Shop::Lang()->get('wishlistProductadded', 'messages'),
                             'wishlistProductadded'
                         );
-                        if ($redirect === true) {
+                        if ($redirect === true && !Request::isAjaxRequest()) {
                             \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
                             exit;
                         }

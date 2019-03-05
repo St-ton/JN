@@ -324,7 +324,7 @@ class IOMethods
             ]);
         }
         $alerts  = Shop::Container()->getAlertService();
-        $content = $smarty->assign('alertList', Shop::Container()->getAlertService())
+        $content = $smarty->assign('alertList', $alerts)
                           ->fetch('snippets/alert_list.tpl');
 
         $response->cNotification = $smarty
@@ -384,7 +384,8 @@ class IOMethods
 
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType     = 2;
-        $response->nCount    = \count($_SESSION['Vergleichsliste']->oArtikel_arr);
+        $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
+            \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
         $response->cTitle    = Shop::Lang()->get('compare');
         $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_compare.tpl');
@@ -458,8 +459,7 @@ class IOMethods
         $_POST['n']           = (int)$qty;
 
         Cart::checkAdditions();
-        $error            = $smarty->getTemplateVars('fehler');
-        $notice           = $smarty->getTemplateVars('hinweis');
+
         $response->nType  = 2;
         $response->nCount = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
         $response->cTitle = Shop::Lang()->get('goToWishlist');
@@ -480,8 +480,12 @@ class IOMethods
                 'title' => Shop::Lang()->get('goToWishlist')
             ]);
         }
-        $smarty->assign('type', empty($error) ? 'info' : 'danger')
-               ->assign('body', empty($error) ? $notice : $error)
+        $alerts = Shop::Container()->getAlertService();
+        $body   = $smarty->assign('alertList', $alerts)
+                         ->fetch('snippets/alert_list.tpl');
+
+        $smarty->assign('type', $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info')
+               ->assign('body', $body)
                ->assign('buttons', $buttons)
                ->assign('Einstellungen', $conf);
 
@@ -508,6 +512,12 @@ class IOMethods
         }
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
+            $response->nType     = 1;
+            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php');
+            $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        }
 
         return $objResponse;
     }

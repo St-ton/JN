@@ -42,6 +42,15 @@
         {dropdownitem href="{get_static_route id='jtl.php' secure=true}" rel="nofollow" title="{lang key='myAccount'}"}
             {lang key='myAccount'}
         {/dropdownitem}
+        {dropdownitem href="{get_static_route id='jtl.php' secure=true}?bestellungen=1" rel="nofollow" title="{lang key='myAccount'}"}
+            {lang key='myOrders'}
+        {/dropdownitem}
+        {dropdownitem href="{get_static_route id='jtl.php' secure=true}?editRechnungsadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
+            {lang key='myPersonalData'}
+        {/dropdownitem}
+        {dropdownitem href="{get_static_route id='jtl.php' secure=true}?wllist=1" rel="nofollow" title="{lang key='myAccount'}"}
+            {lang key='myWishlists'}
+        {/dropdownitem}
         {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}"}
             {lang key='logOut'}
         {/dropdownitem}

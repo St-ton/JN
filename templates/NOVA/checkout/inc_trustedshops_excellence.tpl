@@ -23,7 +23,7 @@
                     {input name="zip" type="hidden" value=$Kunde->cPLZ}
                     {input name="city" type="hidden" value=$Kunde->cOrt}
                     {input name="country" type="hidden" value=$Kunde->cLand}
-                    {input name="phone" type="hidden" value={$Kunde->cTel}
+                    {input name="phone" type="hidden" value=$Kunde->cTel}
                     {input name="KDNR" type="hidden" value=$Kunde->cKundenNr}
                     {input name="amount" type="hidden" value=$Bestellung->fGesamtsummeKundenwaehrung}
                     {input name="curr" type="hidden" value=$Bestellung->Waehrung->cISO}

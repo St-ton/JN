@@ -3,17 +3,22 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 <fieldset>
-    <legend>
+    <legend class="mb-5">
         {if isset($checkout)}
             {lang key='proceedNewCustomer' section='checkout'}
+        {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
+            {lang key='myPersonalData'}
         {else}
             {lang key='address' section='account data'}
         {/if}
     </legend>
     {* salutation / title *}
     {row}
+        {col md=2}
+            <div class="h5">{lang key='name'}</div>
+        {/col}
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
-            {col md=6}
+            {col md=5}
                 {formgroup class="{if isset($fehlendeAngaben.anrede)} has-error{/if}" label-for="salutation" label="{lang key='salutation' section='account data'}"}
                 {select name="anrede" id="salutation" required=true autocomplete="billing sex"}
                     <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
@@ -22,7 +27,7 @@
                 {/select}
                 {if isset($fehlendeAngaben.anrede)}
                     <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                        {lang key='fillOut' section='global'}
+                        {lang key='fillOut'}
                     </div>
                 {/if}
                 {/formgroup}
@@ -30,7 +35,7 @@
         {/if}
 
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_titel !== 'N'}
-            {col cols=12 md=6}
+            {col cols=12 md=5}
                 {if isset($cPost_var['titel'])}
                     {assign var=inputVal_title value=$cPost_var['titel']}
                 {elseif isset($Kunde->cTitel)}
@@ -48,7 +53,8 @@
     {/row}
     {* firstname lastname *}
     {row}
-        {col cols=12 md=6}
+        {col md=2}{/col}
+        {col cols=12 md=5}
             {if isset($cPost_var['vorname'])}
                 {assign var=inputVal_firstName value=$cPost_var['vorname']}
             {elseif isset($Kunde->cVorname)}
@@ -62,7 +68,7 @@
                 ]
             }
         {/col}
-        {col cols=12 md=6}
+        {col cols=12 md=5}
             {if isset($cPost_var['nachname'])}
                 {assign var=inputVal_lastName value=$cPost_var['nachname']}
             {elseif isset($Kunde->cNachname)}
@@ -79,8 +85,9 @@
     {/row}
     {* firm / firmtext *}
     {row}
+        {col md=2}{/col}
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
-        {col cols=12 md=6}
+        {col cols=12 md=5}
             {if isset($cPost_var['firma'])}
                 {assign var=inputVal_firm value=$cPost_var['firma']}
             {elseif isset($Kunde->cFirma)}
@@ -97,7 +104,7 @@
         {/if}
 
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
-        {col cols=12 md=6}
+        {col cols=12 md=5}
             {if isset($cPost_var['firmazusatz'])}
                 {assign var=inputVal_firmext value=$cPost_var['firmazusatz']}
             {elseif isset($Kunde->cZusatz)}
@@ -113,9 +120,15 @@
         {/col}
         {/if}
     {/row}
+
+    <hr class="mt-3 mb-5">
+
     {* street / number *}
     {row}
-        {col cols=12 md=8}
+        {col md=2}
+            <div class="h5">{lang key='billingAdress' section='account data'}</div>
+        {/col}
+        {col cols=12 md=7}
             {if isset($cPost_var['strasse'])}
                 {assign var=inputVal_street value=$cPost_var['strasse']}
             {elseif isset($Kunde->cStrasse)}
@@ -130,7 +143,7 @@
             }
         {/col}
 
-        {col cols=12 md=4}
+        {col cols=12 md=3}
             {if isset($cPost_var['hausnummer'])}
                 {assign var=inputVal_streetnumber value=$cPost_var['hausnummer']}
             {elseif isset($Kunde->cHausnummer)}
@@ -148,7 +161,8 @@
     {* adress addition *}
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz !== 'N'}
         {row}
-            {col cols=12 md=6}
+            {col md=2}{/col}
+            {col cols=12 md=5}
                 {if isset($cPost_var['adresszusatz'])}
                     {assign var=inputVal_street2 value=$cPost_var['adresszusatz']}
                 {elseif isset($Kunde->cAdressZusatz)}
@@ -177,7 +191,8 @@
         {assign var=cIso value=''}
     {/if}
     {row}
-        {col cols=12 md=6}
+        {col md=2}{/col}
+        {col cols=12 md=5}
             {formgroup
                 class="{if isset($fehlendeAngaben.land)} has-error{/if}"
                 label-for="country"
@@ -205,7 +220,7 @@
             {else}
                 {assign var=cState value=''}
             {/if}
-            {col cols=12 md=6}
+            {col cols=12 md=5}
                 {formgroup class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
                     label-for="state"
                     label="{lang key='state' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
@@ -247,6 +262,7 @@
     {/row}
     {* zip / city *}
     {row}
+        {col md=2}{/col}
         {col cols=12 md=3}
             {formgroup
                 class="{if isset($fehlendeAngaben.plz)} has-error{/if}"
@@ -274,7 +290,7 @@
                 {/if}
             {/formgroup}
         {/col}
-        {col cols=12 md=6}
+        {col cols=12 md=5}
             {formgroup
                 class="{if isset($fehlendeAngaben.ort)} has-error{/if}"
                 label-for="city"
@@ -305,7 +321,8 @@
     {* UStID *}
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'N'}
     {row}
-        {col cols=12 md=6}
+        {col md=2}{/col}
+        {col cols=12 md=5}
             {formgroup
                 class="{if isset($fehlendeAngaben.ustid)} has-error{/if}"
                 label-for="ustid"
@@ -342,12 +359,14 @@
     {/row}
     {/if}
 </fieldset>
-
+<hr class="mt-3 mb-5">
 <fieldset>
-   <legend>{lang key='contactInformation' section='account data'}</legend>
     {* E-Mail *}
     {row}
-        {col cols=12 md=6}
+        {col md=2}
+            <div class="h5">{lang key='contactInformation' section='account data'}</div>
+        {/col}
+        {col cols=12 md=5}
             {if isset($cPost_var['email'])}
                 {assign var=inputVal_email value=$cPost_var['email']}
             {elseif isset($Kunde->cMail)}
@@ -365,8 +384,9 @@
     {* phone & fax *}
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'}
         {row}
+            {col md=2}{/col}
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N'}
-            {col cols=12 md=6}
+            {col cols=12 md=5}
                 {if isset($cPost_var['tel'])}
                     {assign var=inputVal_tel value=$cPost_var['tel']}
                 {elseif isset($Kunde->cTel)}
@@ -383,7 +403,7 @@
             {/if}
 
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'}
-            {col cols=12 md=6}
+            {col cols=12 md=5}
                 {if isset($cPost_var['fax'])}
                     {assign var=inputVal_fax value=$cPost_var['fax']}
                 {elseif isset($Kunde->cFax)}
@@ -403,8 +423,9 @@
 
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N' || $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
         {row}
+            {col md=2}{/col}
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N'}
-                {col cols=12 md=6}
+                {col cols=12 md=5}
                     {if isset($cPost_var['mobil'])}
                         {assign var=inputVal_mobile value=$cPost_var['mobil']}
                     {elseif isset($Kunde->cMobil)}
@@ -421,7 +442,7 @@
             {/if}
 
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
-                {col cols=12 md=6}
+                {col cols=12 md=5}
                     {if isset($cPost_var['www'])}
                         {assign var=inputVal_www value=$cPost_var['www']}
                     {elseif isset($Kunde->cWWW)}
@@ -441,7 +462,8 @@
 
     {if $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag !== 'N'}
         {row}
-            {col cols=12 md=6}
+            {col md=2}{/col}
+            {col cols=12 md=5}
                 {if isset($cPost_var['geburtstag'])}
                     {assign var=inputVal_birthday value=$cPost_var['geburtstag']}
                 {elseif isset($Kunde->dGeburtstag_formatted)}
@@ -459,9 +481,13 @@
     {/if}
 </fieldset>
 {if $Einstellungen.kundenfeld.kundenfeld_anzeigen === 'Y' && !empty($oKundenfeld_arr)}
+<hr class="mt-3 mb-5">
 <fieldset>
     {row}
-        {col cols=12 md=6}
+        {col md=2}
+            <div class="h5">{lang key='miscellaneous'}</div>
+        {/col}
+        {col cols=12 md=5}
             {if $step === 'formular' || $step === 'edit_customer_address' || $step === 'Lieferadresse' || $step === 'rechnungsdaten'}
                 {foreach $oKundenfeld_arr as $oKundenfeld}
                     {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}

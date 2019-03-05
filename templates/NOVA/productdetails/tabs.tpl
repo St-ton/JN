@@ -74,7 +74,7 @@
 {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
 || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
     {if $tabanzeige}
-        {tabs id="product-tabs" class="nav nav-tabs" swipeable=true}
+        {tabs id="product-tabs" swipeable=true}
         {if $useDescription}
             {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc" class="nav-item" swipeable=true}
                 <div id="tab-description">

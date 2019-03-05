@@ -19,7 +19,7 @@
                     {/if}
                     {block name='searchspecial-overlay'}
                         {if isset($Artikel->oSuchspecialBild)}
-                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_XS) alt=$alt}
+                            {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
                         {/if}
                     {/block}
 
@@ -61,7 +61,7 @@
         {/col}
         {col cols=12 md=5 class="product-detail text-center text-md-left"}
             {block name='product-title'}
-                <div class="h4 title" itemprop="name">
+                <div class="h4 title mb-3" itemprop="name">
                     {link href=$Artikel->cURLFull}{$Artikel->cName}{/link}
                 </div>
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
@@ -186,8 +186,10 @@
             <div class="product-detail-cell" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                 <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                 {block name='form-basket'}
-                    {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
-                    <div class="delivery-status">
+                    <div class="mb-3">
+                        {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
+                    </div>
+                    <div class="delivery-status mb-3">
                         {block name='delivery-status'}
                             {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
                             {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
@@ -221,11 +223,11 @@
                             {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                                 <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
                             {elseif $anzeige === 'ampel'}
-                                <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->AmpelText}</small></div>
+                                <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}">{$Artikel->Lageranzeige->AmpelText}</div>
                             {/if}
                             {if $Artikel->cEstimatedDelivery}
                                 <div class="estimated_delivery d-none d-sm-block">
-                                    <small>{lang key='shippingTime'}: {$Artikel->cEstimatedDelivery}</small>
+                                    {lang key='shippingTime'}: {$Artikel->cEstimatedDelivery}
                                 </div>
                             {/if}
                         {/block}

@@ -24,13 +24,13 @@
             <div class="product-info-inner">
                 <div class="product-headline d-none d-sm-block">
                     {block name='productdetails-info-product-title'}
-                        <h1 class="product-title" itemprop="name">{$Artikel->cName}</h1>
+                        <h1 class="product-title mb-3" itemprop="name">{$Artikel->cName}</h1>
                     {/block}
                 </div>
 
                 {block name='productdetails-info-essential-wrapper'}
                 {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
-                    {row class="info-essential mb-2"}
+                    {row class="info-essential mb-3"}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                             {block name='productdetails-info-rating-wrapper'}
                                 {col class="rating-wrapper" itemprop="aggregateRating" itemscope=true itemtype="http://schema.org/AggregateRating"}
@@ -49,8 +49,8 @@
                         {/if}
                         {block name='productdetails-info-essential'}
                             {if isset($Artikel->cArtNr) || isset($Artikel->dMHD)}
-                                {col cols=12}
-                                    <p class="text-muted product-sku">{lang key='sortProductno'}: <span
+                                {col cols=12 class='product-sku'}
+                                    <p class="text-muted mb-0">{lang key='sortProductno'}: <span
                                                 itemprop="sku">{$Artikel->cArtNr}</span></p>
                                     {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                                         <p title="{lang key='productMHDTool'}"
@@ -118,14 +118,14 @@
                 {block name='productdetails-info-description-wrapper'}
                 {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                     {block name='productdetails-info-description'}
-                        <div class="shortdesc mb-5 d-none d-md-flex" itemprop="description">
+                        <div class="shortdesc mb-2 d-none d-md-flex" itemprop="description">
                             {$Artikel->cKurzBeschreibung}
                         </div>
                     {/block}
                 {/if}
                 {/block}
 
-                <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <div class="product-offer mb-5" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                     <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                     {block name='productdetails-info-hidden'}
                         {if !($Artikel->nIstVater)}
@@ -152,7 +152,7 @@
                         {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                     {/block}
 
-                    {row class="mb-5"}
+                    {row}
                         {block name='productdetails-info-price'}
                             {col cols=12}
                                 {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
@@ -171,7 +171,6 @@
                     {if !$Artikel->bHasKonfig}
                         {include file='productdetails/basket.tpl'}
                     {/if}
-                    <hr>
                 </div>
             </div>{* /product-info-inner *}
             {/block}{* productdetails-info *}

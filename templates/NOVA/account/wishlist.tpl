@@ -74,7 +74,10 @@
                     {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                         <td width="1%"></td>
                         <td class="text-right">
-                            {link href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-secondary" title="{lang key='wishlistremoveItem' section='login'}"}
+                            {link href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
+                                class="btn btn-secondary"
+                                title="{lang key='wishlistremoveItem' section='login'}"
+                                data=["toggle" => "tooltip", "placement" => "bottom"]}
                                 <span class="fa fa-trash-o"></span>
                             {/link}
                         </td>
@@ -90,6 +93,7 @@
                                         class="btn btn-secondary"
                                         href=$CWunschlistePos->Artikel->cURLFull
                                         title="{lang key='product' section='global'} {lang key='configure' section='global'}"
+                                        data=["toggle" => "tooltip", "placement" => "bottom"]
                                     }
                                         <span class="fa fa-gears"></span>
                                     {/link}
@@ -98,6 +102,7 @@
                                         class="btn btn-primary"
                                         href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
                                         title="{lang key='wishlistaddToCart' section='login'}"
+                                        data=["toggle" => "tooltip", "placement" => "bottom"]
                                     }
                                         <span class="fas fa-shopping-cart"></span>
                                     {/link}
@@ -106,6 +111,7 @@
                                     class="btn btn-secondary"
                                     href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
                                     title="{lang key='wishlistremoveItem' section='login'}"
+                                    data=["toggle" => "tooltip", "placement" => "bottom"]
                                 }
                                     <span class="fa fa-trash-alt"></span>
                                 {/link}
@@ -125,11 +131,19 @@
                             {input type="text" name="wishlist-url" readonly=true value="{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}"}
                             {buttongroup}
                                 {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
-                                    {button type="submit" name="wlvm" value="1" title="{lang key='wishlistViaEmail' section='login'}"}
+                                    {button type="submit"
+                                        name="wlvm"
+                                        value="1"
+                                        title="{lang key='wishlistViaEmail' section='login'}"
+                                        data=["toggle" => "tooltip", "placement" => "bottom"]}
                                        <i class="fa fa-envelope"></i>
                                    {/button}
                                 {/if}
-                                {button type="submit" name="wlAction" value="setPrivate" title="{lang key='wishlistSetPrivate' section='login'}"}
+                                {button type="submit"
+                                    name="wlAction"
+                                    value="setPrivate"
+                                    title="{lang key='wishlistSetPrivate' section='login'}"
+                                    data=["toggle" => "tooltip", "placement" => "bottom"]}
                                     <i class="fa fa-eye-slash"></i> <span class="d-none d-md-inline-block">{lang key='wishlistSetPrivate' section='login'}</span>
                                 {/button}
                             {/buttongroup}
@@ -148,10 +162,11 @@
                         href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlpah=1{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
                         type="submit"
                         title="{lang key='wishlistAddAllToCart' section='login'}"
+                        data=["toggle" => "tooltip", "placement" => "bottom"]
                     }
                         <i class="fas fa-shopping-cart"></i>
                     {/link}
-                    {button type="submit" title="{lang key='wishlistUpdate' section='login'}"}
+                    {button type="submit" title="{lang key='wishlistUpdate' section='login'}" data=["toggle" => "tooltip", "placement" => "bottom"]}
                         <i class="fa fa-sync"></i>
                     {/button}
                     {link
@@ -159,6 +174,7 @@
                         href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wldl=1"
                         type="submit"
                         title="{lang key='wishlistDelAll' section='login'}"
+                        data=["toggle" => "tooltip", "placement" => "bottom"]
                     }
                         <i class="fa fa-trash-alt"></i>
                     {/link}

@@ -25,21 +25,42 @@
                                 {input type="hidden" name="wl" value=$Wunschliste->kWunschliste}
                                 {buttongroup}
                                     {if $Wunschliste->nStandard != 1}
-                                        {button size="sm" type="submit" name="wls" value=$Wunschliste->kWunschliste title="{lang key='wishlistStandard' section='login'}"}
+                                        {button size="sm"
+                                            type="submit"
+                                            name="wls"
+                                            value=$Wunschliste->kWunschliste
+                                            title="{lang key='wishlistStandard' section='login'}"
+                                            data=["toggle" => "tooltip", "placement" => "bottom"]}
                                             <i class="fa fa-ok"></i> {lang key='wishlistStandard' section='login'}
                                         {/button}
                                     {/if}
                                     {if $Wunschliste->nOeffentlich == 1}
-                                        {button size="sm" type="submit" name="wlAction" value="setPrivate" title="{lang key='wishlistPrivat' section='login'}"}
+                                        {button size="sm"
+                                            type="submit"
+                                            name="wlAction"
+                                            value="setPrivate"
+                                            title="{lang key='wishlistPrivat' section='login'}"
+                                            data=["toggle" => "tooltip", "placement" => "bottom"]}
                                             <i class="fa fa-eye-slash"></i> <span class="d-none d-md-inline-block">{lang key='wishlistSetPrivate' section='login'}</span>
                                         {/button}
                                     {/if}
                                     {if $Wunschliste->nOeffentlich == 0}
-                                        {button size="sm" type="submit" name="wlAction" value="setPublic" title="{lang key='wishlistNotPrivat' section='login'}"}
+                                        {button size="sm"
+                                            type="submit"
+                                            name="wlAction"
+                                            value="setPublic"
+                                            title="{lang key='wishlistNotPrivat' section='login'}"
+                                            data=["toggle" => "tooltip", "placement" => "bottom"]}
                                             <i class="fa fa-eye"></i> <span class="d-none d-md-inline-block">{lang key='wishlistNotPrivat' section='login'}</span>
                                         {/button}
                                     {/if}
-                                    {button size="sm" type="submit" variant="danger" name="wllo" value=$Wunschliste->kWunschliste title="{lang key='wishlisteDelete' section='login'}"}
+                                    {button size="sm"
+                                        type="submit"
+                                        variant="danger"
+                                        name="wllo"
+                                        value=$Wunschliste->kWunschliste
+                                        title="{lang key='wishlisteDelete' section='login'}"
+                                        data=["toggle" => "tooltip", "placement" => "bottom"]}
                                         <i class="fa fa-trash-alt"></i>
                                     {/button}
                                 {/buttongroup}

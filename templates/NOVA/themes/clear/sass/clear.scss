@@ -245,7 +245,9 @@ header,
         }
 
       }
-
+      a {
+        text-decoration: none;
+      }
     }
     .table {
       width: auto;
@@ -2206,6 +2208,9 @@ table caption {
   }
 }
 
+#account .card{
+  border-color: $gray-lighter;
+}
 /* pagination */
 
 .pagination { justify-content: space-between; align-items: center;

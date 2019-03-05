@@ -288,7 +288,7 @@ header,
       overflow-y: auto;
       overflow-x: hidden;
       position: fixed;
-      top: 60px;
+      top: 55px;
       left: 0px;
       clear: both;
       background: white;
@@ -297,6 +297,9 @@ header,
       @include box-shadow(0 8px 10px -5px rgba(0, 0, 0, 0.15));
     }
   }
+}
+#shop-nav .nav-item:hover{
+  cursor:  pointer;
 }
 
 .tt-dropdown-menu, .tt-menu {
@@ -486,6 +489,7 @@ ul.partlist-items {
     .variation {
       background: #fff !important;
       color: $gray-700 !important;
+      min-width: 45px;
       img {
         max-width: 45px;
         max-height: 45px;

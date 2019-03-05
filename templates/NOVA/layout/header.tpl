@@ -167,7 +167,7 @@
                             </div>
                         {/col}
                         {col cols=12 md=5 order=6 order-md=2}
-                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2 d-md-flex float-md-right"}
+                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 d-md-flex float-md-right"}
                                 {include file='layout/header_nav_search.tpl'}
                             {/collapse}
                         {/col}

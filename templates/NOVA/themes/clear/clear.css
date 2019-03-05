@@ -14060,7 +14060,7 @@ header,
     overflow-y: auto;
     overflow-x: hidden;
     position: fixed;
-    top: 60px;
+    top: 55px;
     left: 0px;
     clear: both;
     background: white;
@@ -14069,6 +14069,10 @@ header,
     -webkit-box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
     box-shadow: 0 8px 10px -5px rgba(0, 0, 0, 0.15);
   }
+}
+
+#shop-nav .nav-item:hover {
+  cursor: pointer;
 }
 
 .tt-dropdown-menu, .tt-menu {
@@ -14248,6 +14252,7 @@ ul.partlist-items {
 .swatches.imgswatches .variation {
   background: #fff !important;
   color: #525252 !important;
+  min-width: 45px;
 }
 .swatches.imgswatches .variation img {
   max-width: 45px;

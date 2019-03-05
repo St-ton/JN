@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2"}
+{collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2"}
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
     {dropdownitem tag="div" right=true}
         <table class="table table-striped dropdown-cart-items">

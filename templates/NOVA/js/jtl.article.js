@@ -199,6 +199,7 @@
                         var newWidth = parseInt(maxHeight-otherElemHeight);
                         $('#gallery img').css('width', newWidth);
                     }*/
+
                 }
 
                 $('#gallery img').css('max-width', w);
@@ -230,7 +231,12 @@
 
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) == -1) {
                 addClickListener();
-
+                $(document).keyup(function(e) {
+                    if (e.key === "Escape") { // escape key maps to keycode `27`
+                        slickreset();
+                        addClickListener();
+                    }
+                });
                 $('#image_fullscreen_close').on('click', function(e) {
                     slickreset();
                     addClickListener();

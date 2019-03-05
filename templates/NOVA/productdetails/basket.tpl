@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
-    <div id="add-to-cart" class="d-print-none product-buy text-right{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
+    <div id="add-to-cart" class="d-print-none product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
     {block name='add-to-cart'}
         {if $Artikel->nErscheinendesProdukt}
             <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center">
@@ -36,16 +36,39 @@
                                     {$Artikel->cEinheit}
                                 {/inputgrouptext}
                             {/if}
-                            {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="ml-4" variant="primary"}
+                        {/inputgroupappend}
+                        {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="ml-4" variant="primary"}
+                            <span class="btn-basket-check">
+                                <span class="fas fa-shopping-cart d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
+                            </span>
+                            <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
+                                <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
+                            </svg>
+                        {/button}
+                    {/inputgroup}
+                    {*row}
+                        {col md=5}
+                            <div class="input-group" role="group">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-decrement btn-light form-control" type="button"><strong>-</strong></button>
+                                </div>
+                                <input type="text" style="text-align: center" class="form-control form-control quantity text-right" placeholder="">
+                                <div class="input-group-append">
+                                    <button class="btn btn-increment btn-light form-control" type="button"><strong>+</strong></button>
+                                </div>
+                            </div>
+                        {/col}
+                        {col md=7}
+                            {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="btn-animation btn-block" variant="primary"}
                                 <span class="btn-basket-check">
-                                    <span class="fas fa-shopping-cart d-block d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
+                                    <span class="fas fa-shopping-cart d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
                                 </span>
                                 <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
                                     <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
                                 </svg>
                             {/button}
-                        {/inputgroupappend}
-                    {/inputgroup}
+                        {/col}
+                    {/row*}
                 {/block}
             {/if}
         {/if}

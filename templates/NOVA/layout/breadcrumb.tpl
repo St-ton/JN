@@ -7,7 +7,7 @@
 {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp !== $smarty.const.PAGE_STARTSEITE && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG && $nSeitenTyp !== $smarty.const.PAGE_BESTELLSTATUS}
     {row class="breadcrumb-wrapper"}
         {col}
-            {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="pl-0"}
+            {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="pl-0 pt-0"}
                 {foreach $Brotnavi as $oItem}
                     {if $oItem@first}
                         {block name='breadcrumb-first-item'}

@@ -7,8 +7,8 @@
     {assign var=nImageMaxWidth value=480}
     {assign var=nImageMaxHeight value=320}
     {assign var=nImagePreviewWidth value=35}
-    <div id="uploads">
-        <div class="h3">{lang key='yourUploads'}</div>
+    <div id="uploads" class="mt-3">
+        <div class="h2">{lang key='yourUploads'}</div>
         <div class="table-responsive">
             <table class="table table-striped table-bordered" id="customerupload">
                 <thead>
@@ -32,7 +32,7 @@
                         <td class="text-center">
                             {form method="post" action="{get_static_route id='jtl.php'}"}
                                 {input name="kUpload" type="hidden" value=$oUpload->kUpload}
-                                {button size="sm" name=$oUpload->cName}<i class="fa fa-download"></i>{/button}
+                                {button type="submit" size="sm" name=$oUpload->cName}<i class="fa fa-download"></i>{/button}
                             {/form}
                         </td>
                     </tr>

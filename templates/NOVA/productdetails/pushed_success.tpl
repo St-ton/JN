@@ -9,7 +9,9 @@
         {assign var=pushedArtikel value=$Artikel}
     {/if}
     {assign var=showXSellingCart value=isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
-    <div class="h4 alert-heading bg-success text-success mb-3">{$cartNote}</div>
+    {if isset($cartNote)}
+        <div class="h4 alert-heading bg-success text-success mb-3">{$cartNote}</div>
+    {/if}
     {row}
         {col cols=12 md="{if $showXSellingCart}6{else}12{/if}" class="text-center mb-3"}
             {block name='pushed-success-product-cell'}

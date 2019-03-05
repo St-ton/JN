@@ -398,7 +398,9 @@ if ($customerID > 0) {
                     }
                 }
                 $smarty->assign('CWunschliste', Wunschliste::buildPrice(new Wunschliste($wishlist->kWunschliste)));
-                $step = 'wunschliste anzeigen';
+                if (Request::verifyGPCDataInt('accountPage') !== 1) {
+                    $step = 'wunschliste anzeigen';
+                }
             }
         }
     }
@@ -714,12 +716,14 @@ if ($customerID > 0) {
     }
 
     if ($step === 'mein Konto' || $step === 'wunschliste') {
-        $smarty->assign('oWunschliste_arr', Shop::Container()->getDB()->selectAll(
-            'twunschliste',
-            'kKunde',
-            $customerID,
-            '*',
-            'dErstellt DESC'
+        $smarty->assign('oWunschliste_arr', Shop::Container()->getDB()->queryPrepared(
+            'SELECT tw.*, COUNT(twp.kArtikel) AS productCount
+                FROM twunschliste AS tw
+                    LEFT JOIN twunschlistepos AS twp  USING (kWunschliste)
+                WHERE kKunde = :customerID
+                GROUP BY tw.kWunschliste',
+            ['customerID' => $customerID],
+            ReturnType::ARRAY_OF_OBJECTS
         ));
     }
 
@@ -737,7 +741,8 @@ if ($customerID > 0) {
             }
         }
         executeHook(HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
-        $smarty->assign('Lieferadressen', $deliveryAddresses);
+        $smarty->assign('Lieferadressen', $deliveryAddresses)
+               ->assign('compareList', new Vergleichsliste());
     }
 
     if ($step === 'rechnungsdaten') {
@@ -796,7 +801,12 @@ if ($customerID > 0) {
 }
 $alertNote = $alertHelper->alertTypeExists(Alert::TYPE_NOTE);
 if (!$alertNote && $step === 'mein Konto' && Frontend::getCustomer()->isLoggedIn()) {
-    $alertHelper->addAlert(Alert::TYPE_INFO, Shop::Lang()->get('myAccountDesc', 'login'), 'myAccountDesc');
+    $alertHelper->addAlert(
+        Alert::TYPE_INFO,
+        Shop::Lang()->get('myAccountDesc', 'login'),
+        'myAccountDesc',
+        ['showInAlertListTemplate' => false]
+    );
 }
 $cCanonicalURL = $linkHelper->getStaticRoute('jtl.php', true);
 $link          = $linkHelper->getPageLink($kLink);

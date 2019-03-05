@@ -199,6 +199,7 @@
                         var newWidth = parseInt(maxHeight-otherElemHeight);
                         $('#gallery img').css('width', newWidth);
                     }*/
+
                 }
 
                 $('#gallery img').css('max-width', w);
@@ -230,7 +231,12 @@
 
             if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) == -1) {
                 addClickListener();
-
+                $(document).keyup(function(e) {
+                    if (e.key === "Escape") { // escape key maps to keycode `27`
+                        slickreset();
+                        addClickListener();
+                    }
+                });
                 $('#image_fullscreen_close').on('click', function(e) {
                     slickreset();
                     addClickListener();
@@ -650,7 +656,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding
@@ -662,7 +669,8 @@
                                     title: response.cTitle,
                                     message: response.cNotification,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                         }
@@ -694,7 +702,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding
@@ -726,7 +735,8 @@
                     size: 'lg',
                     url: url,
                     keyboard: true,
-                    tabindex: -1
+                    tabindex: -1,
+                    buttons: false
                 });
                 e.stopPropagation();
 
@@ -768,7 +778,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding
@@ -780,7 +791,8 @@
                                     title: response.cTitle,
                                     message: response.cNotification,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                         }
@@ -812,7 +824,8 @@
                                     title: response.cTitle,
                                     message: errorlist,
                                     keyboard: true,
-                                    tabindex: -1
+                                    tabindex: -1,
+                                    buttons: false
                                 });
                                 break;
                             case 1: // forwarding

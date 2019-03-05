@@ -34,38 +34,8 @@
         </script>
     {/if}
 
-    {if !isset($showLoginPanel)}
-        {$showLoginPanel = true}
-    {/if}
-    {if $step === 'login' || (!empty($editRechnungsadresse))}
-        {$showLoginPanel = false}
-    {/if}
-
     {row id="account"}
-        {if $showLoginPanel}
-            {col cols=12 md=3}
-                {listgroup class="mb-5"}
-                    {listgroupitem href="{get_static_route id='jtl.php'}" active=($step === 'mein Konto')}
-                        {lang key='accountOverview' section='account data'}
-                    {/listgroupitem}
-                    {listgroupitem href="{get_static_route id='jtl.php' params=['bestellungen' => 1]}" active=($step === 'bestellung' || $step === 'bestellungen')}
-                        {lang key='orders' section='account data'}
-                    {/listgroupitem}
-                    {listgroupitem href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" active=($step === 'rechnungsdaten')}
-                        {lang key='address' section='account data'}
-                    {/listgroupitem}
-                    {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-                        {listgroupitem href="{get_static_route id='jtl.php' params=['wllist' => 1]}" active=($step|substr:0:11 === 'wunschliste')}
-                            {lang key='wishlists' section='account data'}
-                        {/listgroupitem}
-                    {/if}
-                    {listgroupitem href="{get_static_route id='jtl.php' params=['bewertungen' => 1]}" active=($step === 'bewertungen')}
-                        {lang key='allRatings'}
-                    {/listgroupitem}
-                {/listgroup}
-            {/col}
-        {/if}
-        {col cols=12 md="{if !$showLoginPanel}12{else}9{/if}"}
+        {col cols=12}
             {if $step === 'login'}
                 {include file='account/login.tpl'}
             {elseif $step === 'mein Konto'}

@@ -321,7 +321,8 @@ $(document).ready(function () {
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,
-            tabindex: -1
+            tabindex: -1,
+            buttons: false
         });
         e.stopPropagation();
         return false;

@@ -2481,7 +2481,9 @@ class Artikel
             ) {
                 $value->cName .= $outOfStock;
             }
-            if ($tmpVariation->cPfad && \file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad)) {
+            if ($tmpVariation->cPfad
+                && \file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad)
+            ) {
                 $this->cVariationenbilderVorhanden = true;
                 $value->cBildPfadMini              = \PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
                 $value->cBildPfad                  = \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
@@ -5485,8 +5487,8 @@ class Artikel
             return '';
         }
         // set default values
-        $minDeliveryDays = (\mb_strlen(\trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
-        $maxDeliveryDays = (\mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
+        $minDeliveryDays = \mb_strlen(\trim($favShipping->nMinLiefertage)) > 0 ? (int)$favShipping->nMinLiefertage : 2;
+        $maxDeliveryDays = \mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0 ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
         $nAllPieces = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl

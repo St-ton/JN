@@ -392,13 +392,19 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
             case KAMPAGNE_DEF_HIT:    // HIT
                 $data = Shop::Container()->getDB()->query(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                        $cSQLSELECT . ",
-                        tkampagnevorgang.cCustomData, DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                        $cSQLSELECT . ", tkampagnevorgang.cCustomData, 
+                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
                         IF(tbesucher.cIP IS NULL, tbesucherarchiv.cIP, tbesucher.cIP) AS cIP,
                         IF(tbesucher.cReferer IS NULL, tbesucherarchiv.cReferer, tbesucher.cReferer) AS cReferer,
-                        IF(tbesucher.cEinstiegsseite IS NULL, tbesucherarchiv.cEinstiegsseite, tbesucher.cEinstiegsseite) AS cEinstiegsseite,
+                        IF(tbesucher.cEinstiegsseite IS NULL, 
+                            tbesucherarchiv.cEinstiegsseite, 
+                            tbesucher.cEinstiegsseite
+                        ) AS cEinstiegsseite,
                         IF(tbesucher.cBrowser IS NULL, tbesucherarchiv.cBrowser, tbesucher.cBrowser) AS cBrowser,
-                        DATE_FORMAT(if(tbesucher.dZeit IS NULL, tbesucherarchiv.dZeit, tbesucher.dZeit), '%d.%m.%Y %H:%i') AS dErstellt_DE,
+                        DATE_FORMAT(IF(tbesucher.dZeit IS NULL,
+                            tbesucherarchiv.dZeit, 
+                            tbesucher.dZeit
+                        ), '%d.%m.%Y %H:%i') AS dErstellt_DE,
                         tbesucherbot.cUserAgent
                         FROM tkampagnevorgang
                         LEFT JOIN tbesucher ON tbesucher.kBesucher = tkampagnevorgang.kKey
@@ -442,8 +448,14 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
                         IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
                         IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
-                        IF(tbestellung.cZahlungsartName IS NULL, 'n.v.', tbestellung.cZahlungsartName) AS cZahlungsartName,
-                        IF(tbestellung.cVersandartName IS NULL, 'n.v.', tbestellung.cVersandartName) AS cVersandartName,
+                        IF(tbestellung.cZahlungsartName IS NULL,
+                            'n.v.',
+                             tbestellung.cZahlungsartName
+                         ) AS cZahlungsartName,
+                        IF(tbestellung.cVersandartName IS NULL,
+                            'n.v.', 
+                            tbestellung.cVersandartName
+                        ) AS cVersandartName,
                         IF(tbestellung.fGesamtsumme IS NULL, 'n.v.', tbestellung.fGesamtsumme) AS fGesamtsumme,
                         IF(tbestellung.cBestellNr IS NULL, 'n.v.', tbestellung.cBestellNr) AS cBestellNr,
                         IF(tbestellung.cStatus IS NULL, 'n.v.', tbestellung.cStatus) AS cStatus,
@@ -551,7 +563,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
                         IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
                         IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
-                        IF(tbestellung.cZahlungsartName IS NULL, 'n.v.', tbestellung.cZahlungsartName) AS cZahlungsartName,
+                        IF(tbestellung.cZahlungsartName IS NULL,
+                            'n.v.', 
+                            tbestellung.cZahlungsartName
+                        ) AS cZahlungsartName,
                         IF(tbestellung.cVersandartName IS NULL, 'n.v.', tbestellung.cVersandartName) AS cVersandartName,
                         IF(tbestellung.fGesamtsumme IS NULL, 'n.v.', tbestellung.fGesamtsumme) AS fGesamtsumme,
                         IF(tbestellung.cBestellNr IS NULL, 'n.v.', tbestellung.cBestellNr) AS cBestellNr,
@@ -607,17 +622,27 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                         $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tproduktanfragehistory.cVorname IS NULL, 'n.v.', tproduktanfragehistory.cVorname) AS cVorname,
-                        IF(tproduktanfragehistory.cNachname IS NULL, 'n.v.', tproduktanfragehistory.cNachname) AS cNachname,
+                        IF(tproduktanfragehistory.cVorname IS NULL,
+                            'n.v.',
+                            tproduktanfragehistory.cVorname
+                        ) AS cVorname,
+                        IF(tproduktanfragehistory.cNachname IS NULL, 
+                            'n.v.', 
+                            tproduktanfragehistory.cNachname
+                        ) AS cNachname,
                         IF(tproduktanfragehistory.cFirma IS NULL, 'n.v.', tproduktanfragehistory.cFirma) AS cFirma,
                         IF(tproduktanfragehistory.cTel IS NULL, 'n.v.', tproduktanfragehistory.cTel) AS cTel,
                         IF(tproduktanfragehistory.cMail IS NULL, 'n.v.', tproduktanfragehistory.cMail) AS cMail,
-                        IF(tproduktanfragehistory.cNachricht IS NULL, 'n.v.', tproduktanfragehistory.cNachricht) AS cNachricht,
+                        IF(tproduktanfragehistory.cNachricht IS NULL,
+                            'n.v.', 
+                            tproduktanfragehistory.cNachricht
+                        ) AS cNachricht,
                         IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
                         IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
                         DATE_FORMAT(tproduktanfragehistory.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                         FROM tkampagnevorgang
-                        LEFT JOIN tproduktanfragehistory ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
+                        LEFT JOIN tproduktanfragehistory 
+                            ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
                         LEFT JOIN tartikel ON tartikel.kArtikel = tproduktanfragehistory.kArtikel
                         " . $cSQLWHERE . '
                             AND kKampagne = ' . (int)$kKampagne . '
@@ -647,16 +672,29 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                         $cSQLSELECT . ",
                         DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tverfuegbarkeitsbenachrichtigung.cVorname IS NULL, 'n.v.', tverfuegbarkeitsbenachrichtigung.cVorname) AS cVorname,
-                        IF(tverfuegbarkeitsbenachrichtigung.cNachname IS NULL, 'n.v.', tverfuegbarkeitsbenachrichtigung.cNachname) AS cNachname,
-                        IF(tverfuegbarkeitsbenachrichtigung.cMail IS NULL, 'n.v.', tverfuegbarkeitsbenachrichtigung.cMail) AS cMail,
-                        IF(tverfuegbarkeitsbenachrichtigung.cAbgeholt IS NULL, 'n.v.', tverfuegbarkeitsbenachrichtigung.cAbgeholt) AS cAbgeholt,
+                        IF(tverfuegbarkeitsbenachrichtigung.cVorname IS NULL,
+                            'n.v.',
+                             tverfuegbarkeitsbenachrichtigung.cVorname
+                        ) AS cVorname,
+                        IF(tverfuegbarkeitsbenachrichtigung.cNachname IS NULL,
+                            'n.v.',
+                             tverfuegbarkeitsbenachrichtigung.cNachname
+                        ) AS cNachname,
+                        IF(tverfuegbarkeitsbenachrichtigung.cMail IS NULL, 
+                            'n.v.',
+                            tverfuegbarkeitsbenachrichtigung.cMail
+                        ) AS cMail,
+                        IF(tverfuegbarkeitsbenachrichtigung.cAbgeholt IS NULL,
+                            'n.v.',
+                            tverfuegbarkeitsbenachrichtigung.cAbgeholt
+                        ) AS cAbgeholt,
                         IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
                         IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
                         DATE_FORMAT(tverfuegbarkeitsbenachrichtigung.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                         FROM tkampagnevorgang
                         LEFT JOIN tverfuegbarkeitsbenachrichtigung 
-                                ON tverfuegbarkeitsbenachrichtigung.kVerfuegbarkeitsbenachrichtigung = tkampagnevorgang.kKey
+                                ON tverfuegbarkeitsbenachrichtigung.kVerfuegbarkeitsbenachrichtigung =
+                                    tkampagnevorgang.kKey
                         LEFT JOIN tartikel 
                                 ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
                         " . $cSQLWHERE . '
@@ -838,7 +876,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         IF(tnewsletter.cBetreff IS NULL, 'n.v.', tnewsletter.cBetreff) AS cBetreff,
                         DATE_FORMAT(tnewslettertrack.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltTrack_DE,
                         IF(tnewsletterempfaenger.cVorname IS NULL, 'n.v.', tnewsletterempfaenger.cVorname) AS cVorname,
-                        IF(tnewsletterempfaenger.cNachname IS NULL, 'n.v.', tnewsletterempfaenger.cNachname) AS cNachname,
+                        IF(tnewsletterempfaenger.cNachname IS NULL,
+                            'n.v.',
+                            tnewsletterempfaenger.cNachname
+                        ) AS cNachname,
                         IF(tnewsletterempfaenger.cEmail IS NULL, 'n.v.', tnewsletterempfaenger.cEmail) AS cEmail
                         FROM tkampagnevorgang
                         LEFT JOIN tnewslettertrack ON tnewslettertrack.kNewsletterTrack = tkampagnevorgang.kKey
@@ -1101,9 +1142,9 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
+                $parts = Date::getDateParts($oDate->cStampNew);
 
-                return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
+                return $parts['cJahr'] . '-' . $parts['cMonat'] . '-' . $parts['cTag'];
                 break;
             case 2:    // Woche
                 $oDate = Shop::Container()->getDB()->query(
@@ -1117,9 +1158,9 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
+                $parts = Date::getDateParts($oDate->cStampNew);
 
-                return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
+                return $parts['cJahr'] . '-' . $parts['cMonat'] . '-' . $parts['cTag'];
                 break;
             case 3:    // Tag
                 $oDate = Shop::Container()->getDB()->query(
@@ -1133,9 +1174,9 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
                     return date('Y-m-d');
                 }
 
-                $cDatum_arr = Date::getDateParts($oDate->cStampNew);
+                $parts = Date::getDateParts($oDate->cStampNew);
 
-                return $cDatum_arr['cJahr'] . '-' . $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag'];
+                return $parts['cJahr'] . '-' . $parts['cMonat'] . '-' . $parts['cTag'];
                 break;
         }
     }

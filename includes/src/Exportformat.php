@@ -1389,7 +1389,8 @@ class Exportformat
                 \fclose($datei);
                 if (\copy(
                     \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)
+                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
+                )
                 ) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
                 } else {
@@ -1442,7 +1443,8 @@ class Exportformat
                 \fclose($datei);
                 if (\copy(
                     \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
-                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)
+                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
+                )
                 ) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
                 }

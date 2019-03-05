@@ -791,12 +791,14 @@ class Wunschliste
         foreach ($positions as $position) {
             $kWunschlistePos = (int)$position->kWunschlistePos;
             // Ist ein Kommentar vorhanden
-            if (\mb_strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
+            if (isset($_POST['Kommentar_' . $kWunschlistePos])) {
                 $upd             = new stdClass();
                 $upd->cKommentar = Text::htmlentities(
                     Text::filterXSS($db->escape(\mb_substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))
                 );
                 $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $upd);
+            } else {
+                break;
             }
             // Ist eine Anzahl gesezt
             if ((int)$_POST['Anzahl_' . $kWunschlistePos] > 0) {

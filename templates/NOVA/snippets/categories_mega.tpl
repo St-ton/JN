@@ -168,7 +168,7 @@
                             {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller)}
                                 <div class="category-wrapper manufacturer mt-3">
                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
-                                        <div class="d-none d-md-block">
+                                        <div class="d-none d-md-block mb-3">
                                             {link href=$hst->cURLFull title=$hst->cSeo}
                                                 {image lazy=true data=["src" => $hst->cBildURLNormal]
                                                      src="{$imageBaseURL}gfx/trans.png" alt=$hst->cName|escape:'html'}

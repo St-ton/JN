@@ -100,7 +100,7 @@
 
 {has_boxes position='left' assign='hasLeftPanel'}
 {block name='body-tag'}
-    <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
+    <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}{if $isFluidTemplate} class="unboxed-layout"{/if}>
 {/block}
 
 {if !$bExclusive}
@@ -113,12 +113,11 @@
             {include file='layout/header_composer_menu.tpl'}
         {/if}
         {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
-        <header class="d-print-none container-fluid {if $isSticky}sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
+        <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
             {block name='header-container-inner'}
-                {if !$isFluidTemplate}
-                    <div class="container px-0 px-lg-3 clearfix">
-                {/if}
+
+                <div class="container px-0 px-lg-3 clearfix">
                 {block name='header-branding-top-bar'}
                     <div id="top-bar" class="text-right d-none d-md-block">
                         {include file='layout/header_top_bar.tpl'}
@@ -175,9 +174,7 @@
 
                 {/block}
 
-                {if !$isFluidTemplate}
-                    </div>{* /container-block *}
-                {/if}
+                </div>
             {/block}
         </header>
     {/block}
@@ -206,11 +203,11 @@
     {/if}
 {/block}
 {block name='main-wrapper-starttag'}
-    <main id="main-wrapper" class="container{if $isFluidTemplate}-fluid{/if}{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if} mt-0 mt-md-6 pt-4 px-4">
+    <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
 {/block}
 {block name='content-all-starttags'}
     {block name='content-wrapper-starttag'}
-        <div id="content-wrapper">
+        <div id="content-wrapper" class="container mt-0 mt-md-6 pt-4 px-4">
     {/block}
 
     {block name='product-pagination'}

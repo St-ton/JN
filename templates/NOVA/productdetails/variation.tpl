@@ -73,7 +73,7 @@
                             !empty($Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar) && $Artikel->VariationenOhneFreifeld[$i]->Werte[$y]->nNichtLieferbar == 1}
                             {else}
                                 {block name='productdetails-info-variation-radio'}
-                                    <div class="custom-control custom-radio">
+                                    <div class="custom-control custom-radio mb-1">
                                         <input type="radio"
                                             class="custom-control-input"
                                             name="eigenschaftwert[{$Variation->kEigenschaft}]"

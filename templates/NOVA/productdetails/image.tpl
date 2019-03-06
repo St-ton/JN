@@ -12,19 +12,19 @@
             {if !($Artikel->nIstVater && $Artikel->kVaterArtikel == 0)}
                 <div class="actions btn-group btn-group-xs btn-group-justified" data-toggle="product-actions">
                     {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
-                        {button name="Vergleichsliste" type="submit" class="compare badge mr-3 mt-3"
+                        {button name="Vergleichsliste" type="submit" class="compare badge badge-circle"
                         title="{lang key='addToCompare' section='productOverview'}"
                         data=["toggle"=>"tooltip", "placement"=>"top"]
                         }
-                            {image class="svg" src="{$imageBaseURL}{$currentTemplateDir}themes/base/images/compare.svg" alt="{lang key='addToCompare' section='productOverview'}"}
+                            <span class="far fa-list-alt"></span>
                         {/button}
                     {/if}
                     {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-                        {button name="Wunschliste" type="submit" class="wishlist badge mr-3 mt-3"
+                        {button name="Wunschliste" type="submit" class="wishlist badge badge-circle"
                         title="{lang key='addToWishlist' section='productDetails'}"
                         data=["toggle"=>"tooltip", "placement"=>"top"]
                         }
-                            {image class="svg" src="{$imageBaseURL}{$currentTemplateDir}themes/base/images/wishlist.svg" alt="{lang key='addToWishlist' section='productDetails'}"}
+                            <span class="far fa-heart"></span>
                         {/button}
                     {/if}
                 </div>

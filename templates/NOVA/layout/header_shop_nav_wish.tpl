@@ -10,16 +10,14 @@
         id='shop-nav-wish'
         class="btn-link d-none d-md-flex{if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}"
     }
-
-            <i class='fas fa-heart'></i>
-            {badge pill=true
-                variant="primary"
-                class="{if empty($smarty.session.Wunschliste->CWunschlistePos_arr)} d-none{/if}"
-                id="badge-wl-count"
-            }
-                {$smarty.session.Wunschliste->CWunschlistePos_arr|count}
-            {/badge}
-
+        <i class='fas fa-heart'></i>
+        {badge pill=true
+            variant="primary"
+            class="{if empty($smarty.session.Wunschliste->CWunschlistePos_arr)} d-none{/if}"
+            id="badge-wl-count"
+        }
+            {$smarty.session.Wunschliste->CWunschlistePos_arr|count}
+        {/badge}
     {/navitem}
     {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2"}
         {dropdownitem tag="div" right=true id="wishlist-dropdown-container"}

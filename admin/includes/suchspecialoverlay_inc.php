@@ -6,6 +6,7 @@
 
 use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Template;
 
 /**
  * @return array
@@ -55,6 +56,7 @@ function speicherEinstellung(
     $overlay = JTL\Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
     if ($overlay->getType() <= 0) {
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('invalidOverlay'), 'invalidOverlay');
         return false;
     }
     $overlay->setActive((int)$post['nAktiv'])
@@ -64,6 +66,19 @@ function speicherEinstellung(
             ->setPriority((int)$post['nPrio']);
 
     if (mb_strlen($files['name']) > 0) {
+        $template    = $template ?: Template::getInstance()->getName();
+        $overlayPath = \PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE;
+        if (!is_writable($overlayPath)) {
+            Shop::Container()->getAlertService()->addAlert(
+                \Alert::TYPE_ERROR,
+                sprintf(__('errorOverlayWritePermissions'), $template . \PFAD_OVERLAY_TEMPLATE),
+                'errorOverlayWritePermissions',
+                ['saveInSession' => true]
+            );
+
+            return false;
+        }
+
         loescheBild($overlay);
         $overlay->setImageName(
             JTL\Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
@@ -325,7 +340,7 @@ function speicherBild(array $files, JTL\Media\Image\Overlay $overlay): bool
                 ['size' => IMAGE_SIZE_XS,  'factor' => 1],
                 ['size' => IMAGE_SIZE_SM, 'factor' => 2],
                 ['size' => IMAGE_SIZE_MD,  'factor' => 3],
-                ['size' => IMAGE_SIZE_LG, 'factor' => 4],
+                ['size' => IMAGE_SIZE_LG, 'factor' => 4]
             ];
 
             foreach ($sizesToCreate as $sizeToCreate) {

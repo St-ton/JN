@@ -67,3 +67,6 @@ msgstr "Mobile Endgeräte"
 
 msgid "parentTemplateMissing"
 msgstr "Parent-Template fehlt"
+
+msgid "errorOverlayWritePermissions"
+msgstr "Overlays could not be created - please check write permissions of folder \"%s\" and activate the template again."

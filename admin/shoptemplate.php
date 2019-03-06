@@ -52,9 +52,6 @@ if (isset($_GET['check'])) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 }
-if (isset($_GET['uploadError'])) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileUpload'), 'errorFileUpload');
-}
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $scss      = new SimpleCSS();
     $dir       = basename($_POST['ordner']);
@@ -95,7 +92,6 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     }
     $tplConfXML   = $template->leseEinstellungenXML($dir, $parentFolder);
     $sectionCount = count($_POST['cSektion']);
-    $uploadError  = '';
     for ($i = 0; $i < $sectionCount; $i++) {
         $section = $db->escape($_POST['cSektion'][$i]);
         $name    = $db->escape($_POST['cName'][$i]);
@@ -127,7 +123,12 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                         if (mb_strpos($targetFile, $base) !== 0
                             || !move_uploaded_file($file['tmp_name'], $targetFile)
                         ) {
-                            $uploadError = '&uploadError=true';
+                            Shop::Container()->getAlertService()->addAlert(
+                                \Alert::TYPE_ERROR,
+                                __('errorFileUpload'),
+                                'errorFileUpload',
+                                ['saveInSession' => true]
+                            );
                         }
                         $break = true;
                         break;
@@ -159,7 +160,8 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     // re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
-        ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
+        ($bCheck ? 'true' : 'false'), true, 301);
+    exit;
 }
 if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $dir          = $db->escape($_GET['settings']);
@@ -188,6 +190,7 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
         // re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
+        exit;
     } else {
         // iterate over each "Section"
         foreach ($tplConfXML as $_conf) {

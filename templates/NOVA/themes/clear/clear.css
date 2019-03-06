@@ -13506,7 +13506,7 @@ aside .badge-light {
 .input-group .nmbr-cfg-group {
   display: flex;
   position: relative;
-  flex: 1 1 auto;
+  flex: 1 1 50%;
   width: 1%;
   margin-bottom: 0;
 }
@@ -13515,7 +13515,7 @@ aside .badge-light {
 .input-group .nmbr-cfg-group input.quantity {
   display: flex;
   position: relative;
-  flex: 1 1 auto;
+  flex: 1 1 50%;
   width: 1%;
   margin-bottom: 0;
 }

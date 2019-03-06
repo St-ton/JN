@@ -17,7 +17,7 @@
                     {break}
                 {/if}
                 {$id = '"a"'}
-                {listgroupitem data-id=$oArtikel->kArtikel}
+                {listgroupitem data-id=$oArtikel->kArtikel class="border-0"}
                     {link href=$oArtikel->cURLDEL class="remove float-right"
                         title="{lang section="comparelist" key="removeFromCompareList"}"
                         data=["name"=>"Vergleichsliste.remove",
@@ -35,7 +35,7 @@
             {/foreach}
         {/listgroup}
         {if $itemCount > 1}
-            <hr>
+            <hr class="my-4">
             {link
                 class="btn btn-secondary btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"
                 href="{get_static_route id='vergleichsliste.php'}"

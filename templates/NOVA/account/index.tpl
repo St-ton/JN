@@ -16,21 +16,20 @@
     {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
         <script type="text/javascript">
             $(window).on('load', function() {
-                $(function () {
-                    eModal.confirm({ldelim}
-                            message: '{lang key='basket2PersMerge' section='login'}',
-                            label1: '{lang key='no' section='global'}',
-                            label2: '{lang key='yes' section='global'}'
-                                {rdelim},
-                        '{lang key='basket' section='global'}',
-                        function (res) {
-                            if (res) {
-                                window.location = "{get_static_route id='jtl.php'}?basket2Pers=1"
-                            }
+                $(function() {
+                    var options = {
+                        message: '{lang key='basket2PersMerge' section='login'}',
+                        label1: '{lang key='no' section='global'}',
+                        label2: '{lang key='yes' section='global'}',
+                        title: '{lang key='basket' section='global'}'
+                    };
+                    eModal.confirm(options).then(
+                        function() {
+                            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
                         }
                     );
                 });
-            } );
+            });
         </script>
     {/if}
 

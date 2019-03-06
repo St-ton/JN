@@ -244,7 +244,7 @@
             {/row}
             {row}
                 {col cols=12}
-                    {collapse id="create-new-wishlist" visible=false class='mb-3'}
+                    {collapse id="create-new-wishlist" visible=($newWL === 1) class='mb-3'}
                         {form method="post" action="{get_static_route id='wunschliste.php'}"}
                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                             {inputgroup}

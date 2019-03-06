@@ -25,7 +25,7 @@
         },
         selector: {
             navBadgeUpdate: '#shop-nav-compare',
-            navBadgeUpdateWish: '#shop-nav-wish',
+            navContainerWish: '#wishlist-dorpdown-container',
             navBadgeAppend: '#shop-nav li.cart-menu',
             boxContainer: '#sidebox',
             boxContainerWish: '#sidebox',
@@ -845,23 +845,14 @@
         },
 
         updateWishlist: function(data) {
-            var $badgeUpd = $(this.options.selector.navBadgeUpdateWish);
-            var i = 0;
-            var badge = $(data.cNavBadge);
-            $badgeUpd.replaceWith(badge);
+            var $navContainerWish = $(this.options.selector.navContainerWish);
 
-            badge.on('click', '.popup', function (e) {
-                var url = e.currentTarget.href;
-                url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
-                eModal.ajax({
-                    size: 'lg',
-                    url: url,
-                    keyboard: true,
-                    tabindex: -1
-                });
-                e.stopPropagation();
-
-                return false;
+            $.evo.io().call('updateWishlistDropdown', [$navContainerWish], this, function(error, data) {
+                if (error) {
+                    return;
+                }
+                $navContainerWish.html(data.response.content);
+                $('#badge-wl-count').html(data.response.currentPosCount);
             });
 
             for (var ind in data.cBoxContainer) {

@@ -76,6 +76,8 @@ class Wunschliste
      */
     public $oKunde;
 
+    public const WISHLISTS_CACHE_ID = 'wishlistsWithCount';
+
     /**
      * @param int $kWunschliste
      */
@@ -771,6 +773,8 @@ class Wunschliste
      */
     public static function update(int $id): string
     {
+        Shop::Container()->getCache()->flush(self::WISHLISTS_CACHE_ID);
+
         $db = Shop::Container()->getDB();
         if (isset($_POST['WunschlisteName']) && \mb_strlen($_POST['WunschlisteName']) > 0) {
             $name = Text::htmlentities(
@@ -1097,5 +1101,29 @@ class Wunschliste
         $upd->nOeffentlich = 1;
         $upd->cURLID       = $urlID;
         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $wishlistID, $upd);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getWishlists(): array
+    {
+        if ($wishlists = Shop::Container()->getCache()->get(self::WISHLISTS_CACHE_ID)) {
+            return $wishlists;
+        }
+
+        $wishlists = Shop::Container()->getDB()->queryPrepared(
+            'SELECT tw.*, COUNT(twp.kArtikel) AS productCount
+                FROM twunschliste AS tw
+                    LEFT JOIN twunschlistepos AS twp USING (kWunschliste)
+                WHERE kKunde = :customerID
+                GROUP BY tw.kWunschliste
+                ORDER BY tw.nStandard DESC',
+            ['customerID' => Frontend::getCustomer()->getID()],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        Shop::Container()->getCache()->set(self::WISHLISTS_CACHE_ID, $wishlists, [CACHING_GROUP_OBJECT]);
+
+        return $wishlists;
     }
 }

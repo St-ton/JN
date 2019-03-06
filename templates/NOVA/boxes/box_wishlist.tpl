@@ -30,7 +30,7 @@
             {/foreach}
         {/listgroup}
         <hr>
-        {link href="{get_static_route id='jtl.php'}?wl={$oBox->getWishListID()}" class="btn btn-secondary btn-block btn-sm"}
+        {link href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-secondary btn-block btn-sm"}
             {lang key='goToWishlist'}
         {/link}
     {/card}

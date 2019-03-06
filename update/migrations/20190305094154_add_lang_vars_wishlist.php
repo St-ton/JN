@@ -42,6 +42,8 @@ class Migration_20190305094154 extends Migration implements IMigration
         $this->setLocalization('eng', 'wishlist', 'wlRemoveAllProducts', 'Remove all products');
         $this->setLocalization('ger', 'wishlist', 'setAsStandardWishlist', 'Setzen Sie die aktuelle Wunschliste als Standard');
         $this->setLocalization('eng', 'wishlist', 'setAsStandardWishlist', 'Set wishlist as standard');
+        $this->setLocalization('ger', 'wishlist', 'addNew', 'Neue erstellen');
+        $this->setLocalization('eng', 'wishlist', 'addNew', 'Create new');
     }
 
     public function down()
@@ -53,5 +55,6 @@ class Migration_20190305094154 extends Migration implements IMigration
         $this->removeLocalization('wlRemoveAllProducts');
         $this->removeLocalization('setAsStandardWishlist');
         $this->removeLocalization('rename');
+        $this->removeLocalization('addNew');
     }
 }

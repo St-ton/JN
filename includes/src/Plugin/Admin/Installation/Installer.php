@@ -175,6 +175,7 @@ final class Installer
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
             $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
             $loader         = new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            $bootstrapper   = $versionedDir . \OLD_BOOTSTRAPPER;
         } else {
             $version      = $baseNode['Version'];
             $basePath     = \PFAD_ROOT . \PLUGIN_DIR . $this->dir . \DIRECTORY_SEPARATOR;
@@ -182,6 +183,7 @@ final class Installer
             $versionNode  = [];
             $modern       = true;
             $loader       = new PluginLoader($this->db, Shop::Container()->getCache());
+            $bootstrapper = $versionedDir . \PLUGIN_BOOTSTRAPPER;
         }
         $tags = empty($baseNode['Install'][0]['FlushTags'])
             ? []
@@ -215,8 +217,7 @@ final class Installer
         $plugin->dErstellt            = $lastVersionKey !== null
             ? $versionNode[$lastVersionKey]['CreateDate']
             : $baseNode['CreateDate'];
-        $plugin->bBootstrap           = \is_file($versionedDir . 'bootstrap.php')
-            || \is_file($versionedDir . 'Bootstrap.php')  ? 1 : 0;
+        $plugin->bBootstrap           = \is_file($bootstrapper) ? 1 : 0;
         foreach ($tags as $_tag) {
             if (\defined(\trim($_tag))) {
                 $tagsToFlush[] = \constant(\trim($_tag));

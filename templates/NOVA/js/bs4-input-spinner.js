@@ -221,7 +221,7 @@
                 $input.prop("disabled", disabled)
                 $buttonIncrement.prop("disabled", disabled)
                 $buttonDecrement.prop("disabled", disabled)
-                $input.prop("class", "form-control " + $original.prop("class"))
+                $input.prop("class", $original.prop("class"))
                 // $inputGroup.prop("class", "input-group " + $original.prop("class") + " " + config.groupClass)
             }
 

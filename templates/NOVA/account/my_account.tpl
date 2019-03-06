@@ -85,7 +85,7 @@
 
 {row class='mb-5'}
     {col cols=12 md=6}
-        {card no-body=true}
+        {card no-body=true id='my-wishlists'}
             {cardheader class="bg-info"}
             {link class='text-decoration-none' href="{get_static_route id='wunschliste.php'}"}
                 {lang key='myWishlists'}

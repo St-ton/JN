@@ -57,4 +57,3 @@
         </div>
     </div>
 </form>
-<script type="text/javascript" src="{$currentTemplateDir}js/jquery.uploadify.js"></script>

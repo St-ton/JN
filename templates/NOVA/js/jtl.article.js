@@ -25,7 +25,7 @@
         },
         selector: {
             navBadgeUpdate: '#shop-nav-compare',
-            navContainerWish: '#wishlist-dorpdown-container',
+            navContainerWish: '#wishlist-dropdown-container',
             navBadgeWish: '#badge-wl-count',
             navBadgeAppend: '#shop-nav li.cart-menu',
             boxContainer: '#sidebox',

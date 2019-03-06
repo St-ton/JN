@@ -215,7 +215,8 @@ final class Installer
         $plugin->dErstellt            = $lastVersionKey !== null
             ? $versionNode[$lastVersionKey]['CreateDate']
             : $baseNode['CreateDate'];
-        $plugin->bBootstrap           = \is_file($versionedDir . 'bootstrap.php') ? 1 : 0;
+        $plugin->bBootstrap           = \is_file($versionedDir . 'bootstrap.php')
+            || \is_file($versionedDir . 'Bootstrap.php')  ? 1 : 0;
         foreach ($tags as $_tag) {
             if (\defined(\trim($_tag))) {
                 $tagsToFlush[] = \constant(\trim($_tag));

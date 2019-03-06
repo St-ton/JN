@@ -5,7 +5,7 @@
 {block name="head"}
 <head>
     {block name="head-meta"}
-        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+        <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
         <meta name="description" itemprop="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
         <meta name="keywords" itemprop="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -129,7 +129,7 @@
             </div>
          </div>
     {/if}
-    
+
     {block name="header"}
         <header class="hidden-print {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'}container-block{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
             <div class="container">
@@ -177,14 +177,14 @@
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 <div class="container">
             {/if}
-            
+
             {block name="header-category-nav"}
             <div class="category-nav navbar-wrapper hidden-xs">
                 {include file="layout/header_category_nav.tpl"}
             </div>{* /category-nav *}
             {/block}
-            
-            
+
+
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 </div>{* /container-block *}
             {/if}
@@ -197,7 +197,7 @@
     {block name="content-wrapper-starttag"}
     <div id="content-wrapper">
     {/block}
-    
+
     {block name="header-fluid-banner"}
         {assign var="isFluidBanner" value=isset($Einstellungen.template.theme.banner_full_width) && $Einstellungen.template.theme.banner_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oImageMap)}
         {if $isFluidBanner}
@@ -212,7 +212,7 @@
     {block name="content-container-starttag"}
     <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}{/if}">
     {/block}
-    
+
     {block name="content-container-block-starttag"}
     <div class="container-block{if !$isFluidContent} beveled{/if}">
     {/block}
@@ -227,15 +227,15 @@
         </div>
     {/if}
     {/block}
-    
+
     {block name="content-row-starttag"}
     <div class="row">
     {/block}
-    
+
     {block name="content-starttag"}
     <div id="content" class="col-xs-12{if isset($boxes.left) && !$bExclusive && !empty($boxes.left)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
     {/block}
-    
+
     {block name="header-breadcrumb"}
         {include file='layout/breadcrumb.tpl'}
     {/block}

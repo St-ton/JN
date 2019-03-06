@@ -218,7 +218,7 @@
                                         {/if}
 
                                         {if !$oGruppe->quantityEquals()}
-                                            <div class="quantity form-inline" data-id="{$kKonfiggruppe}" style="display:none">
+                                            <div class="quantity" data-id="{$kKonfiggruppe}" style="display:none">
                                                 {inputgroup}
                                                     {inputgroupaddon prepend=true}
                                                         {inputgrouptext}

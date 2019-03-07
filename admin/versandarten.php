@@ -29,6 +29,7 @@ $step               = 'uebersicht';
 $Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
 $alertHelper        = Shop::Container()->getAlertService();
+$countryHelper      = Shop::Container()->getCountryService();
 
 $missingShippingClassCombis = getMissingShippingClassCombi();
 $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
@@ -540,10 +541,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
 }
 
 if ($step === 'neue Versandart') {
-    $versandlaender = $db->query(
-        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    $versandlaender = $countryHelper->getCountrylist();
     if ($versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
         $smarty->assign('einheit', 'kg');
     }
@@ -738,7 +736,7 @@ if ($step === 'Zuschlagsliste') {
     $smarty->assign('Versandart', $Versandart)
            ->assign('Zuschlaege', $Zuschlaege)
            ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('Land', $db->select('tland', 'cISO', $cISO))
+           ->assign('Land', $countryHelper->getCountry($cISO))
            ->assign('sprachen', Sprache::getAllLanguages());
 }
 

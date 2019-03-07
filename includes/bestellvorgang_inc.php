@@ -2157,11 +2157,11 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
 
     $deliveryCountry = ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
-        ? Shop::Container()->getDB()->select('tland', 'cISO', $data['land'])
+        ? Shop::Container()->getCountryService()->getCountry($data['land'])
         : null;
 
-    if (isset($deliveryCountry->nEU)
-        && $deliveryCountry->nEU === '0'
+    if (isset($deliveryCountry)
+        && !$deliveryCountry->isEU()
         && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y'
     ) {
         //skip

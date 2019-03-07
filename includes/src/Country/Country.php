@@ -25,7 +25,8 @@ class Country
         'cDeutsch'   => 'Name',
         'cEnglisch'  => 'Name',
         'cKontinent' => 'continent',
-        'cIso'       => 'ISO'
+        'cIso'       => 'ISO',
+        'cName'      => 'Name'
     ];
 
     /**
@@ -90,6 +91,18 @@ class Country
     public function getNameForLangISO(string $LangISO): string
     {
         return locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $LangISO);
+    }
+
+    /**
+     * @param string $LangISO
+     * @return Country
+     */
+    public function setNameForLangISO(string $LangISO): self
+    {
+        $this->name    = $this->getNameForLangISO($LangISO);
+        $this->langISO = $LangISO;
+
+        return $this;
     }
 
     /**

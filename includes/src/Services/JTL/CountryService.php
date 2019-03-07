@@ -44,7 +44,7 @@ class CountryService implements CountryServiceInterface
 
         foreach ($countries as $country) {
             $contryTMP = new Country($country->cISO);
-            $contryTMP->setEU((int)$country->nEU === 1)
+            $contryTMP->setEU($country->nEU)
                       ->setContinent($country->cKontinent);
 
             $this->getCountryList()->push($contryTMP);
@@ -67,7 +67,7 @@ class CountryService implements CountryServiceInterface
      * @param string $ISO
      * @return Country
      */
-    public function getCountry(string $ISO): Country
+    public function getCountry(string $ISO): ?Country
     {
         return $this->getCountryList()->filter(function (Country $country) use ($ISO) {
             return $country->getISO() === $ISO;

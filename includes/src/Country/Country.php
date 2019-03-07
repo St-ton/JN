@@ -7,6 +7,7 @@
 namespace JTL\Country;
 
 use JTL\Shop;
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Country
@@ -14,13 +15,26 @@ use JTL\Shop;
  */
 class Country
 {
+    use MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected static $mapping = [
+        'nEU'        => 'EU',
+        'cDeutsch'   => 'Name',
+        'cEnglisch'  => 'Name',
+        'cKontinent' => 'continent',
+        'cIso'       => 'ISO'
+    ];
+
     /**
      * @var string
      */
     private $ISO;
 
     /**
-     * @var bool
+     * @var int
      */
     private $EU;
 
@@ -65,8 +79,16 @@ class Country
         $countryData = Shop::Container()->getDB()->select('tland', 'cISO', $this->getISO());
         if ($countryData !== null) {
             $this->setContinent($countryData->cKontinent)
-                 ->setEU((int)$countryData->nEU === 1);
+                 ->setEU($countryData->nEU);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEU(): bool
+    {
+        return $this->getEU() === 1;
     }
 
     /**
@@ -89,18 +111,18 @@ class Country
     }
 
     /**
-     * @return bool
+     * @return int
      */
-    public function isEU(): bool
+    public function getEU(): int
     {
         return $this->EU;
     }
 
     /**
-     * @param bool $EU
+     * @param int $EU
      * @return Country
      */
-    public function setEU(bool $EU): self
+    public function setEU(int $EU): self
     {
         $this->EU = $EU;
 

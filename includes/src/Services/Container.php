@@ -25,6 +25,7 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Services\JTL\NewsServiceInterface;
 use JTL\Services\JTL\PasswordServiceInterface;
+use JTL\Services\JTL\CountryServiceInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
@@ -204,5 +205,14 @@ class Container extends ContainerBase implements DefaultServicesInterface
     public function getDebugBar(): JTLDebugBar
     {
         return $this->get(JTLDebugBar::class);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getCountryService(): CountryServiceInterface
+    {
+        return $this->get(CountryServiceInterface::class);
     }
 }

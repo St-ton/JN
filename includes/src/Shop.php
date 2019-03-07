@@ -1932,6 +1932,8 @@ final class Shop
 
         $container->singleton(Services\JTL\PasswordServiceInterface::class, Services\JTL\PasswordService::class);
 
+        $container->singleton(Services\JTL\CountryServiceInterface::class, Services\JTL\CountryService::class);
+
         $container->singleton(Debug\JTLDebugBar::class, function (Container $container) {
             return new Debug\JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
         });

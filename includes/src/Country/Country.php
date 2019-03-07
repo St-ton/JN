@@ -47,8 +47,10 @@ class Country
      */
     public function __construct(string $ISO, bool $initFromDB = false)
     {
+        $langIso = $_SESSION['AdminAccount']->kSprache ?? Shop::Lang()->gibISO();
+
         $this->setISO($ISO);
-        $this->setLangISO(Shop::Lang()->gibISO() === 'ger' ? 'de' : 'en');
+        $this->setLangISO($langIso === 'ger' ? 'de' : 'en');
         $this->setName();
         if ($initFromDB) {
             $this->initFromDB();

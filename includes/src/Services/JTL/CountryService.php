@@ -49,6 +49,10 @@ class CountryService implements CountryServiceInterface
 
             $this->getCountryList()->push($contryTMP);
         }
+
+        $this->countryList = $this->getCountryList()->sortBy(function (Country $country) {
+            return $country->getName();
+        });
     }
 
     /**

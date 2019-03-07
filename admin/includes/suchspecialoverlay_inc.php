@@ -71,7 +71,7 @@ function speicherEinstellung(
         if (!is_writable($overlayPath)) {
             Shop::Container()->getAlertService()->addAlert(
                 \Alert::TYPE_ERROR,
-                sprintf(__('errorOverlayWritePermissions'), $template . \PFAD_OVERLAY_TEMPLATE),
+                sprintf(__('errorOverlayWritePermissions'), \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE),
                 'errorOverlayWritePermissions',
                 ['saveInSession' => true]
             );

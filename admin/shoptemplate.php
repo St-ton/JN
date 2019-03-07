@@ -112,23 +112,24 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                         if (!isset($_setting->cKey, $_setting->rawAttributes['target']) || $_setting->cKey !== $name) {
                             continue;
                         }
-                        // target folder
-                        $base = PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' .
-                            $_setting->rawAttributes['target'];
+                        $templatePath = PFAD_TEMPLATES . $dir . '/' . $_setting->rawAttributes['target'];
+                        $base         = PFAD_ROOT . $templatePath;
                         // optional target file name + extension
                         if (isset($_setting->rawAttributes['targetFileName'])) {
                             $value = $_setting->rawAttributes['targetFileName'];
                         }
                         $targetFile = $base . $value;
                         if (mb_strpos($targetFile, $base) !== 0
-                            || !move_uploaded_file($file['tmp_name'], $targetFile)
+                            || !is_writable($base)
                         ) {
                             Shop::Container()->getAlertService()->addAlert(
                                 \Alert::TYPE_ERROR,
-                                __('errorFileUpload'),
+                                sprintf(__('errorFileUpload'), $templatePath),
                                 'errorFileUpload',
                                 ['saveInSession' => true]
                             );
+                        } else {
+                            move_uploaded_file($file['tmp_name'], $targetFile);
                         }
                         $break = true;
                         break;

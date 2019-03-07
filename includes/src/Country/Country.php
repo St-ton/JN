@@ -84,6 +84,15 @@ class Country
     }
 
     /**
+     * @param string $LangISO
+     * @return string
+     */
+    public function getNameForLangISO(string $LangISO): string
+    {
+        return locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $LangISO);
+    }
+
+    /**
      * @return bool
      */
     public function isEU(): bool
@@ -161,7 +170,7 @@ class Country
      */
     public function setName(): self
     {
-        $this->name = locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $this->getLangISO());
+        $this->name = $this->getNameForLangISO($this->getLangISO());
 
         return $this;
     }

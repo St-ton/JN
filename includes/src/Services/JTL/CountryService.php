@@ -40,7 +40,7 @@ class CountryService implements CountryServiceInterface
 
     public function init(): void
     {
-        $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
+        $countries = $this->db->query('SELECT cISO, nEU, cKontinent FROM tland', ReturnType::ARRAY_OF_OBJECTS);
 
         foreach ($countries as $country) {
             $contryTMP = new Country($country->cISO);

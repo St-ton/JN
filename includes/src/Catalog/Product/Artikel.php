@@ -6166,45 +6166,30 @@ class Artikel
             ? $helper->getFreeShippingCountries($this->Preise->fVK[0], $kKundengruppe, $this->kVersandklasse)
             : '';
         if ($shippingFreeCountries) {
-            $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
-                return \mb_strlen($e) > 0 ? "'" .  \trim($e) . "'" : null;
+            $codes          = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
+                return \trim($e);
             }));
-            $count   = \count($codes);
-            $sql     = 'cISO IN (' . \implode(',', $codes) . ')';
-            $string  = '';
-            $cacheID = 'jtl_ola_' . \md5($sql);
+            $countriesAssoc = [];
+            $string         = '';
+            $cacheID        = 'jtl_ola_' . \md5($shippingFreeCountries);
             if (($countryData = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $countryData = Shop::Container()->getDB()->query(
-                    'SELECT cISO, cDeutsch, cEnglisch 
-                        FROM tland WHERE ' . $sql,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+                $countryData = Shop::Container()->getCountryService()->getFilteredCountryList($codes);
                 Shop::Container()->getCache()->set(
                     $cacheID,
                     $countryData,
                     [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
                 );
             }
-            $countriesAssoc = [];
-            $german         = (!isset($_SESSION['cISOSprache']) || Shop::getLanguageCode() === 'ger');
-            foreach ($countryData as $i => $country) {
+            foreach ($countryData as $country) {
                 if ($asString) {
-                    $string .= $german === true
-                        ? $country->cDeutsch
-                        : $country->cEnglisch;
-                    if ($count > ($i + 1)) {
-                        $string .= ', ';
-                    }
+                    $string .= $country->getName() . ', ';
                 } else {
-                    $string                         = $german === true
-                        ? $country->cDeutsch
-                        : $country->cEnglisch;
-                    $countriesAssoc[$country->cISO] = $string;
+                    $countriesAssoc[$country->getISO()] = $country->getName();
                 }
             }
 
             return $asString
-                ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', $string)
+                ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \rtrim($string, ', '))
                 : $countriesAssoc;
         }
 

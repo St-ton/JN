@@ -70,7 +70,24 @@ class CountryService implements CountryServiceInterface
     public function getCountry(string $ISO): ?Country
     {
         return $this->getCountryList()->filter(function (Country $country) use ($ISO) {
-            return $country->getISO() === $ISO;
+            return $country->getISO() === strtoupper($ISO);
         })->pop();
+    }
+
+    /**
+     * @param array $ISOToFilter
+     * @param bool $getAllIfEmpty
+     * @return Collection
+     */
+    public function getFilteredCountryList(array $ISOToFilter, bool $getAllIfEmpty = false): Collection
+    {
+        if ($getAllIfEmpty && empty($ISOToFilter)) {
+            return $this->getCountryList();
+        }
+        $filterItems = \array_map('strtoupper', $ISOToFilter);
+
+        return $this->getCountryList()->filter(function (Country $country) use ($filterItems) {
+            return \in_array($country->getISO(), $filterItems, true);
+        });
     }
 }

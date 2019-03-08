@@ -18,7 +18,7 @@
                         <div class="col">
                             {select name="land" id="country" placeholder=""}
                                 {foreach $laender as $land}
-                                    <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
+                                    <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->getISO() && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->getISO())}selected{/if}>{$land->getName()}</option>
                                 {/foreach}
                             {/select}
                         </div>

@@ -1205,9 +1205,9 @@ class Sprache
         if (\mb_strlen($iso) > 2) {
             return $iso;
         }
-        $column = Shop::getLanguageCode() === 'ger' ? 'cDeutsch' : 'cEnglisch';
+        $country = Shop::Container()->getCountryService()->getCountry($iso);
 
-        return $this->db->select('tland', 'cISO', $iso)->$column ?? $iso;
+        return $country !== null ? $country->getName() : $iso;
     }
 
     /**

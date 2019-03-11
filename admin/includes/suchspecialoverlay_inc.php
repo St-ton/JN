@@ -84,9 +84,20 @@ function speicherEinstellung(
             JTL\Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
             mappeFileTyp($files['type'])
         );
-        speicherBild($files, $overlay);
+        $imageCreated = speicherBild($files, $overlay);
     }
-    $overlay->save();
+    if (!isset($imageCreated) || $imageCreated) {
+        $overlay->save();
+    } else {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_ERROR,
+            __('errorFileUploadGeneral'),
+            'errorFileUploadGeneral',
+            ['saveInSession' => true]
+        );
+
+        return false;
+    }
 
     return true;
 }
@@ -303,8 +314,9 @@ function erstelleOverlay($image, $width, $height, $size, $transparency, $extensi
  * @param int    $transparency
  * @param string $extension
  * @param string $path
+ * @return bool
  */
-function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): void
+function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): bool
 {
 //    $conf = Shop::getSettings([CONF_BILDER]);
 //    $bSkalieren    = !($conf['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
@@ -313,7 +325,11 @@ function erstelleFixedOverlay(string $image, int $size, int $transparency, strin
     $factor           = $size / $width;
 
     $im = ladeOverlay($image, $size, $height * $factor, $transparency);
-    speicherOverlay($im, $extension, $path);
+    if (!speicherOverlay($im, $extension, $path)) {
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -347,13 +363,16 @@ function speicherBild(array $files, JTL\Media\Image\Overlay $overlay): bool
                 if (!is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
                     mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
                 }
-                erstelleFixedOverlay(
+                $imageCreated = erstelleFixedOverlay(
                     $original,
                     $overlay->getSize() * $sizeToCreate['factor'],
                     $overlay->getTransparance(),
                     $ext,
                     PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
                 );
+                if (!$imageCreated) {
+                    return false;
+                }
             }
 
             return true;

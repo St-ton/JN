@@ -1600,3 +1600,6 @@ msgstr "Einstiegsseite"
 
 msgid "origin"
 msgstr "Herkunft"
+
+msgid "errorFileUploadGeneral"
+msgstr "Fehler beim hochladen der Datei."

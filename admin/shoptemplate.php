@@ -119,17 +119,20 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                             $value = $_setting->rawAttributes['targetFileName'];
                         }
                         $targetFile = $base . $value;
-                        if (mb_strpos($targetFile, $base) !== 0
-                            || !is_writable($base)
-                        ) {
+                        if (!is_writable($base)) {
                             Shop::Container()->getAlertService()->addAlert(
                                 \Alert::TYPE_ERROR,
                                 sprintf(__('errorFileUpload'), $templatePath),
                                 'errorFileUpload',
                                 ['saveInSession' => true]
                             );
-                        } else {
-                            move_uploaded_file($file['tmp_name'], $targetFile);
+                        } elseif (!move_uploaded_file($file['tmp_name'], $targetFile)) {
+                            Shop::Container()->getAlertService()->addAlert(
+                                \Alert::TYPE_ERROR,
+                                __('errorFileUploadGeneral'),
+                                'errorFileUploadGeneral',
+                                ['saveInSession' => true]
+                            );
                         }
                         $break = true;
                         break;

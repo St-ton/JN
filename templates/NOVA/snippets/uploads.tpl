@@ -14,7 +14,7 @@
     {/if}
     <script type="text/javascript" src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/locales/{$uploaderLang}.js"></script>
 
-    {if $tplscope === "product"}
+    {if $tplscope === 'product'}
         <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
         {alert variant="info"}
             {lang key='maxUploadSize'}: <strong>{$cMaxUploadSize}</strong>

@@ -6,6 +6,7 @@
 
 use JTL\Helpers\Form;
 use JTL\Shop;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/../globalinclude.php';
 
@@ -18,11 +19,10 @@ function retCode($bOk)
 {
     die(json_encode(['status' => $bOk ? 'ok' : 'error']));
 }
-$session = \JTL\Session\Frontend::getInstance();
+$session = Frontend::getInstance();
 if (!Form::validateToken()) {
     retCode(0);
 }
-// upload file
 if (!empty($_FILES)) {
     if (!isset($_REQUEST['uniquename'], $_REQUEST['cname'])) {
         retCode(0);
@@ -45,19 +45,23 @@ if (!empty($_FILES)) {
         && mb_strpos($realPath . DS, PFAD_UPLOADS) === 0
         && move_uploaded_file($cTempFile, $cTargetFile)
     ) {
-        $oFile         = new stdClass();
-        $oFile->cName  = !empty($_REQUEST['variation'])
-            ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
-            : $_REQUEST['cname'] . '_' . $fileData['name'];
-        $oFile->nBytes = $fileData['size'];
-        $oFile->cKB    = round($fileData['size'] / 1024, 2);
+        $file = new stdClass();
+        if (isset($_REQUEST['prodID'])) {
+            $file->cName = (int)$_REQUEST['prodID'] . '_' . $cUnique . '.' . $sourceInfo['extension'];
+        } else {
+            $file->cName  = !empty($_REQUEST['variation'])
+                ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
+                : $_REQUEST['cname'] . '_' . $fileData['name'];
+        }
+        $file->nBytes = $fileData['size'];
+        $file->cKB    = round($fileData['size'] / 1024, 2);
 
         if (!isset($_SESSION['Uploader'])) {
             $_SESSION['Uploader'] = [];
         }
-        $_SESSION['Uploader'][$cUnique] = $oFile;
+        $_SESSION['Uploader'][$cUnique] = $file;
         if (isset($_REQUEST['uploader'])) {
-            die(json_encode($oFile));
+            die(json_encode($file));
         }
         retCode(1);
     }

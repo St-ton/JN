@@ -65,6 +65,7 @@
                                     jtl_token:  "{$smarty.session.jtl_token}",
                                     uniquename: "{$oUploadSchema->cUnique}",
                                     uploader:   "4.00",
+                                    prodID:     "{$oUploadSchema->prodID}",
                                     cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
                                     {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                     variation:  "{strip}
@@ -182,6 +183,7 @@
                                             jtl_token:  "{$smarty.session.jtl_token}",
                                             uniquename: "{$oUpload->cUnique}",
                                             uploader:   "4.00",
+                                            prodID:     "{$oUploadSchema->prodID}",
                                             cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
                                             {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                             variation:  "{strip}

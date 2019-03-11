@@ -43,7 +43,7 @@ class Migration_20190311122800 extends Migration implements IMigration
             'selectbox',
             280,
             (object)[
-                'cBeschreibung' => 'Sollen Sonderzeichen im Artikelnamen in HTML Entities umgewandelt werden\'',
+                'cBeschreibung' => 'Sollen Sonderzeichen im Artikelnamen in HTML Entities umgewandelt werden',
                 'inputOptions'  => [
                     'Y' => 'Ja',
                     'N' => 'Nein',

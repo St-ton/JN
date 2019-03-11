@@ -42,6 +42,7 @@ final class Upload
             $upload->cDateiTyp_arr      = self::formatTypen($upload->cDateiTyp);
             $upload->cDateiListe        = \implode(';', $upload->cDateiTyp_arr);
             $upload->bVorhanden         = \is_file(\PFAD_UPLOADS . $upload->cUnique);
+            $upload->prodID             = $productID;
             $file                       = $_SESSION['Uploader'][$upload->cUnique] ?? null;
             if ($file !== null && \is_object($file)) {
                 $upload->cDateiname    = $file->cName;

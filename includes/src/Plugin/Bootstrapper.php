@@ -58,7 +58,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @param Dispatcher $dispatcher
+     * @inheritdoc
      */
     public function boot(Dispatcher $dispatcher)
     {
@@ -71,9 +71,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @param int         $type
-     * @param string      $title
-     * @param null|string $description
+     * @inheritdoc
      */
     final public function addNotify($type, $title, $description = null)
     {
@@ -81,36 +79,35 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function installed()
     {
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function uninstalled()
     {
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function enabled()
     {
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function disabled()
     {
     }
 
     /**
-     * @param mixed $oldVersion
-     * @param mixed $newVersion
+     * @inheritdoc
      */
     public function updated($oldVersion, $newVersion)
     {
@@ -119,7 +116,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @return PluginInterface
      */
-    public function getPlugin()
+    public function getPlugin(): PluginInterface
     {
         return $this->plugin;
     }

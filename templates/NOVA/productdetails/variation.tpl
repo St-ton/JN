@@ -44,7 +44,7 @@
                                             data-original="{$Variationswert->cName}"
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
-                                            data-content="{$cVariationsWert|escape:'html'}{if $Variationswert->notExists}<span class='label label-default label-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='label label-default label-not-available'>{lang key='ampelRot'}</span>{/if}"
+                                            data-content="{$cVariationsWert|escape:'html'}{if $Variationswert->notExists}<span class='badge badge-danger badge-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='badge badge-default badge-not-available'>{lang key='ampelRot'}</span>{/if}"
                                             {if !empty($Variationswert->cBildPfadMini)}
                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
                                                 data-title='{$Variationswert->cName}'
@@ -98,7 +98,7 @@
                                                     data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                                {/if}>
 
-                                            {include file="productdetails/variation_value.tpl"}{if $Variationswert->notExists}<span class='label label-default label-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='label label-default label-not-available'>{lang key='ampelRot'}</span>{/if}
+                                            {include file="productdetails/variation_value.tpl"}{if $Variationswert->notExists}<span class='badge badge-danger badge-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='badge badge-danger badge-not-available'>{lang key='ampelRot'}</span>{/if}
                                         </label>
                                     </div>
                                 {/block}

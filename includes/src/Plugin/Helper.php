@@ -438,14 +438,16 @@ class Helper
             if ($plugin === null || $plugin->isBootstrap() === false) {
                 return null;
             }
-            $file  = $plugin->getPaths()->getBasePath() . \PLUGIN_BOOTSTRAPPER;
-            $class = \sprintf('Plugin\\%s\\%s', $plugin->getPluginID(), 'Bootstrap');
-            if (!\is_file($file)) {
-                return null;
+            if ($loader instanceof LegacyPluginLoader) {
+                $file  = $plugin->getPaths()->getVersionedPath() . \OLD_BOOTSTRAPPER;
+                $class = \sprintf('%s\\%s', $plugin->getPluginID(), 'Bootstrap');
+                if (!\is_file($file)) {
+                    return null;
+                }
+                require_once $file;
+            } else {
+                $class = \sprintf('Plugin\\%s\\%s', $plugin->getPluginID(), 'Bootstrap');
             }
-
-            require_once $file;
-
             if (!\class_exists($class)) {
                 return null;
             }

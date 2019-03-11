@@ -29,7 +29,7 @@
                 {/listgroupitem}
             {/foreach}
         {/listgroup}
-        <hr>
+        <hr class="my-4">
         {link href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-secondary btn-block btn-sm"}
             {lang key='goToWishlist'}
         {/link}

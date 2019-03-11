@@ -1253,7 +1253,7 @@
                         label = $item.data('content');
                         wrapper = $('<div />').append(label);
                         $(wrapper)
-                            .find('.label-not-available')
+                            .find('.badge-not-available')
                             .remove();
                         label = $(wrapper).html();
                         $item.data('content', label)
@@ -1261,7 +1261,7 @@
 
                         break;
                     case 'radio':
-                        elem = $item.find('.label-not-available');
+                        elem = $item.find('.badge-not-available');
                         if (elem.length === 1) {
                             $(elem).remove();
                         }
@@ -1293,11 +1293,11 @@
 
                     $wrapper.append(content);
                     $wrapper
-                        .find('.label-not-available')
+                        .find('.badge-not-available')
                         .remove();
 
                     label = $('<span />')
-                        .addClass('label label-default label-not-available')
+                        .addClass('badge badge-danger badge-not-available')
                         .text(' '+note);
 
                     $wrapper.append(label);
@@ -1309,11 +1309,11 @@
                         .selectpicker('refresh');
                     break;
                 case 'radio':
-                    $item.find('.label-not-available')
+                    $item.find('.badge-not-available')
                         .remove();
 
                     label = $('<span />')
-                        .addClass('label label-default label-not-available')
+                        .addClass('badge badge-danger badge-not-available')
                         .text(' '+note);
 
                     $item.append(label);

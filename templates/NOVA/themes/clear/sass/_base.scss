@@ -424,6 +424,9 @@ ul.partlist-items {
     }
   }
 }
+.badge-not-available{
+  margin-left: map-get($spacers, 2);
+}
 
 .control-hidden {
   position: absolute;
@@ -1495,10 +1498,22 @@ $jqcloud-classes: 7;
   display: flex;
 }
 .choose_quantity,
-.quantity-wrapper{
+.quantity-wrapper,
+.input-group {
   flex-wrap: nowrap;
   .nmbr-cfg-group{
     display: flex;
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    margin-bottom: 0;
+    input.quantity {
+      display: flex;
+      position: relative;
+      flex: 1 1 auto;
+      width: 1%;
+      margin-bottom: 0;
+    }
     .unit {
       background: $input-bg;
       border-left: 0;

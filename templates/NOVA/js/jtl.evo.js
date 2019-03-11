@@ -636,7 +636,7 @@
                 groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
                 buttonsClass: "btn-light form-control",
                 buttonsWidth: "",
-                textAlign: "center",
+                textAlign: "right",
                 autoDelay: 500, // ms holding before auto value change
                 autoInterval: 100, // speed of auto value change
                 boostThreshold: 10, // boost after these steps

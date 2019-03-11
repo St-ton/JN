@@ -589,7 +589,7 @@ class Metadata implements MetadataInterface
         $excludes     = self::getExcludes();
         $excludeWords = \explode(' ', $excludes[Shop::getLanguageCode()]->cKeywords ?? '');
         $wordsArray   = \array_udiff($wordsArray, $excludeWords, 'strcasecmp');
-        $keywords = array();
+        $keywords     = array();
         // count word occurrences
         while (($c_word = \array_shift($wordsArray)) !== null) {
             if (\array_key_exists($c_word, $keywords)) {

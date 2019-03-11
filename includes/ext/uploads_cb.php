@@ -50,7 +50,7 @@ if (!empty($_FILES)) {
         if (isset($_REQUEST['prodID'])) {
             $file->cName = (int)$_REQUEST['prodID'] . '_' . $unique . '.' . $sourceInfo['extension'];
         } else {
-            $file->cName  = !empty($_REQUEST['variation'])
+            $file->cName = !empty($_REQUEST['variation'])
                 ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name']
                 : $_REQUEST['cname'] . '_' . $fileData['name'];
         }

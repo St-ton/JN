@@ -31,12 +31,7 @@ final class Data extends AbstractPush
             LIMIT " . self::LIMIT_AVAILABILITY_MSGS,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-        $count   = \count($current);
-        if ($count === 0) {
-            return $xml;
-        }
-
-        $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = $count;
+        $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = \count($current);
         for ($i = 0; $i < $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
             $current[$i . ' attr'] = $this->buildAttributes($current[$i]);
             $this->db->query(

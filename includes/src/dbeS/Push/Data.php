@@ -31,30 +31,35 @@ final class Data extends AbstractPush
             LIMIT " . self::LIMIT_AVAILABILITY_MSGS,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-        $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = \count($current);
-        for ($i = 0; $i < $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
-            $current[$i . ' attr'] = $this->buildAttributes($current[$i]);
-            $this->db->query(
-                "UPDATE tverfuegbarkeitsbenachrichtigung
-                SET cAbgeholt = 'Y'
-                WHERE kVerfuegbarkeitsbenachrichtigung = " .
-                (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'],
-                ReturnType::DEFAULT
-            );
+        $count   = \count($current);
+        if ($count > 0) {
+            $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl'] = $count;
+            for ($i = 0; $i < $xml['tverfuegbarkeitsbenachrichtigung attr']['anzahl']; $i++) {
+                $current[$i . ' attr'] = $this->buildAttributes($current[$i]);
+                $this->db->query(
+                    "UPDATE tverfuegbarkeitsbenachrichtigung
+                    SET cAbgeholt = 'Y'
+                    WHERE kVerfuegbarkeitsbenachrichtigung = " .
+                    (int)$current[$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'],
+                    ReturnType::DEFAULT
+                );
+            }
+            $xml['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = $current;
         }
-        $xml['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'] = $current;
-
-        $xml['queueddata']['uploadqueue']['tuploadqueue'] = $this->db->query(
+        $queueData = $this->db->query(
             'SELECT *
             FROM tuploadqueue
             LIMIT ' . self::LIMIT_UPLOADQUEUE,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-
-        $xml['tuploadqueue attr']['anzahl'] = \count($xml['queueddata']['uploadqueue']['tuploadqueue']);
-        for ($i = 0; $i < $xml['tuploadqueue attr']['anzahl']; $i++) {
-            $xml['queueddata']['uploadqueue']['tuploadqueue'][$i . ' attr'] =
-                $this->buildAttributes($xml['queueddata']['uploadqueue']['tuploadqueue'][$i]);
+        $count     = \count($queueData);
+        if ($count > 0) {
+            $xml['queueddata']['uploadqueue']['tuploadqueue'] = $queueData;
+            $xml['tuploadqueue attr']['anzahl']               = $count;
+            for ($i = 0; $i < $xml['tuploadqueue attr']['anzahl']; $i++) {
+                $xml['queueddata']['uploadqueue']['tuploadqueue'][$i . ' attr'] =
+                    $this->buildAttributes($xml['queueddata']['uploadqueue']['tuploadqueue'][$i]);
+            }
         }
 
         return $xml;

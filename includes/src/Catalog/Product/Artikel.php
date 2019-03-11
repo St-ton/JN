@@ -4294,13 +4294,7 @@ class Artikel
                 $this->cHerstellerBildURLNormal = $imageBaseURL . $this->cHerstellerBildNormal;
             }
         }
-        //datum umformatieren
         $this->dErstellt_de = \date_format(\date_create($this->dErstellt), 'd.m.Y');
-        // Sonderzeichen im Artikelnamen nach HTML Entities codieren
-        if ($this->conf['global']['global_artikelname_htmlentities'] === 'Y') {
-            $this->cName = Text::htmlentities($this->cName);
-        }
-        //Artikel kann in WK gelegt werden?
         if ($this->nErscheinendesProdukt && $this->conf['global']['global_erscheinende_kaeuflich'] !== 'Y') {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_NICHTVORBESTELLBAR;
         }
@@ -6351,10 +6345,7 @@ class Artikel
             );
         }
         if (!empty($this->cName)) {
-            $title = (!isset($this->conf['global']['global_artikelname_htmlentities'])
-                || $this->conf['global']['global_artikelname_htmlentities'] === 'N')
-                ? Text::htmlentities($this->cName)
-                : $this->cName;
+            $title = $this->cName;
         }
         $title = \str_replace('"', '', $title) . $globalMetaTitle;
 

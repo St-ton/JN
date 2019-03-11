@@ -15,6 +15,8 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 use function Functional\some;
+use function Functional\map;
+use function Functional\sort;
 
 /**
  * Class Vergleichsliste
@@ -268,6 +270,113 @@ class Vergleichsliste
         }
 
         return $col;
+    }
+
+    /**
+     * @param bool $keysOnly
+     * @return array
+     */
+    public static function getPrioRows(bool $keysOnly = false): array
+    {
+        $conf               = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+        $possibleRowsToView = [
+            'vergleichsliste_artikelnummer',
+            'vergleichsliste_hersteller',
+            'vergleichsliste_beschreibung',
+            'vergleichsliste_kurzbeschreibung',
+            'vergleichsliste_artikelgewicht',
+            'vergleichsliste_versandgewicht',
+            'vergleichsliste_merkmale',
+            'vergleichsliste_variationen'
+        ];
+        $prioRows           = [];
+        $ignoreRow          = 0;
+        foreach ($possibleRowsToView as $row) {
+            if ($conf['vergleichsliste'][$row] > $ignoreRow) {
+                $prioRows[$row] = self::getMappedRowNames($row);
+            }
+        }
+        $prioRows = sort($prioRows, function (array $left, array $right) {
+            return $left['priority'] < $right['priority'];
+        });
+
+        return $keysOnly ? map($prioRows, function (array $row) {
+            return $row['key'];
+        }) : $prioRows;
+    }
+
+    /**
+     * @param string $confName
+     * @return array
+     */
+    public static function getMappedRowNames(string $confName): array
+    {
+        $conf = Shop::getSettings([CONF_VERGLEICHSLISTE])['vergleichsliste'];
+        switch ($confName) {
+            case 'vergleichsliste_artikelnummer':
+                return [
+                    'key'      => 'cArtNr',
+                    'name'     => Shop::Lang()->get('productNumber', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_hersteller':
+                return [
+                    'key'      => 'cHersteller',
+                    'name'     => Shop::Lang()->get('manufacturer', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_beschreibung':
+                return [
+                    'key'      => 'cBeschreibung',
+                    'name'     => Shop::Lang()->get('description', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_kurzbeschreibung':
+                return [
+                    'key'      => 'cKurzBeschreibung',
+                    'name'     => Shop::Lang()->get('shortDescription', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_artikelgewicht':
+                return [
+                    'key'      => 'fArtikelgewicht',
+                    'name'     => Shop::Lang()->get('productWeight', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_versandgewicht':
+                return [
+                    'key'      => 'fGewicht',
+                    'name'     => Shop::Lang()->get('shippingWeight', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_merkmale':
+                return [
+                    'key'      => 'Merkmale',
+                    'name'     => Shop::Lang()->get('', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_variationen':
+                return [
+                    'key'      => 'Variationen',
+                    'name'     => Shop::Lang()->get('', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            default:
+                return [
+                    'key'      => '',
+                    'name'     => '',
+                    'priority' => 0
+                ];
+                break;
+        }
     }
 
     /**

@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -57,12 +58,12 @@ class Image extends Portlet
         return [
             'src'        => [
                 'label'   => 'Bild',
-                'type'    => 'image',
+                'type'    => InputType::IMAGE,
                 'default' => '',
             ],
             'shape'      => [
                 'label'      => 'Form',
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     'normal'    => 'normal',
                     'rounded'   => 'abgerundete Ecken',
@@ -73,7 +74,7 @@ class Image extends Portlet
             ],
             'responsive' => [
                 'label'      => 'Responsives Bild?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'options'    => [
                     true  => 'ja',
                     false => 'nein',

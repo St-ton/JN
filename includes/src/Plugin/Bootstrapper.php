@@ -44,7 +44,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     private $cache;
 
     /**
-     * AbstractPlugin constructor.
+     * Bootstrapper constructor.
      * @param PluginInterface   $plugin
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache

@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -63,7 +64,7 @@ class Text extends Portlet
         return [
             'text' => [
                 'label'   => 'Text',
-                'type'    => 'richtext',
+                'type'    => InputType::RICHTEXT,
                 'default' => '<p>Rich Text Content</p>',
             ],
         ];

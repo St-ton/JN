@@ -2481,7 +2481,9 @@ class Artikel
             ) {
                 $value->cName .= $outOfStock;
             }
-            if ($tmpVariation->cPfad && \file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad)) {
+            if ($tmpVariation->cPfad
+                && \file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad)
+            ) {
                 $this->cVariationenbilderVorhanden = true;
                 $value->cBildPfadMini              = \PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
                 $value->cBildPfad                  = \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
@@ -4294,13 +4296,7 @@ class Artikel
                 $this->cHerstellerBildURLNormal = $imageBaseURL . $this->cHerstellerBildNormal;
             }
         }
-        //datum umformatieren
         $this->dErstellt_de = \date_format(\date_create($this->dErstellt), 'd.m.Y');
-        // Sonderzeichen im Artikelnamen nach HTML Entities codieren
-        if ($this->conf['global']['global_artikelname_htmlentities'] === 'Y') {
-            $this->cName = Text::htmlentities($this->cName);
-        }
-        //Artikel kann in WK gelegt werden?
         if ($this->nErscheinendesProdukt && $this->conf['global']['global_erscheinende_kaeuflich'] !== 'Y') {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_NICHTVORBESTELLBAR;
         }
@@ -5485,8 +5481,8 @@ class Artikel
             return '';
         }
         // set default values
-        $minDeliveryDays = (\mb_strlen(\trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
-        $maxDeliveryDays = (\mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
+        $minDeliveryDays = \mb_strlen(\trim($favShipping->nMinLiefertage)) > 0 ? (int)$favShipping->nMinLiefertage : 2;
+        $maxDeliveryDays = \mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0 ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
         $nAllPieces = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
@@ -6351,10 +6347,7 @@ class Artikel
             );
         }
         if (!empty($this->cName)) {
-            $title = (!isset($this->conf['global']['global_artikelname_htmlentities'])
-                || $this->conf['global']['global_artikelname_htmlentities'] === 'N')
-                ? Text::htmlentities($this->cName)
-                : $this->cName;
+            $title = $this->cName;
         }
         $title = \str_replace('"', '', $title) . $globalMetaTitle;
 

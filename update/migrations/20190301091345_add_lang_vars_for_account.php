@@ -56,8 +56,18 @@ class Migration_20190301091345 extends Migration implements IMigration
         $this->setLocalization('eng', 'account data', 'noOrdersYet', 'There are no orders yet.');
         $this->setLocalization('ger', 'account data', 'noWishlist', 'Es ist keine Wunschliste vorhanden.');
         $this->setLocalization('eng', 'account data', 'noWishlist', 'There is no wishlist at the moment.');
-        $this->setLocalization('ger', 'account data', 'compareListItemCount', 'Sie haben %d Artikel auf Ihrer Vergleichsliste.');
-        $this->setLocalization('eng', 'account data', 'compareListItemCount', 'You have %d products on your comparelist.');
+        $this->setLocalization(
+            'ger',
+            'account data',
+            'compareListItemCount',
+            'Sie haben %d Artikel auf Ihrer Vergleichsliste.'
+        );
+        $this->setLocalization(
+            'eng',
+            'account data',
+            'compareListItemCount',
+            'You have %d products on your comparelist.'
+        );
         $this->setLocalization('ger', 'account data', 'editCustomerData', 'Kundendaten ändern');
         $this->setLocalization('eng', 'account data', 'editCustomerData', 'Save customer data');
         $this->setLocalization('ger', 'account data', 'orderOverview', 'Bestellübersicht');
@@ -69,8 +79,18 @@ class Migration_20190301091345 extends Migration implements IMigration
         $this->setLocalization('ger', 'breadcrumb', 'bcWishlist', 'Wunschliste');
         $this->setLocalization('eng', 'breadcrumb', 'bcWishlist', 'Wishlist');
 
-        $this->setLocalization('ger', 'login', 'myAccountDesc', 'Hier können Sie Ihre Adressdaten ändern und den Status Ihrer Bestellungen abfragen.');
-        $this->setLocalization('eng', 'login', 'myAccountDesc', 'Here you can change your address details and have a look at your order status.');
+        $this->setLocalization(
+            'ger',
+            'login',
+            'myAccountDesc',
+            'Hier können Sie Ihre Adressdaten ändern und den Status Ihrer Bestellungen abfragen.'
+        );
+        $this->setLocalization(
+            'eng',
+            'login',
+            'myAccountDesc',
+            'Here you can change your address details and have a look at your order status.'
+        );
     }
 
     public function down()
@@ -95,7 +115,19 @@ class Migration_20190301091345 extends Migration implements IMigration
         $this->removeLocalization('miscellaneous');
         $this->removeLocalization('currently');
 
-        $this->setLocalization('ger', 'login', 'myAccountDesc', 'Hier können Sie Ihre Adressdaten ändern, den Status Ihrer Bestellungen abfragen und Gutscheine weiterverschenken.');
-        $this->setLocalization('eng', 'login', 'myAccountDesc', 'You can change your address details here, can have a look at your order status and you can forward vouchers.');
+        $this->setLocalization(
+            'ger',
+            'login',
+            'myAccountDesc',
+            'Hier können Sie Ihre Adressdaten ändern, den Status Ihrer Bestellungen ' .
+            'abfragen und Gutscheine weiterverschenken.'
+        );
+        $this->setLocalization(
+            'eng',
+            'login',
+            'myAccountDesc',
+            'You can change your address details here, can have a look at your ' .
+            'order status and you can forward vouchers.'
+        );
     }
 }

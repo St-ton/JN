@@ -1,9 +1,9 @@
 <?php
 /**
- * add option for xselling show parent
+ * remove global html entity config
  *
- * @author Falk Prüfer
- * @created Tue, 14 Jun 2016 15:25:25 +0200
+ * @author fm
+ * @created Mon, 11 Mar 2019 12:28:00 +0100
  */
 
 use JTL\Update\IMigration;
@@ -18,37 +18,36 @@ use JTL\Update\Migration;
  * fetchAll           - array of fetched objects
  * fetchArray         - array of fetched assoc arrays
  * dropColumn         - drops a column if exists
- * addLocalization    - add localization
+ * setLocalization    - add localization
  * removeLocalization - remove localization
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_20160614152525 extends Migration implements IMigration
+class Migration_20190311122800 extends Migration implements IMigration
 {
-    protected $author = 'fp';
+    protected $author      = 'fm';
+    protected $description = 'remove global html entity config';
 
     public function up()
     {
-        $this->setConfig(
-            'artikeldetails_xselling_kauf_parent',
-            'N',
-            \CONF_ARTIKELDETAILS,
-            'Immer Vaterartikel anzeigen',
-            'selectbox',
-            230,
-            (object)[
-                'cBeschreibung' => 'Es werden immer die zugeh&ouml;rigen Vaterartikel angezeigt, auch wenn ' .
-                    'tats&auml;chlich Kindartikel gekauft wurden.',
-                'inputOptions'  => [
-                    'Y' => 'Ja',
-                    'N' => 'Nein',
-                ],
-            ]
-        );
+        $this->removeConfig('global_artikelname_htmlentities');
     }
 
     public function down()
     {
-        $this->removeConfig('artikeldetails_xselling_kauf_parent');
+        $this->setConfig(
+            'global_artikelname_htmlentities',
+            'N',
+            \CONF_GLOBAL,
+            'HTML-Code Umwandlung bei Artikelnamen',
+            'selectbox',
+            280,
+            (object)[
+                'cBeschreibung' => 'Sollen Sonderzeichen im Artikelnamen in HTML Entities umgewandelt werden',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein',
+                ],
+        ]);
     }
 }

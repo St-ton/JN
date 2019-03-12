@@ -1,0 +1,58 @@
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace JTL\OPC;
+
+use MyCLabs\Enum\Enum;
+
+/**
+ * Class InputType
+ * @package JTL\Plugin\Admin
+ */
+class InputType extends Enum
+{
+    public const SELECT = 'select';
+
+    public const RADIO = 'radio';
+
+    public const PASSWORD = 'password';
+
+    public const TEXTAREA = 'textarea';
+
+    public const NUMBER = 'number';
+
+    public const EMAIL = 'email';
+
+    public const CHECKBOX = 'checkbox';
+
+    public const COLOR = 'color';
+
+    public const HIDDEN = 'hidden';
+
+    public const HINT = 'hint';
+
+    public const TEXT = 'text';
+
+    public const TEXT_LIST = 'textlist';
+
+    public const IMAGE = 'image';
+
+    public const IMAGE_SET = 'image-set';
+
+    public const ICON = 'icon';
+
+    public const VIDEO = 'video';
+
+    public const DATE = 'date';
+
+    public const TIME = 'time';
+
+    public const RICHTEXT = 'richtext';
+
+    public const FILTER = 'filter';
+
+    public const BANNER_ZONES = 'banner-zones';
+}

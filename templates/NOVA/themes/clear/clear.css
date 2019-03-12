@@ -12117,6 +12117,7 @@ button.bg-info:focus {
   margin-left: 0.25rem;
   width: initial;
   height: initial;
+  float: right;
 }
 .dropdown-toggle[aria-expanded=true]::after {
   transform: rotate(180deg);
@@ -13020,7 +13021,7 @@ ul.partlist-items {
   text-decoration: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
   #content.col-lg-9.order-lg-1 {
     padding-left: 32px;
   }

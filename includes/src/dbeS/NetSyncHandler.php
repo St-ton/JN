@@ -213,7 +213,7 @@ class NetSyncHandler
                 $files[]  = new SystemFile(
                     $index++,
                     $pathName,
-                    \substr($pathName, \strlen($preview ? \PFAD_DOWNLOADS_PREVIEW : \PFAD_DOWNLOADS)),
+                    \basename($pathName),
                     $pathinfo['filename'],
                     $pathinfo['dirname'],
                     $pathinfo['extension'],

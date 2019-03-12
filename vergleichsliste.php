@@ -7,6 +7,7 @@
 use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Catalog\Vergleichsliste;
+use JTL\Helpers\Cart;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
@@ -21,8 +22,21 @@ $link          = $linkHelper->getPageLink($kLink);
 $compareList   = new Vergleichsliste();
 $attrVar       = Vergleichsliste::buildAttributeAndVariation($compareList);
 $prioRowsArray = Vergleichsliste::getPrioRows();
-$prioRows      = Vergleichsliste::getPrioRows(true);
+$prioRows      = Vergleichsliste::getPrioRows(true, false);
+$alertHelper   = Shop::Container()->getAlertService();
 Vergleichsliste::setComparison($compareList);
+
+if (Request::verifyGPCDataInt('addToCart') !== 0) {
+    Cart::addProductIDToCart(
+        Request::verifyGPCDataInt('addToCart'),
+        Request::verifyGPDataString('anzahl')
+    );
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('basketAdded', 'messages'),
+        'basketAdded'
+    );
+}
 
 $nBreiteAttribut = ($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']

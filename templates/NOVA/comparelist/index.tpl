@@ -8,17 +8,57 @@
 
 {block name='content'}
     <h1>{lang key='compare' section='global'}</h1>
-
+    <hr class="mt-2 mb-2">
     {include file='snippets/extension.tpl'}
 
     {if $oVergleichsliste->oArtikel_arr|@count > 0}
-        <div>
-            {foreach $prioRows as $row}
-                {checkbox id=$row['name']}{$row['name']}{/checkbox}
-            {/foreach}
+        <div id="filter-checkboxes" class="mb-3">
+            {row}
+                {col}
+                    {buttongroup}
+                        {button
+                        variant="light"
+                        role="button"
+                        data=["toggle"=> "collapse", "target"=>"#collapse-checkboxes"]
+                        }
+                            <i class="fa fa-chevron-down"></i>
+                            Filter
+                        {/button}
+                        {button variant="light" id="check-all"}
+                            {lang key='showAll'}
+                        {/button}
+                        {button variant="light" id="check-none"}
+                            {lang key='showNone'}
+                        {/button}
+                    {/buttongroup}
+                {/col}
+            {/row}
+            {collapse id="collapse-checkboxes" visible=false}
+                {foreach $prioRows as $row}
+                    {if $row['key'] !== 'Merkmale' && $row['key'] !== 'Variationen'}
+                        {checkbox checked=true data=['id' => $row['key']] class='comparelist-checkbox'}
+                            {$row['name']}
+                        {/checkbox}
+                    {/if}
+                    {if $row['key'] === 'Merkmale'}
+                        {foreach $oMerkmale_arr as $oMerkmale}
+                            {checkbox checked=true data=['id' => "attr-{$oMerkmale->cName}"] class='comparelist-checkbox'}
+                                {$oMerkmale->cName}
+                            {/checkbox}
+                        {/foreach}
+                    {/if}
+                    {if $row['key'] === 'Variationen'}
+                        {foreach $oVariationen_arr as $oVariationen}
+                            {checkbox checked=true data=['id' => "vari-{$oVariationen->cName}"] class='comparelist-checkbox'}
+                                {$oVariationen->cName}
+                            {/checkbox}
+                        {/foreach}
+                    {/if}
+                {/foreach}
+            {/collapse}
         </div>
         <div class="comparelist table-responsive">
-            <table class="table table-striped table-bordered table-sm">
+            <table class="table table-bordered table-sm">
                 <tr>
                     <td>&nbsp;</td>
                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
@@ -36,7 +76,7 @@
                             <p>
                                 {link href=$oArtikel->cURLFull}{$oArtikel->cName}{/link}
                             </p>
-
+                            {include file='productdetails/rating.tpl' stars=$oArtikel->fDurchschnittsBewertung}
                             {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                                 <p>{lang key='productOutOfStock' section='productDetails'}</p>
                             {elseif $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
@@ -46,17 +86,57 @@
                                     {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='detail'}
                                 </p>
                             {/if}
+                            {if ($oArtikel->inWarenkorbLegbar === 1 || ($oArtikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))}
+                                {if $oArtikel->bHasKonfig}
+                                    {link href=$oArtikel->cURLFull class="btn btn-primary"
+                                    title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
+                                        <span class="fa fa-cogs"></span>
+                                    {/link}
+                                {elseif !empty($oArtikel->Variationen)}
+                                    {link href=$oArtikel->cURLFull class="btn btn-primary"
+                                    title="{lang key='product' section='global'} {lang key='wishlistaddToCart' section='global'}"}
+                                        <span class="fas fa-shopping-cart"></span>
+                                    {/link}
+                                {else}
+                                    {form method='post'}
+                                        {formgroup class="quantity-wrapper"}
+                                            {inputgroup class="quantity-wrapper"}
+                                                {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
+                                                step="{if $oArtikel->fAbnahmeintervall > 0}{$oArtikel->fAbnahmeintervall}{/if}"
+                                                id="quantity{$oArtikel->kArtikel}"
+                                                class="quantity text-right"
+                                                name="anzahl"
+                                                autocomplete="off"
+                                                value="{if $oArtikel->fAbnahmeintervall > 0}{if $oArtikel->fMindestbestellmenge > $oArtikel->fAbnahmeintervall}{$oArtikel->fMindestbestellmenge}{else}{$oArtikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                            {/inputgroup}
+                                        {/formgroup}
+                                        {button
+                                        type="submit"
+                                        name="addToCart"
+                                        value=$oArtikel->kArtikel
+                                        variant="primary"
+                                        title="{lang key='wishlistaddToCart' section='login'}"
+                                        }
+                                            <span class="fas fa-shopping-cart"></span>
+                                        {/button}
+                                    {/form}
+                                {/if}
+                            {/if}
                         </td>
                     {/foreach}
                 </tr>
                 {foreach $prioRows as $row}
                     {if $row['key'] !== 'Merkmale' && $row['key'] !== 'Variationen'}
-                        <tr>
+                        <tr class="comparelist-row" data-id="row-{$row['key']}">
                         <td>
                             <b>{$row['name']}</b>
                         </td>
                         {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                            {if $oArtikel->$row['key'] !== ''}
+                            {if $row['key'] === 'verfuegbarkeit'}
+                                <td>{include file='productdetails/stock.tpl' Artikel=$oArtikel availability=true}</td>
+                            {elseif $row['key'] === 'lieferzeit'}
+                                <td>{include file='productdetails/stock.tpl' Artikel=$oArtikel shippingTime=true}</td>
+                            {elseif $oArtikel->$row['key'] !== ''}
                                 <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
                                     {if $row['key'] === 'fArtikelgewicht' || $row['key'] === 'fGewicht'}
                                         {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
@@ -72,7 +152,7 @@
                     {/if}
                     {if $row['key'] === 'Merkmale'}
                         {foreach $oMerkmale_arr as $oMerkmale}
-                            <tr>
+                            <tr class="comparelist-row" data-id="row-attr-{$oMerkmale->cName}">
                                 <td>
                                     <b>{$oMerkmale->cName}</b>
                                 </td>
@@ -96,7 +176,7 @@
                     {/if}
                     {if $row['key'] === 'Variationen'}
                         {foreach $oVariationen_arr as $oVariationen}
-                            <tr>
+                            <tr class="comparelist-row" data-id="row-vari-{$oVariationen->cName}">
                                 <td>
                                     <b>{$oVariationen->cName}</b>
                                 </td>
@@ -170,6 +250,21 @@
             }();
         </script>
     {/if}
+    <script>
+        $(document).ready(function () {
+            $('.comparelist-checkbox').change(function () {
+                $('[data-id="row-' + $(this).data('id') + '"]').toggleClass('d-none');
+            });
+            $('#check-all').click(function () {
+                $('.comparelist-checkbox').prop('checked', true);
+                $('.comparelist-row').removeClass('d-none');
+            });
+            $('#check-none').click(function () {
+                $('.comparelist-checkbox').prop('checked', false);
+                $('.comparelist-row').addClass('d-none');
+            });
+        });
+    </script>
 {/block}
 
 {block name='footer'}

@@ -2380,6 +2380,18 @@ msgstr "Anzeigepriorität Artikelnummer"
 msgid "vergleichsliste_artikelnummer_desc"
 msgstr "0 = Dieses Feld nicht anzeigen"
 
+msgid "vergleichsliste_verfuegbarkeit_name"
+msgstr "Anzeigepriorität Verfügbarkeit"
+
+msgid "vergleichsliste_verfuegbarkeit_desc"
+msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
+
+msgid "vergleichsliste_lieferzeit_name"
+msgstr "Anzeigepriorität Lieferzeit"
+
+msgid "vergleichsliste_lieferzeit_desc"
+msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
+
 msgid "vergleichsliste_hersteller_name"
 msgstr "Anzeigepriorität Hersteller"
 

@@ -274,9 +274,10 @@ class Vergleichsliste
 
     /**
      * @param bool $keysOnly
+     * @param bool $newStandard
      * @return array
      */
-    public static function getPrioRows(bool $keysOnly = false): array
+    public static function getPrioRows(bool $keysOnly = false, bool $newStandard = true): array
     {
         $conf               = Shop::getSettings([CONF_VERGLEICHSLISTE]);
         $possibleRowsToView = [
@@ -289,8 +290,12 @@ class Vergleichsliste
             'vergleichsliste_merkmale',
             'vergleichsliste_variationen'
         ];
-        $prioRows           = [];
-        $ignoreRow          = 0;
+        if ($newStandard) {
+            $possibleRowsToView[] = 'vergleichsliste_verfuegbarkeit';
+            $possibleRowsToView[] = 'vergleichsliste_lieferzeit';
+        }
+        $prioRows  = [];
+        $ignoreRow = 0;
         foreach ($possibleRowsToView as $row) {
             if ($conf['vergleichsliste'][$row] > $ignoreRow) {
                 $prioRows[$row] = self::getMappedRowNames($row);
@@ -358,14 +363,28 @@ class Vergleichsliste
             case 'vergleichsliste_merkmale':
                 return [
                     'key'      => 'Merkmale',
-                    'name'     => Shop::Lang()->get('', 'comparelist'),
+                    'name'     => Shop::Lang()->get('characteristics', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
                 break;
             case 'vergleichsliste_variationen':
                 return [
                     'key'      => 'Variationen',
-                    'name'     => Shop::Lang()->get('', 'comparelist'),
+                    'name'     => Shop::Lang()->get('variations', 'comparelist'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_verfuegbarkeit':
+                return [
+                    'key'      => 'verfuegbarkeit',
+                    'name'     => Shop::Lang()->get('availability', 'productOverview'),
+                    'priority' => $conf[$confName]
+                ];
+                break;
+            case 'vergleichsliste_lieferzeit':
+                return [
+                    'key'      => 'lieferzeit',
+                    'name'     => Shop::Lang()->get('shippingTime'),
                     'priority' => $conf[$confName]
                 ];
                 break;

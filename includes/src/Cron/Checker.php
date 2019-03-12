@@ -56,11 +56,7 @@ class Checker
      */
     public function isLocked(): bool
     {
-        if ($this->filePointer === false) {
-            return false;
-        }
-
-        if ($this->lock()) {
+        if ($this->filePointer === false || $this->lock()) {
             return false;
         }
         $this->unlock();

@@ -4,18 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferadresse;
+use JTL\Customer\Kunde;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
 use JTL\Emailhistory;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
-use JTL\Checkout\Kupon;
-use JTL\Checkout\Lieferadresse;
-use JTL\Catalog\Product\Preise;
-use JTL\Shop;
 use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\SmartyResourceNiceDB;
 use JTL\TrustedShops;
-use JTL\DB\ReturnType;
 
 /**
  * @param array                 $params
@@ -87,8 +90,8 @@ function sendeMail($moduleID, $data, $mail = null)
     $senderName = $config['emails']['email_master_absender_name'];
     $senderMail = $config['emails']['email_master_absender'];
     $sendCopy   = '';
-    $smarty     = new \JTL\Smarty\JTLSmarty(true, \JTL\Smarty\ContextType::MAIL);
-    $smarty->registerResource('db', new \JTL\Smarty\SmartyResourceNiceDB($db, \JTL\Smarty\ContextType::MAIL))
+    $smarty     = new JTLSmarty(true, ContextType::MAIL);
+    $smarty->registerResource('db', new SmartyResourceNiceDB($db, ContextType::MAIL))
                ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                ->setCaching(0)
                ->setDebugging(0)

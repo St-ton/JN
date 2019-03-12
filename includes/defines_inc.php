@@ -275,6 +275,9 @@ define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
 define('PLUGIN_BOOTSTRAPPER', 'Bootstrap.php');
 define('OLD_BOOTSTRAPPER', 'bootstrap.php');
+
+define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
+
 // Red. Param
 define('R_MINDESTMENGE', 1);
 define('R_LAGER', 2);

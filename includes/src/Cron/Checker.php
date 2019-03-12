@@ -27,6 +27,11 @@ class Checker
     private $logger;
 
     /**
+     * @var resource|bool
+     */
+    private $filePointer;
+
+    /**
      * Checker constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
@@ -35,6 +40,48 @@ class Checker
     {
         $this->db     = $db;
         $this->logger = $logger;
+        if (!\file_exists(\JOBQUEUE_LOCKFILE)) {
+            \touch(\JOBQUEUE_LOCKFILE);
+        }
+        $this->filePointer = \fopen(\JOBQUEUE_LOCKFILE, 'rb');
+    }
+
+    public function __destruct()
+    {
+        \fclose($this->filePointer);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLocked(): bool
+    {
+        if ($this->filePointer === false) {
+            return false;
+        }
+
+        if ($this->lock()) {
+            return false;
+        }
+        $this->unlock();
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function lock(): bool
+    {
+        return \flock($this->filePointer, \LOCK_EX | \LOCK_NB);
+    }
+
+    /**
+     * @return bool
+     */
+    public function unlock(): bool
+    {
+        return \flock($this->filePointer, \LOCK_UN);
     }
 
     /**

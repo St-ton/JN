@@ -9,6 +9,7 @@ namespace JTL\Cron;
 use DateTime;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -79,8 +80,8 @@ class Queue
         foreach ($jobs as $job) {
             $queueEntry                = new stdClass();
             $queueEntry->cronID        = $job->cronID;
-            $queueEntry->foreignKeyID  = $job->foreignKeyID;
-            $queueEntry->foreignKey    = $job->foreignKey;
+            $queueEntry->foreignKeyID  = $job->foreignKeyID ?? '_DBNULL_';
+            $queueEntry->foreignKey    = $job->foreignKey ?? '_DBNULL_';
             $queueEntry->tableName     = $job->tableName;
             $queueEntry->jobType       = $job->jobType;
             $queueEntry->startTime     = 'NOW()';
@@ -92,8 +93,19 @@ class Queue
         }
     }
 
-    public function run(): void
+    /**
+     * @param Checker $checker
+     * @throws \Exception
+     */
+    public function run(Checker $checker): void
     {
+        if ($checker->isLocked()) {
+            $this->logger->debug('Cron currently locked');
+            exit;
+        }
+        $checker->lock();
+        $this->enqueueCronJobs($checker->check());
+        $this->loadQueueFromDB();
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
                 $this->logger->debug('Job limit reached after ' . \JOBQUEUE_LIMIT_JOBS . ' jobs.');
@@ -123,5 +135,6 @@ class Queue
                 'job'       => $job
             ]);
         }
+        $checker->unlock();
     }
 }

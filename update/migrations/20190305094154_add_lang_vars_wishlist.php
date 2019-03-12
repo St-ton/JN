@@ -36,6 +36,8 @@ class Migration_20190305094154 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'activate', 'Activate');
         $this->setLocalization('ger', 'global', 'rename', 'Umbenennen');
         $this->setLocalization('eng', 'global', 'rename', 'Rename');
+        $this->setLocalization('ger', 'global', 'copied', 'kopiert');
+        $this->setLocalization('eng', 'global', 'copied', 'copied');
         $this->setLocalization('ger', 'wishlist', 'wlDelete', 'Liste löschen');
         $this->setLocalization('eng', 'wishlist', 'wlDelete', 'Delete list');
         $this->setLocalization('ger', 'wishlist', 'wlRemoveAllProducts', 'Alle Artikel löschen');
@@ -55,6 +57,7 @@ class Migration_20190305094154 extends Migration implements IMigration
         $this->removeLocalization('wlRemoveAllProducts');
         $this->removeLocalization('setAsStandardWishlist');
         $this->removeLocalization('rename');
+        $this->removeLocalization('copied');
         $this->removeLocalization('addNew');
     }
 }

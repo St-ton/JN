@@ -50,58 +50,73 @@
         {if $isCurrenctCustomer === true}
             {row}
                 {col cols=2 md=1}
-                    {dropdown variant="light" text="<i class='fas fa-ellipsis-v'></i>"}
-                        {dropdownitem}
-                            {input type="submit" value="{lang key='rename'}" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
+                    {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>"}
+                        {dropdownitem class="text-center"}
+                            {button type="submit" variant="link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
+                                {lang key='rename'}
+                            {/button}
                         {/dropdownitem}
-                        {dropdownitem}
+                        {dropdownitem class="text-center"}
                             {form
-                            method="post"
-                            action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                            name="Wunschliste"
+                                method="post"
+                                action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                                name="Wunschliste"
                             }
                                 {input type="hidden" name="wla" value="1"}
                                 {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {input type="hidden" name="action" value="removeAll"}
-                                {input type="submit"  value="{lang key='wlRemoveAllProducts' section='wishlist'}"}
+                                {button type="submit" variant="link"}
+                                    {lang key='wlRemoveAllProducts' section='wishlist'}
+                                {/button}
                             {/form}
                         {/dropdownitem}
-                        {dropdownitem}
+                        {dropdownitem class="text-center"}
                             {form
-                            method="post"
-                            action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                            name="Wunschliste"
+                                method="post"
+                                action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                                name="Wunschliste"
                             }
                                 {input type="hidden" name="wla" value="1"}
                                 {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {input type="hidden" name="action" value="addAllToCart"}
-                                {input type="submit" value="{lang key='wishlistAddAllToCart' section='login'}"}
+                                {button type="submit" variant="link"}
+                                    {lang key='wishlistAddAllToCart' section='login'}
+                                {/button}
                             {/form}
                         {/dropdownitem}
-                        {dropdownitem}
+                        {dropdownitem class="text-center"}
                             {form method="post" action="{get_static_route id='wunschliste.php'}"}
                                 {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                 {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
                                 {input type="hidden" name="action" value="delete"}
-                                {input type="submit" value="{lang key='wlDelete' section='wishlist'}"}
+                                {button type="submit" variant="link"}
+                                    {lang key='wlDelete' section='wishlist'}
+                                {/button}
                             {/form}
                         {/dropdownitem}
                         {if $CWunschliste->nStandard != 1}
-                            {dropdownitem}
+                            {dropdownitem class="text-center"}
                                 {form method="post" action="{get_static_route id='wunschliste.php'}"}
                                     {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                                     {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
                                     {input type="hidden" name="action" value="setAsDefault"}
-                                    {input type="submit"
-                                    value="{lang key='activate'}"
-                                    title="{lang key='setAsStandardWishlist' section='wishlist'}"
-                                    data=["toggle" => "tooltip", "placement" => "bottom"]
+                                    {button type="submit"
+                                        variant="link"
+                                        title="{lang key='setAsStandardWishlist' section='wishlist'}"
+                                        data=["toggle" => "tooltip", "placement" => "bottom"]
                                     }
+                                        {lang key='activate'}
+                                    {/button}
                                 {/form}
                             {/dropdownitem}
                         {/if}
-                        {dropdownitem}
-                            {input type="submit" value="{lang key='wishlistAddNew' section='login'}" data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]}
+                        {dropdownitem class="text-center"}
+                            {button type="submit"
+                                variant="link"
+                                data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]
+                            }
+                                {lang key='wishlistAddNew' section='login'}
+                            {/button}
                         {/dropdownitem}
                     {/dropdown}
                 {/col}
@@ -190,25 +205,41 @@
                         {form method="post" action="{get_static_route id='wunschliste.php'}"}
                             {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
                             {inputgroup}
-                            {input
-                                type="text"
-                                name="wishlist-url"
-                                readonly=true
-                                value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"
-                            }
-                            {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
-                                {inputgroupaddon append=true}
-                                {button
-                                    type="submit"
-                                    name="action"
-                                    value="sendViaMail"
-                                    disabled=(!$hasItems)
-                                    title="{lang key='wishlistViaEmail' section='login'}"
+                                {input
+                                    type="text"
+                                    id="wishlist-url"
+                                    name="wishlist-url"
+                                    readonly=true
+                                    value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"
                                 }
-                                    <i class="fa fa-envelope"></i>
-                                {/button}
-                                {/inputgroupaddon}
-                            {/if}
+                                {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
+                                    {inputgroupaddon append=true}
+                                        {button
+                                            class="copyToClipboard input-like"
+                                            name="copy"
+                                            variant="light"
+                                            value="copyToClipboard"
+                                            disabled=(!$hasItems)
+                                            title="{lang key='copied'}"
+                                            data=["clipboard-target"=>"#wishlist-url"]
+                                        }
+                                            <i class="far fa-copy"></i>
+                                        {/button}
+                                    {/inputgroupaddon}
+                                    {inputgroupaddon append=true}
+                                        {button
+                                            type="submit"
+                                            name="action"
+                                            variant="light"
+                                            class="input-like"
+                                            value="sendViaMail"
+                                            disabled=(!$hasItems)
+                                            title="{lang key='wishlistViaEmail' section='login'}"
+                                        }
+                                            <i class="far fa-envelope"></i>
+                                        {/button}
+                                    {/inputgroupaddon}
+                                {/if}
                             {/inputgroup}
                         {/form}
                     {/col}

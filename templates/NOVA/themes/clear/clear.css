@@ -12152,7 +12152,8 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
   #evo-main-nav-wrapper {
     flex-flow: wrap;
   }
-  #evo-main-nav-wrapper #nav-cart-collapse,
+  #evo-main-nav-wrapper #nav-wishlist-collapse,
+#evo-main-nav-wrapper #nav-cart-collapse,
 #evo-main-nav-wrapper #nav-account-collapse {
     background: #fff;
     position: absolute;
@@ -12175,7 +12176,8 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
   }
-  #evo-main-nav-wrapper #nav-cart-collapse .dropdown-item,
+  #evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item,
+#evo-main-nav-wrapper #nav-cart-collapse .dropdown-item,
 #evo-main-nav-wrapper #nav-account-collapse .dropdown-item {
     display: block;
     width: 100%;
@@ -12188,15 +12190,20 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     background-color: transparent;
     border: 0;
   }
-  #evo-main-nav-wrapper #nav-cart-collapse .dropdown-item:hover, #evo-main-nav-wrapper #nav-cart-collapse .dropdown-item:focus,
+  #evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item:hover, #evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item:focus,
+#evo-main-nav-wrapper #nav-cart-collapse .dropdown-item:hover,
+#evo-main-nav-wrapper #nav-cart-collapse .dropdown-item:focus,
 #evo-main-nav-wrapper #nav-account-collapse .dropdown-item:hover,
 #evo-main-nav-wrapper #nav-account-collapse .dropdown-item:focus {
     color: #16181b;
     text-decoration: none;
     background-color: #f5f7fa;
   }
-  #evo-main-nav-wrapper #nav-cart-collapse a,
-#evo-main-nav-wrapper #nav-account-collapse a {
+  #evo-main-nav-wrapper #nav-wishlist-collapse a, #evo-main-nav-wrapper #nav-wishlist-collapse i,
+#evo-main-nav-wrapper #nav-cart-collapse a,
+#evo-main-nav-wrapper #nav-cart-collapse i,
+#evo-main-nav-wrapper #nav-account-collapse a,
+#evo-main-nav-wrapper #nav-account-collapse i {
     text-decoration: none;
   }
   #evo-main-nav-wrapper .table {
@@ -14222,6 +14229,38 @@ table caption {
     text-align: center;
     margin-bottom: 1rem;
   }
+}
+
+/* wishlist */
+input.form-control[name=wishlist-url] {
+  background: #f8f8f8;
+  /*@include border-radius($dropdown-border-radius);*/
+}
+
+.input-like {
+  background-color: #f8f8f8;
+  border: 1px solid #ced4da;
+  border-left: 0;
+  margin-left: -1px;
+}
+.input-like:not(:last-child) {
+  border-right: 0;
+}
+.input-like:hover, .input-like:focus {
+  border-color: #ced4da;
+}
+
+.wishlist-options .btn-link {
+  text-decoration: none;
+}
+.wishlist-options .dropdown-menu {
+  border-radius: 0.125rem;
+  -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+}
+
+.no-chevron :after {
+  content: "";
 }
 
 /*# sourceMappingURL=clear.css.map */

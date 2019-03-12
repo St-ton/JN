@@ -264,6 +264,20 @@ function lazyLoadMenu(viewport){
     }
 }
 
+function addCopyToClipboardListener() {
+    var clipboard = new ClipboardJS('.btn.copyToClipboard');
+
+    clipboard.on('success', function(e) {
+        $(e.trigger).tooltip({title: 'copied'});
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+    });
+}
+
 function initWow()
 {
     new WOW().init();
@@ -529,5 +543,6 @@ $(document).ready(function () {
     regionsToState();
     compatibility();
     addValidationListener();
+    addCopyToClipboardListener();
     initWow();
 });

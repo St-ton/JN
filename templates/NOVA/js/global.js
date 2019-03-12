@@ -264,6 +264,20 @@ function lazyLoadMenu(viewport){
     }
 }
 
+function addCopyToClipboardListener() {
+    var clipboard = new ClipboardJS('.btn.copyToClipboard');
+
+    clipboard.on('success', function(e) {
+        $(e.trigger).tooltip({title: 'copied'});
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+    });
+}
+
 function initWow()
 {
     new WOW().init();
@@ -321,7 +335,8 @@ $(document).ready(function () {
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,
-            tabindex: -1
+            tabindex: -1,
+            buttons: false
         });
         e.stopPropagation();
         return false;
@@ -528,5 +543,6 @@ $(document).ready(function () {
     regionsToState();
     compatibility();
     addValidationListener();
+    addCopyToClipboardListener();
     initWow();
 });

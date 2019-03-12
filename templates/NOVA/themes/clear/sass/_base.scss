@@ -113,6 +113,7 @@ body.unboxed-layout {
 #evo-main-nav-wrapper {
   @include media-breakpoint-up(md) {
     flex-flow: wrap;
+    #nav-wishlist-collapse,
     #nav-cart-collapse,
     #nav-account-collapse {
       background: #fff;
@@ -153,7 +154,7 @@ body.unboxed-layout {
         }
 
       }
-      a {
+      a,i {
         text-decoration: none;
       }
     }
@@ -2200,4 +2201,39 @@ table caption {
 
 .productlist-item-info {
   @include media-breakpoint-down(sm) { text-align: center; margin-bottom: $spacer; }
+}
+
+/* wishlist */
+input.form-control[name="wishlist-url"] {
+  background: $white;
+  /*@include border-radius($dropdown-border-radius);*/
+}
+.input-like {
+  background-color: $input-bg;
+  border: 1px solid $input-border-color;
+  border-left: 0;
+  margin-left: -1px;
+  &:not(:last-child) {
+    border-right: 0;
+  }
+  &:hover,
+  &:focus {
+    border-color: $input-border-color;
+  }
+}
+
+.wishlist-options {
+  .btn-link {
+    text-decoration: none;
+  }
+  .dropdown-menu {
+    @include border-radius($dropdown-border-radius);
+    @include box-shadow($dropdown-box-shadow);
+  }
+}
+
+.no-chevron {
+  :after {
+    content: "";
+  }
 }

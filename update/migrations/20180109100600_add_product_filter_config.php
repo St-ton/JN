@@ -23,7 +23,7 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'tag_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Tagfilters',
             'selectbox',
             176,
@@ -38,7 +38,7 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'category_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Kategoriefilters',
             'selectbox',
             148,
@@ -53,7 +53,7 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'manufacturer_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Herstellerfilters',
             'selectbox',
             121,
@@ -68,7 +68,7 @@ class Migration_20180109100600 extends Migration implements IMigration
         $this->setConfig(
             'search_special_filter_type',
             'A',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Typ des Suchspezialfilters',
             'selectbox',
             141,

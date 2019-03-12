@@ -30,15 +30,24 @@ class Migration_20181117133301 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setConfig('ftp_header', 'FTP Verbindung', CONF_FTP, 'FTP Verbindung', null, 100, (object)[ 'cConf' => 'N' ], true);
-        $this->setConfig('ftp_hostname', 'localhost', CONF_FTP, 'FTP Hostname', 'text', 101, null, true);
-        $this->setConfig('ftp_port', '21', CONF_FTP, 'FTP Port', 'number', 102, null, true);
-        $this->setConfig('ftp_user', '', CONF_FTP, 'FTP Benutzer', 'text', 103, null, true);
-        $this->setConfig('ftp_pass', '', CONF_FTP, 'FTP Passwort', 'pass', 104, null, true);
+        $this->setConfig(
+            'ftp_header',
+            'FTP Verbindung',
+            \CONF_FTP,
+            'FTP Verbindung',
+            null,
+            100,
+            (object)[ 'cConf' => 'N' ],
+            true
+        );
+        $this->setConfig('ftp_hostname', 'localhost', \CONF_FTP, 'FTP Hostname', 'text', 101, null, true);
+        $this->setConfig('ftp_port', '21', \CONF_FTP, 'FTP Port', 'number', 102, null, true);
+        $this->setConfig('ftp_user', '', \CONF_FTP, 'FTP Benutzer', 'text', 103, null, true);
+        $this->setConfig('ftp_pass', '', \CONF_FTP, 'FTP Passwort', 'pass', 104, null, true);
         $this->setConfig(
             'ftp_ssl',
             'N',
-            CONF_FTP,
+            \CONF_FTP,
             'FTP SSL',
             'selectbox',
             105,
@@ -51,7 +60,16 @@ class Migration_20181117133301 extends Migration implements IMigration
             ],
             true
         );
-        $this->setConfig('ftp_path', '/', CONF_FTP, 'FTP Pfad', 'text', 106, (object)[ 'cBeschreibung' => 'Pfad zum Shop Hauptverzeichnis?' ], true);
+        $this->setConfig(
+            'ftp_path',
+            '/',
+            \CONF_FTP,
+            'FTP Pfad',
+            'text',
+            106,
+            (object)[ 'cBeschreibung' => 'Pfad zum Shop Hauptverzeichnis?' ],
+            true
+        );
     }
 
     public function down()

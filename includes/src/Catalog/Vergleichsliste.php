@@ -38,19 +38,10 @@ class Vergleichsliste
     {
         if ($kArtikel > 0) {
             $oArtikel           = new stdClass();
-            $tmpName            = Shop::Container()->getDB()->select(
-                'tartikel',
-                'kArtikel',
-                $kArtikel,
-                null,
-                null,
-                null,
-                null,
-                false,
-                'cName'
-            );
+            $tmpProduct         = (new Artikel())->fuelleArtikel($kArtikel);
             $oArtikel->kArtikel = $kArtikel;
-            $oArtikel->cName    = $tmpName->cName;
+            $oArtikel->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
+            $oArtikel->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
             if (\is_array($variations) && \count($variations) > 0) {
                 $oArtikel->Variationen = $variations;
             }

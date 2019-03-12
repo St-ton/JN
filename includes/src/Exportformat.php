@@ -1387,7 +1387,11 @@ class Exportformat
 
                 $this->writeFooter($datei);
                 \fclose($datei);
-                if (\copy(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                if (\copy(
+                    \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
+                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
+                )
+                ) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
                 } else {
                     $errorMessage = 'Konnte Export-Datei ' .
@@ -1437,7 +1441,11 @@ class Exportformat
                 // Schreibe Fusszeile
                 $this->writeFooter($datei);
                 \fclose($datei);
-                if (\copy(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName, \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname)) {
+                if (\copy(
+                    \PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName,
+                    \PFAD_ROOT . \PFAD_EXPORT . $this->cDateiname
+                )
+                ) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $this->tempFileName);
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten

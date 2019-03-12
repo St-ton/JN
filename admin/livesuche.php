@@ -445,9 +445,17 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                     (int)$queryID
                 );
             }
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDeleteMultiple'), 'successSearchDeleteMultiple');
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successSearchDeleteMultiple'),
+                'successSearchDeleteMultiple'
+            );
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorAtLeastOneSearch'),
+                'errorAtLeastOneSearch'
+            );
         }
     }
     $smarty->assign('tab', 'erfolglos');

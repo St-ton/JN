@@ -35,7 +35,7 @@
             {assign var=isDropdown value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
             {if $isDropdown}
                 <li class="nav-item dropdown{if $category->kKategorie == $activeId} active{/if}" data-tab="{$category@iteration}">
-                    {link href=$category->cURLFull title=$category->cSeo class="nav-link" data-toggle="dropdown-toggle" target="_self"}
+                    {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
                         {$category->cName}
                     {/link}
                     <div class="dropdown-menu">
@@ -162,23 +162,13 @@
         {assign var=linkSEOHersteller value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
         {navitemdropdown text="{if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}" data=["tab"=>"manufacturer"]}
             {container}
-                <div class="manufacturer">
-                    {if isset($linkSEOHersteller)}
-                        {link href=$linkSEOHersteller->getURL() title=$linkSEOHersteller->getName()}
-                            {$linkSEOHersteller->getName()}
-                        {/link}
-                    {else}
-                        {lang key='manufacturers'}
-                    {/if}
-                </div>
-                <hr class="my-2 d-none d-md-block">
                 {row}
                     {foreach $manufacturers as $hst}
                         {col cols=12 md=6 lg=3}
                             {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller)}
                                 <div class="category-wrapper manufacturer mt-3">
                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
-                                        <div class="d-none d-md-block">
+                                        <div class="d-none d-md-block mb-3">
                                             {link href=$hst->cURLFull title=$hst->cSeo}
                                                 {image lazy=true data=["src" => $hst->cBildURLNormal]
                                                      src="{$imageBaseURL}gfx/trans.png" alt=$hst->cName|escape:'html'}

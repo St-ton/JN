@@ -11,6 +11,7 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 use JTL\Shop;
@@ -66,7 +67,7 @@ class ProductStream extends Portlet
     {
         return [
             'listStyle'    => [
-                'type'    => 'select',
+                'type'    => InputType::SELECT,
                 'label'   => 'Darstellung',
                 'options' => [
                     'gallery'    => 'Galerie',
@@ -85,13 +86,13 @@ class ProductStream extends Portlet
             ],
             'productCount' => [
                 'label'              => 'Anzahl sichtbare Artikel',
-                'type'               => 'number',
+                'type'               => InputType::NUMBER,
                 'collapseControlEnd' => true,
                 'dspl_width'         => 50,
                 'default'            => 3,
             ],
             'filters'      => [
-                'type'    => 'filter',
+                'type'    => InputType::FILTER,
                 'label'   => 'Artikelfilter',
                 'default' => [],
             ],

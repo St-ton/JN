@@ -63,8 +63,14 @@ class ipl_partialcancel_request extends ipl_xml_request
      * @param $shippingdecreasegross
      * @param $currency
      */
-    public function set_cancel_params($reference, $rebatedecrease, $rebatedecreasegross, $shippingdecrease, $shippingdecreasegross, $currency)
-    {
+    public function set_cancel_params(
+        $reference,
+        $rebatedecrease,
+        $rebatedecreasegross,
+        $shippingdecrease,
+        $shippingdecreasegross,
+        $currency
+    ) {
         $this->_cancel_params['reference']             = $reference;
         $this->_cancel_params['rebatedecrease']        = $rebatedecrease;
         $this->_cancel_params['rebatedecreasegross']   = $rebatedecreasegross;

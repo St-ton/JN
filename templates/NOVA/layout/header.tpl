@@ -32,8 +32,8 @@
             <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
             <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
         {else}
-            <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
-            <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
+            <meta itemprop="image" content="{$ShopLogoURL}" />
+            <meta property="og:image" content="{$ShopLogoURL}" />
         {/if}
     {/block}
 
@@ -100,7 +100,7 @@
 
 {has_boxes position='left' assign='hasLeftPanel'}
 {block name='body-tag'}
-    <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
+    <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}{if $isFluidTemplate} class="unboxed-layout"{/if}>
 {/block}
 
 {if !$bExclusive}
@@ -113,12 +113,11 @@
             {include file='layout/header_composer_menu.tpl'}
         {/if}
         {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
-        <header class="d-print-none container-fluid {if $isSticky}sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
+        <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
             {block name='header-container-inner'}
-                {if !$isFluidTemplate}
-                    <div class="container px-0 px-lg-3 clearfix">
-                {/if}
+
+                <div class="container px-0 px-lg-3 clearfix">
                 {block name='header-branding-top-bar'}
                     <div id="top-bar" class="text-right d-none d-md-block">
                         {include file='layout/header_top_bar.tpl'}
@@ -133,7 +132,7 @@
                                 <div class="navbar-brand" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
-                                    <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
+                                    <meta itemprop="logo" content="{$ShopLogoURL}">
 
                                     {link href=$ShopURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
@@ -167,7 +166,7 @@
                             </div>
                         {/col}
                         {col cols=12 md=5 order=6 order-md=2}
-                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2 d-md-flex float-md-right"}
+                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 d-md-flex float-md-right"}
                                 {include file='layout/header_nav_search.tpl'}
                             {/collapse}
                         {/col}
@@ -175,9 +174,7 @@
 
                 {/block}
 
-                {if !$isFluidTemplate}
-                    </div>{* /container-block *}
-                {/if}
+                </div>
             {/block}
         </header>
     {/block}
@@ -206,11 +203,11 @@
     {/if}
 {/block}
 {block name='main-wrapper-starttag'}
-    <main id="main-wrapper" class="container{if $isFluidTemplate}-fluid{/if}{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if} mt-0 mt-md-6 pt-4 px-4">
+    <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
 {/block}
 {block name='content-all-starttags'}
     {block name='content-wrapper-starttag'}
-        <div id="content-wrapper">
+        <div id="content-wrapper" class="container mt-0 mt-md-6 pt-4 px-4">
     {/block}
 
     {block name='product-pagination'}

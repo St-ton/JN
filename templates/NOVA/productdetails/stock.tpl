@@ -3,9 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
-<div class="delivery-status p-3 px-3 mb-3">
+<div class="delivery-status p-3 mt-3 mb-4">
 {block name='delivery-status'}
-    {row}
+    {row class='align-items-center'}
         {col cols=6}
             {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
                 <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
@@ -20,9 +20,9 @@
                 ($Artikel->cLagerKleinerNull === 'N' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I' || $Artikel->cLagerKleinerNull === 'Y' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
                     <span class="status status-1">{lang key='supplierStockNotice' printf=$Artikel->fLieferzeit}</span>
                 {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
-                    <span class="status status-{$Artikel->Lageranzeige->nStatus}">{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                    <span class="status status-{$Artikel->Lageranzeige->nStatus}"><span class="fas fa-truck mr-2"></span>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
                 {elseif $anzeige === 'ampel'}
-                    <span class="status status-{$Artikel->Lageranzeige->nStatus}">{$Artikel->Lageranzeige->AmpelText}</span>
+                    <span class="status status-{$Artikel->Lageranzeige->nStatus}"><span class="fas fa-truck mr-2"></span>{$Artikel->Lageranzeige->AmpelText}</span>
                 {/if}
                 {include file='productdetails/warehouse.tpl' tplscope='detail'}
             {else}

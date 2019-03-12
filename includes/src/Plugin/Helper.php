@@ -382,8 +382,8 @@ class Helper
         foreach ($langVars as $lv) {
             if (!isset($new[$lv['kPluginSprachvariable']])) {
                 $var                                   = new stdClass();
-                $var->kPluginSprachvariable            = $lv['kPluginSprachvariable'];
-                $var->kPlugin                          = $lv['kPlugin'];
+                $var->kPluginSprachvariable            = (int)$lv['kPluginSprachvariable'];
+                $var->kPlugin                          = (int)$lv['kPlugin'];
                 $var->cName                            = $lv['cName'];
                 $var->cBeschreibung                    = $lv['cBeschreibung'];
                 $var->oPluginSprachvariableSprache_arr = [$lv['cISO'] => $lv['customValue']];
@@ -438,14 +438,16 @@ class Helper
             if ($plugin === null || $plugin->isBootstrap() === false) {
                 return null;
             }
-            $file  = $plugin->getPaths()->getBasePath() . \PLUGIN_BOOTSTRAPPER;
-            $class = \sprintf('Plugin\\%s\\%s', $plugin->getPluginID(), 'Bootstrap');
-            if (!\is_file($file)) {
-                return null;
+            if ($loader instanceof LegacyPluginLoader) {
+                $file  = $plugin->getPaths()->getVersionedPath() . \OLD_BOOTSTRAPPER;
+                $class = \sprintf('%s\\%s', $plugin->getPluginID(), 'Bootstrap');
+                if (!\is_file($file)) {
+                    return null;
+                }
+                require_once $file;
+            } else {
+                $class = \sprintf('Plugin\\%s\\%s', $plugin->getPluginID(), 'Bootstrap');
             }
-
-            require_once $file;
-
             if (!\class_exists($class)) {
                 return null;
             }

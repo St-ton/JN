@@ -39,10 +39,10 @@ class Overlay
         'kSuchspecialOverlay' => 'Type',
         'cTemplate'           => 'TemplateName',
         'cSuchspecial'        => 'Name',
-        'cPfadKlein'          => 'PathKlein',
-        'cPfadNormal'         => 'PathNormal',
-        'cPfadGross'          => 'PathGross',
-        'cPfadRetina'         => 'PathRetina',
+        'cPfadKlein'          => 'URLKlein',
+        'cPfadNormal'         => 'URLNormal',
+        'cPfadGross'          => 'URLGross',
+        'cPfadRetina'         => 'URLRetina',
         'cBildPfad'           => 'ImageName'
     ];
 
@@ -610,46 +610,6 @@ class Overlay
      * @return string
      * @deprecated since 5.0.0
      */
-    public function getPathKlein(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPathSize(\IMAGE_SIZE_XS);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getPathNormal(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPathSize(\IMAGE_SIZE_SM);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getPathGross(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPathSize(\IMAGE_SIZE_MD);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getPathRetina(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPathSize(\IMAGE_SIZE_LG);
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.0.0
-     */
     public function getURLKlein(): string
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
@@ -685,7 +645,6 @@ class Overlay
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return $this->getURL(\IMAGE_SIZE_LG);
     }
-
 
     /**
      * @param string $path

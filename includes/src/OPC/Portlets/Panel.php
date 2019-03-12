@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -63,7 +64,7 @@ class Panel extends Portlet
             ],
             'panel-state' => [
                 'label'      => 'Typ',
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'dspl_width' => 50,
                 'options'    => [
                     'default' => 'Standard',
@@ -76,12 +77,12 @@ class Panel extends Portlet
             ],
             'title-flag'  => [
                 'label'      => 'Kopf anzeigen?',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 50,
             ],
             'footer-flag' => [
                 'label'      => 'Fuß anzeigen?',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 50,
             ],
         ];

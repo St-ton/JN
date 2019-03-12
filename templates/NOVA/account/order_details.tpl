@@ -9,91 +9,131 @@
 </script>
 
 <h1>{lang key='orderCompletedPre' section='checkout'}</h1>
+{card no-body=true class='mb-3'}
+    {cardheader}
+        {row}
+            {col md=3 class='border-right'}
+                <strong><i class="far fa-calendar-alt"></i> {$Bestellung->dErstelldatum_de}</strong>
+            {/col}
+            {col md=5}
+                {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
+            {/col}
+            {col md=4}
+                {lang key='orderStatus' section='login'}: {$Bestellung->Status}
+            {/col}
+        {/row}
+    {/cardheader}
+    {cardbody}
+        {row}
+            {col md=3 class='border-right'}
 
-{row class="mb-3"}
-    {col}
-        {block name='order-details-order-info'}
-        {listgroup}
-            {listgroupitem}<strong>{lang key='yourOrderId' section='checkout'}:</strong> {$Bestellung->cBestellNr}{/listgroupitem}
-            {listgroupitem}<strong>{lang key='orderDate' section='login'}:</strong> {$Bestellung->dErstelldatum_de}{/listgroupitem}
-            {listgroupitem variant="info"}<strong>Status:</strong> {$Bestellung->Status}{/listgroupitem}
-        {/listgroup}
-        {/block}
-    {/col}
-{/row}
-
-{row class="mb-3"}
-    {col md=6}
-        {block name='order-details-billing-address'}
-        {card}
-            <div class="h3">{block name='order-details-billing-address-title'}{lang key='billingAdress' section='checkout'}{/block}</div>
-            {include file='checkout/inc_billing_address.tpl' Kunde=$billingAddress}
-        {/card}
-        {/block}
-    {/col}
-    {col md=6}
-        {block name='order-details-shipping-address'}
-        {card}
-            {if !empty($Lieferadresse->kLieferadresse)}
-                <div class="h3">{block name='order-details-shipping-address-title'}{lang key='shippingAdress' section='checkout'}{/block}</div>
-                {include file='checkout/inc_delivery_address.tpl'}
-            {else}
-                <div class="h3">{block name='order-details-shipping-address-title'}{lang key='shippingAdressEqualBillingAdress' section='account data'}{/block}</div>
-                {include file='checkout/inc_billing_address.tpl' Kunde=$billingAddress}
-            {/if}
-        {/card}
-        {/block}
-    {/col}
-{/row}
-{row class="mb-3"}
-    {col md=6}
-        {card}
-            {block name='order-details-payment'}
-            <div class="h3">{block name='order-details-payment-title'}{lang key='paymentOptions' section='global'}: {$Bestellung->cZahlungsartName}{/block}</div>
-            {block name='order-details-payment-body'}
-            {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
-                {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
-            {else}
-                {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_billpay_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
-                    {link href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
-                {else}
-                    {lang key='notPayedYet' section='login'}
+                {row class='mb-3'}<strong>{lang key='orderOverview' section='account data'}</strong>{/row}
+                {row}
+                    {col md=8 class='p-0'}<span class="price_label">{lang key='subtotal' section='account data'}:</span>{/col}
+                    {col md=4 class='p-0 pr-2 text-right'}<span>{$Bestellung->WarensummeLocalized[1]}</span>{/col}
+                {/row}
+                {if $Bestellung->GuthabenNutzen == 1}
+                    {row}
+                    {col md=8  class='p-0'}<span class="price_label">{lang key='useCredit' section='account data'}:</span>{/col}
+                    {col md=4  class='p-0 pr-2 text-right'}<span>{$Bestellung->GutscheinLocalized}</span>{/col}
+                    {/row}
                 {/if}
-            {/if}
-            {/block}
-            {/block}
-        {/card}
-    {/col}
-    {col md=6}
-        {card}
-            {block name='order-details-shipping'}
-            <div class="h3">{block name='order-details-shipping-title'}{lang key='shippingOptions' section='global'}: {$Bestellung->cVersandartName}{/block}</div>
-            {cardbody}
-            {block name='order-details-shipping-body'}
-            {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
-                {lang key='shippedOn' section='login'} {$Bestellung->dVersanddatum_de}
-            {elseif $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}
-                {$Bestellung->Status}
-            {else}
-                <p>{lang key='notShippedYet' section='login'}</p>
-                {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO}
-                <p><strong>{lang key='shippingTime' section='global'}</strong>: {if isset($cEstimatedDeliveryEx)}{$cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}</p>
+                {row class='info'}
+                    {col md=8 class='p-0'}<span class="price_label"><strong>{lang key='totalSum' section='global'}</strong>{if $NettoPreise} {lang key='gross' section='global'}{/if}:</span>{/col}
+                    {col md=4 class='p-0 pr-2 text-right'}<span class="price"><strong>{$Bestellung->WarensummeLocalized[0]}</strong></span>{/col}
+                {/row}
+                {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+                    {foreach $Bestellung->Steuerpositionen as $taxPosition}
+                        {row class='text-muted'}
+                            {col md=8 class='p-0'}<small>{$taxPosition->cName}</small>{/col}
+                            {col md=4 class='p-0 pr-2 text-right'}<small>{$taxPosition->cPreisLocalized}</small>{/col}
+                        {/row}
+                    {/foreach}
                 {/if}
-            {/if}
-            {/block}
-            {/cardbody}
-            {/block}
-        {/card}
-    {/col}
-{/row}
+                <hr class="mt-5 mb-5">
+                {row class='mb-3'}
+                {block name='order-details-payment'}
+                    {col md=12 sm=6 class='p-0'}
+                    {block name='order-details-payment-title'}{lang key='paymentOptions' section='global'}: <small>{$Bestellung->cZahlungsartName}</small>{/block}<br />
+                    {/col}
+                    {col md=12 sm=6 class='p-0'}
+                    {block name='order-details-payment-body'}
+                        <small>
+                        {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
+                            {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
+                        {else}
+                            {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_billpay_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
+                                {link href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
+                            {else}
+                                {lang key='notPayedYet' section='login'}
+                            {/if}
+                        {/if}
+                        </small>
+                    {/block}
+                    {/col}
+                {/block}
+                {/row}
+                {row class='mb-3'}
+                {block name='order-details-shipping'}
+                    {col md=12 sm=6 class='p-0'}
+                    {block name='order-details-shipping-title'}{lang key='shippingOptions' section='global'}: <small>{$Bestellung->cVersandartName}</small>{/block}<br />
+                    {/col}
+                    {col md=12 sm=6 class='p-0'}
+                    {block name='order-details-shipping-body'}
+                        <small>
+                        {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
+                            {lang key='shippedOn' section='login'} {$Bestellung->dVersanddatum_de}
+                        {elseif $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}
+                            {$Bestellung->Status}
+                        {else}
+                            <span>{lang key='notShippedYet' section='login'}</span><br />
+                            {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO}
+                                <span>{lang key='shippingTime' section='global'}: {if isset($cEstimatedDeliveryEx)}{$cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}</span>
+                            {/if}
+                        {/if}
+                        </small>
+                    {/block}
+                    {/col}
+                {/block}
+                {/row}
+                {row class='mb-3'}
+                {block name='order-details-billing-address'}
+                    {col md=12 sm=6 class='p-0'}
+                    {block name='order-details-billing-address-title'}{lang key='billingAdress' section='checkout'}:{/block}<br />
+                    {/col}
+                    {col md=12 sm=6 class='p-0'}
+                    <small>
+                        {include file='checkout/inc_billing_address.tpl' orderDetail=true}
+                    </small>
+                    {/col}
+                {/block}
+                {/row}
+                {row class='mb-3'}
+                {block name='order-details-shipping-address'}
+                    {col md=12 sm=6 class='p-0'}
+                    {block name='order-details-shipping-address-title'}{lang key='shippingAdress' section='checkout'}:{/block}<br />
+                    {/col}
+                    {col md=12 sm=6 class='p-0'}
+                    <small>
+                    {if !empty($Lieferadresse->kLieferadresse)}
+                        {include file='checkout/inc_delivery_address.tpl' orderDetail=true}
+                    {else}
+                        {block name='order-details-shipping-address-title'}{lang key='shippingAdressEqualBillingAdress' section='account data'}{/block}
+                    {/if}
+                    </small>
+                    {/col}
+                {/block}
+                {/row}
+            {/col}
+            {col md=9}
+                <strong>{lang key='basket'}</strong>
+                {include file='account/order_item.tpl' tplscope='confirmation'}
+            {/col}
+        {/row}
+    {/cardbody}
+{/card}
 
 {block name='order-details-basket'}
-<div class="h2">{lang key='basket'}</div>
-
-<div class="table-responsive">
-    {include file='account/order_item.tpl' tplscope='confirmation'}
-</div>
-
 {include file='account/downloads.tpl'}
 {include file='account/uploads.tpl'}
 {/block}

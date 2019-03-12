@@ -63,9 +63,17 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             $success              = $success && $cf->save($customerField);
         }
         if ($success) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldRefresh'), 'successCustomerFieldRefresh');
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successCustomerFieldRefresh'),
+                'successCustomerFieldRefresh'
+            );
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldRefresh'), 'errorCustomerFieldRefresh');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorCustomerFieldRefresh'),
+                'errorCustomerFieldRefresh'
+            );
         }
     } else { // Speichern
         $customerField = (object)[

@@ -16,13 +16,16 @@ use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\Checkout\Versand;
 use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\SmartyResourceNiceDB;
+use JTL\Smarty\ContextType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-/** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global JTLSmarty $smarty */
 $mailTpl             = null;
 $nFehler             = 0;
 $continue            = true;
@@ -781,8 +784,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                 ]
             );
             $db->insert($localizedTableName, $localized);
-            $mailSmarty = new \JTL\Smarty\JTLSmarty(true, \JTL\Smarty\ContextType::MAIL);
-            $mailSmarty->registerResource('db', new \JTL\Smarty\SmartyResourceNiceDB($db, \JTL\Smarty\ContextType::MAIL))
+            $mailSmarty = new JTLSmarty(true, ContextType::MAIL);
+            $mailSmarty->registerResource('db', new SmartyResourceNiceDB($db, ContextType::MAIL))
                        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(Smarty::CACHING_OFF)
                        ->setDebugging(Smarty::DEBUG_OFF)

@@ -1,5 +1,5 @@
 {if empty($smarty.session.Kunde->kKunde)}
-    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2 pt-2"}
+    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 pt-2"}
         {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 py-3"}
             <fieldset id="quick-login">
                 {formgroup}
@@ -38,9 +38,18 @@
         {/dropdownitem}
     {/collapse}
 {else}
-    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2 text-center"}
+    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 text-center"}
         {dropdownitem href="{get_static_route id='jtl.php' secure=true}" rel="nofollow" title="{lang key='myAccount'}"}
             {lang key='myAccount'}
+        {/dropdownitem}
+        {dropdownitem href="{get_static_route id='jtl.php' secure=true}?bestellungen=1" rel="nofollow" title="{lang key='myAccount'}"}
+            {lang key='myOrders'}
+        {/dropdownitem}
+        {dropdownitem href="{get_static_route id='jtl.php' secure=true}?editRechnungsadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
+            {lang key='myPersonalData'}
+        {/dropdownitem}
+        {dropdownitem href="{get_static_route id='jtl.php' secure=true}?wllist=1" rel="nofollow" title="{lang key='myAccount'}"}
+            {lang key='myWishlists'}
         {/dropdownitem}
         {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}"}
             {lang key='logOut'}

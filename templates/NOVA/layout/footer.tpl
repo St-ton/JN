@@ -30,7 +30,7 @@
 {block name='footer'}
     {if !$bExclusive}
         <footer>
-            {container fluid=$isFluidTemplate class="d-print-none pt-4"}
+            {container class="d-print-none pt-4"}
                 {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
                     {block name='footer-newsletter'}
                         {row class="newsletter-footer" class="text-center text-md-left"}

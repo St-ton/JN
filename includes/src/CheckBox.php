@@ -537,7 +537,7 @@ class CheckBox
     {
         $lang = Sprache::getLangIDFromIso($iso);
 
-        return (int)($lang->kSprache ?? 0);
+        return (int)($lang->kSprachISO ?? 0);
     }
 
     /**

@@ -52,13 +52,13 @@ class UploadDatei
     private $licenseOK;
 
     /**
-     * @param int $kUpload
+     * @param int $id
      */
-    public function __construct(int $kUpload = 0)
+    public function __construct(int $id = 0)
     {
         $this->licenseOK = self::checkLicense();
-        if ($kUpload > 0 && $this->licenseOK) {
-            $this->loadFromDB($kUpload);
+        if ($id > 0 && $this->licenseOK) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -71,12 +71,12 @@ class UploadDatei
     }
 
     /**
-     * @param int $kUpload
+     * @param int $id
      * @return bool
      */
-    public function loadFromDB(int $kUpload): bool
+    public function loadFromDB(int $id): bool
     {
-        $upload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', $kUpload);
+        $upload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', $id);
         if ($this->licenseOK && isset($upload->kUpload) && (int)$upload->kUpload > 0) {
             self::copyMembers($upload, $this);
 
@@ -117,10 +117,10 @@ class UploadDatei
 
     /**
      * @param int $kCustomID
-     * @param int $nTyp
+     * @param int $type
      * @return array
      */
-    public static function fetchAll(int $kCustomID, int $nTyp): array
+    public static function fetchAll(int $kCustomID, int $type): array
     {
         if (!self::checkLicense()) {
             return [];
@@ -128,7 +128,7 @@ class UploadDatei
         $files = Shop::Container()->getDB()->selectAll(
             'tuploaddatei',
             ['kCustomID', 'nTyp'],
-            [$kCustomID, $nTyp]
+            [$kCustomID, $type]
         );
         foreach ($files as $upload) {
             $upload->cGroesse   = Upload::formatGroesse($upload->nBytes);

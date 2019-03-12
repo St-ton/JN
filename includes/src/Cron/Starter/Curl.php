@@ -8,7 +8,7 @@ namespace JTL\Cron\Starter;
 
 /**
  * Class Curl
- * @package Cron\Starter
+ * @package JTL\Cron\Starter
  */
 class Curl extends AbstractStarter
 {

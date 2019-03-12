@@ -8,7 +8,7 @@ namespace JTL\Cron\Starter;
 
 /**
  * Class AbstractStarter
- * @package Cron\Starter
+ * @package JTL\Cron\Starter
  */
 abstract class AbstractStarter implements StarterInterface
 {
@@ -35,7 +35,7 @@ abstract class AbstractStarter implements StarterInterface
     /**
      * @inheritdoc
      */
-    public function setTimeout(int $timeout)
+    public function setTimeout(int $timeout): void
     {
         $this->timeout = $timeout;
     }
@@ -51,7 +51,7 @@ abstract class AbstractStarter implements StarterInterface
     /**
      * @inheritdoc
      */
-    public function setURL(string $url)
+    public function setURL(string $url): void
     {
         $this->url = $url;
     }

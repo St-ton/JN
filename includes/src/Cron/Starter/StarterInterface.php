@@ -8,7 +8,7 @@ namespace JTL\Cron\Starter;
 
 /**
  * Interface StarterInterface
- * @package Cron\Starter
+ * @package JTL\Cron\Starter
  */
 interface StarterInterface
 {
@@ -25,7 +25,7 @@ interface StarterInterface
     /**
      * @param int $timeout
      */
-    public function setTimeout(int $timeout);
+    public function setTimeout(int $timeout): void;
 
     /**
      * @return string
@@ -35,5 +35,5 @@ interface StarterInterface
     /**
      * @param string $url
      */
-    public function setURL(string $url);
+    public function setURL(string $url): void;
 }

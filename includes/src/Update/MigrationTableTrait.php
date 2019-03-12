@@ -215,7 +215,9 @@ trait MigrationTableTrait
                     WHERE kEinstellungenConf={$kEinstellungenConf}"
             );
             if ((int)$count->count !== 0) {
-                throw new Exception('another entry already present in teinstellungenconfwerte and overwrite is disabled');
+                throw new Exception('another entry already present in ' .
+                    'teinstellungenconfwerte and overwrite is disabled'
+                );
             }
 
             unset($count);

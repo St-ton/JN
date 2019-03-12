@@ -314,7 +314,8 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
     $result .= '-- @important: !!! PLEASE MAKE AN BACKUP OF STRUCTURE AND DATA FOR `' . $database . '` !!!' . $nl;
     $result .= '-- ' . $nl;
     $result .= $nl;
-    $result .= '-- ----------------------------------------------------------------------------------------------------' . $nl;
+    $result .= '-- ---------------------------------------------------------' .
+        '-------------------------------------------' . $nl;
     $result .= '-- ' . $nl;
     $result .= 'use `' . $database . '`;' . $nl;
 

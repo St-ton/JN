@@ -58,13 +58,13 @@ final class UploadSchema
     private $licenseOK;
 
     /**
-     * @param int $kUploadSchema
+     * @param int $id
      */
-    public function __construct(int $kUploadSchema = 0)
+    public function __construct(int $id = 0)
     {
         $this->licenseOK = self::checkLicense();
-        if ($kUploadSchema > 0 && $this->licenseOK === true) {
-            $this->loadFromDB($kUploadSchema);
+        if ($id > 0 && $this->licenseOK === true) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -77,9 +77,9 @@ final class UploadSchema
     }
 
     /**
-     * @param int $kUploadSchema
+     * @param int $id
      */
-    private function loadFromDB(int $kUploadSchema): void
+    private function loadFromDB(int $id): void
     {
         $upload = Shop::Container()->getDB()->queryPrepared(
             'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
@@ -92,7 +92,7 @@ final class UploadSchema
                 WHERE kUploadSchema =  :uid',
             [
                 'lid' => Shop::getLanguageID(),
-                'uid' => $kUploadSchema
+                'uid' => $id
             ],
             ReturnType::SINGLE_OBJECT
         );

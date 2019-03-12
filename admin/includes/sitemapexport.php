@@ -12,11 +12,14 @@ use JTL\Media\Image;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Customer\Kundengruppe;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\Media\MediaImage;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\Config;
 
 /**
  * @param string $nDatei
@@ -1166,17 +1169,17 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $productsPerPage, $config = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $config   = $config ?? JTL\Shopsetting::getInstance()->getAll();
+    $config   = $config ?? Shopsetting::getInstance()->getAll();
     $cURL_arr = [];
     $params   = [];
     Shop::setLanguage($langID);
-    $filterConfig = new JTL\Filter\Config();
+    $filterConfig = new Config();
     $filterConfig->setLanguageID($langID);
     $filterConfig->setLanguages($languages);
     $filterConfig->setConfig($config);
     $filterConfig->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
     $filterConfig->setBaseURL(Shop::getURL() . '/');
-    $naviFilter = new JTL\Filter\ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
+    $naviFilter = new ProductFilter($filterConfig, Shop::Container()->getDB(), Shop::Container()->getCache());
     switch ($cKey) {
         case 'kKategorie':
             $params['kKategorie'] = $kKey;

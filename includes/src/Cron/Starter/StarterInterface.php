@@ -4,8 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Starter;
-
+namespace JTL\Cron\Starter;
 
 /**
  * Interface StarterInterface

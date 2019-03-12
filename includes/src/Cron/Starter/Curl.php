@@ -4,8 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Starter;
-
+namespace JTL\Cron\Starter;
 
 /**
  * Class Curl
@@ -18,7 +17,7 @@ class Curl extends AbstractStarter
      */
     public function start(): bool
     {
-        $curl            = \curl_init();
+        $curl = \curl_init();
         \curl_setopt($curl, \CURLOPT_URL, $this->getURL());
         \curl_setopt($curl, \CURLOPT_POST, true);
         \curl_setopt($curl, \CURLOPT_NOSIGNAL, 1);

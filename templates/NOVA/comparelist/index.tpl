@@ -144,7 +144,6 @@
                                         </div>
                                     {/if}
                                 </td>
-
                             {elseif $row['key'] === 'lieferzeit'}
                                 <td>{include file='productdetails/stock.tpl' Artikel=$oArtikel shippingTime=true}</td>
                             {elseif $oArtikel->$row['key'] !== ''}

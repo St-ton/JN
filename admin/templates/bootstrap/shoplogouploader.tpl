@@ -23,14 +23,18 @@
                             showPreview: true,
                             language: 'de',
                             maxFileSize: 100000,
-                            maxFilesNum: 1{if $ShopLogo|strlen > 0}, initialPreview: [
-                                '<img src="{$ShopLogoURL}" class="file-preview-image" alt="Logo" title="Logo" />'
-                            ],
+                            maxFilesNum: 1,
+                            fileActionSettings: {ldelim}
+                                showDrag: false
+                            {rdelim}{if $ShopLogo|strlen > 0},
                             initialPreviewConfig: [
                                 {ldelim}
                                     url: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php',
                                     extra: {ldelim}logo: '{$ShopLogo}'{rdelim}
                                 {rdelim}
+                            ],
+                            initialPreview: [
+                                '<img src="{$ShopLogoURL}" class="file-preview-image" alt="Logo" title="Logo" />'
                             ]
                             {/if}
                         {rdelim}).on('fileuploaded', function(event, data) {ldelim}

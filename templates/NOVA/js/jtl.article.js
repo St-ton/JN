@@ -738,6 +738,11 @@
                 $(this.options.selector.navCompare).addClass('d-none');
                 $('#nav-comparelist-collapse').removeClass('show');
             }
+            if (data.nCount > 1) {
+                $('#nav-comparelist-goto').removeClass('d-none');
+            } else {
+                $('#nav-comparelist-goto').addClass('d-none');
+            }
             this.registerProductActions($('#shop-nav'));
 
             for (var ind in data.cBoxContainer) {

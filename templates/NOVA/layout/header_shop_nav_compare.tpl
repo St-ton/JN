@@ -26,7 +26,11 @@
             {/row}
             {row class="mt-2"}
                 {col}
-                    {link class='btn btn-sm btn-primary float-right' href="{get_static_route id='vergleichsliste.php'}"}
+                    {link
+                    class="btn btn-sm btn-primary float-right {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && count($smarty.session.Vergleichsliste->oArtikel_arr) <= 1}d-none{/if}"
+                    id='nav-comparelist-goto'
+                    href="{get_static_route id='vergleichsliste.php'}"
+                    }
                         {lang key='gotToCompare'}
                     {/link}
                 {/col}

@@ -3677,7 +3677,7 @@ class Artikel
                     $startDate = new DateTime($this->dSonderpreisStart_en);
                     $today     = new DateTime();
                     $endDate   = ($this->dSonderpreisEnde_en !== null && $this->dSonderpreisEnde_en !== '0000-00-00')
-                        ? new DateTime($this->dSonderpreisEnde_en)
+                        ? (new DateTime($this->dSonderpreisEnde_en))->modify('+1 days')
                         : $today;
                     $return    = ($startDate > $today || $endDate < $today);
                 }

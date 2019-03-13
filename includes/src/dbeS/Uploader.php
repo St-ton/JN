@@ -20,7 +20,7 @@ class Uploader extends NetSyncHandler
      */
     protected function request($request)
     {
-        if (Upload::checkLicense()) {
+        if (!Upload::checkLicense()) {
             self::throwResponse(NetSyncResponse::ERRORNOLICENSE);
         }
         switch ($request) {
@@ -48,7 +48,6 @@ class Uploader extends NetSyncHandler
                                 $oUpload->nBytes
                             );
                         }
-
                         self::throwResponse(NetSyncResponse::OK, $systemFiles);
                     }
                 }

@@ -29,11 +29,19 @@ class Migration_20170928095400 extends Migration implements IMigration
 
     public function down()
     {
-        $this->setConfig('global_ssl_www', '', CONF_GLOBAL, 'Zertifikat ausgestellt auf', 'selectbox', 541, (object)[
-            'cBeschreibung' => 'Diese Einstellung ist nur gültig, wenn Sie ein eigenes Zertifikat nutzen. Geben Sie hier an, ob es auf die Domain mit www. davor ausgestellt wurde.',
+        $this->setConfig(
+            'global_ssl_www',
+            '',
+            \CONF_GLOBAL,
+            'Zertifikat ausgestellt auf',
+            'selectbox',
+            541,
+            (object)[
+            'cBeschreibung' => 'Diese Einstellung ist nur gültig, wenn Sie ein eigenes Zertifikat nutzen. ' .
+                'Geben Sie hier an, ob es auf die Domain mit www. davor ausgestellt wurde.',
             'inputOptions'  => [
                 'www.' => 'Zertifikat ausgestellt auf Domain mit www',
-                '' => 'Zertifikat ausgestellt auf Domain ohne www',
+                ''     => 'Zertifikat ausgestellt auf Domain ohne www',
             ],
         ]);
     }

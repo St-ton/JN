@@ -233,8 +233,8 @@ trait PortletHtml
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });";
-                    if ($props[$propDesc['showOnProp']]['type'] === 'checkbox'
-                        || $props[$propDesc['showOnProp']]['type'] === 'radio'
+                    if ($props[$propDesc['showOnProp']]['type'] === InputType::CHECKBOX
+                        || $props[$propDesc['showOnProp']]['type'] === InputType::RADIO
                     ) {
                         $res .= "    
                                     if ($('[name=\"" . $propDesc['showOnProp'] . '"][value="' .
@@ -293,7 +293,7 @@ trait PortletHtml
     ): string {
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
-        $type  = $propDesc['type'] ?? 'text';
+        $type  = $propDesc['type'] ?? InputType::TEXT;
         $class = !empty($propDesc['class']) ? ' ' . $propDesc['class'] : '';
         $prop  = $instance->hasProperty($propname)
             ? $instance->getProperty($propname)
@@ -317,19 +317,19 @@ trait PortletHtml
                     </a>';
         }
         switch ($type) {
-            case 'number':
-            case 'email':
-            case 'date':
-            case 'time':
-            case 'password':
+            case InputType::NUMBER:
+            case InputType::EMAIL:
+            case InputType::DATE:
+            case InputType::TIME:
+            case InputType::PASSWORD:
                 $res .= '<input type="' . $type . '" class="form-control' .
                     $class . '" name="' .
                     $propname . '" value="' . $prop . '" id="config-' . $propname . '"' .
                     $placeholder .
                     ($required ? ' required>' : '>');
                 break;
-            case 'checkbox':
-                $res .= $this->getConfigPanelSnippet($instance, 'checkbox', [
+            case InputType::CHECKBOX:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::CHECKBOX, [
                     'option'   => $propDesc['option'] ?? null,
                     'required' => $required,
                     'class'    => $class,
@@ -337,14 +337,14 @@ trait PortletHtml
                     'propname' => $propname,
                 ]);
                 break;
-            case 'textlist':
-                $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
+            case InputType::TEXT_LIST:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::TEXT_LIST, [
                     'propname' => $propname,
                     'prop'     => $prop
                 ]);
                 break;
-            case 'radio':
-                $res .= $this->getConfigPanelSnippet($instance, 'radio', [
+            case InputType::RADIO:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::RADIO, [
                     'options'  => $propDesc['options'],
                     'inline'   => $propDesc['inline'] ?? false,
                     'required' => $required,
@@ -353,8 +353,8 @@ trait PortletHtml
                     'propname' => $propname,
                 ]);
                 break;
-            case 'select':
-                $res .= $this->getConfigPanelSnippet($instance, 'select', [
+            case InputType::SELECT:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::SELECT, [
                     'options'  => $propDesc['options'],
                     'inline'   => $propDesc['inline'] ?? false,
                     'required' => $required,
@@ -363,22 +363,22 @@ trait PortletHtml
                     'propname' => $propname,
                 ]);
                 break;
-            case 'image':
-                $res .= $this->getConfigPanelSnippet($instance, 'image', [
+            case InputType::IMAGE:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::IMAGE, [
                     'previewImgUrl' => empty($prop) ? Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
                 break;
-            case 'richtext':
-                $res .= $this->getConfigPanelSnippet($instance, 'richtext', [
+            case InputType::RICHTEXT:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::RICHTEXT, [
                     'prop'     => $prop,
                     'propname' => $propname,
                     'required' => $required,
                 ]);
                 break;
-            case 'color':
-                $res .= $this->getConfigPanelSnippet($instance, 'color', [
+            case InputType::COLOR:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::COLOR, [
                     'prop'        => $prop,
                     'propname'    => $propname,
                     'required'    => $required,
@@ -386,29 +386,29 @@ trait PortletHtml
                     'colorFormat' => $propDesc['color-format'] ?? 'rgba',
                 ]);
                 break;
-            case 'filter':
-                $res .= $this->getConfigPanelSnippet($instance, 'filter', [
+            case InputType::FILTER:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::FILTER, [
                     'propname' => $propname,
                     'prop'     => $prop
                 ]);
                 break;
-            case 'icon':
-                $res .= $this->getConfigPanelSnippet($instance, 'icon', [
+            case InputType::ICON:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::ICON, [
                     'propname' => $propname,
                     'prop'     => $prop,
                     'uid'      => \uniqid('', false)
                 ]);
                 break;
-            case 'hidden':
+            case InputType::HIDDEN:
                 $res .= '<input type="hidden" name="' .
                     $propname . '" value="' . $prop .
                     '" id="config-"' . $propname . '">';
                 break;
-            case 'banner-zones':
-                $res .= $this->getConfigPanelSnippet($instance, 'banner-zones');
+            case InputType::BANNER_ZONES:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::BANNER_ZONES);
                 break;
-            case 'image-set':
-                $res .= $this->getConfigPanelSnippet($instance, 'image-set', [
+            case InputType::IMAGE_SET:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::IMAGE_SET, [
                     'propname'   => $propname,
                     'prop'       => $prop,
                     'useColumns' => !empty($propDesc['useColumns']) ? $propDesc['useColumns'] : false,
@@ -416,19 +416,19 @@ trait PortletHtml
                     'useTitles'  => !empty($propDesc['useTitles']) ? $propDesc['useTitles'] : false
                 ]);
                 break;
-            case 'video':
-                $res .= $this->getConfigPanelSnippet($instance, 'video', [
+            case InputType::VIDEO:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::VIDEO, [
                     'previewVidUrl' => empty($prop) ? Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
                 break;
-            case 'hint':
+            case InputType::HINT:
                 $res .= '<div class="alert alert-' . $propDesc['class'] . '" role="alert">' .
                     $propDesc['text'] .
                     '</div>';
                 break;
-            case 'text':
+            case InputType::TEXT:
             default:
                 $res .= '<input type="text" class="form-control" name="' . $propname .
                     '" value="' . $prop . '" id="config-' . $propname . '"' .

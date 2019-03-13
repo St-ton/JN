@@ -26,7 +26,7 @@
         router-class="link_to_comparelist"
         target="{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'}_blank{/if}"
         title="{lang key='compare'}"
-        class="{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE && !empty($smarty.session.Vergleichsliste->oArtikel_arr)} active{/if}"
+        class="{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE && !empty($smarty.session.Vergleichsliste->oArtikel_arr)} active{/if}{if empty($smarty.session.Vergleichsliste->oArtikel_arr)} d-none{/if}"
     }
         {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}
             <span class="fas fa-tasks"></span>

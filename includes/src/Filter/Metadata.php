@@ -567,9 +567,9 @@ class Metadata implements MetadataInterface
      */
     public static function getTopMetaKeywords(string $text, int $maxWords = 10, bool $asArray = false)
     {
-        //remove text-format-clutter
+        // remove text-format-clutter
         $text = \str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.', '"'], ' ', $text);
-        //sanitize and lowercase text
+        // sanitize and lowercase text
         $text = \StringHandler::removeDoubleSpaces(
             \preg_replace(
                 '/[^a-zA-Z0-9üÜäÄöÖß-]/u',
@@ -577,21 +577,20 @@ class Metadata implements MetadataInterface
                 \StringHandler::htmlentitydecode(\strtolower(\strip_tags($text)))
             )
         );
-        //text to array
+        // text to array
         $wordsArray = \explode(' ', $text);
-        //minimum word length
+        // minimum word length
         $minimumWordLength = (int)Shop::getSettingValue(\CONF_METAANGABEN, 'global_meta_keywords_laenge');
 
         $wordsArray = \array_filter($wordsArray, function ($value) use ($minimumWordLength) {
             return \strlen($value) >= $minimumWordLength;
         });
-        //filter keywords from global keywords blacklist
+        // filter keywords from global keywords blacklist
         $excludes     = self::getExcludes();
-        $excludeWords = \explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords ?? '');
+        $excludeWords = \explode(' ', $excludes[Shop::getLanguageCode()]->cKeywords ?? '');
         $wordsArray   = \array_udiff($wordsArray, $excludeWords, 'strcasecmp');
-
-        $keywords = array();
-        //count word occurrences
+        $keywords     = array();
+        // count word occurrences
         while (($c_word = \array_shift($wordsArray)) !== null) {
             if (\array_key_exists($c_word, $keywords)) {
                 $keywords[$c_word]++;

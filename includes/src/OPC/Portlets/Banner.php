@@ -7,6 +7,7 @@
 namespace JTL\OPC\Portlets;
 
 use JTL\Catalog\Product\Artikel;
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 use JTL\Shop;
@@ -108,14 +109,14 @@ class Banner extends Portlet
         return [
             'src'   => [
                 'label'      => __('Image'),
-                'type'       => 'image',
+                'type'       => InputType::IMAGE,
                 'default'    => '',
                 'dspl_width' => 50,
                 'required'   => true,
             ],
             'zones' => [
                 'label'   => __('Zones'),
-                'type'    => 'banner-zones',
+                'type'    => InputType::BANNER_ZONES,
                 'default' => '[]',
             ],
             'class' => [

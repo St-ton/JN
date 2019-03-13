@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -64,7 +65,7 @@ class Video extends Portlet
             ],
             'video-responsive'  => [
                 'label'   => 'responsive einbetten?',
-                'type'    => 'radio',
+                'type'    => InputType::RADIO,
                 'inline'  => true,
                 'options' => [
                     true  => 'ja',
@@ -74,19 +75,19 @@ class Video extends Portlet
             ],
             'video-width'       => [
                 'label'      => 'Breite',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => 600,
                 'dspl_width' => 50,
             ],
             'video-height'      => [
                 'label'      => 'Höhe',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => 338,
                 'dspl_width' => 50,
             ],
             'video-vendor'      => [
                 'label'   => 'Quelle',
-                'type'    => 'select',
+                'type'    => InputType::SELECT,
                 'options' => [
                     'youtube' => 'YouTube',
                     'vimeo'   => 'Vimeo',
@@ -96,7 +97,7 @@ class Video extends Portlet
             ],
             'video-yt-hint'     => [
                 'label'                => 'Hinweis',
-                'type'                 => 'hint',
+                'type'                 => InputType::HINT,
                 'class'                => 'danger',
                 'text'                 => 'In ihren Datenschutzerklärungen sollten sie darauf hinweisen, ' .
                     'dass YouTube-Videos im „erweiterten Datenschutzmodus“ in ihren Seiten eingebettet sind. ' .
@@ -115,17 +116,17 @@ class Video extends Portlet
             ],
             'video-yt-start'    => [
                 'label'      => 'Start',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'dspl_width' => 50,
             ],
             'video-yt-end'      => [
                 'label'      => 'Ende',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'dspl_width' => 50,
             ],
             'video-yt-controls' => [
                 'label'      => 'Steuerelemente anzeigen?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     '1' => 'ja',
@@ -136,7 +137,7 @@ class Video extends Portlet
             ],
             'video-yt-rel'      => [
                 'label'      => 'ähnliche Videos anzeigen?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     '1' => 'ja',
@@ -147,7 +148,7 @@ class Video extends Portlet
             ],
             'video-yt-color'    => [
                 'label'        => 'Farbe',
-                'type'         => 'radio',
+                'type'         => InputType::RADIO,
                 'inline'       => true,
                 'options'      => [
                     'white' => 'weiß',
@@ -174,7 +175,7 @@ class Video extends Portlet
             ],
             'video-vim-loop'    => [
                 'label'      => 'Video nach Ablauf wiederholen?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     '1' => 'ja',
@@ -185,7 +186,7 @@ class Video extends Portlet
             ],
             'video-vim-img'     => [
                 'label'      => 'Bild anzeigen?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     '1' => 'ja',
@@ -196,7 +197,7 @@ class Video extends Portlet
             ],
             'video-vim-title'   => [
                 'label'      => 'Titel anzeigen?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     '1' => 'ja',
@@ -207,7 +208,7 @@ class Video extends Portlet
             ],
             'video-vim-byline'  => [
                 'label'      => 'Verfasserangabe anzeigen?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     '1' => 'ja',
@@ -218,14 +219,14 @@ class Video extends Portlet
             ],
             'video-vim-color'   => [
                 'label'              => 'Farbe',
-                'type'               => 'color',
+                'type'               => InputType::COLOR,
                 'default'            => '#ffffff',
                 'dspl_width'         => 50,
                 'collapseControlEnd' => true,
             ],
             'video-local-url'   => [
                 'label'                => 'Video URL',
-                'type'                 => 'video',
+                'type'                 => InputType::VIDEO,
                 'collapseControlStart' => true,
                 'showOnProp'           => 'video-vendor',
                 'showOnPropValue'      => 'local',

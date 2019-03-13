@@ -38,6 +38,7 @@ use JTL\Staat;
 use JTL\Catalog\Trennzeichen;
 use SmartyException;
 use stdClass;
+use JTL\Catalog\Wishlist\Wunschliste;
 
 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
 
@@ -75,6 +76,7 @@ class IOMethods
                         ->register('removeFromComparelist', [$this, 'removeFromComparelist'])
                         ->register('pushToWishlist', [$this, 'pushToWishlist'])
                         ->register('removeFromWishlist', [$this, 'removeFromWishlist'])
+                        ->register('updateWishlistDropdown', [$this, 'updateWishlistDropdown'])
                         ->register('checkDependencies', [$this, 'checkDependencies'])
                         ->register('checkVarkombiDependencies', [$this, 'checkVarkombiDependencies'])
                         ->register('generateToken', [$this, 'generateToken'])
@@ -564,6 +566,26 @@ class IOMethods
                 }
             }
         }
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        return $objResponse;
+    }
+
+    /**
+     * @return IOResponse
+     * @throws SmartyException
+     */
+    public function updateWishlistDropdown(): IOResponse
+    {
+        $response    = new stdClass();
+        $objResponse = new IOResponse();
+        $smarty      = Shop::Smarty();
+
+        $smarty->assign('wishlists', Wunschliste::getWishlists());
+
+        $response->content         = $smarty->fetch('snippets/wishlist_dropdown.tpl');
+        $response->currentPosCount = count(Frontend::getWishList()->CWunschlistePos_arr);
+
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 
         return $objResponse;

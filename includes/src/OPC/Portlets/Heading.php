@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -57,7 +58,7 @@ class Heading extends Portlet
         return [
             'level' => [
                 'label'      => __('Level'),
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     '1' => '1',
                     '2' => '2',
@@ -72,7 +73,7 @@ class Heading extends Portlet
             ],
             'text'  => [
                 'label'      => __('Text'),
-                'type'       => 'text',
+                'type'       => InputType::TEXT,
                 'default'    => __('Heading'),
                 'dspl_width' => 50,
             ],

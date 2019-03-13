@@ -85,9 +85,9 @@
 
 {row class='mb-5'}
     {col cols=12 md=6}
-        {card no-body=true}
+        {card no-body=true id='my-wishlists'}
             {cardheader class="bg-info"}
-            {link class='text-decoration-none' href="$cCanonicalURL?wllist=1"}
+            {link class='text-decoration-none' href="{get_static_route id='wunschliste.php'}"}
                 {lang key='myWishlists'}
             {/link}
             {/cardheader}
@@ -96,7 +96,7 @@
                     {foreach $oWunschliste_arr as $wishlist}
                         {row}
                             {col md=6}
-                                <p>{link href="$cCanonicalURL?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
+                                <p>{link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
                                 <small>{$wishlist->productCount} {lang key='products'}</small>
                                 </p>
                             {/col}

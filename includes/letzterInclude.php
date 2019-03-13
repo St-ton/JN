@@ -12,6 +12,7 @@ use JTL\Catalog\Navigation;
 use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
@@ -184,7 +185,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('cSessionID', session_id())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
-       ->assign('shopFaviconURL', Shop::getFaviconURL());
+       ->assign('shopFaviconURL', Shop::getFaviconURL())
+       ->assign('wishlists', Wunschliste::getWishlists());
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

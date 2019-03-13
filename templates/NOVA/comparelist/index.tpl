@@ -6,6 +6,8 @@
     {include file='layout/header.tpl'}
 {/block}
 
+{assign var='descriptionLength' value=200}
+
 {block name='content'}
     <h1>{lang key='compare' section='global'}</h1>
     <hr class="mt-2 mb-2">
@@ -22,7 +24,7 @@
                         data=["toggle"=> "collapse", "target"=>"#collapse-checkboxes"]
                         }
                             <i class="fa fa-chevron-down"></i>
-                            Filter
+                            {lang key='filter'}
                         {/button}
                         {button variant="light" id="check-all"}
                             {lang key='showAll'}
@@ -150,8 +152,22 @@
                                 <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
                                     {if $row['key'] === 'fArtikelgewicht' || $row['key'] === 'fGewicht'}
                                         {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
-                                    {else}
-                                        {$oArtikel->$row['key']}
+                                    {elseif $row['key'] === 'cBeschreibung'}
+                                        {if $oArtikel->$row['key']|strlen < $descriptionLength}
+                                            {$oArtikel->$row['key']}
+                                        {else}
+                                            <div>
+                                                <span>
+                                                    {$oArtikel->$row['key']|substr:0:$descriptionLength}
+                                                </span>
+                                                {collapse tag='span' id="read-more-{$oArtikel->kArtikel}"}
+                                                    {$oArtikel->$row['key']|substr:$descriptionLength}
+                                                {/collapse}
+                                            </div>
+                                            {button variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}"]}
+                                                {lang key='more'}<i class="fa fa-chevron-down"></i>
+                                            {/button}
+                                        {/if}
                                     {/if}
                                 </td>
                             {else}

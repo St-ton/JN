@@ -35,6 +35,8 @@ class Migration_20190312112201 extends Migration implements IMigration
 
         $this->setLocalization('ger', 'global', 'showNone', 'Alle ausblenden');
         $this->setLocalization('eng', 'global', 'showNone', 'Show none');
+        $this->setLocalization('ger', 'global', 'filter', 'Filter');
+        $this->setLocalization('eng', 'global', 'filter', 'Filter');
     }
 
     public function down()
@@ -43,5 +45,6 @@ class Migration_20190312112201 extends Migration implements IMigration
         $this->removeConfig('vergleichsliste_lieferzeit');
 
         $this->removeLocalization('showNone');
+        $this->removeLocalization('filter');
     }
 }

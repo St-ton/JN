@@ -12153,7 +12153,8 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
   #evo-main-nav-wrapper {
     flex-flow: wrap;
   }
-  #evo-main-nav-wrapper #nav-wishlist-collapse,
+  #evo-main-nav-wrapper #nav-comparelist-collapse,
+#evo-main-nav-wrapper #nav-wishlist-collapse,
 #evo-main-nav-wrapper #nav-cart-collapse,
 #evo-main-nav-wrapper #nav-account-collapse {
     background: #fff;
@@ -12162,7 +12163,7 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     right: 0;
     z-index: 1000;
     float: left;
-    min-width: 10rem;
+    min-width: 20vw;
     padding: 0.5rem 0;
     margin: 0.125rem 0 0;
     font-size: 0.875rem;
@@ -12177,7 +12178,8 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     -webkit-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
   }
-  #evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item,
+  #evo-main-nav-wrapper #nav-comparelist-collapse .dropdown-item,
+#evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item,
 #evo-main-nav-wrapper #nav-cart-collapse .dropdown-item,
 #evo-main-nav-wrapper #nav-account-collapse .dropdown-item {
     display: block;
@@ -12191,7 +12193,9 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     background-color: transparent;
     border: 0;
   }
-  #evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item:hover, #evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item:focus,
+  #evo-main-nav-wrapper #nav-comparelist-collapse .dropdown-item:hover, #evo-main-nav-wrapper #nav-comparelist-collapse .dropdown-item:focus,
+#evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item:hover,
+#evo-main-nav-wrapper #nav-wishlist-collapse .dropdown-item:focus,
 #evo-main-nav-wrapper #nav-cart-collapse .dropdown-item:hover,
 #evo-main-nav-wrapper #nav-cart-collapse .dropdown-item:focus,
 #evo-main-nav-wrapper #nav-account-collapse .dropdown-item:hover,
@@ -12200,7 +12204,9 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     text-decoration: none;
     background-color: #f5f7fa;
   }
-  #evo-main-nav-wrapper #nav-wishlist-collapse a, #evo-main-nav-wrapper #nav-wishlist-collapse i,
+  #evo-main-nav-wrapper #nav-comparelist-collapse a, #evo-main-nav-wrapper #nav-comparelist-collapse i,
+#evo-main-nav-wrapper #nav-wishlist-collapse a,
+#evo-main-nav-wrapper #nav-wishlist-collapse i,
 #evo-main-nav-wrapper #nav-cart-collapse a,
 #evo-main-nav-wrapper #nav-cart-collapse i,
 #evo-main-nav-wrapper #nav-account-collapse a,
@@ -12314,6 +12320,9 @@ ul.partlist-items {
   list-style-position: inside;
 }
 
+#nav-cart-collapse {
+  min-width: 30vw;
+}
 #nav-cart-collapse .dropdown-item {
   padding: 0;
 }
@@ -14262,6 +14271,21 @@ input.form-control[name=wishlist-url] {
 
 .no-chevron :after {
   content: "";
+}
+
+.comparelist {
+  max-height: 800px;
+}
+.comparelist .table thead th:first-child, .comparelist td:first-child {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 1000;
+}
+.comparelist .table thead th {
+  background: #fff;
+  vertical-align: top;
+  z-index: 999;
 }
 
 /*# sourceMappingURL=clear.css.map */

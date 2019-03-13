@@ -18,7 +18,7 @@
         </sup>
     {/navitem}
     {collapse id="nav-comparelist-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2"}
-        {dropdownitem tag="div" right=true id="comparelist-dropdown-container"}
+        <div id="comparelist-dropdown-container" class="p-3">
             {row}
                 {col id='comparelist-dropdown-content'}
                     {include file='snippets/comparelist_dropdown.tpl'}
@@ -27,14 +27,14 @@
             {row class="mt-2"}
                 {col}
                     {link
-                    class="btn btn-sm btn-primary float-right {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && count($smarty.session.Vergleichsliste->oArtikel_arr) <= 1}d-none{/if}"
-                    id='nav-comparelist-goto'
-                    href="{get_static_route id='vergleichsliste.php'}"
+                        class="btn btn-sm btn-primary float-right {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && count($smarty.session.Vergleichsliste->oArtikel_arr) <= 1}d-none{/if}"
+                        id='nav-comparelist-goto'
+                        href="{get_static_route id='vergleichsliste.php'}"
                     }
                         {lang key='gotToCompare'}
                     {/link}
                 {/col}
             {/row}
-        {/dropdownitem}
+        </div>
     {/collapse}
 </div>

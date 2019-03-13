@@ -22,9 +22,9 @@
         </sup>
     {/navitem}
     {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2"}
-        {dropdownitem tag="div" right=true id="wishlist-dropdown-container"}
+        <div id="wishlist-dropdown-container" class="p-3">
             {include file='snippets/wishlist_dropdown.tpl'}
-        {/dropdownitem}
+        </div>
     {/collapse}
 </div>
 {/if}

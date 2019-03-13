@@ -4,7 +4,7 @@
  *}
 {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2"}
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
-    {dropdownitem tag="div" right=true}
+    <div class="p-3">
         <table class="table table-striped dropdown-cart-items">
             <tbody>
             {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
@@ -98,7 +98,7 @@
                 {/link}
             {/col}
         {/row}
-    {/dropdownitem}
+    </div>
     {else}
     {dropdownitem href="{{get_static_route id='warenkorb.php'}}" rel="nofollow" title="{lang section='checkout' key='emptybasket'}"}
         {lang section='checkout' key='emptybasket'}

@@ -133,7 +133,18 @@
                         </td>
                         {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                             {if $row['key'] === 'verfuegbarkeit'}
-                                <td>{include file='productdetails/stock.tpl' Artikel=$oArtikel availability=true}</td>
+                                <td>
+                                    {include file='productdetails/stock.tpl' Artikel=$oArtikel availability=true}
+                                    {if $oArtikel->nErscheinendesProdukt}
+                                        <div>
+                                            {lang key='productAvailableFrom' section='global'}: <strong>{$oArtikel->Erscheinungsdatum_de}</strong>
+                                            {if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && $oArtikel->inWarenkorbLegbar == 1}
+                                                ({lang key='preorderPossible' section='global'})
+                                            {/if}
+                                        </div>
+                                    {/if}
+                                </td>
+
                             {elseif $row['key'] === 'lieferzeit'}
                                 <td>{include file='productdetails/stock.tpl' Artikel=$oArtikel shippingTime=true}</td>
                             {elseif $oArtikel->$row['key'] !== ''}

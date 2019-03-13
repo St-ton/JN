@@ -17,6 +17,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\Cron\Starter\Curl;
+use JTL\Cron\Starter\StarterFactory;
 use JTL\DB\DbInterface;
 use JTL\DB\NiceDB;
 use JTL\DB\ReturnType;
@@ -953,9 +954,8 @@ final class Shop
         Dispatcher::getInstance()->fire(Event::RUN);
 
         self::$productFilter->initStates(self::getParameters());
-        $cronStarter = new Curl();
-        $cronStarter->setURL(self::getURL() . '/' . \PFAD_INCLUDES . 'cron_inc.php');
-        $cronStarter->start();
+        $starterFactory = new StarterFactory(self::getConfig([\CONF_CRON])['cron']);
+        $starterFactory->getStarter()->start();
 
         return self::$productFilter;
     }

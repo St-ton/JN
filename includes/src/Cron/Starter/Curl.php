@@ -13,10 +13,34 @@ namespace JTL\Cron\Starter;
 class Curl extends AbstractStarter
 {
     /**
+     * @var int
+     */
+    private $frequency = 1;
+
+    /**
+     * @return int
+     */
+    public function getFrequency(): int
+    {
+        return $this->frequency;
+    }
+
+    /**
+     * @param int $frequency
+     */
+    public function setFrequency(int $frequency): void
+    {
+        $this->frequency = $frequency;
+    }
+
+    /**
      * @inheritdoc
      */
     public function start(): bool
     {
+        if (\random_int(1, $this->frequency) !== 1) {
+            return false;
+        }
         $curl = \curl_init();
         \curl_setopt($curl, \CURLOPT_URL, $this->getURL());
         \curl_setopt($curl, \CURLOPT_POST, true);

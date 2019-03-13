@@ -1,3 +1,16 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"X-Generator: Poedit 2.2.1\n"
+
 msgid "systemlog_flag_name"
 msgstr "systemlog_flag"
 
@@ -3321,3 +3334,15 @@ msgstr "Verschlüsselt (SSL)"
 
 msgid "ftp_path_name"
 msgstr "Pfad zum Shop"
+
+msgid "cron_type_name"
+msgstr "Pseudo-Cron Methode"
+
+msgid "cron_freq_name"
+msgstr "Server-to-Server jeden X-ten Aufruf starten"
+
+msgid "cron_type_desc"
+msgstr "Welche Methode soll verwendet werden?"
+
+msgid "cron_freq_desc"
+msgstr "Starte bei jedem x-ten Seitenaufruf den Pseudo-Cron"

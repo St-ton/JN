@@ -164,7 +164,7 @@ msgid "configgroup_44"
 msgstr "Barzahlung"
 
 msgid "configgroup_250"
-msgstr "Sofort"
+msgstr "Sofortüberweisung"
 
 msgid "configgroup_288"
 msgstr "Einstellungen"

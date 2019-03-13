@@ -26,13 +26,17 @@
             {/row}
             {row class="mt-2"}
                 {col}
+                {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && count($smarty.session.Vergleichsliste->oArtikel_arr) <= 1}
+                    {lang key='productNumberHint' section='comparelist'}
+                {else}
                     {link
-                        class="btn btn-sm btn-primary float-right {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && count($smarty.session.Vergleichsliste->oArtikel_arr) <= 1}d-none{/if}"
+                        class="btn btn-sm btn-primary float-right"
                         id='nav-comparelist-goto'
                         href="{get_static_route id='vergleichsliste.php'}"
                     }
                         {lang key='gotToCompare'}
                     {/link}
+                {/if}
                 {/col}
             {/row}
         </div>

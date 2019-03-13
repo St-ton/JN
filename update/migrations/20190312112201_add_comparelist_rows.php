@@ -37,6 +37,8 @@ class Migration_20190312112201 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'showNone', 'Show none');
         $this->setLocalization('ger', 'global', 'filter', 'Filter');
         $this->setLocalization('eng', 'global', 'filter', 'Filter');
+        $this->setLocalization('ger', 'comparelist', 'productNumberHint', 'Bitte mindestens zwei Artikel für einen Vergleich hinzufügen.');
+        $this->setLocalization('eng', 'comparelist', 'productNumberHint', 'Please add at least two products to compare.');
     }
 
     public function down()
@@ -46,5 +48,6 @@ class Migration_20190312112201 extends Migration implements IMigration
 
         $this->removeLocalization('showNone');
         $this->removeLocalization('filter');
+        $this->removeLocalization('productNumberHint');
     }
 }

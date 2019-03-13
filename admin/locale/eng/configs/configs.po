@@ -974,7 +974,7 @@ msgid "benachrichtigung_nutzen_name"
 msgstr "Allow availability requests"
 
 msgid "benachrichtigung_nutzen_desc"
-msgstr "Specify whether customers can choose to receive a notification when an item becomes available that is not currently available."
+msgstr "Specify whether customers can choose to receive a notification when an item becomes available that is not currently available. (Popup in list view in NOVA template inactive)"
 
 msgid "benachrichtigung_abfragen_vorname_name"
 msgstr "Prompt first name"
@@ -1865,10 +1865,10 @@ msgid "sonstiges_gratisgeschenk_nutzen_desc"
 msgstr "Specify whether to offer free gifts in the basket as soon as a customer has reached the minimum order value required."
 
 msgid "sonstiges_gratisgeschenk_anzahl_name"
-msgstr "Number of free gifts on overview page"
+msgstr "Number of free gifts on overview/cart page"
 
 msgid "sonstiges_gratisgeschenk_anzahl_desc"
-msgstr "Specify how many free gifts are to be displayed in the overview page. Enter 0 to show all free gifts."
+msgstr "Specify how many free gifts are to be displayed in the overview and cart page. Enter 0 to show all free gifts."
 
 msgid "sonstiges_gratisgeschenk_sortierung_name"
 msgstr "Sort free gifts by"

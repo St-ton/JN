@@ -974,7 +974,7 @@ msgid "benachrichtigung_nutzen_name"
 msgstr "Verfügbarkeitsanfragen ermöglichen"
 
 msgid "benachrichtigung_nutzen_desc"
-msgstr "Hier können Sie festlegen, ob Kunden bei Artikeln, die aktuell nicht lieferbar sind, angeben können, dass sie informiert werden möchten, wenn der Artikel wieder verfügbar ist."
+msgstr "Hier können Sie festlegen, ob Kunden bei Artikeln, die aktuell nicht lieferbar sind, angeben können, dass sie informiert werden möchten, wenn der Artikel wieder verfügbar ist. (Pop-Up in Listenansicht im NOVA Template inaktiv)"
 
 msgid "benachrichtigung_abfragen_vorname_name"
 msgstr "Vorname abfragen"
@@ -1865,10 +1865,10 @@ msgid "sonstiges_gratisgeschenk_nutzen_desc"
 msgstr "Hier legen Sie fest, ob Gratisgeschenke im Warenkorb angeboten werden, sobald ein Kunde den dafür erforderlichen Mindestbestellwert erreicht hat."
 
 msgid "sonstiges_gratisgeschenk_anzahl_name"
-msgstr "Anzahl Gratisgeschenke auf der Übersichtsseite"
+msgstr "Anzahl Gratisgeschenke auf der Übersichtsseite/im Warenkorb"
 
 msgid "sonstiges_gratisgeschenk_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Gratisgeschenke auf der Übersichtsseite angezeigt werden. Geben Sie 0 an, um alle Gratisgeschenke anzuzeigen."
+msgstr "Hier legen Sie fest, wie viele Gratisgeschenke auf der Übersichtsseite und im Warenkorb angezeigt werden. Geben Sie 0 an, um alle Gratisgeschenke anzuzeigen."
 
 msgid "sonstiges_gratisgeschenk_sortierung_name"
 msgstr "Gratisgeschenke sortieren nach"

@@ -3780,12 +3780,12 @@ class Artikel
                     $endDate->modify('+1 days');
                     $return = ($endDate >= new DateTime());
                 } elseif ($this->cAktivSonderpreis === 'N' && $this->dSonderpreisStart_en !== null) {
-                    //do not use cached result if a special price started in the mean time
+                    // do not use cached result if a special price started in the mean time
                     $startDate = new DateTime($this->dSonderpreisStart_en);
                     $today     = new DateTime();
                     $endDate   = $this->dSonderpreisEnde_en === null
                         ? $today
-                        : new DateTime($this->dSonderpreisEnde_en);
+                        : (new DateTime($this->dSonderpreisEnde_en))->modify('+1 days');
                     $return    = ($startDate > $today || $endDate < $today);
                 }
                 if ($return === true) {

@@ -11,7 +11,7 @@
         href="{get_static_route id='vergleichsliste.php'}"
         target="{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'}_blank{/if}"
         title="{lang key='compare'}"
-        class="{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if}"
+        class="d-none d-md-flex mr-2{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if}"
     }
         <span class="fas fa-tasks"></span>
         <sup>

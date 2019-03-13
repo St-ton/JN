@@ -14,7 +14,7 @@
     {/if}
     <script type="text/javascript" src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/locales/{$uploaderLang}.js"></script>
 
-    {if $tplscope === "product"}
+    {if $tplscope === 'product'}
         <div class="h3 section-heading">{lang key='uploadHeadline'}</div>
         {alert variant="info"}
             {lang key='maxUploadSize'}: <strong>{$cMaxUploadSize}</strong>
@@ -65,6 +65,7 @@
                                     jtl_token:  "{$smarty.session.jtl_token}",
                                     uniquename: "{$oUploadSchema->cUnique}",
                                     uploader:   "4.00",
+                                    prodID:     "{$oUploadSchema->prodID}",
                                     cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
                                     {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                     variation:  "{strip}
@@ -182,6 +183,7 @@
                                             jtl_token:  "{$smarty.session.jtl_token}",
                                             uniquename: "{$oUpload->cUnique}",
                                             uploader:   "4.00",
+                                            prodID:     "{$oUploadSchema->prodID}",
                                             cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
                                             {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
                                             variation:  "{strip}

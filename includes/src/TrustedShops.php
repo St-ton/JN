@@ -30,12 +30,18 @@ if (\TS_MODUS === 1) {
     // Produktiv
     //define('TS_SERVER', 'https://protection.trustedshops.com/ts/protectionservices/ApplicationRequestService?wsdl');
     \define('TS_SERVER', 'https://www.trustedshops.de/ts/services/TsProtection?wsdl');
-    \define('TS_SERVER_PROTECTION', 'https://www.trustedshops.com/ts/protectionservices/ApplicationRequestService?wsdl');
+    \define(
+        'TS_SERVER_PROTECTION',
+        'https://www.trustedshops.com/ts/protectionservices/ApplicationRequestService?wsdl'
+    );
     \define('TS_CHECK_SERVER', 'https://www.trustedshops.de/ts/services/TsRating?wsdl');
     \define('TS_RATING_SERVER', 'https://www.trustedshops.de/ts/services/TsRating?wsdl');
 } else {
     // Test
-    //define('TS_SERVER', 'https://protection-qa.trustedshops.com/ts/protectionservices/ApplicationRequestService?wsdl');
+    //\define(
+    //    'TS_SERVER',
+    //    'https://protection-qa.trustedshops.com/ts/protectionservices/ApplicationRequestService?wsdl'
+    //);
     \define('TS_SERVER', 'https://qa.trustedshops.de/ts/services/TsProtection?wsdl');
     \define(
         'TS_SERVER_PROTECTION',
@@ -275,18 +281,27 @@ class TrustedShops
             $this->cLogoSiegelBoxURL['nl'] = 'https://www.trustedshops.nl/shop/certificate.php?shop_id=' . $this->tsId;
             $this->cLogoSiegelBoxURL['it'] = 'https://www.trustedshops.it/shop/certificate.php?shop_id=' . $this->tsId;
 
-            $this->cBoxText['de']      = "Die im K&auml;uferschutz enthaltene <a href='" . $this->cBedingungURL . "' target='_blank'>Trusted Shops Garantie</a> sichert Ihren Online-Kauf ab. " .
-                "Mit der &Uuml;bermittlung und <a href='" . $this->cSpeicherungURL . "' target='_blank'>Speicherung</a> meiner E-Mail-Adresse zur " .
-                "Abwicklung des K&auml;uferschutzes durch Trusted Shops bin ich einverstanden. <a href='" . $this->cBedingungURL . "' target='_blank'>Garantiebedingungen</a> f&uuml;r den K&auml;uferschutz.";
-            $this->cBoxText['en']      = "The Trusted Shops buyer protection secures your online purchase. I agree with the transfer and <a href='" . $this->cSpeicherungURL .
-                "' target='_blank'>saving</a> of my email address for the buyer protection handling by Trusted Shops. <a href='" . $this->cBedingungURL .
-                "' target='_blank'>Conditions</a> for the buyer protection.";
-            $this->cBoxText['nl']      = "De in de koperbescherming inbegrepen Trusted Shops Garantie beveiligt uw online aankoop. Ik ga akkoord met de doorgifte en de <a href='" .
-                $this->cSpeicherungURL . "' target='_blank'>opslag</a> van mijn E-mailadres voor de afwikkeling van de koperbescherming door Trusted Shops. <a href='" .
-                $this->cBedingungURL . "' target='_blank'>Garantievoorwaarden</a>  voor de koperbescherming.";
-            $this->cBoxText['it']      = "La protezione acquirenti di Trusted Shops rende sicuri i tuoi acquisti online. Do il mio assenso al trasferimento e al <a href='" .
-                $this->cSpeicherungURL . "' target='_blank'>salvataggio</a> del mio indirizzo e-mail per lelaborazione della protezione acquirenti da parte di Trusted Shops. <a href='" .
-                $this->cBedingungURL . "' target='_blank'>Condizioni</a> della protezione acquirenti.";
+            $this->cBoxText['de']      = 'Die im K&auml;uferschutz enthaltene <a href="' . $this->cBedingungURL .
+                '" target="_blank">Trusted Shops Garantie</a> sichert Ihren Online-Kauf ab. ' .
+                'Mit der &Uuml;bermittlung und <a href="' . $this->cSpeicherungURL .
+                '" target="_blank">Speicherung</a> meiner E-Mail-Adresse zur  Abwicklung des ' .
+                'K&auml;uferschutzes durch Trusted Shops bin ich einverstanden. <a href="' . $this->cBedingungURL .
+                '" target="_blank">Garantiebedingungen</a> f&uuml;r den K&auml;uferschutz.';
+            $this->cBoxText['en']      = 'The Trusted Shops buyer protection secures your online purchase. ' .
+                'I agree with the transfer and <a href="' . $this->cSpeicherungURL .
+                '" target="_blank">saving</a> of my email address for the buyer protection handling by ' .
+                'Trusted Shops. <a href="' . $this->cBedingungURL . '" target="_blank">Conditions</a> ' .
+                'for the buyer protection.';
+            $this->cBoxText['nl']      = 'De in de koperbescherming inbegrepen Trusted Shops Garantie ' .
+                'beveiligt uw online aankoop. Ik ga akkoord met de doorgifte en de <a href="' .
+                $this->cSpeicherungURL . '" target="_blank">opslag</a> van mijn E-mailadres voor de afwikkeling ' .
+                'van de koperbescherming door Trusted Shops. <a href="' . $this->cBedingungURL .
+                '" target="_blank">Garantievoorwaarden</a>  voor de koperbescherming.';
+            $this->cBoxText['it']      = 'La protezione acquirenti di Trusted Shops rende sicuri i tuoi acquisti ' .
+                'online. Do il mio assenso al trasferimento e al <a href="' .
+                $this->cSpeicherungURL . '" target="_blank">salvataggio</a> del mio indirizzo e-mail per l' .
+                'elaborazione della protezione acquirenti da parte di Trusted Shops. <a href="' .
+                $this->cBedingungURL . '" target="_blank">Condizioni</a> della protezione acquirenti.';
             $this->cBoxText['default'] = $this->cBoxText['de'];
         }
         Shop::Container()->getCache()->set($cacheID, $this, [\CACHING_GROUP_OPTION, \CACHING_GROUP_CORE]);
@@ -1140,8 +1155,10 @@ class TrustedShops
         if (!\is_object($certificate)) {
             $certificate = new stdClass();
         }
-        $certificate->cWSUser     = \trim(Shop::Container()->getCryptoService()->encryptXTEA($certificate->cWSUser));
-        $certificate->cWSPasswort = \trim(Shop::Container()->getCryptoService()->encryptXTEA($certificate->cWSPasswort));
+        $service = Shop::Container()->getCryptoService();
+
+        $certificate->cWSUser     = \trim($service->encryptXTEA($certificate->cWSUser));
+        $certificate->cWSPasswort = \trim($service->encryptXTEA($certificate->cWSPasswort));
 
         return $certificate;
     }
@@ -1159,8 +1176,10 @@ class TrustedShops
 
             return $certificate;
         }
-        $certificate->cWSUser     = \trim(Shop::Container()->getCryptoService()->decryptXTEA($certificate->cWSUser));
-        $certificate->cWSPasswort = \trim(Shop::Container()->getCryptoService()->decryptXTEA($certificate->cWSPasswort));
+        $service = Shop::Container()->getCryptoService();
+
+        $certificate->cWSUser     = \trim($service->decryptXTEA($certificate->cWSUser));
+        $certificate->cWSPasswort = \trim($service->decryptXTEA($certificate->cWSPasswort));
 
         return $certificate;
     }

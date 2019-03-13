@@ -922,7 +922,7 @@ class NiceDB implements DbInterface
      *
      * @param int           $type - Type [0 => query, 1 => prepared]
      * @param string        $stmt - Statement to be executed
-     * @param array         $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
+     * @param array         $params - An array of values with as many elements as there are bound parameters
      * @param int           $return - what should be returned.
      * @param int|bool      $echo print current stmt
      * @param bool          $bExecuteHook should function executeHook be executed

@@ -26,6 +26,7 @@ use JTL\Cart\Warenkorb;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
 use JTL\Filter\Metadata;
+use JTL\Catalog\Wishlist\Wunschliste;
 
 $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
@@ -180,7 +181,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('cSessionID', session_id())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
-       ->assign('shopFaviconURL', Shop::getFaviconURL());
+       ->assign('shopFaviconURL', Shop::getFaviconURL())
+       ->assign('wishlists', Wunschliste::getWishlists());
 
 $nav = new \JTL\Catalog\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

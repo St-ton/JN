@@ -38,12 +38,13 @@ class Migration_20180405090000 extends Migration implements IMigration
         $this->setConfig(
             'wartungsmodus_hinweis',
             'Dieser Shop befindet sich im Wartungsmodus.',
-            CONF_GLOBAL,
+            \CONF_GLOBAL,
             'Wartungsmodus Hinweis',
             'text',
             1020,
             (object)[
-                'cBeschreibung' => 'Dieser Hinweis wird Besuchern angezeigt, wenn der Shop im Wartungsmodus ist. Achtung: Im Evo-Template steuern Sie diesen Text &uuml;ber die Sprachvariable maintenanceModeActive.',
+                'cBeschreibung' => 'Dieser Hinweis wird Besuchern angezeigt, wenn der Shop im Wartungsmodus ist. ' .
+                    'Achtung: Im Evo-Template steuern Sie diesen Text über die Sprachvariable maintenanceModeActive.',
             ]
         );
     }

@@ -117,7 +117,7 @@
 
             {block name='header-container-inner'}
 
-                <div class="container px-0 px-lg-3 clearfix">
+                <div class="container px-4 clearfix">
                 {block name='header-branding-top-bar'}
                     <div id="top-bar" class="text-right d-none d-md-block">
                         {include file='layout/header_top_bar.tpl'}

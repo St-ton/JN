@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -64,7 +65,7 @@ class Flipcard extends Portlet
             ],
             'flip-style' => [
                 'label'      => 'Richtung',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     'flip_v' => 'vertical',

@@ -352,6 +352,7 @@ if ($customerID > 0) {
 }
 Shop::Smarty()->assign('CWunschliste', $wishlist)
     ->assign('oWunschliste_arr', $wishlists)
+    ->assign('newWL', Request::verifyGPCDataInt('newWL'))
     ->assign('wlsearch', $searchQuery)
     ->assign('Link', $link)
     ->assign('hasItems', !empty($wishlist->CWunschlistePos_arr))

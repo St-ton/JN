@@ -12,6 +12,7 @@ use JTL\Helpers\Text;
 use JTL\Cart\WarenkorbPers;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

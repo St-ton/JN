@@ -10,6 +10,7 @@ use JTL\Customer\Kundengruppe;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);

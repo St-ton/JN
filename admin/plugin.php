@@ -11,6 +11,7 @@ use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

@@ -6,7 +6,7 @@
 
 namespace JTL\Catalog\Wishlist;
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;

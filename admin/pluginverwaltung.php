@@ -24,6 +24,7 @@ use JTL\Plugin\InstallCode;
 use JTL\Mapper\PluginState as StateMapper;
 use JTL\Mapper\PluginValidation as ValidationMapper;
 use JTL\XMLParser;
+use JTL\Alert\Alert;
 use function Functional\select;
 use function Functional\group;
 use function Functional\first;

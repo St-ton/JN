@@ -7,7 +7,7 @@
 use JTL\Helpers\Cart;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Kampagne;
 use JTL\Customer\Kunde;

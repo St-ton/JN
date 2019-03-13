@@ -8,6 +8,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Pagination\Pagination;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty

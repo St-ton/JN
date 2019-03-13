@@ -10,6 +10,7 @@ use JTL\PlausiTrennzeichen;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\Catalog\Trennzeichen;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

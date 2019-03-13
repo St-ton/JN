@@ -9,6 +9,7 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\Template;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

@@ -5,6 +5,8 @@
  */
 
 use JTL\Sprache;
+use JTL\Shop;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

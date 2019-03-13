@@ -9,7 +9,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\ExtensionPoint;
 use JTL\Firma;

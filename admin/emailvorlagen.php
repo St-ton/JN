@@ -19,6 +19,7 @@ use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
 use JTL\Smarty\ContextType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

@@ -7,6 +7,7 @@
 use JTL\Shop;
 use JTL\DB\ReturnType;
 use JTL\Template;
+use JTL\Alert\Alert;
 
 /**
  * @return array
@@ -67,11 +68,11 @@ function speicherEinstellung(
 
     if (mb_strlen($files['name']) > 0) {
         $template    = $template ?: Template::getInstance()->getName();
-        $overlayPath = \PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE;
+        $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
         if (!is_writable($overlayPath)) {
             Shop::Container()->getAlertService()->addAlert(
-                \Alert::TYPE_ERROR,
-                sprintf(__('errorOverlayWritePermissions'), \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE),
+                Alert::TYPE_ERROR,
+                sprintf(__('errorOverlayWritePermissions'), PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE),
                 'errorOverlayWritePermissions',
                 ['saveInSession' => true]
             );

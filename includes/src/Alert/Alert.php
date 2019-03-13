@@ -4,7 +4,9 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL;
+namespace JTL\Alert;
+
+use JTL\Shop;
 
 /**
  * Class Alert

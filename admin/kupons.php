@@ -15,6 +15,7 @@ use JTL\Pagination\Pagination;
 use JTL\Pagination\Operation;
 use JTL\DB\ReturnType;
 
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);

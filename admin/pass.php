@@ -7,6 +7,7 @@
 use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Helpers\Text;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */

@@ -11,6 +11,7 @@ use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';

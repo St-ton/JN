@@ -9,6 +9,7 @@ namespace JTL\Helpers;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
+use JTL\Alert\Alert;
 
 /**
  * Class Overlay
@@ -40,17 +41,17 @@ class Overlay
      */
     public function loadOverlaysFromTemplateFolder(string $template): bool
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
+        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
 
-        $overlayPath = \PFAD_ROOT . \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE;
+        $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
         $dir         = $overlayPath . \JTL\Media\Image\Overlay::ORIGINAL_FOLDER_NAME;
         if (!\is_dir($dir)) {
             return false;
         }
-        if (!is_writable($overlayPath)) {
+        if (!\is_writable($overlayPath)) {
             Shop::Container()->getAlertService()->addAlert(
-                \Alert::TYPE_ERROR,
-                sprintf(__('errorOverlayWritePermissions'), \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE),
+                Alert::TYPE_ERROR,
+                sprintf(__('errorOverlayWritePermissions'), PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE),
                 'errorOverlayWritePermissions',
                 ['saveInSession' => true]
             );

@@ -13,6 +13,7 @@ use JTL\SimpleCSS;
 use JTL\Shop;
 use JTL\Template;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty $smarty
@@ -121,14 +122,14 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                         $targetFile = $base . $value;
                         if (!is_writable($base)) {
                             Shop::Container()->getAlertService()->addAlert(
-                                \Alert::TYPE_ERROR,
+                                Alert::TYPE_ERROR,
                                 sprintf(__('errorFileUpload'), $templatePath),
                                 'errorFileUpload',
                                 ['saveInSession' => true]
                             );
                         } elseif (!move_uploaded_file($file['tmp_name'], $targetFile)) {
                             Shop::Container()->getAlertService()->addAlert(
-                                \Alert::TYPE_ERROR,
+                                Alert::TYPE_ERROR,
                                 __('errorFileUploadGeneral'),
                                 'errorFileUploadGeneral',
                                 ['saveInSession' => true]

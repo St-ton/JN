@@ -12,6 +12,7 @@ use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Alert\Alert;
 
 /**
  * @return array|bool

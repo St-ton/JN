@@ -10,6 +10,7 @@ use JTL\Helpers\Form;
 use JTL\Update\DBMigrationHelper;
 use JTL\Shop;
 use JTL\Helpers\Text;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

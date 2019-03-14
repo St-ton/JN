@@ -12,6 +12,8 @@ $oAccount->redirectOnFailure();
 use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Alert\Alert;
+use JTL\Filesystem;
 
 $shopSettings = Shopsetting::getInstance();
 $alertHelper  = Shop::Container()->getAlertService();

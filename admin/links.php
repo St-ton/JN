@@ -13,6 +13,7 @@ use JTL\DB\ReturnType;
 use JTL\Link\Link;
 use JTL\Link\LinkInterface;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

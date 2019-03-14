@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferschein;

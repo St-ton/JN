@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;

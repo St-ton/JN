@@ -6,7 +6,7 @@
 
 namespace JTL\Checkout;
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Product;

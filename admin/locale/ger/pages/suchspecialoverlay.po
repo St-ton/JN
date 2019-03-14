@@ -49,3 +49,9 @@ msgstr "Hier legen Sie fest, wo sich das Bild-Overlay im Artikelbild befinden so
 
 msgid "suchspecialoverlayPrioDesc"
 msgstr "Falls auf einen Artikel mehrere Specials zutreffen, können Sie hier die Reihenfolge festlegen. Das Special mit der höchsten Priorität wird angezeigt."
+
+msgid "errorOverlayWritePermissions"
+msgstr "Overlay konnte nicht gespeichert werden - bitte Schreibrechte des Ordners \"%s\" prüfen."
+
+msgid "invalidOverlay"
+msgstr "Unbekanntes Overlay"

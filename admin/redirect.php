@@ -13,6 +13,7 @@ use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
 use JTL\Pagination\Operation;
 use JTL\Pagination\DataType;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty

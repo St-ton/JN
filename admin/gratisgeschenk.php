@@ -6,6 +6,8 @@
 
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
+use JTL\Shop;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

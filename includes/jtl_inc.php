@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Cart\WarenkorbPers;
 use JTL\Cart\WarenkorbPersPos;
 use JTL\Catalog\Product\Artikel;

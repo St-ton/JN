@@ -237,40 +237,20 @@ function speicherOverlay($im, $extension, $path, $quality = 80)
     }
     switch ($extension) {
         case '.jpg':
-            if (!function_exists('imagejpeg')) {
-                return false;
-            }
-
-            return imagejpeg($im, $path, $quality);
-            break;
+            return function_exists('imagejpeg') ? imagejpeg($im, $path, $quality) : false;
         case '.png':
-            if (!function_exists('imagepng')) {
-                return false;
-            }
-
-            return imagepng($im, $path);
-            break;
+            return function_exists('imagepng') ? imagepng($im, $path) : false;
         case '.gif':
-            if (!function_exists('imagegif')) {
-                return false;
-            }
-
-            return imagegif($im, $path);
-            break;
+            return function_exists('imagegif') ? imagegif($im, $path) : false;
         case '.bmp':
-            if (!function_exists('imagewbmp')) {
-                return false;
-            }
-
-            return imagewbmp($im, $path);
-            break;
+            return function_exists('imagewbmp') ? imagewbmp($im, $path) : false;
+        default:
+            return false;
     }
-
-    return false;
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0.0
  * @param string $image
  * @param string $width
  * @param string $height
@@ -321,16 +301,10 @@ function erstelleFixedOverlay(string $image, int $size, int $transparency, strin
 {
 //    $conf = Shop::getSettings([CONF_BILDER]);
 //    $bSkalieren    = !($conf['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
-
     [$width, $height] = getimagesize($image);
     $factor           = $size / $width;
 
-    $im = ladeOverlay($image, $size, $height * $factor, $transparency);
-    if (!speicherOverlay($im, $extension, $path)) {
-        return false;
-    }
-
-    return true;
+    return speicherOverlay(ladeOverlay($image, $size, $height * $factor, $transparency), $extension, $path);
 }
 
 

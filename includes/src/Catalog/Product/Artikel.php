@@ -8,7 +8,6 @@ namespace JTL\Catalog\Product;
 
 use DateTime;
 use function Functional\map;
-use function Functional\reindex;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Download;
 use JTL\Extensions\Konfigurator;
@@ -6186,14 +6185,10 @@ class Artikel
             || Shop::getLanguageCode() === 'ger'
             || $_SESSION['cISOSprache'] === 'ger');
         $row       = $german ? 'cDeutsch' : 'cEnglisch';
-        $countries = map(
-            reindex($countryData, function ($e) {
-                return $e->cISO;
-            }),
-            function ($e) use ($row) {
-                return $e->$row;
-            }
-        );
+        $countries = [];
+        foreach ($countryData as $item) {
+            $countries[$item->cISO] = $item->$row;
+        }
 
         return $asString
             ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))

@@ -73,3 +73,9 @@ msgstr "Letzter Einkauf"
 
 msgid "newsletterSubscriber"
 msgstr "Newsletter-Abonnent"
+
+msgid "moreDetailsStatistics"
+msgstr "Mehr Details unter <a href=\"statistik.php?s=3\">Statistiken</a>"
+
+msgid "noStatisticsFound"
+msgstr "Keine Statistiken gefunden"

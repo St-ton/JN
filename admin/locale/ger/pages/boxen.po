@@ -139,3 +139,6 @@ msgstr "auf allen Seiten deaktiviert"
 
 msgid "warningChangesForAllPages"
 msgstr "Die Auswahl \"Alle Seiten\" überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten gemacht wurden."
+
+msgid "errorBoxesVisibilityEdit"
+msgstr "Fehler beim setzen der Sichtbarkeit der Boxen."

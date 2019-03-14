@@ -24,7 +24,9 @@
             wishListRemove: 'Wunschliste.remove'
         },
         selector: {
-            navBadgeUpdate: '#shop-nav-compare',
+            navUpdateCompare: '#comparelist-dropdown-content',
+            navBadgeUpdateCompare: '#comparelist-badge',
+            navCompare: '#shop-nav-compare',
             navContainerWish: '#wishlist-dropdown-container',
             navBadgeWish: '#badge-wl-count',
             navBadgeAppend: '#shop-nav li.cart-menu',
@@ -534,6 +536,7 @@
 
             this.registerProductActions($('#sidepanel_left'));
             this.registerProductActions($('#footer'));
+            this.registerProductActions($('#shop-nav'));
             this.registerProductActions($wrapper);
         },
 
@@ -724,25 +727,24 @@
         },
 
         updateComparelist: function(data) {
-            var $badgeUpd = $(this.options.selector.navBadgeUpdate);
+            var $badgeUpd = $(this.options.selector.navUpdateCompare);
 
-            var badge = $(data.cNavBadge);
-            $badgeUpd.replaceWith(badge);
+            var badge = $(data.navDropdown);
+            $badgeUpd.html(badge);
+            $(this.options.selector.navBadgeUpdateCompare).html(data.nCount);
 
-            badge.on('click', '.popup', function (e) {
-                var url = e.currentTarget.href;
-                url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
-                eModal.ajax({
-                    size: 'lg',
-                    url: url,
-                    keyboard: true,
-                    tabindex: -1,
-                    buttons: false
-                });
-                e.stopPropagation();
-
-                return false;
-            });
+            if (data.nCount > 0) {
+                $(this.options.selector.navCompare).removeClass('d-none');
+            } else {
+                $(this.options.selector.navCompare).addClass('d-none');
+                $('#nav-comparelist-collapse').removeClass('show');
+            }
+            if (data.nCount > 1) {
+                $('#nav-comparelist-goto').removeClass('d-none');
+            } else {
+                $('#nav-comparelist-goto').addClass('d-none');
+            }
+            this.registerProductActions($('#shop-nav'));
 
             for (var ind in data.cBoxContainer) {
                 var $list = $(this.options.selector.boxContainer+ind);

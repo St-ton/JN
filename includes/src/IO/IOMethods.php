@@ -338,8 +338,9 @@ class IOMethods
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
-                                      ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
+                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             /** @var BoxInterface[] $boxes */
@@ -385,12 +386,13 @@ class IOMethods
         $_GET['vlplo']           = $kArtikel;
 
         Frontend::getInstance()->setStandardSessionVars();
-        $response->nType     = 2;
-        $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
+        $response->nType       = 2;
+        $response->nCount      = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
             \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
-        $response->cTitle    = Shop::Lang()->get('compare');
-        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
-                                       ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cTitle      = Shop::Lang()->get('compare');
+        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
+                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!\is_array($boxes)) {

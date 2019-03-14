@@ -170,7 +170,7 @@ if ($action !== null && Form::validateToken()) {
                 }
                 $wl = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
                 if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $wl->cName) {
-                    $wl->cName = $_POST['wishlistName'];
+                    $wl->cName = Text::htmlentities(Text::filterXSS($_POST['wishlistName']));
                     Shop::Container()->getDB()->update(
                         'twunschliste',
                         'kWunschliste',

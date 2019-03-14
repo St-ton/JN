@@ -38,11 +38,11 @@ class Checker
      */
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        $this->db     = $db;
-        $this->logger = $logger;
         if (!\file_exists(\JOBQUEUE_LOCKFILE)) {
             \touch(\JOBQUEUE_LOCKFILE);
         }
+        $this->db          = $db;
+        $this->logger      = $logger;
         $this->filePointer = \fopen(\JOBQUEUE_LOCKFILE, 'rb');
     }
 

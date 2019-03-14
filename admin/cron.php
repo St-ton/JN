@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Cron\Admin\Controller;
 use JTL\Helpers\Form;
 use JTL\Shop;

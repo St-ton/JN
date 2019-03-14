@@ -14,7 +14,7 @@ use JTL\Update\Migration;
  */
 class Migration_20190312160200 extends Migration implements IMigration
 {
-    protected $author      = 'fm';
+    protected $author = 'fm';
     protected $description = 'add cron config';
 
     public function up()
@@ -29,7 +29,7 @@ class Migration_20190312160200 extends Migration implements IMigration
             (object)[
                 'cBeschreibung' => 'Welche Methode soll verwendet werden?',
                 'inputOptions'  => [
-                    'N' => 'keine',
+                    'N'   => 'keine',
                     'tpl' => 'Template-gesteuert',
                     's2s' => 'Curl Server-to-Server',
                 ],

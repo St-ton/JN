@@ -3670,14 +3670,13 @@ class Artikel
                 $return = true;
                 if ($this->cAktivSonderpreis === 'Y' && $this->dSonderpreisEnde_en !== '0000-00-00' && $this->dSonderpreisEnde_en !== null) {
                     $endDate = new DateTime($this->dSonderpreisEnde_en);
-                    $endDate->modify('+1 days');
-                    $return = ($endDate >= new DateTime());
+                    $return  = $endDate >= (new DateTime())->setTime(0, 0);
                 } elseif ($this->cAktivSonderpreis === 'N' && $this->dSonderpreisStart_en !== '0000-00-00' && $this->dSonderpreisStart_en !== null) {
                     //do not use cached result if a special price started in the mean time
                     $startDate = new DateTime($this->dSonderpreisStart_en);
-                    $today     = new DateTime();
+                    $today     = (new DateTime())->setTime(0, 0);
                     $endDate   = ($this->dSonderpreisEnde_en !== null && $this->dSonderpreisEnde_en !== '0000-00-00')
-                        ? (new DateTime($this->dSonderpreisEnde_en))->modify('+1 days')
+                        ? new DateTime($this->dSonderpreisEnde_en)
                         : $today;
                     $return    = ($startDate > $today || $endDate < $today);
                 }

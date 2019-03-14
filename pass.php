@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Customer\Kunde;
 use JTL\Shop;
 use JTL\Helpers\Text;

@@ -40,6 +40,8 @@ ifndef('DB_DEFAULT_SQL_MODE', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 
+ifndef('ADMIN_MIGRATION', false);
+
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
 ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);
@@ -108,7 +110,7 @@ ifndef('PFAD_MEDIAFILES', 'mediafiles/');
 ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
 ifndef('IMAGE_SIZE_XS', 'xs');
 ifndef('IMAGE_SIZE_SM', 'sm');
-ifndef('IMAGE_SIZE_MD', 'mg');
+ifndef('IMAGE_SIZE_MD', 'md');
 ifndef('IMAGE_SIZE_LG', 'lg');
 ifndef('PFAD_PRODUKTBILDER', PFAD_BILDER . 'produkte/');
 ifndef('PFAD_PRODUKTBILDER_MINI', PFAD_PRODUKTBILDER . 'mini/');

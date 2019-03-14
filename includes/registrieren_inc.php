@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Tax;
 use JTL\Helpers\ShippingMethod;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Kampagne;
 use JTL\Customer\Kunde;

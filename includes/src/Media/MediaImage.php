@@ -251,11 +251,10 @@ class MediaImage implements IMedia
             if (\in_array($display, ['on', '1', 'true'], true)) {
                 echo $e->getMessage();
             }
-            \http_response_code(500);
+            \http_response_code(404);
         }
         exit;
     }
-
 
     /**
      * @param MediaImageRequest $req

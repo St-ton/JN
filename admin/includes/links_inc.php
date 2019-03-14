@@ -4,8 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Link\LinkInterface;
+use JTL\Shop;
 
 /**
  * @param \JTL\Link\LinkGroupInterface $linkGroup
@@ -202,7 +203,7 @@ function getLinkVar($kLink, $var)
 function getGesetzteKundengruppen($link)
 {
     $ret = [];
-    if ($link instanceof \JTL\Link\LinkInterface) {
+    if ($link instanceof LinkInterface) {
         $cGroups = $link->getCustomerGroups();
         if (count($cGroups) === 0) {
             $ret[0] = true;

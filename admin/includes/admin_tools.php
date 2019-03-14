@@ -6,15 +6,16 @@
 
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\Notification;
+use JTL\Catalog\Currency;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Catalog\Currency;
+use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
 use JTL\Kampagne;
 use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
 use JTL\XMLParser;
 
 /**
@@ -620,7 +621,7 @@ function getFrontendSmarty()
     static $frontendSmarty = null;
 
     if ($frontendSmarty === null) {
-        $frontendSmarty = new \JTL\Smarty\JTLSmarty();
+        $frontendSmarty = new JTLSmarty();
     }
 
     return $frontendSmarty;

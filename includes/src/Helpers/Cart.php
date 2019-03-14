@@ -8,7 +8,7 @@ namespace JTL\Helpers;
 
 use function Functional\filter;
 use function Functional\map;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;

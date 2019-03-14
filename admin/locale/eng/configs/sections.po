@@ -1,24 +1,23 @@
 msgid "configsection_1"
-msgstr "Globale Einstellungen"
+msgstr "Global settings"
 
 msgid "configsection_2"
-msgstr "Startseite"
+msgstr "Homepage"
 
 msgid "configsection_3"
-msgstr "Emaileinstellungen"
+msgstr "Email settings"
 
 msgid "configsection_4"
-msgstr "Sucheinstellungen"
+msgstr "Search settings"
 
 msgid "configsection_5"
-msgstr "Artikeldetails"
+msgstr "Item detail page"
 
 msgid "configsection_6"
-msgstr "Formulareinstellungen"
+msgstr "Form settings"
 
 msgid "configsection_7"
-msgstr "Warenkorb/Kaufabwicklung"
+msgstr "Basket/Checkout"
 
 msgid "configsection_8"
-msgstr "Boxen"
-
+msgstr "Boxes"

@@ -8,7 +8,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Cart;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\Shop;
 use JTL\Shopsetting;

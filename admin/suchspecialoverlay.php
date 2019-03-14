@@ -9,6 +9,7 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\Template;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -30,8 +31,6 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
         if (speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
-        } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
     }
     if ($oID > 0) {

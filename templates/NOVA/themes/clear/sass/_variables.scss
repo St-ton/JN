@@ -32,8 +32,11 @@ $grid-gutter-width:                 32px;
 $font-family-sans-serif:            "Open Sans", Helvetica, Arial, sans-serif;
 $headings-font-family:              $font-family-sans-serif;
 $font-size-base:                    0.875rem;
-$font-weight-semibold:              500;
 $line-height-base:                  1.5;
+
+$font-weight-normal:                400;
+$font-weight-semibold:              600;
+$font-weight-bold:                  700;
 
 // heading
 
@@ -51,6 +54,7 @@ $btn-active-box-shadow:             none;
 $btn-focus-box-shadow:              none;
 $btn-decoration:                    none;
 $btn-hover-decoration:              none;
+$btn-font-weight:                   $font-weight-semibold;
 
 // styles
 
@@ -67,7 +71,6 @@ $link-color:                        $gray-700;
 $link-decoration:                   underline;
 $link-hover-color:                  $link-color;
 $link-hover-decoration:             none;
-
 
 $breadcrumb-divider:                "\f054";
 $breadcrumb-active-color:           $gray-dark;
@@ -124,17 +127,24 @@ $input-height:                      calc(#{$line-height-base * 1em} + #{$input-b
 $custom-control-indicator-bg:       $sand;
 $custom-control-indicator-border-color: transparent;
 
-/* pagination */
+// pagination
 
-$pagination-border-width:       0;
-$pagination-bg:                 transparent;
+$pagination-border-width:           0;
+$pagination-bg:                     transparent;
 
-$pagination-hover-bg:           transparent;
+$pagination-hover-bg:               transparent;
 
-$pagination-active-bg:          transparent;
-$pagination-active-color:       $link-color;
+$pagination-active-bg:              transparent;
+$pagination-active-color:           $link-color;
 
-$pagination-focus-box-shadow:   none;
+$pagination-focus-box-shadow:       none;
 
-$pagination-disabled-color:     $sand;
-$pagination-disabled-bg:        transparent;
+$pagination-disabled-color:         $sand;
+$pagination-disabled-bg:            transparent;
+
+// breadcrumbs
+
+$breadcrumb-bg:                     transparent;
+$breadcrumb-divider-color:          $gray-dark;
+$breadcrumb-active-color:           $gray-dark;
+$breadcrumb-divider:                url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSI2cHgiIGhlaWdodD0iMTBweCIgdmlld0JveD0iMCAwIDYgMTAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+ICAgICAgICA8dGl0bGU+74SFPC90aXRsZT4gICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+ICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiAgICAgICAgPHBhdGggZD0iTTUuODcxMDc5NzUsNS41MzEyNjU0MiBMMS43MjI2NTIxNCw5LjYwOTM4MDcgQzEuNjUyMzM5ODEsOS43MDMxMzA2NSAxLjU1ODU4OTg2LDkuNzUwMDA1MzYgMS40NDE0MDI4MSw5Ljc1MDAwNTM2IEMxLjMyNDIxNTc3LDkuNzUwMDA1MzYgMS4yMTg3NDcyNyw5LjcwMzEzMDY1IDEuMTI0OTk3MzIsOS42MDkzODA3IEwwLjg3ODkwNDE1NSw5LjM2MzI4NzU0IEMwLjc4NTE1NDE5OSw5LjI5Mjk3NTIgMC43MzgyNzk0OSw5LjE5OTIyNTI1IDAuNzM4Mjc5NDksOS4wODIwMzgyMSBDMC43MzgyNzk0OSw4Ljk2NDg1MTE3IDAuNzg1MTU0MTk5LDguODU5MzgyNjcgMC44Nzg5MDQxNTUsOC43NjU2MzI3MSBMNC40NjQ4MzMxLDUuMjUwMDE2MDkgTDAuODc4OTA0MTU1LDEuNzM0Mzk5NDggQzAuODA4NTkxODIyLDEuNjQwNjQ5NTIgMC43NzM0MzU2NTYsMS41MzUxODEwMiAwLjc3MzQzNTY1NiwxLjQxNzk5Mzk4IEMwLjc3MzQzNTY1NiwxLjMwMDgwNjk0IDAuODA4NTkxODIyLDEuMjA3MDU2OTggMC44Nzg5MDQxNTUsMS4xMzY3NDQ2NSBMMS4xMjQ5OTczMiwwLjg1NTQ5NTMyMSBDMS4yMTg3NDcyNywwLjc4NTE4Mjk4OCAxLjMyNDIxNTc3LDAuNzUwMDI2ODIyIDEuNDQxNDAyODEsMC43NTAwMjY4MjIgQzEuNTU4NTg5ODYsMC43NTAwMjY4MjIgMS42NTIzMzk4MSwwLjc4NTE4Mjk4OCAxLjcyMjY1MjE0LDAuODU1NDk1MzIxIEw1Ljg3MTA3OTc1LDQuOTMzNjEwNiBDNS45NDEzOTIwOCw1LjAyNzM2MDU1IDUuOTc2NTQ4MjUsNS4xMzI4MjkwNSA1Ljk3NjU0ODI1LDUuMjUwMDE2MDkgQzUuOTc2NTQ4MjUsNS4zNjcyMDMxNCA1Ljk0MTM5MjA4LDUuNDcyNjcxNjMgNS44NzEwNzk3NSw1LjU2NjQyMTU5IEw1Ljg3MTA3OTc1LDUuNTMxMjY1NDIgWiIgaWQ9Iu+EhSIgZmlsbD0iIzUyNTI1MiI+PC9wYXRoPiAgICA8L2c+PC9zdmc+);

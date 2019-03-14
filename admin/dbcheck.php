@@ -10,6 +10,7 @@ use JTL\Helpers\Form;
 use JTL\Update\DBMigrationHelper;
 use JTL\Shop;
 use JTL\Helpers\Text;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -73,7 +74,7 @@ $smarty->assign('cDBFileStruct_arr', $dbFileStruct)
        ->assign('cDBStruct_arr', $dbStruct)
        ->assign('cDBError_arr', $dbErrors)
        ->assign('maintenanceResult', $maintenanceResult)
-       ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
+       ->assign('scriptGenerationAvailable', ADMIN_MIGRATION)
        ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
        ->assign('Einstellungen', $conf)
        ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())

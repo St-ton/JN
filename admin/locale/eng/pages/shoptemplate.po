@@ -30,7 +30,7 @@ msgid "errorTemplateSave"
 msgstr "Template bzw. Einstellungen konnten nicht geändert werden."
 
 msgid "errorFileUpload"
-msgstr "Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen."
+msgstr "Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte des Ordners \"%s\" überprüfen."
 
 msgid "successLayoutReset"
 msgstr "Layout wurde erfolgreich zurückgesetzt."
@@ -67,3 +67,6 @@ msgstr "Mobile Endgeräte"
 
 msgid "parentTemplateMissing"
 msgstr "Parent-Template fehlt"
+
+msgid "errorOverlayWritePermissions"
+msgstr "Overlays could not be created - please check write permissions of folder \"%s\" and activate the template again."

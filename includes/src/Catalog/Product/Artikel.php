@@ -8,6 +8,7 @@ namespace JTL\Catalog\Product;
 
 use DateTime;
 use function Functional\map;
+use function Functional\reindex;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Download;
 use JTL\Extensions\Konfigurator;
@@ -6080,9 +6081,9 @@ class Artikel
         $ust         = '';
         $versand     = '';
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
-            $versand             = ', ';
-            $versandfreielaender = $this->gibMwStVersandLaenderString();
-            if ($versandfreielaender && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
+            $versand   = ', ';
+            $countries = $this->gibMwStVersandLaenderString();
+            if ($countries && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
                 if ($this->conf['global']['global_versandkostenfrei_darstellung'] === 'D') {
                     $cLaenderAssoc_arr = $this->gibMwStVersandLaenderString(false);
                     $cLaender          = '';
@@ -6101,7 +6102,7 @@ class Artikel
                     $versand .= '<a href="' .
                         $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
                         '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="' .
-                        $versandfreielaender . ', ' . Shop::Lang()->get('else') . ' ' .
+                        $countries . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">' .
                         Shop::Lang()->get('noShippingcostsTo') . '</a>';
                 }
@@ -6161,50 +6162,42 @@ class Artikel
         $shippingFreeCountries = isset($this->Preise->fVK[0])
             ? $helper->getFreeShippingCountries($this->Preise->fVK[0], $kKundengruppe, $this->kVersandklasse)
             : '';
-        if ($shippingFreeCountries) {
-            $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
-                return \mb_strlen($e) > 0 ? "'" .  \trim($e) . "'" : null;
-            }));
-            $count   = \count($codes);
-            $sql     = 'cISO IN (' . \implode(',', $codes) . ')';
-            $string  = '';
-            $cacheID = 'jtl_ola_' . \md5($sql);
-            if (($countryData = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $countryData = Shop::Container()->getDB()->query(
-                    'SELECT cISO, cDeutsch, cEnglisch 
-                        FROM tland WHERE ' . $sql,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                Shop::Container()->getCache()->set(
-                    $cacheID,
-                    $countryData,
-                    [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
-                );
-            }
-            $countriesAssoc = [];
-            $german         = (!isset($_SESSION['cISOSprache']) || Shop::getLanguageCode() === 'ger');
-            foreach ($countryData as $i => $country) {
-                if ($asString) {
-                    $string .= $german === true
-                        ? $country->cDeutsch
-                        : $country->cEnglisch;
-                    if ($count > ($i + 1)) {
-                        $string .= ', ';
-                    }
-                } else {
-                    $string                         = $german === true
-                        ? $country->cDeutsch
-                        : $country->cEnglisch;
-                    $countriesAssoc[$country->cISO] = $string;
-                }
-            }
-
-            return $asString
-                ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', $string)
-                : $countriesAssoc;
+        if (empty($shippingFreeCountries)) {
+            return $asString ? '' : [];
         }
+        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
+            return \mb_strlen($e) > 0 ? "'" . \trim($e) . "'" : null;
+        }));
+        $sql     = 'cISO IN (' . \implode(',', $codes) . ')';
+        $cacheID = 'jtl_ola_' . \md5($sql);
+        if (($countryData = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $countryData = Shop::Container()->getDB()->query(
+                'SELECT cISO, cDeutsch, cEnglisch 
+                    FROM tland WHERE ' . $sql,
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            Shop::Container()->getCache()->set(
+                $cacheID,
+                $countryData,
+                [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
+            );
+        }
+        $german    = (!isset($_SESSION['cISOSprache'])
+            || Shop::getLanguageCode() === 'ger'
+            || $_SESSION['cISOSprache'] === 'ger');
+        $row       = $german ? 'cDeutsch' : 'cEnglisch';
+        $countries = map(
+            reindex($countryData, function ($e) {
+                return $e->cISO;
+            }),
+            function ($e) use ($row) {
+                return $e->$row;
+            }
+        );
 
-        return $asString ? '' : [];
+        return $asString
+            ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))
+            : $countries;
     }
 
     /**
@@ -6536,13 +6529,17 @@ class Artikel
         if (!$taxText && $this->AttributeAssoc === null) {
             $taxText = $this->gibAttributWertNachName(\ART_ATTRIBUT_STEUERTEXT);
         }
+        $countries       = $this->gibMwStVersandLaenderString(false);
+        $countriesString = \count($countries) > 0
+            ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))
+            : '';
 
         return [
             'net'                   => $net,
             'text'                  => $taxText,
             'tax'                   => $this->mwstFormat(Tax::getSalesTax($this->kSteuerklasse)),
-            'shippingFreeCountries' => $this->gibMwStVersandLaenderString(),
-            'countries'             => $this->gibMwStVersandLaenderString(false),
+            'shippingFreeCountries' => $countriesString,
+            'countries'             => $countries,
             'shippingClass'         => $this->cVersandklasse
         ];
     }

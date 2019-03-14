@@ -117,7 +117,7 @@
 
             {block name='header-container-inner'}
 
-                <div class="container px-4 clearfix">
+                <div class="container px-md-4 clearfix">
                 {block name='header-branding-top-bar'}
                     <div id="top-bar" class="pt-2 text-right d-none d-md-block">
                         {include file='layout/header_top_bar.tpl'}
@@ -126,7 +126,7 @@
 
                 {block name='header-category-nav'}
 
-                    {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-lg-0"}
+                    {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-0"}
                         {col id="logo" md=3 order=2 order-md=1 class="mr-auto pb-lg-4"}
                             {block name='logo'}
                                 <div class="navbar-brand ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
@@ -165,8 +165,8 @@
                                 <span class="TabNav_Indicator d-none d-md-block"></span>
                             </div>
                         {/col}
-                        {col order=6 sm=12 md="auto" order-md=2 class="col-auto"}
-                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex float-md-right"}
+                        {col order=6 cols=12 md="auto" order-md=2 class="col-auto"}
+                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex mx-auto float-md-right"}
                                 {include file='layout/header_nav_search.tpl'}
                             {/collapse}
                         {/col}
@@ -207,7 +207,7 @@
 {/block}
 {block name='content-all-starttags'}
     {block name='content-wrapper-starttag'}
-        <div id="content-wrapper" class="container mt-0 mt-md-6 pt-4 px-4">
+        <div id="content-wrapper" class="container mt-0 mt-md-6 pt-4 px-md-4">
     {/block}
 
     {block name='product-pagination'}

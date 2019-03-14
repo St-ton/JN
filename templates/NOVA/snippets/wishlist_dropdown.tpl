@@ -17,7 +17,7 @@
     {/foreach}
     {row}
         {col}
-            {link class='btn btn-primary float-right' href="{get_static_route id='wunschliste.php'}?newWL=1"}
+            {link class='btn btn-primary float-right mt-3' href="{get_static_route id='wunschliste.php'}?newWL=1"}
                 {lang key='addNew' section='wishlist'}
             {/link}
         {/col}

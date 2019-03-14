@@ -14,17 +14,17 @@ msgstr ""
 
 # Titles
 msgid "JTL Shop Administration"
-msgstr "Administration von JTL-Shop"
+msgstr "Administration of JTL-Shop"
 
 msgid "Toggle navigation"
-msgstr "Navigation umschalten"
+msgstr "Toggle navigation"
 
 msgid "Search item"
-msgstr "Suchbegriff"
+msgstr "Search terms"
 
 # Top Menu
 msgid "Presentation"
-msgstr "Darstellung"
+msgstr "View"
 
 # Mid Menu
 msgid "Template"
@@ -32,52 +32,49 @@ msgstr "Templates"
 
 # Menu Item
 msgid "Template settings"
-msgstr "Template-Einstellungen"
+msgstr "Template settings"
 
 # Mid Menu
 msgid "Images"
-msgstr "Bilder"
+msgstr "Images"
 
 # Menu Items
 msgid "Image settings"
-msgstr "Bildeinstellungen"
+msgstr "Image settings"
 
 msgid "Watermark"
-msgstr "Wasserzeichen"
+msgstr "Watermark"
 
 msgid "Shop logo"
-msgstr "Shop-Logo"
+msgstr "Shop logo"
 
 msgid "Item overlays"
-msgstr "Artikel-Overlays"
+msgstr "Item overlays"
 
 # Top Menu
 msgid "Contents"
-msgstr "Inhalte"
+msgstr "Contents"
 
 # Mid Menu
 msgid "Item"
-msgstr "Artikel"
+msgstr "Items"
 
 # Menu Items
-msgid "Selection wizard"
-msgstr "Auswahlassistent"
-
 msgid "Item details"
-msgstr "Artikeldetails"
+msgstr "Item details"
 
 msgid "Customer reviews"
-msgstr "Kundenbewertungen"
+msgstr "Customer reviews"
 
 msgid "Price history"
-msgstr "Preisverlauf"
+msgstr "Price history"
 
 msgid "Warehouse"
-msgstr "Warenlager"
+msgstr "Warehouse"
 
 # Top Menu
 msgid "Pages"
-msgstr "Seiten"
+msgstr "Pages"
 
 # Mid Menu
 msgid "OnPage Composer"
@@ -85,25 +82,25 @@ msgstr "OnPage Composer"
 
 # Menu Items
 msgid "Front page"
-msgstr "Startseite"
+msgstr "Homepage"
 
 msgid "GTC/cancellation policy"
-msgstr "AGB / Widerrufsbelehrung"
+msgstr "Terms/Withdrawal"
 
 msgid "Own pages"
-msgstr "Eigene Seiten"
+msgstr "Custom pages"
 
 msgid "News"
 msgstr "News"
 
 msgid "Box settings"
-msgstr "Boxeneinstellungen"
+msgstr "Box settings"
 
 msgid "Boxes"
-msgstr "Boxen"
+msgstr "Boxes"
 
 msgid "Language administration"
-msgstr "Sprachverwaltung"
+msgstr "Language administration"
 
 # Just incase you want to add a translation for partners:
 #   msgid "IT-Recht Kanzlei"
@@ -113,69 +110,69 @@ msgstr "Sprachverwaltung"
 #   msgstr "Trustbadge Reviews"
 # Mid Menu
 msgid "Forms"
-msgstr "Formulare"
+msgstr "Forms"
 
 # Menu Items
 msgid "Form settings"
-msgstr "Formulareinstellungen"
+msgstr "Form settings"
 
 msgid "Contact form"
-msgstr "Kontaktformular"
+msgstr "Contact form"
 
 msgid "Custom form fields"
-msgstr "Eigene Formularfelder"
+msgstr "Custom form fields"
 
 msgid "Check box administration"
-msgstr "Checkboxenverwaltung"
+msgstr "Check box administration"
 
 # Mid Menu
 msgid "E-mails"
-msgstr "E-Mails"
+msgstr "Emails"
 
 # Menu Items
 msgid "Email settings"
-msgstr "E-Mail-Einstellungen"
+msgstr "Email settings"
 
 msgid "Templates"
-msgstr "Vorlagen"
+msgstr "Templates"
 
 msgid "Reports"
-msgstr "Berichte"
+msgstr "Reports"
 
 msgid "Blacklist"
 msgstr "Blacklist"
 
 msgid "E-mail log"
-msgstr "E-Mail-Log"
+msgstr "Email-Log"
 
 # Top Menu
 msgid "Purchases"
-msgstr "Kaufabwicklung"
+msgstr "Checkout"
 
 # Mid Menu
 msgid "Shopping cart"
-msgstr "Warenkorb"
+msgstr "Basket"
 
 # Menu Items
 msgid "Shopping cart settings"
-msgstr "Warenkorbeinstellungen"
+msgstr "Basket settings"
 
 msgid "Saved baskets"
-msgstr "Gespeicherte Warenkörbe"
+msgstr "Saved baskets"
 
 msgid "Free gift"
-msgstr "Gratisgeschenk"
+msgstr "Free gift"
 
 # Just incase you want to add a translation for partners:
 #   msgid "Trusted Shops"
 #   msgstr "Trusted Shops"
 # Mid Menu
 msgid "Payments"
-msgstr "Zahlungen"
+msgstr "Payments"
 
 # Menu Items
 msgid "Method of payment"
-msgstr "Zahlungsarten"
+msgstr "Payment methods"
 
 # Just incase you want to add a translation for partners:
 #   msgid "Amazon Payments"
@@ -185,79 +182,79 @@ msgstr "Zahlungsarten"
 #   msgstr "Skrill"
 # Mid Menu
 msgid "Delivery"
-msgstr "Versand"
+msgstr "Shipments"
 
 # Menu Items
 msgid "Shipping methods"
-msgstr "Versandarten"
+msgstr "Shipping methods"
 
 msgid "Additional packaging"
-msgstr "Zusatzverpackung"
+msgstr "Additional packaging"
 
 msgid "Marketing"
 msgstr "Marketing"
 
 msgid "Customer loyalty"
-msgstr "Kundenbindung"
+msgstr "Customer loyalty"
 
 msgid "Surveys"
-msgstr "Umfragen"
+msgstr "Surveys"
 
 msgid "Customers win customers"
-msgstr "Kunden werben Kunden"
+msgstr "Customer referral programme"
 
 msgid "Coupons"
 msgstr "Coupons"
 
 msgid "Wish list"
-msgstr "Wunschzettel"
+msgstr "Wish list"
 
 msgid "Comparison list"
-msgstr "Vergleichsliste"
+msgstr "Comparison list"
 
 msgid "Newsletter"
 msgstr "Newsletter"
 
 # Mid Menu
 msgid "Publicity"
-msgstr "Werbung"
+msgstr "Advertisement"
 
 # Menu Items
 msgid "Banner"
-msgstr "Banner"
+msgstr "Banners"
 
 msgid "Slider"
-msgstr "Slider"
+msgstr "Sliders"
 
 msgid "Campaigns"
-msgstr "Kampagnen"
+msgstr "Campaigns"
 
 # Mid Menu
 msgid "Statistics"
-msgstr "Statistiken"
+msgstr "Statistics"
 
 # Menu Items
 msgid "Sales revenues"
-msgstr "Umsätze"
+msgstr "Sales revenues"
 
 msgid "Visitors"
-msgstr "Besucher"
+msgstr "Visitors"
 
 msgid "Customer origin"
-msgstr "Kundenherkunft"
+msgstr "Origins of shop visitors"
 
 msgid "Search engines"
-msgstr "Suchmaschinen"
+msgstr "Search engines"
 
 msgid "Start pages"
-msgstr "Einstiegsseiten"
+msgstr "Start pages"
 
 msgid "Coupon statistics"
-msgstr "Coupon-Statistiken"
+msgstr "Coupon reports"
 
 # Top Menu
 msgid "Import / Export"
-msgstr "Import / Export"
+msgstr "Import/Export"
 
 # Mid Menu
 msgid "Import"
@@ -265,10 +262,10 @@ msgstr "Import"
 
 # Menu Items
 msgid "Customer data import"
-msgstr "Kundenimport"
+msgstr "Customer data import"
 
 msgid "Import newsletter recipient"
-msgstr "Newsletter-Empfänger importieren"
+msgstr "Import newsletter recipients"
 
 # Mid Menu
 msgid "Export"
@@ -276,63 +273,63 @@ msgstr "Export"
 
 # Menu Items
 msgid "Task scheduler"
-msgstr "Aufgabenplaner"
+msgstr "Task scheduler"
 
 msgid "Export formats"
-msgstr "Exportformate"
+msgstr "Export formats"
 
 msgid "Sitemap export"
-msgstr "Sitemap-Export"
+msgstr "Sitemap export"
 
 msgid "RSS feed"
-msgstr "RSS-Feed"
+msgstr "RSS feed"
 
 # Top Menu
 msgid "Administration"
-msgstr "Verwaltung"
+msgstr "Administration"
 
 # Mid Menu
 msgid "Settings"
-msgstr "Einstellungen"
+msgstr "Settings"
 
 # Menu Items
 msgid "Global settings"
-msgstr "Globale Einstellungen"
+msgstr "Global settings"
 
 msgid "Back end user"
-msgstr "Backend-Benutzer"
+msgstr "Back end user"
 
 msgid "Synchronisation with JTL-Wawi"
-msgstr "Synchronisierung mit JTL-Wawi"
+msgstr "Synchronisation with JTL-Wawi"
 
 msgid "Global meta data"
-msgstr "Globale Meta-Angaben"
+msgstr "Global meta data"
 
 msgid "Special items"
-msgstr "Besondere Artikel"
+msgstr "Special items"
 
 msgid "Sitemap structure"
-msgstr "Sitemap-Aufbau"
+msgstr "Sitemap structure"
 
 msgid "Number formats"
-msgstr "Zahlenformate"
+msgstr "Number formats"
 
 msgid "Cache"
 msgstr "Cache"
 
 # Mid Menu
 msgid "Maintenance"
-msgstr "Wartung"
+msgstr "Maintenance"
 
 # Menu Items
 msgid "Order history"
-msgstr "Bestellhistorie"
+msgstr "Order history"
 
 msgid "Activation centre"
-msgstr "Freischaltzentrale"
+msgstr "Activation centre"
 
 msgid "System log"
-msgstr "System-Log"
+msgstr "System log"
 
 msgid "Status"
 msgstr "Status"
@@ -341,79 +338,76 @@ msgid "Update"
 msgstr "Update"
 
 msgid "Image administration"
-msgstr "Bilderverwaltung"
+msgstr "Image administration"
 
 msgid "Re-directions"
-msgstr "Weiterleitungen"
+msgstr "Forwarding"
 
 msgid "Reset shop"
-msgstr "Shop zurücksetzen"
+msgstr "Reset shop"
 
 # Mid Menu
 msgid "Search"
-msgstr "Suche"
+msgstr "Search"
 
 # Menu Items
 msgid "Search settings"
-msgstr "Sucheinstellungen"
+msgstr "Search settings"
 
 msgid "Filter"
-msgstr "Filter"
+msgstr "Filters"
 
 msgid "Queries"
-msgstr "Suchanfragen"
-
-msgid "Cron"
-msgstr "Cron"
+msgstr "Search queries"
 
 # Top Menu
 msgid "Plugins"
-msgstr "Plugins"
+msgstr "Plug-ins"
 
 # Mid Menu
 msgid "Overview"
-msgstr "Übersicht"
+msgstr "Overview"
 
 # Menu Items
 msgid "Plug-in marketplace"
-msgstr "Plugin-Marktplatz"
+msgstr "Plug-in marketplace"
 
 msgid "Plug-in administration"
-msgstr "Plugin-Verwaltung"
+msgstr "Plug-in administration"
 
 msgid "Plug-in profiler"
-msgstr "Plugin-Profiler"
+msgstr "Plug-in profiler"
 
 # Mid Menu
 # This is redundant, but could be used in the future.
 #   msgid "Plugins"
-#   msgstr "Plugins"
+#   msgstr "Plug-ins"
 #
 #
 # Right Top Menu
 msgid "Messages"
-msgstr "Mitteilungen"
+msgstr "Notifications"
 
 msgid "Favorites"
-msgstr "Favoriten"
+msgstr "Favourites"
 
 msgid "Dashboard"
 msgstr "Dashboard"
 
 msgid "Help"
-msgstr "Hilfe"
+msgstr "Help"
 
 msgid "System check"
-msgstr "System-Check"
+msgstr "System check"
 
 msgid "Rating system"
-msgstr "Bewertungssystem"
+msgstr "Review system"
 
 msgid "Manage favorites"
-msgstr "Favoriten verwalten"
+msgstr "Managing favourites"
 
 msgid "First steps"
-msgstr "Erste Schritte"
+msgstr "First steps"
 
 msgid "JTL guide"
 msgstr "JTL-Guide"
@@ -425,77 +419,77 @@ msgid "Training"
 msgstr "Training"
 
 msgid "Service partner"
-msgstr "Servicepartner"
+msgstr "Service partners"
 
 msgid "To the shop"
-msgstr "Zum Onlineshop"
+msgstr "Go to online shop"
 
 msgid "Logout"
-msgstr "Abmelden"
+msgstr "Log out"
 
 # Notfications
 msgid "System update"
-msgstr "System-Update"
+msgstr "System update"
 
 msgid "A database update is mandatory"
-msgstr "Ein Datenbank-Update ist zwingend notwendig."
+msgstr "A database update is required."
 
 msgid "Data system"
-msgstr "Dateisystem"
+msgstr "File system"
 
 msgid "Some directories are not writeable."
-msgstr "Es sind Verzeichnisse nicht beschreibbar."
+msgstr "Some directories are not writeable."
 
 msgid "Please delete the installation directory '/install' in the root directory."
-msgstr "Bitte löschen Sie das Installationsverzeichnis '/install/' im Wurzelverzeichnis Ihres JTL-Shops."
+msgstr "Please delete the installation directory '/install/' in the root directory of your JTL-Shop."
 
 msgid "Database"
-msgstr "Datenbank"
+msgstr "Database"
 
 msgid "There are errors within the database structure."
-msgstr "Es liegen Fehler in der Datenbankstruktur vor."
+msgstr "Error in the database structure."
 
 msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
-msgstr "Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br/>Weitere Hilfe zu Template-Anpassungen finden Sie im <i class=\"fa fa-external-link\"></i> JTL-Guide."
+msgstr "The template version does not match the shop version.<br/>For further information on adjusting the template, please see the<i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
-msgstr "Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig."
+msgstr "You are using a fully responsive template. It is not necessary to activate a separate mobile template."
 
 msgid "You have activated a non-standard template!"
-msgstr "Sie haben kein Standard-Template aktiviert."
+msgstr "No default shop template enabled."
 
 msgid "The profiler is active. This can cause strong power loss in the shop."
-msgstr "Der Plugin-Profiler ist aktiv. Dies kann zu starken Leistungseinbußen im Onlineshop führen."
+msgstr "The plug-in profiler is active. This can lead to severe performance issues."
 
 msgid "New plugin versions are available."
-msgstr "Es sind neue Plugin-Versionen vorhanden."
+msgstr "There are new plug-in versions available."
 
 msgid "Configuration"
-msgstr "Konfiguration"
+msgstr "Configuration"
 
 msgid "You've selected Google reCaptcha as spam protection method, but homepage and or secrect key have not been added."
-msgstr "Sie haben Google reCaptcha als Spamschutz-Methode gewählt, aber Websiteschlüssel und/oder Geheimen Schlüssel nicht angegeben."
+msgstr "You have chosen Google reCaptcha as your spam protection method but did not indicate a site key and/or a secret key."
 
 msgid "A coupon being used in a survey is not active or does not exist anylonger."
-msgstr "In einer Umfrage wird ein Coupon verwendet, der inaktiv ist oder nicht mehr existiert."
+msgstr "A survey uses a coupon that is inactive or does not exist."
 
 msgid "The full-text index does not exist!"
-msgstr "Der Volltextindex ist nicht vorhanden."
+msgstr "No full-text index available."
 
 msgid "E-mail template broken"
-msgstr "E-Mail-Vorlage defekt"
+msgstr "Bad email template"
 
 msgid "The E-mail template 'Passwort vergessen'/'Forgotten password' is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
-msgstr "Die E-Mail-Vorlage „Passwort Vergessen“ ist veraltet. Die Variable $neues_passwort ist nicht mehr verfügbar. Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück."
+msgstr "The email template \"Forgot password\" is outdated. The variable $neues_passwort is no longer available. Please replace it by $passwordResetLink or reset the template."
 
 msgid "Insecure SMTP connection"
-msgstr "Unsichere SMTP-Verbindung"
+msgstr "Unsafe SMTP connection"
 
 msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
-msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter „System &gt; E-Mails &gt; E-Mail-Einstellungen &gt; SMTP-Security.“"
+msgstr "You have chosen SMTP but did not select an SMTP security method. We urgently recommend adapting your email settings. You will find the option here: System &gt; Emails &gt; Email settings &gt; SMTP Security."
 
 msgid "User management"
-msgstr "Benutzerverwaltung"
+msgstr "User management"
 
 msgid "The algorithm for saving passwords has changed. <br/>Please generate a new emergency code for the 2 factor authentication."
-msgstr "Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung."
+msgstr "The algorithm for changing the password has changed.<br/>Please generate new emergency codes for the two-factor authentication."

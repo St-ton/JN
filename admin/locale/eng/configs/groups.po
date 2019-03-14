@@ -1,249 +1,248 @@
 msgid "configgroup_108"
-msgstr "Artikel"
+msgstr "Items"
 
 msgid "configgroup_114"
-msgstr "Kategorien"
+msgstr "Categories"
 
 msgid "configgroup_121"
-msgstr "Allgemein"
+msgstr "General"
 
 msgid "configgroup_222"
-msgstr "UST Ausweisung (z.B. wegen Kleinunternehmerregelung)"
+msgstr "Show value-added tax (e.g. small business regulation)"
 
 msgid "configgroup_539"
-msgstr "Gespeicherter Warenkorb"
+msgstr "Saved basket"
 
 msgid "configgroup_444"
-msgstr "Wunschzettel"
+msgstr "Wish list"
 
 msgid "configgroup_173"
-msgstr "Wartungsmodus"
+msgstr "Maintenance mode"
 
 msgid "configgroup_1289"
-msgstr "Versand Seite"
+msgstr "Special page \"Shipments\""
 
 msgid "configgroup_1443"
-msgstr "Adminbereich"
+msgstr "Admin area"
 
 msgid "configgroup_1567"
-msgstr "Cookie-Einstellungen (Achtung: nur ändern, wenn Sie genau wissen, was Sie tun!)"
+msgstr "Cookie setting (Please note: Change only if you possess sufficient knowledge in this field.)"
 
 msgid "configgroup_123"
-msgstr "Allgemein"
+msgstr "General"
 
 msgid "configgroup_144"
-msgstr "Emaileinstellungen"
+msgstr "Email settings"
 
 msgid "configgroup_56"
-msgstr "Suche"
+msgstr "Search"
 
 msgid "configgroup_421"
-msgstr "Livesuche"
+msgstr "Live search"
 
 msgid "configgroup_1312"
-msgstr "Erweiterte Darstellung"
+msgstr "Expanded view"
 
 msgid "configgroup_84"
-msgstr "X-Selling (Standard)"
+msgstr "Cross-selling (Standard)"
 
 msgid "configgroup_86"
-msgstr "X-Selling (Kunden, die X gekauft haben, haben auch Y gekauft)"
+msgstr "Cross-selling (Others also bought)"
 
 msgid "configgroup_89"
-msgstr "Allgemeines"
+msgstr "General"
 
 msgid "configgroup_301"
-msgstr "Frage zum Produkt"
+msgstr "Question about item"
 
 msgid "configgroup_314"
-msgstr "Mailbenachrichtigung, wenn Produkt wieder verf&uuml;gbar"
+msgstr "Back in stock notification email"
 
 msgid "configgroup_516"
-msgstr "Vergleichsliste"
+msgstr "Comparison list"
 
 msgid "configgroup_626"
-msgstr "Produkttagging"
+msgstr "Item tagging"
 
 msgid "configgroup_638"
-msgstr "MedienModul"
+msgstr "Media files"
 
 msgid "configgroup_1122"
-msgstr "Ähnliche Artikel"
+msgstr "Similar items"
 
 msgid "configgroup_1295"
-msgstr "St&uuml;ckliste"
+msgstr "Bill of materials"
 
 msgid "configgroup_1650"
-msgstr "Beschreibungs-Tab"
+msgstr "Description tab"
 
 msgid "configgroup_1"
-msgstr "Kundenaccounterstellung / Unregistriert bestellen"
+msgstr "Create customer account/Order without registration"
 
 msgid "configgroup_14"
-msgstr "Lieferadresse"
+msgstr "Shipping address"
 
 msgid "configgroup_556"
-msgstr "Umsatzsteuer Identifikationsnummer"
+msgstr "VAT identification number"
 
 msgid "configgroup_283"
-msgstr "Warenkorb"
+msgstr "Basket"
 
 msgid "configgroup_132"
-msgstr "Bestellvorgang"
+msgstr "Order process"
 
 msgid "configgroup_92"
-msgstr "Bestellabschluss"
+msgstr "Order completion"
 
 msgid "configgroup_65"
-msgstr "Box: Bestseller"
+msgstr "Box: Bestsellers"
 
 msgid "configgroup_69"
-msgstr "Box: Sonderangebote"
+msgstr "Box: Special offers"
 
 msgid "configgroup_72"
-msgstr "Box: Neu im Sortiment"
+msgstr "Boxes: New in product range"
 
 msgid "configgroup_75"
-msgstr "Box: Top Angebot"
+msgstr "Box: Top offer"
 
 msgid "configgroup_78"
-msgstr "Box: Zuletzt angesehen"
+msgstr "Box: Recently viewed"
 
 msgid "configgroup_278"
-msgstr "Box: Bald erscheinende Produkte"
+msgstr "Box: Coming soon"
 
 msgid "configgroup_424"
-msgstr "Suchwolke"
+msgstr "Search cloud"
 
 msgid "configgroup_426"
-msgstr "Tagwolke"
+msgstr "Tag cloud"
 
 msgid "configgroup_441"
-msgstr "Wunschzettel"
+msgstr "Wish list"
 
 msgid "configgroup_468"
-msgstr "Vergleichsliste"
+msgstr "Comparison list"
 
 msgid "configgroup_542"
-msgstr "Box: Top Bewertet"
+msgstr "Box: Top rated"
 
 msgid "configgroup_1517"
-msgstr "Box: Preisradar"
+msgstr "Box: Top rated"
 
 msgid "configgroup_161"
-msgstr "Bildeinstellungen"
+msgstr "Image settings"
 
 msgid "configgroup_432"
-msgstr "Tagging Übersicht"
+msgstr "Tagging overview"
 
 msgid "configgroup_436"
-msgstr "Livesuche Übersicht"
+msgstr "Live search overview"
 
 msgid "configgroup_1143"
-msgstr "Gratisgeschenk"
+msgstr "Free gift"
 
 msgid "configgroup_24"
-msgstr "Vorkasse Überweisung"
+msgstr "Advance payment via transfer"
 
 msgid "configgroup_28"
-msgstr "Nachnahme"
+msgstr "Cash on delivery"
 
 msgid "configgroup_32"
-msgstr "Kreditkarte"
+msgstr "Credit card"
 
 msgid "configgroup_36"
-msgstr "Rechnung"
+msgstr "Pay by invoice"
 
 msgid "configgroup_1450"
-msgstr "Billpay"
+msgstr "BillPay"
 
 msgid "configgroup_40"
-msgstr "Lastschrift"
+msgstr "Direct debit"
 
 msgid "configgroup_44"
-msgstr "Barzahlung"
+msgstr "Cash"
 
 msgid "configgroup_250"
-msgstr "Sofort&uuml;berweisung"
+msgstr "Pay now online bank transfer"
 
 msgid "configgroup_288"
-msgstr "Einstellungen"
+msgstr "Settings"
 
 msgid "configgroup_396"
-msgstr "RSS-Feed Einstellungen"
+msgstr "Settings for RSS feed"
 
 msgid "configgroup_452"
-msgstr "Preisverlauf"
+msgstr "Price history"
 
 msgid "configgroup_471"
-msgstr "Vergleichsliste"
+msgstr "Comparison list"
 
 msgid "configgroup_486"
-msgstr "Bewertung"
+msgstr "Review"
 
 msgid "configgroup_491"
-msgstr "Bewertungserinnerung an Kunden"
+msgstr "Remind customer of writing a customer review"
 
 msgid "configgroup_504"
 msgstr "Newsletter"
 
 msgid "configgroup_518"
-msgstr "Kundenfeld"
+msgstr "Form field"
 
 msgid "configgroup_520"
-msgstr "Allgemein"
+msgstr "General"
 
 msgid "configgroup_1320"
-msgstr "Kategoriefilter"
+msgstr "Category filter"
 
 msgid "configgroup_535"
-msgstr "Bewertungsfilter"
+msgstr "Customer review filter"
 
 msgid "configgroup_529"
-msgstr "Tagfilter"
+msgstr "Tag filter"
 
 msgid "configgroup_635"
-msgstr "Suchtrefferfilter"
+msgstr "Search result filter"
 
 msgid "configgroup_531"
-msgstr "Merkmalfilter"
+msgstr "Characteristics filter"
 
 msgid "configgroup_527"
-msgstr "Preisspannenfilter"
+msgstr "Price range filter"
 
 msgid "configgroup_616"
-msgstr "Aktueller Hersteller"
+msgstr "Current manufacturer"
 
 msgid "configgroup_621"
-msgstr "Aktueller Merkmalwert"
+msgstr "Current characteristic value"
 
 msgid "configgroup_623"
-msgstr "Aktuelle Kategorie"
+msgstr "Current category"
 
 msgid "configgroup_548"
-msgstr "Email Blacklist"
+msgstr "Email blacklist"
 
 msgid "configgroup_134"
-msgstr "Meta Angaben"
+msgstr "Meta data"
 
 msgid "configgroup_568"
-msgstr "Newssystem"
+msgstr "News system"
 
 msgid "configgroup_579"
-msgstr "Shop Sitemap Einstellungen"
+msgstr "Sitemap settings"
 
 msgid "configgroup_586"
-msgstr "Umfragesystem Einstellungen"
+msgstr "Settings for survey system"
 
 msgid "configgroup_593"
-msgstr "Kunden werben Kunden Einstellungen"
+msgstr "Settings for customer referral programme"
 
 msgid "configgroup_1291"
-msgstr "Trusted Shops K&auml;uferschutz Einstellungen"
+msgstr "Settings for Trusted Shops buyer protection"
 
 msgid "configgroup_1392"
-msgstr "Suchspecial Standardsortierung"
+msgstr "Default sorting for special items"
 
 msgid "configgroup_1491"
-msgstr "Warenrücksendung"
-
+msgstr "Goods return"

@@ -72,11 +72,10 @@ $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDon
     return true;
 });
 
-if ($res) {
+if ($res > 0) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV') . ' ' . __('errorImportRow'), 'errorImportCSV');
+} elseif ($res === 0) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
-} else {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV'), 'errorImportCSV');
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportRow'), 'errorImportRow');
 }
 
 // Aktion ausgeloest?

@@ -4,22 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Cart\WarenkorbPers;
+use JTL\Cart\WarenkorbPersPos;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Checkout\Kupon;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
+use JTL\Extensions\Konfigitem;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Alert;
-use JTL\Catalog\Product\Artikel;
+use JTL\Helpers\Text;
 use JTL\Kampagne;
-use JTL\Customer\Kunde;
-use JTL\Checkout\Kupon;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Cart\WarenkorbPers;
-use JTL\Cart\WarenkorbPersPos;
-use JTL\Catalog\Wishlist\Wunschliste;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
 
 /**
  * Redirect - Falls jemand eine Aktion durchführt die ein Kundenkonto beansprucht und der Gast nicht einloggt ist,
@@ -448,7 +449,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                             }
                             // Konfigitems ohne Artikelbezug
                         } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem)) {
-                            $oKonfigitem = new \JTL\Extensions\Konfigitem($oWarenkorbPersPos->kKonfigitem);
+                            $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
                             $cart->erstelleSpezialPos(
                                 $oKonfigitem->getName(),
                                 $oWarenkorbPersPos->fAnzahl,

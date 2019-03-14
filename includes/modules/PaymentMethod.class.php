@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Checkout\Bestellung;
-use JTL\Helpers\Request;
-use JTL\Customer\Kunde;
-use JTL\Shop;
 use JTL\Cart\Warenkorb;
+use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
+use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class PaymentMethod
@@ -736,9 +737,9 @@ class PaymentMethod
         global $oPlugin;
         $oTmpPlugin    = $oPlugin;
         $paymentMethod = null;
-        $pluginID      = \JTL\Plugin\Helper::getIDByModuleID($moduleId);
+        $pluginID      = PluginHelper::getIDByModuleID($moduleId);
         if ($pluginID > 0) {
-            $loader = \JTL\Plugin\Helper::getLoaderByPluginID($pluginID);
+            $loader = PluginHelper::getLoaderByPluginID($pluginID);
             try {
                 $oPlugin = $loader->init($pluginID);
             } catch (InvalidArgumentException $e) {

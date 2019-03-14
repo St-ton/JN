@@ -4,17 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Notification;
 use JTL\Backend\Revision;
 use JTL\Helpers\Form;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Session\Backend;
-use JTLShop\SemVer\Version;
-use JTL\DB\NiceDB;
-use JTL\Backend\AdminLoginStatus;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
+use JTL\Session\Backend;
+use JTL\Shop;
+use JTL\Sprache;
+use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
     define('DEFINES_PFAD', __DIR__ . '/../../includes/');

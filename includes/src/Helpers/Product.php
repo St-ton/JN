@@ -7,7 +7,7 @@
 namespace JTL\Helpers;
 
 use function Functional\group;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cart\WarenkorbPos;
 use JTL\CheckBox;

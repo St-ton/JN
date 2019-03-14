@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Helpers\Seo;
+
 /**
  * @param string $cSeo
  * @return mixed
@@ -12,7 +14,7 @@
 function getSeo($cSeo)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\Helpers\Seo::getSeo($cSeo);
+    return Seo::getSeo($cSeo);
 }
 
 /**
@@ -23,7 +25,7 @@ function getSeo($cSeo)
 function checkSeo($cSeo)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\Helpers\Seo::checkSeo($cSeo);
+    return Seo::checkSeo($cSeo);
 }
 
 /**
@@ -34,7 +36,7 @@ function checkSeo($cSeo)
 function iso2ascii($str)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\Helpers\Seo::iso2ascii($str);
+    return Seo::iso2ascii($str);
 }
 
 /**
@@ -47,5 +49,5 @@ function iso2ascii($str)
 function getFlatSeoPath($cSeoPath)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \JTL\Helpers\Seo::getFlatSeoPath($cSeoPath);
+    return Seo::getFlatSeoPath($cSeoPath);
 }

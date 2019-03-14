@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Update\MigrationManager;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 use JTL\Template;
+use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 
 /**
- * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global JTLSmarty                 $smarty
  * @global \JTL\Backend\AdminAccount $oAccount
  */
 
@@ -20,7 +22,7 @@ $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
 $updater  = new Updater();
 $template = Template::getInstance();
-$feSmarty = new \JTL\Smarty\JTLSmarty(true, \JTL\Smarty\ContextType::FRONTEND);
+$feSmarty = new JTLSmarty(true, ContextType::FRONTEND);
 $feSmarty->clearCompiledTemplate();
 $smarty->clearCompiledTemplate();
 Shop::Container()->getCache()->flushAll();
@@ -31,11 +33,10 @@ $version          = $updater->getVersion();
 $updatesAvailable = $updater->hasPendingUpdates();
 $updateError      = $updater->error();
 
-if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
-    $smarty->assign('manager', new MigrationManager());
-}
-
 $smarty->assign('updatesAvailable', $updatesAvailable)
+       ->assign('manager', ADMIN_MIGRATION ? new MigrationManager() : null)
+       ->assign('isPluginManager', false)
+       ->assign('migrationURL', 'dbupdater.php')
        ->assign('currentFileVersion', $fileVersion)
        ->assign('currentDatabaseVersion', $dbVersion)
        ->assign('hasDifferentVersions', !Version::parse($fileVersion)->equals(Version::parse($fileVersion)))

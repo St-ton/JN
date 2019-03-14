@@ -4,21 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Backend\Revision;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferschein;
+use JTL\Checkout\Versand;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
-use JTL\Checkout\Kupon;
-use JTL\Checkout\Lieferschein;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
-use JTL\Checkout\Versand;
-use JTL\DB\ReturnType;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
-use JTL\Smarty\ContextType;
+use JTL\Sprache;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

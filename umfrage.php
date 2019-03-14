@@ -5,7 +5,7 @@
  */
 
 use JTL\Helpers\Request;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Nice;
 use JTL\Shop;
 use JTL\Link\Link;

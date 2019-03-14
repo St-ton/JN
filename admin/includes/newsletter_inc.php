@@ -17,6 +17,7 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\SmartyResourceNiceDB;
 use JTL\Session\Frontend;
+use JTL\Alert\Alert;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 

@@ -7,6 +7,7 @@
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);

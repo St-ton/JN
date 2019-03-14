@@ -7,6 +7,7 @@
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Media\MediaImage;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

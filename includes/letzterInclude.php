@@ -4,29 +4,33 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Cart\Warenkorb;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Navigation;
+use JTL\Catalog\NavigationEntry;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\DB\ReturnType;
+use JTL\ExtensionPoint;
+use JTL\Filter\Metadata;
+use JTL\Filter\SearchResults;
+use JTL\Firma;
 use JTL\Helpers\Category;
 use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
-use JTL\Alert;
-use JTL\Catalog\Product\Artikel;
-use JTL\ExtensionPoint;
-use JTL\Firma;
+use JTL\Helpers\Text;
 use JTL\Kampagne;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Catalog\Product\Preise;
+use JTL\Link\Link;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Helpers\Text;
 use JTL\Template;
 use JTL\Visitor;
-use JTL\Cart\Warenkorb;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
-use JTL\Filter\Metadata;
-use JTL\Catalog\Wishlist\Wunschliste;
 
 $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
@@ -177,25 +181,25 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \JTL\Filter\SearchResults())
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new SearchResults())
        ->assign('cSessionID', session_id())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
        ->assign('wishlists', Wunschliste::getWishlists());
 
-$nav = new \JTL\Catalog\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
+$nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
 $nav->setProductFilter($NaviFilter);
 $nav->setCategoryList($expandedCategories);
 if (isset($AktuellerArtikel) && $AktuellerArtikel instanceof Artikel) {
     $nav->setProduct($AktuellerArtikel);
 }
-if (isset($link) && $link instanceof \JTL\Link\Link) {
+if (isset($link) && $link instanceof Link) {
     $nav->setLink($link);
 }
 if (isset($breadCrumbName, $breadCrumbURL)) {
-    $breadCrumbEntry = new \JTL\Catalog\NavigationEntry();
+    $breadCrumbEntry = new NavigationEntry();
     $breadCrumbEntry->setURL($breadCrumbURL);
     $breadCrumbEntry->setName($breadCrumbName);
     $breadCrumbEntry->setURLFull($breadCrumbURL);

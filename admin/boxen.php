@@ -13,6 +13,7 @@ use JTL\Template;
 use JTL\DB\ReturnType;
 use JTL\Link\LinkGroupInterface;
 use JTL\Boxes\Type;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);

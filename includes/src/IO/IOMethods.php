@@ -7,7 +7,7 @@
 namespace JTL\IO;
 
 use Exception;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Boxes\Type;
 use JTL\Catalog\Product\Artikel;

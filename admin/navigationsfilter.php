@@ -8,6 +8,7 @@ use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty

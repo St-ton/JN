@@ -10,7 +10,7 @@ use JTL\Shop;
 
 /**
  * Class Alert
- * @package JTL
+ * @package JTL\Alert
  */
 class Alert
 {

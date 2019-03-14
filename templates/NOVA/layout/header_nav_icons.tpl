@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{navitem tag="div" class="d-flex d-md-none" mr-2 aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-search-collapse']}
+{navitem tag="div" class="d-flex d-md-none mr-2" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-search-collapse']}
     <i class="fas fa-search"></i>
 {/navitem}
 {navitem tag="div" class="mr-2 mr-md-3" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-account-collapse']}

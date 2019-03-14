@@ -111,6 +111,11 @@ body.unboxed-layout {
   }
 }
 #evo-main-nav-wrapper {
+  @include media-breakpoint-up(lg) {
+    margin-left: - map_get($spacers,4);
+    margin-right: - map_get($spacers,4);
+  }
+
   @include media-breakpoint-up(md) {
     flex-flow: wrap;
     #nav-comparelist-collapse,
@@ -123,7 +128,7 @@ body.unboxed-layout {
       right: 0;
       z-index: $zindex-dropdown;
       float: left;
-      min-width: 20vw;
+      min-width: $dropdown-min-width*2.7;
       padding: $dropdown-padding-y 0;
       margin: $dropdown-spacer 0 0; // override default ul
       font-size: $font-size-base; // Redeclare because nesting can cause inheritance issues
@@ -181,6 +186,7 @@ body.unboxed-layout {
     text-decoration: none;
     display: flex;
     align-items: center;
+    height: 2rem;
   }
   @include media-breakpoint-down(sm) {
     .nav-link, .cart-icon-dropdown .nav-item { height: 100%; }
@@ -297,7 +303,6 @@ ul.partlist-items {
 }
 
 #nav-cart-collapse {
-  min-width: 30vw;
   .dropdown-item {
     padding: 0;
   }

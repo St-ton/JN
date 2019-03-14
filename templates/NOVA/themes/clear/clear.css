@@ -12148,6 +12148,12 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
   }
 }
 
+@media (min-width: 992px) {
+  #evo-main-nav-wrapper {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+  }
+}
 @media (min-width: 768px) {
   #evo-main-nav-wrapper {
     flex-flow: wrap;
@@ -12162,7 +12168,7 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     right: 0;
     z-index: 1000;
     float: left;
-    min-width: 20vw;
+    min-width: 27rem;
     padding: 0.5rem 0;
     margin: 0.125rem 0 0;
     font-size: 0.875rem;
@@ -12235,6 +12241,7 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
   text-decoration: none;
   display: flex;
   align-items: center;
+  height: 2rem;
 }
 @media (max-width: 767.98px) {
   #evo-main-nav-wrapper .nav-link, #evo-main-nav-wrapper .cart-icon-dropdown .nav-item {
@@ -12347,9 +12354,6 @@ ul.partlist-items {
   list-style-position: inside;
 }
 
-#nav-cart-collapse {
-  min-width: 30vw;
-}
 #nav-cart-collapse .dropdown-item {
   padding: 0;
 }

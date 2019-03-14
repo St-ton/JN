@@ -7,7 +7,7 @@
         id="shop-nav-compare"
         tag="div"
         title="{lang key='compare'}"
-        class="d-md-flex mr-2{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}"
+        class="mr-2{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}"
         data=['toggle' => 'collapse', 'target' => '#nav-comparelist-collapse']
     }
         <span class="fas fa-tasks"></span>
@@ -19,14 +19,14 @@
     {/navitem}
     {collapse id="nav-comparelist-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2"}
         <div id="comparelist-dropdown-container" class="p-3">
-            {row}
-                {col id='comparelist-dropdown-content'}
+            {row id='comparelist-dropdown-content'}
                     {include file='snippets/comparelist_dropdown.tpl'}
-                {/col}
+                {*{/col}
             {/row}
             {row class="mt-2"}
                 {col}
-                {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && count($smarty.session.Vergleichsliste->oArtikel_arr) <= 1}
+                    {$smarty.session.Vergleichsliste->oArtikel_arr|@count|@var_dump}
+                {if !empty($smarty.session.Vergleichsliste->oArtikel_arr) && $smarty.session.Vergleichsliste->oArtikel_arr|@count <= 1}
                     {lang key='productNumberHint' section='comparelist'}
                 {else}
                     {link
@@ -37,7 +37,7 @@
                         {lang key='gotToCompare'}
                     {/link}
                 {/if}
-                {/col}
+                {/col}*}
             {/row}
         </div>
     {/collapse}

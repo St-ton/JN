@@ -1,4 +1,8 @@
 {if !empty($wishlists)}
+    {$wlCount = 0}
+    {if isset($smarty.session.Wunschliste->CWunschlistePos_arr)}
+        {$wlCount = $smarty.session.Wunschliste->CWunschlistePos_arr|count}
+    {/if}
     <div class="wishlist-icon-dropdown">
         {navitem tag="div"
         aria=['expanded' => 'false']
@@ -10,10 +14,10 @@
             <sup>
                 {badge pill=true
                 variant="primary"
-                class="{if empty($smarty.session.Wunschliste->CWunschlistePos_arr)} d-none{/if}"
+                class="{if $wlCount === 0} d-none{/if}"
                 id="badge-wl-count"
                 }
-                {$smarty.session.Wunschliste->CWunschlistePos_arr|count}
+                {$wlCount}
                 {/badge}
             </sup>
         {/navitem}

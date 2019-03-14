@@ -15,7 +15,7 @@
                 {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_XS) alt=$alt}
             {/if}
         {/block}
-        {image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt}
+        {image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt class="img-fluid"}
         <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
         <meta itemprop="url" content="{$Artikel->cURLFull}">
     {/link}

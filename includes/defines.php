@@ -40,6 +40,8 @@ ifndef('DB_DEFAULT_SQL_MODE', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 
+ifndef('ADMIN_MIGRATION', false);
+
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
 ifndef('DEFAULT_CURL_OPT_VERIFYHOST', 2);

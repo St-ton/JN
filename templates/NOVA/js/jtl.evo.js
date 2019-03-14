@@ -59,14 +59,8 @@
                     }
                 ]
             };
-
-            if ($('#content').hasClass('col-lg-9')) {
-                evoSliderOptions.slidesToShow = 2;
-            } else {
-                evoSliderOptions.slidesToShow = 3;
-            }
-
-            //initialize "pushed-success"-slider for detailed customization
+            evoSliderOptions.slidesToShow = 2;
+            // initialize "pushed-success"-slider for detailed customization
             $('#pushed-success .evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
             if ($('#content').hasClass('col-lg-9')) {
@@ -229,7 +223,7 @@
                 $(e).height($('div', $(e)).outerHeight());
             });
         },
-        
+
         tooltips: function() {
             $('[data-toggle="tooltip"]').tooltip();
         },
@@ -301,12 +295,12 @@
                 document.body.appendChild(s);
             })();
         },
-        
+
         showNotify: function(options) {
             eModal.alert({
                 size: 'lg',
                 buttons: false,
-                title: options.title, 
+                title: options.title,
                 message: options.text,
                 keyboard: true,
                 tabindex: -1})
@@ -316,10 +310,10 @@
                 }
             );
         },
-        
+
         renderCaptcha: function(parameters) {
             if (typeof parameters !== 'undefined') {
-                this.options.captcha = 
+                this.options.captcha =
                     $.extend({}, this.options.captcha, parameters);
             }
 
@@ -378,7 +372,7 @@
         popover: function() {
             /*
              * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
-             * <div id="popover-content123" class="popover">content here</div> 
+             * <div id="popover-content123" class="popover">content here</div>
              */
             $('[data-toggle="popover"]').popover({
                 trigger: 'hover',
@@ -582,7 +576,7 @@
                 that.trigger('loaded.evo.content', { url: url });
             });
         },
-        
+
         spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw

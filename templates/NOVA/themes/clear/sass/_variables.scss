@@ -5,7 +5,7 @@ $gray-light:                        #9b9b9b;
 $gray:                              #707070;
 $gray-dark:                         #525252;
 $sand:                              #ebebeb;
-$white:                             #f8f8f8;
+$cool-white:                        #f8f8f8;
 $primary:                           #F8BF00;
 $secondary:                         transparent;
 $success:                           #098B1B;
@@ -77,14 +77,14 @@ $breadcrumb-active-color:           $gray-dark;
 
 $border-radius:                     .125rem !default;
 
-$card-bg:                           $white;
+$card-bg:                           #fff;
 
 $searchcloud-font-size-scaling:     30%;
 $navbar-light-color:                $gray-dark;
 
-$input-bg:                          $white;
-$list-group-bg:                     $white;
-$list-group-disabled-bg:            $white;
+$input-bg:                          #fff;
+$list-group-bg:                     #fff;
+$list-group-disabled-bg:            #fff;
 
 $progress-bar-color:                $gray;
 
@@ -107,10 +107,10 @@ $url-1:                             url(../base/images/loading-sm.gif);
 
 $tooltip-font-size:                 $font-size-base/1.15;
 $tooltip-color:                     $gray-dark;
-$tooltip-bg:                        $white;
+$tooltip-bg:                        #fff;
 $tooltip-border-radius:             $border-radius;
 $tooltip-arrow-color:               $gray-dark;
-$tooltip-arrow-inner-color:         $white;
+$tooltip-arrow-inner-color:         #fff;
 
 $tooltip-arrow-inner-width:         .8rem;
 $tooltip-arrow-inner-height:        .4rem;

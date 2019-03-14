@@ -111,8 +111,14 @@ body.unboxed-layout {
   }
 }
 #evo-main-nav-wrapper {
+  @include media-breakpoint-up(lg) {
+    margin-left: - map_get($spacers,4);
+    margin-right: - map_get($spacers,4);
+  }
+
   @include media-breakpoint-up(md) {
     flex-flow: wrap;
+    #nav-comparelist-collapse,
     #nav-wishlist-collapse,
     #nav-cart-collapse,
     #nav-account-collapse {
@@ -158,9 +164,6 @@ body.unboxed-layout {
       }
     }
     #nav-account-collapse { min-width: $dropdown-min-width*2.3; }
-    .table {
-      width: auto;
-    }
   }
   .nav-item{
     border-bottom: $highlight-border-size solid transparent;
@@ -180,6 +183,7 @@ body.unboxed-layout {
     text-decoration: none;
     display: flex;
     align-items: center;
+    height: 2rem;
   }
   @include media-breakpoint-down(sm) {
     .nav-link, .cart-icon-dropdown .nav-item { height: 100%; }
@@ -196,27 +200,27 @@ body.unboxed-layout {
 
 
   @include media-breakpoint-down(sm) {
+    #nav-comparelist-collapse,
+    #nav-wishlist-collapse,
     #nav-cart-collapse,
-    #nav-account-collapse,
-    #nav-search-collapse {
+    #nav-account-collapse {
       max-height: 400px;
       z-index: $zindex-sticky;
       overflow-y: auto;
       overflow-x: hidden;
       position: absolute;
-      top: 55px;
+      top: 50px;
       left: $grid-gutter-width/2;
-      padding: 0 !important;
       right: 0;
       clear: both;
       background: white;
-      padding: 15px;
+      padding: 15px 0;
       width: calc(100% - #{$grid-gutter-width});
       @include box-shadow(0 8px 10px -5px rgba(0, 0, 0, 0.15));
     }
     #nav-search-collapse {
       top: 0;
-      width: 100%;
+      width: calc(100% - #{$grid-gutter-width});
       left: 0;
     }
   }
@@ -303,6 +307,9 @@ ul.partlist-items {
     table-layout: fixed;
     word-break: break-word;
     white-space: initial;
+    &.table-striped tbody tr:nth-of-type(odd) {
+      background-color: $bg-info;
+    }
   }
 }
 
@@ -1553,7 +1560,7 @@ a[data-toggle="collapse"][aria-expanded=true],
 
 //footer
 footer {
-  background: $white;
+  background: $cool-white;
   color: $gray;
   padding-top: $spacer;
   .card {
@@ -1596,7 +1603,7 @@ footer {
     }
     &:active,
     &:focus{
-      color: $white;
+      color: $cool-white;
       background: $primary;
       border-color: $primary;
     }
@@ -2017,7 +2024,7 @@ table caption {
       box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
 
       .btn-toggle {
-        color: $white;
+        color: $cool-white;
         background-color: $gray;
       }
     }
@@ -2032,14 +2039,14 @@ table caption {
     }
 
     .switcher-header {
-      background-color: $white;
+      background-color: $cool-white;
       border-bottom: 1px solid rgba(120,130,140,.13);
     }
 
     .switcher-content {
       padding:  $spacer;
       min-height: 4rem;
-      background-color: $white;
+      background-color: $cool-white;
     }
   }
 }
@@ -2192,11 +2199,11 @@ table caption {
 .text-decoration-underline { text-decoration: underline; }
 /* wishlist */
 input.form-control[name="wishlist-url"] {
-  background: $white;
+  background: $cool-white;
   /*@include border-radius($dropdown-border-radius);*/
 }
 .input-like {
-  background-color: $input-bg;
+  background-color: $cool-white;
   border: 1px solid $input-border-color;
   border-left: 0;
   margin-left: -1px;
@@ -2222,5 +2229,22 @@ input.form-control[name="wishlist-url"] {
 .no-chevron {
   :after {
     content: "";
+  }
+}
+
+.comparelist {
+  max-height: 800px;
+  .table thead th, td {
+    &:first-child {
+      position: sticky;
+      left: 0;
+      background: #fff;
+      z-index: $zindex-dropdown;
+    }
+  }
+  .table thead th {
+    background: #fff;
+    vertical-align: top;
+    z-index: $zindex-dropdown - 1;
   }
 }

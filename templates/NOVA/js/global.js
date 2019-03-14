@@ -278,6 +278,17 @@ function addCopyToClipboardListener() {
     });
 }
 
+function addCloseMenuDropdownListener() {
+    $(document).on("click", function (event) {
+        var clickover = $(event.target);
+        var _opened   = $("#evo-main-nav-wrapper .collapse.show");
+        var _parents  = clickover.parents(".collapse.show");
+        if (_opened[0] !== undefined && !clickover.hasClass("collapse") && _parents.length === 0) {
+            $(".nav-item[data-target='#" + _opened[0].id + "']").click();
+        }
+    });
+}
+
 function initWow()
 {
     new WOW().init();
@@ -544,5 +555,6 @@ $(document).ready(function () {
     compatibility();
     addValidationListener();
     addCopyToClipboardListener();
+    addCloseMenuDropdownListener();
     initWow();
 });

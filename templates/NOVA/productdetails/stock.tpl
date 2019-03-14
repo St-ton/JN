@@ -3,10 +3,11 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
-<div class="delivery-status p-3 mt-3 mb-4">
+<div class="delivery-status {if !isset($availability) && !isset($shippingTime)}p-3 mt-3 mb-4{/if}">
 {block name='delivery-status'}
     {row class='align-items-center'}
-        {col cols=6}
+        {if !isset($shippingTime)}
+        {col cols="{if !isset($availability) && !isset($shippingTime)}6{else}12{/if}"}
             {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
                 <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
             {elseif !$Artikel->nErscheinendesProdukt}
@@ -48,13 +49,17 @@
                 <div class="delivery-status">{lang key='deliveryStatus'}: {$Artikel->cLieferstatus}</div>
             {/if}
         {/col}
-        {col cols=6}
+        {/if}
+        {if !isset($availability)}
+        {col cols="{if !isset($availability) && !isset($shippingTime)}6{else}12{/if}"}
             {if $Artikel->cEstimatedDelivery}
                 <div class="estimated-delivery">
-                    {lang key='shippingTime'}: <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
+                    {if !isset($availability) && !isset($shippingTime)}{lang key='shippingTime'}:{/if}
+                    <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
                 </div>
             {/if}
         {/col}
+        {/if}
     {/row}
 {/block}
 </div>

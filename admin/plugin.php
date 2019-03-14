@@ -4,14 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
 use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
+use JTL\Plugin\Admin\Installation\MigrationManager;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
-use JTL\Alert\Alert;
+use JTL\Plugin\Plugin;
+use JTL\Shop;
+use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -99,6 +102,20 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         $oPlugin = $loader->init($kPlugin, $invalidateCache);
     }
     if ($oPlugin !== null) {
+        if (ADMIN_MIGRATION && $oPlugin instanceof Plugin) {
+            Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+            $manager    = new MigrationManager(
+                $db,
+                $oPlugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                $oPlugin->getPluginID(),
+                Version::parse($oPlugin->getMeta()->getVersion())
+            );
+            $migrations = count($manager->getMigrations());
+            if ($migrations > 0) {
+                $smarty->assign('manager', $manager)
+                       ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
+            }
+        }
         $smarty->assign('oPlugin', $oPlugin);
         if ($updated === true) {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
@@ -134,4 +151,7 @@ $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
 
 $smarty->assign('oPlugin', $oPlugin)
        ->assign('step', $step)
+       ->assign('hasDifferentVersions', false)
+       ->assign('currentDatabaseVersion', 0)
+       ->assign('currentFileVersion', 0)
        ->display('plugin.tpl');

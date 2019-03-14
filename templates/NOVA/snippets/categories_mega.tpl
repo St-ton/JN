@@ -3,6 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {strip}
+{if !isset($i)}
+    {assign var=i value=0}
+{/if}
 {assign var=max_subsub_items value=4}
 
 {block name='megamenu-categories'}
@@ -33,8 +36,14 @@
         {/if}
         {foreach $categories as $category}
             {assign var=isDropdown value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
+            {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
+                {assign var=activeParent value=$activeParents[$i]}
+            {/if}
             {if $isDropdown}
-                <li class="nav-item dropdown{if $category->kKategorie == $activeId} active{/if}" data-tab="{$category@iteration}">
+                <li class="nav-item pb-2 dropdown{if $category->kKategorie == $activeId
+                || ((isset($activeParent)
+                && isset($activeParent->kKategorie))
+                && $activeParent->kKategorie == $category->kKategorie)} active{/if}" data-tab="{$category@iteration}">
                     {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
                         {$category->cName}
                     {/link}
@@ -42,7 +51,7 @@
                 {*{navitemdropdown text=$category->cKurzbezeichnung
                     data=["tab"=>$category@iteration]
                     class="{if $category->kKategorie == $activeId} active{/if}"}*}
-                    {container class="pt-2"}
+                    {container class="pt-md-2"}
                         {row}
                             {assign var=hasInfoColumn value=false}
                         {if $Einstellungen.template.megamenu.show_maincategory_info !== 'N'

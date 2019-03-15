@@ -1603,3 +1603,27 @@ msgstr "Herkunft"
 
 msgid "errorFileUploadGeneral"
 msgstr "Fehler beim hochladen der Datei."
+
+msgid "Europa"
+msgstr "Europa"
+
+msgid "Asien"
+msgstr "Asien"
+
+msgid "Nordamerika"
+msgstr "Nordamerika"
+
+msgid "Suedamerika"
+msgstr "Suedamerika"
+
+msgid "Ozeanien"
+msgstr "Ozeanien"
+
+msgid "Afrika"
+msgstr "Afrika"
+
+msgid "Antarktis"
+msgstr "Antarktis"
+
+msgid "date"
+msgstr "Datum"

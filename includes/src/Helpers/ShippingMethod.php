@@ -16,6 +16,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Checkout\Versandart;
 use stdClass;
+use JTL\Country\Country;
 
 /**
  * Class ShippingMethod
@@ -1334,8 +1335,8 @@ class ShippingMethod
                 \array_filter(\explode(' ', $oVersandart->cLaender))
             )->toArray();
             // re-concatinate isos with "," for the final output
-            $resultString = \implode(', ', \array_map(function ($e) {
-                return $e->name;
+            $resultString = \implode(', ', \array_map(function (Country $e) {
+                return $e->getName();
             }, $countries));
 
             $vkfls = \sprintf(Shop::Lang()->get('noShippingCostsAtExtended', 'basket'), $resultString);

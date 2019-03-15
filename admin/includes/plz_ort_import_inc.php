@@ -41,7 +41,10 @@ function plzimportGetPLZOrt(): array
 
     foreach ($plzOrt_arr as $key => $oPLZOrt) {
         $fName = PFAD_UPLOADS . $oPLZOrt->cLandISO . '.tab';
-
+        if (($country = Shop::Container()->getCountryService()->getCountry($oPLZOrt->cLandISO)) !== null) {
+            $oPLZOrt->cDeutsch   = $country->getName();
+            $oPLZOrt->cKontinent = $country->getContinent();
+        }
         if (is_file($fName)) {
             $plzOrt_arr[$key]->cImportFile = $oPLZOrt->cLandISO . '.tab';
         }
@@ -453,6 +456,7 @@ function plzimportActionDelTempImport(): array
  */
 function plzimportActionLoadAvailableDownloads(): array
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
     $oLand_arr = $_SESSION['plzimport.oLand_arr'] ?? Shop::Container()->getCache()->get('plzimport.oLand_arr');
     if ($oLand_arr === false) {
         $ch = curl_init();
@@ -473,13 +477,7 @@ function plzimportActionLoadAvailableDownloads(): array
                 },
                 $hits[2]
             );
-            $oLand_arr  = Shop::Container()->getDB()->query(
-                'SELECT cISO, cDeutsch
-                    FROM tland
-                    WHERE cISO IN (' . implode(', ', $quotedHits) . ')
-                    ORDER BY cISO',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $oLand_arr  = Shop::Container()->getCountryService()->getFilteredCountryList($quotedHits)->toArray();
 
             foreach ($oLand_arr as $key => $oLand) {
                 $idx = array_search($oLand->cISO, $hits[2], true);

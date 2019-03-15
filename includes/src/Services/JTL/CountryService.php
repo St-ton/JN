@@ -10,6 +10,7 @@ use JTL\Country\Country;
 use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Cache\JTLCacheInterface;
 
 /**
  * Class CountryService
@@ -28,20 +29,32 @@ class CountryService implements CountryServiceInterface
     private $db;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private $cache;
+
+    /**
      * CountryService constructor.
      * @param DbInterface $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
         $this->countryList = new Collection();
         $this->db          = $db;
+        $this->cache       = $cache;
         $this->init();
     }
 
     public function init(): void
     {
-        $countries = $this->db->query('SELECT cISO, nEU, cKontinent FROM tland', ReturnType::ARRAY_OF_OBJECTS);
+        $cacheID = 'serviceCountryList';
+        if (($countries = $this->cache->get($cacheID)) !== false) {
+            $this->countryList = $countries;
 
+            return;
+        }
+        $countries = $this->db->query('SELECT cISO, nEU, cKontinent FROM tland', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($countries as $country) {
             $contryTMP = new Country($country->cISO);
             $contryTMP->setEU($country->nEU)
@@ -53,6 +66,8 @@ class CountryService implements CountryServiceInterface
         $this->countryList = $this->getCountryList()->sortBy(function (Country $country) {
             return $country->getName();
         });
+
+        $this->cache->set($cacheID, $this->countryList, [\CACHING_GROUP_OBJECT]);
     }
 
     /**

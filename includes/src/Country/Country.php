@@ -8,6 +8,7 @@ namespace JTL\Country;
 
 use JTL\Shop;
 use JTL\MagicCompatibilityTrait;
+use JTL\Helpers\Text;
 
 /**
  * Class Country
@@ -24,7 +25,7 @@ class Country
         'nEU'        => 'EU',
         'cDeutsch'   => 'Name',
         'cEnglisch'  => 'Name',
-        'cKontinent' => 'continent',
+        'cKontinent' => 'Continent',
         'cIso'       => 'ISO',
         'cName'      => 'Name'
     ];
@@ -47,13 +48,7 @@ class Country
     /**
      * @var string
      */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $langISO;
-
+    private $names;
 
     /**
      * Country constructor.
@@ -62,11 +57,10 @@ class Country
      */
     public function __construct(string $ISO, bool $initFromDB = false)
     {
-        $langIso = $_SESSION['AdminAccount']->kSprache ?? Shop::Lang()->gibISO();
-
         $this->setISO($ISO);
-        $this->setLangISO($langIso === 'ger' ? 'de' : 'en');
-        $this->setName();
+        foreach (Shop::Lang()->getAllLanguages() as $lang) {
+            $this->setName($lang);
+        }
         if ($initFromDB) {
             $this->initFromDB();
         }
@@ -91,18 +85,6 @@ class Country
     public function getNameForLangISO(string $LangISO): string
     {
         return locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $LangISO);
-    }
-
-    /**
-     * @param string $LangISO
-     * @return Country
-     */
-    public function setNameForLangISO(string $LangISO): self
-    {
-        $this->name    = $this->getNameForLangISO($LangISO);
-        $this->langISO = $LangISO;
-
-        return $this;
     }
 
     /**
@@ -156,7 +138,7 @@ class Country
      */
     public function getContinent(): string
     {
-        return $this->continent;
+        return Shop::Lang()->get($this->continent);
     }
 
     /**
@@ -171,19 +153,23 @@ class Country
     }
 
     /**
+     * @param int|null $idx
      * @return string
      */
-    public function getName(): string
+    public function getName(int $idx = null): string
     {
-        return $this->name;
+        $langID = $_SESSION['AdminAccount']->kSprache ?? Shop::getLanguageID();
+
+        return $this->names[$idx ?? $langID] ?? '';
     }
 
     /**
+     * @param \stdClass $lang
      * @return Country
      */
-    public function setName(): self
+    public function setName(\stdClass $lang): self
     {
-        $this->name = $this->getNameForLangISO($this->getLangISO());
+        $this->names[$lang->kSprache] = $this->getNameForLangISO(Text::convertISO2ISO639($lang->cISO));
 
         return $this;
     }
@@ -191,18 +177,18 @@ class Country
     /**
      * @return string
      */
-    public function getLangISO(): string
+    public function getNames(): string
     {
-        return $this->langISO;
+        return $this->names;
     }
 
     /**
-     * @param string $langISO
+     * @param array $names
      * @return Country
      */
-    public function setLangISO(string $langISO): self
+    public function setNames(array $names): self
     {
-        $this->langISO = $langISO;
+        $this->names = $names;
 
         return $this;
     }

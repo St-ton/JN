@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -55,21 +56,21 @@ class Row extends Portlet
         return [
             'layout-xs' => [
                 'label'          => '<i class="fa fa-mobile"></i> Layout XS',
-                'type'           => 'text',
+                'type'           => InputType::TEXT,
                 'default'        => '6+6',
                 'dspl_width'     => 50,
                 'layoutCollapse' => [
                     'layout-sm' => [
                         'label' => '<i class="fa fa-tablet"></i> Layout S',
-                        'type'  => 'text',
+                        'type'  => InputType::TEXT,
                     ],
                     'layout-md' => [
                         'label' => '<i class="fa fa-laptop"></i> Layout M',
-                        'type'  => 'text',
+                        'type'  => InputType::TEXT,
                     ],
                     'layout-lg' => [
                         'label' => '<i class="fa fa-desktop"></i> Layout L',
-                        'type'  => 'text',
+                        'type'  => InputType::TEXT,
                     ],
                 ]
             ],

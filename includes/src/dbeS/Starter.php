@@ -58,7 +58,7 @@ class Starter
         'Bestellungen_xml' => Orders::class,
         'Bilder_xml'       => Images::class,
         'Brocken_xml'      => Brocken::class,
-        'Date_xml'         => Data::class,
+        'Data_xml'         => Data::class,
         'Download_xml'     => Downloads::class,
         'Globals_xml'      => Globals::class,
         'Hersteller_xml'   => Manufacturers::class,

@@ -6,7 +6,7 @@
 
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Cart;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\Catalog\Product\Preise;
 use JTL\Shop;

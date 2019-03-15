@@ -264,6 +264,31 @@ function lazyLoadMenu(viewport){
     }
 }
 
+function addCopyToClipboardListener() {
+    var clipboard = new ClipboardJS('.btn.copyToClipboard');
+
+    clipboard.on('success', function(e) {
+        $(e.trigger).tooltip({title: 'copied'});
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+    });
+}
+
+function addCloseMenuDropdownListener() {
+    $(document).on("click", function (event) {
+        var clickover = $(event.target);
+        var _opened   = $("#evo-main-nav-wrapper .collapse.show");
+        var _parents  = clickover.parents(".collapse.show");
+        if (_opened[0] !== undefined && !clickover.hasClass("collapse") && _parents.length === 0) {
+            $(".nav-item[data-target='#" + _opened[0].id + "']").click();
+        }
+    });
+}
+
 function initWow()
 {
     new WOW().init();
@@ -321,7 +346,8 @@ $(document).ready(function () {
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,
-            tabindex: -1
+            tabindex: -1,
+            buttons: false
         });
         e.stopPropagation();
         return false;
@@ -528,5 +554,7 @@ $(document).ready(function () {
     regionsToState();
     compatibility();
     addValidationListener();
+    addCopyToClipboardListener();
+    addCloseMenuDropdownListener();
     initWow();
 });

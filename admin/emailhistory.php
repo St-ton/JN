@@ -7,6 +7,7 @@
 use JTL\Emailhistory;
 use JTL\Helpers\Form;
 use JTL\Pagination\Pagination;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

@@ -34,7 +34,7 @@ class Migration_20180208162100 extends Migration implements IMigration
         $this->setConfig(
             'allgemein_globalmerkmalfilter_benutzen',
             'Y',
-            CONF_NAVIGATIONSFILTER,
+            \CONF_NAVIGATIONSFILTER,
             'Globale Merkmalbox benutzen',
             'selectbox',
             110,

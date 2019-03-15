@@ -1,6 +1,6 @@
 {if empty($smarty.session.Kunde->kKunde)}
-    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 pt-2"}
-        {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 py-3"}
+    {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 py-0"}
+        {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 pt-5 pb-3"}
             <fieldset id="quick-login">
                 {formgroup}
                     {input type="email" name="email" id="email_quick"
@@ -17,7 +17,7 @@
                         {captchaMarkup getBody=true}
                     {/formgroup}
                 {/if}
-                {formgroup}
+                {formgroup class="mb-0"}
                     {input type="hidden" name="login" value="1"}
                     {if !empty($oRedirect->cURL)}
                         {foreach $oRedirect->oParameter_arr as $oParameter}
@@ -30,12 +30,12 @@
                 {/formgroup}
             </fieldset>
         {/form}
-        {dropdownitem href="{get_static_route id='pass.php'}" rel="nofollow" title="{lang key='forgotPassword'}" class="px-5"}
+        {link href="{get_static_route id='pass.php'}" rel="nofollow" title="{lang key='forgotPassword'}" class="d-block px-5 pt-0 pb-2"}
             {lang key='forgotPassword'}
-        {/dropdownitem}
-        {dropdownitem href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}" class="px-5 pb-2 bg-info"}
-            {lang key='newHere'} {lang key='registerNow'}
-        {/dropdownitem}
+        {/link}
+        {link href="{get_static_route id='registrieren.php'}" rel="nofollow" title="{lang key='registerNow'}" class="d-block px-5 py-3 bg-info"}
+            {lang key='newHere'} <span class="text-decoration-underline">{lang key='registerNow'}</span>
+        {/link}
     {/collapse}
 {else}
     {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 text-center"}
@@ -48,7 +48,7 @@
         {dropdownitem href="{get_static_route id='jtl.php' secure=true}?editRechnungsadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
             {lang key='myPersonalData'}
         {/dropdownitem}
-        {dropdownitem href="{get_static_route id='jtl.php' secure=true}?wllist=1" rel="nofollow" title="{lang key='myAccount'}"}
+        {dropdownitem href="{get_static_route id='jtl.php' secure=true}#my-wishlists" rel="nofollow" title="{lang key='myAccount'}"}
             {lang key='myWishlists'}
         {/dropdownitem}
         {dropdownitem href="{get_static_route id='jtl.php' secure=true}?logout=1" rel="nofollow" title="{lang key='logOut'}"}

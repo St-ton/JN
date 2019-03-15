@@ -14,7 +14,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
@@ -716,15 +716,7 @@ if ($customerID > 0) {
     }
 
     if ($step === 'mein Konto' || $step === 'wunschliste') {
-        $smarty->assign('oWunschliste_arr', Shop::Container()->getDB()->queryPrepared(
-            'SELECT tw.*, COUNT(twp.kArtikel) AS productCount
-                FROM twunschliste AS tw
-                    LEFT JOIN twunschlistepos AS twp  USING (kWunschliste)
-                WHERE kKunde = :customerID
-                GROUP BY tw.kWunschliste',
-            ['customerID' => $customerID],
-            ReturnType::ARRAY_OF_OBJECTS
-        ));
+        $smarty->assign('oWunschliste_arr', Wunschliste::getWishlists());
     }
 
     if ($step === 'mein Konto') {

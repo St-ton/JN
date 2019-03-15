@@ -12,6 +12,7 @@ use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -19,67 +20,65 @@ $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$alertHelper     = Shop::Container()->getAlertService();
-$cStep           = 'uebersicht';
-$nAnzahlProSeite = 15;
-$oSprach_arr     = Sprache::getAllLanguages();
-$oCheckBox       = new CheckBox();
-$cTab            = $cStep;
+$alertHelper  = Shop::Container()->getAlertService();
+$step         = 'uebersicht';
+$itemsPerPage = 15;
+$languages    = Sprache::getAllLanguages();
+$checkbox     = new CheckBox();
+$tab          = $step;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $cTab = Request::verifyGPDataString('tab');
+    $tab = Request::verifyGPDataString('tab');
 }
 if (isset($_POST['erstellenShowButton'])) {
-    $cTab = 'erstellen';
+    $tab = 'erstellen';
 } elseif (Request::verifyGPCDataInt('uebersicht') === 1 && Form::validateToken()) {
-    $kCheckBox_arr = $_POST['kCheckBox'];
+    $checkboxIDs = $_POST['kCheckBox'];
     if (isset($_POST['checkboxAktivierenSubmit'])) {
-        $oCheckBox->aktivateCheckBox($kCheckBox_arr);
+        $checkbox->aktivateCheckBox($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxActivate'), 'successCheckboxActivate');
     } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
-        $oCheckBox->deaktivateCheckBox($kCheckBox_arr);
+        $checkbox->deaktivateCheckBox($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDeactivate'), 'successCheckboxDeactivate');
     } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
-        $oCheckBox->deleteCheckBox($kCheckBox_arr);
+        $checkbox->deleteCheckBox($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxDelete'), 'successCheckboxDelete');
     }
 } elseif (Request::verifyGPCDataInt('edit') > 0) {
-    $kCheckBox = Request::verifyGPCDataInt('edit');
-    $cStep     = 'erstellen';
-    $cTab      = $cStep;
-    $smarty->assign('oCheckBox', new CheckBox($kCheckBox));
+    $checkboxID = Request::verifyGPCDataInt('edit');
+    $step       = 'erstellen';
+    $tab        = $step;
+    $smarty->assign('oCheckBox', new CheckBox($checkboxID));
 } elseif (Request::verifyGPCDataInt('erstellen') === 1 && Form::validateToken()) {
-    $cStep       = 'erstellen';
-    $kCheckBox   = Request::verifyGPCDataInt('kCheckBox');
-    $cPlausi_arr = plausiCheckBox($_POST, $oSprach_arr);
-    if (count($cPlausi_arr) === 0) {
-        $oCheckBox = speicherCheckBox($_POST, $oSprach_arr);
-        $cStep     = 'uebersicht';
+    $step       = 'erstellen';
+    $checkboxID = Request::verifyGPCDataInt('kCheckBox');
+    $checks     = plausiCheckBox($_POST, $languages);
+    if (count($checks) === 0) {
+        $checkbox = speicherCheckBox($_POST, $languages);
+        $step     = 'uebersicht';
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxCreate'), 'successCheckboxCreate');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         $smarty->assign('cPost_arr', Text::filterXSS($_POST))
-               ->assign('cPlausi_arr', $cPlausi_arr);
-        if ($kCheckBox > 0) {
-            $smarty->assign('kCheckBox', $kCheckBox);
+               ->assign('cPlausi_arr', $checks);
+        if ($checkboxID > 0) {
+            $smarty->assign('kCheckBox', $checkboxID);
         }
     }
-    $cTab = $cStep;
+    $tab = $step;
 }
 
-$oPagination   = (new Pagination())
-    ->setItemCount($oCheckBox->getAllCheckBoxCount())
+$pagination = (new Pagination())
+    ->setItemCount($checkbox->getAllCheckBoxCount())
     ->assemble();
-$oCheckBox_arr = $oCheckBox->getAllCheckBox('LIMIT ' . $oPagination->getLimitSQL());
-
-$smarty->assign('oCheckBox_arr', $oCheckBox_arr)
-       ->assign('oPagination', $oPagination)
+$smarty->assign('oCheckBox_arr', $checkbox->getAllCheckBox('LIMIT ' . $pagination->getLimitSQL()))
+       ->assign('oPagination', $pagination)
        ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
        ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)
        ->assign('CHECKBOX_ORT_NEWSLETTERANMELDUNG', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
        ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
-       ->assign('oSprache_arr', $oSprach_arr)
+       ->assign('oSprache_arr', $languages)
        ->assign('oKundengruppe_arr', Shop::Container()->getDB()->query(
            'SELECT * 
                 FROM tkundengruppe 
@@ -92,7 +91,7 @@ $smarty->assign('oCheckBox_arr', $oCheckBox_arr)
               ORDER BY cName',
            ReturnType::ARRAY_OF_OBJECTS
        ))
-       ->assign('oCheckBoxFunktion_arr', $oCheckBox->getCheckBoxFunctions())
-       ->assign('step', $cStep)
-       ->assign('cTab', $cTab)
+       ->assign('oCheckBoxFunktion_arr', $checkbox->getCheckBoxFunctions())
+       ->assign('step', $step)
+       ->assign('cTab', $tab)
        ->display('checkbox.tpl');

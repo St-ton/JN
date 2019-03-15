@@ -13,6 +13,7 @@ use JTL\Helpers\Text;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

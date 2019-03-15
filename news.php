@@ -5,7 +5,7 @@
  */
 
 use JTL\Helpers\URL;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Pagination\Pagination;

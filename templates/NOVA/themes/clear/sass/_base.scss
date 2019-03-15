@@ -82,6 +82,7 @@ html {
     margin-left: 0.25rem;
     width: initial;
     height: initial;
+    float: right;
   }
   &[aria-expanded=true]::after {
     transform: rotate(180deg) ;
@@ -110,8 +111,15 @@ body.unboxed-layout {
   }
 }
 #evo-main-nav-wrapper {
+  @include media-breakpoint-up(lg) {
+    margin-left: - map_get($spacers,4);
+    margin-right: - map_get($spacers,4);
+  }
+
   @include media-breakpoint-up(md) {
     flex-flow: wrap;
+    #nav-comparelist-collapse,
+    #nav-wishlist-collapse,
     #nav-cart-collapse,
     #nav-account-collapse {
       background: #fff;
@@ -120,7 +128,7 @@ body.unboxed-layout {
       right: 0;
       z-index: $zindex-dropdown;
       float: left;
-      min-width: $dropdown-min-width;
+      min-width: $dropdown-min-width*2.7;
       padding: $dropdown-padding-y 0;
       margin: $dropdown-spacer 0 0; // override default ul
       font-size: $font-size-base; // Redeclare because nesting can cause inheritance issues
@@ -128,7 +136,6 @@ body.unboxed-layout {
       text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
       list-style: none;
       background-clip: padding-box;
-      border: $dropdown-border-width solid $dropdown-border-color;
       max-height: 30rem;
       overflow-y: auto;
       @include border-radius($dropdown-border-radius);
@@ -152,22 +159,18 @@ body.unboxed-layout {
         }
 
       }
-      a {
+      a,i {
         text-decoration: none;
       }
     }
-    .table {
-      width: auto;
-    }
-    .nav-item{
-      border-bottom: $highlight-border-size solid transparent;
-      &.active,
-      &[aria-expanded="true"] {
-        border-bottom: $highlight-border-size solid $primary;
-      }
-      /*&:first-child > .nav-link {
-        padding-left: 0;
-      }*/
+    #nav-account-collapse { min-width: $dropdown-min-width*2.3; }
+  }
+  .nav-item{
+    border-bottom: $highlight-border-size solid transparent;
+    text-decoration: none;
+    &.active,
+    &[aria-expanded="true"] {
+      border-bottom: $highlight-border-size solid $primary;
     }
   }
   @include media-breakpoint-down(md) {
@@ -180,31 +183,51 @@ body.unboxed-layout {
     text-decoration: none;
     display: flex;
     align-items: center;
+    height: 2rem;
+  }
+  @include media-breakpoint-down(sm) {
+    .nav-link, .cart-icon-dropdown .nav-item { height: 100%; }
   }
   #nav-search-collapse .nav-item{
     display: flex;
   }
   .badge {
     word-break: initial;
+    height: 14px;
+    line-height: 11px;
+    margin-left: -2px;
   }
 
 
   @include media-breakpoint-down(sm) {
+    #nav-comparelist-collapse,
+    #nav-wishlist-collapse,
     #nav-cart-collapse,
-    #nav-account-collapse,
-    #nav-search-collapse {
+    #nav-account-collapse {
       max-height: 400px;
+      z-index: $zindex-sticky;
       overflow-y: auto;
       overflow-x: hidden;
-      position: fixed;
-      top: 55px;
-      left: 0px;
+      position: absolute;
+      top: 50px;
+      left: $grid-gutter-width/2;
+      right: 0;
       clear: both;
       background: white;
-      padding: 15px;
-      width: 100%;
+      padding: 15px 0;
+      width: calc(100% - #{$grid-gutter-width});
       @include box-shadow(0 8px 10px -5px rgba(0, 0, 0, 0.15));
     }
+    #nav-search-collapse {
+      top: 0;
+      width: calc(100% - #{$grid-gutter-width});
+      left: 0;
+    }
+  }
+}
+@include media-breakpoint-down(sm) {
+  #shop-nav {
+    position: static;
   }
 }
 #shop-nav .nav-item:hover{
@@ -256,6 +279,12 @@ body.unboxed-layout {
   }
 }
 
+#top-bar {
+  .btn-link { text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
 .word-break {
   word-break: break-all;
 }
@@ -278,6 +307,9 @@ ul.partlist-items {
     table-layout: fixed;
     word-break: break-word;
     white-space: initial;
+    &.table-striped tbody tr:nth-of-type(odd) {
+      background-color: $bg-info;
+    }
   }
 }
 
@@ -976,7 +1008,7 @@ ul.partlist-items {
   }
 }
 
-@include media-breakpoint-up(md) {
+@include media-breakpoint-up(lg) {
   #content.col-lg-9.order-lg-1 {
     padding-left: $grid-gutter-width;
   }
@@ -1084,10 +1116,10 @@ hr {
 }
 
 #search {
-
   input[name='qs'] {
     border-right: none;
-    border-color: $gray-light;
+    border-color: $gray;
+    background: transparent;
     &:focus {
       box-shadow: none;
     }
@@ -1098,9 +1130,11 @@ hr {
       border-left: none;
       color: $body-color;
       box-shadow: none;
-      border-color: $gray-light;
+      border-color: $gray;
+      line-height: 0;
       &:hover {
-        background: initial;
+        background: #fff;
+        color: $gray-dark;
       }
       &:focus {
         box-shadow: none;
@@ -1266,58 +1300,12 @@ $jqcloud-classes: 7;
 }
 
 .breadcrumb {
-  list-style: none;
-  background-color: transparent;
-  a {
-    text-decoration: none;
-    color: $gray;
-    font-weight: 300;
-  }
+  a { text-decoration: none; }
   > li {
-    display: inline-block;
-    position: relative;
-
-    /* + li:before {
-      font-family: "Font Awesome 5 Free", Helvetica, Arial, sans-serif;
-      font-weight: 900;
-      padding: 0 5px;
-    } */
-
-    + li:before, + li:after {
-      content: '' !important;
-      display: block;
-      position: absolute;
-
-      width: 8px;
-      height: 1px;
-      border-radius: 6px;
-      background: $gray;
-      margin-top: 8px;
-
-      -moz-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      -webkit-transform: rotate(45deg);
-      transform: rotate(45deg);
-    }
-
-    + li:after {
-      -moz-transform: rotate(-45deg);
-      -o-transform: rotate(-45deg);
-      -webkit-transform: rotate(-45deg);
-      transform: rotate(-45deg);
-      margin-top: -7px;
-    }
-
-    + li a { margin-left: 15px; }
-
     &.last a {
       color: $breadcrumb-active-color;
-      font-weight: 500;
+      font-weight: $font-weight-semibold;
     }
-  }
-
-  > .active {
-    color: $breadcrumb-active-color;
   }
 }
 
@@ -1572,7 +1560,7 @@ a[data-toggle="collapse"][aria-expanded=true],
 
 //footer
 footer {
-  background: $white;
+  background: $cool-white;
   color: $gray;
   padding-top: $spacer;
   .card {
@@ -1615,7 +1603,7 @@ footer {
     }
     &:active,
     &:focus{
-      color: $white;
+      color: $cool-white;
       background: $primary;
       border-color: $primary;
     }
@@ -1653,13 +1641,13 @@ footer {
   @include media-breakpoint-down(sm) {
     max-height: 400px;
     overflow-y: auto;
-    .nav-item{
-      border-bottom: $highlight-border-size solid transparent;
+    .nav-item{ border-bottom: 0 !important;
       &.active > a,
       &[aria-expanded="true"] > a {
         border-bottom: $highlight-border-size solid $primary;
       }
     }
+    .dropdown-item.active, .dropdown-item:hover, .dropdown-item:focus { background: transparent !important; }
   }
   text-align: center;
   .nav,
@@ -1932,6 +1920,10 @@ table caption {
   caption-side: top;
 }
 
+.navbar-brand img.img-fluid {
+  max-height: 70px;
+}
+
 .nav-wizard {
   position: relative;
   overflow: hidden;
@@ -2032,7 +2024,7 @@ table caption {
       box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
 
       .btn-toggle {
-        color: $white;
+        color: $cool-white;
         background-color: $gray;
       }
     }
@@ -2047,14 +2039,14 @@ table caption {
     }
 
     .switcher-header {
-      background-color: $white;
+      background-color: $cool-white;
       border-bottom: 1px solid rgba(120,130,140,.13);
     }
 
     .switcher-content {
       padding:  $spacer;
       min-height: 4rem;
-      background-color: $white;
+      background-color: $cool-white;
     }
   }
 }
@@ -2157,6 +2149,7 @@ table caption {
 #account .card{
   border-color: $gray-lighter;
 }
+
 /* pagination */
 
 .pagination { justify-content: space-between; align-items: center;
@@ -2199,4 +2192,59 @@ table caption {
 
 .productlist-item-info {
   @include media-breakpoint-down(sm) { text-align: center; margin-bottom: $spacer; }
+}
+
+.bootstrap-select .btn, .dropdown .btn { font-weight: $custom-select-font-weight; }
+
+.text-decoration-underline { text-decoration: underline; }
+/* wishlist */
+input.form-control[name="wishlist-url"] {
+  background: $cool-white;
+  /*@include border-radius($dropdown-border-radius);*/
+}
+.input-like {
+  background-color: $cool-white;
+  border: 1px solid $input-border-color;
+  border-left: 0;
+  margin-left: -1px;
+  &:not(:last-child) {
+    border-right: 0;
+  }
+  &:hover,
+  &:focus {
+    border-color: $input-border-color;
+  }
+}
+
+.wishlist-options {
+  .btn-link {
+    text-decoration: none;
+  }
+  .dropdown-menu {
+    @include border-radius($dropdown-border-radius);
+    @include box-shadow($dropdown-box-shadow);
+  }
+}
+
+.no-chevron {
+  :after {
+    content: "";
+  }
+}
+
+.comparelist {
+  max-height: 800px;
+  .table thead th, td {
+    &:first-child {
+      position: sticky;
+      left: 0;
+      background: #fff;
+      z-index: $zindex-dropdown;
+    }
+  }
+  .table thead th {
+    background: #fff;
+    vertical-align: top;
+    z-index: $zindex-dropdown - 1;
+  }
 }

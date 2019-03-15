@@ -13,6 +13,7 @@ use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
 use JTL\Backend\AdminLoginStatus;
 use JTL\Session\Backend;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';

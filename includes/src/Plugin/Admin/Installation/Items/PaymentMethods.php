@@ -139,7 +139,8 @@ class PaymentMethods extends AbstractItem
             $names        = ['Anzahl Bestellungen nötig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
             $valueNames   = ['min_bestellungen', 'min', 'max'];
             $descriptions = [
-                'Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen.',
+                'Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, ' .
+                'können diese Zahlungsart nutzen.',
                 'Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden.',
                 'Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)'
             ];

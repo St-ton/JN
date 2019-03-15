@@ -7,7 +7,7 @@
 use JTL\Checkout\Bestellung;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Preise;
 use JTL\Shop;
 use JTL\Helpers\Text;

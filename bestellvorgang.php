@@ -8,7 +8,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Cart;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -210,9 +210,7 @@ if (isset($_SESSION['Zahlungsart'])
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }
-if ($step === 'Bestaetigung'
-    && $cart->gibGesamtsummeWaren(true) === 0.0
-) {
+if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
     $oPaymentMethod = PaymentMethod::create('za_null_jtl');
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);

@@ -7,7 +7,7 @@
 namespace JTL\Helpers;
 
 use function Functional\map;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Cart\Warenkorb;
 use JTL\Catalog\Currency;
 use JTL\DB\ReturnType;

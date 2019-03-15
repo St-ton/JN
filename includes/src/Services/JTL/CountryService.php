@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Shop;
 
 /**
  * Class CountryService
@@ -104,5 +105,25 @@ class CountryService implements CountryServiceInterface
         return $this->getCountryList()->filter(function (Country $country) use ($filterItems) {
             return \in_array($country->getISO(), $filterItems, true);
         });
+    }
+
+    /**
+     * @param string $countryName
+     * @return null|string
+     */
+    public function getIsoByCountryName(string $countryName): ?string
+    {
+
+        $countryMatch = $this->getCountryList()->filter(function (Country $country) use ($countryName) {
+            foreach ($country->getNames() as $countryNameTMP) {
+                if (strtolower($countryNameTMP) === strtolower($countryName)) {
+                    return true;
+                }
+            }
+
+            return false;
+        })->pop();
+
+        return $countryMatch ? $countryMatch->getISO() : null;
     }
 }

@@ -38,4 +38,10 @@ interface CountryServiceInterface
      * @return Collection
      */
     public function getFilteredCountryList(array $ISOToFilter, bool $getAllIfEmpty = false): Collection;
+
+    /**
+     * @param string $countryName
+     * @return null|string
+     */
+    public function getIsoByCountryName(string $countryName): ?string;
 }

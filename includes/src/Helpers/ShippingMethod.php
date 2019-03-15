@@ -1426,7 +1426,7 @@ class ShippingMethod
         $countryHelper = Shop::Container()->getCountryService();
 
         if (!$force && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $ignoreConf)) {
-            $countrISOFilter = Shop::Container()->getDB()->query(
+            $countryISOFilter = Shop::Container()->getDB()->query(
                 "SELECT DISTINCT tland.cISO
                     FROM tland
                     INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
@@ -1437,8 +1437,8 @@ class ShippingMethod
                     : ''),
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $countries       = $countryHelper->getFilteredCountryList(
-                \Functional\map($countrISOFilter, function ($country) {
+            $countries        = $countryHelper->getFilteredCountryList(
+                \Functional\map($countryISOFilter, function ($country) {
                     return $country->cISO;
                 })
             )->toArray();

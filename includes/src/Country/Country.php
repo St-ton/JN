@@ -46,7 +46,7 @@ class Country
     private $continent;
 
     /**
-     * @var string
+     * @var array
      */
     private $names;
 
@@ -175,9 +175,9 @@ class Country
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getNames(): string
+    public function getNames(): array
     {
         return $this->names;
     }

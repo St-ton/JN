@@ -55,11 +55,13 @@ class CountryService implements CountryServiceInterface
 
             return;
         }
-        $countries = $this->db->query('SELECT cISO, nEU, cKontinent FROM tland', ReturnType::ARRAY_OF_OBJECTS);
+        $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($countries as $country) {
             $contryTMP = new Country($country->cISO);
             $contryTMP->setEU($country->nEU)
-                      ->setContinent($country->cKontinent);
+                      ->setContinent($country->cKontinent)
+                      ->setNameDE($country->cDeutsch)
+                      ->setNameEN($country->cEnglisch);
 
             $this->getCountryList()->push($contryTMP);
         }
@@ -113,10 +115,15 @@ class CountryService implements CountryServiceInterface
      */
     public function getIsoByCountryName(string $countryName): ?string
     {
-
+        $countryName  = strtolower($countryName);
         $countryMatch = $this->getCountryList()->filter(function (Country $country) use ($countryName) {
+            if (strtolower($country->getNameDE()) === $countryName
+                || strtolower($country->getNameEN()) === $countryName
+            ) {
+                return true;
+            }
             foreach ($country->getNames() as $countryNameTMP) {
-                if (strtolower($countryNameTMP) === strtolower($countryName)) {
+                if (strtolower($countryNameTMP) === $countryName) {
                     return true;
                 }
             }

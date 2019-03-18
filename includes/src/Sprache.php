@@ -1218,15 +1218,8 @@ class Sprache
      */
     private function mappedGetIsoCodeByCountryName(string $country): string
     {
-        $iso = $this->db->select('tland', 'cDeutsch', $country);
-        if (!empty($iso->cISO)) {
-            return $iso->cISO;
-        }
-        $iso = $this->db->select('tland', 'cEnglisch', $country);
-        if (!empty($iso->cISO)) {
-            return $iso->cISO;
-        }
+        $iso = Shop::Container()->getCountryService()->getIsoByCountryName($country);
 
-        return 'noISO';
+        return $iso ?? 'noISO';
     }
 }

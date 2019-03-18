@@ -51,6 +51,18 @@ class Country
     private $names;
 
     /**
+     * for backwards compatibility cDeutsch
+     * @var string
+     */
+    private $nameDE;
+
+    /**
+     * for backwards compatibility cEnglisch
+     * @var string
+     */
+    private $nameEN;
+
+    /**
      * Country constructor.
      * @param string $ISO
      * @param bool $initFromDB
@@ -74,7 +86,9 @@ class Country
         $countryData = Shop::Container()->getDB()->select('tland', 'cISO', $this->getISO());
         if ($countryData !== null) {
             $this->setContinent($countryData->cKontinent)
-                 ->setEU($countryData->nEU);
+                 ->setEU($countryData->nEU)
+                 ->setNameDE($countryData->cDeutsch)
+                 ->setNameEN($countryData->cEnglisch);
         }
     }
 
@@ -189,6 +203,44 @@ class Country
     public function setNames(array $names): self
     {
         $this->names = $names;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameDE(): string
+    {
+        return $this->nameDE;
+    }
+
+    /**
+     * @param string $nameDE
+     * @return Country
+     */
+    public function setNameDE(string $nameDE): self
+    {
+        $this->nameDE = $nameDE;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNameEN(): string
+    {
+        return $this->nameEN;
+    }
+
+    /**
+     * @param string $nameEN
+     * @return Country
+     */
+    public function setNameEN(string $nameEN): self
+    {
+        $this->nameEN = $nameEN;
 
         return $this;
     }

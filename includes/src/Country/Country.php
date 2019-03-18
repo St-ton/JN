@@ -26,7 +26,7 @@ class Country
         'cDeutsch'   => 'Name',
         'cEnglisch'  => 'Name',
         'cKontinent' => 'Continent',
-        'cIso'       => 'ISO',
+        'cISO'       => 'ISO',
         'cName'      => 'Name'
     ];
 

@@ -473,14 +473,14 @@ function plzimportActionLoadAvailableDownloads(): array
         if (preg_match_all(PLZIMPORT_REGEX, $cContent, $hits, PREG_PATTERN_ORDER)) {
             $quotedHits = array_map(
                 function ($hit) {
-                    return Shop::Container()->getDB()->getPDO()->quote($hit);
+                    return trim(Shop::Container()->getDB()->getPDO()->quote($hit), "'");
                 },
                 $hits[2]
             );
             $oLand_arr  = Shop::Container()->getCountryService()->getFilteredCountryList($quotedHits)->toArray();
 
-            foreach ($oLand_arr as $key => $oLand) {
-                $idx = array_search($oLand->cISO, $hits[2], true);
+            foreach ($oLand_arr as $oLand) {
+                $idx = array_search($oLand->getISO(), $hits[2], true);
                 if ($idx !== false) {
                     $date         = date_create_from_format('d-M-Y H:i', $hits[3][$idx]);
                     $oLand->cURL  = urlencode($hits[1][$idx]);

@@ -179,7 +179,7 @@ msgstr "Zahlungsarten"
 
 # Just incase you want to add a translation for partners:
 #   msgid "Amazon Payments"
-#   msgstr "Amazon Payments"
+#   msgstr "Amazon Pay"
 #
 #   msgid "Skrill"
 #   msgstr "Skrill"
@@ -368,7 +368,7 @@ msgstr "Cron"
 
 # Top Menu
 msgid "Plugins"
-msgstr "Plug-ins"
+msgstr "Plugins"
 
 # Mid Menu
 msgid "Overview"
@@ -376,18 +376,18 @@ msgstr "Übersicht"
 
 # Menu Items
 msgid "Plug-in marketplace"
-msgstr "Plug-in-Marktplatz"
+msgstr "Plugin-Marktplatz"
 
 msgid "Plug-in administration"
-msgstr "Plug-in-Verwaltung"
+msgstr "Plugin-Verwaltung"
 
 msgid "Plug-in profiler"
-msgstr "Plug-in-Profiler"
+msgstr "Plugin-Profiler"
 
 # Mid Menu
 # This is redundant, but could be used in the future.
 #   msgid "Plugins"
-#   msgstr "Plug-ins"
+#   msgstr "Plugins"
 #
 #
 # Right Top Menu
@@ -465,10 +465,10 @@ msgid "You have activated a non-standard template!"
 msgstr "Sie haben kein Standard-Template aktiviert."
 
 msgid "The profiler is active. This can cause strong power loss in the shop."
-msgstr "Der Plug-in-Profiler ist aktiv. Dies kann zu starken Leistungseinbußen im Onlineshop führen."
+msgstr "Der Plugin-Profiler ist aktiv. Dies kann zu starken Leistungseinbußen im Onlineshop führen."
 
 msgid "New plugin versions are available."
-msgstr "Es sind neue Plug-in-Versionen vorhanden."
+msgstr "Es sind neue Plugin-Versionen vorhanden."
 
 msgid "Configuration"
 msgstr "Konfiguration"
@@ -486,13 +486,13 @@ msgid "E-mail template broken"
 msgstr "E-Mail-Vorlage defekt"
 
 msgid "The E-mail template 'Passwort vergessen'/'Forgotten password' is outdated. The variable $neues_passwort is not available anymore. Please replace this with $passwordResetLink or reset the template."
-msgstr "Die E-Mail-Vorlage 'Passwort Vergessen' ist veraltet. Die Variable $neues_passwort ist nicht mehr verfügbar. Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück."
+msgstr "Die E-Mail-Vorlage „Passwort Vergessen“ ist veraltet. Die Variable $neues_passwort ist nicht mehr verfügbar. Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück."
 
 msgid "Insecure SMTP connection"
 msgstr "Unsichere SMTP-Verbindung"
 
 msgid "You have selected SMTP as mail-method, but no encryption method has been chosen. We recommend you urgently to adjust your mail settings. You can find these options at 'System > E-Mails > Emaileinstellungen > SMTP Security'"
-msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter 'System &gt; E-Mails &gt; E-Mail-Einstellungen &gt; SMTP-Security.'"
+msgstr "Sie haben SMTP gewählt, allerdings keine SMTP-Security-Methode. Wir empfehlen Ihnen dringend, Ihre E-Mail-Einstellungen anzupassen. Sie finden die Option unter „System &gt; E-Mails &gt; E-Mail-Einstellungen &gt; SMTP-Security.“"
 
 msgid "User management"
 msgstr "Benutzerverwaltung"

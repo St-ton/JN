@@ -13,6 +13,7 @@ use JTL\SimpleCSS;
 use JTL\Shop;
 use JTL\Template;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty $smarty
@@ -51,9 +52,6 @@ if (isset($_GET['check'])) {
     } elseif ($_GET['check'] === 'false') {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
-}
-if (isset($_GET['uploadError'])) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileUpload'), 'errorFileUpload');
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $scss      = new SimpleCSS();
@@ -95,7 +93,6 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     }
     $tplConfXML   = $template->leseEinstellungenXML($dir, $parentFolder);
     $sectionCount = count($_POST['cSektion']);
-    $uploadError  = '';
     for ($i = 0; $i < $sectionCount; $i++) {
         $section = $db->escape($_POST['cSektion'][$i]);
         $name    = $db->escape($_POST['cName'][$i]);
@@ -116,18 +113,27 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                         if (!isset($_setting->cKey, $_setting->rawAttributes['target']) || $_setting->cKey !== $name) {
                             continue;
                         }
-                        // target folder
-                        $base = PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' .
-                            $_setting->rawAttributes['target'];
+                        $templatePath = PFAD_TEMPLATES . $dir . '/' . $_setting->rawAttributes['target'];
+                        $base         = PFAD_ROOT . $templatePath;
                         // optional target file name + extension
                         if (isset($_setting->rawAttributes['targetFileName'])) {
                             $value = $_setting->rawAttributes['targetFileName'];
                         }
                         $targetFile = $base . $value;
-                        if (mb_strpos($targetFile, $base) !== 0
-                            || !move_uploaded_file($file['tmp_name'], $targetFile)
-                        ) {
-                            $uploadError = '&uploadError=true';
+                        if (!is_writable($base)) {
+                            Shop::Container()->getAlertService()->addAlert(
+                                Alert::TYPE_ERROR,
+                                sprintf(__('errorFileUpload'), $templatePath),
+                                'errorFileUpload',
+                                ['saveInSession' => true]
+                            );
+                        } elseif (!move_uploaded_file($file['tmp_name'], $targetFile)) {
+                            Shop::Container()->getAlertService()->addAlert(
+                                Alert::TYPE_ERROR,
+                                __('errorFileUploadGeneral'),
+                                'errorFileUploadGeneral',
+                                ['saveInSession' => true]
+                            );
                         }
                         $break = true;
                         break;
@@ -159,7 +165,8 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     // re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
-        ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
+        ($bCheck ? 'true' : 'false'), true, 301);
+    exit;
 }
 if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $dir          = $db->escape($_GET['settings']);
@@ -188,6 +195,7 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
         // re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
+        exit;
     } else {
         // iterate over each "Section"
         foreach ($tplConfXML as $_conf) {

@@ -15,6 +15,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';

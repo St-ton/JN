@@ -24,8 +24,8 @@
                 {/foreach}
             </tbody>
         </table>
-        Mehr Details unter <a href="statistik.php?s=3">Statistiken</a>
+        {__('moreDetailsStatistics')}
     {else}
-        <div class="alert alert-info">Keine Statistiken gefunden</div>
+        <div class="alert alert-info">{__('noStatisticsFound')}</div>
     {/if}
 </div>

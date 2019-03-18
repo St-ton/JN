@@ -15,6 +15,7 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
 use JTL\Plugin\Helper;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

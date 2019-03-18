@@ -13,6 +13,7 @@ use JTL\Slider;
 use JTL\Sprache;
 use JTL\DB\ReturnType;
 use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';

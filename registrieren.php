@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';

@@ -7,7 +7,7 @@
 use JTL\Session\Frontend;
 use JTL\Helpers\URL;
 use JTL\Helpers\ShippingMethod;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Helpers\CMS;
 use JTL\Catalog\Hersteller;
 use JTL\Shop;

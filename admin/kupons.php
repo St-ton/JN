@@ -72,11 +72,10 @@ $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDon
     return true;
 });
 
-if ($res) {
+if ($res > 0) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV') . ' ' . __('errorImportRow'), 'errorImportCSV');
+} elseif ($res === 0) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
-} else {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportCSV'), 'errorImportCSV');
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImportRow'), 'errorImportRow');
 }
 
 // Aktion ausgeloest?
@@ -110,7 +109,7 @@ if ($action === 'bearbeiten') {
     $couponErrors = validateCoupon($oKupon);
     if (count($couponErrors) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
-        $errorMessage = __('checkInput') . ':<ul>';
+        $errorMessage = __('errorCheckInput') . ':<ul>';
 
         foreach ($couponErrors as $couponError) {
             $errorMessage .= '<li>' . $couponError . '</li>';
@@ -118,7 +117,7 @@ if ($action === 'bearbeiten') {
 
         $errorMessage .= '</ul>';
         $action        = 'bearbeiten';
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMessage, 'checkInput');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMessage, 'errorCheckInput');
         augmentCoupon($oKupon);
     } elseif (saveCoupon($oKupon, $oSprache_arr) > 0) {// Validierung erfolgreich => Kupon speichern
         // erfolgreich gespeichert => evtl. Emails versenden

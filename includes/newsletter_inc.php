@@ -5,7 +5,7 @@
  */
 
 use JTL\Helpers\Form;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Kunde;
 use JTL\Shop;

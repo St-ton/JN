@@ -13,6 +13,7 @@ use JTL\Template;
 use JTL\DB\ReturnType;
 use JTL\Link\LinkGroupInterface;
 use JTL\Boxes\Type;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
@@ -134,11 +135,6 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             $boxCount  = count($boxes);
             $bValue    = $_REQUEST['box_show'] ?? false;
             $bOk       = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
-            if ($bOk) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
-            } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
-            }
 
             foreach ($boxes as $i => $box) {
                 $idx = 'box-filter-' . $box;
@@ -149,7 +145,11 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if ($ePosition !== 'left' || $pageID > 0) {
                 $boxAdmin->setVisibility($pageID, $ePosition, isset($_REQUEST['box_show']));
             }
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxRefresh'), 'successBoxRefresh');
+            if ($bOk) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxRefresh'), 'successBoxRefresh');
+            } else {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxesVisibilityEdit'), 'errorBoxesVisibilityEdit');
+            }
             break;
 
         case 'activate':

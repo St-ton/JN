@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
-use JTL\IO\IOResponse;
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
-use JTL\Plugin\State;
-use JTL\Plugin\Helper;
-use JTL\Smarty\JTLSmarty;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\IO\IOResponse;
 use JTL\Network\JTLApi;
+use JTL\Plugin\Helper;
+use JTL\Plugin\State;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * @param bool $bActive
@@ -85,7 +86,7 @@ function getWidgets(bool $bActive = true)
     }
 
     if ($bActive) {
-        $smarty = JTLSmarty::getInstance(false, \JTL\Smarty\ContextType::BACKEND);
+        $smarty = JTLSmarty::getInstance(false, ContextType::BACKEND);
 
         foreach ($widgets as $widget) {
             $widget->cContent = '';

@@ -5,7 +5,7 @@
  */
 
 use JTL\Checkout\Bestellung;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Customer\Kunde;
 use JTL\Shop;
 use JTL\DB\ReturnType;

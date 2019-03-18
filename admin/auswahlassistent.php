@@ -14,6 +14,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */

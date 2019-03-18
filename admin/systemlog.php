@@ -11,6 +11,7 @@ use JTL\Shop;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Pagination\Operation;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty

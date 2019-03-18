@@ -10,6 +10,8 @@ use JTL\CustomerFields;
 use JTL\PlausiKundenfeld;
 use JTL\Sprache;
 use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

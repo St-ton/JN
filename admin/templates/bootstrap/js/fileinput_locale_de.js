@@ -7,7 +7,7 @@
  * @see http://github.com/kartik-v/bootstrap-fileinput
  */
 (function ($) {
-    'use strict';
+    "use strict";
 
     $.fn.fileinputLocales['de'] = {
         fileSingle: 'Datei',
@@ -15,12 +15,15 @@
         browseLabel: 'Auswählen &hellip;',
         removeLabel: 'Löschen',
         removeTitle: 'Ausgewählte löschen',
-        cancelLabel: 'Laden',
+        cancelLabel: 'Abbrechen',
         cancelTitle: 'Hochladen abbrechen',
         uploadLabel: 'Hochladen',
         uploadTitle: 'Hochladen der ausgewählten Dateien',
-        msgZoomTitle: 'Details anzeigen',
+        msgNo: 'Keine',
+        msgNoFilesSelected: 'Keine Dateien ausgewählt',
+        msgCancelled: 'Abgebrochen',
         msgZoomModalHeading: 'ausführliche Vorschau',
+        msgSizeTooSmall: 'Datei "{name}" (<b>{size} KB</b>) ist zu klein und muss größer als <b>{minSize} KB</b> sein.',
         msgSizeTooLarge: 'Datei "{name}" (<b>{size} KB</b>) überschreitet maximal zulässige Upload-Größe von <b>{maxSize} KB</b>.',
         msgFilesTooLess: 'Sie müssen mindestens <b>{n}</b> {files} zum Hochladen auswählen.',
         msgFilesTooMany: 'Anzahl der Dateien für den Upload ausgewählt <b>({n})</b> überschreitet maximal zulässige Grenze von <b>{m}</b> Stück.',
@@ -29,10 +32,25 @@
         msgFileNotReadable: 'Die Datei "{name}" ist nicht lesbar.',
         msgFilePreviewAborted: 'Dateivorschau abgebrochen für "{name}".',
         msgFilePreviewError: 'Beim Lesen der Datei "{name}" ein Fehler aufgetreten.',
+        msgInvalidFileName: 'Ungültige Zeichen in Datei "{name}".',
         msgInvalidFileType: 'Ungültiger Typ für Datei "{name}". Nur Dateien der Typen "{types}" werden unterstützt.',
         msgInvalidFileExtension: 'Ungültige Erweiterung für Datei "{name}". Nur Dateien mit der Endung "{extensions}" werden unterstützt.',
+        msgFileTypes: {
+            'image': 'image',
+            'html': 'HTML',
+            'text': 'text',
+            'video': 'video',
+            'audio': 'audio',
+            'flash': 'flash',
+            'pdf': 'PDF',
+            'object': 'object'
+        },
         msgUploadAborted: 'Der Datei-Upload wurde abgebrochen',
-        msgValidationError: 'Fehler beim Hochladen',
+        msgUploadThreshold: 'Verarbeite...',
+        msgUploadBegin: 'Initialisiere...',
+        msgUploadEnd: 'Fertig',
+        msgUploadEmpty: 'Keine Upload-Daten vorhanden.',
+        msgValidationError: 'Validierungsfehler',
         msgLoading: 'Lade Datei {index} von {files} hoch&hellip;',
         msgProgress: 'Datei {index} von {files} - {name} - zu {percent}% fertiggestellt.',
         msgSelected: '{n} {files} ausgewählt',
@@ -43,14 +61,33 @@
         msgImageHeightLarge: 'Höhe der Bilddatei "{name}" nicht überschreiten {size} px.',
         msgImageResizeError: 'Konnte Bildabmessungen nicht ändern.',
         msgImageResizeException: 'Fehler beim Ändern der Größe des Bildes.<pre>{errors}</pre>',
+        msgAjaxError: 'Uploadfehler',
+        msgAjaxProgressError: '{operation} fehlgeschlagen',
+        ajaxOperations: {
+            deleteThumb: 'file delete',
+            uploadThumb: 'file upload',
+            uploadBatch: 'batch file upload',
+            uploadExtra: 'form data upload'
+        },
         dropZoneTitle: 'Dateien hierher ziehen &hellip;',
+        dropZoneClickTitle: '<br>(or click to select {files})',
         fileActionSettings: {
             removeTitle: 'Datei entfernen',
             uploadTitle: 'Datei hochladen',
-            indicatorNewTitle: 'Datei ausgewählt, bitte Template-Einstellungen speichern.',
+            zoomTitle: 'Details anzeigen',
+            dragTitle: 'Verschieben',
+            indicatorNewTitle: 'Noch nicht hochgeladen',
             indicatorSuccessTitle: 'Hochgeladen',
-            indicatorErrorTitle: 'Upload Fehler',
+            indicatorErrorTitle: 'Uploadfehler',
             indicatorLoadingTitle: 'Hochladen ...'
+        },
+        previewZoomButtonTitles: {
+            prev: 'Vorige Datei ansehen',
+            next: 'Nächste Datei ansehen',
+            toggleheader: 'Header',
+            fullscreen: 'Vollbild',
+            borderless: 'Borderless',
+            close: 'schließen'
         }
     };
 })(window.jQuery);

@@ -6,7 +6,7 @@
 
 namespace JTL\Services\JTL;
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use Illuminate\Support\Collection;
 
 /**

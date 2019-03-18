@@ -4,7 +4,7 @@
  *}
 {strip}
     {block name='navbar-productsearch'}
-        {navform id="search" action="index.php" method="get"}
+        {navform id="search" action="index.php" method="get" class="py-3 py-md-0"}
             {inputgroup class="mx-auto w-maxcon"}
                 {input name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
                 {inputgroupaddon append=true}

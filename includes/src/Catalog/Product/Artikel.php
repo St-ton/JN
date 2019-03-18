@@ -6181,7 +6181,6 @@ class Artikel
                 $countries,
                 [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
             );
-
         }
 
         return $asString

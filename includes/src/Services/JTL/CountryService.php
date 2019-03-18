@@ -57,13 +57,13 @@ class CountryService implements CountryServiceInterface
         }
         $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($countries as $country) {
-            $contryTMP = new Country($country->cISO);
-            $contryTMP->setEU($country->nEU)
+            $countryTMP = new Country($country->cISO);
+            $countryTMP->setEU($country->nEU)
                       ->setContinent($country->cKontinent)
                       ->setNameDE($country->cDeutsch)
                       ->setNameEN($country->cEnglisch);
 
-            $this->getCountryList()->push($contryTMP);
+            $this->getCountryList()->push($countryTMP);
         }
 
         $this->countryList = $this->getCountryList()->sortBy(function (Country $country) {

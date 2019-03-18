@@ -93,12 +93,12 @@ class Country
     }
 
     /**
-     * @param string $LangISO
+     * @param string $langISO
      * @return string
      */
-    public function getNameForLangISO(string $LangISO): string
+    public function getNameForLangISO(string $langISO): string
     {
-        return locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $LangISO);
+        return locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $langISO);
     }
 
     /**

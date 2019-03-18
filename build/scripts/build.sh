@@ -207,7 +207,7 @@ build_create_db_struct()
     local i=0;
     local DB_STRUCTURE='{';
     local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
-    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json;
+    local SCHEMAJSON_PATH="${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json";
 
     while ((i++)); read -r table;
     do
@@ -235,6 +235,8 @@ build_create_db_struct()
     done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
 
     echo "${DB_STRUCTURE}" > ${SCHEMAJSON_PATH};
+
+    echo "  Dbstruct file admin/includes/shopmd5files/dbstruct_${VERSION}.json";
 }
 
 build_create_initial_schema()

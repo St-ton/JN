@@ -162,14 +162,14 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
                    LEFT JOIN tcron 
-                      ON tcron.kKey = texportformat.kExportformat
-                      AND tcron.cKey = 'kExportformat'
-                      AND tcron.cTabelle = 'texportformat'
+                      ON tcron.foreignKeyID = texportformat.kExportformat
+                      AND tcron.foreignKey = 'kExportformat'
+                      AND tcron.tableName = 'texportformat'
                    LEFT JOIN tjobqueue 
-                      ON tjobqueue.kKey = texportformat.kExportformat
-                      AND tjobqueue.cKey = 'kExportformat'
-                      AND tjobqueue.cTabelle = 'texportformat'
-                      AND tjobqueue.cJobArt = 'exportformat'
+                      ON tjobqueue.foreignKeyID = texportformat.kExportformat
+                      AND tjobqueue.foreignKey = 'kExportformat'
+                      AND tjobqueue.tableName = 'texportformat'
+                      AND tjobqueue.jobType = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
                    WHERE texportformat.kExportformat = " . $kExportformat,

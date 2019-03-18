@@ -40,7 +40,7 @@ build_create()
     build_composer_execute;
 
     echo "Create delete files csv";
-    build_create_deleted_files_csv ${APPLICATION_VERSION_STR};
+    build_create_deleted_files_csv;
 
     echo "Move class files";
     build_move_class_files;
@@ -91,7 +91,7 @@ build_composer_execute()
 
 build_create_deleted_files_csv()
 {
-    local VERSION="${1//[\/\.]/-}";
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//[v]/}";
     local CUR_PWD=$(pwd);
     local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
@@ -202,10 +202,12 @@ build_migrate()
 
 build_create_db_struct()
 {
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
     local i=0;
     local DB_STRUCTURE='{';
     local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
-    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json;
+    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json;
 
     while ((i++)); read -r table;
     do

@@ -17,8 +17,11 @@
         {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
             {row}
                 {col md=6}
-                    {formgroup label-for="salutation" label="{lang key='salutation' section='account data'}"}
-                        {select name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix"}
+                    {formgroup
+                        label-for="salutation"
+                        label="{lang key='salutation' section='account data'}{if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                    }
+                        {select name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix" required=($Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y')}
                             <option value="" disabled selected>{lang key='salutation' section='account data'}</option>
                             <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                             <option value="m" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>

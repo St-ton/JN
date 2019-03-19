@@ -37,8 +37,12 @@
                         {row}
                             {if $Einstellungen.kontakt.kontakt_abfragen_anrede !== 'N'}
                                 {col cols=12 md=6}
-                                    {formgroup label="{lang key='salutation' section='account data'}" label-for="salutation"}
-                                        {select name="anrede" id="salutation" required=true}
+                                    {formgroup
+                                        label="{lang key='salutation' section='account data'}{if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                                        label-for="salutation"
+                                    }
+                                        {select name="anrede" id="salutation" required=($Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y')}
+                                            <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
                                             <option value="w"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                                             <option value="m"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                                         {/select}

@@ -692,10 +692,13 @@ msgid "artikeldetails_fragezumprodukt_anzeigen_value(P)"
 msgstr "Yes, as dialogue box"
 
 msgid "produktfrage_abfragen_anrede_value(Y)"
-msgstr "Yes"
+msgstr "Yes, mandatory"
 
 msgid "produktfrage_abfragen_anrede_value(N)"
 msgstr "No"
+
+msgid "produktfrage_abfragen_anrede_value(O)"
+msgstr "Yes, optional"
 
 msgid "produktfrage_abfragen_vorname_value(O)"
 msgstr "Yes, optional"
@@ -881,10 +884,13 @@ msgid "kundenregistrierung_abfragen_titel_value(N)"
 msgstr "No"
 
 msgid "kundenregistrierung_abfragen_anrede_value(Y)"
-msgstr "Yes"
+msgstr "Yes, mandatory"
 
 msgid "kundenregistrierung_abfragen_anrede_value(N)"
 msgstr "No"
+
+msgid "kundenregistrierung_abfragen_anrede_value(O)"
+msgstr "Yes, optional"
 
 msgid "kundenregistrierung_pflicht_vorname_value(Y)"
 msgstr "Yes, mandatory"
@@ -1031,10 +1037,13 @@ msgid "kundenregistrierung_vcardupload_value(N)"
 msgstr "No"
 
 msgid "lieferadresse_abfragen_anrede_value(Y)"
-msgstr "Yes"
+msgstr "Yes, mandatory"
 
 msgid "lieferadresse_abfragen_anrede_value(N)"
 msgstr "No"
+
+msgid "lieferadresse_abfragen_anrede_value(O)"
+msgstr "Yes, optional"
 
 msgid "lieferadresse_abfragen_titel_value(O)"
 msgstr "Yes, optional"
@@ -1625,10 +1634,13 @@ msgid "exportformate_semikolon_value( )"
 msgstr "Escape with space"
 
 msgid "kontakt_abfragen_anrede_value(Y)"
-msgstr "Yes"
+msgstr "Yes, mandatory"
 
 msgid "kontakt_abfragen_anrede_value(N)"
 msgstr "No"
+
+msgid "kontakt_abfragen_anrede_value(O)"
+msgstr "Yes, optional"
 
 msgid "kontakt_abfragen_vorname_value(O)"
 msgstr "Yes, optional"

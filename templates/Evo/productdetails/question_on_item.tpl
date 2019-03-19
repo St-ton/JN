@@ -23,8 +23,13 @@
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group float-label-control">
-                            <label for="salutation" class="control-label">{lang key='salutation' section='account data'}</label>
-                            <select name="anrede" id="salutation" class="form-control" autocomplete="honorific-prefix">
+                            <label for="salutation" class="control-label">
+                                {lang key='salutation' section='account data'}
+                                {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'O'}
+                                    <span class="optional"> - {lang key='optional'}</span>
+                                {/if}
+                            </label>
+                            <select name="anrede" id="salutation" class="form-control" autocomplete="honorific-prefix" {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}required{/if}>
                                 <option value="" disabled selected>{lang key='salutation' section='account data'}</option>
                                 <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                                 <option value="m" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>

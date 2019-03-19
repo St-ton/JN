@@ -19,8 +19,12 @@
         {/col}
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
             {col md=5}
-                {formgroup class="{if isset($fehlendeAngaben.anrede)} has-error{/if}" label-for="salutation" label="{lang key='salutation' section='account data'}"}
-                {select name="anrede" id="salutation" required=true autocomplete="billing sex"}
+                {formgroup
+                    class="{if isset($fehlendeAngaben.anrede)} has-error{/if}"
+                    label-for="salutation"
+                    label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                }
+                {select name="anrede" id="salutation" required=($Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y') autocomplete="billing sex"}
                     <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
                     <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                     <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>

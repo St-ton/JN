@@ -9,10 +9,10 @@
         {col cols=12 md=6}
             {formgroup
                 class="{if !empty($fehlendeAngaben.anrede)} has-error{/if}"
-                label="{lang key='salutation' section='account data'}"
+                label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
                 label-for="{$prefix}-{$name}-salutation"
             }
-                {select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" required=true autocomplete="shipping sex"}
+                {select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" required=($Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y') autocomplete="shipping sex"}
                     <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
                     <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                     <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>

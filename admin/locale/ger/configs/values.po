@@ -692,10 +692,13 @@ msgid "artikeldetails_fragezumprodukt_anzeigen_value(P)"
 msgstr "Ja, als Pop-up"
 
 msgid "produktfrage_abfragen_anrede_value(Y)"
-msgstr "Ja"
+msgstr "Ja, erforderliche Angabe"
 
 msgid "produktfrage_abfragen_anrede_value(N)"
 msgstr "Nein"
+
+msgid "produktfrage_abfragen_anrede_value(O)"
+msgstr "Ja, optionale Angabe"
 
 msgid "produktfrage_abfragen_vorname_value(O)"
 msgstr "Ja, optionale Angabe"
@@ -881,10 +884,13 @@ msgid "kundenregistrierung_abfragen_titel_value(N)"
 msgstr "Nein"
 
 msgid "kundenregistrierung_abfragen_anrede_value(Y)"
-msgstr "Ja"
+msgstr "Ja, erforderliche Angabe"
 
 msgid "kundenregistrierung_abfragen_anrede_value(N)"
 msgstr "Nein"
+
+msgid "kundenregistrierung_abfragen_anrede_value(O)"
+msgstr "Ja, optionale Angabe"
 
 msgid "kundenregistrierung_pflicht_vorname_value(Y)"
 msgstr "Ja, erforderliche Angabe"
@@ -1031,10 +1037,13 @@ msgid "kundenregistrierung_vcardupload_value(N)"
 msgstr "Nein"
 
 msgid "lieferadresse_abfragen_anrede_value(Y)"
-msgstr "Ja"
+msgstr "Ja, erforderliche Angabe"
 
 msgid "lieferadresse_abfragen_anrede_value(N)"
 msgstr "Nein"
+
+msgid "lieferadresse_abfragen_anrede_value(O)"
+msgstr "Ja, optionale Angabe"
 
 msgid "lieferadresse_abfragen_titel_value(O)"
 msgstr "Ja, optionale Angabe"
@@ -1625,10 +1634,13 @@ msgid "exportformate_semikolon_value( )"
 msgstr "Mit Leerzeichen maskieren"
 
 msgid "kontakt_abfragen_anrede_value(Y)"
-msgstr "Ja"
+msgstr "Ja, erforderliche Angabe"
 
 msgid "kontakt_abfragen_anrede_value(N)"
 msgstr "Nein"
+
+msgid "kontakt_abfragen_anrede_value(O)"
+msgstr "Ja, optionale Angabe"
 
 msgid "kontakt_abfragen_vorname_value(O)"
 msgstr "Ja, optionale Angabe"

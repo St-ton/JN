@@ -4,7 +4,7 @@ Message:
 {$Nachricht->cNachricht}
 
 Contact person:
-{if $Nachricht->cAnredeLocalized}{$Nachricht->cAnredeLocalized} {/if}{if $Nachricht->cVorname}{$Nachricht->cVorname} {/if}{if $Nachricht->cNachname}{$Nachricht->cNachname}{/if}
+{if $Nachricht->cVorname}{$Nachricht->cVorname} {/if}{if $Nachricht->cNachname}{$Nachricht->cNachname}{/if}
 {if $Nachricht->cFirma}{$Nachricht->cFirma}{/if}
 
 Email: {$Nachricht->cMail}

@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Sehr geehrter Kunde,
 
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde aktualisiert.
 
@@ -40,7 +40,7 @@ Gesamtsumme: {$Bestellung->WarensummeLocalized[0]}
 
 Ihre Rechnungsadresse:
 
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
@@ -57,7 +57,7 @@ Email: {$Kunde->cMail}
 {if $Bestellung->Lieferadresse->kLieferadresse>0}
 Ihre Lieferadresse:
 
-{$Bestellung->Lieferadresse->cAnredeLocalized} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
+{$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
 {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}
 {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}
 {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}

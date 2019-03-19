@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Sehr geehrter Kunde,
 
 vielen Dank für Ihre Bestellung bei {$Einstellungen.global.global_shopname}.
 
@@ -42,7 +42,7 @@ Lieferzeit: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimate
 Ihre Rechnungsadresse:
 
 {if !empty($Kunde->cFirma)}{$Kunde->cFirma}{/if}
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
@@ -60,7 +60,7 @@ Email: {$Kunde->cMail}
 Ihre Lieferadresse:
 
 {if !empty($Bestellung->Lieferadresse->cFirma)}{$Bestellung->Lieferadresse->cFirma}{/if}
-{$Bestellung->Lieferadresse->cAnredeLocalized} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
+{$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
 {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}
 {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}
 {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}

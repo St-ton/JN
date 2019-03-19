@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear customer,<br>
 <br>
 Thank you very much for registering in our online shop at <a href="{$ShopURL}" target="_blank"><strong>{$ShopURL}</strong></a><br>
 <br>

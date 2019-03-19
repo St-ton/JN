@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear customer,<br>
 <br>
 Thank you for your product rating. You can redeem your bonus credit of {$oBewertungGuthabenBonus->fGuthabenBonusLocalized} for any of your future purchases.<br>
 <br>

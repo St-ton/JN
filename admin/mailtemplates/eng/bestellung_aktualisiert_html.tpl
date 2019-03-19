@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear customer,<br>
 <br>
 Your order at {$Einstellungen.global.global_shopname} was updated.<br>
 <br>

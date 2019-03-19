@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
+Dear customer,<br>
 <br>
 Thank you for your order at {$Einstellungen.global.global_shopname}.<br>
 <br>

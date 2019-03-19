@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},
+Dear customer,
 
 As part of our customer recommendation program, we are pleased to grant you a reward of {$BestandskundenBoni->fGuthaben}.
 

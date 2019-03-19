@@ -43,8 +43,8 @@ class Export extends Job
             $ins                   = new stdClass();
             $ins->kJobQueue        = $queueEntry->jobQueueID;
             $ins->kExportformat    = $queueEntry->foreignKeyID;
-            $ins->nLimitN          = $queueEntry->taskLimit;
-            $ins->nLimitM          = $queueEntry->tasksExecuted;
+            $ins->nLimitN          = $queueEntry->tasksExecuted;
+            $ins->nLimitM          = $queueEntry->taskLimit;
             $ins->nInArbeit        = $queueEntry->isRunning;
             $ins->dStartZeit       = $queueEntry->startTime->format('Y-m-d H:i');
             $ins->dZuletztGelaufen = $queueEntry->lastStart->format('Y-m-d H:i');

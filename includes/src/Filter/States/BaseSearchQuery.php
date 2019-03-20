@@ -4,25 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\StateSQL;
-use Session\Frontend;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\MagicCompatibilityTrait;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
 use function Functional\filter;
 
 /**
  * Class BaseSearchQuery
- * @package Filter\States
+ * @package JTL\Filter\States
  */
 class BaseSearchQuery extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -104,14 +107,14 @@ class BaseSearchQuery extends AbstractFilter
             : 3;
         if (\mb_strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
             \preg_match(
-                '/[\w\.\-]{' . $minChars . ',}/u',
+                '/[\S]{' . $minChars . ',}/u',
                 \str_replace(' ', '', $name),
                 $hits
             );
             if (\count($hits) === 0) {
-                $this->error = \Shop::Lang()->get('expressionHasTo') . ' ' .
+                $this->error = Shop::Lang()->get('expressionHasTo') . ' ' .
                     $minChars . ' ' .
-                    \Shop::Lang()->get('lettersDigits');
+                    Shop::Lang()->get('lettersDigits');
             }
         }
 
@@ -501,7 +504,7 @@ class BaseSearchQuery extends AbstractFilter
             return 0;
         }
 
-        if ($this->getLanguageID() > 0 && !\Sprache::isDefaultLanguageActive()) {
+        if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
             $sql = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
                         tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
@@ -511,7 +514,7 @@ class BaseSearchQuery extends AbstractFilter
         // Shop2 Suche - mehr als 3 Suchwörter *
         if (\count($search) > 3) {
             $sql .= ' 1 ';
-            if ($this->getLanguageID() > 0 && !\Sprache::isDefaultLanguageActive()) {
+            if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
                 $sql .= ' FROM tartikel
                                 LEFT JOIN tartikelsprache
                                     ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -809,7 +812,7 @@ class BaseSearchQuery extends AbstractFilter
                 $sql .= ')';
             }
 
-            if ($this->getLanguageID() > 0 && !\Sprache::isDefaultLanguageActive()) {
+            if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
                 $sql .= ' FROM tartikel
                             LEFT JOIN tartikelsprache
                                 ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -921,7 +924,7 @@ class BaseSearchQuery extends AbstractFilter
                     FROM tartikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
-            if (\Shop::getLanguage() > 0 && !\Sprache::isDefaultLanguageActive()) {
+            if (Shop::getLanguage() > 0 && !Sprache::isDefaultLanguageActive()) {
                 $score = 'MATCH (' . \implode(', ', $langCols) . ")
                             AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
                 if ($fullText === 'B') {
@@ -1052,7 +1055,7 @@ class BaseSearchQuery extends AbstractFilter
     public static function getSearchRows(array $config = null): array
     {
         $searchRows = [];
-        $config     = $config ?? \Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
+        $config     = $config ?? Shop::getSettings([\CONF_ARTIKELUEBERSICHT]);
         for ($i = 0; $i < 10; ++$i) {
             $searchRows[] = self::getPrioritizedRows($searchRows, $config);
         }
@@ -1073,8 +1076,8 @@ class BaseSearchQuery extends AbstractFilter
         $max     = 0;
         $current = '';
         $prefix  = 'tartikel.';
-        $conf    = $conf['artikeluebersicht'] ?? \Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
-        if (!\Sprache::isDefaultLanguageActive()) {
+        $conf    = $conf['artikeluebersicht'] ?? Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        if (!Sprache::isDefaultLanguageActive()) {
             $prefix = 'tartikelsprache.';
         }
         if ($conf['suche_prio_name'] > $max && !\in_array($prefix . 'cName', $exclude, true)) {

@@ -35,11 +35,11 @@ class OFC_Charts_Bar_Filled_Value extends OFC_Charts_Bar_Value
 
 class OFC_Charts_Bar_Filled extends OFC_Charts_Bar
 {
-    public function __construct($colour=null, $outline_colour=null)
+    public function __construct($colour = null, $outline_colour = null)
     {
         parent::__construct();
 
-        $this->type      = 'bar_filled';
+        $this->type = 'bar_filled';
 
         if (isset($colour)) {
             $this->set_colour($colour);

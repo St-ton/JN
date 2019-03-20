@@ -104,7 +104,7 @@
                                             <td width="20">
                                                 <input name="kSitemapTracker[]" type="checkbox" value="{$oSitemapDownload->kSitemapTracker}">
                                             </td>
-                                            <td><a href="{Shop::getURL()}/{$oSitemapDownload->cSitemap}" target="_blank">{$oSitemapDownload->cSitemap}</a></td>
+                                            <td><a href="{\JTL\Shop::getURL()}/{$oSitemapDownload->cSitemap}" target="_blank">{$oSitemapDownload->cSitemap}</a></td>
                                             <td>
                                                 <strong>{__('sitemapIP')}</strong>: {$oSitemapDownload->cIP}<br />
                                                 {if $oSitemapDownload->cBot|strlen > 0}

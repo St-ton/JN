@@ -16,6 +16,7 @@ if (file_exists(JOBQUEUE_LOCKFILE) === false) {
 
 $lockfile = fopen(JOBQUEUE_LOCKFILE, 'rb');
 
+use JTL\Shop;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -34,8 +35,8 @@ if (flock($lockfile, LOCK_EX | LOCK_NB) === false) {
 }
 
 $db      = Shop::Container()->getDB();
-$queue   = new \Cron\Queue($db, $logger, new \Cron\JobFactory($db, $logger));
-$checker = new \Cron\Checker($db, $logger);
+$queue   = new \JTL\Cron\Queue($db, $logger, new \JTL\Cron\JobFactory($db, $logger));
+$checker = new \JTL\Cron\Checker($db, $logger);
 
 $unqueuedJobs = $checker->check();
 $queue->enqueueCronJobs($unqueuedJobs);

@@ -4,28 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * @global Smarty\JTLSmarty $smarty
- */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->redirectOnFailure();
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Alert\Alert;
+use JTL\Filesystem;
 
-$cHinweis     = '';
-$cFehler      = '';
 $shopSettings = Shopsetting::getInstance();
+$alertHelper  = Shop::Container()->getAlertService();
 
-\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 if (!empty($_POST) && Form::validateToken()) {
-    $cHinweis = saveAdminSectionSettings(CONF_FTP, $_POST);
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_FTP, $_POST), 'saveSettings');
     $shopSettings->reset();
 
     if (isset($_POST['test'])) {
-        unset($cHinweis);
-
         try {
             $fs = new Filesystem\FtpFilesystem([
                 'hostname' => $_POST['ftp_hostname'],
@@ -38,18 +37,20 @@ if (!empty($_POST) && Form::validateToken()) {
             ]);
 
             $isShopRoot = $fs->exists('includes/config.JTL-Shop.ini.php');
-            $smarty->assign('isShopRoot', $isShopRoot);
+            if ($isShopRoot) {
+                $alertHelper->addAlert(Alert::TYPE_INFO, __('ftpValidConnection'), 'ftpValidConnection');
+            } else {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('ftpInvalidShopRoot'), 'ftpInvalidShopRoot');
+            }
         } catch (\Exception $e) {
-            $cFehler = $e->getMessage();
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $e->getMessage(), 'errorFTP');
         }
     }
 }
 
 $oConfig_arr = getAdminSectionSettings(CONF_FTP);
-\Shop::Container()->getGetText()->localizeConfigs($oConfig_arr);
+Shop::Container()->getGetText()->localizeConfigs($oConfig_arr);
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oConfig', Shop::getSettings([CONF_FTP])['ftp'])
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->display('ftp.tpl');

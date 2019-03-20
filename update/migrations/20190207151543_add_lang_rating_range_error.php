@@ -6,6 +6,9 @@
  * @created Thu, 07 Feb 2019 15:15:43 +0100
  */
 
+use JTL\Update\Migration;
+use JTL\Update\IMigration;
+
 /**
  * Migration
  *
@@ -27,8 +30,18 @@ class Migration_20190207151543 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setLocalization('ger', 'errorMessages', 'ratingRange', 'Die Bewertung muss eine Zahl zwischen 1 und 5 sein.');
-        $this->setLocalization('eng', 'errorMessages', 'ratingRange', 'The rating needs to be a value between 1 and 5.');
+        $this->setLocalization(
+            'ger',
+            'errorMessages',
+            'ratingRange',
+            'Die Bewertung muss eine Zahl zwischen 1 und 5 sein.'
+        );
+        $this->setLocalization(
+            'eng',
+            'errorMessages',
+            'ratingRange',
+            'The rating needs to be a value between 1 and 5.'
+        );
     }
 
     public function down()

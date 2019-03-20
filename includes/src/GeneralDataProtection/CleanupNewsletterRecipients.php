@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CleanupNewsletterRecipients
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * Delete newsletter-registrations with no opt-in within given interval
  * (interval former "interval_clear_logs" = 90 days)
@@ -36,7 +37,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
      */
     private function cleanupNewsletters(): void
     {
-        $data = \Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->queryPrepared(
             "SELECT e.cOptCode
             FROM tnewsletterempfaenger e
                 JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail
@@ -54,7 +55,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as $res) {
-            \Shop::Container()->getDB()->queryPrepared(
+            Shop::Container()->getDB()->queryPrepared(
                 'DELETE e, h
                 FROM tnewsletterempfaenger e
                    INNER JOIN tnewsletterempfaengerhistory h ON h.cOptCode = e.cOptCode AND h.cEmail = e.cEmail

@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class Staat
+ * @package JTL
  */
 class Staat
 {
@@ -34,7 +37,7 @@ class Staat
      */
     public function __construct(array $options = null)
     {
-        if (is_array($options)) {
+        if (\is_array($options)) {
             $this->setOptions($options);
         }
     }
@@ -45,10 +48,10 @@ class Staat
      */
     public function setOptions(array $options): self
     {
-        $methods = get_class_methods($this);
+        $methods = \get_class_methods($this);
         foreach ($options as $key => $value) {
-            $method = 'set' . ucfirst($key);
-            if (in_array($method, $methods, true) && method_exists($this, $method)) {
+            $method = 'set' . \ucfirst($key);
+            if (\in_array($method, $methods, true) && \method_exists($this, $method)) {
                 $this->$method($value);
             }
         }
@@ -138,9 +141,9 @@ class Staat
      */
     public static function getRegions(string $cLandIso): ?array
     {
-        if (mb_strlen($cLandIso) === 2) {
+        if (\mb_strlen($cLandIso) === 2) {
             $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $cLandIso, '*', 'cName');
-            if (is_array($countries) && count($countries) > 0) {
+            if (\is_array($countries) && \count($countries) > 0) {
                 $states = [];
                 foreach ($countries as $country) {
                     $options = [
@@ -167,10 +170,10 @@ class Staat
      */
     public static function getRegionByIso($cCode, $cLandISO = ''): ?Staat
     {
-        if (mb_strlen($cCode) > 0) {
+        if (\mb_strlen($cCode) > 0) {
             $key2 = null;
             $val2 = null;
-            if (mb_strlen($cLandISO) > 0) {
+            if (\mb_strlen($cLandISO) > 0) {
                 $key2 = 'cLandIso';
                 $val2 = $cLandISO;
             }
@@ -196,7 +199,7 @@ class Staat
      */
     public static function getRegionByName(string $cName): ?Staat
     {
-        if (mb_strlen($cName) > 0) {
+        if (\mb_strlen($cName) > 0) {
             $oObj = Shop::Container()->getDB()->select('tstaat', 'cName', $cName);
             if (isset($oObj->kStaat) && $oObj->kStaat > 0) {
                 $options = [

@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Shop;
 
 /**
  * Class Blueprint
- * @package OPC
+ * @package JTL\OPC
  */
 class Blueprint implements \JsonSerializable
 {
@@ -92,7 +94,7 @@ class Blueprint implements \JsonSerializable
     public function deserialize(array $data): self
     {
         $this->setName($data['name']);
-        $instance = \Shop::Container()->getOPC()->getPortletInstance($data['content']);
+        $instance = Shop::Container()->getOPC()->getPortletInstance($data['content']);
         $this->setInstance($instance);
 
         return $this;

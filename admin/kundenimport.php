@@ -4,12 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
@@ -54,22 +60,23 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
         $row      = 0;
         $fmt      = [];
         $formatId = -1;
-        $hinweis  = '';
+        $notice   = '';
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $hinweis .= __('checkHead');
-                $fmt      = checkformat($data, $format);
+                $notice .= __('checkHead');
+                $fmt     = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $hinweis .= __('errorFormatNotFound');
+                    $notice .= __('errorFormatNotFound');
                     break;
                 }
-                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
+                $notice .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
+                $notice .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
 
             $row++;
         }
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
         fclose($file);
     }
 }
@@ -77,10 +84,9 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
 $smarty->assign('sprachen', Sprache::getAllLanguages())
        ->assign('kundengruppen', Shop::Container()->getDB()->query(
            'SELECT * FROM tkundengruppe ORDER BY cName',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('step', $step ?? null)
-       ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
 
 
@@ -152,7 +158,7 @@ function processImport($fmt, $data)
             $kunde->{$fmt[$i]} = $data[$i];
         }
     }
-    if (StringHandler::filterEmailAddress($kunde->cMail) === false) {
+    if (Text::filterEmailAddress($kunde->cMail) === false) {
         return __('errorInvalidEmail');
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
@@ -189,7 +195,7 @@ function processImport($fmt, $data)
                 "SELECT cWert AS cLand 
                     FROM teinstellungen 
                     WHERE cName = 'kundenregistrierung_standardland'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (is_object($oRes) && isset($oRes->cLand) && mb_strlen($oRes->cLand) > 0) {
                 $_SESSION['kundenimport']['cLand'] = $oRes->cLand;

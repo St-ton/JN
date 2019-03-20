@@ -24,13 +24,13 @@ msgid "kampagneOverview"
 msgstr "Kampagnen"
 
 msgid "kampagneNewBTN"
-msgstr "neue Kampagne erstellen"
+msgstr "Neue Kampagne erstellen"
 
 msgid "kampagneDetailStatsBTN"
 msgstr "Aktualisieren"
 
 msgid "kampagneDetailStats"
-msgstr "Detaillierte Statistiken zu Kampagne"
+msgstr "Detaillierte Statistiken zur Kampagne"
 
 msgid "kampagneDetailStatsDef"
 msgstr "Detaillierte Statistiken"
@@ -54,13 +54,13 @@ msgid "kampagneView"
 msgstr "Ansicht"
 
 msgid "kampagneDateTill"
-msgstr "bis (inkl.)"
+msgstr "bis (einschließlich)"
 
 msgid "kampagneCreate"
 msgstr "Neue Kampagne"
 
 msgid "kampagneEdit"
-msgstr "Kampagne editieren"
+msgstr "Kampagne bearbeiten"
 
 msgid "kampagneName"
 msgstr "Kampagnenname"
@@ -84,7 +84,7 @@ msgid "kampagnenDate"
 msgstr "Erstellt am"
 
 msgid "kampagnenNLInfo"
-msgstr "Anzahl Aufrufe von Newslettern, welche mit der Kampagne verknüpft sind. Standard: 0, wenn die Kampagne keinem Newsletter zugewiesen ist oder keine Newsletteraufrufe gezählt wurden"
+msgstr "Anzahl Aufrufe von Newslettern, welche mit der Kampagne verknüpft sind. Standard: 0, wenn die Kampagne keinem Newsletter zugewiesen ist oder keine Newsletter-Aufrufe gezählt wurden"
 
 msgid "successCampaignSave"
 msgstr "Ihre Kampagne wurde erfolgreich gespeichert."

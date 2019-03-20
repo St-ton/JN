@@ -6,6 +6,9 @@
  * @created Tue, 14 Jun 2016 15:25:25 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -26,13 +29,22 @@ class Migration_20160614152525 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setConfig('artikeldetails_xselling_kauf_parent', 'N', CONF_ARTIKELDETAILS, 'Immer Vaterartikel anzeigen', 'selectbox', 230, (object)[
-            'cBeschreibung' => 'Es werden immer die zugeh&ouml;rigen Vaterartikel angezeigt, auch wenn tats&auml;chlich Kindartikel gekauft wurden.',
-            'inputOptions'  => [
-                'Y' => 'Ja',
-                'N' => 'Nein',
-            ],
-        ]);
+        $this->setConfig(
+            'artikeldetails_xselling_kauf_parent',
+            'N',
+            \CONF_ARTIKELDETAILS,
+            'Immer Vaterartikel anzeigen',
+            'selectbox',
+            230,
+            (object)[
+                'cBeschreibung' => 'Es werden immer die zugeh&ouml;rigen Vaterartikel angezeigt, auch wenn ' .
+                    'tats&auml;chlich Kindartikel gekauft wurden.',
+                'inputOptions'  => [
+                    'Y' => 'Ja',
+                    'N' => 'Nein',
+                ],
+            ]
+        );
     }
 
     public function down()

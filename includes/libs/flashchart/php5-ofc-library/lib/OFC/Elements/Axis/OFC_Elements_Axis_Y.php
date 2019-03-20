@@ -42,7 +42,7 @@ class OFC_Elements_Axis_Y extends OFC_Elements_Axis
         $this->{'tick-length'} = $val;
     }
 
-    public function set_range($min, $max, $steps=1)
+    public function set_range($min, $max, $steps = 1)
     {
         $this->min = $min;
         $this->max = $max;

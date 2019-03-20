@@ -4,21 +4,26 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Overlay;
-use Helpers\Request;
-use Helpers\Template as TemplateHelper;
+use JTL\Helpers\Form;
+use JTL\Helpers\Overlay;
+use JTL\Helpers\Request;
+use JTL\Helpers\Template as TemplateHelper;
+use JTL\LessParser;
+use JTL\SimpleCSS;
+use JTL\Shop;
+use JTL\Template;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 /**
- * @global \Smarty\JTLSmarty $smarty
+ * @global \JTL\Smarty\JTLSmarty $smarty
  */
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
 
-$cHinweis       = '';
-$cFehler        = '';
+$alertHelper    = Shop::Container()->getAlertService();
 $lessVars_arr   = [];
 $lessVarsSkin   = [];
 $lessColors_arr = [];
@@ -43,13 +48,10 @@ if (isset($_POST['key'], $_POST['upload'])) {
 }
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
-        $cHinweis = __('successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } elseif ($_GET['check'] === 'false') {
-        $cFehler = __('errorTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
-}
-if (isset($_GET['uploadError'])) {
-    $cFehler .= __('errorFileUpload');
 }
 if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
     $scss      = new SimpleCSS();
@@ -57,9 +59,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
     $customCSS = $scss->getCustomCSSFile($dir);
     if (isset($_POST['reset']) && (int)$_POST['reset'] === 1) {
         if (file_exists($customCSS) && is_writable($customCSS)) {
-            $cHinweis = __('successLayoutReset');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutReset'), 'successLayoutReset');
         } else {
-            $cFehler = __('errorLayoutReset');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLayoutReset'), 'errorLayoutReset');
         }
     } else {
         $selectors     = $_POST['selector'];
@@ -71,10 +73,13 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
             $scss->addCSS($selectors[$i], $attributes[$i], $values[$i]);
         }
         if (file_put_contents($customCSS, $scss->renderCSS()) === false) {
-            $cFehler = __('errorStyleFilePermission') .
-                $customCSS . '.';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorStyleFilePermission') . $customCSS . '.',
+                'errorLayoutReset'
+            );
         } else {
-            $cHinweis = __('successLayoutSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutSave'), 'successLayoutSave');
         }
     }
 }
@@ -88,7 +93,6 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     }
     $tplConfXML   = $template->leseEinstellungenXML($dir, $parentFolder);
     $sectionCount = count($_POST['cSektion']);
-    $uploadError  = '';
     for ($i = 0; $i < $sectionCount; $i++) {
         $section = $db->escape($_POST['cSektion'][$i]);
         $name    = $db->escape($_POST['cName'][$i]);
@@ -109,18 +113,27 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
                         if (!isset($_setting->cKey, $_setting->rawAttributes['target']) || $_setting->cKey !== $name) {
                             continue;
                         }
-                        // target folder
-                        $base = PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' .
-                            $_setting->rawAttributes['target'];
+                        $templatePath = PFAD_TEMPLATES . $dir . '/' . $_setting->rawAttributes['target'];
+                        $base         = PFAD_ROOT . $templatePath;
                         // optional target file name + extension
                         if (isset($_setting->rawAttributes['targetFileName'])) {
                             $value = $_setting->rawAttributes['targetFileName'];
                         }
                         $targetFile = $base . $value;
-                        if (mb_strpos($targetFile, $base) !== 0
-                            || !move_uploaded_file($file['tmp_name'], $targetFile)
-                        ) {
-                            $uploadError = '&uploadError=true';
+                        if (!is_writable($base)) {
+                            Shop::Container()->getAlertService()->addAlert(
+                                Alert::TYPE_ERROR,
+                                sprintf(__('errorFileUpload'), $templatePath),
+                                'errorFileUpload',
+                                ['saveInSession' => true]
+                            );
+                        } elseif (!move_uploaded_file($file['tmp_name'], $targetFile)) {
+                            Shop::Container()->getAlertService()->addAlert(
+                                Alert::TYPE_ERROR,
+                                __('errorFileUploadGeneral'),
+                                'errorFileUploadGeneral',
+                                ['saveInSession' => true]
+                            );
                         }
                         $break = true;
                         break;
@@ -138,9 +151,9 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
     }
     $bCheck = __switchTemplate($_POST['ordner'], $_POST['eTyp']);
     if ($bCheck) {
-        $cHinweis = __('successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } else {
-        $cFehler = __('errorTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 
     if (Request::verifyGPCDataInt('activate') === 1) {
@@ -148,11 +161,12 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         $overlayHelper->loadOverlaysFromTemplateFolder($_POST['ordner']);
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
     // re-init smarty with new template - problematic because of re-including functions.php
     header('Location: ' . Shop::getURL() . '/' .
         PFAD_ADMIN . 'shoptemplate.php?check=' .
-        ($bCheck ? 'true' : 'false') . $uploadError, true, 301);
+        ($bCheck ? 'true' : 'false'), true, 301);
+    exit;
 }
 if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
     $dir          = $db->escape($_GET['settings']);
@@ -174,13 +188,14 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         $oTpl->eTyp = 'admin';
         $bCheck     = __switchTemplate($dir, $oTpl->eTyp);
         if ($bCheck) {
-            $cHinweis = __('successTemplateSave');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
         } else {
-            $cFehler = __('errorTemplateSave');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
         }
-        $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+        $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
         // re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
+        exit;
     } else {
         // iterate over each "Section"
         foreach ($tplConfXML as $_conf) {
@@ -252,17 +267,15 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
            ->assign('oEinstellungenXML', $tplConfXML);
 } elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
-        $cHinweis = __('successTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } else {
-        $cFehler = __('errorTemplateSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
     }
 
-    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())
        ->assign('oAdminTemplate_arr', $templateHelper->getAdminTemplates())
        ->assign('oStoredTemplate_arr', $templateHelper->getStoredTemplates())
-       ->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis)
        ->display('shoptemplate.tpl');

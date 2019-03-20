@@ -4,25 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace JTL\Plugin\Admin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use Plugin\Admin\Installation\Installer;
-use Plugin\Admin\Installation\Uninstaller;
-use Plugin\Admin\Validation\PluginValidator;
-use Plugin\Admin\Validation\LegacyPluginValidator;
-use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\PluginLoader;
-use Plugin\Helper;
-use Plugin\InstallCode;
-use Plugin\LegacyPlugin;
-use Plugin\LegacyPluginLoader;
-use Plugin\State;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Plugin\Admin\Installation\Installer;
+use JTL\Plugin\Admin\Installation\Uninstaller;
+use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
+use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Plugin\Admin\Validation\ValidatorInterface;
+use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginLoader;
+use JTL\Plugin\State;
 
 /**
  * Class StateChanger
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin
  */
 class StateChanger
 {

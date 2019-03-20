@@ -5,7 +5,7 @@
     "type": "project",
     "homepage": "https://www.jtl-software.de",
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",
@@ -21,7 +21,7 @@
         "ext-xml": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "imanee/imanee": "dev-master",
+        "intervention/image": "^2.4",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^4.2",
         "jtlshop/shop4-systemcheck": "^1.1",
@@ -38,7 +38,6 @@
         "psr/container": "1.0.0",
         "lstrojny/functional-php": "^1.8",
         "monolog/monolog": "^1.23",
-        "tightenco/collect": "^5.7.0",
         "eloquent/pathogen": "~0.6",
         "mrclay/minify": "~3.0.0",
         "myclabs/php-enum": "^1.6",
@@ -46,7 +45,9 @@
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.15",
         "gettext/gettext": "^4.6",
-        "jtl/oauth2-client": "^1.0"
+        "jtl/oauth2-client": "^1.0",
+        "squizlabs/php_codesniffer": "^3.4",
+        "illuminate/container": "^5.7"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
@@ -54,7 +55,8 @@
         "symfony/finder": "^4.0",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3",
-        "sensiolabs/security-checker": "^5.0"
+        "sensiolabs/security-checker": "^5.0",
+        "squizlabs/php_codesniffer": "^3.4"
     },
     "suggest": {
         "ext-redis": "Better caching method",
@@ -95,7 +97,11 @@
     "autoload": {
         "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],
         "psr-4": {
-            "": ["src/","../plugins/"]
+            "JTL\\": ["src/"],
+            "Plugin\\": ["../plugins/"]
         }
+    },
+    "autoload-dev": {
+        "psr-4": { "Tests\\": "../tests/" }
     }
 }

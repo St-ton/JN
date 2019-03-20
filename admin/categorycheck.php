@@ -4,12 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Backend\Status;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
-$status             = \Backend\Status::getInstance();
+$status             = Status::getInstance();
 $orphanedCategories = $status->getOrphanedCategories(false);
 
 $smarty->assign('passed', count($orphanedCategories) === 0)

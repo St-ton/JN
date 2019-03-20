@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
 
 /**
@@ -71,7 +75,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false)
             $result->cWHERE    .= " AND kEinstellungenConf = '" . (int)$query . "'";
         } else {
             $query              = mb_convert_case($query, MB_CASE_LOWER);
-            $queryEnt           = StringHandler::htmlentities($query);
+            $queryEnt           = Text::htmlentities($query);
             $result->nSuchModus = 4;
             $result->cSearch    = 'Suche nach Name: ' . $query;
             $getText            = Shop::Container()->getGetText();
@@ -110,11 +114,11 @@ function holeEinstellungen($oSQL, bool $bSpeichern)
     }
 
     $oSQL->oEinstellung_arr = Shop::Container()->getDB()->query(
-        "SELECT *
+        'SELECT *
             FROM teinstellungenconf
-            WHERE " . $oSQL->cWHERE . '
+            WHERE ' . $oSQL->cWHERE . '
             ORDER BY kEinstellungenSektion, nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     Shop::Container()->getGetText()->loadConfigLocales();
     foreach ($oSQL->oEinstellung_arr as $j => $oEinstellung) {
@@ -183,7 +187,7 @@ function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
                 WHERE nSort > ' . (int)$nSort . '
                     AND kEinstellungenSektion = ' . (int)$kEinstellungenSektion . '
                 ORDER BY nSort',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
             if ($oEinstellungTMP->cConf !== 'N') {
@@ -212,7 +216,7 @@ function holeEinstellungHeadline(int $nSort, int $sectionID)
                 WHERE nSort < ' . $nSort . '
                     AND kEinstellungenSektion = ' . $sectionID . '
                 ORDER BY nSort DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
             if ($oEinstellungTMP->cConf === 'N') {

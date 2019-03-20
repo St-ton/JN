@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Visitor;
+
 /**
  * @param null|string $userAgent
  * @return stdClass

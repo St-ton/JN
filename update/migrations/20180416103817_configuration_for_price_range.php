@@ -6,6 +6,9 @@
  * @created Mon, 16 Apr 2018 10:38:17 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -31,8 +34,16 @@ class Migration_20180416103817 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setConfig('articleoverview_pricerange_width', '150', CONF_ARTIKELUEBERSICHT, 'Max. Abweichung (%) für Preis-Range Anzeige', 'number', 372, (object)[
-            'cBeschreibung' => 'Überschreitet der Max. Preis den Min. Preis um die angegebenen Prozent, dann wird stattdessen nur ein "ab" angezeigt.',
+        $this->setConfig(
+            'articleoverview_pricerange_width',
+            '150',
+            \CONF_ARTIKELUEBERSICHT,
+            'Max. Abweichung (%) für Preis-Range Anzeige',
+            'number',
+            372,
+            (object)[
+            'cBeschreibung' => 'Überschreitet der Max. Preis den Min. Preis um die angegebenen Prozent, ' .
+                'dann wird stattdessen nur ein "ab" angezeigt.',
         ]);
     }
 

@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
-use DB\DbInterface;
+use JTL\DB\DbInterface;
 
 /**
  * Class SurveyQuestionFactory
- * @package Survey
+ * @package JTL\Survey
  */
 class SurveyQuestionFactory
 {

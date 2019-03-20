@@ -4,25 +4,38 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\Revision;
+use JTL\Backend\Revision;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Hersteller;
+use JTL\Kampagne;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\SmartyResourceNiceDB;
+use JTL\Session\Frontend;
+use JTL\Alert\Alert;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 /**
  * @param array $conf
- * @return \Smarty\JTLSmarty
+ * @return JTLSmarty
  */
 function bereiteNewsletterVor($conf)
 {
     $db         = Shop::Container()->getDB();
-    $mailSmarty = new \Smarty\JTLSmarty(true, \Smarty\ContextType::NEWSLETTER);
+    $mailSmarty = new JTLSmarty(true, ContextType::NEWSLETTER);
     $mailSmarty->setCaching(0)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
-               ->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::NEWSLETTER))
+               ->registerResource('db', new SmartyResourceNiceDB($db, ContextType::NEWSLETTER))
                ->assign('Firma', $db->query(
                    'SELECT *  FROM tfirma',
-                   \DB\ReturnType::SINGLE_OBJECT
+                   ReturnType::SINGLE_OBJECT
                ))
                ->assign('URL_SHOP', Shop::getURL())
                ->assign('Einstellungen', $conf);
@@ -33,15 +46,15 @@ function bereiteNewsletterVor($conf)
 }
 
 /**
- * @param \Smarty\JTLSmarty $mailSmarty
- * @param object            $newsletter
- * @param array             $conf
- * @param stdClass          $recipients
- * @param array             $products
- * @param array             $manufacturers
- * @param array             $categories
- * @param string            $campaign
- * @param string            $oKunde
+ * @param JTLSmarty $mailSmarty
+ * @param object    $newsletter
+ * @param array     $conf
+ * @param stdClass  $recipients
+ * @param array     $products
+ * @param array     $manufacturers
+ * @param array     $categories
+ * @param string    $campaign
+ * @param string    $oKunde
  * @return string|bool
  */
 function versendeNewsletter(
@@ -77,7 +90,7 @@ function versendeNewsletter(
                 JOIN tkundengruppe 
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
                 WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         if (isset($oKundengruppe->nNettoPreise)) {
             $net = $oKundengruppe->nNettoPreise;
@@ -145,14 +158,14 @@ function versendeNewsletter(
 }
 
 /**
- * @param \Smarty\JTLSmarty $mailSmarty
- * @param object            $newsletter
- * @param array             $products
- * @param array             $manufacturers
- * @param array             $categories
- * @param string            $campaign
- * @param stdClass|string   $recipient
- * @param stdClass|string   $customer
+ * @param JTLSmarty       $mailSmarty
+ * @param object          $newsletter
+ * @param array           $products
+ * @param array           $manufacturers
+ * @param array           $categories
+ * @param string          $campaign
+ * @param stdClass|string $recipient
+ * @param stdClass|string $customer
  * @return string
  */
 function gibStaticHtml(
@@ -188,8 +201,9 @@ function gibStaticHtml(
  */
 function speicherVorlage($post)
 {
-    $tpl    = null;
-    $checks = pruefeVorlage(
+    $alertHelper = Shop::Container()->getAlertService();
+    $tpl         = null;
+    $checks      = pruefeVorlage(
         $post['cName'],
         $post['kKundengruppe'],
         $post['cBetreff'],
@@ -258,10 +272,18 @@ function speicherVorlage($post)
             $upd->cInhaltText   = $tpl->cInhaltText;
             $upd->dStartZeit    = $tpl->dStartZeit;
             Shop::Container()->getDB()->update('tnewslettervorlage', 'kNewsletterVorlage', $kNewsletterVorlage, $upd);
-            $GLOBALS['cHinweis'] .= sprintf(__('successNewsletterTemplateEdit'), $tpl->cName) .'<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successNewsletterTemplateEdit'), $tpl->cName),
+                'successNewsletterTemplateEdit'
+            );
         } else {
-            $kNewsletterVorlage   = Shop::Container()->getDB()->insert('tnewslettervorlage', $tpl);
-            $GLOBALS['cHinweis'] .= sprintf(__('successNewsletterTemplateSave'), $tpl->cName) .'<br />';
+            $kNewsletterVorlage = Shop::Container()->getDB()->insert('tnewslettervorlage', $tpl);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successNewsletterTemplateSave'), $tpl->cName),
+                'successNewsletterTemplateSave'
+            );
         }
         $tpl->kNewsletterVorlage = $kNewsletterVorlage;
 
@@ -701,7 +723,7 @@ function holeNewslettervorlageStd(int $defaultTemplateID, int $templateID = 0)
                         FROM tnewslettervorlagestdvarinhalt
                         WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar .
                         $cSQL,
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
             }
 
@@ -842,7 +864,7 @@ function getNewsletterEmpfaenger(int $kNewsletter)
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
             WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
                 AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 
     $recipients->cKundengruppe_arr = $cKundengruppe_arr;
@@ -880,7 +902,7 @@ function holeAbonnentenAnzahl($cAktiveSucheSQL): int
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }
 
@@ -908,7 +930,7 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL): array
             WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
         $cAktiveSucheSQL->cWHERE . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $cSQL,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -928,7 +950,7 @@ function loescheAbonnenten($recipientIDs): bool
             FROM tnewsletterempfaenger
             WHERE kNewsletterEmpfaenger' .
         $where,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     if (count($recipients) === 0) {
@@ -937,7 +959,7 @@ function loescheAbonnenten($recipientIDs): bool
     $db->query(
         'DELETE FROM tnewsletterempfaenger
             WHERE kNewsletterEmpfaenger' . $where,
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
     foreach ($recipients as $recipient) {
         $hist               = new stdClass();
@@ -976,7 +998,7 @@ function aktiviereAbonnenten($recipientIDs): bool
             FROM tnewsletterempfaenger
             WHERE kNewsletterEmpfaenger' .
         $where,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     if (count($recipients) === 0) {
@@ -986,7 +1008,7 @@ function aktiviereAbonnenten($recipientIDs): bool
         'UPDATE tnewsletterempfaenger
             SET nAktiv = 1
             WHERE kNewsletterEmpfaenger' . $where,
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
     foreach ($recipients as $recipient) {
         $hist               = new stdClass();
@@ -1050,7 +1072,7 @@ function gibAbonnent($post)
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE " . $cSQL . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     if (isset($oAbonnent->kNewsletterEmpfaenger) && $oAbonnent->kNewsletterEmpfaenger > 0) {
         $oKunde               = new Kunde($oAbonnent->kKunde ?? 0);
@@ -1106,7 +1128,7 @@ function baueNewsletterVorschau($template)
                ->assign('Kunde', $customer)
                ->assign('Artikelliste', $products)
                ->assign('Herstellerliste', $manufacturers)
-               ->assign('Kategorieliste', $categories)
+               ->assign('Kategorieiste', $categories)
                ->assign('Kampagne', $campaign);
 
     try {
@@ -1152,7 +1174,7 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
                     FROM tartikel
                     WHERE cArtNr IN (' . implode(',', $res) . ')
                         AND kEigenschaftKombi = 0',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             // Existieren Artikel zu den entsprechenden Artikelnummern?
             foreach ($artNoData as $artNo) {
@@ -1191,7 +1213,7 @@ function gibArtikelObjekte($productIDs, $campaign = '', int $customerGroupID = 0
     foreach ($productIDs as $id) {
         $id = (int)$id;
         if ($id > 0) {
-            \Session\Frontend::getCustomerGroup()->setMayViewPrices(1);
+            Frontend::getCustomerGroup()->setMayViewPrices(1);
             $product = new Artikel();
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if (!($product->kArtikel > 0)) {

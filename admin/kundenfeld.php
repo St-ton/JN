@@ -4,18 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\CustomerFields;
+use JTL\PlausiKundenfeld;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
-/** @global \Smarty\JTLSmarty $smarty */
-$cf       = CustomerFields::getInstance((int)$_SESSION['kSprache']);
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'uebersicht';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$cf          = CustomerFields::getInstance((int)$_SESSION['kSprache']);
+$step        = 'uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
 setzeSprache();
 
@@ -25,7 +30,11 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-    $cHinweis .= saveAdminSectionSettings(CONF_KUNDENFELD, $_POST);
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_KUNDENFELD, $_POST),
+        'saveSettings'
+    );
 } elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && Form::validateToken()) {
     $success = true;
     if (isset($_POST['loeschen'])) {
@@ -35,12 +44,20 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
                 $success = $success && $cf->delete((int)$kKundenfeld);
             }
             if ($success) {
-                $cHinweis .= __('successCustomerFieldDelete') . '<br />';
+                $alertHelper->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    __('successCustomerFieldDelete'),
+                    'successCustomerFieldDelete'
+                );
             } else {
-                $cFehler .= __('errorCustomerFieldDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
             }
         } else {
-            $cFehler .= __('errorAtLeastOneCustomerField') . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorAtLeastOneCustomerField'),
+                'errorAtLeastOneCustomerField'
+            );
         }
     } elseif (isset($_POST['aktualisieren'])) {
         foreach ($cf->getCustomerFields() as $customerField) {
@@ -48,20 +65,28 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             $success              = $success && $cf->save($customerField);
         }
         if ($success) {
-            $cHinweis .= __('successCustomerFieldRefresh') . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                __('successCustomerFieldRefresh'),
+                'successCustomerFieldRefresh'
+            );
         } else {
-            $cFehler .= __('errorCustomerFieldRefresh') . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorCustomerFieldRefresh'),
+                'errorCustomerFieldRefresh'
+            );
         }
     } else { // Speichern
         $customerField = (object)[
             'kKundenfeld' => (int)($_POST['kKundenfeld'] ?? 0),
             'kSprache'    => (int)$_SESSION['kSprache'],
-            'cName'       => StringHandler::htmlspecialchars(
-                StringHandler::filterXSS($_POST['cName']),
+            'cName'       => Text::htmlspecialchars(
+                Text::filterXSS($_POST['cName']),
                 ENT_COMPAT | ENT_HTML401
             ),
-            'cWawi'       => StringHandler::filterXSS(str_replace(['"',"'"], '', $_POST['cWawi'])),
-            'cTyp'        => StringHandler::filterXSS($_POST['cTyp']),
+            'cWawi'       => Text::filterXSS(str_replace(['"', "'"], '', $_POST['cWawi'])),
+            'cTyp'        => Text::filterXSS($_POST['cTyp']),
             'nSort'       => (int)$_POST['nSort'],
             'nPflicht'    => (int)$_POST['nPflicht'],
             'nEditierbar' => (int)$_POST['nEdit'],
@@ -74,16 +99,20 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 
         if (count($check->getPlausiVar()) === 0) {
             if ($cf->save($customerField, $cfValues)) {
-                $cHinweis .= __('successCustomerFieldSave') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCustomerFieldSave'), 'successCustomerFieldSave');
             } else {
-                $cFehler .= __('errorCustomerFieldSave') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerFieldSave'), 'errorCustomerFieldSave');
             }
         } else {
             $erroneousFields = $check->getPlausiVar();
-            if (isset($erroneousFields['cName']) && 2 === $erroneousFields['cName']) {
-                $cFehler = __('errorCustomerFieldNameExists');
+            if (isset($erroneousFields['cName']) && $erroneousFields['cName'] === 2) {
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    __('errorCustomerFieldNameExists'),
+                    'errorCustomerFieldNameExists'
+                );
             } else {
-                $cFehler = __('errorFillRequired');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
             }
             $smarty->assign('xPlausiVar_arr', $check->getPlausiVar())
                    ->assign('xPostVar_arr', $check->getPostVar())
@@ -124,7 +153,5 @@ $smarty->assign('oKundenfeld_arr', $fields)
        ->assign('nHighestSortDiff', $highestSortDiff)
        ->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENFELD))
        ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('kundenfeld.tpl');

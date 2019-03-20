@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Link\LinkInterface;
-use News\Item;
-use Shop;
-use Sprache;
+use JTL\Link\LinkInterface;
+use JTL\News\Item;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class URL
- * @package Helpers
+ * @package JTL\Helpers
  */
 class URL
 {

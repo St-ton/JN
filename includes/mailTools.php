@@ -4,12 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\GeneralObject;
-use Helpers\Request;
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferadresse;
+use JTL\Customer\Kunde;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Emailhistory;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\SmartyResourceNiceDB;
+use JTL\TrustedShops;
 
 /**
- * @param array            $params
- * @param Smarty\JTLSmarty $smarty
+ * @param array                 $params
+ * @param \JTL\Smarty\JTLSmarty $smarty
  * @return string
  */
 function includeMailTemplate($params, $smarty)
@@ -36,7 +49,7 @@ function includeMailTemplate($params, $smarty)
                     FROM temailvorlagesprache
                     WHERE kSprache = ' . (int)$lang->kSprache .
                 ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage,
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
         }
         if (isset($res->content)) {
@@ -77,8 +90,8 @@ function sendeMail($moduleID, $data, $mail = null)
     $senderName = $config['emails']['email_master_absender_name'];
     $senderMail = $config['emails']['email_master_absender'];
     $sendCopy   = '';
-    $smarty     = new \Smarty\JTLSmarty(true, \Smarty\ContextType::MAIL);
-    $smarty->registerResource('db', new \Smarty\SmartyResourceNiceDB($db, \Smarty\ContextType::MAIL))
+    $smarty     = new JTLSmarty(true, ContextType::MAIL);
+    $smarty->registerResource('db', new SmartyResourceNiceDB($db, ContextType::MAIL))
                ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
                ->setCaching(0)
                ->setDebugging(0)
@@ -93,7 +106,7 @@ function sendeMail($moduleID, $data, $mail = null)
     if (!isset($data->tkunde->kKundengruppe) || !$data->tkunde->kKundengruppe) {
         $data->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
-    $data->tfirma        = $db->query('SELECT * FROM tfirma', \DB\ReturnType::SINGLE_OBJECT);
+    $data->tfirma        = $db->query('SELECT * FROM tfirma', ReturnType::SINGLE_OBJECT);
     $data->tkundengruppe = $db->select(
         'tkundengruppe',
         'kKundengruppe',
@@ -162,7 +175,7 @@ function sendeMail($moduleID, $data, $mail = null)
                ->assign('WRB', $WRB)
                ->assign('DSE', $DSE)
                ->assign('WRBForm', $WRBForm)
-               ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(Request::getRealIP())));
+               ->assign('IP', Text::htmlentities(Text::filterXSS(Request::getRealIP())));
 
     $data = lokalisiereInhalt($data);
     // ModulId von einer Plugin Emailvorlage vorhanden?
@@ -183,7 +196,7 @@ function sendeMail($moduleID, $data, $mail = null)
         'SELECT *
             FROM ' . $cTable . '
             WHERE ' . $cSQLWhere,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     // Email aktiv?
     if (isset($mailTPL->cAktiv) && $mailTPL->cAktiv === 'N') {
@@ -252,7 +265,7 @@ function sendeMail($moduleID, $data, $mail = null)
                             AND tzahlungsart.cModulId = :module
                         WHERE tzahlungsartsprache.cISOSprache = :iso',
                     ['module' => $cModulId, 'iso' => $lang->cISO],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
                 if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
                     $smarty->assign('Zahlungsart', $oZahlungsartConf);
@@ -260,9 +273,9 @@ function sendeMail($moduleID, $data, $mail = null)
             }
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 $langID   = $_SESSION['cISOSprache'] ?? 'ger'; //workaround for testmails from backend
-                $ts       = new TrustedShops(-1, StringHandler::convertISO2ISO639($langID));
+                $ts       = new TrustedShops(-1, Text::convertISO2ISO639($langID));
                 $tsRating = $ts->holeKundenbewertungsstatus(
-                    StringHandler::convertISO2ISO639($langID)
+                    Text::convertISO2ISO639($langID)
                 );
                 if ($tsRating !== false
                     && mb_strlen($tsRating->cTSID) > 0
@@ -292,7 +305,7 @@ function sendeMail($moduleID, $data, $mail = null)
                             AND tzahlungsart.cModulId = :module
                         WHERE tzahlungsartsprache.cISOSprache = :iso',
                     ['module' => $cModulId, 'iso' => $lang->cISO],
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
 
                 if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
@@ -300,7 +313,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 }
             }
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langCode = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
+                $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache']);
                 $ts       = new TrustedShops(-1, $langCode);
                 $tsRating = $ts->holeKundenbewertungsstatus($langCode);
                 if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
@@ -332,7 +345,7 @@ function sendeMail($moduleID, $data, $mail = null)
         case MAILTEMPLATE_BESTELLUNG_VERSANDT:
             $smarty->assign('Bestellung', $data->tbestellung);
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langCode = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
+                $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache']);
                 $ts       = new TrustedShops(-1, $langCode);
                 $tsRating = $ts->holeKundenbewertungsstatus($langCode);
                 if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
@@ -353,7 +366,7 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_KUPON:
             $smarty->assign('Kupon', $data->tkupon)
-                       ->assign('couponTypes', Kupon::getCouponTypes());
+                   ->assign('couponTypes', Kupon::getCouponTypes());
             break;
 
         case MAILTEMPLATE_KONTAKTFORMULAR:
@@ -391,10 +404,10 @@ function sendeMail($moduleID, $data, $mail = null)
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 $ts       = new TrustedShops(
                     -1,
-                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                    Text::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 $tsRating = $ts->holeKundenbewertungsstatus(
-                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                    Text::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
                 if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
@@ -538,7 +551,7 @@ function sendeMail($moduleID, $data, $mail = null)
     $mail->fromName      = $senderName;
     $mail->replyToEmail  = $senderMail;
     $mail->replyToName   = $senderName;
-    $mail->subject       = StringHandler::htmlentitydecode($mailTPL->cBetreff);
+    $mail->subject       = Text::htmlentitydecode($mailTPL->cBetreff);
     $mail->bodyText      = $bodyText;
     $mail->bodyHtml      = $bodyHtml;
     $mail->lang          = $lang->cISO;
@@ -587,7 +600,7 @@ function sendeMail($moduleID, $data, $mail = null)
     verschickeMail($mail);
 
     if ($sendCopy) {
-        $copyAddresses = StringHandler::parseSSK($sendCopy);
+        $copyAddresses = Text::parseSSK($sendCopy);
         foreach ($copyAddresses as $copyAddress) {
             $mail->toEmail      = $copyAddress;
             $mail->toName       = $copyAddress;
@@ -648,7 +661,7 @@ function verschickeMail($mail)
         }
         unset($mail->kEmailvorlage);
     }
-    $mail->bodyText  = StringHandler::htmlentitydecode(str_replace('&euro;', 'EUR', $mail->bodyText), ENT_NOQUOTES);
+    $mail->bodyText  = Text::htmlentitydecode(str_replace('&euro;', 'EUR', $mail->bodyText), ENT_NOQUOTES);
     $mail->cFehler   = '';
     $GLOBALS['mail'] = $mail; // Plugin Work Around
     if (!$mail->methode) {
@@ -908,8 +921,8 @@ function bauePDFArrayZumVeschicken($pdfString)
 function getPDFAttachments($pdfString, $nameString)
 {
     $result    = [];
-    $pdfData   = StringHandler::parseSSK(trim($pdfString, ";\t\n\r\0"));
-    $names     = StringHandler::parseSSK(trim($nameString, ";\t\n\r\0"));
+    $pdfData   = Text::parseSSK(trim($pdfString, ";\t\n\r\0"));
+    $names     = Text::parseSSK(trim($nameString, ";\t\n\r\0"));
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     if (is_array($pdfData)) {
         foreach ($pdfData as $key => $pdfFile) {
@@ -964,10 +977,10 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
         $eol = "\r";
     }
 
-    $fromName = StringHandler::unhtmlentities($fromName);
-    $fromMail = StringHandler::unhtmlentities($fromMail);
-    $subject  = StringHandler::unhtmlentities($subject);
-    $text     = StringHandler::unhtmlentities($text);
+    $fromName = Text::unhtmlentities($fromName);
+    $fromMail = Text::unhtmlentities($fromMail);
+    $subject  = Text::unhtmlentities($subject);
+    $text     = Text::unhtmlentities($text);
 
     $text = $text ?: 'Sorry, but you need an html mailer to read this mail.';
 

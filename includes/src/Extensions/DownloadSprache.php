@@ -4,12 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
+
+use JTL\Nice;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class DownloadSprache
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class DownloadSprache
 {
@@ -49,7 +52,7 @@ class DownloadSprache
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_DOWNLOADS);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_DOWNLOADS);
     }
 
     /**
@@ -58,7 +61,7 @@ class DownloadSprache
      */
     private function loadFromDB(int $kDownload, int $kSprache): void
     {
-        $oDownloadSprache = \Shop::Container()->getDB()->select(
+        $oDownloadSprache = Shop::Container()->getDB()->select(
             'tdownloadsprache',
             'kDownload',
             $kDownload,
@@ -81,7 +84,7 @@ class DownloadSprache
     public function save(bool $bPrimary = false)
     {
         $oObj      = $this->kopiereMembers();
-        $kDownload = \Shop::Container()->getDB()->insert('tdownloadsprache', $oObj);
+        $kDownload = Shop::Container()->getDB()->insert('tdownloadsprache', $oObj);
         if ($kDownload > 0) {
             return $bPrimary ? $kDownload : true;
         }
@@ -94,11 +97,11 @@ class DownloadSprache
      */
     public function update(): int
     {
-        $upd                = new \stdClass();
+        $upd                = new stdClass();
         $upd->cName         = $this->getName();
         $upd->cBeschreibung = $this->getBeschreibung();
 
-        return \Shop::Container()->getDB()->update(
+        return Shop::Container()->getDB()->update(
             'tdownloadsprache',
             ['kDownload', 'kSprache'],
             [$this->getDownload(), $this->getSprache()],
@@ -183,11 +186,11 @@ class DownloadSprache
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function kopiereMembers(): \stdClass
+    private function kopiereMembers(): stdClass
     {
-        $obj = new \stdClass();
+        $obj = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
             $obj->$member = $this->$member;
         }

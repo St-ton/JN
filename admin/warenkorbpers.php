@@ -4,27 +4,32 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Cart\WarenkorbPers;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-/** @global \Smarty\JTLSmarty $smarty */
-$cHinweis          = '';
-$cFehler           = '';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step              = 'uebersicht';
 $settingsIDs       = [540];
 $searchSQL         = new stdClass();
 $searchSQL->cJOIN  = '';
 $searchSQL->cWHERE = '';
+$alertHelper       = Shop::Container()->getAlertService();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
-    $cSuche = Shop::Container()->getDB()->escape(StringHandler::filterXSS(Request::verifyGPDataString('cSuche')));
+    $cSuche = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
     if (mb_strlen($cSuche) > 0) {
         $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
             OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
@@ -38,8 +43,8 @@ if (isset($_POST['einstellungen'])
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
     && Form::validateToken()
 ) {
-    $step      = 'uebersicht';
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $step = 'uebersicht';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
     $smarty->assign('tab', 'einstellungen');
 }
 
@@ -48,7 +53,7 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 
     if ($oWarenkorbPers->entferneSelf()) {
-        $cHinweis .= __('successCartPersPosDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
     }
 
     unset($oWarenkorbPers);
@@ -66,7 +71,7 @@ $customerCount = (int)Shop::Container()->getDB()->query(
             ' . $searchSQL->cWHERE . '
             GROUP BY tkunde.kKunde
         ) AS tAnzahl',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 )->count;
 
 $oPagiKunden = (new Pagination('kunden'))
@@ -86,7 +91,7 @@ $customers = Shop::Container()->getDB()->query(
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
         LIMIT ' . $oPagiKunden->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 foreach ($customers as $item) {
@@ -109,7 +114,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = ' . $kKunde,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 
     $oPagiWarenkorb = (new Pagination('warenkorb'))
@@ -127,7 +132,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $kKunde . '
             LIMIT ' . $oPagiWarenkorb->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
         $customer = new Kunde($cart->kKundeTMP);
@@ -142,7 +147,5 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
 }
 
 $smarty->assign('step', $step)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->display('warenkorbpers.tpl');

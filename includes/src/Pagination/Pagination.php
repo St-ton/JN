@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Pagination;
+namespace JTL\Pagination;
+
+use Illuminate\Support\Collection;
 
 /**
  * Class Pagination
- * @package Pagination
+ * @package JTL\Pagination
  */
 class Pagination
 {
@@ -128,7 +130,7 @@ class Pagination
     private $items;
 
     /**
-     * @var array|\Tightenco\Collect\Support\Collection
+     * @var array|Collection
      */
     private $pageItems;
 
@@ -144,7 +146,7 @@ class Pagination
 
     /**
      * Pagination constructor.
-     * @param string $id
+     * @param string|null $id
      */
     public function __construct(string $id = null)
     {
@@ -209,7 +211,7 @@ class Pagination
     }
 
     /**
-     * @param array|\Tightenco\Collect\Support\Collection $items - item array to be paginated and sorted
+     * @param array|Collection $items - item array to be paginated and sorted
      * @return $this
      */
     public function setItemArray($items): self
@@ -232,7 +234,7 @@ class Pagination
     }
 
     /**
-     * @param int
+     * @param int $n
      * @return $this
      */
     public function setDefaultSortByDir(int $n): self
@@ -349,7 +351,7 @@ class Pagination
         $this->limitSQL = $this->firstPageItem . ',' . $this->pageItemCount;
         if (\is_array($this->items)) {
             $this->pageItems = \array_slice($this->items, $this->firstPageItem, $this->pageItemCount);
-        } elseif ($this->items instanceof \Tightenco\Collect\Support\Collection) {
+        } elseif ($this->items instanceof Collection) {
             $this->pageItems = $this->items->slice($this->firstPageItem, $this->pageItemCount);
         }
 
@@ -506,7 +508,7 @@ class Pagination
     }
 
     /**
-     * @return array|\Tightenco\Collect\Support\Collection|null
+     * @return array|Collection|null
      */
     public function getPageItems()
     {

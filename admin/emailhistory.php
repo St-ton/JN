@@ -4,33 +4,34 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Pagination\Pagination;
+use JTL\Emailhistory;
+use JTL\Helpers\Form;
+use JTL\Pagination\Pagination;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
-$cHinweis        = '';
-$cFehler         = '';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step            = 'uebersicht';
 $nAnzahlProSeite = 30;
 $oEmailhistory   = new Emailhistory();
 $cAction         = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
+$alertHelper     = Shop::Container()->getAlertService();
 
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {
-        if (true !== $oEmailhistory->deleteAll()) {
-            $cFehler = __('errorHistoryDelete');
+        if ($oEmailhistory->deleteAll() !== true) {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
         }
     } elseif (isset($_POST['kEmailhistory'])
         && is_array($_POST['kEmailhistory'])
         && count($_POST['kEmailhistory']) > 0
     ) {
         $oEmailhistory->deletePack($_POST['kEmailhistory']);
-        $cHinweis = __('successHistoryDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successHistoryDelete'), 'successHistoryDelete');
     } else {
-        $cFehler = __('errorSelectEntry');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSelectEntry'), 'errorSelectEntry');
     }
 }
 
@@ -42,7 +43,5 @@ if ($step === 'uebersicht') {
            ->assign('oEmailhistory_arr', $oEmailhistory->getAll(' LIMIT ' . $oPagination->getLimitSQL()));
 }
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->display('emailhistory.tpl');

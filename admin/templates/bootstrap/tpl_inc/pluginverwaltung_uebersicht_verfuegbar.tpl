@@ -9,7 +9,7 @@
         // for all found licenses..
         for (var key in vLicenses) {
             // ..bind a click-handler to the plugins checkbox
-            $('input[id="plugin-check-'+key+'"]').click(function(event) {
+            $('input[id="plugin-check-'+key+'"]').on('click', function(event) {
                 // grab the element, which was rising that click-event (click to the checkbox)
                 var oTemp = $(event.currentTarget);
                 szPluginName = oTemp.val();
@@ -90,9 +90,9 @@
                                     <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatible')}" class="label warning label-danger"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fa fa-warning"></i></span>
                                         {else}
-                                            <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                         {/if}
                                     {/if}
                                 </td>
@@ -100,7 +100,7 @@
                                     <label for="plugin-check-{$listingItem->getDir()}">{$listingItem->getName()}</label>
                                     <p>{$listingItem->getDescription()}</p>
                                     {if $listingItem->isShop4Compatible() === false && $listingItem->isShop5Compatible() === false}
-                                        <div class="alert alert-info">{__('dangerPluginNotCompatible')}</div>
+                                        <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}
                                 </td>
                                 <td class="tcenter">{$listingItem->getVersion()}</td>

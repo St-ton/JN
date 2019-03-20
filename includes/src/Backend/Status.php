@@ -4,22 +4,30 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Backend;
+namespace JTL\Backend;
 
-use Cache\JTLCacheInterface;
-use DB\ReturnType;
-use Helpers\Template as TemplateHelper;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Template as TemplateHelper;
+use JTL\Media\Image;
+use JTL\Media\MediaImage;
+use JTL\Plugin\State;
+use JTL\Profiler;
+use JTL\Shop;
+use JTL\SingletonTrait;
+use JTL\Template;
+use JTL\Update\Updater;
+use JTL\Checkout\ZahlungsLog;
+use stdClass;
 use function Functional\some;
-use Plugin\State;
-use Shop;
 
 /**
  * Class Status
- * @package Backend
+ * @package JTL\Backend
  */
 class Status
 {
-    use \SingletonTrait;
+    use SingletonTrait;
 
     /**
      * @var array
@@ -51,18 +59,18 @@ class Status
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      * @throws \Exception
      */
-    protected function getImageCache(): \stdClass
+    protected function getImageCache(): stdClass
     {
-        return \MediaImage::getStats(\Image::TYPE_PRODUCT);
+        return MediaImage::getStats(Image::TYPE_PRODUCT);
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    protected function getSystemLogInfo(): \stdClass
+    protected function getSystemLogInfo(): stdClass
     {
         $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
 
@@ -127,7 +135,7 @@ class Status
      */
     protected function validFolderPermissions(): bool
     {
-        $permissionStat = (new \Systemcheck_Platform_Filesystem(PFAD_ROOT))->getFolderStats();
+        $permissionStat = (new \Systemcheck_Platform_Filesystem(\PFAD_ROOT))->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }
@@ -175,7 +183,7 @@ class Status
      */
     protected function hasPendingUpdates(): bool
     {
-        return (new \Updater())->hasPendingUpdates();
+        return (new Updater())->hasPendingUpdates();
     }
 
     /**
@@ -183,7 +191,7 @@ class Status
      */
     protected function hasActiveProfiler(): bool
     {
-        return \Profiler::getIsActive() !== 0;
+        return Profiler::getIsActive() !== 0;
     }
 
     /**
@@ -199,7 +207,7 @@ class Status
      */
     protected function hasDifferentTemplateVersion(): bool
     {
-        return \APPLICATION_VERSION !== \Template::getInstance()->getVersion();
+        return Template::getInstance()->getVersion() !== \APPLICATION_VERSION;
     }
 
     /**
@@ -294,7 +302,7 @@ class Status
             'cAnbieter, cName, nSort, kZahlungsart'
         );
         foreach ($paymentMethods as $method) {
-            if (($logCount = \ZahlungsLog::count($method->cModulId, \JTLLOG_LEVEL_ERROR)) > 0) {
+            if (($logCount = ZahlungsLog::count($method->cModulId, \JTLLOG_LEVEL_ERROR)) > 0) {
                 $method->logCount          = $logCount;
                 $incorrectPaymentMethods[] = $method;
             }
@@ -393,7 +401,7 @@ class Status
         }
         // check against plugins, found in file-system
         foreach ($pluginsDB as $szFolder => $nVersion) {
-            $info = PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/info.xml';
+            $info = \PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/info.xml';
             $xml  = null;
             if (\file_exists($info)) {
                 $xml = \simplexml_load_file($info);

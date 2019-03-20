@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Exceptions;
+namespace JTL\Exceptions;
 
 use Psr\Container\ContainerExceptionInterface;
 
 /**
  * Class CircularReferenceException
- * @package Exceptions
+ * @package JTL\Exceptions
  */
 class CircularReferenceException extends \Exception implements ContainerExceptionInterface
 {

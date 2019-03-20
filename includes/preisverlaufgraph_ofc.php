@@ -3,6 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Catalog\Product\Preisverlauf;
+use JTL\Shop;
+use JTL\Session\Frontend;
+
 require_once __DIR__ . '/globalinclude.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 
@@ -34,7 +39,7 @@ function expandPriceArray($data, $max)
 }
 
 if (isset($_GET['kArtikel'])) {
-    $session       = \Session\Frontend::getInstance();
+    $session       = Frontend::getInstance();
     $conf          = Shop::getSettings([CONF_PREISVERLAUF]);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];
@@ -43,8 +48,8 @@ if (isset($_GET['kArtikel'])) {
 
     if (count($conf) > 0) {
         $priceConfig           = new stdClass();
-        $priceConfig->Waehrung = \Session\Frontend::getCurrency()->getName();
-        $priceConfig->Netto    = \Session\Frontend::getCustomerGroup()->isMerchant()
+        $priceConfig->Waehrung = Frontend::getCurrency()->getName();
+        $priceConfig->Netto    = Frontend::getCustomerGroup()->isMerchant()
             ? 0
             : $_GET['fMwSt'];
 

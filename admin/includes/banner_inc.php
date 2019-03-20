@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\ImageMap;
+use JTL\IO\IOResponse;
+use JTL\Shop;
+
 /**
  * @return mixed
  */
@@ -54,7 +58,7 @@ function holeBannerDateien()
 {
     $cBannerFile_arr = [];
     if (($nHandle = opendir(PFAD_ROOT . PFAD_BILDER_BANNER)) !== false) {
-        while (false !== ($cFile = readdir($nHandle))) {
+        while (($cFile = readdir($nHandle)) !== false) {
             if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
                 $cBannerFile_arr[] = $cFile;
             }

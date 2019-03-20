@@ -4,23 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Artikel;
-use DB\ReturnType;
-use Kundengruppe;
-use Preise;
-use Session\Frontend;
-use Shop;
-use Sprache;
+use function Functional\some;
+use JTL\Catalog\Product\Artikel;
+use JTL\Cart\Warenkorb;
+use JTL\DB\ReturnType;
+use JTL\Customer\Kundengruppe;
+use JTL\Catalog\Product\Preise;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Checkout\Versandart;
 use stdClass;
-use StringHandler;
-use Versandart;
-use Warenkorb;
 
 /**
  * Class ShippingMethod
- * @package Helpers
+ * @package JTL\Helpers
  */
 class ShippingMethod
 {
@@ -92,18 +92,18 @@ class ShippingMethod
     }
 
     /**
-     * @param float|int $wert
-     * @param int       $kKundengruppe
-     * @param int       $versandklasse
+     * @param float|int $price
+     * @param int       $cgroupID
+     * @param int       $shippingClassID
      * @return string
      */
-    public function getFreeShippingCountries($wert, int $kKundengruppe, int $versandklasse = 0): string
+    public function getFreeShippingCountries($price, int $cgroupID, int $shippingClassID = 0): string
     {
-        if (!isset($this->countries[$kKundengruppe][$versandklasse])) {
-            if (!isset($this->countries[$kKundengruppe])) {
-                $this->countries[$kKundengruppe] = [];
+        if (!isset($this->countries[$cgroupID][$shippingClassID])) {
+            if (!isset($this->countries[$cgroupID])) {
+                $this->countries[$cgroupID] = [];
             }
-            $this->countries[$kKundengruppe][$versandklasse] = Shop::Container()->getDB()->queryPrepared(
+            $this->countries[$cgroupID][$shippingClassID] = Shop::Container()->getDB()->queryPrepared(
                 "SELECT *
                     FROM tversandart
                     WHERE fVersandkostenfreiAbX > 0
@@ -111,52 +111,35 @@ class ShippingMethod
                         OR cVersandklassen RLIKE :sClasses)
                         AND (cKundengruppen = '-1' OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)",
                 [
-                    'sClasses' => '^([0-9 -]* )?' . $versandklasse . ' ',
-                    'cGroupID' => $kKundengruppe
+                    'sClasses' => '^([0-9 -]* )?' . $shippingClassID . ' ',
+                    'cGroupID' => $cgroupID
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
         $shippingFreeCountries = [];
-        foreach ($this->countries[$kKundengruppe][$versandklasse] as $_method) {
-            if (isset($_method->fVersandkostenfreiAbX)
-                && (float)$_method->fVersandkostenfreiAbX > 0
-                && (float)$_method->fVersandkostenfreiAbX < $wert
-            ) {
-                foreach (\explode(' ', $_method->cLaender) as $_country) {
-                    if (\mb_strlen($_country) > 0) {
-                        $shippingFreeCountries[] = $_country;
-                    }
-                }
+        foreach ($this->countries[$cgroupID][$shippingClassID] as $_method) {
+            if ((float)$_method->fVersandkostenfreiAbX >= $price) {
+                continue;
+            }
+            foreach (\explode(' ', $_method->cLaender) as $_country) {
+                $shippingFreeCountries[] = $_country;
             }
         }
-        $shippingFreeCountries = \array_unique($shippingFreeCountries);
-        $res                   = '';
-        foreach ($shippingFreeCountries as $i => $_country) {
-            $res .= (($i > 0) ? ', ' : '') . $_country;
-        }
 
-        return $res;
+        return \implode(', ', \array_unique($shippingFreeCountries));
     }
 
     /**
-     * @param string $cLand
+     * @param string $country
      * @return bool
      */
-    public static function normalerArtikelversand($cLand): bool
+    public static function normalerArtikelversand($country): bool
     {
-        $bNoetig = false;
-        $cart    = Frontend::getCart();
-        foreach ($cart->PositionenArr as $pos) {
-            if ((int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
-                && !self::gibArtikelabhaengigeVersandkosten($cLand, $pos->Artikel, $pos->nAnzahl)
-            ) {
-                $bNoetig = true;
-                break;
-            }
-        }
-
-        return $bNoetig;
+        return some(Frontend::getCart()->PositionenArr, function ($pos) use ($country) {
+            return (int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                && !self::gibArtikelabhaengigeVersandkosten($country, $pos->Artikel, $pos->nAnzahl);
+        });
     }
 
     /**
@@ -170,22 +153,21 @@ class ShippingMethod
 
     /**
      * @former gibMoeglicheVersandarten()
-     * @param string $lieferland
-     * @param string $plz
-     * @param string $versandklassen
-     * @param int    $kKundengruppe
+     * @param string $countryCode
+     * @param string $zip
+     * @param string $shippingClasses
+     * @param int    $cgroupID
      * @return array
      */
-    public static function getPossibleShippingMethods($lieferland, $plz, $versandklassen, int $kKundengruppe): array
+    public static function getPossibleShippingMethods($countryCode, $zip, $shippingClasses, int $cgroupID): array
     {
         $db                       = Shop::Container()->getDB();
         $cart                     = Frontend::getCart();
         $kSteuerklasse            = $cart->gibVersandkostenSteuerklasse();
         $minVersand               = 10000;
-        $cISO                     = $lieferland;
-        $hasSpecificShippingcosts = self::hasSpecificShippingcosts($lieferland);
+        $hasSpecificShippingcosts = self::hasSpecificShippingcosts($countryCode);
         $vatNote                  = null;
-        $cNurAbhaengigeVersandart = self::normalerArtikelversand($lieferland) === false
+        $cNurAbhaengigeVersandart = self::normalerArtikelversand($countryCode) === false
             ? 'Y'
             : 'N';
         $methods                  = $db->queryPrepared(
@@ -198,9 +180,9 @@ class ShippingMethod
                     OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
                 ORDER BY nSort",
             [
-                'iso'      => '%' . $cISO . '%',
-                'cGroupID' => $kKundengruppe,
-                'sClasses' => '^([0-9 -]* )?' . $versandklassen . ' ',
+                'iso'      => '%' . $countryCode . '%',
+                'cGroupID' => $cgroupID,
+                'sClasses' => '^([0-9 -]* )?' . $shippingClasses . ' ',
                 'depOnly'  => $cNurAbhaengigeVersandart
             ],
             ReturnType::ARRAY_OF_OBJECTS
@@ -215,8 +197,8 @@ class ShippingMethod
             $shippingMethod->nSort              = (int)$shippingMethod->nSort;
             $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
             $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
-            $shippingMethod->Zuschlag           = self::getAdditionalFees($shippingMethod, $cISO, $plz);
-            $shippingMethod->fEndpreis          = self::calculateShippingFees($shippingMethod, $cISO, null);
+            $shippingMethod->Zuschlag           = self::getAdditionalFees($shippingMethod, $countryCode, $zip);
+            $shippingMethod->fEndpreis          = self::calculateShippingFees($shippingMethod, $countryCode, null);
             if ($shippingMethod->fEndpreis === -1) {
                 unset($methods[$i]);
                 continue;
@@ -238,30 +220,29 @@ class ShippingMethod
             $shippingMethod->cLieferdauer              = [];
             $shippingMethod->specificShippingcosts_arr = null;
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = $db->select(
+                $localized = $db->select(
                     'tversandartsprache',
                     'kVersandart',
                     (int)$shippingMethod->kVersandart,
                     'cISOSprache',
                     $Sprache->cISO
                 );
-                if (isset($name_spr->cName)) {
-                    $shippingMethod->angezeigterName[$Sprache->cISO]        = $name_spr->cName;
-                    $shippingMethod->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweistextShop;
-                    $shippingMethod->cLieferdauer[$Sprache->cISO]           = $name_spr->cLieferdauer;
+                if (isset($localized->cName)) {
+                    $shippingMethod->angezeigterName[$Sprache->cISO]        = $localized->cName;
+                    $shippingMethod->angezeigterHinweistext[$Sprache->cISO] = $localized->cHinweistextShop;
+                    $shippingMethod->cLieferdauer[$Sprache->cISO]           = $localized->cLieferdauer;
                 }
             }
             if ($shippingMethod->fEndpreis < $minVersand) {
                 $minVersand = $shippingMethod->fEndpreis;
             }
-            // lokalisieren
             if ($shippingMethod->fEndpreis == 0) {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
                 $shippingMethod->cPreisLocalized = Shop::Lang()->get('freeshipping');
                 if ($hasSpecificShippingcosts === true) {
                     $shippingMethod->cPreisLocalized           = Preise::getLocalizedPriceString($shippingCosts);
                     $shippingMethod->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
-                        $lieferland,
+                        $countryCode,
                         $cart->PositionenArr
                     );
                 }
@@ -270,13 +251,13 @@ class ShippingMethod
                 $shippingMethod->cPreisLocalized = Preise::getLocalizedPriceString($shippingCosts) . ($vatNote ?? '');
                 if ($hasSpecificShippingcosts === true) {
                     $shippingMethod->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK(
-                        $lieferland,
+                        $countryCode,
                         $cart->PositionenArr
                     );
                 }
             }
             // Abfrage ob die Zahlungsart/en zur Versandart gesetzt ist/sind
-            $zahlungsarten   = $db->queryPrepared(
+            $paymentMethods = $db->queryPrepared(
                 "SELECT tversandartzahlungsart.*, tzahlungsart.*
                      FROM tversandartzahlungsart, tzahlungsart
                      WHERE tversandartzahlungsart.kVersandart = :methodID
@@ -288,18 +269,14 @@ class ShippingMethod
                      ORDER BY tzahlungsart.nSort",
                 [
                     'methodID' => (int)$shippingMethod->kVersandart,
-                    'cGroupID' => $kKundengruppe
+                    'cGroupID' => $cgroupID
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $bVersandGueltig = false;
-            foreach ($zahlungsarten as $zahlungsart) {
-                if (PaymentMethod::shippingMethodWithValidPaymentMethod($zahlungsart)) {
-                    $bVersandGueltig = true;
-                    break;
-                }
-            }
-            if (!$bVersandGueltig) {
+            $valid          = some($paymentMethods, function ($pmm) {
+                return PaymentMethod::shippingMethodWithValidPaymentMethod($pmm);
+            });
+            if (!$valid) {
                 unset($shippingMethod);
             }
         }
@@ -307,8 +284,7 @@ class ShippingMethod
         $possibleMethods = \array_filter(
             \array_merge($methods),
             function ($p) use ($minVersand) {
-                return $p->cAnzeigen === 'immer'
-                    || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minVersand);
+                return $p->cAnzeigen === 'immer' || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minVersand);
             }
         );
         // evtl. Versandkupon anwenden
@@ -325,43 +301,43 @@ class ShippingMethod
 
     /**
      * @former ermittleVersandkosten()
-     * @param string $cLand
-     * @param string $cPLZ
-     * @param string $cError
+     * @param string $country
+     * @param string $zip
+     * @param string $errorMsg
      * @return bool
      */
-    public static function getShippingCosts($cLand, $cPLZ, &$cError = ''): bool
+    public static function getShippingCosts($country, $zip, &$errorMsg = ''): bool
     {
-        if ($cLand !== null && $cPLZ !== null && \mb_strlen($cLand) > 0 && \mb_strlen($cPLZ) > 0) {
-            $kKundengruppe = Frontend::getCustomerGroup()->getID();
+        if ($country !== null && $zip !== null && \mb_strlen($country) > 0 && \mb_strlen($zip) > 0) {
+            $cgroupID = Frontend::getCustomerGroup()->getID();
             if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-                $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
+                $cgroupID = $_SESSION['Kunde']->kKundengruppe;
             }
 
             $shippingMethods = self::getPossibleShippingMethods(
-                StringHandler::filterXSS($cLand),
-                StringHandler::filterXSS($cPLZ),
+                Text::filterXSS($country),
+                Text::filterXSS($zip),
                 self::getShippingClasses(Frontend::getCart()),
-                $kKundengruppe
+                $cgroupID
             );
             if (\count($shippingMethods) > 0) {
                 Shop::Smarty()
                     ->assign('ArtikelabhaengigeVersandarten', self::gibArtikelabhaengigeVersandkostenImWK(
-                        $cLand,
+                        $country,
                         Frontend::getCart()->PositionenArr
                     ))
                     ->assign('Versandarten', $shippingMethods)
-                    ->assign('Versandland', Sprache::getCountryCodeByCountryName($cLand))
-                    ->assign('VersandPLZ', StringHandler::filterXSS($cPLZ));
+                    ->assign('Versandland', Sprache::getCountryCodeByCountryName($country))
+                    ->assign('VersandPLZ', Text::filterXSS($zip));
             } else {
-                $cError = Shop::Lang()->get('noDispatchAvailable');
+                $errorMsg = Shop::Lang()->get('noDispatchAvailable');
             }
             \executeHook(\HOOK_WARENKORB_PAGE_ERMITTLEVERSANDKOSTEN);
 
             return true;
         }
 
-        return !(isset($_POST['versandrechnerBTN']) && (\mb_strlen($cLand) === 0 || \mb_strlen($cPLZ) === 0));
+        return !(isset($_POST['versandrechnerBTN']) && (\mb_strlen($country) === 0 || \mb_strlen($zip) === 0));
     }
 
     /**
@@ -377,39 +353,38 @@ class ShippingMethod
         if (!\is_array($products) || \count($products) === 0) {
             return null;
         }
-        $cLandISO = $_SESSION['cLieferlandISO'] ?? false;
+        $iso      = $_SESSION['cLieferlandISO'] ?? false;
         $cart     = Frontend::getCart();
-        if (!$cLandISO) {
-            //Falls kein Land in tfirma da
-            $cLandISO = 'DE';
+        $cgroupID = Frontend::getCustomerGroup()->getID();
+        if (!$iso) {
+            // Falls kein Land in tfirma da
+            $iso = 'DE';
         }
-
-        $kKundengruppe = Frontend::getCustomerGroup()->getID();
         // Baue ZusatzArtikel
         $additionalProduct                  = new stdClass();
         $additionalProduct->fAnzahl         = 0;
         $additionalProduct->fWarenwertNetto = 0;
         $additionalProduct->fGewicht        = 0;
 
-        $shippingClasses                = self::getShippingClasses($cart);
-        $conf                           = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
-        $additionalShippingFees         = 0;
-        $fWarensummeProSteuerklasse_arr = [];
-        $kSteuerklasse                  = 0;
+        $shippingClasses        = self::getShippingClasses($cart);
+        $conf                   = Shop::getSettings([\CONF_KAUFABWICKLUNG]);
+        $additionalShippingFees = 0;
+        $perTaxClass            = [];
+        $taxClassID             = 0;
         // Vorkonditionieren -- Gleiche kartikel aufsummieren
         // aber nur, wenn artikelabhaengiger Versand bei dem jeweiligen kArtikel
         $productIDs = [];
         foreach ($products as $product) {
-            $kArtikel              = (int)$product['kArtikel'];
-            $productIDs[$kArtikel] = isset($productIDs[$kArtikel]) ? 1 : 0;
+            $productID              = (int)$product['kArtikel'];
+            $productIDs[$productID] = isset($productIDs[$productID]) ? 1 : 0;
         }
-        $bMerge         = false;
+        $merge          = false;
         $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($productIDs as $kArtikel => $nArtikelAssoc) {
+        foreach ($productIDs as $productID => $nArtikelAssoc) {
             if ($nArtikelAssoc !== 1) {
                 continue;
             }
-            $tmpProduct = (new Artikel())->fuelleArtikel($kArtikel, $defaultOptions);
+            $tmpProduct = (new Artikel())->fuelleArtikel($productID, $defaultOptions);
             // Normaler Variationsartikel
             if ($tmpProduct !== null
                 && $tmpProduct->nIstVater === 0
@@ -420,21 +395,21 @@ class ShippingMethod
                 // Nur wenn artikelabhaengiger Versand gestaffelt als Funktionsattribut gesetzt ist
                 $fAnzahl = 0;
                 foreach ($products as $i => $prod) {
-                    if ($prod['kArtikel'] === $kArtikel) {
+                    if ($prod['kArtikel'] === $productID) {
                         $fAnzahl += $prod['fAnzahl'];
                         unset($products[$i]);
                     }
                 }
 
-                $oArtikelMerged             = [];
-                $oArtikelMerged['kArtikel'] = $kArtikel;
-                $oArtikelMerged['fAnzahl']  = $fAnzahl;
-                $products[]                 = $oArtikelMerged;
-                $bMerge                     = true;
+                $merged             = [];
+                $merged['kArtikel'] = $productID;
+                $merged['fAnzahl']  = $fAnzahl;
+                $products[]         = $merged;
+                $merge              = true;
             }
         }
 
-        if ($bMerge) {
+        if ($merge) {
             $products = \array_merge($products);
         }
         $defaultOptions = Artikel::getDefaultOptions();
@@ -443,20 +418,19 @@ class ShippingMethod
             if ($tmpProduct === null || $tmpProduct->kArtikel <= 0) {
                 continue;
             }
-            $kSteuerklasse = $tmpProduct->kSteuerklasse;
+            $taxClassID = $tmpProduct->kSteuerklasse;
             // Artikelabhaengige Versandkosten?
             if ($tmpProduct->nIstVater === 0) {
-                //Summen pro Steuerklasse summieren
+                // Summen pro Steuerklasse summieren
                 if ($tmpProduct->kSteuerklasse === null) {
-                    $fWarensummeProSteuerklasse_arr[$tmpProduct->kSteuerklasse] = 0;
+                    $perTaxClass[$tmpProduct->kSteuerklasse] = 0;
                 }
 
-                $fWarensummeProSteuerklasse_arr[$tmpProduct->kSteuerklasse] +=
-                    $tmpProduct->Preise->fVKNetto * $product['fAnzahl'];
+                $perTaxClass[$tmpProduct->kSteuerklasse] += $tmpProduct->Preise->fVKNetto * $product['fAnzahl'];
 
                 $oVersandPos = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
                     $tmpProduct,
-                    $cLandISO,
+                    $iso,
                     $product['fAnzahl']
                 );
                 if ($oVersandPos !== false) {
@@ -539,21 +513,19 @@ class ShippingMethod
                         $kEigenschaftWert0
                     );
                     $child->fuelleArtikel($kKindArtikel, $defaultOptions);
-                    //Summen pro Steuerklasse summieren
-                    if (!\array_key_exists($child->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                        $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] = 0;
+                    // Summen pro Steuerklasse summieren
+                    if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
+                        $perTaxClass[$child->kSteuerklasse] = 0;
                     }
+                    $perTaxClass[$child->kSteuerklasse] += $child->Preise->fVKNetto * $product['fAnzahl'];
 
-                    $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] +=
-                        $child->Preise->fVKNetto * $product['fAnzahl'];
-
-                    $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
+                    $sum = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
                         $child,
-                        $cLandISO,
+                        $iso,
                         $product['fAnzahl']
                     );
-                    if ($fSumme !== false) {
-                        $additionalShippingFees += $fSumme;
+                    if ($sum !== false) {
+                        $additionalShippingFees += $sum;
                         continue;
                     }
 
@@ -574,21 +546,20 @@ class ShippingMethod
                         $kEigenschaftWert1
                     );
                     $child->fuelleArtikel($kKindArtikel, $defaultOptions);
-                    //Summen pro Steuerklasse summieren
-                    if (!\array_key_exists($child->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                        $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] = 0;
+                    // Summen pro Steuerklasse summieren
+                    if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
+                        $perTaxClass[$child->kSteuerklasse] = 0;
                     }
 
-                    $fWarensummeProSteuerklasse_arr[$child->kSteuerklasse] +=
-                        $child->Preise->fVKNetto * $product['fAnzahl'];
+                    $perTaxClass[$child->kSteuerklasse] += $child->Preise->fVKNetto * $product['fAnzahl'];
 
-                    $fSumme = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
+                    $sum = self::gibHinzukommendeArtikelAbhaengigeVersandkosten(
                         $child,
-                        $cLandISO,
+                        $iso,
                         $product['fAnzahl']
                     );
-                    if ($fSumme !== false) {
-                        $additionalShippingFees += $fSumme;
+                    if ($sum !== false) {
+                        $additionalShippingFees += $sum;
                         continue;
                     }
 
@@ -596,7 +567,9 @@ class ShippingMethod
                     $additionalProduct->fWarenwertNetto += $product['fAnzahl'] * $child->Preise->fVKNetto;
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
-                if (\mb_strlen($shippingClasses) > 0 && \mb_strpos($shippingClasses, $child->kVersandklasse) === false) {
+                if (\mb_strlen($shippingClasses) > 0
+                    && \mb_strpos($shippingClasses, $child->kVersandklasse) === false
+                ) {
                     $shippingClasses = '-' . $child->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {
                     $shippingClasses = $child->kVersandklasse;
@@ -607,63 +580,63 @@ class ShippingMethod
         if (isset($cart->PositionenArr) && \is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
             // Wenn etwas im Warenkorb ist, dann Vesandart vom Warenkorb rausfinden
             $oVersandartNurWK = self::getFavourableShippingMethod(
-                $cLandISO,
+                $iso,
                 $shippingClasses,
-                $kKundengruppe,
+                $cgroupID,
                 null
             );
             $depending        = self::gibArtikelabhaengigeVersandkostenImWK(
-                $cLandISO,
+                $iso,
                 $cart->PositionenArr
             );
 
-            $fSumme = 0;
+            $sum = 0;
             foreach ($depending as $oArtikelAbhaenigeVersandkosten) {
-                $fSumme += $oArtikelAbhaenigeVersandkosten->fKosten;
+                $sum += $oArtikelAbhaenigeVersandkosten->fKosten;
             }
 
-            $oVersandartNurWK->fEndpreis += $fSumme;
-            $oVersandart                  = self::getFavourableShippingMethod(
-                $cLandISO,
+            $oVersandartNurWK->fEndpreis += $sum;
+            $shippingMethod               = self::getFavourableShippingMethod(
+                $iso,
                 $shippingClasses,
-                $kKundengruppe,
+                $cgroupID,
                 $additionalProduct
             );
-            $oVersandart->fEndpreis      += ($fSumme + $additionalShippingFees);
+            $shippingMethod->fEndpreis   += ($sum + $additionalShippingFees);
         } else {
             $oVersandartNurWK            = new stdClass();
-            $oVersandart                 = new stdClass();
+            $shippingMethod              = new stdClass();
             $oVersandartNurWK->fEndpreis = 0;
-            $oVersandart->fEndpreis      = $additionalShippingFees;
+            $shippingMethod->fEndpreis   = $additionalShippingFees;
         }
 
-        if (\abs($oVersandart->fEndpreis - $oVersandartNurWK->fEndpreis) > 0.01) {
-            //Versand mit neuen Artikeln > als Versand ohne Steuerklasse bestimmen
-            foreach ($cart->PositionenArr as $oPosition) {
-                if ((int)$oPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+        if (\abs($shippingMethod->fEndpreis - $oVersandartNurWK->fEndpreis) > 0.01) {
+            // Versand mit neuen Artikeln > als Versand ohne Steuerklasse bestimmen
+            foreach ($cart->PositionenArr as $position) {
+                if ((int)$position->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                     //Summen pro Steuerklasse summieren
-                    if (!\array_key_exists($oPosition->Artikel->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
-                        $fWarensummeProSteuerklasse_arr[$oPosition->Artikel->kSteuerklasse] = 0;
+                    if (!\array_key_exists($position->Artikel->kSteuerklasse, $perTaxClass)) {
+                        $perTaxClass[$position->Artikel->kSteuerklasse] = 0;
                     }
-                    $fWarensummeProSteuerklasse_arr[$oPosition->Artikel->kSteuerklasse] +=
-                        $oPosition->Artikel->Preise->fVKNetto * $oPosition->nAnzahl;
+                    $perTaxClass[$position->Artikel->kSteuerklasse] +=
+                        $position->Artikel->Preise->fVKNetto * $position->nAnzahl;
                 }
             }
 
             if ($conf['kaufabwicklung']['bestellvorgang_versand_steuersatz'] === 'US') {
-                $nMaxSumme = 0;
-                foreach ($fWarensummeProSteuerklasse_arr as $j => $fWarensummeProSteuerklasse) {
-                    if ($fWarensummeProSteuerklasse > $nMaxSumme) {
-                        $nMaxSumme     = $fWarensummeProSteuerklasse;
-                        $kSteuerklasse = $j;
+                $maxSum = 0;
+                foreach ($perTaxClass as $j => $fWarensummeProSteuerklasse) {
+                    if ($fWarensummeProSteuerklasse > $maxSum) {
+                        $maxSum     = $fWarensummeProSteuerklasse;
+                        $taxClassID = $j;
                     }
                 }
             } else {
-                $nMaxSteuersatz = 0;
-                foreach ($fWarensummeProSteuerklasse_arr as $j => $fWarensummeProSteuerklasse) {
-                    if (Tax::getSalesTax($j) > $nMaxSteuersatz) {
-                        $nMaxSteuersatz = Tax::getSalesTax($j);
-                        $kSteuerklasse  = $j;
+                $maxTaxRate = 0;
+                foreach ($perTaxClass as $j => $fWarensummeProSteuerklasse) {
+                    if (Tax::getSalesTax($j) > $maxTaxRate) {
+                        $maxTaxRate = Tax::getSalesTax($j);
+                        $taxClassID = $j;
                     }
                 }
             }
@@ -671,12 +644,11 @@ class ShippingMethod
             return \sprintf(
                 Shop::Lang()->get('productExtraShippingNotice'),
                 Preise::getLocalizedPriceString(
-                    Tax::getGross($oVersandart->fEndpreis, Tax::getSalesTax($kSteuerklasse), 4)
+                    Tax::getGross($shippingMethod->fEndpreis, Tax::getSalesTax($taxClassID), 4)
                 )
             );
         }
 
-        //Versand mit neuen Artikeln gleich oder guenstiger als ohne
         return Shop::Lang()->get('productNoExtraShippingNotice');
     }
 
@@ -684,7 +656,7 @@ class ShippingMethod
      * @param string         $deliveryCountry
      * @param string         $shippingClasses
      * @param int            $customerGroupID
-     * @param Artikel|object $article
+     * @param Artikel|object $product
      * @param bool           $checkProductDepedency
      * @return mixed
      * @former gibGuenstigsteVersandart()
@@ -693,12 +665,11 @@ class ShippingMethod
         $deliveryCountry,
         $shippingClasses,
         $customerGroupID,
-        $article,
+        $product,
         $checkProductDepedency = true
     ) {
         $favourableIDX   = 0;
         $minVersand      = 10000;
-        $cISO            = $deliveryCountry;
         $depOnly         = ($checkProductDepedency && self::normalerArtikelversand($deliveryCountry) === false)
             ? 'Y'
             : 'N';
@@ -714,14 +685,14 @@ class ShippingMethod
             ORDER BY nSort",
             [
                 'depOnly'  => $depOnly,
-                'iso'      => '%' . $cISO . '%',
+                'iso'      => '%' . $deliveryCountry . '%',
                 'cGroupID' => $customerGroupID,
                 'sClasses' => '^([0-9 -]* )?' . $shippingClasses . ' '
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($shippingMethods as $i => $shippingMethod) {
-            $shippingMethod->fEndpreis = self::calculateShippingFees($shippingMethod, $cISO, $article);
+            $shippingMethod->fEndpreis = self::calculateShippingFees($shippingMethod, $deliveryCountry, $product);
             if ($shippingMethod->fEndpreis === -1) {
                 unset($shippingMethods[$i]);
                 continue;
@@ -740,41 +711,41 @@ class ShippingMethod
      * wird die hinzukommende Versandsumme fuer den Artikel
      * der hinzugefuegt werden soll errechnet und zurueckgegeben.
      *
-     * @param Artikel $oArtikel
-     * @param string  $cLandISO
-     * @param float   $fArtikelAnzahl
+     * @param Artikel $product
+     * @param string  $iso
+     * @param float   $productAmount
      * @return bool|stdClass
      */
-    public static function gibHinzukommendeArtikelAbhaengigeVersandkosten($oArtikel, $cLandISO, $fArtikelAnzahl)
+    public static function gibHinzukommendeArtikelAbhaengigeVersandkosten($product, $iso, $productAmount)
     {
-        $oArtikel->kArtikel              = (int)$oArtikel->kArtikel;
-        $nArtikelAbhaengigeVersandkosten = self::pruefeArtikelabhaengigeVersandkosten($oArtikel);
-        if ($nArtikelAbhaengigeVersandkosten === 1) {
-            return self::gibArtikelabhaengigeVersandkosten($cLandISO, $oArtikel, $fArtikelAnzahl, false);
+        $product->kArtikel = (int)$product->kArtikel;
+        $dep               = self::pruefeArtikelabhaengigeVersandkosten($product);
+        if ($dep === 1) {
+            return self::gibArtikelabhaengigeVersandkosten($iso, $product, $productAmount, false);
         }
-        if ($nArtikelAbhaengigeVersandkosten === 2) {
+        if ($dep === 2) {
             // Gib alle Artikel im Warenkorb, die Artikel abhaengige Versandkosten beinhalten
             $depending = self::gibArtikelabhaengigeVersandkostenImWK(
-                $cLandISO,
+                $iso,
                 Frontend::getCart()->PositionenArr,
                 false
             );
 
             if (\count($depending) > 0) {
-                $nAnzahl = $fArtikelAnzahl;
-                $fKosten = 0;
+                $amount = $productAmount;
+                $total  = 0;
                 foreach ($depending as $shipping) {
                     $shipping->kArtikel = (int)$shipping->kArtikel;
                     // Wenn es bereits den hinzukommenden Artikel im Warenkorb gibt
                     // zaehle die Anzahl vom Warenkorb hinzu und gib die Kosten fuer den Artikel im Warenkorb
-                    if ($shipping->kArtikel === $oArtikel->kArtikel) {
-                        $nAnzahl += $shipping->nAnzahl;
-                        $fKosten  = $shipping->fKosten;
+                    if ($shipping->kArtikel === $product->kArtikel) {
+                        $amount += $shipping->nAnzahl;
+                        $total   = $shipping->fKosten;
                         break;
                     }
                 }
 
-                return self::gibArtikelabhaengigeVersandkosten($cLandISO, $oArtikel, $nAnzahl, false) - $fKosten;
+                return self::gibArtikelabhaengigeVersandkosten($iso, $product, $amount, false) - $total;
             }
         }
 
@@ -782,25 +753,25 @@ class ShippingMethod
     }
 
     /**
-     * @param Artikel $oArtikel
+     * @param Artikel $product
      * @return int
      */
-    public static function pruefeArtikelabhaengigeVersandkosten(Artikel $oArtikel): int
+    public static function pruefeArtikelabhaengigeVersandkosten(Artikel $product): int
     {
-        $bHookReturn = false;
+        $hookReturn = false;
         \executeHook(\HOOK_TOOLS_GLOBAL_PRUEFEARTIKELABHAENGIGEVERSANDKOSTEN, [
-            'oArtikel'    => &$oArtikel,
-            'bHookReturn' => &$bHookReturn
+            'oArtikel'    => &$product,
+            'bHookReturn' => &$hookReturn
         ]);
 
-        if ($bHookReturn) {
+        if ($hookReturn) {
             return -1;
         }
-        if ($oArtikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN]) {
+        if ($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN]) {
             // Artikelabhaengige Versandkosten
             return 1;
         }
-        if ($oArtikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]) {
+        if ($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]) {
             // Artikelabhaengige Versandkosten gestaffelt
             return 2;
         }
@@ -809,24 +780,24 @@ class ShippingMethod
     }
 
     /**
-     * @param string  $cLand
-     * @param Artikel $Artikel
-     * @param int     $nAnzahl
-     * @param bool    $bCheckLieferadresse
+     * @param string  $country
+     * @param Artikel $product
+     * @param int     $amount
+     * @param bool    $checkDeliveryAddress
      * @return bool|stdClass
      */
     public static function gibArtikelabhaengigeVersandkosten(
-        $cLand,
-        Artikel $Artikel,
-        $nAnzahl,
-        bool $bCheckLieferadresse = true
+        $country,
+        Artikel $product,
+        $amount,
+        bool $checkDeliveryAddress = true
     ) {
         $steuerSatz  = null;
         $bHookReturn = false;
         \executeHook(\HOOK_TOOLS_GLOBAL_GIBARTIKELABHAENGIGEVERSANDKOSTEN, [
-            'oArtikel'    => &$Artikel,
-            'cLand'       => &$cLand,
-            'nAnzahl'     => &$nAnzahl,
+            'oArtikel'    => &$product,
+            'cLand'       => &$country,
+            'nAnzahl'     => &$amount,
             'bHookReturn' => &$bHookReturn
         ]);
 
@@ -843,68 +814,68 @@ class ShippingMethod
             )->fSteuersatz;
         }
         // gestaffelte
-        if (!empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])) {
+        if (!empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])) {
             $arrVersand = \array_filter(\explode(
                 ';',
-                $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]
+                $product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]
             ));
             foreach ($arrVersand as $cVersand) {
                 // DE 1-45,00:2-60,00:3-80;AT 1-90,00:2-120,00:3-150,00
                 [$cLandAttr, $KostenTeil] = \explode(' ', $cVersand);
-                if ($cLandAttr && ($cLand === $cLandAttr || $bCheckLieferadresse === false)) {
+                if ($cLandAttr && ($country === $cLandAttr || $checkDeliveryAddress === false)) {
                     $arrKosten = \explode(':', $KostenTeil);
                     foreach ($arrKosten as $staffel) {
                         [$bisAnzahl, $fPreis] = \explode('-', $staffel);
                         $fPreis               = (float)\str_replace(',', '.', $fPreis);
-                        if ($fPreis >= 0 && $bisAnzahl > 0 && $nAnzahl <= $bisAnzahl) {
-                            $oVersandPos = new stdClass();
+                        if ($fPreis >= 0 && $bisAnzahl > 0 && $amount <= $bisAnzahl) {
+                            $position = new stdClass();
                             //posname lokalisiert ablegen
-                            $oVersandPos->cName = [];
+                            $position->cName = [];
                             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                                $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
-                                    ' ' . $Artikel->cName . ' (' . $cLandAttr . ')';
+                                $position->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
+                                    ' ' . $product->cName . ' (' . $cLandAttr . ')';
                             }
-                            $oVersandPos->fKosten = $fPreis;
+                            $position->fKosten = $fPreis;
                             if ($netPricesActive === true) {
-                                $oVersandPos->cPreisLocalized = Preise::getLocalizedPriceString(
-                                    Tax::getNet((float)$oVersandPos->fKosten, $steuerSatz)
+                                $position->cPreisLocalized = Preise::getLocalizedPriceString(
+                                    Tax::getNet((float)$position->fKosten, $steuerSatz)
                                 ) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
                                 Shop::Lang()->get('vat', 'productDetails');
                             } else {
-                                $oVersandPos->cPreisLocalized = Preise::getLocalizedPriceString($oVersandPos->fKosten);
+                                $position->cPreisLocalized = Preise::getLocalizedPriceString($position->fKosten);
                             }
 
-                            return $oVersandPos;
+                            return $position;
                         }
                     }
                 }
             }
         }
         // flache
-        if (!empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])) {
-            $arrVersand = \array_filter(\explode(';', $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN]));
+        if (!empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])) {
+            $arrVersand = \array_filter(\explode(';', $product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN]));
             foreach ($arrVersand as $cVersand) {
                 [$cLandAttr, $fKosten] = \explode(' ', $cVersand);
-                if ($cLandAttr && ($cLand === $cLandAttr || $bCheckLieferadresse === false)) {
-                    $oVersandPos = new stdClass();
+                if ($cLandAttr && ($country === $cLandAttr || $checkDeliveryAddress === false)) {
+                    $position = new stdClass();
                     //posname lokalisiert ablegen
-                    $oVersandPos->cName = [];
+                    $position->cName = [];
                     foreach ($_SESSION['Sprachen'] as $Sprache) {
-                        $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
-                            $Artikel->cName . ' (' . $cLandAttr . ')';
+                        $position->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
+                            $product->cName . ' (' . $cLandAttr . ')';
                     }
-                    $oVersandPos->fKosten = (float)\str_replace(',', '.', $fKosten) * $nAnzahl;
+                    $position->fKosten = (float)\str_replace(',', '.', $fKosten) * $amount;
                     if ($netPricesActive === true) {
-                        $oVersandPos->cPreisLocalized = Preise::getLocalizedPriceString(Tax::getNet(
-                            (float)$oVersandPos->fKosten,
+                        $position->cPreisLocalized = Preise::getLocalizedPriceString(Tax::getNet(
+                            (float)$position->fKosten,
                             $steuerSatz
                         )) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
                         Shop::Lang()->get('vat', 'productDetails');
                     } else {
-                        $oVersandPos->cPreisLocalized = Preise::getLocalizedPriceString($oVersandPos->fKosten);
+                        $position->cPreisLocalized = Preise::getLocalizedPriceString($position->fKosten);
                     }
 
-                    return $oVersandPos;
+                    return $position;
                 }
             }
         }
@@ -920,12 +891,11 @@ class ShippingMethod
      */
     public static function gibArtikelabhaengigeVersandkostenImWK($country, $positions, $checkDelivery = true): array
     {
-        $arrVersandpositionen = [];
+        $shippingPositions = [];
         if (!\is_array($positions)) {
-            return $arrVersandpositionen;
+            return $shippingPositions;
         }
         $positions = \array_filter($positions, function ($pos) {
-            
             return (int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && \is_object($pos->Artikel);
         });
         foreach ($positions as $pos) {
@@ -936,12 +906,12 @@ class ShippingMethod
                 $checkDelivery
             );
             if (!empty($shippingPos->cName)) {
-                $shippingPos->kArtikel  = (int)$pos->Artikel->kArtikel;
-                $arrVersandpositionen[] = $shippingPos;
+                $shippingPos->kArtikel = (int)$pos->Artikel->kArtikel;
+                $shippingPositions[]   = $shippingPos;
             }
         }
 
-        return $arrVersandpositionen;
+        return $shippingPositions;
     }
 
     /**
@@ -950,47 +920,47 @@ class ShippingMethod
      */
     public static function getShippingClasses(Warenkorb $Warenkorb): string
     {
-        $VKarr = [];
+        $classes = [];
         foreach ($Warenkorb->PositionenArr as $pos) {
             $pos->kVersandklasse = (int)$pos->kVersandklasse;
             if ((int)$pos->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && $pos->kVersandklasse > 0
-                && !\in_array($pos->kVersandklasse, $VKarr, true)
+                && !\in_array($pos->kVersandklasse, $classes, true)
             ) {
-                $VKarr[] = $pos->kVersandklasse;
+                $classes[] = $pos->kVersandklasse;
             }
         }
-        \sort($VKarr);
+        \sort($classes);
 
-        return \implode('-', $VKarr);
+        return \implode('-', $classes);
     }
 
     /**
-     * @param Versandart|object $versandart
-     * @param string            $cISO
-     * @param string            $plz
+     * @param Versandart|object $shippingMethod
+     * @param string            $iso
+     * @param string            $zip
      * @return stdClass|null
      * @former gibVersandZuschlag()
      */
-    public static function getAdditionalFees($versandart, $cISO, $plz): ?stdClass
+    public static function getAdditionalFees($shippingMethod, $iso, $zip): ?stdClass
     {
         $db   = Shop::Container()->getDB();
         $fees = $db->selectAll(
             'tversandzuschlag',
             ['kVersandart', 'cISO'],
-            [(int)$versandart->kVersandart, $cISO]
+            [(int)$shippingMethod->kVersandart, $iso]
         );
         foreach ($fees as $fee) {
-            $plz_x = $db->queryPrepared(
+            $zipData = $db->queryPrepared(
                 'SELECT * FROM tversandzuschlagplz
                     WHERE ((cPLZAb <= :plz
                         AND cPLZBis >= :plz)
                         OR cPLZ = :plz)
                         AND kVersandzuschlag = :sid',
-                ['plz' => $plz, 'sid' => (int)$fee->kVersandzuschlag],
+                ['plz' => $zip, 'sid' => (int)$fee->kVersandzuschlag],
                 ReturnType::SINGLE_OBJECT
             );
-            if (isset($plz_x->kVersandzuschlagPlz) && $plz_x->kVersandzuschlagPlz > 0) {
+            if (isset($zipData->kVersandzuschlagPlz) && $zipData->kVersandzuschlagPlz > 0) {
                 $fee->angezeigterName = [];
                 foreach (Frontend::getLanguages() as $Sprache) {
                     $localized = $db->select(
@@ -1015,163 +985,160 @@ class ShippingMethod
     /**
      * @todo Hier gilt noch zu beachten, dass fWarenwertNetto vom Zusatzartikel
      *       darf kein Netto sein, sondern der Preis muss in Brutto angegeben werden.
-     * @param Versandart|object $versandart
-     * @param String            $cISO
-     * @param Artikel|stdClass  $oZusatzArtikel
-     * @param Artikel|int       $Artikel
+     * @param Versandart|object $shippingMethod
+     * @param String            $iso
+     * @param Artikel|stdClass  $additionalProduct
+     * @param Artikel|null      $product
      * @return int|string
      * @former berechneVersandpreis()
      */
-    public static function calculateShippingFees($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
+    public static function calculateShippingFees($shippingMethod, $iso, $additionalProduct, $product = null)
     {
-        if (!isset($oZusatzArtikel->fAnzahl)) {
-            if ($oZusatzArtikel === null) {
-                $oZusatzArtikel = new stdClass();
+        $db = Shop::Container()->getDB();
+        if (!isset($additionalProduct->fAnzahl)) {
+            if ($additionalProduct === null) {
+                $additionalProduct = new stdClass();
             }
-            $oZusatzArtikel->fAnzahl         = 0;
-            $oZusatzArtikel->fWarenwertNetto = 0;
-            $oZusatzArtikel->fGewicht        = 0;
+            $additionalProduct->fAnzahl         = 0;
+            $additionalProduct->fWarenwertNetto = 0;
+            $additionalProduct->fGewicht        = 0;
         }
-        $versandberechnung = Shop::Container()->getDB()->select(
+        $calculation = $db->select(
             'tversandberechnung',
             'kVersandberechnung',
-            $versandart->kVersandberechnung
+            $shippingMethod->kVersandberechnung
         );
-        $preis             = 0;
-        switch ($versandberechnung->cModulId) {
+        $price       = 0;
+        switch ($calculation->cModulId) {
             case 'vm_versandkosten_pauschale_jtl':
-                $preis = $versandart->fPreis;
+                $price = $shippingMethod->fPreis;
                 break;
 
             case 'vm_versandberechnung_gewicht_jtl':
-                $warenkorbgewicht  = $Artikel
-                    ? $Artikel->fGewicht
+                $totalWeight  = $product
+                    ? $product->fGewicht
                     : Frontend::getCart()->getWeight();
-                $warenkorbgewicht += $oZusatzArtikel->fGewicht;
-                $versand           = Shop::Container()->getDB()->queryPrepared(
+                $totalWeight += $additionalProduct->fGewicht;
+                $shipping     = $db->queryPrepared(
                     'SELECT *
                         FROM tversandartstaffel
                         WHERE kVersandart = :sid
                             AND fBis >= :wght
                         ORDER BY fBis ASC',
-                    ['sid' => (int)$versandart->kVersandart, 'wght' => $warenkorbgewicht],
+                    ['sid' => (int)$shippingMethod->kVersandart, 'wght' => $totalWeight],
                     ReturnType::SINGLE_OBJECT
                 );
-                if (isset($versand->kVersandartStaffel)) {
-                    $preis = $versand->fPreis;
+                if (isset($shipping->kVersandartStaffel)) {
+                    $price = $shipping->fPreis;
                 } else {
                     return -1;
                 }
                 break;
 
             case 'vm_versandberechnung_warenwert_jtl':
-                $warenkorbwert  = $Artikel
-                    ? $Artikel->Preise->fVKNetto
+                $total    = $product
+                    ? $product->Preise->fVKNetto
                     : Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
-                $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
-                $versand        = Shop::Container()->getDB()->queryPrepared(
+                $total   += $additionalProduct->fWarenwertNetto;
+                $shipping = $db->queryPrepared(
                     'SELECT *
                         FROM tversandartstaffel
                         WHERE kVersandart = :sid
                             AND fBis >= :val
                         ORDER BY fBis ASC',
-                    ['sid' => (int)$versandart->kVersandart, 'val' => $warenkorbwert],
+                    ['sid' => (int)$shippingMethod->kVersandart, 'val' => $total],
                     ReturnType::SINGLE_OBJECT
                 );
-                if (isset($versand->kVersandartStaffel)) {
-                    $preis = $versand->fPreis;
+                if (isset($shipping->kVersandartStaffel)) {
+                    $price = $shipping->fPreis;
                 } else {
                     return -1;
                 }
                 break;
 
             case 'vm_versandberechnung_artikelanzahl_jtl':
-                $artikelanzahl = 1;
-                if (!$Artikel) {
-                    $artikelanzahl = isset($_SESSION['Warenkorb'])
+                $productCount = 1;
+                if (!$product) {
+                    $productCount = isset($_SESSION['Warenkorb'])
                         ? Frontend::getCart()->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL])
                         : 0;
                 }
-                $artikelanzahl += $oZusatzArtikel->fAnzahl;
-                $versand        = Shop::Container()->getDB()->queryPrepared(
+                $productCount += $additionalProduct->fAnzahl;
+                $shipping      = $db->queryPrepared(
                     'SELECT *
                         FROM tversandartstaffel
                         WHERE kVersandart = :sid
                             AND fBis >= :cnt
                         ORDER BY fBis ASC',
-                    ['sid' => (int)$versandart->kVersandart, 'cnt' => $artikelanzahl],
+                    ['sid' => (int)$shippingMethod->kVersandart, 'cnt' => $productCount],
                     ReturnType::SINGLE_OBJECT
                 );
-                if (isset($versand->kVersandartStaffel)) {
-                    $preis = $versand->fPreis;
+                if (isset($shipping->kVersandartStaffel)) {
+                    $price = $shipping->fPreis;
                 } else {
                     return -1;
                 }
                 break;
 
             default:
-                //bearbeite fremdmodule
+                // bearbeite fremdmodule
                 break;
         }
-        //artikelabhaengiger Versand?
-        if ($versandart->cNurAbhaengigeVersandart === 'Y'
-            && (!empty($Artikel->FunktionsAttribute['versandkosten'])
-                || !empty($Artikel->FunktionsAttribute['versandkosten gestaffelt']))
+        if ($shippingMethod->cNurAbhaengigeVersandart === 'Y'
+            && (!empty($product->FunktionsAttribute['versandkosten'])
+                || !empty($product->FunktionsAttribute['versandkosten gestaffelt']))
         ) {
-            $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($cISO, $Artikel, 1);
-            $preis           += $fArticleSpecific->fKosten ?? 0;
+            $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1);
+            $price           += $fArticleSpecific->fKosten ?? 0;
         }
-        //Deckelung?
-        if ($preis >= $versandart->fDeckelung && $versandart->fDeckelung > 0) {
-            $preis = $versandart->fDeckelung;
+        if ($price >= $shippingMethod->fDeckelung && $shippingMethod->fDeckelung > 0) {
+            $price = $shippingMethod->fDeckelung;
         }
-        //Zuschlag
-        if (isset($versandart->Zuschlag->fZuschlag) && $versandart->Zuschlag->fZuschlag != 0) {
-            $preis += $versandart->Zuschlag->fZuschlag;
+        if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
+            $price += $shippingMethod->Zuschlag->fZuschlag;
         }
-        //versandkostenfrei?
-        $fArtikelPreis     = 0;
-        $fGesamtsummeWaren = 0;
-        if ($versandart->eSteuer === 'netto') {
-            if ($Artikel) {
-                $fArtikelPreis = $Artikel->Preise->fVKNetto;
+        $productPrice = 0;
+        $grandTotal   = 0;
+        if ($shippingMethod->eSteuer === 'netto') {
+            if ($product) {
+                $productPrice = $product->Preise->fVKNetto;
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = Tax::getNet(
+                $grandTotal = Tax::getNet(
                     Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true),
                     Tax::getSalesTax(Frontend::getCart()->gibVersandkostenSteuerklasse())
                 );
             }
-        } elseif ($versandart->eSteuer === 'brutto') {
-            if ($Artikel) {
-                $fArtikelPreis = Tax::getGross(
-                    $Artikel->Preise->fVKNetto,
-                    Tax::getSalesTax($Artikel->kSteuerklasse)
+        } elseif ($shippingMethod->eSteuer === 'brutto') {
+            if ($product) {
+                $productPrice = Tax::getGross(
+                    $product->Preise->fVKNetto,
+                    Tax::getSalesTax($product->kSteuerklasse)
                 );
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = Frontend::getCart()->gibGesamtsummeWarenExt(
+                $grandTotal = Frontend::getCart()->gibGesamtsummeWarenExt(
                     [\C_WARENKORBPOS_TYP_ARTIKEL],
                     true
                 );
             }
         }
 
-        if ($versandart->fVersandkostenfreiAbX > 0
-            && (($Artikel && $fArtikelPreis >= $versandart->fVersandkostenfreiAbX)
-                || ($fGesamtsummeWaren >= $versandart->fVersandkostenfreiAbX))
+        if ($shippingMethod->fVersandkostenfreiAbX > 0
+            && (($product && $productPrice >= $shippingMethod->fVersandkostenfreiAbX)
+                || ($grandTotal >= $shippingMethod->fVersandkostenfreiAbX))
         ) {
-            $preis = 0;
+            $price = 0;
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, [
-            'fPreis'         => &$preis,
-            'versandart'     => $versandart,
-            'cISO'           => $cISO,
-            'oZusatzArtikel' => $oZusatzArtikel,
-            'Artikel'        => $Artikel,
+            'fPreis'         => &$price,
+            'ersandart'      => $shippingMethod,
+            'cISO'           => $iso,
+            'oZusatzArtikel' => $additionalProduct,
+            'Artikel'        => $product,
         ]);
 
-        return $preis;
+        return $price;
     }
 
     /**
@@ -1280,14 +1247,15 @@ class ShippingMethod
         ) {
             return '';
         }
+        $db         = Shop::Container()->getDB();
         $fSummeDiff = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
         // check if vkfreiabx is calculated net or gross
         if ($method->eSteuer === 'netto') {
             // calculate net with default tax class
-            $defaultTaxClass = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
+            $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
             if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
                 $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
-                $defaultTax = Shop::Container()->getDB()->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
+                $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
                 if ($defaultTax !== null) {
                     $defaultTaxValue = $defaultTax->fSteuersatz;
                     $fSummeDiff      = (float)$method->fVersandkostenfreiAbX -
@@ -1298,7 +1266,7 @@ class ShippingMethod
         if (isset($method->cNameLocalized)) {
             $name = $method->cNameLocalized;
         } else {
-            $localized = Shop::Container()->getDB()->select(
+            $localized = $db->select(
                 'tversandartsprache',
                 'kVersandart',
                 $method->kVersandart,
@@ -1381,11 +1349,11 @@ class ShippingMethod
         $defaultShipping = self::normalerArtikelversand($country);
         $cacheID         = 'vkfrei_' . $customerGroupID . '_' .
             $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
-        if (($oVersandart = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($shippingMethod = Shop::Container()->getCache()->get($cacheID)) === false) {
             if (\mb_strlen($country) > 0) {
-                $customerSQL = " AND cLaender LIKE '%" . StringHandler::filterXSS($country) . "%'";
+                $customerSQL = " AND cLaender LIKE '%" . Text::filterXSS($country) . "%'";
             } else {
-                $landIso     = Shop::Container()->getDB()->query(
+                $iso         = Shop::Container()->getDB()->query(
                     'SELECT cISO
                         FROM tfirma
                         JOIN tland
@@ -1393,12 +1361,12 @@ class ShippingMethod
                         LIMIT 0,1',
                     ReturnType::SINGLE_OBJECT
                 );
-                $customerSQL = isset($landIso->cISO)
-                    ? " AND cLaender LIKE '%" . $landIso->cISO . "%'"
+                $customerSQL = isset($iso->cISO)
+                    ? " AND cLaender LIKE '%" . $iso->cISO . "%'"
                     : '';
             }
-            $cProductSpecificSQLWhere = empty($defaultShipping) ? '' : " AND cNurAbhaengigeVersandart = 'N' ";
-            $oVersandart              = Shop::Container()->getDB()->queryPrepared(
+            $productSpecificCondition = empty($defaultShipping) ? '' : " AND cNurAbhaengigeVersandart = 'N' ";
+            $shippingMethod           = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                     FROM tversandart
                     LEFT JOIN tversandartsprache
@@ -1409,7 +1377,7 @@ class ShippingMethod
                             OR cVersandklassen RLIKE :cShippingClass)
                         AND (cKundengruppen = '-1'
                             OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
-                        " . $customerSQL . $cProductSpecificSQLWhere . '
+                        " . $customerSQL . $productSpecificCondition . '
                     ORDER BY tversandart.fVersandkostenfreiAbX, tversandart.nSort ASC
                     LIMIT 1',
                 [
@@ -1419,11 +1387,11 @@ class ShippingMethod
                 ],
                 ReturnType::SINGLE_OBJECT
             );
-            Shop::Container()->getCache()->set($cacheID, $oVersandart, [\CACHING_GROUP_OPTION]);
+            Shop::Container()->getCache()->set($cacheID, $shippingMethod, [\CACHING_GROUP_OPTION]);
         }
 
-        return !empty($oVersandart) && $oVersandart->fVersandkostenfreiAbX > 0
-            ? $oVersandart
+        return !empty($shippingMethod) && $shippingMethod->fVersandkostenfreiAbX > 0
+            ? $shippingMethod
             : 0;
     }
 

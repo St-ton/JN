@@ -4,8 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Helpers\Cart;
+use JTL\Checkout\Bestellung;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Cart;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\SimpleMail;
+use JTL\Helpers\Text;
+use JTL\TrustedShops;
+use JTL\Cart\Warenkorb;
+use JTL\Session\Frontend;
+use JTL\Plugin\Helper;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
@@ -19,7 +28,7 @@ $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
 $kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 $link       = $linkHelper->getPageLink($kLink);
-$cart       = \Session\Frontend::getCart();
+$cart       = Frontend::getCart();
 $smarty     = Shop::Smarty();
 $db         = Shop::Container()->getDB();
 $bestellung = null;
@@ -33,7 +42,7 @@ if (isset($_GET['i'])) {
     }
     $db->query(
         'DELETE FROM tbestellid WHERE dDatum < DATE_SUB(NOW(), INTERVAL 30 DAY)',
-        \DB\ReturnType::DEFAULT
+        ReturnType::DEFAULT
     );
     $smarty->assign('abschlussseite', 1);
 } else {
@@ -89,7 +98,7 @@ if (isset($_GET['i'])) {
     setzeSmartyWeiterleitung($bestellung);
 }
 if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
-    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+    $oTrustedShops = new TrustedShops(-1, Text::convertISO2ISO639($_SESSION['cISOSprache']));
     if ((int)$oTrustedShops->nAktiv === 1 && mb_strlen($oTrustedShops->tsId) > 0) {
         $smarty->assign('oTrustedShops', $oTrustedShops);
     }
@@ -103,10 +112,10 @@ $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK);
 
 $kPlugin = isset($bestellung->Zahlungsart->cModulId)
-    ? \Plugin\Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
+    ? Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
-    $loader = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+    $loader = Helper::getLoaderByPluginID($kPlugin);
     $smarty->assign('oPlugin', $loader->init($kPlugin));
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {

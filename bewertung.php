@@ -4,7 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Alert\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\Shop;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_INCLUDES . 'bewertung_inc.php';
@@ -17,7 +21,7 @@ $ratingAllowed = true;
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     $messageSaveRating = speicherBewertung(
         $params['kArtikel'],
-        \Session\Frontend::getCustomer()->getID(),
+        Frontend::getCustomer()->getID(),
         Shop::getLanguageID(),
         Request::verifyGPDataString('cTitel'),
         Request::verifyGPDataString('cText'),
@@ -28,13 +32,13 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 } elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
     speicherHilfreich(
         $params['kArtikel'],
-        \Session\Frontend::getCustomer()->getID(),
+        Frontend::getCustomer()->getID(),
         Shop::getLanguageID(),
         Request::verifyGPCDataInt('btgseite'),
         Request::verifyGPCDataInt('btgsterne')
     );
 } elseif (Request::verifyGPCDataInt('bfa') === 1) {
-    if (\Session\Frontend::getCustomer()->getID() <= 0) {
+    if (Frontend::getCustomer()->getID() <= 0) {
         $helper = Shop::Container()->getLinkService();
         header(
             'Location: ' . $helper->getStaticRoute('jtl.php') .
@@ -62,7 +66,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         );
         $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
     }
-    if (!\Session\Frontend::getCustomer()->isLoggedIn()) {
+    if (!Frontend::getCustomer()->isLoggedIn()) {
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_DANGER,
             Shop::Lang()->get('loginFirst', 'product rating'),
@@ -70,7 +74,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             ['showInAlertListTemplate' => false]
         );
         $ratingAllowed = false;
-    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, \Session\Frontend::getCustomer()) === false) {
+    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, Frontend::getCustomer()) === false) {
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_DANGER,
             Shop::Lang()->get('productNotBuyed', 'product rating'),
@@ -94,7 +98,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
             Shop::Container()->getDB()->select(
                 'tbewertung',
                 ['kArtikel', 'kKunde'],
-                [$AktuellerArtikel->kArtikel, \Session\Frontend::getCustomer()->getID()]
+                [$AktuellerArtikel->kArtikel, Frontend::getCustomer()->getID()]
             )
         );
 

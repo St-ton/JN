@@ -4,21 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Tightenco\Collect\Support\Collection;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
+use Illuminate\Support\Collection;
 use function Functional\flatten;
 use function Functional\map;
 
 /**
  * Class LinkGroup
- * @package Link
+ * @package JTL\Link
  */
 final class LinkGroup implements LinkGroupInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -135,7 +137,7 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->names[$idx] ?? '';
     }

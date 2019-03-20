@@ -9,7 +9,7 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/dq1g2"
 
 msgid "shoptemplatesDesc"
-msgstr "Das Shop-Template bestimmt das Design und Layout Ihres Shops. Auf dieser Seite werden alle Shop-Templates gelistet, die sich im Ordner /templates/ ausgehend vom Shop-Wurzelverzeichnis befinden. Falls Sie ein neues Template haben und es nutzen möchten, so übertragen Sie es bitte vorerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis."
+msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Shop-Wurzelverzeichnis befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per &lt;abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\"&gt;FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
 
 msgid "admintemplatesDesc"
 msgstr "Die Möglichkeit, Admin-Templates umzustellen, wird in der finalen Version 4.00 entfernt! Sie dient nur internen Testzwecken."
@@ -18,10 +18,10 @@ msgid "templateName"
 msgstr "Templatename"
 
 msgid "shoplogouploader"
-msgstr "Laden Sie hier Ihr Shoplogo hoch"
+msgstr "Laden Sie hier Ihr Shop-Logo hoch."
 
 msgid "warning_responsive_mobile"
-msgstr "Responsive Templates sind für alle Auflösungen geeignet und sollten nicht explizit als Template für mobile Endgeräte ausgewiesen werden!"
+msgstr "Responsive Templates sind für alle Auflösungen geeignet und sollten nicht explizit als Template für mobile Endgeräte ausgewiesen werden."
 
 msgid "successTemplateSave"
 msgstr "Template und Einstellungen wurden erfolgreich geändert."
@@ -30,7 +30,7 @@ msgid "errorTemplateSave"
 msgstr "Template bzw. Einstellungen konnten nicht geändert werden."
 
 msgid "errorFileUpload"
-msgstr "Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte &uumlberprüfen."
+msgstr "Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte des Ordners \"%s\" überprüfen."
 
 msgid "successLayoutReset"
 msgstr "Layout wurde erfolgreich zurückgesetzt."
@@ -67,3 +67,6 @@ msgstr "Mobile Endgeräte"
 
 msgid "parentTemplateMissing"
 msgstr "Parent-Template fehlt"
+
+msgid "errorOverlayWritePermissions"
+msgstr "Overlays konnten nicht erzeugt werden - bitte Schreibrechte des Ordners \"%s\" prüfen und das Template erneut aktivieren."

@@ -6,6 +6,9 @@
  * @created Mon, 19 Mar 2018 16:02:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -45,7 +48,8 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=4 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='bewertungsfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='bewertungsfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) 
@@ -56,12 +60,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja, im Contentbereich und der Navigationsbox', nSort=3 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=4 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) 
@@ -73,12 +79,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja, im Contentbereich und der Navigationsbox', nSort=3 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=4 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) 
@@ -91,12 +99,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja, im Contentbereich und der Navigationsbox', nSort=3 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=4 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) 
@@ -109,12 +119,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja, im Contentbereich und der Navigationsbox', nSort=3 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=4 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) 
@@ -127,7 +139,8 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=4 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='merkmalfilter_verwenden') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='merkmalfilter_verwenden') AND cWert='N';"
+        );
 
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) 
@@ -139,7 +152,8 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=4 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='preisspannenfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='preisspannenfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "INSERT INTO teinstellungenconfwerte (kEinstellungenConf, cName, cWert, nSort) 
@@ -178,12 +192,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja', nSort=1 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=2 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_herstellerfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "DELETE FROM teinstellungenconfwerte
@@ -195,12 +211,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja', nSort=1 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=2 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_suchspecialfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "DELETE FROM teinstellungenconfwerte
@@ -212,12 +230,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja', nSort=1 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=2 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_kategoriefilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "DELETE FROM teinstellungenconfwerte
@@ -229,12 +249,14 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET cName='Ja', nSort=1 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='Y';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='Y';"
+        );
 
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=2 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='allgemein_tagfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "DELETE FROM teinstellungenconfwerte
@@ -246,7 +268,8 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=3 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='merkmalfilter_verwenden') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='merkmalfilter_verwenden') AND cWert='N';"
+        );
 
         $this->execute(
             "DELETE FROM teinstellungenconfwerte
@@ -258,13 +281,13 @@ class Migration_20180319160200 extends Migration implements IMigration
         $this->execute(
             "UPDATE teinstellungenconfwerte 
                 SET nSort=3 WHERE kEinstellungenConf = (
-                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='preisspannenfilter_benutzen') AND cWert='N';");
+                    SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='preisspannenfilter_benutzen') AND cWert='N';"
+        );
 
         $this->execute(
             "DELETE FROM teinstellungenconfwerte
                 WHERE kEinstellungenConf = ( 
                 SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='preisspannenfilter_benutzen') AND cWert='Y';"
         );
-
     }
 }

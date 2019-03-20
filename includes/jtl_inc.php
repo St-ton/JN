@@ -4,9 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Cart;
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Alert\Alert;
+use JTL\Cart\WarenkorbPers;
+use JTL\Cart\WarenkorbPersPos;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Checkout\Kupon;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
+use JTL\Extensions\Konfigitem;
+use JTL\Helpers\Cart;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Kampagne;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Redirect - Falls jemand eine Aktion durchführt die ein Kundenkonto beansprucht und der Gast nicht einloggt ist,
@@ -177,7 +191,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
     if (!$customerID) {
         return false;
     }
-    $cart = \Session\Frontend::getCart();
+    $cart = Frontend::getCart();
     $db   = Shop::Container()->getDB();
     foreach ($cart->PositionenArr as $oWarenkorbPos) {
         if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
@@ -197,7 +211,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
                     'atr' => FKT_ATTRIBUT_GRATISGESCHENK,
                     'sum' => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
                 ],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (isset($present->kArtikel) && $present->kArtikel > 0) {
                 WarenkorbPers::addToCheck(
@@ -242,7 +256,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
                     'atr' => FKT_ATTRIBUT_GRATISGESCHENK,
                     'sum' => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
                 ],
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             if (isset($present->kArtikel) && $present->kArtikel > 0) {
                 if ($present->fLagerbestand <= 0
@@ -296,7 +310,7 @@ function setzeWarenkorbPersInWarenkorb(int $customerID): bool
  */
 function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
 {
-    $cart = \Session\Frontend::getCart();
+    $cart = Frontend::getCart();
     if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
         return;
     }
@@ -310,7 +324,7 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
                 FROM tartikelsichtbarkeit
                 WHERE kArtikel = ' . (int)$position->kArtikel . '
                     AND kKundengruppe = ' . $customerGroupID,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$position->kKonfigitem === 0) {
@@ -321,7 +335,7 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
                FROM tpreise
                WHERE kArtikel = ' . (int)$position->kArtikel . '
                    AND kKundengruppe = ' . $customerGroupID,
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
 
         if (!isset($price->fVKNetto)) {
@@ -347,7 +361,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
 
         return;
     }
-    $cart           = \Session\Frontend::getCart();
+    $cart           = Frontend::getCart();
     $db             = Shop::Container()->getDB();
     $config         = Shop::getSettings([CONF_GLOBAL, CONF_KAUFABWICKLUNG, CONF_KUNDEN]);
     $loginCaptchaOK = $Kunde->verifyLoginCaptcha($_POST);
@@ -391,11 +405,11 @@ function fuehreLoginAus($userLogin, $passLogin): void
             if (isset($_SESSION['Kampagnenbesucher'])) {
                 Kampagne::setCampaignAction(KAMPAGNE_DEF_LOGIN, $Kunde->kKunde, 1.0); // Login
             }
-            $session = \Session\Frontend::getInstance();
+            $session = Frontend::getInstance();
             $session->setCustomer($Kunde);
             // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
             Wunschliste::persistInSession();
-            $cURL                  = StringHandler::filterXSS(Request::verifyGPDataString('cURL'));
+            $cURL                  = Text::filterXSS(Request::verifyGPDataString('cURL'));
             $bPersWarenkorbGeladen = false;
             if ($config['global']['warenkorbpers_nutzen'] === 'Y' && count($cart->PositionenArr) === 0) {
                 $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
@@ -422,7 +436,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                     'atr' => FKT_ATTRIBUT_GRATISGESCHENK,
                                     'sum' => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
                                 ],
-                                \DB\ReturnType::SINGLE_OBJECT
+                                ReturnType::SINGLE_OBJECT
                             );
                             if ((isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0)
                                 && ($oArtikelGeschenk->fLagerbestand > 0
@@ -435,7 +449,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                             }
                             // Konfigitems ohne Artikelbezug
                         } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem)) {
-                            $oKonfigitem = new \Extensions\Konfigitem($oWarenkorbPersPos->kKonfigitem);
+                            $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
                             $cart->erstelleSpezialPos(
                                 $oKonfigitem->getName(),
                                 $oWarenkorbPersPos->fAnzahl,
@@ -443,7 +457,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                                 $oKonfigitem->getSteuerklasse(),
                                 C_WARENKORBPOS_TYP_ARTIKEL,
                                 false,
-                                !\Session\Frontend::getCustomerGroup()->isMerchant(),
+                                !Frontend::getCustomerGroup()->isMerchant(),
                                 '',
                                 $oWarenkorbPersPos->cUnique,
                                 $oWarenkorbPersPos->kKonfigitem,
@@ -514,7 +528,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
                             );
                         }
                     } else {
-                        \Session\Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+                        Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                         Kupon::mapCouponErrorMessage($Kuponfehler['ungueltig']);
                     }
                 }

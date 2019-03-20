@@ -4,18 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use Plugin\AbstractPlugin;
-use Plugin\Plugin;
-use Plugin\PluginInterface;
-use Plugin\PluginLoader;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\PluginLoader;
+use JTL\Shop;
 
 /**
  * Class Portlet
- * @package OPC
+ * @package JTL\OPC
  */
-abstract class Portlet implements \JsonSerializable
+class Portlet implements \JsonSerializable
 {
     use PortletHtml;
     use PortletStyles;
@@ -27,7 +26,7 @@ abstract class Portlet implements \JsonSerializable
     protected $id = 0;
 
     /**
-     * @var Plugin
+     * @var PluginInterface
      */
     protected $plugin;
 
@@ -62,14 +61,14 @@ abstract class Portlet implements \JsonSerializable
         $this->class = $class;
         $this->id    = $id;
         if ($pluginId > 0) {
-            $loader       = new PluginLoader(\Shop::Container()->getDB(), \Shop::Container()->getCache());
+            $loader       = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
             $this->plugin = $loader->init($pluginId);
         }
 
         if ($this->plugin === null) {
-            \Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
+            Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
         } else {
-            \Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
+            Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
         }
     }
 

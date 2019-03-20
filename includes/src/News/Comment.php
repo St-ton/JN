@@ -4,19 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Comment
- * @package News
+ * @package JTL\News
  */
 class Comment implements CommentInterface
 {
 
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array

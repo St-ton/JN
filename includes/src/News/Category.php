@@ -4,21 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Tightenco\Collect\Support\Collection;
+use DateTime;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
+use stdClass;
+use Illuminate\Support\Collection;
 use function Functional\flatten;
 use function Functional\map;
 
 /**
  * Class Category
- * @package News
+ * @package JTL\News
  */
 class Category implements CategoryInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -197,7 +201,7 @@ class Category implements CategoryInterface
             $this->previewImages[$langID]    = $groupLanguage->cPreviewImage;
             $this->isActive                  = (bool)$groupLanguage->nAktiv;
             $this->dateLastModified          = \date_create($groupLanguage->dLetzteAktualisierung);
-            $this->parentID                  = (int)$groupLanguage->kParent;
+            $this->parentID                  = (int)($groupLanguage->kParent ?? 0);
             $this->level                     = (int)$groupLanguage->lvl;
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
@@ -240,7 +244,7 @@ class Category implements CategoryInterface
         if ($overview === null) {
             return $this;
         }
-        $this->urls[\Shop::getLanguageID()] = \Shop::getURL() . '/' . $overview->cSeo;
+        $this->urls[Shop::getLanguageID()] = Shop::getURL() . '/' . $overview->cSeo;
 
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT tnews.kNews
@@ -265,10 +269,10 @@ class Category implements CategoryInterface
     }
 
     /**
-     * @param \stdClass|null $filterSQL
+     * @param stdClass|null $filterSQL
      * @return $this
      */
-    public function getOverview(\stdClass $filterSQL): Category
+    public function getOverview(stdClass $filterSQL): Category
     {
         $this->setID(0);
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
@@ -378,7 +382,7 @@ class Category implements CategoryInterface
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->names[$idx] ?? '';
     }
@@ -396,7 +400,7 @@ class Category implements CategoryInterface
      */
     public function setName(string $name, int $idx = null): void
     {
-        $this->names[$idx ?? \Shop::getLanguageID()] = $name;
+        $this->names[$idx ?? Shop::getLanguageID()] = $name;
     }
 
     /**
@@ -420,7 +424,7 @@ class Category implements CategoryInterface
      */
     public function getMetaTitle(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaTitles[$idx] ?? '';
     }
@@ -430,7 +434,7 @@ class Category implements CategoryInterface
      */
     public function setMetaTitle(string $metaTitle, int $idx = null): void
     {
-        $this->metaTitles[$idx ?? \Shop::getLanguageID()] = $metaTitle;
+        $this->metaTitles[$idx ?? Shop::getLanguageID()] = $metaTitle;
     }
 
     /**
@@ -446,7 +450,7 @@ class Category implements CategoryInterface
      */
     public function getMetaKeyword(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaKeywords[$idx] ?? '';
     }
@@ -464,7 +468,7 @@ class Category implements CategoryInterface
      */
     public function setMetaKeyword(string $metaKeyword, int $idx = null): void
     {
-        $this->metaKeywords[$idx ?? \Shop::getLanguageID()] = $metaKeyword;
+        $this->metaKeywords[$idx ?? Shop::getLanguageID()] = $metaKeyword;
     }
 
     /**
@@ -480,7 +484,7 @@ class Category implements CategoryInterface
      */
     public function getMetaDescription(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->metaDescriptions[$idx] ?? '';
     }
@@ -498,7 +502,7 @@ class Category implements CategoryInterface
      */
     public function setMetaDescription(string $metaDescription, int $idx = null): void
     {
-        $this->metaDescriptions[$idx ?? \Shop::getLanguageID()] = $metaDescription;
+        $this->metaDescriptions[$idx ?? Shop::getLanguageID()] = $metaDescription;
     }
 
     /**
@@ -514,7 +518,7 @@ class Category implements CategoryInterface
      */
     public function getURL(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         // @todo: category or month overview?
 //        return $this->urls[$idx] ?? '/?nm=' . $this->getID();
@@ -534,7 +538,7 @@ class Category implements CategoryInterface
      */
     public function getSEO(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->seo[$idx] ?? '';
     }
@@ -584,7 +588,7 @@ class Category implements CategoryInterface
      */
     public function getLanguageID(int $idx = null): int
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->languageIDs[$idx] ?? 0;
     }
@@ -610,7 +614,7 @@ class Category implements CategoryInterface
      */
     public function getLanguageCode(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->languageCodes[$idx] ?? '';
     }
@@ -636,7 +640,7 @@ class Category implements CategoryInterface
      */
     public function getDescription(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->descriptions[$idx] ?? '';
     }
@@ -662,7 +666,7 @@ class Category implements CategoryInterface
      */
     public function getPreviewImage(int $idx = null): string
     {
-        $idx = $idx ?? \Shop::getLanguageID();
+        $idx = $idx ?? Shop::getLanguageID();
 
         return $this->previewImages[$idx] ?? '';
     }
@@ -726,7 +730,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function getDateLastModified(): \DateTime
+    public function getDateLastModified(): DateTime
     {
         return $this->dateLastModified;
     }
@@ -734,7 +738,7 @@ class Category implements CategoryInterface
     /**
      * @inheritdoc
      */
-    public function setDateLastModified(\DateTime $dateLastModified): void
+    public function setDateLastModified(DateTime $dateLastModified): void
     {
         $this->dateLastModified = $dateLastModified;
     }

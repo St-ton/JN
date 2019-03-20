@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
 
 /**
  * Class Manufacturer
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 final class Manufacturer extends AbstractItem
 {

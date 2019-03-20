@@ -9,8 +9,8 @@
     $(function()
     {
         $('#einstellen').submit(validateFormData);
-        $('#btn-add-range').click(function() { addPriceRange(); });
-        $('.btn-remove-range').click(removePriceRange);
+        $('#btn-add-range').on('click', function() { addPriceRange(); });
+        $('.btn-remove-range').on('click', removePriceRange);
 
         selectCheck(document.getElementById('preisspannenfilter_anzeige_berechnung'));
 
@@ -37,7 +37,7 @@
             '</div>'
         );
 
-        $('.btn-remove-range').off('click').click(removePriceRange);
+        $('.btn-remove-range').off('click').on('click', removePriceRange);
     }
 
     function removePriceRange()
@@ -88,13 +88,13 @@
                 $row.removeClass('has-error');
 
                 if(nVon === '' || nBis === '') {
-                    cFehler += {__('errorFillRequired')} + '<br>';
+                    cFehler += '{__('errorFillRequired')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += {__('thePriceRange')} + fVon + ' {__('to')} ' + fBis + {__('isInvalid')} + '<br>';
+                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('isInvalid')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += {__('thePriceRange')} + fVon + ' {__('to')} ' + fBis + {__('overlapps')} + '<br>';
+                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('overlapps')}' + '<br>';
                     $row.addClass('has-error');
                 }
 

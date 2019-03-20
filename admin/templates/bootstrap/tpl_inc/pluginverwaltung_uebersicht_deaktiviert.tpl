@@ -37,15 +37,15 @@
                                 </td>
                                 <td class="tcenter plugin-status">
                                     <h4 class="label-wrap text-nowrap">
-                                        <span class="label {if $plugin->getState() === \Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \Plugin\State::UPDATE_FAILED || $plugin->getState() === \Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
+                                        <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                             {$mapper->map($plugin->getState())}
                                         </span>
                                         {foreach $allPluginItems as $p}
                                             {if $p->getID() === $plugin->getPluginID()}
                                                 {if $p->isShop5Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {elseif $p->isShop5Compatible() === false && $p->isShop4Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {/if}
                                                 {break}
                                             {/if}

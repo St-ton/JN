@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
  * Class AbstractFilter
- * @package Filter
+ * @package JTL\Filter
  */
 abstract class AbstractFilter implements FilterInterface
 {

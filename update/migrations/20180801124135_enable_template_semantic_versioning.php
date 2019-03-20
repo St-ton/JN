@@ -6,6 +6,9 @@
  * @created Wed, 01 Aug 2018 12:41:35 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180801124135 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Enable semantic versioning for templates';
 
     public function up()

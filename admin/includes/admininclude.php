@@ -4,9 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\Notification;
-use Backend\Revision;
-use Helpers\Form;
+use JTL\Backend\AdminLoginStatus;
+use JTL\Backend\Notification;
+use JTL\Backend\Revision;
+use JTL\Helpers\Form;
+use JTL\Services\JTL\CaptchaServiceInterface;
+use JTL\Services\JTL\SimpleCaptchaService;
+use JTL\Session\Backend;
+use JTL\Shop;
+use JTL\Sprache;
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
@@ -49,25 +55,25 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$db       = new \DB\NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$db       = Shop::Container()->getDB();
 $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
 $lang     = Sprache::getInstance($db, $cache);
-$session  = \Session\Backend::getInstance();
+$session  = Backend::getInstance();
 $oAccount = Shop::Container()->getAdminAccount();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
-Shop::Container()->setSingleton(\Services\JTL\CaptchaServiceInterface::class, function () {
-    return new \Services\JTL\SimpleCaptchaService(true);
+Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
+    return new SimpleCaptchaService(true);
 });
 Shop::bootstrap();
 
 if ($oAccount->logged()) {
     if (!$session->isValid()) {
         $oAccount->logout();
-        $oAccount->redirectOnFailure(\Backend\AdminLoginStatus::ERROR_SESSION_INVALID);
+        $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
     }
 
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
@@ -89,4 +95,4 @@ if ($oAccount->logged()) {
 
 $pageName = basename($_SERVER['PHP_SELF'], '.php');
 
-\Shop::Container()->getGetText()->loadAdminLocale("pages/$pageName");
+Shop::Container()->getGetText()->loadAdminLocale("pages/$pageName");

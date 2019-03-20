@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Tabs
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Tabs extends Portlet
 {
@@ -51,11 +52,11 @@ class Tabs extends Portlet
         return [
             'tabs' => [
                 'label'   => 'Tabs',
-                'type'    => 'textlist',
+                'type'    => InputType::TEXT_LIST,
                 'default' => ['Tab eins', 'Tab zwei', 'Tab drei'],
             ],
             'uniqid' => [
-                'type'    => 'hidden',
+                'type'    => InputType::HIDDEN,
                 'default' => \uniqid('', false),
             ]
         ];

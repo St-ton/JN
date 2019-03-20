@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Backend\Notification;
-use Backend\NotificationEntry;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use Events\Dispatcher;
+use JTL\Backend\Notification;
+use JTL\Backend\NotificationEntry;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Events\Dispatcher;
 
 /**
  * Class Bootstrapper
- * @package Plugin
+ * @package JTL\Plugin
  */
 abstract class Bootstrapper implements BootstrapperInterface
 {
@@ -44,7 +44,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     private $cache;
 
     /**
-     * AbstractPlugin constructor.
+     * Bootstrapper constructor.
      * @param PluginInterface   $plugin
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
@@ -58,7 +58,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @param Dispatcher $dispatcher
+     * @inheritdoc
      */
     public function boot(Dispatcher $dispatcher)
     {
@@ -71,9 +71,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @param int         $type
-     * @param string      $title
-     * @param null|string $description
+     * @inheritdoc
      */
     final public function addNotify($type, $title, $description = null)
     {
@@ -81,36 +79,35 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function installed()
     {
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function uninstalled()
     {
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function enabled()
     {
     }
 
     /**
-     *
+     * @inheritdoc
      */
     public function disabled()
     {
     }
 
     /**
-     * @param mixed $oldVersion
-     * @param mixed $newVersion
+     * @inheritdoc
      */
     public function updated($oldVersion, $newVersion)
     {
@@ -119,7 +116,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @return PluginInterface
      */
-    public function getPlugin()
+    public function getPlugin(): PluginInterface
     {
         return $this->plugin;
     }

@@ -4,25 +4,36 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Plugin\Plugin;
+use JTL\Shop;
 
 /**
  * Trait PortletHtml
- * @package OPC
+ * @package JTL\OPC
  */
 trait PortletHtml
 {
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    abstract public function getPreviewHtml(PortletInstance $instance): string;
+    public function getPreviewHtml(PortletInstance $instance): string
+    {
+        return $this->getPreviewHtmlFromTpl($instance);
+    }
 
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
-    abstract public function getFinalHtml(PortletInstance $instance): string;
+    public function getFinalHtml(PortletInstance $instance): string
+    {
+        return $this->getFinalHtmlFromTpl($instance);
+    }
 
     /**
      * @param PortletInstance $instance
@@ -57,11 +68,28 @@ trait PortletHtml
     final protected function getTemplatePath(): string
     {
         $plugin = $this->getPlugin();
+
         if ($plugin !== null) {
-            return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
+            /** @var Plugin $plugin */
+            return $plugin->getPaths()->getPortletsPath() . 'templates/';
         }
 
-        return PFAD_ROOT . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/';
+        return \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
+    }
+
+    /**
+     * @return string
+     */
+    final protected function getTemplateUrl(): string
+    {
+        $plugin = $this->getPlugin();
+
+        if ($plugin !== null) {
+            /** @var Plugin $plugin */
+            return $plugin->getPaths()->getPortletsUrl() . 'templates/';
+        }
+
+        return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
     }
 
     /**
@@ -71,10 +99,7 @@ trait PortletHtml
      */
     final protected function getPreviewHtmlFromTpl(PortletInstance $instance): string
     {
-        return \Shop::Smarty()
-                    ->assign('portlet', $this)
-                    ->assign('instance', $instance)
-                    ->fetch($this->getTemplatePath() . 'preview.tpl');
+        return $this->getHtmlFromTpl($instance, true);
     }
 
     /**
@@ -82,13 +107,31 @@ trait PortletHtml
      * @return string
      * @throws \Exception
      */
-    final protected function getFinalHtmlFromTpl($instance): string
+    final protected function getFinalHtmlFromTpl(PortletInstance $instance): string
     {
+        return $this->getHtmlFromTpl($instance, false);
+    }
 
-        return \Shop::Smarty()
-                    ->assign('portlet', $this)
-                    ->assign('instance', $instance)
-                    ->fetch($this->getTemplatePath() . 'final.tpl');
+    /**
+     * @param PortletInstance $instance
+     * @param bool $isPreview
+     * @return string
+     * @throws \SmartyException
+     */
+    final protected function getHtmlFromTpl(PortletInstance $instance, bool $isPreview): string
+    {
+        $smarty  = $isPreview ? \getFrontendSmarty() : Shop::Smarty();
+        $tplPath = $this->getTemplatePath() . $this->getClass() . '.tpl';
+
+        if (\file_exists($tplPath) === false) {
+            $tplPath = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/GenericPortlet.tpl';
+        }
+
+        return $smarty
+            ->assign('isPreview', $isPreview)
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($tplPath);
     }
 
     /**
@@ -98,10 +141,10 @@ trait PortletHtml
      */
     final protected function getConfigPanelHtmlFromTpl(PortletInstance $instance): string
     {
-        return \Shop::Smarty()
-                    ->assign('portlet', $this)
-                    ->assign('instance', $instance)
-                    ->fetch($this->getTemplatePath() . 'configpanel.tpl');
+        return Shop::Smarty()
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch($this->getTemplatePath() . 'configpanel.tpl');
     }
 
     /**
@@ -113,15 +156,16 @@ trait PortletHtml
      */
     final protected function getConfigPanelSnippet(PortletInstance $instance, $id, $extraAssigns = []): string
     {
-        $smarty = \Shop::Smarty();
+        $smarty = Shop::Smarty();
 
         foreach ($extraAssigns as $name => $val) {
             $smarty->assign($name, $val);
         }
 
-        return $smarty->assign('portlet', $this)
-                      ->assign('instance', $instance)
-                      ->fetch(\PFAD_ROOT . \PFAD_TEMPLATES . "Evo/portlets/OPC/config.$id.tpl");
+        return $smarty
+            ->assign('portlet', $this)
+            ->assign('instance', $instance)
+            ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/config.' . $id . '.tpl');
     }
 
     /**
@@ -154,7 +198,7 @@ trait PortletHtml
         }
 
         $res  = '';
-        $res .= "<ul class='nav nav-tabs'>";
+        $res .= '<ul class="nav nav-tabs">';
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
@@ -166,7 +210,7 @@ trait PortletHtml
         }
 
         $res .= '</ul>';
-        $res .= "<div class='tab-content'>";
+        $res .= '<div class="tab-content">';
         $i    = 0;
 
         foreach ($tabs as $tabname => $props) {
@@ -189,8 +233,8 @@ trait PortletHtml
                                             $('#collapseContainer$cllpsID').hide();
                                         }
                                     });";
-                    if ($props[$propDesc['showOnProp']]['type'] === 'checkbox'
-                        || $props[$propDesc['showOnProp']]['type'] === 'radio'
+                    if ($props[$propDesc['showOnProp']]['type'] === InputType::CHECKBOX
+                        || $props[$propDesc['showOnProp']]['type'] === InputType::RADIO
                     ) {
                         $res .= "    
                                     if ($('[name=\"" . $propDesc['showOnProp'] . '"][value="' .
@@ -208,7 +252,7 @@ trait PortletHtml
                                 });
                             </script>";
                     }
-                    $res .= "<div class='collapse' id='collapseContainer$cllpsID'>";
+                    $res .= '<div class="collapse" id="collapseContainer' . $cllpsID .'">';
                 }
 
                 $res .= $this->getAutoConfigProp($instance, $propname, $propDesc, $containerId);
@@ -249,7 +293,7 @@ trait PortletHtml
     ): string {
         $res   = '';
         $label = $propDesc['label'] ?? $propname;
-        $type  = $propDesc['type'] ?? 'text';
+        $type  = $propDesc['type'] ?? InputType::TEXT;
         $class = !empty($propDesc['class']) ? ' ' . $propDesc['class'] : '';
         $prop  = $instance->hasProperty($propname)
             ? $instance->getProperty($propname)
@@ -273,19 +317,19 @@ trait PortletHtml
                     </a>';
         }
         switch ($type) {
-            case 'number':
-            case 'email':
-            case 'date':
-            case 'time':
-            case 'password':
+            case InputType::NUMBER:
+            case InputType::EMAIL:
+            case InputType::DATE:
+            case InputType::TIME:
+            case InputType::PASSWORD:
                 $res .= '<input type="' . $type . '" class="form-control' .
                     $class . '" name="' .
                     $propname . '" value="' . $prop . '" id="config-' . $propname . '"' .
                     $placeholder .
                     ($required ? ' required>' : '>');
                 break;
-            case 'checkbox':
-                $res .= $this->getConfigPanelSnippet($instance, 'checkbox', [
+            case InputType::CHECKBOX:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::CHECKBOX, [
                     'option'   => $propDesc['option'] ?? null,
                     'required' => $required,
                     'class'    => $class,
@@ -293,14 +337,14 @@ trait PortletHtml
                     'propname' => $propname,
                 ]);
                 break;
-            case 'textlist':
-                $res .= $this->getConfigPanelSnippet($instance, 'textlist', [
+            case InputType::TEXT_LIST:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::TEXT_LIST, [
                     'propname' => $propname,
                     'prop'     => $prop
                 ]);
                 break;
-            case 'radio':
-                $res .= $this->getConfigPanelSnippet($instance, 'radio', [
+            case InputType::RADIO:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::RADIO, [
                     'options'  => $propDesc['options'],
                     'inline'   => $propDesc['inline'] ?? false,
                     'required' => $required,
@@ -309,8 +353,8 @@ trait PortletHtml
                     'propname' => $propname,
                 ]);
                 break;
-            case 'select':
-                $res .= $this->getConfigPanelSnippet($instance, 'select', [
+            case InputType::SELECT:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::SELECT, [
                     'options'  => $propDesc['options'],
                     'inline'   => $propDesc['inline'] ?? false,
                     'required' => $required,
@@ -319,22 +363,22 @@ trait PortletHtml
                     'propname' => $propname,
                 ]);
                 break;
-            case 'image':
-                $res .= $this->getConfigPanelSnippet($instance, 'image', [
-                    'previewImgUrl' => empty($prop) ? \Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
+            case InputType::IMAGE:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::IMAGE, [
+                    'previewImgUrl' => empty($prop) ? Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
                 break;
-            case 'richtext':
-                $res .= $this->getConfigPanelSnippet($instance, 'richtext', [
+            case InputType::RICHTEXT:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::RICHTEXT, [
                     'prop'     => $prop,
                     'propname' => $propname,
                     'required' => $required,
                 ]);
                 break;
-            case 'color':
-                $res .= $this->getConfigPanelSnippet($instance, 'color', [
+            case InputType::COLOR:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::COLOR, [
                     'prop'        => $prop,
                     'propname'    => $propname,
                     'required'    => $required,
@@ -342,29 +386,29 @@ trait PortletHtml
                     'colorFormat' => $propDesc['color-format'] ?? 'rgba',
                 ]);
                 break;
-            case 'filter':
-                $res .= $this->getConfigPanelSnippet($instance, 'filter', [
+            case InputType::FILTER:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::FILTER, [
                     'propname' => $propname,
                     'prop'     => $prop
                 ]);
                 break;
-            case 'icon':
-                $res .= $this->getConfigPanelSnippet($instance, 'icon', [
+            case InputType::ICON:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::ICON, [
                     'propname' => $propname,
                     'prop'     => $prop,
                     'uid'      => \uniqid('', false)
                 ]);
                 break;
-            case 'hidden':
+            case InputType::HIDDEN:
                 $res .= '<input type="hidden" name="' .
                     $propname . '" value="' . $prop .
                     '" id="config-"' . $propname . '">';
                 break;
-            case 'banner-zones':
-                $res .= $this->getConfigPanelSnippet($instance, 'banner-zones');
+            case InputType::BANNER_ZONES:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::BANNER_ZONES);
                 break;
-            case 'image-set':
-                $res .= $this->getConfigPanelSnippet($instance, 'image-set', [
+            case InputType::IMAGE_SET:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::IMAGE_SET, [
                     'propname'   => $propname,
                     'prop'       => $prop,
                     'useColumns' => !empty($propDesc['useColumns']) ? $propDesc['useColumns'] : false,
@@ -372,19 +416,19 @@ trait PortletHtml
                     'useTitles'  => !empty($propDesc['useTitles']) ? $propDesc['useTitles'] : false
                 ]);
                 break;
-            case 'video':
-                $res .= $this->getConfigPanelSnippet($instance, 'video', [
-                    'previewVidUrl' => empty($prop) ? \Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
+            case InputType::VIDEO:
+                $res .= $this->getConfigPanelSnippet($instance, InputType::VIDEO, [
+                    'previewVidUrl' => empty($prop) ? Shop::getURL() . '/' . \PFAD_GFX . 'keinBild.gif' : $prop,
                     'prop'          => $prop,
                     'propname'      => $propname,
                 ]);
                 break;
-            case 'hint':
+            case InputType::HINT:
                 $res .= '<div class="alert alert-' . $propDesc['class'] . '" role="alert">' .
                     $propDesc['text'] .
                     '</div>';
                 break;
-            case 'text':
+            case InputType::TEXT:
             default:
                 $res .= '<input type="text" class="form-control" name="' . $propname .
                     '" value="' . $prop . '" id="config-' . $propname . '"' .
@@ -412,7 +456,7 @@ trait PortletHtml
         $attributes    = $instance->getAttributeString();
         $dataAttribute = $instance->getDataAttributeString();
 
-        return "<$tag $attributes $dataAttribute >$innerHtml</$tag>";
+        return '<' . $tag . ' ' . $attributes . ' ' . $dataAttribute. '>' . $innerHtml . '</' . $tag . '>';
     }
 
     /**
@@ -428,7 +472,7 @@ trait PortletHtml
     ): string {
         $attributes = $instance->getAttributeString();
 
-        return "<$tag $attributes>$innerHtml</$tag>";
+        return '<' . $tag . ' ' . $attributes . '>' . $innerHtml . '</' . $tag . '>';
     }
 
     /**
@@ -436,6 +480,13 @@ trait PortletHtml
      */
     final protected function getDefaultIconSvgUrl(): string
     {
-        return \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/' . $this->getClass() . '/icon.svg';
+        $path = $this->getTemplatePath() . 'icon.svg';
+        $url  = $this->getTemplateUrl() . 'icon.svg';
+
+        if (\file_exists($path) === false) {
+            return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/OPC/generic.icon.svg';
+        }
+
+        return $url;
     }
 }

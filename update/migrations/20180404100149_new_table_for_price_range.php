@@ -6,6 +6,9 @@
  * @created Wed, 04 Apr 2018 10:01:49 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -47,6 +50,6 @@ class Migration_20180404100149 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DROP TABLE `tpricerange`");
+        $this->execute('DROP TABLE `tpricerange`');
     }
 }

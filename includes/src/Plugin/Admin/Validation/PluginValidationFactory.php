@@ -4,34 +4,34 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation;
+namespace JTL\Plugin\Admin\Validation;
 
-use Plugin\Admin\Validation\Items\Author;
-use Plugin\Admin\Validation\Items\Blueprints;
-use Plugin\Admin\Validation\Items\Boxes;
-use Plugin\Admin\Validation\Items\Checkboxes;
-use Plugin\Admin\Validation\Items\DateCreated;
-use Plugin\Admin\Validation\Items\Exports;
-use Plugin\Admin\Validation\Items\ExtendedTemplates;
-use Plugin\Admin\Validation\Items\ExtensionDir;
-use Plugin\Admin\Validation\Items\FrontendLinks;
-use Plugin\Admin\Validation\Items\Hooks;
-use Plugin\Admin\Validation\Items\Installation;
-use Plugin\Admin\Validation\Items\Licence;
-use Plugin\Admin\Validation\Items\Localization;
-use Plugin\Admin\Validation\Items\MailTemplates;
-use Plugin\Admin\Validation\Items\Menus;
-use Plugin\Admin\Validation\Items\Name;
-use Plugin\Admin\Validation\Items\NoUninstaller;
-use Plugin\Admin\Validation\Items\PaymentMethods;
-use Plugin\Admin\Validation\Items\PluginID;
-use Plugin\Admin\Validation\Items\Portlets;
-use Plugin\Admin\Validation\Items\WidgetsExtension;
-use Plugin\Admin\Validation\Items\XMLVersion;
+use JTL\Plugin\Admin\Validation\Items\Author;
+use JTL\Plugin\Admin\Validation\Items\Blueprints;
+use JTL\Plugin\Admin\Validation\Items\Boxes;
+use JTL\Plugin\Admin\Validation\Items\Checkboxes;
+use JTL\Plugin\Admin\Validation\Items\DateCreated;
+use JTL\Plugin\Admin\Validation\Items\Exports;
+use JTL\Plugin\Admin\Validation\Items\ExtendedTemplates;
+use JTL\Plugin\Admin\Validation\Items\ExtensionDir;
+use JTL\Plugin\Admin\Validation\Items\FrontendLinks;
+use JTL\Plugin\Admin\Validation\Items\Hooks;
+use JTL\Plugin\Admin\Validation\Items\Installation;
+use JTL\Plugin\Admin\Validation\Items\Licence;
+use JTL\Plugin\Admin\Validation\Items\Localization;
+use JTL\Plugin\Admin\Validation\Items\MailTemplates;
+use JTL\Plugin\Admin\Validation\Items\Menus;
+use JTL\Plugin\Admin\Validation\Items\Name;
+use JTL\Plugin\Admin\Validation\Items\NoUninstaller;
+use JTL\Plugin\Admin\Validation\Items\PaymentMethods;
+use JTL\Plugin\Admin\Validation\Items\PluginID;
+use JTL\Plugin\Admin\Validation\Items\Portlets;
+use JTL\Plugin\Admin\Validation\Items\WidgetsExtension;
+use JTL\Plugin\Admin\Validation\Items\XMLVersion;
 
 /**
  * Class PluginValidationFactory
- * @package Plugin\Admin\Validation
+ * @package JTL\Plugin\Admin\Validation
  */
 class PluginValidationFactory
 {

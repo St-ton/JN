@@ -4,11 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\Shop;
+use JTL\Template;
 
 /**
  * Class Shopinfo
- * @package Widgets
+ * @package JTL\Widgets
  */
 class Shopinfo extends AbstractWidget
 {
@@ -17,10 +20,10 @@ class Shopinfo extends AbstractWidget
      */
     public function init()
     {
-        $tpl             = \Template::getInstance();
+        $tpl             = Template::getInstance();
         $strTplVersion   = $tpl->getVersion();
-        $strFileVersion  = \Shop::getApplicationVersion();
-        $strDBVersion    = \Shop::getShopDatabaseVersion();
+        $strFileVersion  = Shop::getApplicationVersion();
+        $strDBVersion    = Shop::getShopDatabaseVersion();
         $strUpdated      = \date_format(\date_create(\getJTLVersionDB(true)), 'd.m.Y, H:i:m');
         $strMinorVersion = \APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '';
 

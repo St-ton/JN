@@ -10,13 +10,13 @@ class ofc_arrow
      *@param $colour as string.
      *@param $barb_length as number. Length of the barbs in pixels.
      */
-    public function __construct($x, $y, $a, $b, $colour, $barb_length=10)
+    public function __construct($x, $y, $a, $b, $colour, $barb_length = 10)
     {
-        $this->type     = "arrow";
-        $this->start    = array("x"=>$x, "y"=>$y);
-        $this->end        = array("x"=>$a, "y"=>$b);
+        $this->type  = 'arrow';
+        $this->start = array('x' => $x, 'y' => $y);
+        $this->end   = array('x' => $a, 'y' => $b);
         $this->colour($colour);
-        $this->{"barb-length"} = $barb_length;
+        $this->{'barb-length'} = $barb_length;
     }
     
     public function colour($colour)

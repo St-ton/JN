@@ -5,1000 +5,1000 @@ msgid "systemlog_flag_desc"
 msgstr ""
 
 msgid "artikel_artikelanzeigefilter_name"
-msgstr "Artikelanzeigefilter"
+msgstr "Item display filter"
 
 msgid "artikel_artikelanzeigefilter_desc"
-msgstr "Folgende Artikel werden im Shop zu finden sein"
+msgstr "Specify whether to display all items, only items with available stock, or only items with available stock or that allow a negative stock."
 
 msgid "artikel_artikelanzeigefilter_seo_name"
-msgstr "Direktaufruf ausverkaufter Artikel"
+msgstr "Direct access to sold out items"
 
 msgid "artikel_artikelanzeigefilter_seo_desc"
-msgstr "Methode beim Direktaufruf (über Artikel-URL) ausverkaufter Artikel. (Ist nur wirksam, wenn \"Artikelanzeigefilter\" aktiv ist.)"
+msgstr "Specify whether sold-out items can still be accessed directly via the item URL. This option is only valid when \"Item display filter\" is active."
 
 msgid "artikel_lagerampel_gruen_name"
-msgstr "Lagerbestandsampel grün"
+msgstr "Green stock level indicator"
 
 msgid "artikel_lagerampel_gruen_desc"
-msgstr "Ab diesem Lagerbestand steht die Lagerbestandsampel auf grün. Zwischen diesem Wert und Lagerbestandsampel rot, steht die Lagerbestandsampel auf gelb."
+msgstr "From this value on, the text for \"Green stock level indicator\" is shown. Between this value and the value for \"Red stock level indicator\", the text for \"Yellow stock level indicator\" appears."
 
 msgid "artikel_lagerampel_rot_name"
-msgstr "Lagerbestandsampel rot"
+msgstr "Red stock level indicator"
 
 msgid "artikel_lagerampel_rot_desc"
-msgstr "Bis zu diesem Lagerbestand steht die Lagerbestandsampel auf rot. Zwischen diesem Wert und Lagerbestandsampel grün, steht die Lagerbestandsampel auf gelb."
+msgstr "Up to this value, the text for \"Red stock level indicator\" is shown. Between this value and the value for \"Green stock level indicator\", the text for \"Yellow stock level indicator\" appears."
 
 msgid "artikel_ampel_lagernull_gruen_name"
-msgstr "Lagerbestandsampel grün Sonderbedingung"
+msgstr "Green stock level indicator with \"Allow negative stock\"."
 
 msgid "artikel_ampel_lagernull_gruen_desc"
-msgstr "Wenn der Lagerbestand kleiner 0 sein darf (Überverkauf möglich), soll Lagerbestandsampel grün sein?"
+msgstr "Specify whether the text for \"Green stock level indicator\" is always shown with items for which \"Allow negative stock\" is activated in JTL-Wawi."
 
 msgid "global_preis0_name"
-msgstr "Wenn Preis ist gleich 0"
+msgstr "If price is 0"
 
 msgid "global_preis0_desc"
-msgstr "Sollen Produkte mit Preis 0 in den Warenkorb gelegt werden?"
+msgstr "Specify whether items with a price of 0 can be placed in the basket or whether a note is displayed that the price is available on request. This option helps to prevent accidental free-of-charge listings."
 
 msgid "artikeldetails_variationswertlager_name"
-msgstr "Variationswerte mit Lager &lt;= 0"
+msgstr "Variation values without available stock"
 
 msgid "artikeldetails_variationswertlager_desc"
-msgstr "Sollen diese Werte zur Auswahl stehen? Gilt nur f&uuml;r Artikel, die einen Haken bei &quot;Lagerbestand bei Variationen&quot; gesetzt haben"
+msgstr "Specify what happens when individual variation values of variation items for which the option \"Track stocks of variations\" is enabled are out of stock."
 
 msgid "global_versandfrei_anzeigen_name"
-msgstr "Versandfrei beim Artikel anzeigen"
+msgstr "Show that item can be shipped free of charge"
 
 msgid "global_versandfrei_anzeigen_desc"
-msgstr "M&ouml;chten Sie beim Artikel anzeigen, ob er versandkostenfrei versendet werden kann? H&auml;ngt von Versandarten mit Versandkostenfrei ab X sowie Einstellung 1470 ab."
+msgstr "Here you can set whether an item is shown with free shipping or not. Whether this is displayed depends on the settings for the shipping methods and setting 1470 \"Show countries free of shipping costs\"."
 
 msgid "global_warenkorb_weiterleitung_name"
-msgstr "Weiterleitung zum Warenkorb"
+msgstr "Forwarding to basket"
 
 msgid "global_warenkorb_weiterleitung_desc"
-msgstr "M&ouml;chten Sie, dass Ihre Kunden zum Warenkorb weitergeleitet werden, sobald sie etwas in den Warenkorb legen?"
+msgstr "Specify whether to forward customers directly to the basket when they place something in the basket."
 
 msgid "global_versandklasse_anzeigen_name"
-msgstr "Versandklasse im Versandtext anzeigen"
+msgstr "Show shipping class in shipping text"
 
 msgid "global_versandklasse_anzeigen_desc"
-msgstr "Soll bei jedem Artikel die Versandklasse mit im Versandtext angezeigt werden, falls die Versandklasse nicht Standard ist?"
+msgstr "Specify whether the shipping class is shown for items that no not have the shipping class \"standard\"."
 
 msgid "global_lieferverzoegerung_anzeigen_name"
-msgstr "Evtl. Lieferzeitverzögerung anzeigen"
+msgstr "Show possible delivery delay"
 
 msgid "global_lieferverzoegerung_anzeigen_desc"
-msgstr "Sollen eventuelle Lieferverzögerungen bei Artikeln im Warenkorb angezeigt werden, wenn mit Lagerbestand gearbeitet wird und das Lager kleiner Null werden darf?"
+msgstr "Specify whether to display item delivery delays in the basket. For them to be displayed, inventory management must be active and negative stock must be allowed."
 
 msgid "global_versandkostenfrei_darstellung_name"
-msgstr "Versandkostenfrei Darstellung als"
+msgstr "Show countries free of shipping costs"
 
 msgid "global_versandkostenfrei_darstellung_desc"
-msgstr "Wie soll die Versandkostenfrei Darstellung beim Artikel angezeigt werden?"
+msgstr "Specify how to display the destination countries for which no shipping costs apply."
 
 msgid "global_artikelname_htmlentities_name"
-msgstr "HTML-Code Umwandlung bei Artikelnamen"
+msgstr "HTML conversion of special characters in item names"
 
 msgid "global_artikelname_htmlentities_desc"
-msgstr "Sollen Sonderzeichen im Artikelnamen in HTML Entities umgewandelt werden"
+msgstr "Specify whether to convert special characters in item names into the corresponding HTML transcription."
 
 msgid "global_bestseller_minanzahl_name"
-msgstr "Bestseller ab welcher Anzahl"
+msgstr "Minimum number of sales for bestsellers"
 
 msgid "global_bestseller_minanzahl_desc"
-msgstr "Ab welcher Anzahl an Verkäufen pro Artikel, soll dieser Artikel in den Bestsellers erscheinen?"
+msgstr "Specify the minimum number of times an item must be sold in order to be marked as a bestseller."
 
 msgid "kategorien_anzeigefilter_name"
-msgstr "Kategorieanzeigefilter"
+msgstr "Category display filter"
 
 msgid "kategorien_anzeigefilter_desc"
-msgstr "Folgende Kategorien werden im Shop zu finden sein"
+msgstr "Specify whether to display all categories in JTL-Shop or only categories that are not empty."
 
 msgid "artikel_lagerampel_keinlager_name"
-msgstr "Lagerbestandsampel (Ohne Lager)"
+msgstr "Coloured stock level indicator (non-inventory items)"
 
 msgid "artikel_lagerampel_keinlager_desc"
-msgstr "Standardampel wenn Artikel ohne Lagerbestand arbeitet"
+msgstr "Specify the text that is to be displayed for non-inventory items."
 
 msgid "global_shopname_name"
-msgstr "Shopname"
+msgstr "Online shop name"
 
 msgid "global_shopname_desc"
-msgstr "Mit diesem Namen wird Ihr Shop repräsentiert."
+msgstr "Specify the title of your online shop here. The title is displayed, for example, when you move the mouse over your shop logo."
 
 msgid "global_sichtbarkeit_name"
-msgstr "Sichtbarkeit der Standardkundengruppe"
+msgstr "Visible to default customer group"
 
 msgid "global_sichtbarkeit_desc"
-msgstr "Die Standardkundengruppe ist die Kundengruppe, die jeder Besucher automatisch annimmt"
+msgstr "Specify whether visitors who are not logged in can see everything that the default customer can see, whether they can only see items without prices, or whether they cannot see items and categories at all."
 
 msgid "global_kundenkonto_aktiv_name"
-msgstr "Kundenkonto wann aktiv"
+msgstr "Activation of new customer account"
 
 msgid "global_kundenkonto_aktiv_desc"
-msgstr "Soll das Kundenkonto direkt nach Erstellung nutzbar sein oder soll der Shopbetreiber vorerst das Konto freischalten (z.B. reine B2B Shops)?"
+msgstr "Specify whether customer accounts have to be activated in JTL-Wawi first or whether they are active in JTL-Shop directly after creation and can be immediately used for a purchase."
 
 msgid "kaufabwicklung_ssl_nutzen_name"
-msgstr "Automatischer Seitenwechsel zwischen http/https"
+msgstr "Redirect automatically from http to https"
 
 msgid "kaufabwicklung_ssl_nutzen_desc"
-msgstr "Dadurch werden sensible Daten verschlüsselt. Hierzu wird ein SSL-Zertifikat auf dem Server benötigt"
+msgstr "Here you can specify whether part of your website or your whole website is accessible only via an encrypted connection. For this purpose, a valid SSL certificate is required on your server."
 
 msgid "global_versandhinweis_name"
-msgstr "Hinweis auf Versandkosten an Produktpreisen"
+msgstr "Refer to shipping costs underneath item price"
 
 msgid "global_versandhinweis_desc"
 msgstr ""
 
 msgid "global_erscheinende_kaeuflich_name"
-msgstr "Produkte mit zuk&uuml;nftigem Erscheinungsdatum"
+msgstr "Items with release date in future"
 
 msgid "global_erscheinende_kaeuflich_desc"
-msgstr "Sollen Produkte, die erst in Zukunft erscheinen, zu kaufen sein?"
+msgstr "Specify whether items with a future release date can already be purchased."
 
 msgid "global_zaehler_anzeigen_name"
-msgstr "Besucherz&auml;hler anzeigen"
+msgstr "Show visitor counter"
 
 msgid "global_zaehler_anzeigen_desc"
 msgstr ""
 
 msgid "global_dezimaltrennzeichen_sonstigeangaben_name"
-msgstr "Dezimaltrennzeichen für sonstige Angaben"
+msgstr "Decimal separator for other data"
 
 msgid "global_dezimaltrennzeichen_sonstigeangaben_desc"
-msgstr "Welches Dezimaltrennzeichen soll bei sonstigen Angaben genutzt werden? "
+msgstr "Specify whether to use a period or a comma as a decimal separator for other data. "
 
 msgid "garbagecollector_wawiabgleich_name"
-msgstr "Automatische Shop Bereinigung (GarbageCollector)"
+msgstr "Automatic shop clean-up (GarbageCollector)"
 
 msgid "garbagecollector_wawiabgleich_desc"
-msgstr "Sollen Einträge in stark wachsende Tabellen nach einer bestimmten Anzahl Tage gelöscht werden?"
+msgstr "Specify whether entries in fast-growing tables are to be deleted regularly."
 
 msgid "global_merkmalwert_url_indexierung_name"
-msgstr "Merkmalwert-URLs Suchmaschinen-Indexierung"
+msgstr "Indexation of URLs for characteristic values by search engines"
 
 msgid "global_merkmalwert_url_indexierung_desc"
 msgstr ""
 
 msgid "redirect_save_404_name"
-msgstr "404-Hits automatisch in den Weiterleitungen erfassen?"
+msgstr "Automatically record 404 hits under \"Forwarding\""
 
 msgid "redirect_save_404_desc"
-msgstr "Sollen nicht gefundene URLs automatisch in der Weiterleitungstabelle gespeichert werden?"
+msgstr "Specify whether bad URLs are to be recorded automatically on the Forwarding page. You can then set up a redirection for these pages."
 
 msgid "global_ust_auszeichnung_name"
-msgstr "USt - Auszeichnung am Produktpreis"
+msgstr "Position of VAT for item"
 
 msgid "global_ust_auszeichnung_desc"
-msgstr "Wie soll die Umsatzsteuer ausgewiesen werden?"
+msgstr "Define how the value-added tax for the item is displayed."
 
 msgid "global_fusszeilehinweis_name"
-msgstr "Hinweis in Fusszeile"
+msgstr "Notes in footer"
 
 msgid "global_fusszeilehinweis_desc"
-msgstr "Hier können Sie weitere Hinweise zum Produktpreis machen (z.B. als Kleinunternehmer)"
+msgstr "Here you can give further information on the item price (e.g. as a small-business owner)."
 
 msgid "global_steuerpos_anzeigen_name"
-msgstr "Steuerpositionen in Bestellvorgang / Emails anzeigen"
+msgstr "Show tax positions in order process/emails"
 
 msgid "global_steuerpos_anzeigen_desc"
-msgstr "Als Kleinunternehmer können Sie die explizite Ausweisung der USt. hiermit ausschalten"
+msgstr "As a small-business owner, you can deactivate stating VAT here."
 
 msgid "warenkorbpers_nutzen_name"
-msgstr "Persistenten Warenkorb nutzen"
+msgstr "Save basket"
 
 msgid "warenkorbpers_nutzen_desc"
-msgstr "Soll der persistente Warenkorb genutzt werden? Dies ermöglicht das Speichern des Warenkorbs in die Datenbank. "
+msgstr "Specify whether to save the last basket with unordered items for customers in the database. This allows customers to access their previous baskets when they log on again at a later time. "
 
 msgid "global_wunschliste_weiterleitung_name"
-msgstr "Weiterleitung zum Wunschzettel"
+msgstr "Forwarding to wish list"
 
 msgid "global_wunschliste_weiterleitung_desc"
-msgstr "Möchten Sie, dass Ihre Kunden weitergeleitet werden, sobald Sie etwas zum Wunschzettel hinzufügen?"
+msgstr "Specify whether your customers are forwarded directly to the wish list when they add an item to it."
 
 msgid "global_wunschliste_anzeigen_name"
-msgstr "Wunschzettel nutzen"
+msgstr "Enable wish list"
 
 msgid "global_wunschliste_anzeigen_desc"
-msgstr "Möchten Sie, dass der Wunschzettel angezeigt wird?"
+msgstr "Specify whether your customers are able to create and maintain wish lists."
 
 msgid "global_wunschliste_freunde_aktiv_name"
-msgstr "Wunschzettelversand an Freunde aktivieren"
+msgstr "Enable sharing wish lists with friends"
 
 msgid "global_wunschliste_freunde_aktiv_desc"
-msgstr "Wenn ja, können Kunden ihren Wunschzettel per Email an Freunde versenden"
+msgstr "Specify whether your customers should be able to send their wish lists by email directly from JTL-Shop."
 
 msgid "global_wunschliste_max_email_name"
-msgstr "Maximale Anzahl von Empfängern beim Wunschzettelversand"
+msgstr "Maximum number of recipients for sharing a wish list"
 
 msgid "global_wunschliste_max_email_desc"
-msgstr "Die Anzahl setzt die maximalen Emailempfänger beim Versand des Wunschzettels fest"
+msgstr "Specify to how many recipients wish lists can be sent by email."
 
 msgid "global_wunschliste_artikel_loeschen_nach_kauf_name"
-msgstr "Gekaufte Artikel nach Bestellung von Wunschliste l&ouml;schen?"
+msgstr "Delete purchased items from wish list after ordering"
 
 msgid "global_wunschliste_artikel_loeschen_nach_kauf_desc"
-msgstr "Sollen Artikel die auf der Wunschliste stehen und bestellt wurden, nach dem Kauf gel&ouml;scht werden?"
+msgstr "Specify whether to delete items from the wish list after they have been bought."
 
 msgid "wartungsmodus_aktiviert_name"
-msgstr "Wartungsmodus aktivieren"
+msgstr "Enable maintenance mode"
 
 msgid "wartungsmodus_aktiviert_desc"
-msgstr "Mit aktiviertem Wartungsmodus wird der Shop Besuchern keine Inhalte anzeigen"
+msgstr "Here you can activate the maintenance mode of JTL-Shop. JTL-Shop contents are not displayed in maintenance mode. In this mode, you can easily perform maintenance work such as updates or backups."
 
 msgid "global_versandermittlung_anzeigen_name"
-msgstr "Versandermittlung anzeigen"
+msgstr "Show shipping cost determination"
 
 msgid "global_versandermittlung_anzeigen_desc"
-msgstr "Soll auf der Spezialseite 'Versand' die Versandkostenermittlung angezeigt werden?"
+msgstr "Specify whether to display the shipping cost determination on the special page \"Shipments\"."
 
 msgid "global_versandermittlung_lieferdauer_anzeigen_name"
-msgstr "Versandermittlung Lieferdauer anzeigen"
+msgstr "Show delivery time with shipping cost determination"
 
 msgid "global_versandermittlung_lieferdauer_anzeigen_desc"
-msgstr "Soll die Lieferdauer bei der Versandermittlung angezeigt werden?"
+msgstr "Specify whether to also display the delivery time with the shipping cost determination."
 
 msgid "admin_ckeditor_mode_name"
-msgstr "CKEditor-Modus"
+msgstr "CKEditor mode"
 
 msgid "admin_ckeditor_mode_desc"
-msgstr ""
+msgstr " "
 
 msgid "admin_login_logger_mode_name"
-msgstr "Adminloginversuche loggen?"
+msgstr "Record failed login attempts by Admin"
 
 msgid "admin_login_logger_mode_desc"
-msgstr "Sollen Backend-Loginversuche geloggt werden?"
+msgstr "Specify whether failed login attempts by the Admin account are logged in the back end."
 
 msgid "global_cookie_lifetime_name"
-msgstr "Cookie-Lifetime"
+msgstr "Cookie lifetime"
 
 msgid "global_cookie_lifetime_desc"
-msgstr "Die Zeit in Sekunden, die Cookies g&uuml;ltig sein sollen. Leer lassen oder 0 f&uuml;r Standard."
+msgstr "Specify how many seconds a cookie is valid. 0 equals the default value."
 
 msgid "global_cookie_path_name"
-msgstr "Cookie-Pfad"
+msgstr "Cookie path"
 
 msgid "global_cookie_path_desc"
-msgstr "Der Pfad der Domain, in dem das Cookie zu Verf&uuml;gung steht. Mit einem einfachen Schr&auml;gstrich gilt es f&uuml;r alle Pfade der Domain. Leer lassen f&uuml;r Standard."
+msgstr "Specify the path of your JTL-Shop in which the cookie should be available. Enter a simple slash so that it is available everywhere. Leave this field empty to get the default setting."
 
 msgid "global_cookie_domain_name"
-msgstr "Cookie-Domain"
+msgstr "Cookie domain"
 
 msgid "global_cookie_domain_desc"
-msgstr "Die Cookie-Domain, z.B. \"www.example.com\". Damit die Cookies auf allen Subdomains zur Verf&uuml;gung stehen, muss der Domain ein Punkt vorangestellt werden. Leer lassen f&uuml;r Standard."
+msgstr "Enter the domain for which the cookies are valid, e.g. \"www.example.com\". For cookies to be available on all subdomains as well, the subdomain must be preceded by a dot. Leave this field empty to get the default setting."
 
 msgid "global_cookie_secure_name"
 msgstr "Secure"
 
 msgid "global_cookie_secure_desc"
-msgstr "Falls auf \"Ja\" gesetzt, wird das Cookie nur über sichere Verbindungen gesendet."
+msgstr "Specify whether cookies are to be sent with secure connections only."
 
 msgid "global_cookie_httponly_name"
 msgstr "HTTPONLY"
 
 msgid "global_cookie_httponly_desc"
-msgstr "Falls auf \"Ja\" gesetzt, versucht PHP das httponly-Flag zu senden."
+msgstr "Specify whether PHP should attempt to send the HTTPONLY flag."
 
 msgid "startseite_neuimsortiment_anzahl_name"
-msgstr "Anzahl anzuzeigender &quot;Neu im Sortiment&quot; Artikel"
+msgstr "\"New in product range\": Number of items"
 
 msgid "startseite_neuimsortiment_anzahl_desc"
-msgstr "0 = Es werden keine &quot;Neu im Sortiment&quot; Artikel angezeigt"
+msgstr "Specify the number of items per box. 0 means that the box is hidden."
 
 msgid "startseite_neuimsortiment_sortnr_name"
-msgstr "&quot;Neu im Sortiment&quot; Sortiernummer"
+msgstr "\"New in product range\": Sort number"
 
 msgid "startseite_neuimsortiment_sortnr_desc"
-msgstr "Je kleiner, desto weiter oben"
+msgstr "Specify the position of the box. The lower an entered number is in comparison to that of other boxes, the higher up a box appears."
 
 msgid "startseite_topangebote_anzahl_name"
-msgstr "Anzahl anzuzeigender Top-Angebote"
+msgstr "Top offers: number of items"
 
 msgid "startseite_topangebote_anzahl_desc"
 msgstr ""
 
 msgid "startseite_topangebote_sortnr_name"
-msgstr "Top-Angebote Sortiernummer"
+msgstr "Top offers: sort number"
 
 msgid "startseite_topangebote_sortnr_desc"
 msgstr ""
 
 msgid "startseite_sonderangebote_anzahl_name"
-msgstr "Anzahl anzuzeigender Sonderangebote"
+msgstr "Special offers: number of items"
 
 msgid "startseite_sonderangebote_anzahl_desc"
 msgstr ""
 
 msgid "startseite_sonderangebote_sortnr_name"
-msgstr "Sonderangebote Sortiernummer"
+msgstr "Special offers: sort number"
 
 msgid "startseite_sonderangebote_sortnr_desc"
 msgstr ""
 
 msgid "startseite_bestseller_anzahl_name"
-msgstr "Anzahl anzuzeigender Bestseller"
+msgstr "Bestsellers: max. number of items"
 
 msgid "startseite_bestseller_anzahl_desc"
 msgstr ""
 
 msgid "startseite_bestseller_sortnr_name"
-msgstr "Bestseller Sortiernummer"
+msgstr "Bestsellers: sort number"
 
 msgid "startseite_bestseller_sortnr_desc"
 msgstr ""
 
 msgid "email_methode_name"
-msgstr "Emails versenden per"
+msgstr "Send emails via"
 
 msgid "email_methode_desc"
-msgstr "Diese Methode wird angewendet, um Emails zu verschicken"
+msgstr "Specify the protocol used to send emails."
 
 msgid "email_sendmail_pfad_name"
-msgstr "Sendmail Pfad"
+msgstr "Sendmail path"
 
 msgid "email_sendmail_pfad_desc"
-msgstr "Nur notwendig, wenn Emailmethode = Sendmail"
+msgstr "If you have selected the \"Sendmail\" option under \"Send emails via\", enter the path for sendmail here."
 
 msgid "email_smtp_hostname_name"
-msgstr "SMTP Hostname"
+msgstr "SMTP host name"
 
 msgid "email_smtp_hostname_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "email_smtp_port_name"
-msgstr "SMTP Port"
+msgstr "SMTP port"
 
 msgid "email_smtp_port_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", you can specify here whether SMTP authentication is required."
 
 msgid "email_smtp_auth_name"
-msgstr "SMTP Auth nutzen"
+msgstr "Use SMTP Auth"
 
 msgid "email_smtp_auth_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", you can specify here whether SMTP authentication is required."
 
 msgid "email_smtp_user_name"
-msgstr "SMTP Benutzername"
+msgstr "SMTP user name"
 
 msgid "email_smtp_user_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you use SMTP-Auth, you can enter the user name for the SMTP server here."
 
 msgid "email_smtp_pass_name"
-msgstr "SMTP Passwort"
+msgstr "SMTP password"
 
 msgid "email_smtp_pass_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you use SMTP-Auth, you can enter the password for the SMTP server here."
 
 msgid "email_smtp_verschluesselung_name"
-msgstr "SMTP Security"
+msgstr "SMTP security"
 
 msgid "email_smtp_verschluesselung_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", you can specify here whether and how the SMTP connection is encrypted."
 
 msgid "email_master_absender_name"
-msgstr "Master-Emailadresse"
+msgstr "Master email address"
 
 msgid "email_master_absender_desc"
-msgstr "Diese Emailadresse wird für alle Emails verwendet. Sie kann von den jeweiligen Spezialemailadressen überschrieben werden."
+msgstr "Specify the email address from which newsletters are to be sent."
 
 msgid "email_master_absender_name_name"
-msgstr "Master-Email Absendername"
+msgstr "Sender for master email address"
 
 msgid "email_master_absender_name_desc"
-msgstr "Diese Emailadresse wird für alle Emails verwendet. Sie kann von den jeweiligen Spezialemailadressen überschrieben werden."
+msgstr "Specify which sender is to be used for emails."
 
 msgid "suche_fulltext_name"
-msgstr "Volltextsuche verwenden"
+msgstr "Use full-text search"
 
 msgid "suche_fulltext_desc"
-msgstr "F&uuml;r die Volltextsuche werden spezielle Indizes angelegt. Dies muss von der verwendeten Datenbankversion unterst&uuml;tzt werden."
+msgstr "Specify whether to use the full-text search. Special indices are created for the full-text search. This must be supported by the used database version."
 
 msgid "suche_prio_name_name"
-msgstr "Suchpriorität Artikelname"
+msgstr "Search priority of item name"
 
 msgid "suche_prio_name_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_suchbegriffe_name"
-msgstr "Suchpriorität Suchbegriffe eines Artikels"
+msgstr "Search priority of search terms of an item"
 
 msgid "suche_prio_suchbegriffe_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_artikelnummer_name"
-msgstr "Suchpriorität Artikelnummer"
+msgstr "Search priority of SKU"
 
 msgid "suche_prio_artikelnummer_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_kurzbeschreibung_name"
-msgstr "Suchpriorität Artikelkurzbeschreibung"
+msgstr "Search priority of brief item description"
 
 msgid "suche_prio_kurzbeschreibung_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_beschreibung_name"
-msgstr "Suchpriorität Artikelbeschreibung"
+msgstr "Search priority of item description"
 
 msgid "suche_prio_beschreibung_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_ean_name"
-msgstr "Suchpriorität Artikel EAN"
+msgstr "Search priority of item EAN"
 
 msgid "suche_prio_ean_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_isbn_name"
-msgstr "Suchpriorität Artikel ISBN"
+msgstr "Search priority of item ISBN"
 
 msgid "suche_prio_isbn_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_han_name"
-msgstr "Suchpriorität Artikel HAN"
+msgstr "Search priority of item MPN"
 
 msgid "suche_prio_han_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_prio_anmerkung_name"
-msgstr "Suchpriorität Artikel Anmerkung"
+msgstr "Search priority of item note"
 
 msgid "suche_prio_anmerkung_desc"
-msgstr "0 = In diesem Feld nicht suchen"
+msgstr "Specify the order in which fields are searched. The higher the priority, the earlier a field is searched. 0 ensures that a field is not considered at all."
 
 msgid "suche_min_zeichen_name"
-msgstr "Mindestzeichenanzahl des Suchausdrucks"
+msgstr "Minimum number of characters of search term"
 
 msgid "suche_min_zeichen_desc"
-msgstr "Unter dieser Zeichenanzahlgrenze wird die Suche nicht ausgef&uuml;hrt. (Bei Verwendung der Volltextsuche sollte dieser Wert an den Datenbankparameter ft_min_word_len angepasst werden.)"
+msgstr "Specify the minimum number of characters that a search term must contain for the search to be executed (when using the full-text search, this value should be adjusted to the database parameter ft_min_word_len)."
 
 msgid "suche_sortierprio_name_name"
-msgstr "Priorität der Suchtreffersortierung: Name A-Z"
+msgstr "Priority of sorting options: Name from A to Z"
 
 msgid "suche_sortierprio_name_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
 
 msgid "suche_sortierprio_name_ab_name"
-msgstr "Priorität der Suchtreffersortierung: Name Z-A"
+msgstr "Priority of sorting options: Name from Z to A"
 
 msgid "suche_sortierprio_name_ab_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
 
 msgid "suche_sortierprio_preis_name"
-msgstr "Priorität der Suchtreffersortierung: Preis 1..9"
+msgstr "Priority of sorting options: Price low to high"
 
 msgid "suche_sortierprio_preis_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
 
 msgid "suche_sortierprio_preis_ab_name"
-msgstr "Priorität der Suchtreffersortierung: Preis 9..1"
+msgstr "Priority of sorting options: Price high to low"
 
 msgid "suche_sortierprio_preis_ab_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
 
 msgid "suche_sortierprio_ean_name"
-msgstr "Priorität der Suchtreffersortierung: EAN"
+msgstr "Priority of sorting options: EAN"
 
 msgid "suche_sortierprio_ean_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
 
 msgid "suche_sortierprio_erstelldatum_name"
-msgstr "Priorität der Suchtreffersortierung: Artikelaktualität"
+msgstr "Priority of sorting options: Newest items"
 
 msgid "suche_sortierprio_erstelldatum_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Wird nach Artikelaktualität sortiert, so werden die neusten Artikel zuerst angezeigt"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option. The items that have been added last will be shown first."
 
 msgid "suche_sortierprio_artikelnummer_name"
-msgstr "Priorität der Suchtreffersortierung: Artikelnummer"
+msgstr "Priority of sorting options: SKU"
 
 msgid "suche_sortierprio_artikelnummer_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option."
 
 msgid "suche_sortierprio_lagerbestand_name"
-msgstr "Priorität der Suchtreffersortierung: Verfügbarkeit"
+msgstr "Priority of sorting options: Availability"
 
 msgid "suche_sortierprio_lagerbestand_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Sortierung nach Lagerbestand"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option. "
 
 msgid "suche_sortierprio_gewicht_name"
-msgstr "Priorität der Suchtreffersortierung: Gewicht"
+msgstr "Priority of sorting options: Weight"
 
 msgid "suche_sortierprio_gewicht_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option. "
 
 msgid "suche_sortierprio_erscheinungsdatum_name"
-msgstr "Priorität der Suchtreffersortierung: Erscheinungsdatum"
+msgstr "Priority of sorting options: Release date"
 
 msgid "suche_sortierprio_erscheinungsdatum_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option. "
 
 msgid "suche_sortierprio_bestseller_name"
-msgstr "Priorität der Suchtreffersortierung: Bestseller"
+msgstr "Priority of sorting options: Bestsellers"
 
 msgid "suche_sortierprio_bestseller_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting option is shown. Set the priority to 0 to hide this sorting option. "
 
 msgid "suche_sortierprio_bewertung_name"
-msgstr "Priorität der Suchtreffersortierung: Bewertungen"
+msgstr "Priority of sorting options: Customer reviews"
 
 msgid "suche_sortierprio_bewertung_desc"
-msgstr "0 - diese Sortiermöglichkeit wird nicht angeboten. Je höher die Priorität, desto weiter oben diese Sortiermöglichkeit"
+msgstr "The higher the priority, the higher up a sorting possibility is shown. Set the priority to 0 to hide this sorting option. "
 
 msgid "suche_max_treffer_name"
-msgstr "Maximale Treffer pro Suche"
+msgstr "Maximum number of search results"
 
 msgid "suche_max_treffer_desc"
-msgstr "Maximal soviele Treffer werden bei der Suche gefunden. Wert nicht zu gro&szlig; setzen, da sonst die Suche langsam wird. Richtwert: 300"
+msgstr "Specify the maximum number of search results to be found. Do not set the value too high so as not to slow down the search. We recommend a value of 300."
 
 msgid "suche_ajax_anzahl_name"
-msgstr "Anzahl maximaler Ajax Suchvorschläge"
+msgstr "Maximum number of Ajax search proposals"
 
 msgid "suche_ajax_anzahl_desc"
-msgstr "Wieviele Suchvorschläge sollen maximal per Ajax angezeigt werden, wenn man eine Zeichenfolge in die Suche tippt?"
+msgstr "Specify the maximum number of search proposals to be made to your customers during input. For this purpose, a mapping must exist."
 
 msgid "artikeluebersicht_varikombi_anzahl_name"
-msgstr "Anzahl Vorschaubilder bei Variationskombis"
+msgstr "Number of thumbnails for parent-child relationships"
 
 msgid "artikeluebersicht_varikombi_anzahl_desc"
-msgstr "Wieviele Vorschaubilder von Variationskombinationen sollen in der Artikel&uuml;bersicht angezeigt werden? (0 = nicht anzeigen)"
+msgstr "Specify how many thumbnails are to be displayed with parent-child relationships in the item overview."
 
 msgid "artikeluebersicht_lagerbestandsanzeige_name"
-msgstr "Lagerbestandsanzeige"
+msgstr "Stock level display"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_desc"
-msgstr "So wird der Lagerbestand eines Artikels angezeigt. (z.B. in Suche oder Kategorieübersicht)"
+msgstr "Specify if and how the stock level of an item is displayed."
 
 msgid "artikeluebersicht_kurzbeschreibung_anzeigen_name"
-msgstr "Kurzbeschreibung anzeigen"
+msgstr "Show brief description"
 
 msgid "artikeluebersicht_kurzbeschreibung_anzeigen_desc"
-msgstr "Soll die Kurzbeschreibung des Artikels auf &Uuml;bersichtsseiten angezeigt werden?"
+msgstr "Specify whether to also display the brief description field of an item in the item overview. This setting applies only to the list view."
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_name"
-msgstr "Hinweis Lieferantenbestandsanzeige anzeigen"
+msgstr "Show reference to supplier stocks"
 
 msgid "artikeluebersicht_lagerbestandanzeige_anzeigen_desc"
 msgstr ""
 
 msgid "artikeluebersicht_hersteller_anzeigen_name"
-msgstr "Hersteller bei den Produkten anzeigen"
+msgstr "Show item manufacturers"
 
 msgid "artikeluebersicht_hersteller_anzeigen_desc"
-msgstr "Soll der Hersteller in der Artikelübersicht angezeigt werden."
+msgstr "Specify whether and how to display the manufacturer in the item overview. This setting applies only to the list view."
 
 msgid "artikeluebersicht_artikelproseite_name"
-msgstr "Artikel pro Seite in der Artikelübersicht"
+msgstr "Items per page in item overview"
 
 msgid "artikeluebersicht_artikelproseite_desc"
 msgstr ""
 
 msgid "artikeluebersicht_artikelsortierung_name"
-msgstr "Standardsortierung"
+msgstr "Default sorting"
 
 msgid "artikeluebersicht_artikelsortierung_desc"
 msgstr ""
 
 msgid "artikeluebersicht_max_seitenzahl_name"
-msgstr "Anzahl Seitenzahlen"
+msgstr "Number of page numbers"
 
 msgid "artikeluebersicht_max_seitenzahl_desc"
-msgstr "Maximal soviele anklickbare Seitenzahlen gibt es, wenn Artikelanzahl über mehrere Seiten geht."
+msgstr "Specify the maximum number of pages to be displayed underneath the search results on a search result page."
 
 msgid "artikeluebersicht_rabattanzeige_name"
-msgstr "Anzeige rabattierter Preise (Artikel&uuml;bersicht / Suche)"
+msgstr "Display of discounts (item overview/search)"
 
 msgid "artikeluebersicht_rabattanzeige_desc"
-msgstr "Sofern ein Rabatt bei einem Artikel aktiv ist, was soll angezeigt werden?"
+msgstr "Specify how discounts are to be displayed."
 
 msgid "artikeluebersicht_sonderpreisanzeige_name"
-msgstr "Anzeige von Sonderpreisen (Artikel&uuml;bersicht / Suche)"
+msgstr "Display of special prices (item overview/search)"
 
 msgid "artikeluebersicht_sonderpreisanzeige_desc"
-msgstr "Sofern ein Sonderpreis bei einem Artikel aktiv ist, was soll angezeigt werden?"
+msgstr "Specify how to display the price for items with a special price."
 
 msgid "articleoverview_pricerange_width_name"
-msgstr "Max. Abweichung (%) für Preis-Range Anzeige"
+msgstr "Maximum price gap for price display with \"from\" (in %)"
 
 msgid "articleoverview_pricerange_width_desc"
-msgstr "Überschreitet der Max. Preis den Min. Preis um die angegebenen Prozent, dann wird stattdessen nur ein \"ab\" angezeigt."
+msgstr "Specify how large the gap (in %) between the lowest and the highest price must be so that the price is indicated as \"from\" + cheapest price."
 
 msgid "topbest_anzeigen_name"
-msgstr "Top-Angebote und/oder Bestseller anzeigen"
+msgstr "Show top offers and/or bestsellers"
 
 msgid "topbest_anzeigen_desc"
-msgstr "Wenn eine Kategorie keine eigenen Artikel enthält, sollen dann Top-Angebote und/oder Bestseller aus deren Unterkategorien angezeigt werden?"
+msgstr "Specify whether the respective items from the subcategories are displayed if there are no top offers or bestsellers in the categories."
 
 msgid "artikelubersicht_topbest_anzahl_name"
-msgstr "Maximale Anzahl Top/Bestseller-Artikel"
+msgstr "Maximum number of top offers/bestsellers"
 
 msgid "artikelubersicht_topbest_anzahl_desc"
-msgstr "Wieviele Artikel sollen bei den Top/Bestseller-Artikel angezeigt werden? (0 = Keiner)"
+msgstr "Specify how many items are to be displayed as top offers/bestsellers. If you select 0, no item is displayed."
 
 msgid "artikelubersicht_bestseller_gruppieren_name"
-msgstr "Bestseller pro Seite gruppieren"
+msgstr "Group bestsellers on top of page"
 
 msgid "artikelubersicht_bestseller_gruppieren_desc"
-msgstr "Sollen die Bestseller aus der Artikelliste pro Seite über den anderen Artikeln aus der Liste gruppiert angezeigt werden?"
+msgstr "Specify whether to group the bestsellers above the search results."
 
 msgid "artikeluebersicht_bestseller_anzahl_name"
-msgstr "Maximum Anzahl für Bestseller Gruppierung"
+msgstr "Maximum number of grouped best sellers"
 
 msgid "artikeluebersicht_bestseller_anzahl_desc"
-msgstr "Legen Sie die maximale Anzahl für Bestseller Gruppierung fest. Gilt nur, wenn obige Einstellung \"Bestseller pro Seite gruppieren\" auf Ja steht"
+msgstr "Specify the maximum number of bestsellers to be grouped. For this purpose, the option \"Group best sellers on top of page\" must be activated."
 
 msgid "artikeluebersicht_gewicht_anzeigen_name"
-msgstr "Versandgewicht anzeigen"
+msgstr "Show shipping weight"
 
 msgid "artikeluebersicht_gewicht_anzeigen_desc"
-msgstr "Das Gewicht vom Artikel mit Verpackung"
+msgstr "Specify whether to display the shipping weight (item + packaging) defined in JTL-Wawi on the item detail page."
 
 msgid "artikeluebersicht_artikelgewicht_anzeigen_name"
-msgstr "Artikelgewicht anzeigen"
+msgstr "Show item weight"
 
 msgid "artikeluebersicht_artikelgewicht_anzeigen_desc"
-msgstr "Das Gewicht vom Artikel ohne Verpackung."
+msgstr "Specify whether to display the item weight (item without packaging) defined in JTL-Wawi on the item detail page."
 
 msgid "artikeluebersicht_vergleichsliste_anzeigen_name"
-msgstr "Button Vergleichsliste anzeigen"
+msgstr "Show comparison list button"
 
 msgid "artikeluebersicht_vergleichsliste_anzeigen_desc"
-msgstr "Soll ein Button zum Hinzufügen auf die Vergleichsliste in der Artikelübersicht angezeigt werden?"
+msgstr "Specify whether to show a button in the item list that allows adding items to the comparison list."
 
 msgid "artikeluebersicht_wunschzettel_anzeigen_name"
-msgstr "Button Wunschzettel anzeigen"
+msgstr "Show wish list button"
 
 msgid "artikeluebersicht_wunschzettel_anzeigen_desc"
-msgstr "Soll ein Button zum Hinzufügen auf die Wunschzettel in der Artikelübersicht angezeigt werden?"
+msgstr "Specify whether to show a button in the item list that allows adding items to the wish list."
 
 msgid "artikeluebersicht_anzahl_pfeile_name"
-msgstr "Pfeilbuttons für die Artikelanzahl"
+msgstr "Arrow buttons for item quantity"
 
 msgid "artikeluebersicht_anzahl_pfeile_desc"
-msgstr "Wie sollen die Pfeile f&uuml;r die Anzahl in der Artikel&uuml;bersicht angezeigt werden."
+msgstr "Specify whether to display arrow buttons for changing the item quantity."
 
 msgid "artikeluebersicht_artikelintervall_anzeigen_name"
-msgstr "Abnahmeintervall anzeigen"
+msgstr "Show permissible order quantity"
 
 msgid "artikeluebersicht_artikelintervall_anzeigen_desc"
-msgstr "Zeigt das Abnahmeintervall des Artikel in der Artikelübersicht an"
+msgstr "Specify whether to display the permissible order quantity (if applicable)."
 
 msgid "artikeluebersicht_finanzierung_anzeigen_name"
-msgstr "Finanzierungsvorschlag anzeigen"
+msgstr "Show financing proposal"
 
 msgid "artikeluebersicht_finanzierung_anzeigen_desc"
-msgstr "Wollen Sie das in der Artikel&uuml;bersicht bei jedem Artikel ein Finanzierungsvorschlag angezeigt wird?"
+msgstr "Specify whether to display a financing proposal for each item."
 
 msgid "livesuche_max_ip_count_name"
-msgstr "Maximale Einträge pro Besucher und Stunde"
+msgstr "Maximum entries per visitor per hour"
 
 msgid "livesuche_max_ip_count_desc"
-msgstr "Damit verhindern Sie, dass einzelne IPs die Livesuche manipulieren."
+msgstr "Specify the maximum number of entries saved in the live search per visitor per hour. This allows you to prevent manipulation of the live search."
 
 msgid "suchfilter_anzeigen_ab_name"
-msgstr "Suche verfeinern anzeigen ab"
+msgstr "Show \"Refine search\" from"
 
 msgid "suchfilter_anzeigen_ab_desc"
-msgstr "Anzahl der Artikel ab der erweiterte Suchfilter angezeigt werden"
+msgstr "Specify the minimum number of items that must be displayed in the search results for further search filters to be available for selection."
 
 msgid "artikeluebersicht_erw_darstellung_name"
-msgstr "Erweiterte Darstellung nutzen"
+msgstr "Use expanded item overview"
 
 msgid "artikeluebersicht_erw_darstellung_desc"
-msgstr "Soll in der Artikel&uuml;bersicht eine Auswahlm&ouml;glichkeit f&uuml;r eine erweiterte Ansicht angezeigt werden?"
+msgstr "Specify whether your customers can change the way the item overview is displayed. If \"No\" is selected for this option, only the default setting is used."
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_name"
-msgstr "Standard Darstellung"
+msgstr "Default display option for item overview"
 
 msgid "artikeluebersicht_erw_darstellung_stdansicht_desc"
-msgstr "Welche Darstellung soll in der Artikel&uuml;bersicht standardm&auml;&szlig;ig angezeigt werden? Achtung: Evo unterst&uuml;tzt nur Liste und Galerie."
+msgstr "Specify the default display option that your customers will be shown. With the JTL-Shop default template EVO, you can only use the options \"Gallery\" and \"List\"."
 
 msgid "artikeluebersicht_anzahl_darstellung1_name"
-msgstr "Anzahl Artikel in Listendarstellung"
+msgstr "Number of items in list view"
 
 msgid "artikeluebersicht_anzahl_darstellung1_desc"
-msgstr "Wieviele Artikel sollen in der Listendarstellung auf einmal in der Artikelansicht angezeigt werden?"
+msgstr "Specify how many items are to be displayed in the list view."
 
 msgid "products_per_page_list_name"
-msgstr "Auswahloptionen Artikel pro Seite in Listenansicht"
+msgstr "Item selection options per page in list view"
 
 msgid "products_per_page_list_desc"
-msgstr "Mit Komma getrennt, -1 für alle"
+msgstr "Specify how many item selection options are available per page. Set this value to -1 to display all."
 
 msgid "artikeluebersicht_anzahl_darstellung2_name"
-msgstr "Anzahl Artikel in Galeriedarstellung"
+msgstr "Number of items in gallery view"
 
 msgid "artikeluebersicht_anzahl_darstellung2_desc"
-msgstr "Wieviele Artikel sollen in der Galeriedarstellung auf einmal in der Artikelansicht angezeigt werden?"
+msgstr "Specify how many items are to be displayed in the gallery view."
 
 msgid "products_per_page_gallery_name"
-msgstr "Auswahloptionen Artikel pro Seite in Gallerieansicht"
+msgstr "Item selection options per page in gallery view"
 
 msgid "products_per_page_gallery_desc"
-msgstr "Mit Komma getrennt, -1 für alle"
+msgstr "Specify how many item selection options are available per page. Set this value to -1 to display all."
 
 msgid "artikeluebersicht_anzahl_darstellung3_name"
-msgstr "Anzahl Artikel in Mosaikdarstellung"
+msgstr "Number of items in mosaic view"
 
 msgid "artikeluebersicht_anzahl_darstellung3_desc"
-msgstr "Wieviele Artikel sollen in der Mosaikdarstellung auf einmal in der Artikelansicht angezeigt werden?"
+msgstr "Specify how many items are to be displayed in the mosaic view."
 
 msgid "artikeldetails_xselling_standard_anzeigen_name"
-msgstr "Standard X-Selling beim Artikel anzeigen?"
+msgstr "Show default cross-selling"
 
 msgid "artikeldetails_xselling_standard_anzeigen_desc"
-msgstr "Dies sind Produkte, die dem aktuellen Artikel über die X-Selling Funktion zugewiesen wurden."
+msgstr "Specify whether cross-selling is shown for the item according to the settings in JTL-Wawi."
 
 msgid "artikeldetails_xselling_kauf_anzeigen_name"
-msgstr "Kaufbeziehung X-Selling-Produkte beim Artikel anzeigen"
+msgstr "Show \"Others also bought\""
 
 msgid "artikeldetails_xselling_kauf_anzeigen_desc"
-msgstr "Dies sind Produkte, die aufgrund bereits getätigter Käufe, in Beziehung miteinander stehen."
+msgstr "Specify whether customers are shown items that other customers have bought along with this item."
 
 msgid "artikeldetails_xselling_kauf_anzahl_name"
-msgstr "Anzahl Produkte anzeigen"
+msgstr "Number of displayed items"
 
 msgid "artikeldetails_xselling_kauf_anzahl_desc"
 msgstr ""
 
 msgid "artikeldetails_xselling_kauf_parent_name"
-msgstr "Immer Vaterartikel anzeigen"
+msgstr "Always show parent item"
 
 msgid "artikeldetails_xselling_kauf_parent_desc"
-msgstr "Es werden immer die zugeh&ouml;rigen Vaterartikel angezeigt, auch wenn tats&auml;chlich Kindartikel gekauft wurden."
+msgstr "Specify whether to always display the parent item and not a specific child items."
 
 msgid "artikel_variationspreisanzeige_name"
-msgstr "Variationsaufpreise anzeigen als"
+msgstr "Show extra charges for variations as follows"
 
 msgid "artikel_variationspreisanzeige_desc"
-msgstr "Wie sollen die Variationsaufpreise angezeigt werden?"
+msgstr "Specify how to indicate extra charges for variations."
 
 msgid "artikel_lagerbestandsanzeige_name"
-msgstr "Lagerbestandsanzeige"
+msgstr "Stock level display"
 
 msgid "artikel_lagerbestandsanzeige_desc"
-msgstr "So wird der Lagerbestand eines Artikels angezeigt. (Einzelansicht)"
+msgstr "Specify how the stock level of an item is displayed (individual view)."
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_name"
-msgstr "Hinweis Lieferantenbestandsanzeige anzeigen"
+msgstr "Show reference to supplier stocks"
 
 msgid "artikeldetails_lieferantenbestand_anzeigen_desc"
 msgstr ""
 
 msgid "artikeldetails_kurzbeschreibung_anzeigen_name"
-msgstr "Kurzbeschreibung anzeigen"
+msgstr "Show brief description"
 
 msgid "artikeldetails_kurzbeschreibung_anzeigen_desc"
-msgstr "Soll die Kurzbeschreibung des Artikels auf der Detailseite angezeigt werden?"
+msgstr "Specify whether to show a short description of the item on the item detail page."
 
 msgid "artikeldetails_uvp_anzeigen_name"
-msgstr "UVP anzeigen"
+msgstr "Show RRP"
 
 msgid "artikeldetails_uvp_anzeigen_desc"
-msgstr "Unverbindliche Preisempfehlung"
+msgstr "Specify whether to show the recommended retail price of an item on the item detail page. For this purpose, the information must be saved for the item in JTL-Wawi."
 
 msgid "artikeldetails_lieferstatus_anzeigen_name"
-msgstr "Lieferstatus anzeigen"
+msgstr "Show delivery status"
 
 msgid "artikeldetails_lieferstatus_anzeigen_desc"
-msgstr "Zeigt den Lieferstatus an, sofern gesetzt"
+msgstr "Specify whether to show the delivery status of an item on the item detail page. For this purpose, this information must be saved for the item in JTL-Wawi."
 
 msgid "artikeldetails_hersteller_anzeigen_name"
-msgstr "Hersteller anzeigen"
+msgstr "Show manufacturer"
 
 msgid "artikeldetails_hersteller_anzeigen_desc"
-msgstr "Zeigt den Hersteller an, sofern gesetzt"
+msgstr "Specify whether to show the manufacturer of an item on the item detail page. For this purpose, this information must be defined for the item in JTL-Wawi."
 
 msgid "artikeldetails_artikelintervall_anzeigen_name"
-msgstr "Abnahmeintervall anzeigen"
+msgstr "Show permissible order quantity"
 
 msgid "artikeldetails_artikelintervall_anzeigen_desc"
-msgstr "Zeigt das Abnahmeintervall des Artikel in den Artikeldetails an"
+msgstr "Specify whether to show the permissible order quantity for an item on the item detail page. For this purpose, this information must be saved for the item in JTL-Wawi."
 
 msgid "artikel_weitere_artikel_hersteller_anzeigen_name"
-msgstr "Link &quot;weitere Artikel dieses Herstellers&quot; anzeigen"
+msgstr "Show link to other items of manufacturer"
 
 msgid "artikel_weitere_artikel_hersteller_anzeigen_desc"
-msgstr "Dieser Link wird dann nur bei Artikeln angezeigt, die auch einen Hersteller zugewiesen haben"
+msgstr "Specify whether a link to the other items of the manufacturer is displayed for items. For this purpose, this information must be saved for the item in JTL-Wawi."
 
 msgid "artikeldetails_rabattanzeige_name"
-msgstr "Anzeige rabattierter Preise (Detailansicht)"
+msgstr "Show discounts (detailed view)"
 
 msgid "artikeldetails_rabattanzeige_desc"
-msgstr "Sofern ein Rabatt bei einem Artikel aktiv ist, was soll angezeigt werden?"
+msgstr "Specify how to display discounts."
 
 msgid "artikeldetails_sonderpreisanzeige_name"
-msgstr "Anzeige von Sonderpreisen (Detailansicht)"
+msgstr "Show special prices (detailed view)"
 
 msgid "artikeldetails_sonderpreisanzeige_desc"
-msgstr "Sofern ein Sonderpreis bei einem Artikel aktiv ist, was soll angezeigt werden?"
+msgstr "Specify how to display the price for items with a special price."
 
 msgid "artikeldetails_kategorie_anzeigen_name"
-msgstr "Kategorie anzeigen"
+msgstr "Show category"
 
 msgid "artikeldetails_kategorie_anzeigen_desc"
-msgstr "Soll die Kategorie in den Artikeldetails angezeigt werden, in welcher sich der Artikel befindet?"
+msgstr "Specify whether to display the item category on the item detail page."
 
 msgid "artikeldetails_tabs_nutzen_name"
-msgstr "Tabs nutzen"
+msgstr "Use tabs"
 
 msgid "artikeldetails_tabs_nutzen_desc"
-msgstr "Daduch werden Reiter f&uuml;r Artikelbeschreibung, Frage zum Produkt, etc. genutzt"
+msgstr "Specify whether tabs are to be used on the item detail page. These include for example customer reviews, item tags or questions about the item. If you disable this option, the different pieces of information are displayed one below the other."
 
 msgid "artikeldetails_navi_blaettern_name"
-msgstr "Navigation n&auml;chster/vorheriger Artikel anzeigen"
+msgstr "Show navigation to next/previous item"
 
 msgid "artikeldetails_navi_blaettern_desc"
-msgstr "Dadurch k&ouml;nnen Besucher in Ihren Produkten bl&auml;ttern"
+msgstr "Specify whether users will be shown links to the previous or next item."
 
 msgid "sie_sparen_x_anzeigen_name"
-msgstr "Sie sparen x% anzeigen"
+msgstr "Show savings in comparison to RRP"
 
 msgid "sie_sparen_x_anzeigen_desc"
-msgstr "Soll der Betrag und Prozentsatz angezeigt werden, den man gg&uuml;. der UVP spart?"
+msgstr "Specify whether to show the value or percentage that the customer saves on items in comparison to the RRP."
 
 msgid "artikeldetails_varikombi_anzahl_name"
-msgstr "Anzahl Vorschaubilder bei Variationskombis"
+msgstr "Number of thumbnails for parent-child relationships"
 
 msgid "artikeldetails_varikombi_anzahl_desc"
-msgstr "Wieviele Vorschaubilder von Variationskombinationen sollen in den Artikeldetails angezeigt werden? (0 = nicht anzeigen)"
+msgstr "Specify how many thumbnails are to be displayed with parent-child relationships in the item overview."
 
 msgid "artikeldetails_varikombi_vorschautext_name"
-msgstr "Beschriftung der Variantenvorschau"
+msgstr "Title of variations preview"
 
 msgid "artikeldetails_varikombi_vorschautext_desc"
-msgstr "Was soll &uuml;ber der Variantenvorschau als Text angezeigt werden?"
+msgstr "Specify what is to be displayed above the variations preview."
 
 msgid "artikeldetails_anzahl_pfeile_name"
-msgstr "Pfeilbuttons für die Artikelanzahl"
+msgstr "Arrow buttons for item quantity"
 
 msgid "artikeldetails_anzahl_pfeile_desc"
-msgstr "Wie sollen die Pfeile f&uuml;r die Anzahl in den Artikeldetails angezeigt werden."
+msgstr "Specify whether to display arrow buttons for changing the item quantity."
 
 msgid "artikeldetails_canonicalurl_varkombikind_name"
-msgstr "Canonical URLs bei Variationskombi Kinder"
+msgstr "Canonical URLs with child items"
 
 msgid "artikeldetails_canonicalurl_varkombikind_desc"
-msgstr "Sollen Canonical URLs von Variationskombi Kindern auf den Vater zeigen"
+msgstr "Specify whether to display canonical URLs of child items with the parent item."
 
 msgid "artikeldetails_warenkorbmatrix_anzeigeformat_name"
-msgstr "Warenkorbmatrix Anzeigeformat"
+msgstr "Displaying options for basket matrix"
 
 msgid "artikeldetails_warenkorbmatrix_anzeigeformat_desc"
-msgstr "Soll die Warenkorbmatrix in den Artikeldetails als Hoch- oder Querformat angezeigt werden?"
+msgstr "Specify how you want the basket matrix to be displayed."
 
 msgid "artikeldetails_warenkorbmatrix_anzeige_name"
-msgstr "Warenkorbmatrix anzeigen"
+msgstr "Show basket matrix"
 
 msgid "artikeldetails_warenkorbmatrix_anzeige_desc"
-msgstr "Soll die Warenkorbmatrix angezeigt werden, sofern Variationsartikel bzw. Variationskombination"
+msgstr "Specify whether the variations of variation items or parent-child relationships are to be selected via a basket matrix."
 
 msgid "artikeldetails_warenkorbmatrix_lagerbeachten_name"
-msgstr "Warenkorbmatrix nicht lagernde Variationen ausblenden"
+msgstr "Hide unavailable items in basket matrix"
 
 msgid "artikeldetails_warenkorbmatrix_lagerbeachten_desc"
-msgstr "Sollen Variationen die nicht mehr auf Lager sind, in der Warenkorbmatrix ausgeblendet werden?"
+msgstr "Specify whether to hide variations in the basket matrix that are currently not available."
 
 msgid "isbn_display_name"
-msgstr "Artikel ISBN anzeigen"
+msgstr "Show ISBN"
 
 msgid "isbn_display_desc"
-msgstr "Soll die ISBN (International Standard Book Number) angezeigt werden?"
+msgstr "Specify whether to show the ISBN."
 
 msgid "adr_hazard_display_name"
-msgstr "Gefahrentafel im Artikel anzeigen"
+msgstr "Show hazard sign for item"
 
 msgid "adr_hazard_display_desc"
-msgstr "Soll die europäische Gefahrentafel angezeigt werden (sofern in Wawi UN-Nummer und Gefahrnummer gepflegt sind)?"
+msgstr "Specify whether the European ADR hazard sign is shown in the item. For this purpose, the UN number and the hazard identification number must be saved in JTL-Wawi."
 
 msgid "artikeldetails_variationskombikind_bildvorschau_name"
-msgstr "Bildervorschau von Variationskombikinder anzeigen"
+msgstr "Preview of child item images"
 
 msgid "artikeldetails_variationskombikind_bildvorschau_desc"
-msgstr "Soll in der Artikelübersicht die Vorschaubilder von Variationskombikinder (falls vorhanden) angezeigt werden? Vorsicht: Bei vielen Variationen kann dies zu großen Ladezeiten führen."
+msgstr "Specify whether to display thumbnails for child items in the item overview. If there are many variations, this may lead to long loading times."
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_name"
-msgstr "Frage zum Produkt Formular anzeigen"
+msgstr "Show form with questions about item"
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_desc"
-msgstr "Zeigt ein Formular an, über das Interessenten Fragen zum Produkt stellen können. Sie erhalten diese Fragen als Email."
+msgstr "Specify whether your customers are able to ask questions about the item on the item detail page. You receive questions by email."
 
 msgid "artikeldetails_fragezumprodukt_email_name"
-msgstr "Frage zum Produkt Eingangsemailadresse. (Notwendige Angabe)"
+msgstr "Email address for questions about the item"
 
 msgid "artikeldetails_fragezumprodukt_email_desc"
-msgstr "An diese Emailadresse werden Anfrage geschickt. Diese Angabe ist zwingend notwendig für die Nutzung der Funktion."
+msgstr "Indicate the email address to which questions about the item will be sent. If you want to use this option, entering an email address is mandatory."
 
 msgid "produktfrage_abfragen_anrede_name"
-msgstr "Anrede abfragen"
+msgstr "Prompt title"
 
 msgid "produktfrage_abfragen_anrede_desc"
-msgstr "Herr, Frau"
+msgstr "Specify whether to prompt the title."
 
 msgid "produktfrage_abfragen_vorname_name"
-msgstr "Vorname abfragen"
+msgstr "Prompt first name"
 
 msgid "produktfrage_abfragen_vorname_desc"
-msgstr ""
+msgstr " "
 
 msgid "produktfrage_abfragen_nachname_name"
-msgstr "Nachname abfragen"
+msgstr "Prompt last name"
 
 msgid "produktfrage_abfragen_nachname_desc"
-msgstr ""
+msgstr " "
 
 msgid "produktfrage_abfragen_firma_name"
-msgstr "Firmenname abfragen"
+msgstr "Prompt company name"
 
 msgid "produktfrage_abfragen_firma_desc"
-msgstr ""
+msgstr " "
 
 msgid "produktfrage_abfragen_tel_name"
-msgstr "Tel abfragen"
+msgstr "Prompt phone number"
 
 msgid "produktfrage_abfragen_tel_desc"
-msgstr ""
+msgstr " "
 
 msgid "produktfrage_abfragen_fax_name"
-msgstr "Fax abfragen"
+msgstr "Prompt fax number"
 
 msgid "produktfrage_abfragen_fax_desc"
-msgstr ""
+msgstr " "
 
 msgid "produktfrage_abfragen_mobil_name"
-msgstr "Mobil abfragen"
+msgstr "Prompt mobile number"
 
 msgid "produktfrage_abfragen_mobil_desc"
-msgstr ""
+msgstr " "
 
 msgid "produktfrage_kopiekunde_name"
-msgstr "Kopie der Produktanfrage an Kunden schicken"
+msgstr "Send copy of question about item to customer"
 
 msgid "produktfrage_kopiekunde_desc"
-msgstr "Dadurch erh&auml;lt der Kunde eine Kopie der Anfrage an seine angegebene Emailadresse"
+msgstr "Specify whether customers receive an email with a copy of their question."
 
 msgid "produktfrage_sperre_minuten_name"
-msgstr "Produktanfrageformular sperren f&uuml;r X Minuten"
+msgstr "Lock form for questions about item for X minutes"
 
 msgid "produktfrage_sperre_minuten_desc"
-msgstr "Sobald ein Kunde das Kontaktformular genutzt hat, kann er fr&uuml;hstens nach sovielen Minuten das Formular erneut absenden."
+msgstr "Specify how many minutes must have passed between one question and the next."
 
 msgid "produktfrage_abfragen_captcha_name"
-msgstr "Spamschutz aktivieren"
+msgstr "Enable spam protection"
 
 msgid "produktfrage_abfragen_captcha_desc"
-msgstr "Soll ein Sicherheitscode abgefragt werden, damit das Formular akzeptiert und abgesendet wird?"
+msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
 msgid "benachrichtigung_nutzen_name"
-msgstr "Service anbieten bei Produkten, deren Lagerbestand &lt;=0 ist"
+msgstr "Allow availability requests"
 
 msgid "benachrichtigung_nutzen_desc"
-msgstr "Kunden k&ouml;nnen hiermit automatisch per Email benachrichtigt werden, sobald das Produkt wieder auf Lager ist"
+msgstr "Specify whether customers can choose to receive a notification when an item becomes available that is not currently available. (Popup in list view in NOVA template inactive)"
 
 msgid "benachrichtigung_abfragen_vorname_name"
-msgstr "Vorname abfragen"
+msgstr "Prompt first name"
 
 msgid "benachrichtigung_abfragen_vorname_desc"
-msgstr ""
+msgstr " "
 
 msgid "benachrichtigung_abfragen_nachname_name"
-msgstr "Nachname abfragen"
+msgstr "Prompt last name"
 
 msgid "benachrichtigung_abfragen_nachname_desc"
-msgstr ""
+msgstr " "
 
 msgid "benachrichtigung_sperre_minuten_name"
-msgstr "Benachrichtigungsformular sperren f&uuml;r X Minuten"
+msgstr "Lock form for availability requests for X minutes"
 
 msgid "benachrichtigung_sperre_minuten_desc"
-msgstr "Sobald ein Kunde einmal die Benachrichtigungsfunktion genutzt hat, kann er fr&uuml;hstens nach sovielen Minuten eine weitere Benachrichtigung anfordern."
+msgstr "Specify how many minutes must have passed between different availability requests."
 
 msgid "benachrichtigung_abfragen_captcha_name"
-msgstr "Spamschutz aktivieren"
+msgstr "Enable spam protection"
 
 msgid "benachrichtigung_abfragen_captcha_desc"
-msgstr "Soll ein Sicherheitscode abgefragt werden, damit die Benachrichtigungsanfrage akzeptiert wird?"
+msgstr "Specify whether to enable the spam protection for the notification form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
 msgid "benachrichtigung_min_lagernd_name"
 msgstr "Notification when minimum stock level percentage is"
@@ -1007,1309 +1007,1309 @@ msgid "benachrichtigung_min_lagernd_desc"
 msgstr "Here you define the ratio of available stock and availability requests that must be reached before an availability notification is sent out. Example: 10 customers made availability requests. Your new stock level amounts to 3 units. In order to send availability notifications at this point, you should set this value to no more than 30%"
 
 msgid "artikeldetails_vergleichsliste_anzeigen_name"
-msgstr "Button zur Vergleichsliste hinzufügen anzeigen"
+msgstr "Show \"Add to comparison list\""
 
 msgid "artikeldetails_vergleichsliste_anzeigen_desc"
-msgstr "Wollen Sie den Button in den Artikeldetails sehen, um einen Artikel zur Vergleichsliste hinzuzufügen?"
+msgstr "Specify whether to display the \"Add to comparison list\" button on the item detail page."
 
 msgid "tagging_freischaltung_name"
-msgstr "Produkttags Eingabe anzeigen"
+msgstr "Allow entry of item tags"
 
 msgid "tagging_freischaltung_desc"
-msgstr "Produkttags von Besuchern können unter den Produkten angezeigt werden."
+msgstr "Specify whether tags can be entered in the item details and whether customers must be logged in."
 
 msgid "tagging_anzeigen_name"
-msgstr "Produkttags beim Artikel anzeigen"
+msgstr "Show item tags with item"
 
 msgid "tagging_anzeigen_desc"
-msgstr "Hier wird die Anzeige der Produkttags beim Artikel aktiviert bzw. deaktiviert."
+msgstr "Specify whether to show tags with the item."
 
 msgid "tagging_max_count_name"
-msgstr "Anzahl angezeigter Produkttags"
+msgstr "Number of displayed item tags"
 
 msgid "tagging_max_count_desc"
-msgstr "Soviele Begriffe werden bei den Produkttags angezeigt."
+msgstr "Specify how many tags are to be displayed on the item detail page."
 
 msgid "tagging_max_ip_count_name"
-msgstr "Maximale Einträge pro Besucher und Tag"
+msgstr "Maximum entries per visitor per day"
 
 msgid "tagging_max_ip_count_desc"
-msgstr "Damit verhindern Sie, dass einzelne IPs das Tagging manipulieren."
+msgstr "Specify the maximum number of entries per visitor per day that is saved to prevent manipulation."
 
 msgid "mediendatei_anzeigen_name"
-msgstr "Mediendateien anzeigen"
+msgstr "Show media files"
 
 msgid "mediendatei_anzeigen_desc"
-msgstr "Möchten Sie in der Artikelansicht Ihre Mediendateien anzeigen?"
+msgstr " Specify whether and where to display media files on the item detail page."
 
 msgid "artikeldetails_aehnlicheartikel_anzahl_name"
-msgstr "Anzahl Artikel"
+msgstr "Number of items"
 
 msgid "artikeldetails_aehnlicheartikel_anzahl_desc"
-msgstr "Wieviele Artikel sollen maximal angezeigt werden? (0 = nicht anzeigen)"
+msgstr "Specify the maximum number of similar items that are to be displayed. 0 shows no items."
 
 msgid "artikeldetails_stueckliste_anzeigen_name"
-msgstr "St&uuml;cklistenkomponenten anzeigen"
+msgstr "Show bill of materials components"
 
 msgid "artikeldetails_stueckliste_anzeigen_desc"
-msgstr "M&ouml;chten Sie alle Komponenten einer St&uuml;ckliste in einer Box in den Artikeldetails anzeigen?"
+msgstr "Specify whether to display all components of a bill of materials in a box on the item detail page."
 
 msgid "artikeldetails_produktbundle_nutzen_name"
-msgstr "Produktbundle-Empfehlungen nutzen"
+msgstr "Use recommendations for item bundle"
 
 msgid "artikeldetails_produktbundle_nutzen_desc"
 msgstr ""
 
 msgid "merkmale_anzeigen_name"
-msgstr "Merkmale anzeigen"
+msgstr "Show characteristics"
 
 msgid "merkmale_anzeigen_desc"
-msgstr "Sollen in den Artikeldetails die Artikelmerkmale angezeigt werden?"
+msgstr "Specify whether to display the item characteristics assigned in JTL-Wawi on the item detail page."
 
 msgid "artikeldetails_gewicht_anzeigen_name"
-msgstr "Versandgewicht anzeigen"
+msgstr "Show shipping weight"
 
 msgid "artikeldetails_gewicht_anzeigen_desc"
-msgstr "Das Gewicht vom Artikel mit Verpackung"
+msgstr "Specify whether to display the shipping weight (item + packaging) defined in JTL-Wawi on the item detail page."
 
 msgid "artikeldetails_artikelgewicht_anzeigen_name"
-msgstr "Artikelgewicht anzeigen"
+msgstr "Show item weight"
 
 msgid "artikeldetails_artikelgewicht_anzeigen_desc"
-msgstr "Das Gewicht vom Artikel ohne Verpackung."
+msgstr "Specify whether to display the item weight (item without packaging) defined in JTL-Wawi on the item detail page."
 
 msgid "artikeldetails_abmessungen_anzeigen_name"
-msgstr "Abmessungen anzeigen?"
+msgstr "Show dimensions"
 
 msgid "artikeldetails_abmessungen_anzeigen_desc"
-msgstr "Maße des Artikels in LxBxH"
+msgstr "Specify whether to display the dimensions (length x width x height) defined in JTL-Wawi on the item detail page."
 
 msgid "artikeldetails_attribute_anhaengen_name"
-msgstr "Attribute vom Artikel an Beschreibung anhängen?"
+msgstr "Add item attributes to description"
 
 msgid "artikeldetails_attribute_anhaengen_desc"
-msgstr "Artikelattribute werden mit Attributname: Attributwert hinter der Beschreibung angezeigt"
+msgstr "Specify whether to display item attributes saved in JTL-Wawi on the item detail page in the pattern Attribute name: Attribute value."
 
 msgid "kundenregistrierung_abfragen_titel_name"
-msgstr "Titel abfragen"
+msgstr "Prompt academic title"
 
 msgid "kundenregistrierung_abfragen_titel_desc"
-msgstr "z.B. Dr., Prof., etc."
+msgstr "Specify whether to prompt the academic title."
 
 msgid "kundenregistrierung_abfragen_anrede_name"
-msgstr "Anrede abfragen"
+msgstr "Prompt title"
 
 msgid "kundenregistrierung_abfragen_anrede_desc"
-msgstr "Herr, Frau"
+msgstr "Specify whether to prompt the title."
 
 msgid "kundenregistrierung_pflicht_vorname_name"
-msgstr "Vorname abfragen"
+msgstr "Prompt first name"
 
 msgid "kundenregistrierung_pflicht_vorname_desc"
-msgstr "Wenn Vorname eine Pflichtangabe ist aber kein Vorname angegeben ist abbrechen."
+msgstr "Cancel if first name is mandatory but no first name has been specified."
 
 msgid "kundenregistrierung_abfragen_firma_name"
-msgstr "Firma abfragen"
+msgstr "Prompt company name"
 
 msgid "kundenregistrierung_abfragen_firma_desc"
-msgstr "z.b. der Firmenname"
+msgstr "Specify whether to prompt the company name."
 
 msgid "kundenregistrierung_abfragen_firmazusatz_name"
-msgstr "Firmenzusatz abfragen"
+msgstr "Prompt company 2"
 
 msgid "kundenregistrierung_abfragen_firmazusatz_desc"
-msgstr "z.b. einen Zusatz zum Firmennamen"
+msgstr "Specify whether to prompt the information entered into Company 2."
 
 msgid "kundenregistrierung_abfragen_adresszusatz_name"
-msgstr "Adresszusatz abfragen"
+msgstr "Prompt address 2"
 
 msgid "kundenregistrierung_abfragen_adresszusatz_desc"
-msgstr "z.B. für die Abteilung einer Firma"
+msgstr "Specify whether to prompt the information entered into Address 2."
 
 msgid "kundenregistrierung_abfragen_mobil_name"
-msgstr "Mobiltelefonnummer abfragen"
+msgstr "Prompt mobile phone number"
 
 msgid "kundenregistrierung_abfragen_mobil_desc"
 msgstr ""
 
 msgid "kundenregistrierung_abfragen_fax_name"
-msgstr "Faxnummer abfragen"
+msgstr "Prompt fax number"
 
 msgid "kundenregistrierung_abfragen_fax_desc"
 msgstr ""
 
 msgid "kundenregistrierung_abfragen_tel_name"
-msgstr "Telefonnummer abfragen"
+msgstr "Prompt phone number"
 
 msgid "kundenregistrierung_abfragen_tel_desc"
 msgstr ""
 
 msgid "kundenregistrierung_abfragen_ustid_name"
-msgstr "UstID abfragen"
+msgstr "Prompt VAT ID"
 
 msgid "kundenregistrierung_abfragen_ustid_desc"
-msgstr "nur wichtig für B2B im Inland- / EU-Handel"
+msgstr "Specify whether to prompt the VAT ID."
 
 msgid "kundenregistrierung_abfragen_www_name"
-msgstr "Homepageadresse abfragen"
+msgstr "Prompt website address"
 
 msgid "kundenregistrierung_abfragen_www_desc"
-msgstr "http://www..."
+msgstr "Specify whether to prompt the website address."
 
 msgid "kundenregistrierung_abfragen_geburtstag_name"
-msgstr "Geburtstagsdatum abfragen"
+msgstr "Prompt date of birth"
 
 msgid "kundenregistrierung_abfragen_geburtstag_desc"
 msgstr ""
 
 msgid "kundenregistrierung_passwortlaenge_name"
-msgstr "Passwort muss min. so lang sein"
+msgstr "Minimum length for password"
 
 msgid "kundenregistrierung_passwortlaenge_desc"
-msgstr "Anzahl Zeichen, die ein Kundenpasswort mindestens haben muss"
+msgstr "Specify the minimum number of characters a customer password must contain."
 
 msgid "kundenregistrierung_standardland_name"
-msgstr "Vorausgewähltes Land"
+msgstr "Pre-selected country"
 
 msgid "kundenregistrierung_standardland_desc"
-msgstr "Bitte ISO-Code eingeben. z.B. DE, CH, AT, etc."
+msgstr "Specify the ISO code for the country that is to be preselected, e.g. DE for Germany or AT for Austria."
 
 msgid "kundenregistrierung_abfragen_bundesland_name"
-msgstr "Bundesland abfragen"
+msgstr "Prompt federal state"
 
 msgid "kundenregistrierung_abfragen_bundesland_desc"
-msgstr "Wichtig für Staaten wie Amerika,.."
+msgstr "Specify whether to select the federal state or the appropriate administrative unit for the selected country (departments in France, states in the USA, etc.)."
 
 msgid "kundenregistrierung_pruefen_ort_name"
-msgstr "Stadt auf Zahl prüfen"
+msgstr "Check city for numbers"
 
 msgid "kundenregistrierung_pruefen_ort_desc"
-msgstr "Fehlermeldung ausgeben, wenn eingegebene Stadt eine Zahl enthält."
+msgstr "Specify whether JTL-Shop should check the entered name of a city for numbers."
 
 msgid "kundenregistrierung_pruefen_name_name"
-msgstr "Name auf Zahlen prüfen"
+msgstr "Check name for numbers"
 
 msgid "kundenregistrierung_pruefen_name_desc"
-msgstr "Wenn Zahlen im Vor- oder Nachnamen vorkommen dann abbrechen"
+msgstr "Specify whether JTL-Shop should check the entered first name and last name for numbers."
 
 msgid "kundenregistrierung_pruefen_zeit_name"
-msgstr "Zeit prüfen"
+msgstr "Check time"
 
 msgid "kundenregistrierung_pruefen_zeit_desc"
-msgstr "Prüfen ob Formular in unter 5 Sekunden abgeschickt wurde"
+msgstr "Specify if JTL-Shop should check whether the entire form was completed in less than 5 seconds."
 
 msgid "kundenregistrierung_pruefen_email_name"
-msgstr "E-Mail DNS prüfen"
+msgstr " Check email DNS"
 
 msgid "kundenregistrierung_pruefen_email_desc"
-msgstr "Prüfen ob es einen DNS-Eintrag zu der Domain der E-Mail Adresse vorhanden ist."
+msgstr "Specify whether to check that there is a DNS entry for the domain of the specified email address."
 
 msgid "kundenregistrierung_nur_lieferlaender_name"
-msgstr "Nur belieferbare Länder in Auswahl"
+msgstr "Offer only countries with shipping method for selection"
 
 msgid "kundenregistrierung_nur_lieferlaender_desc"
-msgstr "Damit gibt es bei der Lieferadresse nur Länder zur Auswahl, für die min. eine Versandart definiert ist."
+msgstr "Specify whether only countries for which there is at least one shipping method can be selected."
 
 msgid "kundenregistrierung_abgleichen_plz_name"
-msgstr "PLZ Prüfung aktivieren"
+msgstr "Check postal code"
 
 msgid "kundenregistrierung_abgleichen_plz_desc"
-msgstr "Hiermit werden PLZ und Ort abgeglichen. Falls ein PLZ/Ort Paar nicht bekannt ist, wird ein Hinweis ausgegeben. Der Bestellvorgang geht immer nach einem Fehlversuch weiter - unabhängig davon ob PLZ/Ort Paar korrekt ist."
+msgstr "Specify whether JTL-Shop checks if the entered postal code matches the entered city. If not, the customer will receive an error message. The customer can still continue the order process even if he does not make any changes."
 
 msgid "registrieren_captcha_name"
-msgstr "Spamschutz aktivieren"
+msgstr "Enable spam protection"
 
 msgid "registrieren_captcha_desc"
-msgstr "Soll ein Sicherheitscode abgefragt werden, damit das Formular akzeptiert und abgesendet wird?"
+msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
 msgid "kundenlogin_max_loginversuche_name"
-msgstr "Captcha nach X erfolglosen Anmeldeversuchen anzeigen"
+msgstr "Show CAPTCHA after X unsuccessful login attempts"
 
 msgid "kundenlogin_max_loginversuche_desc"
-msgstr "Zeigt ein Captcha an, falls eine konfigurierte Anzahl an erfolglosen Loginversuchen für ein Kundenkonto erfolgt. Achtung: Muss vom Template unterstützt werden!"
+msgstr "You can define how many login attempts a customer has before a CAPTCHA appears when they try to log on. This makes it more difficult for a bot to hack a customer account by trial and error. "
 
 msgid "kundenregistrierung_vcardupload_name"
-msgstr "vCard Upload erlauben"
+msgstr "Allow vCard upload"
 
 msgid "kundenregistrierung_vcardupload_desc"
-msgstr "Erlaubt dem Kunden bei der Registrierung das Hochladen einer elektronischen Visitenkarte (vCard) im vcf-Format."
+msgstr "Enables you to allow your customers to upload an electronic business card in vcf format."
 
 msgid "lieferadresse_abfragen_anrede_name"
-msgstr "Anrede abfragen"
+msgstr "Prompt title"
 
 msgid "lieferadresse_abfragen_anrede_desc"
-msgstr "Herr, Frau"
+msgstr "Specify whether to prompt the title."
 
 msgid "lieferadresse_abfragen_titel_name"
-msgstr "Titel abfragen"
+msgstr "Prompt academic title"
 
 msgid "lieferadresse_abfragen_titel_desc"
 msgstr ""
 
 msgid "lieferadresse_abfragen_adresszusatz_name"
-msgstr "Adresszusatz abfragen"
+msgstr "Prompt address 2"
 
 msgid "lieferadresse_abfragen_adresszusatz_desc"
-msgstr "z.B. für die Abteilung einer Firma"
+msgstr "Specify whether to prompt the information entered into Address 2."
 
 msgid "lieferadresse_abfragen_bundesland_name"
-msgstr "Bundesland abfragen"
+msgstr "Prompt federal state"
 
 msgid "lieferadresse_abfragen_bundesland_desc"
-msgstr "Wichtig für Staaten wie Amerika,.."
+msgstr "Specify whether to select the federal state or the appropriate administrative unit for the selected country (departments in France, states in the USA, etc.)."
 
 msgid "lieferadresse_abfragen_tel_name"
-msgstr "Telefonnummer abfragen"
+msgstr "Prompt phone number"
 
 msgid "lieferadresse_abfragen_tel_desc"
 msgstr ""
 
 msgid "lieferadresse_abfragen_mobil_name"
-msgstr "Mobiltelefonnummer abfragen"
+msgstr "Prompt mobile phone number"
 
 msgid "lieferadresse_abfragen_mobil_desc"
 msgstr ""
 
 msgid "lieferadresse_abfragen_email_name"
-msgstr "Emailadresse abfragen"
+msgstr "Prompt email address"
 
 msgid "lieferadresse_abfragen_email_desc"
 msgstr ""
 
 msgid "lieferadresse_abfragen_fax_name"
-msgstr "Faxnummer abfragen"
+msgstr "Prompt fax number"
 
 msgid "lieferadresse_abfragen_fax_desc"
 msgstr ""
 
 msgid "lieferadresse_abfragen_standardland_name"
-msgstr "Vorausgewähltes Land"
+msgstr "Pre-selected country"
 
 msgid "lieferadresse_abfragen_standardland_desc"
-msgstr "Bitte ISO-Code eingeben. z.B. DE, CH, AT, etc."
+msgstr "Specify the ISO code for the country that is to be preselected, e.g. DE for Germany or AT for Austria."
 
 msgid "shop_ustid_name"
-msgstr "UstID des Shops"
+msgstr "VAT ID of shop"
 
 msgid "shop_ustid_desc"
-msgstr "Bitte geben Sie die UstID vom Unternehmen des Shops ein, um andere UstIDs von Kunden zu prüfen."
+msgstr "Specify the VAT identification number for the company that operates the JTL-Shop in order to be able to check a customer's VAT ID number."
 
 msgid "shop_ustid_bzstpruefung_name"
-msgstr "UStID-Nummer Pr&uuml;fung durch MIAS-System aktivieren"
+msgstr "Enable VAT identification number check by VIES system"
 
 msgid "shop_ustid_bzstpruefung_desc"
-msgstr "&Uuml;berpr&uuml;fung der UstID-Nummer durch das MIAS-System der Europ&auml;ischen Kommission. Dazu ist die Angabe der eigenen USt-ID im Feld dar&uuml;ber n&ouml;tig."
+msgstr "Specify whether to have VAT identification numbers checked by the VIES system of the European Commission. You need to enter your own VAT ID for this purpose. "
 
 msgid "shop_ustid_force_remote_check_name"
-msgstr "Kundenregistrierung nur mit MIAS-Best&auml;tigung"
+msgstr "Customer registration only with VIES confirmation"
 
 msgid "shop_ustid_force_remote_check_desc"
-msgstr "\"JA\" stoppt die Kundenregistrierung in jedem Fall (auch wenn das Steueramt des jeweiligen Landes nicht erreichbar ist)."
+msgstr "Specify whether a registration requires a VIES confirmation. If this option is enabled, a registration will also be prevented when the respective tax authorities are unavailable."
 
 msgid "warenkorb_produktbilder_anzeigen_name"
-msgstr "Produktbilder im Warenkorb anzeigen"
+msgstr "Show product images in basket"
 
 msgid "warenkorb_produktbilder_anzeigen_desc"
-msgstr "M&ouml;chten Sie zu jedem Produkt in der Warenkorbansicht ein Vorschaubild anzeigen?"
+msgstr "Specify whether to display a thumbnail for each item in the basket."
 
 msgid "warenkorb_versandermittlung_anzeigen_name"
-msgstr "Versandkostenermittlung anzeigen"
+msgstr "Show shipping cost determination"
 
 msgid "warenkorb_versandermittlung_anzeigen_desc"
-msgstr "M&ouml;chten Sie Ihren Kunden erlauben, im Warenkorb die zu zahlenden Versandkosten zu ermitteln?"
+msgstr "Specify whether to display the shipping cost determination on the special page \"Shipments\"."
 
 msgid "warenkorb_kupon_anzeigen_name"
-msgstr "Standardkuponabfrage bereits im Warenkorb"
+msgstr "Prompt default coupons in basket"
 
 msgid "warenkorb_kupon_anzeigen_desc"
-msgstr "Standardkupons, die nicht personalisiert sind, werden im Warenkorb bereits abgefragt (gilt nicht f&uuml;r Versandkupons)"
+msgstr "Specify whether to already prompt default coupons in the basket. Coupons for free shipping can only be entered when the order is completed."
 
 msgid "warenkorb_xselling_anzeigen_name"
-msgstr "X-Selling im Warenkorb anzeigen"
+msgstr "Show cross-selling in basket"
 
 msgid "warenkorb_xselling_anzeigen_desc"
-msgstr "Möchten Sie, dass im Warenkorb das X-Selling angezeigt wird?"
+msgstr "Specify whether to display cross-selling in the basket"
 
 msgid "warenkorb_xselling_anzahl_name"
-msgstr "Anzahl an Artikel beim X-Selling im Warenkorb"
+msgstr "Number of cross-selling items in basket"
 
 msgid "warenkorb_xselling_anzahl_desc"
-msgstr "Wieviele Artikel möchten Sie im Warenkorb beim X-Selling angezeigen"
+msgstr "Specify how many cross-selling items are to be displayed in the basket."
 
 msgid "warenkorb_varianten_varikombi_anzeigen_name"
-msgstr "Sollen Varianten bei Variationskombinationen im Warenkorb angezeigt werden?"
+msgstr "Show variation values in basket"
 
 msgid "warenkorb_varianten_varikombi_anzeigen_desc"
-msgstr "Sollen Varianten bei Variationskombinationen im Warenkorb angezeigt werden?"
+msgstr "Specify whether to display the variation values of child items in the basket."
 
 msgid "warenkorb_warenkorb2pers_merge_name"
-msgstr "Aktuellen Warenkorb mit gespeicherten Warenkorb zusammenfassen"
+msgstr "Combine current basket with saved basket"
 
 msgid "warenkorb_warenkorb2pers_merge_desc"
-msgstr "Soll der aktuelle Kundenwarenkorb mit dem eventuell gespeicherten Warenkorb des Kunden zusammengefasst werden?"
+msgstr "Specify whether to combine the current basket of a customer with already saved baskets for this customer."
 
 msgid "bestellvorgang_kaufabwicklungsmethode_name"
-msgstr "Kaufabwicklungsmethode"
+msgstr "Checkout method"
 
 msgid "bestellvorgang_kaufabwicklungsmethode_desc"
-msgstr "Welche Methode wollen Sie für Ihre Kaufabwicklung im Shop benutzen?"
+msgstr "Specify what method is to be used for the checkout."
 
 msgid "bestellvorgang_wrb_anzeigen_name"
-msgstr "Widerrufsbelehrung im Bestellvorgang anzeigen"
+msgstr "Show withdrawal policy in order process"
 
 msgid "bestellvorgang_wrb_anzeigen_desc"
 msgstr ""
 
 msgid "bestellvorgang_einzelpreise_anzeigen_name"
-msgstr "Einzelpreise der Positionen anzeigen"
+msgstr "Show individual prices of positions"
 
 msgid "bestellvorgang_einzelpreise_anzeigen_desc"
-msgstr "Sollen Einzelpreise von Positionen im Warenkorb und Bestellvorgang angezeigt werden?"
+msgstr "Specify whether to display the individual prices of positions in the basket and the order process."
 
 msgid "bestellvorgang_lieferstatus_anzeigen_name"
-msgstr "Lieferstatus bei Positionen anzeigen"
+msgstr "Show delivery status with positions"
 
 msgid "bestellvorgang_lieferstatus_anzeigen_desc"
 msgstr ""
 
 msgid "bestellvorgang_unregistriert_name"
-msgstr "Unregistrierten Bestellvorgang zulassen"
+msgstr "Allow ordering without registration"
 
 msgid "bestellvorgang_unregistriert_desc"
-msgstr "Dadurch k&ouml;nnen Kunden den Bestellvorgang durchf&uuml;hren ohne ein Kundenkonto zu erstellen"
+msgstr "Specify whether customers must create a customer account in order to place orders."
 
 msgid "bestellvorgang_unregneukundenkupon_zulassen_name"
-msgstr "Unregistrierten Neukundenkupon zulassen"
+msgstr "Allow new customer coupons for unregistered customers"
 
 msgid "bestellvorgang_unregneukundenkupon_zulassen_desc"
-msgstr "Sollen unregistrierte Bestellungen auch von einem Neukundenkupon profitieren?"
+msgstr "Specify whether customers who do not create a customer account are able to redeem a new customer coupon."
 
 msgid "bestellvorgang_versand_steuersatz_name"
-msgstr "Versand / Zahlungsgebühr"
+msgstr "Shipping and payment fee"
 
 msgid "bestellvorgang_versand_steuersatz_desc"
-msgstr "Wie soll der Steuersatz für die Versand- und Zahlungsgeb&uuml;hr berechnet werden?"
+msgstr "Specify how to determine the tax rates for shipping and payment fees."
 
 msgid "bestellvorgang_artikelmerkmale_name"
-msgstr "Eindeutige Artikelmerkmale Merkmale"
+msgstr "Show item characteristics"
 
 msgid "bestellvorgang_artikelmerkmale_desc"
 msgstr ""
 
 msgid "bestellvorgang_artikelattribute_name"
-msgstr "Eindeutige Artikelmerkmale Attribute anzeigen"
+msgstr "Show item attributes"
 
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
 
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
-msgstr "Eindeutige Artikelkurzbeschreibung anzeigen"
+msgstr "Show unique brief item description"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_desc"
 msgstr ""
 
 msgid "bestellabschluss_bestellnummer_praefix_name"
-msgstr "Bestellnummer Präfix"
+msgstr "Purchase order ID – prefix"
 
 msgid "bestellabschluss_bestellnummer_praefix_desc"
-msgstr "Die Bestellnummer wird autom. so erstellt: {präfix}{fortlaufende Nummer+anfangsnummer}{suffix}"
+msgstr "Specify the structure of the purchase order ID. It is generated as follows: {prefix}{consecutive number + start number}{suffix}"
 
 msgid "bestellabschluss_bestellnummer_anfangsnummer_name"
-msgstr "Bestellnummer Anfangsnummer"
+msgstr "Purchase order ID – start number"
 
 msgid "bestellabschluss_bestellnummer_anfangsnummer_desc"
-msgstr "Die fortlaufende Nummer fängt mit dieser Nummer an, die Bestellnummer setzt sich wie folgt zusammen: {präfix}{fortlaufende Nummer+anfangsnummer}{suffix}"
+msgstr "Specify the structure of the purchase order ID. It is generated as follows: {prefix}{consecutive number + start number}{suffix}"
 
 msgid "bestellabschluss_bestellnummer_suffix_name"
-msgstr "Bestellnummer Suffix"
+msgstr "Purchase order ID – suffix"
 
 msgid "bestellabschluss_bestellnummer_suffix_desc"
-msgstr "Die Bestellnummer wird autom. so erstellt: {präfix}{fortlaufende Nummer+anfangsnummer}{suffix}"
+msgstr "Specify the structure of the purchase order ID. It is generated as follows: {prefix}{consecutive number + start number}{suffix}"
 
 msgid "bestellabschluss_runden5_name"
-msgstr "Gesamtsumme auf 5 Rappen / Cent runden"
+msgstr "Round total sum to 5 centimes/cents"
 
 msgid "bestellabschluss_runden5_desc"
-msgstr "Sinnvoll z.B. für Schweiz, Holland,.."
+msgstr "Specify whether the total sum in the basket should be rounded up or down to 5 centimes/cents."
 
 msgid "bestellabschluss_spamschutz_nutzen_name"
-msgstr "Spam Schutz nutzen"
+msgstr "Enable spam protection"
 
 msgid "bestellabschluss_spamschutz_nutzen_desc"
-msgstr "Nach der ersten Bestellung sind weitere Bestellungen von derselben IP erst nach 2,4,8,16,32,64,128,usw Minuten durchf&uuml;hrbar. N&ouml;tig ist hier, dass die IP gespeichert wird."
+msgstr "Specify whether further orders from the same IP address are only possible after a waiting period of 2 minutes. If another ordering attempt is made before that time, the waiting time is doubled, i.e. to 4, 8, 16, 32, etc. minutes. For this option, the IP address must be saved. "
 
 msgid "bestellabschluss_abschlussseite_name"
-msgstr "Abschlussseite nach externer Bezahlung"
+msgstr "Completion page after external payment"
 
 msgid "bestellabschluss_abschlussseite_desc"
-msgstr "Welche Seite soll nach einer externen Bezahlung wieder im Shop angezeigt werden?"
+msgstr "Specify what page will be displayed after an external payment."
 
 msgid "box_bestseller_scrollen_name"
-msgstr "Scrolling benutzen"
+msgstr "Use scrolling"
 
 msgid "box_bestseller_scrollen_desc"
-msgstr "Sollen die Produkte scrollbar sein"
+msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "box_bestseller_anzahl_anzeige_name"
-msgstr "Anzahl Produkte anzeigen"
+msgstr "Number of displayed items"
 
 msgid "box_bestseller_anzahl_anzeige_desc"
-msgstr "So viele Bestseller werden in der Box angezeigt"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "box_bestseller_anzahl_basis_name"
-msgstr "Basisanzahl Produkte"
+msgstr "Base number of items"
 
 msgid "box_bestseller_anzahl_basis_desc"
-msgstr "Menge, aus der die anzuzeigenden Produkte zufällig ausgesucht werden sollen"
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
 msgid "box_sonderangebote_scrollen_name"
-msgstr "Scrolling benutzen"
+msgstr "Use scrolling"
 
 msgid "box_sonderangebote_scrollen_desc"
-msgstr "Sollen die Produkte scrollbar sein"
+msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "box_sonderangebote_anzahl_anzeige_name"
-msgstr "Anzahl Produkte anzeigen"
+msgstr "Number of displayed items"
 
 msgid "box_sonderangebote_anzahl_anzeige_desc"
-msgstr "So viele Sonderangebote werden in der Box angezeigt"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "box_neuimsortiment_scrollen_name"
-msgstr "Scrolling benutzen"
+msgstr "Use scrolling"
 
 msgid "box_neuimsortiment_scrollen_desc"
-msgstr "Sollen die Produkte scrollbar sein"
+msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "box_neuimsortiment_anzahl_anzeige_name"
-msgstr "Anzahl Produkte anzeigen"
+msgstr "Number of displayed items"
 
 msgid "box_neuimsortiment_anzahl_anzeige_desc"
-msgstr "So viele neue Produkte werden in der Box angezeigt"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "box_neuimsortiment_alter_tage_name"
-msgstr "Neu im Sortiment: Max. Produktalter in Tagen"
+msgstr "Maximum age of items in days"
 
 msgid "box_neuimsortiment_alter_tage_desc"
-msgstr "Produkte, deren Erstelldatum max. soviele Tage zurückliegt, werden als Neu im Sortiment behandelt."
+msgstr "Specify how many days items are marked as \"New in product range\"."
 
 msgid "box_topangebot_scrollen_name"
-msgstr "Scrolling benutzen"
+msgstr "Use scrolling"
 
 msgid "box_topangebot_scrollen_desc"
-msgstr "Sollen die Produkte scrollbar sein"
+msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "box_topangebot_anzahl_anzeige_name"
-msgstr "Anzahl Produkte anzeigen"
+msgstr "Number of displayed items"
 
 msgid "box_topangebot_anzahl_anzeige_desc"
-msgstr "So viele Top Angebote werden in der Box angezeigt"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "box_zuletztangesehen_anzahl_name"
-msgstr "Anzahl Artikel in der Box"
+msgstr "Number of displayed items"
 
 msgid "box_zuletztangesehen_anzahl_desc"
-msgstr "Wieviele verschiedene Artikel sollen in der Box angezeigt werden?"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "box_erscheinende_scrollen_name"
-msgstr "Scrolling benutzen"
+msgstr "Use scrolling"
 
 msgid "box_erscheinende_scrollen_desc"
-msgstr "Sollen die Produkte scrollbar sein"
+msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "box_erscheinende_anzahl_anzeige_name"
-msgstr "Anzahl Produkte anzeigen"
+msgstr "Number of displayed items"
 
 msgid "box_erscheinende_anzahl_anzeige_desc"
-msgstr "So viele Produkte werden in der Box angezeigt"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "boxen_livesuche_anzeigen_name"
-msgstr "Box anzeigen"
+msgstr "Show box"
 
 msgid "boxen_livesuche_anzeigen_desc"
-msgstr "Soll die Suchwolke in einer Box angezeigt werden?"
+msgstr "Specify whether to display the search cloud in a box."
 
 msgid "boxen_livesuche_count_name"
-msgstr "Anzahl angezeigte Suchbegriffe"
+msgstr "Number of displayed search terms"
 
 msgid "boxen_livesuche_count_desc"
-msgstr "Soviele Begriffe werden in der Suchwolke angezeigt."
+msgstr "Specify how many terms are to be displayed in the search cloud. The search cloud can be displayed in a box via the box administration."
 
 msgid "boxen_tagging_anzeigen_name"
-msgstr "Box anzeigen"
+msgstr "Show box"
 
 msgid "boxen_tagging_anzeigen_desc"
-msgstr "Soll die Tagwolke in einer Box angezeigt werden?"
+msgstr "Specify whether to display the tag cloud in a box."
 
 msgid "boxen_tagging_count_name"
-msgstr "Anzahl angezeigte Tagbegriffe"
+msgstr "Number of shown tags"
 
 msgid "boxen_tagging_count_desc"
-msgstr "Soviele Begriffe werden in der Tagwolke angezeigt."
+msgstr "Specify the number of terms that are displayed in the tag cloud. The search cloud can be displayed in a box via the box administration."
 
 msgid "boxen_wunschzettel_anzahl_name"
-msgstr "Wie viele Produkte anzeigen"
+msgstr "Number of items in box"
 
 msgid "boxen_wunschzettel_anzahl_desc"
-msgstr "Wie viele Produkte wollen Sie in der Wunschzettelbox anzeigen?"
+msgstr "Specify how many items are to be displayed in the \"Wish list\" box."
 
 msgid "boxen_wunschzettel_bilder_name"
-msgstr "Sollen Bilder angezeigt werden"
+msgstr "Show images"
 
 msgid "boxen_wunschzettel_bilder_desc"
-msgstr "Sollen Bilder in der Wunschzettelbox angezeigt werden?"
+msgstr "Specify whether to display product images in the \"Wish list\" box."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
-msgstr "Vergleichsliste anzeigen"
+msgstr "Show comparison list"
 
 msgid "boxen_vergleichsliste_anzeigen_desc"
-msgstr "Soll die Vergleichsliste in einer Box angezeigt werden?"
+msgstr "Specify whether to display the comparison list in a box."
 
 msgid "boxen_topbewertet_scrollbar_name"
-msgstr "Scrolling nutzen"
+msgstr "Use scrolling"
 
 msgid "boxen_topbewertet_scrollbar_desc"
-msgstr "Sollen die Produkte scrollbar sein?"
+msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "boxen_topbewertet_anzahl_name"
-msgstr "Anzahl Artikel anzeigen"
+msgstr "Number of displayed items"
 
 msgid "boxen_topbewertet_anzahl_desc"
-msgstr "Wieviele Artikel sollen gleichzeitig in der Box zu sehen sein?"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "boxen_topbewertet_basisanzahl_name"
-msgstr "Basisanzahl Artikel"
+msgstr "Base number of items"
 
 msgid "boxen_topbewertet_basisanzahl_desc"
-msgstr "Menge, aus der die anzuzeigenden Produkte zufällig ausgesucht werden sollen."
+msgstr "Specify the number of items from which the items to be displayed are to be selected."
 
 msgid "boxen_topbewertet_minsterne_name"
-msgstr "Top bewertet ab welcher Durchschnittsbewertung"
+msgstr "\"Top rated\" applies as of the following average rating"
 
 msgid "boxen_topbewertet_minsterne_desc"
-msgstr "Wieviele Sterne muss ein Artikel im Durchschnitt haben, um als top bewertet zu gelten?"
+msgstr "Specify the minimum number of stars with which an item must be rated on average to be considered as \"Top rated\"."
 
 msgid "boxen_preisradar_scrollbar_name"
-msgstr "Scrolling nutzen"
+msgstr "Use scrolling"
 
 msgid "boxen_preisradar_scrollbar_desc"
-msgstr "Sollen die Produkte scrollbar sein?"
+msgstr "Specify whether it is possible to scroll through the items (Yes) or whether to display only the specified number of items."
 
 msgid "boxen_preisradar_anzahl_name"
-msgstr "Anzahl Artikel anzeigen"
+msgstr "Number of displayed items"
 
 msgid "boxen_preisradar_anzahl_desc"
-msgstr "Wieviele Artikel sollen gleichzeitig in der Box zu sehen sein?"
+msgstr "Specify how many items are to be displayed in the box."
 
 msgid "boxen_preisradar_anzahltage_name"
-msgstr "Wieviele Tage sollen beachtet werden?"
+msgstr "Number of considered days"
 
 msgid "boxen_preisradar_anzahltage_desc"
-msgstr "Wieviele Tage in der Vergangenheit, sollen für den Preisverlauf beachtet werden?"
+msgstr "Specify how many days are to be taken into account for the price history."
 
 msgid "bilder_kategorien_breite_name"
-msgstr "Kategoriebilder Breite"
+msgstr "Category images: width"
 
 msgid "bilder_kategorien_breite_desc"
 msgstr ""
 
 msgid "bilder_kategorien_hoehe_name"
-msgstr "Kategoriebilder Höhe"
+msgstr "Category images: height"
 
 msgid "bilder_kategorien_hoehe_desc"
 msgstr ""
 
 msgid "bilder_variationen_gross_breite_name"
-msgstr "Variationsbilder Groß Breite"
+msgstr "Variation images, large: width"
 
 msgid "bilder_variationen_gross_breite_desc"
 msgstr ""
 
 msgid "bilder_variationen_gross_hoehe_name"
-msgstr "Variationsbilder Groß Höhe"
+msgstr "Variation images, large: height"
 
 msgid "bilder_variationen_gross_hoehe_desc"
 msgstr ""
 
 msgid "bilder_variationen_breite_name"
-msgstr "Variationsbilder Breite"
+msgstr "Variation images: width"
 
 msgid "bilder_variationen_breite_desc"
 msgstr ""
 
 msgid "bilder_variationen_hoehe_name"
-msgstr "Variationsbilder Höhe"
+msgstr "Variation images: height"
 
 msgid "bilder_variationen_hoehe_desc"
 msgstr ""
 
 msgid "bilder_variationen_mini_breite_name"
-msgstr "Variationsbilder Mini Breite"
+msgstr "Variation images, mini: width"
 
 msgid "bilder_variationen_mini_breite_desc"
 msgstr ""
 
 msgid "bilder_variationen_mini_hoehe_name"
-msgstr "Variationsbilder Mini H&ouml;he"
+msgstr "Variation images, mini: height"
 
 msgid "bilder_variationen_mini_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_gross_breite_name"
-msgstr "Produktbilder Groß Breite"
+msgstr "Product images, large: width"
 
 msgid "bilder_artikel_gross_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_gross_hoehe_name"
-msgstr "Produktbilder Groß Höhe"
+msgstr "Product images, large: height"
 
 msgid "bilder_artikel_gross_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_normal_breite_name"
-msgstr "Produktbilder Normal Breite"
+msgstr "Product images, normal: width"
 
 msgid "bilder_artikel_normal_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_normal_hoehe_name"
-msgstr "Produktbilder Normal Höhe"
+msgstr "Product images, normal: width"
 
 msgid "bilder_artikel_normal_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_klein_breite_name"
-msgstr "Produktbilder Klein Breite"
+msgstr "Product images, small: width"
 
 msgid "bilder_artikel_klein_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_klein_hoehe_name"
-msgstr "Produktbilder Klein Höhe"
+msgstr "Product images, small: height"
 
 msgid "bilder_artikel_klein_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_mini_breite_name"
-msgstr "Produktbilder Mini Breite"
+msgstr "Product images, mini: width"
 
 msgid "bilder_artikel_mini_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_mini_hoehe_name"
-msgstr "Produktbilder Mini Höhe"
+msgstr "Product images, mini: height"
 
 msgid "bilder_artikel_mini_hoehe_desc"
 msgstr ""
 
 msgid "bilder_hersteller_normal_breite_name"
-msgstr "Herstellerbilder Normal Breite"
+msgstr "Manufacturer images, normal: width"
 
 msgid "bilder_hersteller_normal_breite_desc"
 msgstr ""
 
 msgid "bilder_hersteller_normal_hoehe_name"
-msgstr "Herstellerbilder Normal Höhe"
+msgstr "Manufacturer images, normal: height"
 
 msgid "bilder_hersteller_normal_hoehe_desc"
 msgstr ""
 
 msgid "bilder_hersteller_klein_breite_name"
-msgstr "Herstellerbilder Klein Breite"
+msgstr "Manufacturer images, small: width"
 
 msgid "bilder_hersteller_klein_breite_desc"
 msgstr ""
 
 msgid "bilder_hersteller_klein_hoehe_name"
-msgstr "Herstellerbilder Klein H&ouml;he"
+msgstr "Manufacturer images, small: height"
 
 msgid "bilder_hersteller_klein_hoehe_desc"
 msgstr ""
 
 msgid "bilder_merkmal_normal_breite_name"
-msgstr "Merkmalbilder Normal Breite"
+msgstr "Characteristic images, normal: width"
 
 msgid "bilder_merkmal_normal_breite_desc"
 msgstr ""
 
 msgid "bilder_merkmal_normal_hoehe_name"
-msgstr "Merkmalbilder Normal Höhe"
+msgstr "Characteristic images, normal: height"
 
 msgid "bilder_merkmal_normal_hoehe_desc"
 msgstr ""
 
 msgid "bilder_merkmal_klein_breite_name"
-msgstr "Merkmalbilder Klein Breite"
+msgstr "Characteristic images, small: width"
 
 msgid "bilder_merkmal_klein_breite_desc"
 msgstr ""
 
 msgid "bilder_merkmal_klein_hoehe_name"
-msgstr "Merkmalbilder Klein H&ouml;he"
+msgstr "Characteristic images, small: height"
 
 msgid "bilder_merkmal_klein_hoehe_desc"
 msgstr ""
 
 msgid "bilder_merkmalwert_normal_breite_name"
-msgstr "Merkmalwertbilder Normal Breite"
+msgstr "Characteristic value images, normal: width"
 
 msgid "bilder_merkmalwert_normal_breite_desc"
 msgstr ""
 
 msgid "bilder_merkmalwert_normal_hoehe_name"
-msgstr "Merkmalwertbilder Normal Höhe"
+msgstr "Characteristic value images, normal: height"
 
 msgid "bilder_merkmalwert_normal_hoehe_desc"
 msgstr ""
 
 msgid "bilder_konfiggruppe_klein_breite_name"
-msgstr "Konfiggruppenbilder Klein Breite"
+msgstr "Configuration group images, small: width"
 
 msgid "bilder_konfiggruppe_klein_breite_desc"
 msgstr ""
 
 msgid "bilder_merkmalwert_klein_breite_name"
-msgstr "Merkmalwertbilder Klein Breite"
+msgstr "Characteristic value images, small: width"
 
 msgid "bilder_merkmalwert_klein_breite_desc"
 msgstr ""
 
 msgid "bilder_konfiggruppe_klein_hoehe_name"
-msgstr "Konfiggruppenbilder Klein Höhe"
+msgstr "Configuration group images, small: height"
 
 msgid "bilder_konfiggruppe_klein_hoehe_desc"
 msgstr ""
 
 msgid "bilder_merkmalwert_klein_hoehe_name"
-msgstr "Merkmalwertbilder Klein H&ouml;he"
+msgstr "Characteristic value images, small: height"
 
 msgid "bilder_merkmalwert_klein_hoehe_desc"
 msgstr ""
 
 msgid "bilder_jpg_quali_name"
-msgstr "JPG Bildqualität"
+msgstr "JPEG image quality"
 
 msgid "bilder_jpg_quali_desc"
 msgstr ""
 
 msgid "bilder_artikel_namen_name"
-msgstr "Bildnamen von Artikelbildern"
+msgstr "Image names of product images"
 
 msgid "bilder_artikel_namen_desc"
-msgstr "Unter diesen Dateinamen werden Artikelbilder abgelegt"
+msgstr "Specify how to generate the name of image files for items."
 
 msgid "bilder_kategorie_namen_name"
-msgstr "Bildnamen von Kategoriebildern"
+msgstr "Image names of category images"
 
 msgid "bilder_kategorie_namen_desc"
-msgstr "Unter diesen Dateinamen werden Kategoriebilder abgelegt"
+msgstr "Specify how to generate the name of image files for categories."
 
 msgid "bilder_variation_namen_name"
-msgstr "Bildnamen von Variationsbildern"
+msgstr "Image name of variation images"
 
 msgid "bilder_variation_namen_desc"
-msgstr "Unter diesen Dateinamen werden Variationsbilder abgelegt"
+msgstr "Specify how to generate the name of image files for variations."
 
 msgid "bilder_externe_bildschnittstelle_name"
-msgstr "Externe Bildschnittstelle aktivieren"
+msgstr "Enable external image interface"
 
 msgid "bilder_externe_bildschnittstelle_desc"
-msgstr "Soll die externe Bildschnittstelle aktiviert werden?"
+msgstr "Specify whether to enable the external image interface."
 
 msgid "container_verwenden_name"
-msgstr "Containergröße verwenden"
+msgstr "Match image size to container size"
 
 msgid "container_verwenden_desc"
-msgstr "Bild wird auf die Größe des entsprechenden Containers angepasst."
+msgstr "Specify whether to match the size of the product image to the corresponding container."
 
 msgid "bilder_dateiformat_name"
-msgstr "Dateiformat"
+msgstr "File format"
 
 msgid "bilder_dateiformat_desc"
-msgstr "PNG bzw JPG Speicherformat."
+msgstr "Specify whether to save images in PNG or JPEG format."
 
 msgid "bilder_skalieren_name"
-msgstr "Bilder hochskalieren?"
+msgstr "Scale up images"
 
 msgid "bilder_skalieren_desc"
-msgstr "Zu kleine Bilder werden automatisch hochskaliert"
+msgstr "Specify whether to scale up images whose dimensions are too small for the specified image size. Please note that if the size difference is too great, images may be pixelated."
 
 msgid "bilder_hintergrundfarbe_name"
-msgstr "Hintergrundfarbe"
+msgstr "Background colour"
 
 msgid "bilder_hintergrundfarbe_desc"
 msgstr ""
 
 msgid "sonstiges_tagging_all_count_name"
-msgstr "Anzahl angezeigte Tagbegriffe in der Übersicht"
+msgstr "Number of tags in overview"
 
 msgid "sonstiges_tagging_all_count_desc"
-msgstr "Soviele Begriffe werden in der Komplettübersicht der Tagwolke angezeigt"
+msgstr "Specify how many terms are displayed in the complete overview of the tags."
 
 msgid "sonstiges_livesuche_all_top_count_name"
-msgstr "Anzahl anzuzeigender TOP-Suchanfragen"
+msgstr "Number of top search queries to be displayed"
 
 msgid "sonstiges_livesuche_all_top_count_desc"
-msgstr "Soviele TOP Begriffe werden in der Komplettübersicht der Livesuche angezeigt."
+msgstr "Specify how many terms are displayed as top search queries in the complete overview of the live search."
 
 msgid "sonstiges_livesuche_all_last_count_name"
-msgstr "Anzahl anzuzeigender letzten-Suchanfragen"
+msgstr "Number of recent search queries"
 
 msgid "sonstiges_livesuche_all_last_count_desc"
-msgstr "Soviele der letzten Begriffe werden in der Komplettübersicht der Livesuche angezeigt"
+msgstr "Specify how many of the most recent search queries are to be displayed in the complete overview of the live search."
 
 msgid "sonstiges_gratisgeschenk_nutzen_name"
-msgstr "Gratisgeschenk nutzen?"
+msgstr "Offer free gifts"
 
 msgid "sonstiges_gratisgeschenk_nutzen_desc"
-msgstr "Soll die Funktion der Gratisgeschenke genutzt werden?"
+msgstr "Specify whether to offer free gifts in the basket as soon as a customer has reached the minimum order value required."
 
 msgid "sonstiges_gratisgeschenk_anzahl_name"
-msgstr "Anzahl Gratisgeschenke in der Übersichtsseite"
+msgstr "Number of free gifts on overview/cart page"
 
 msgid "sonstiges_gratisgeschenk_anzahl_desc"
-msgstr "Wieviele Gratisgeschenke sollen in der Übersichtsseite angezeigt werden? 0 = Alle"
+msgstr "Specify how many free gifts are to be displayed in the overview and cart page. Enter 0 to show all free gifts."
 
 msgid "sonstiges_gratisgeschenk_sortierung_name"
-msgstr "Sortierung der Gratisgeschenke nach"
+msgstr "Sort free gifts by"
 
 msgid "sonstiges_gratisgeschenk_sortierung_desc"
-msgstr "Wie sollen die Artikel sortiert werden?"
+msgstr "Specify the criterion to be used to sort free gifts."
 
 msgid "zahlungsart_ueberweisung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_ueberweisung_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_ueberweisung_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_ueberweisung_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_ueberweisung_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_ueberweisung_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_nachnahme_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_nachnahme_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_nachnahme_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_nachnahme_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_nachnahme_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_nachnahme_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_kreditkarte_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_rechnung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_rechnung_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_rechnung_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_rechnung_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_rechnung_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_rechnung_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_billpay_mode_name"
-msgstr "Modus"
+msgstr "Mode"
 
 msgid "zahlungsart_billpay_mode_desc"
 msgstr ""
 
 msgid "zahlungsart_lastschrift_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_lastschrift_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_lastschrift_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_lastschrift_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_lastschrift_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_lastschrift_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_billpay_mid_name"
-msgstr "Händler-ID"
+msgstr "Seller ID"
 
 msgid "zahlungsart_billpay_mid_desc"
-msgstr "ID des Händlers (mid)"
+msgstr " Enter your seller ID (mid) here."
 
 msgid "zahlungsart_billpay_pid_name"
-msgstr "Zahlungsportal-ID"
+msgstr "Payment portal ID"
 
 msgid "zahlungsart_billpay_pid_desc"
-msgstr "ID des Zahlungsportals (pid)"
+msgstr "Enter your payment portal ID (pid) here."
 
 msgid "zahlungsart_lastschrift_bic_abfrage_name"
-msgstr "BIC abfragen"
+msgstr "Prompt BIC"
 
 msgid "zahlungsart_lastschrift_bic_abfrage_desc"
-msgstr "Soll das Feld BIC im Bestellvorgang abgefragt werden?"
+msgstr "Specify whether to prompt the BIC."
 
 msgid "zahlungsart_billpay_bpsecure_name"
-msgstr "Sicherheitscode"
+msgstr "Verification code"
 
 msgid "zahlungsart_billpay_bpsecure_desc"
-msgstr "Hinterlegter Sicherheitscode für das Zahlungsportal (bpsecure)"
+msgstr "Enter the verification code for the payment portal (bpsecure) here."
 
 msgid "zahlungsart_lastschrift_kontoinhaber_abfrage_name"
-msgstr "Kontoinhaber abfragen"
+msgstr "Prompt account holder"
 
 msgid "zahlungsart_lastschrift_kontoinhaber_abfrage_desc"
-msgstr "Soll das Feld Kontoinhaber im Bestellvorgang abfragt werden?"
+msgstr "Specify whether to prompt the account holder."
 
 msgid "zahlungsart_lastschrift_kreditinstitut_abfrage_name"
-msgstr "Kreditinstitut abfragen"
+msgstr "Prompt financial institution"
 
 msgid "zahlungsart_lastschrift_kreditinstitut_abfrage_desc"
-msgstr "Soll das Feld Kreditinstitut im Bestellvorgang abgefragt werden?"
+msgstr "Specify whether to prompt the financial institution."
 
 msgid "zahlungsart_barzahlung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_barzahlung_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_barzahlung_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_barzahlung_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_barzahlung_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_barzahlung_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_billpay_aspaid_name"
-msgstr "Bestellungen automatisch als bezahlt markieren"
+msgstr "Automatically mark orders as paid"
 
 msgid "zahlungsart_billpay_aspaid_desc"
-msgstr "Setzt den Status der Bestellung nach der Vorautorisierung und Erfassung auf bezahlt"
+msgstr "Specify whether recorded orders are automatically marked as paid after preauthorisation."
 
 msgid "zahlungsart_billpay_delayindays_name"
-msgstr "Verschiebung des Zahlungsziels (In Tagen)"
+msgstr "Postpone due date for payment (in days)"
 
 msgid "zahlungsart_billpay_delayindays_desc"
-msgstr "Anzahl der Tage, um die sich die Aktivierung des Zahlungsziels verschiebt (Nach Erstellung der Rechnung)"
+msgstr "Specify by how many days the activation of the due date for payment is to be postponed after invoice creation."
 
 msgid "zahlungsart_billpay_publicapicode_name"
-msgstr "Öffentlicher API Schlüssel"
+msgstr "Public API key"
 
 msgid "zahlungsart_billpay_publicapicode_desc"
 msgstr ""
 
 msgid "zahlungsart_sofortueberweisung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen n&ouml;tig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_sofortueberweisung_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgef&uuml;hrt haben, k&ouml;nnen diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_sofortueberweisung_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_sofortueberweisung_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_sofortueberweisung_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_sofortueberweisung_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_sofortueberweisung_id_name"
-msgstr "User-ID"
+msgstr "User ID"
 
 msgid "zahlungsart_sofortueberweisung_id_desc"
-msgstr "Ihre User-ID"
+msgstr "Specify your Pay now user ID."
 
 msgid "zahlungsart_sofortueberweisung_project_id_name"
-msgstr "Projekt-ID"
+msgstr "Project ID"
 
 msgid "zahlungsart_sofortueberweisung_project_id_desc"
-msgstr "Ihre Projekt-ID"
+msgstr "Specify your Pay now project ID."
 
 msgid "zahlungsart_sofortueberweisung_project_password_name"
-msgstr "Projekt Passwort"
+msgstr "Project password"
 
 msgid "zahlungsart_sofortueberweisung_project_password_desc"
-msgstr "Optional, aber sicherer - Bei Benutzung als Erfolgslink in den Einstellungen von Sofortueberweisung.de unbedingt &quot;http://www.IHRSHOP.de/bestellabschluss.php?i=-USER_VARIABLE_5-&quot; angeben und &quot;Automatische Weiterleitung&quot; aktivieren"
+msgstr "Optionally, enter a project password. When using a success link, you must specify \"http://www.IHRSHOP.de/bestellabschluss.php?i=-USER_VARIABLE_5-\" in the settings and activate \"Automatic redirection\"."
 
 msgid "zahlungsart_sofortueberweisung_benachrichtigung_password_name"
-msgstr "Benachrichtigungspasswort"
+msgstr "Notification password"
 
 msgid "zahlungsart_sofortueberweisung_benachrichtigung_password_desc"
-msgstr "Optional, aber sicherer - Bei Benutzung als Erfolgslink in den Einstellungen von Sofortueberweisung.de unbedingt &quot;http://www.IHRSHOP.de/bestellabschluss.php?i=-USER_VARIABLE_5-&quot; angeben und &quot;Automatische Weiterleitung&quot; aktivieren"
+msgstr "Optionally, enter a notification password. When using a success link, you must specify \"http://www.IHRSHOP.de/bestellabschluss.php?i=-USER_VARIABLE_5-\" in the settings and activate \"Automatic redirection\"."
 
 msgid "zahlungsart_sofortueberweisung_reason_1_name"
-msgstr "Verwendungszweck 1"
+msgstr "Reference 1"
 
 msgid "zahlungsart_sofortueberweisung_reason_1_desc"
-msgstr "W&auml;hlen Sie hier den gew&uuml;nschten Verwendungszweck"
+msgstr "Specify what is to appear in the first line of the payment reference of a bank transfer."
 
 msgid "zahlungsart_sofortueberweisung_reason_2_name"
-msgstr "Verwendungszweck 2"
+msgstr "Reference 2"
 
 msgid "zahlungsart_sofortueberweisung_reason_2_desc"
-msgstr "W&auml;hlen Sie hier den gew&uuml;nschten Verwendungszweck"
+msgstr "Specify what is to appear in the first line of the payment reference of a bank transfer."
 
 msgid "zahlungsart_sofortueberweisung_user_variable_2_name"
-msgstr "Kundenvariable 1"
+msgstr "Customer variable 1"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_2_desc"
 msgstr ""
 
 msgid "zahlungsart_sofortueberweisung_user_variable_3_name"
-msgstr "Kundenvariable 2"
+msgstr "Customer variable 2"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_3_desc"
 msgstr ""
 
 msgid "zahlungsart_sofortueberweisung_user_variable_4_name"
-msgstr "Kundenvariable 3"
+msgstr "Customer variable 3"
 
 msgid "zahlungsart_sofortueberweisung_user_variable_4_desc"
 msgstr ""
 
 msgid "zahlungsart_sofortueberweisung_debugmode_name"
-msgstr "Debug Modus"
+msgstr "Debug mode"
 
 msgid "zahlungsart_sofortueberweisung_debugmode_desc"
-msgstr "Aktivieren Sie den Debug Modus, wenn Sie das Bezahlsystem testen wollen ohne dass tatsächlich Buchungen vorgenommen werden. Es wird dazu auf extra Testserver umgestellt. Denken Sie bitte daran, dass Sie eventuell auch in der Benutzeroberfläche des Zahlung"
+msgstr "Here you can activate the debug mode. This mode enables you to test the Pay now payment system without posting actual data. The payment system will be run on a test server for this purpose. "
 
 msgid "zahlungsart_billpay_invoice_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_invoice_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_billpay_invoice_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_billpay_invoice_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_billpay_invoice_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_billpay_invoice_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_billpay_direct_debit_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_direct_debit_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_billpay_direct_debit_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_billpay_direct_debit_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_billpay_direct_debit_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_billpay_direct_debit_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_billpay_rate_payment_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_rate_payment_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_billpay_rate_payment_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_billpay_rate_payment_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_billpay_rate_payment_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_billpay_rate_payment_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_billpay_paylater_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
+msgstr "Number of required orders"
 
 msgid "zahlungsart_billpay_paylater_min_bestellungen_desc"
-msgstr "Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, können diese Zahlungsart nutzen."
+msgstr "Specify the minimum number of successful orders a customer must have placed to be able to select this payment method."
 
 msgid "zahlungsart_billpay_paylater_min_name"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "zahlungsart_billpay_paylater_min_desc"
-msgstr "Erst ab diesem Bestellwert kann diese Zahlungsart genutzt werden."
+msgstr "Specify the minimum basket value required for a payment method to be available for selection."
 
 msgid "zahlungsart_billpay_paylater_max_name"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "zahlungsart_billpay_paylater_max_desc"
-msgstr "Nur bis zu diesem Bestellwert wird diese Zahlungsart angeboten. (einschliesslich)"
+msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "exportformate_lager_ueber_null_name"
-msgstr "Nur Produkte mit Lagerbestand über 0"
+msgstr "Only items with stock over 0"
 
 msgid "exportformate_lager_ueber_null_desc"
 msgstr ""
 
 msgid "exportformate_preis_ueber_null_name"
-msgstr "Nur Produkte mit Preis über 0"
+msgstr "Only items with price over 0"
 
 msgid "exportformate_preis_ueber_null_desc"
 msgstr ""
 
 msgid "exportformate_beschreibung_name"
-msgstr "Nur Produkte mit Beschreibung"
+msgstr "Only items with description"
 
 msgid "exportformate_beschreibung_desc"
 msgstr ""
 
 msgid "exportformate_lieferland_name"
-msgstr "Versandkosten Lieferland (ISO-Code)"
+msgstr "Shipping costs for destination country (ISO code)"
 
 msgid "exportformate_lieferland_desc"
-msgstr "Es werden autom. die günstigsten Versandkosten zu diesem Lieferland berechnet. ISO-Code angeben, z.B. DE"
+msgstr "The cheapest shipping costs for this destination country will be calculated automatically. Enter the ISO code, i.e. \"DE\" for Germany."
 
 msgid "exportformate_quot_name"
-msgstr "Zeichenmaskierung &quot;"
+msgstr "Escaping of \""
 
 msgid "exportformate_quot_desc"
-msgstr "bei Bedarf können diese Zeichen maskiert werden. CSV-gerechte Aufbereitung sollte ausgeschaltet sein."
+msgstr "You can escape these characters if required."
 
 msgid "exportformate_equot_name"
-msgstr "Zeichenmaskierung '"
+msgstr "Escaping of '"
 
 msgid "exportformate_equot_desc"
-msgstr "bei Bedarf können diese Zeichen maskiert werden. CSV-gerechte Aufbereitung sollte ausgeschaltet sein."
+msgstr "You can escape these characters if required."
 
 msgid "exportformate_semikolon_name"
-msgstr "Zeichenmaskierung ;"
+msgstr "Escaping of ;"
 
 msgid "exportformate_semikolon_desc"
-msgstr "bei Bedarf können diese Zeichen maskiert werden. CSV-gerechte Aufbereitung sollte ausgeschaltet sein."
+msgstr "You can escape these characters if required."
 
 msgid "kontakt_abfragen_anrede_name"
-msgstr "Anrede abfragen"
+msgstr "Prompt title"
 
 msgid "kontakt_abfragen_anrede_desc"
-msgstr "Herr, Frau"
+msgstr "Specify whether to prompt the title."
 
 msgid "kontakt_abfragen_vorname_name"
-msgstr "Vorname abfragen"
+msgstr "Prompt first name"
 
 msgid "kontakt_abfragen_vorname_desc"
 msgstr ""
 
 msgid "kontakt_abfragen_nachname_name"
-msgstr "Nachname abfragen"
+msgstr "Prompt last name"
 
 msgid "kontakt_abfragen_nachname_desc"
 msgstr ""
 
 msgid "kontakt_abfragen_firma_name"
-msgstr "Firmenname abfragen"
+msgstr "Prompt company name"
 
 msgid "kontakt_abfragen_firma_desc"
 msgstr ""
 
 msgid "kontakt_abfragen_tel_name"
-msgstr "Tel abfragen"
+msgstr "Prompt phone number"
 
 msgid "kontakt_abfragen_tel_desc"
 msgstr ""
 
 msgid "kontakt_abfragen_fax_name"
-msgstr "Fax abfragen"
+msgstr "Prompt fax number"
 
 msgid "kontakt_abfragen_fax_desc"
 msgstr ""
 
 msgid "kontakt_abfragen_mobil_name"
-msgstr "Mobil abfragen"
+msgstr "Prompt mobile"
 
 msgid "kontakt_abfragen_mobil_desc"
 msgstr ""
 
 msgid "kontakt_kopiekunde_name"
-msgstr "Kopie der Anfrage an Kunden schicken"
+msgstr "Send copy of request to customer"
 
 msgid "kontakt_kopiekunde_desc"
-msgstr "Dadurch erh&auml;lt der Kunde eine Kopie der Anfrage an seine angegebene Emailadresse"
+msgstr "Specify whether customers also receive their own requests by email."
 
 msgid "kontakt_sperre_minuten_name"
-msgstr "Kontaktformular sperren f&uuml;r X Minuten"
+msgstr "Lock contact form for X minutes"
 
 msgid "kontakt_sperre_minuten_desc"
-msgstr "Sobald ein Kunde das Kontaktformular genutzt hat, kann er fr&uuml;hstens nach sovielen Minuten das Formular erneut absenden."
+msgstr "Specify how many minutes must have passed between one request and the next."
 
 msgid "kontakt_abfragen_captcha_name"
-msgstr "Spamschutz aktivieren"
+msgstr "Enable spam protection"
 
 msgid "kontakt_abfragen_captcha_desc"
-msgstr "Soll ein Sicherheitscode abgefragt werden, damit das Formular akzeptiert und abgesendet wird?"
+msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
 msgid "rss_nutzen_name"
-msgstr "RSS-Feed nutzen"
+msgstr "Use RSS feed"
 
 msgid "rss_nutzen_desc"
 msgstr ""
 
 msgid "rss_titel_name"
-msgstr "Channel Titel"
+msgstr "RSS feed name"
 
 msgid "rss_titel_desc"
-msgstr "Geben Sie den Titel des RSS Feed Kanals an"
+msgstr "Enables you to enter the name of the RSS feed."
 
 msgid "rss_description_name"
-msgstr "Beschreibung des RSS-Feeds"
+msgstr "RSS feed description"
 
 msgid "rss_description_desc"
 msgstr ""
@@ -2318,883 +2318,895 @@ msgid "rss_copyright_name"
 msgstr "Copyright"
 
 msgid "rss_copyright_desc"
-msgstr "Geben Sie den Autor des Feeds an"
+msgstr "Specify copyright information on the RSS feed, for example the name of your online shop."
 
 msgid "rss_logoURL_name"
-msgstr "URL zum Logo"
+msgstr "URL to logo"
 
 msgid "rss_logoURL_desc"
-msgstr "Geben Sie die URL zu einem Logo an, der beim Feed angezeigt werden soll. Sollte ca. 200 Pixel breit sein."
+msgstr "You can save a logo for the RSS feed on your webspace. Enter the URL for this logo here. Recommended width for the logo: 200 pixels "
 
 msgid "rss_alterTage_name"
-msgstr "Max. Alter von Informationen in Tagen"
+msgstr "Max. age of information in days"
 
 msgid "rss_alterTage_desc"
-msgstr "Wieviele Tage dürfen Informationen maximal alt sein, damit sie in den RSS-Feed aufgenommen werden"
+msgstr "Specify the number of days taken into account retroactively in the RSS feed."
 
 msgid "rss_artikel_beachten_name"
-msgstr "Artikel im Export beachten"
+msgstr "Include items in export"
 
 msgid "rss_artikel_beachten_desc"
-msgstr "Sollen neue Artikel im RSS Export beachten werden?"
+msgstr "Specify whether to display new items in the RSS feed."
 
 msgid "rss_news_beachten_name"
-msgstr "News im Export beachten"
+msgstr "Include news postings in export"
 
 msgid "rss_news_beachten_desc"
-msgstr "Sollen neue News im RSS Export beachten werden?"
+msgstr "Specify whether to display news postings in the RSS feed."
 
 msgid "rss_bewertungen_beachten_name"
-msgstr "Bewertungen im Export beachten"
+msgstr "Include customer reviews in export"
 
 msgid "rss_bewertungen_beachten_desc"
-msgstr "Sollen neue Bewertungen im RSS Export beachten werden?"
+msgstr "Specify whether to display newly approved customer reviews in the RSS feed."
 
 msgid "rss_wawiabgleich_name"
-msgstr "RSS bei Wawi Abgleich erstellen"
+msgstr "Generate feed with each synchronisation with JTL-Wawi"
 
 msgid "rss_wawiabgleich_desc"
-msgstr "* ACHTUNG * Dies kann den Abgleich stark verlangsamen! Soll bei einem Wawi Abgleich auch gleichzeitig eine neue RSS Datei erstellt werden?"
+msgstr "Specify whether to generate a new RSS feed with each synchronisation with JTL-Wawi. Attention: This option can significantly slow down the synchronisation with JTL-Wawi."
 
 msgid "preisverlauf_anzeigen_name"
-msgstr "Preisverlauf anzeigen"
+msgstr "Show price history"
 
 msgid "preisverlauf_anzeigen_desc"
-msgstr "Möchten Sie bei Ihrer Artikelansicht, dass dort ein Preisverlauf als Tab sichtbar ist?"
+msgstr "Specify whether to display the price history on the item detail page."
 
 msgid "preisverlauf_anzahl_monate_name"
-msgstr "Letzten X Monate beachten"
+msgstr "Include last X months"
 
 msgid "preisverlauf_anzahl_monate_desc"
-msgstr "Wieviele der letzten Monate sollen für den Preisverlauf beachtet werden? "
+msgstr "Specify how many months are to be taken into account retrospectively for the price history. "
 
 msgid "vergleichsliste_anzahl_name"
-msgstr "Anzahl maximaler Produkte"
+msgstr "Max. number of items"
 
 msgid "vergleichsliste_anzahl_desc"
-msgstr "Maximale Anzahl der Produkte auf der Vergleichsliste"
+msgstr "Specify the maximum number of items on the comparison list."
 
 msgid "vergleichsliste_artikelnummer_name"
-msgstr "Anzeigepriorität Artikelnummer"
+msgstr "Displaying priority of SKU"
 
 msgid "vergleichsliste_artikelnummer_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
+
+msgid "vergleichsliste_verfuegbarkeit_name"
+msgstr "Anzeigepriorität Verfügbarkeit"
+
+msgid "vergleichsliste_verfuegbarkeit_desc"
+msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
+
+msgid "vergleichsliste_lieferzeit_name"
+msgstr "Anzeigepriorität Lieferzeit"
+
+msgid "vergleichsliste_lieferzeit_desc"
+msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
 
 msgid "vergleichsliste_hersteller_name"
-msgstr "Anzeigepriorität Hersteller"
+msgstr "Displaying priority of manufacturer"
 
 msgid "vergleichsliste_hersteller_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_kurzbeschreibung_name"
-msgstr "Anzeigepriorität Kurzbeschreibung"
+msgstr "Displaying priority of brief description"
 
 msgid "vergleichsliste_kurzbeschreibung_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_beschreibung_name"
-msgstr "Anzeigepriorität Beschreibung"
+msgstr "Displaying priority of description"
 
 msgid "vergleichsliste_beschreibung_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_artikelgewicht_name"
-msgstr "Anzeigepriorität Artikelgewicht"
+msgstr "Displaying priority of item weight"
 
 msgid "vergleichsliste_artikelgewicht_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_versandgewicht_name"
-msgstr "Anzeigepriorität Versandgewicht"
+msgstr "Displaying priority of shipping weight"
 
 msgid "vergleichsliste_versandgewicht_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_variationen_name"
-msgstr "Anzeigepriorität Variationen"
+msgstr "Displaying priority of variations"
 
 msgid "vergleichsliste_variationen_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_merkmale_name"
-msgstr "Anzeigepriorität Merkmale"
+msgstr "Displaying priority of characteristics"
 
 msgid "vergleichsliste_merkmale_desc"
-msgstr "0 = Dieses Feld nicht anzeigen"
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_spaltengroesse_name"
-msgstr "Spaltenbreite des Artikels"
+msgstr "Column width for item"
 
 msgid "vergleichsliste_spaltengroesse_desc"
-msgstr "Wie groß (in Pixel) soll jede Spalte für einen Artikel in der Vergleichsliste sein?"
+msgstr "Specify the width in pixels of the item column in the comparison list."
 
 msgid "vergleichsliste_spaltengroesseattribut_name"
-msgstr "Spaltenbreite der Attribute"
+msgstr "Column width for attributes"
 
 msgid "vergleichsliste_spaltengroesseattribut_desc"
-msgstr "Wie groß (in Pixel) soll jede Spalte für ein Artikelattribut in der Vergleichsliste sein?"
+msgstr "Specify the width in pixels of the item attributes column in the comparison list."
 
 msgid "vergleichsliste_target_name"
-msgstr "Position der Vergleichsliste"
+msgstr "Position of comparison list"
 
 msgid "vergleichsliste_target_desc"
-msgstr "Soll die Vergleichsliste in einem neuen Fenster oder im alten Fenster geöffnet werden?"
+msgstr "Specify whether to open the comparison list as a dialogue box or as a separate page in the same window or in a new window."
 
 msgid "bewertung_anzeigen_name"
-msgstr "Bewertungssystem nutzen"
+msgstr "Use review system"
 
 msgid "bewertung_anzeigen_desc"
-msgstr "Solle das Bewertungssystem in den Artikeldetails angezeigt werden?"
+msgstr "Specify whether the option of giving a review is displayed in the item details."
 
 msgid "bewertung_freischalten_name"
-msgstr "Bewertungen freischalten"
+msgstr "Approve customer reviews"
 
 msgid "bewertung_freischalten_desc"
-msgstr "Sollen Bewertungen nach ihrer Eingabe, erst durch den Administrator freigeschaltet werden?"
+msgstr "Specify whether customer reviews must first be approved before they become visible to your visitors."
 
 msgid "bewertung_anzahlseite_name"
-msgstr "Anzahl Bewertungen pro Seite"
+msgstr "Number of customer reviews per page"
 
 msgid "bewertung_anzahlseite_desc"
-msgstr "Wieviele Bewertungen sollen bei der Artikelübersicht maximal auf einer Seite angezeigt werden bevor man blättern muss?"
+msgstr "Specify the number of customer reviews that are to be displayed simultaneously on the item detail page."
 
 msgid "bewertung_hilfreich_anzeigen_name"
-msgstr "Bewertung hilfreich anzeigen"
+msgstr "Show \"Helpful\" with customer review"
 
 msgid "bewertung_hilfreich_anzeigen_desc"
-msgstr "Bei jeder Bewertung besteht die Möglichkeit, diese als hilfreich bzw. nicht hilfreich zu markieren. Wollen Sie diese Option einschalten?"
+msgstr "Specify whether your customers are able to mark customer reviews as helpful or not."
 
 msgid "bewertungserinnerung_nutzen_name"
-msgstr "Bewertungserinnerung nutzen"
+msgstr "Use customer review reminder"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Soll nach dem kauf eines Artikels eine Bewertungserinnerung versendet werden?"
+msgstr "Specify whether to send an email reminder, encouraging your customers to rate an item after purchase."
 
 msgid "bewertungserinnerung_kundengruppen_name"
-msgstr "Bewertungserinnerung nur zulassen für"
+msgstr "Allow customer review reminder only for"
 
 msgid "bewertungserinnerung_kundengruppen_desc"
-msgstr "Welche Kundengruppen sollen eine Bewertungserinnerung erhalten. Mehrfachauswahl mit STRG möglich"
+msgstr "Specify the customer groups that will receive an email reminder about giving a customer review. You can select several groups by holding the Ctrl key. "
 
 msgid "bewertung_guthaben_nutzen_name"
-msgstr "Guthabenbonus nutzen"
+msgstr "Grant credit bonus"
 
 msgid "bewertung_guthaben_nutzen_desc"
-msgstr "Nach der Abgabe einer Bewertung, erhält der Kunde einen gewissen Betrag als Guthaben."
+msgstr "Specify whether your customers receive a credit bonus for reviewing an item."
 
 msgid "bewertungserinnerung_versandtage_name"
-msgstr "Tage nach Versand bis zur Erinnerung"
+msgstr "Days after shipping until reminder"
 
 msgid "bewertungserinnerung_versandtage_desc"
-msgstr "Wieviele Tage nach dem Versand eines Artikels sollen vergehen, bis eine Bewertungserinnerung versendet wird?"
+msgstr "Specify the number of days after the order until a reminder to write a customer review is sent to the customer."
 
 msgid "bewertung_stufe2_anzahlzeichen_name"
-msgstr "Anzahl Textlänge für Stufe 2"
+msgstr "Minimum text length for level 2"
 
 msgid "bewertung_stufe2_anzahlzeichen_desc"
-msgstr "Wieviele Zeichen muss eine Bewertung enthalten, damit der Kunde die Stufe 2 Belohnung als Guthaben erhält?"
+msgstr "Specify the minimum number of characters that a customer review must include for a customer to receive the level 2 reward."
 
 msgid "bewertung_stufe1_guthaben_name"
-msgstr "Wieviel Guthaben bei Stufe 1"
+msgstr "Credit bonus for level 1"
 
 msgid "bewertung_stufe1_guthaben_desc"
-msgstr "Wieviel Guthaben soll der Kunde bei der ersten Stufe erhalten, wenn er eine Bewertung abgegeben hat?"
+msgstr "Specify the minimum bonus for customer reviews regardless of their length."
 
 msgid "bewertung_stufe2_guthaben_name"
-msgstr "Wieviel Guthaben bei Stufe 2"
+msgstr "Credit bonus for level 2"
 
 msgid "bewertung_stufe2_guthaben_desc"
-msgstr "Wieviel Guthaben soll der Kunde bei der zweiten Stufe erhalten, wenn er eine Bewertung abgegeben hat?"
+msgstr "Specify the bonus for customer reviews with at least the number of characters defined under \"Minimum text length for level 2\"."
 
 msgid "bewertung_max_guthaben_name"
-msgstr "Maximale Vergütung pro Kunde und Monat"
+msgstr "Total maximum credit bonus per customer per month"
 
 msgid "bewertung_max_guthaben_desc"
-msgstr "Wie hoch soll die maximale Vergütung im Monat sein, die ein Kunde erreichen kann?"
+msgstr "Specify the maximum total bonus that a customer can receive within a month."
 
 msgid "bewertung_artikel_gekauft_name"
-msgstr "Bewertung nur bei bereits gekauftem Artikel"
+msgstr "Allow customer review only for items already purchased"
 
 msgid "bewertung_artikel_gekauft_desc"
-msgstr "Darf ein Kunde nur eine Bewertung zu einem Artikel abgeben, wenn er selber bereits diesen gekauft hat?"
+msgstr "Specify whether customers can only rate items that they have purchased themselves."
 
 msgid "newsletter_emailmethode_name"
-msgstr "Emails versenden per"
+msgstr "Send emails via"
 
 msgid "newsletter_emailmethode_desc"
-msgstr "Diese Methode wird angewendet, um Emails zu verschicken"
+msgstr "Specify the protocol used to send emails."
 
 msgid "newsletter_sendmailpfad_name"
-msgstr "Sendmail Pfad"
+msgstr "Sendmail path"
 
 msgid "newsletter_sendmailpfad_desc"
-msgstr "Nur notwendig, wenn Emailmethode = Sendmail"
+msgstr "If you have selected the \"Sendmail\" option under \"Send emails via\", enter the path for sendmail here."
 
 msgid "newsletter_smtp_host_name"
-msgstr "SMTP Hostname"
+msgstr "SMTP host name"
 
 msgid "newsletter_smtp_host_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "newsletter_smtp_port_name"
-msgstr "SMTP Port"
+msgstr "SMTP port"
 
 msgid "newsletter_smtp_port_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "newsletter_smtp_authnutzen_name"
-msgstr "SMTP Auth nutzen"
+msgstr "Use SMTP Auth"
 
 msgid "newsletter_smtp_authnutzen_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "newsletter_smtp_benutzer_name"
-msgstr "SMTP Benutzername"
+msgstr "SMTP user name"
 
 msgid "newsletter_smtp_benutzer_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "newsletter_smtp_pass_name"
-msgstr "SMTP Passwort"
+msgstr "SMTP password"
 
 msgid "newsletter_smtp_pass_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "newsletter_smtp_verschluesselung_name"
-msgstr "SMTP Security"
+msgstr "SMTP security"
 
 msgid "newsletter_smtp_verschluesselung_desc"
-msgstr "Nur notwendig, wenn Emailmethode = SMTP"
+msgstr "If you have selected the \"SMTP\" option under \"Send emails via\", enter the port number here."
 
 msgid "newsletter_emailadresse_name"
-msgstr "Newsletter-Emailadresse"
+msgstr "Sender address for newsletter"
 
 msgid "newsletter_emailadresse_desc"
-msgstr "Diese Emailadresse wird für alle Emails verwendet. Sie kann von den jeweiligen Spezialemailadressen beschrieben werden."
+msgstr "Specify the email address from which newsletters are to be sent."
 
 msgid "newsletter_emailtest_name"
-msgstr "Empfänger-Email für Newslettertests"
+msgstr "Recipient address for newsletter tests"
 
 msgid "newsletter_emailtest_desc"
-msgstr "Diese Emailadresse wird für alle Emails verwendet. Sie kann von den jeweiligen Spezialemailadressen beschrieben werden."
+msgstr "Specify the email address to which test newsletters are to be sent."
 
 msgid "newsletter_emailabsender_name"
-msgstr "Newsletter-Email Absendername"
+msgstr "Sender name for newsletter"
 
 msgid "newsletter_emailabsender_desc"
-msgstr "Diese Emailadresse wird für alle Emails verwendet. Sie kann von den jeweiligen Spezialemailadressen beschrieben werden."
+msgstr "Specify what name is to be used as the sender for newsletters."
 
 msgid "newsletter_doubleopt_name"
-msgstr "Double Opt-in aktivieren bei"
+msgstr "Enable double opt-in for"
 
 msgid "newsletter_doubleopt_desc"
-msgstr "Zum Eintrag in der Abonnentenliste muss eine Email bestätigt werden. Für wen soll diese authentifizieren gelten?"
+msgstr "Specify whether only unregistered customers must additionally confirm their entry into the subscriber list by clicking on a link in an email or whether this applies to all customers."
 
 msgid "newsletter_sicherheitscode_name"
-msgstr "Spamschutz aktivieren"
+msgstr "Enable spam protection"
 
 msgid "newsletter_sicherheitscode_desc"
-msgstr "Soll ein Sicherheitscode abgefragt werden, damit das Formular akzeptiert und abgesendet wird?"
+msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
 msgid "kundenfeld_anzeigen_name"
-msgstr "Selbstdef. Kundenfelder anzeigen"
+msgstr "Show custom form fields"
 
 msgid "kundenfeld_anzeigen_desc"
-msgstr "Sollen die selbstdefinierten Kundenfelder bei der Registrierung angezeigt werden?"
+msgstr "Specify whether to prompt the created custom form fields during registration or in the order process."
 
 msgid "allgemein_weiterleitung_name"
-msgstr "Weiterleitung bei nur einem Suchtreffer"
+msgstr "Forward when only one search result is found"
 
 msgid "allgemein_weiterleitung_desc"
-msgstr "Wenn nach einer Filterung nur noch ein Suchtreffer vorhanden ist, soll dann auf die Artikeldetailseite weitergeleitet werden?"
+msgstr "Specify whether your customer is automatically forwarded to the item detail page if there is only one result left after filtering."
 
 msgid "allgemein_herstellerfilter_benutzen_name"
-msgstr "Herstellerfilter benutzen"
+msgstr "Allow filtering by manufacturer"
 
 msgid "allgemein_herstellerfilter_benutzen_desc"
-msgstr "Soll die Herstellerfilterung beim Filtern benutzt werden?"
+msgstr "Specify whether to display the manufacturer as a filter option for your customers in the results list under \"Filter by\"."
 
 msgid "manufacturer_filter_type_name"
-msgstr "Typ des Herstellerfilters"
+msgstr "Type of manufacturer filter"
 
 msgid "manufacturer_filter_type_desc"
-msgstr "Erlaubt Verorderung oder Verundung der Filterwerte"
+msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
 
 msgid "allgemein_suchspecialfilter_benutzen_name"
-msgstr "Besondere Produkte Filter nutzen"
+msgstr "Use filter for special items"
 
 msgid "allgemein_suchspecialfilter_benutzen_desc"
-msgstr "Soll der Suchspecialfilter in der Übersicht angezeigt werden?"
+msgstr "Specify whether to display special items (e.g. top offers) as a filter option for your customers in the results list under \"Filter by\"."
 
 msgid "search_special_filter_type_name"
-msgstr "Typ des Suchspezialfilters"
+msgstr "Special filter type"
 
 msgid "search_special_filter_type_desc"
-msgstr "Erlaubt Verorderung oder Verundung der Filterwerte"
+msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
 
 msgid "allgemein_kategoriefilter_benutzen_name"
-msgstr "Kategoriefilterung benutzen"
+msgstr "Allow filtering by category"
 
 msgid "allgemein_kategoriefilter_benutzen_desc"
-msgstr "Soll die Kategoriefilterung beim Filtern benutzt werden?"
+msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\"."
 
 msgid "kategoriefilter_anzeigen_als_name"
-msgstr "Kategoriefilter anzeigen als"
+msgstr "Show category filter as"
 
 msgid "kategoriefilter_anzeigen_als_desc"
-msgstr "Wie soll der Kategoriefilter in der Artikel&uuml;bersicht angezeigt werden?"
+msgstr "Specify how to display categories when the category filter is activated."
 
 msgid "category_filter_type_name"
-msgstr "Typ des Kategoriefilters"
+msgstr "Category filter type"
 
 msgid "category_filter_type_desc"
-msgstr "Erlaubt Verorderung oder Verundung der Filterwerte"
+msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
 
 msgid "bewertungsfilter_benutzen_name"
-msgstr "Bewertungsfilter benutzen"
+msgstr "Allow filtering by customer review"
 
 msgid "bewertungsfilter_benutzen_desc"
-msgstr "Soll die Bewertungsfilterung beim Filtern benutzt werden?"
+msgstr "Specify whether it is possible to filter by customer reviews (if present)."
 
 msgid "allgemein_tagfilter_benutzen_name"
-msgstr "Tagfilter benutzen"
+msgstr "Allow filtering by tags"
 
 msgid "allgemein_tagfilter_benutzen_desc"
-msgstr "Soll die Tagfilterung beim Filtern benutzt werden?"
+msgstr "If this option is enabled, a box is added that contains all tags entered or activated for the displayed results."
 
 msgid "tagfilter_max_anzeige_name"
-msgstr "Maximale Anzahl an Tags in der Filterung"
+msgstr "Maximum number of tags for filtering"
 
 msgid "tagfilter_max_anzeige_desc"
-msgstr "Wieviele Tags sollen maximal in der Filteranzeige zu sehen sein?"
+msgstr "Specify the maximum number of tags that are to be displayed."
 
 msgid "tag_filter_type_name"
-msgstr "Typ des Tagfilters"
+msgstr "Tag filter type"
 
 msgid "tag_filter_type_desc"
-msgstr "Erlaubt Verorderung oder Verundung der Filterwerte"
+msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
 
 msgid "suchtrefferfilter_nutzen_name"
-msgstr "Suchtrefferfilter benutzen"
+msgstr "Allow filtering by search result"
 
 msgid "suchtrefferfilter_nutzen_desc"
-msgstr "Soll der Suchtrefferfilter benutzt werden?"
+msgstr "Specify whether during a search, customers will see other searches which also match the displayed items. For this purpose, the live search results must be activated."
 
 msgid "suchtrefferfilter_anzahl_name"
-msgstr "Suchtrefferfilter anzahl"
+msgstr "Number of search results"
 
 msgid "suchtrefferfilter_anzahl_desc"
-msgstr "Wieviele Suchtreffer sollen angezeigt werden?"
+msgstr "Specify the number of search results to be displayed."
 
 msgid "merkmalfilter_verwenden_name"
-msgstr "Merkmalfilter benutzen"
+msgstr "Allow filtering by characteristics"
 
 msgid "merkmalfilter_verwenden_desc"
-msgstr "Soll der Merkmalfilter in der Filterübersicht bzw. in den Boxen angezeigt werden?"
+msgstr "Specify whether to display characteristics filters."
 
 msgid "merkmal_anzeigen_als_name"
-msgstr "Merkmale anzeigen als"
+msgstr "Show characteristics as"
 
 msgid "merkmal_anzeigen_als_desc"
-msgstr "Anstelle des Merkmals, können Sie auch optional ein Bild anzeigen lassen oder das Merkmal und ein Bild."
+msgstr "Specify how to display the characteristics."
 
 msgid "merkmalfilter_maxmerkmale_name"
-msgstr "Maximal X Merkmale im Filter anzeigen"
+msgstr "Max. number of characteristics for filter"
 
 msgid "merkmalfilter_maxmerkmale_desc"
-msgstr "Hiermit können Sie eine Obergrenze angezeigter Merkmale im Filter setzen. Merkmale mit den wenigsten Merkmalwerten fallen hierbei als erste heraus. Standard: 10"
+msgstr "Specify the maximum number of characteristics shown for the filter."
 
 msgid "merkmalfilter_maxmerkmalwerte_name"
-msgstr "Maximal X Merkmalwerte ausschreiben"
+msgstr "Max. number of characteristic values"
 
 msgid "merkmalfilter_maxmerkmalwerte_desc"
-msgstr "Hat ein Merkmal mehr als X Merkmalwerte, so werden alle Werte in einer Selectbox angezeigt. Standard: 15"
+msgstr "Limit the number of characteristic values that are shown per characteristic for the filter."
 
 msgid "preisspannenfilter_benutzen_name"
-msgstr "Preisspannenfilter benutzen"
+msgstr "Allow filtering by price range"
 
 msgid "preisspannenfilter_benutzen_desc"
-msgstr "Soll die Preisspannenfilterung beim Filtern benutzt werden?"
+msgstr "Specify whether your customers are able to filter by specific price ranges when displaying an item list."
 
 msgid "preisspannenfilter_spannen_ausblenden_name"
-msgstr "Spannen mit keinem Artikel ausblenden"
+msgstr "Hide empty price ranges"
 
 msgid "preisspannenfilter_spannen_ausblenden_desc"
-msgstr "Falls in einer Spanne kein Artikel vorhanden ist, soll diese dann ausgeblendet werden?"
+msgstr "Specify whether to display price ranges that do not apply to any item."
 
 msgid "preisspannenfilter_anzeige_berechnung_name"
-msgstr "Automatische Preisspannenfilterung"
+msgstr "Automatic price range filtering"
 
 msgid "preisspannenfilter_anzeige_berechnung_desc"
-msgstr "Sollen die Anzeigewerte der Preisspannenfilterung automatisch eingestellt werden?"
+msgstr "Specify whether JTL-Shop automatically selects the displayed price ranges (automatically) or whether previously defined price ranges are to be selected (manually). If you select \"manually\", more fields are shown into which price ranges can be entered."
 
 msgid "hersteller_bild_anzeigen_name"
-msgstr "Hersteller anzeigen"
+msgstr "Show manufacturers"
 
 msgid "hersteller_bild_anzeigen_desc"
-msgstr "Hersteller anzeigen, wenn ein Hersteller angeklickt wird?"
+msgstr "Specify whether to display manufacturer information (e.g. in the item details) when clicking on a manufacturer."
 
 msgid "hersteller_beschreibung_anzeigen_name"
-msgstr "Herstellerbeschreibung anzeigen"
+msgstr "Show description of manufacturer"
 
 msgid "hersteller_beschreibung_anzeigen_desc"
-msgstr "Soll in der Artikelübersicht die Herstellerbeschreibung angezeigt werden?"
+msgstr "Specify whether to also display a descriptive text for the manufacturer."
 
 msgid "merkmalwert_bild_anzeigen_name"
-msgstr "Merkmalwert anzeigen"
+msgstr "Show characteristic value"
 
 msgid "merkmalwert_bild_anzeigen_desc"
-msgstr "Merkmalwert anzeigen, wenn ein Merkmalwert angeklickt wird?"
+msgstr "Specify whether to display the value and the image stored for the value when you click on a characteristic value in the item details."
 
 msgid "merkmalwert_beschreibung_anzeigen_name"
-msgstr "Merkmalwertbeschreibung anzeigen"
+msgstr "Show description of characteristic value"
 
 msgid "merkmalwert_beschreibung_anzeigen_desc"
-msgstr "Soll die Merkmalwertbeschreibung in der Artikelübersicht angezeigt werden?"
+msgstr "Specify whether to display the description of the characteristic value defined in JTL-Wawi."
 
 msgid "kategorie_bild_anzeigen_name"
-msgstr "Kategorie anzeigen"
+msgstr "Show category"
 
 msgid "kategorie_bild_anzeigen_desc"
-msgstr "Kategorie anzeigen, wenn eine Kategorie angeklickt wird?"
+msgstr "Specify how to display a category when clicking on it in the navigation."
 
 msgid "kategorie_beschreibung_anzeigen_name"
-msgstr "Kategoriebeschreibung anzeigen"
+msgstr "Show category description"
 
 msgid "kategorie_beschreibung_anzeigen_desc"
-msgstr "Soll die Kategoriebeschreibung in der Artikelübersicht angezeigt werden?"
+msgstr "Specify whether to display the category description managed in JTL-Wawi on the category page."
 
 msgid "artikeluebersicht_bild_anzeigen_name"
-msgstr "Unterkategorie anzeigen"
+msgstr "Show subcategory"
 
 msgid "artikeluebersicht_bild_anzeigen_desc"
-msgstr "Wie soll die Unterkategorie von der aktuellen Kategorie in der Artikelübersicht angezeigt werden?"
+msgstr "Specify whether to show subcategories on the page. You can choose whether to display just the text, just an image or both."
 
 msgid "unterkategorien_lvl2_anzeigen_name"
-msgstr "Unter-Unterkategorien anzeigen"
+msgstr "Show second-level subcategories"
 
 msgid "unterkategorien_lvl2_anzeigen_desc"
-msgstr "Sollen Unter-Unterkategorien angezeigt werden in der Kategorieübersicht?"
+msgstr "You can use this option to display second-level subcategories of individual subcategories."
 
 msgid "unterkategorien_beschreibung_anzeigen_name"
-msgstr "Unterkategoriebeschreibung anzeigen"
+msgstr "Show subcategory description"
 
 msgid "unterkategorien_beschreibung_anzeigen_desc"
-msgstr "Sollen Beschreibungen von Unterkategorien angezeigt werden, die in der Vater-Kategorie gelistet werden?"
+msgstr "Specify whether to also display the description of subcategories."
 
 msgid "blacklist_benutzen_name"
-msgstr "Email Blacklist benutzen"
+msgstr "Use email blacklist"
 
 msgid "blacklist_benutzen_desc"
-msgstr "Sollen alle verschickten Emails erstmal durch eine Blacklist gefiltert werden?"
+msgstr "Specify whether to use the email blacklist. Specify the email addresses which cannot be used for registration in the online shop and for unregistered orders under \"Email addresses\"."
 
 msgid "global_meta_publisher_name"
-msgstr "Meta Publisher"
+msgstr "Meta publisher"
 
 msgid "global_meta_publisher_desc"
-msgstr "Herausgeber der Seite"
+msgstr "Specify the global publisher of the website."
 
 msgid "global_meta_copyright_name"
-msgstr "Meta Copyright"
+msgstr "Meta copyright"
 
 msgid "global_meta_copyright_desc"
-msgstr "Copyright der Seite"
+msgstr "Specify the global copyright of the website."
 
 msgid "global_meta_title_anhaengen_name"
-msgstr "Meta Title an Produktseiten anhängen"
+msgstr "Add meta title to item detail pages"
 
 msgid "global_meta_title_anhaengen_desc"
-msgstr "Der Meta Title wird auf auch auf Produktseiten angehängt"
+msgstr "This setting ensures that for each item detail page, the global meta title is added to the individual meta title of the page."
 
 msgid "global_meta_title_preis_name"
-msgstr "Artikelpreis im Titel anhängen"
+msgstr "Add item price to title"
 
 msgid "global_meta_title_preis_desc"
-msgstr "Diese Einstellung betrifft nur die Produktdetailseite"
+msgstr "This setting ensures that the item price is added to the meta title on each item detail page."
 
 msgid "global_meta_keywords_laenge_name"
-msgstr "Mindestanzahl von Zeichen in Keywords"
+msgstr "Minimum number of characters in keywords"
 
 msgid "global_meta_keywords_laenge_desc"
-msgstr "Diese Einstellung betrifft nur die Produktdetailseite und deren automatisch generierte Meta Keywords"
+msgstr "Specify the minimum length of the meta keywords for item detail pages."
 
 msgid "global_meta_maxlaenge_title_name"
-msgstr "Maximale Zeichenanzahl Meta-Title"
+msgstr "Maximum number of characters in meta title"
 
 msgid "global_meta_maxlaenge_title_desc"
-msgstr "Wieviele Zeichen darf der Meta-Title maximal lang sein?"
+msgstr "Specify the maximum number of characters that a meta title may have (including spaces)."
 
 msgid "global_meta_maxlaenge_description_name"
-msgstr "Maximale Zeichenanzahl Meta-Description"
+msgstr "Maximum number of characters in meta description"
 
 msgid "global_meta_maxlaenge_description_desc"
-msgstr "Wieviele Zeichen darf der Meta-Description maximal lang sein?"
+msgstr "Specify the maximum number of characters that a meta description may have (including spaces)."
 
 msgid "news_benutzen_name"
-msgstr "Newssystem benutzen"
+msgstr "Use news system"
 
 msgid "news_benutzen_desc"
-msgstr "Soll das Newssystem im Frontend benutzt werden?"
+msgstr "Specify whether to display the news system in the front end of JTL-Shop."
 
 msgid "news_kommentare_nutzen_name"
-msgstr "Newskommentare nutzen"
+msgstr "Allow comments on news"
 
 msgid "news_kommentare_nutzen_desc"
-msgstr "Wollen Sie Newskommentare zu jeder News nutzen?"
+msgstr "Specify whether a comment can be added to all news postings."
 
 msgid "news_anzahl_uebersicht_name"
-msgstr "Anzahl News in der Übersicht"
+msgstr "Number of news postings in overview"
 
 msgid "news_anzahl_uebersicht_desc"
-msgstr "Wieviele News sollen standardmäßig in der Newsübersicht angezeigt werden? 0 = standard"
+msgstr "Specify the number of news postings to be displayed in the news overview. For the default setting, enter 0."
 
 msgid "news_anzahl_content_name"
-msgstr "Anzahl News auf Startseite"
+msgstr "Number of news on homepage"
 
 msgid "news_anzahl_content_desc"
-msgstr "Wieviele News sollen pro Seite im Content angezeigt werden? 0 = keine."
+msgstr "Specify the number of news postings to be displayed on the homepage of your JTL-Shop."
 
 msgid "news_anzahl_box_name"
-msgstr "Anzahl Monate in der Box"
+msgstr "Number of months in the box"
 
 msgid "news_anzahl_box_desc"
-msgstr "Wieviele Monate sollen in der Box angezeigt werden?"
+msgstr "Specify the number of months to be displayed in the box \"News (monthly overview)\" box."
 
 msgid "news_kommentare_freischalten_name"
-msgstr "Newskommentare freischalten"
+msgstr "Activate comments"
 
 msgid "news_kommentare_freischalten_desc"
-msgstr "Wollen Sie erst Kommantare im Backend freischalten, bevor Sie im Frontend angezeigt werden?"
+msgstr "Specify whether comments must always be approved by you before they are displayed under the news postings."
 
 msgid "news_kommentare_eingeloggt_name"
-msgstr "Einloggen um Kommentare zu schreiben"
+msgstr "Allow comments only after login"
 
 msgid "news_kommentare_eingeloggt_desc"
-msgstr "Muss man als Besucher eingeloggt sein um einen Newskommentar zu schreiben oder dürfen es alle Besucher?"
+msgstr "Specify whether only logged-in users can submit comments."
 
 msgid "news_kommentare_anzahlproseite_name"
-msgstr "Anzahl Newskommentare pro Seite"
+msgstr "Number of comments per page"
 
 msgid "news_kommentare_anzahlproseite_desc"
-msgstr "Wieviele Newskommentare m&ouml;chten Sie auf einer Seite anzeigen?"
+msgstr "Specify the maximum number of comments allowed per page."
 
 msgid "news_kommentare_anzahlprobesucher_name"
-msgstr "Maximale Anzahl Kommentare pro News"
+msgstr "Maximum number of comments per news posting"
 
 msgid "news_kommentare_anzahlprobesucher_desc"
-msgstr "Die Anzahl Kommentare, die ein Besucher pro News schreiben darf. Falls 0, dann unendlich."
+msgstr "Specify the maximum number of comments a user can submit per news posting. 0 means that the number is not limited. "
 
 msgid "news_kategorie_unternewsanzeigen_name"
-msgstr "Newskategorien unter den News anzeigen"
+msgstr "Display categories under news postings"
 
 msgid "news_kategorie_unternewsanzeigen_desc"
-msgstr "Möchten Sie unter einer ausgewählten News auch die dazugehörgen Newskategorien sehen?"
+msgstr "Specify whether to display the appropriate news categories under a selected news posting."
 
 msgid "news_kategorie_boxanzeigen_name"
-msgstr "Newskategorien in einer Box anzeigen"
+msgstr "Display news category in a box"
 
 msgid "news_kategorie_boxanzeigen_desc"
-msgstr "Möchten Sie eine übersicht aller Newskategorien in einer Box angezeigt haben?"
+msgstr "Specify whether to display a box with an overview of all news categories."
 
 msgid "news_sicherheitscode_name"
-msgstr "Spamschutz aktivieren"
+msgstr "Enable spam protection"
 
 msgid "news_sicherheitscode_desc"
-msgstr "Soll beim Erstellen eines Kommentares ein Sicherheitscode abgefragt werden, damit das Formular akzeptiert und abgesendet wird?"
+msgstr "Specify whether to use the spam protection method defined in the global settings."
 
 msgid "sitemap_seiten_anzeigen_name"
-msgstr "Alle Linkseiten anzeigen"
+msgstr "Show all custom pages"
 
 msgid "sitemap_seiten_anzeigen_desc"
-msgstr "Sollen alle Seiten des Shops in der Sitemap erscheinen?"
+msgstr "Specify whether all custom pages should appear in the sitemap."
 
 msgid "sitemap_kategorien_anzeigen_name"
-msgstr "Alle Kategorien anzeigen"
+msgstr "Show all categories"
 
 msgid "sitemap_kategorien_anzeigen_desc"
-msgstr "Sollen alle Kategorien des Shops in der Sitemap erscheinen?"
+msgstr "Specify whether all category sites should appear in the sitemap."
 
 msgid "sitemap_globalemerkmale_anzeigen_name"
-msgstr "Globale Merkmale anzeigen"
+msgstr "Show global characteristics"
 
 msgid "sitemap_globalemerkmale_anzeigen_desc"
-msgstr "Sollen globale Merkmale des Shops in der Sitemap erscheinen?"
+msgstr "Specify whether pages for global characteristics should appear in the sitemap."
 
 msgid "sitemap_hersteller_anzeigen_name"
-msgstr "Hersteller anzeigen"
+msgstr "Show manufacturer"
 
 msgid "sitemap_hersteller_anzeigen_desc"
-msgstr "Sollen alle Hersteller des Shops in der Sitemap erscheinen?"
+msgstr "Specify whether all manufacturer pages should appear in the sitemap."
 
 msgid "sitemap_news_anzeigen_name"
-msgstr "News anzeigen"
+msgstr "Show news"
 
 msgid "sitemap_news_anzeigen_desc"
-msgstr "Sollen alle News des Shops in der Sitemap erscheinen?"
+msgstr "Specify whether all news pages should appear in the sitemap."
 
 msgid "sitemap_newskategorien_anzeigen_name"
-msgstr "Newskategorien anzeigen"
+msgstr "Show news categories"
 
 msgid "sitemap_newskategorien_anzeigen_desc"
-msgstr "Sollen alle Newskategorien des Shops in der Sitemap erscheinen?"
+msgstr "Specify whether all news category pages should appear in the sitemap."
 
 msgid "sitemap_weitereseiten_artikeluebersicht_name"
-msgstr "Seiten der Artikelübersichten in Sitemap aufnehmen"
+msgstr "Include pages of item overviews in sitemap"
 
 msgid "sitemap_weitereseiten_artikeluebersicht_desc"
-msgstr "Sollen Seiten aus der Artikel&uuml;bersicht wie z.b. Hersteller, Kategorien mit in die Sitemap aufgenommen werden?"
+msgstr "Specify whether to include the pages of the item overviews (e.g. manufacturers, categories etc.) in the sitemap."
 
 msgid "sitemap_tags_anzeigen_name"
-msgstr "Tags anzeigen"
+msgstr "Show tags"
 
 msgid "sitemap_tags_anzeigen_desc"
-msgstr "Sollen Ihre Tags in der Sitemap erscheinen?"
+msgstr "Specify whether all tag pages should appear in the sitemap."
 
 msgid "sitemap_livesuche_anzeigen_name"
-msgstr "Suchanfragen anzeigen"
+msgstr "Show search queries"
 
 msgid "sitemap_livesuche_anzeigen_desc"
-msgstr "Sollen Ihre Suchanfragen in der Sitemap erscheinen?"
+msgstr "Specify whether all search queries should appear in the sitemap."
 
 msgid "sitemap_googleimage_anzeigen_name"
-msgstr "Artikelbilder in der Sitemap anzeigen"
+msgstr "Show product images in sitemap"
 
 msgid "sitemap_googleimage_anzeigen_desc"
-msgstr "Sollen Artikelbilder mit in die Sitemap aufgenommen werden?"
+msgstr "Specify whether links to product images should appear in the sitemap."
 
 msgid "sitemap_images_categories_name"
-msgstr "Kategoriebilder anzeigen"
+msgstr "Show category images"
 
 msgid "sitemap_images_categories_desc"
-msgstr "Sollen Kategoriebilder mit in die Sitemap aufgenommen werden?"
+msgstr "Specify whether all category images should appear in the sitemap."
 
 msgid "sitemap_images_manufacturers_name"
-msgstr "Herstellerbilder anzeigen"
+msgstr "Show manufacturer images"
 
 msgid "sitemap_images_manufacturers_desc"
-msgstr "Sollen Herstellerbilder mit in die Sitemap aufgenommen werden?"
+msgstr "Specify whether all manufacturer images should appear in the sitemap."
 
 msgid "sitemap_images_newscategory_items_name"
-msgstr "Newskategoriebilder anzeigen"
+msgstr "Show news category images"
 
 msgid "sitemap_images_newscategory_items_desc"
-msgstr "Sollen Newskategoriebilder mit in die Sitemap aufgenommen werden?"
+msgstr "Specify whether all news category images should appear in the sitemap."
 
 msgid "sitemap_images_news_items_name"
-msgstr "Newsbeitragsbilder anzeigen"
+msgstr "Show news posting images"
 
 msgid "sitemap_images_news_items_desc"
-msgstr "Sollen Newsbeitragsbilder mit in die Sitemap aufgenommen werden?"
+msgstr "Specify whether all news posting images should appear in the sitemap."
 
 msgid "sitemap_images_attributes_name"
-msgstr "Merkmalbilder anzeigen"
+msgstr "Show characteristic images"
 
 msgid "sitemap_images_attributes_desc"
-msgstr "Sollen Merkmalbilder mit in die Sitemap aufgenommen werden?"
+msgstr "Specify whether all characteristic images should appear in the sitemap."
 
 msgid "sitemap_wawiabgleich_name"
-msgstr "Sitemap beim Wawi Abgleich erstellen"
+msgstr "Create a sitemap during synchronisation with JTL-Wawi"
 
 msgid "sitemap_wawiabgleich_desc"
-msgstr "Soll bei einem Wawi Abgleich automatisch die Sitemap erstellt werden?"
+msgstr "Specify whether to regenerate the sitemap during each synchronisation with JTL-Wawi."
 
 msgid "sitemap_varkombi_children_export_name"
-msgstr "Export von Kindartikeln (Variationskombinationen)"
+msgstr "Export of child items"
 
 msgid "sitemap_varkombi_children_export_desc"
-msgstr "Sollen Kindartikel von Variationskombinationen in die Exportdatei geschrieben werden?"
+msgstr "Specify whether child items are to be included in the export file."
 
 msgid "sitemap_insert_changefreq_name"
-msgstr "Changefreq in Sitemap einfügen?"
+msgstr "Add changefreq to sitemap"
 
 msgid "sitemap_insert_changefreq_desc"
 msgstr ""
 
 msgid "sitemap_insert_priority_name"
-msgstr "Priority in Sitemap einfügen?"
+msgstr "Add priority to sitemap"
 
 msgid "sitemap_insert_priority_desc"
 msgstr ""
 
 msgid "sitemap_insert_lastmod_name"
-msgstr "Lastmod in Sitemap einfügen?"
+msgstr "Add lastmod to sitemap"
 
 msgid "sitemap_insert_lastmod_desc"
 msgstr ""
 
 msgid "sitemap_google_ping_name"
-msgstr "Sitemap an Google und Bing &uuml;bermitteln nach Export"
+msgstr "Submit sitemap to Google and Bing after export"
 
 msgid "sitemap_google_ping_desc"
-msgstr "Soll nach dem erfolgreichen Export der sitemap.xml und der sitemap_index.xml ein Ping an Google und Bing durchgef&uuml;hrt werden, so dass die Website schnellstm&ouml;glich gecrawlt wird?"
+msgstr "Specify whether a notification is sent to Google and Bing after the files sitemap.xml and sitemap_index.xml have been exported so that they can recrawl the sitemap."
 
 msgid "umfrage_nutzen_name"
-msgstr "Umfragesystem benutzen"
+msgstr "Use survey system"
 
 msgid "umfrage_nutzen_desc"
-msgstr "Wollen Sie das Umfragesystem im Shop nutzen?"
+msgstr "Specify whether to integrate the survey system into your JTL-Shop."
 
 msgid "umfrage_einloggen_name"
-msgstr "Muss man eingeloggt sein"
+msgstr "Login required"
 
 msgid "umfrage_einloggen_desc"
-msgstr "Sollen sich Besucher vorher im Shop einloggen damit sie an einer Umfrage teilnehmen können?"
+msgstr "Specify whether only registered users with customer accounts can take part in surveys."
 
 msgid "umfrage_box_anzahl_name"
-msgstr "Anzahl Umfragen in der Box"
+msgstr "Number of displayed surveys"
 
 msgid "umfrage_box_anzahl_desc"
-msgstr "Wieviele Umfragen sollen in der Box angezeigt werden? Greift nur wenn die Option Box eingeschaltet ist."
+msgstr "Specify how many surveys are to be displayed in the box when you add it to a page using the box management."
 
 msgid "kwk_nutzen_name"
-msgstr "Kunden werben Kunden nutzen?"
+msgstr "Activate customer referral programme"
 
 msgid "kwk_nutzen_desc"
-msgstr "Möchten Sie das Kunden werben Kunden Modul im Shop nutzen?"
+msgstr "Enables you to activate a bonus system for existing customers who invite new customers to register for your JTL-Shop."
 
 msgid "kwk_neukundenguthaben_name"
-msgstr "Neukunde Willkommensguthaben"
+msgstr "Initial credit for referred new customers"
 
 msgid "kwk_neukundenguthaben_desc"
-msgstr "Wieviel Guthaben möchten Sie Neukunden geben?"
+msgstr "Enter the amount of credit that a referred new customer receives after registration."
 
 msgid "kwk_bestandskundenguthaben_name"
-msgstr "Bestandskunde Bonusguthaben"
+msgstr "Bonus credit for existing referring customers"
 
 msgid "kwk_bestandskundenguthaben_desc"
-msgstr "Wieviel Guthaben möchten Sie dem Bestandskunden der geworben hat, gutschreiben?"
+msgstr "Enter the amount of credit that an existing customer receives when a new customer they invited to your online shop buys their first item."
 
 msgid "kwk_kundengruppen_name"
-msgstr "Standard Kundengruppe"
+msgstr "Default customer group"
 
 msgid "kwk_kundengruppen_desc"
-msgstr "Welche Kundengruppe soll Neukunden zugewiesen werden?"
+msgstr "Specify into which customer group new customers are sorted who have been newly referred."
 
 msgid "trustedshops_nutzen_name"
-msgstr "Trusted Shops K&auml;uferschutz nutzen"
+msgstr "Use Trusted Shops buyer protection"
 
 msgid "trustedshops_nutzen_desc"
-msgstr "Wollen Sie Trusted Shops nutzen?"
+msgstr "Here you can activate the Trusted Shops buyer protection for your JTL-Shop. Afterwards, you will need to have a look at a couple of other options."
 
 msgid "trustedshops_kundenbewertung_anzeigen_name"
-msgstr "Trusted Shops Kundenbewertung anzeigen"
+msgstr "Show Trusted Shops customer review"
 
 msgid "trustedshops_kundenbewertung_anzeigen_desc"
-msgstr "Soll die Kundenbewertung in einer Box angezeigt werden?"
+msgstr "Specify whether to display the Trusted Shops customer review in a box."
 
 msgid "suchspecials_sortierung_bestseller_name"
-msgstr "Bestseller sorting"
+msgstr "Sorting of bestsellers"
 
 msgid "suchspecials_sortierung_bestseller_desc"
-msgstr "Wie sollen die Artikel bei den Bestsellern standardm&auml;&szlig;ig sortiert werden?"
+msgstr "Specify the default sorting option for bestsellers."
 
 msgid "suchspecials_sortierung_sonderangebote_name"
-msgstr "Sonderangebote sortierung"
+msgstr "Sorting of special offers"
 
 msgid "suchspecials_sortierung_sonderangebote_desc"
-msgstr "Wie sollen die Artikel bei den Sonderangeboten standardm&auml;&szlig;ig sortiert werden?"
+msgstr "Specify the default sorting for special offers."
 
 msgid "suchspecials_sortierung_neuimsortiment_name"
-msgstr "Neu im Sortiment sortierung"
+msgstr "Sorting of \"New in product range\" items"
 
 msgid "suchspecials_sortierung_neuimsortiment_desc"
-msgstr "Wie sollen die Artikel bei Neu im Sortiment standardm&auml;&szlig;ig sortiert werden?"
+msgstr "Specify the default sorting for items marked as \"New in product range\"."
 
 msgid "suchspecials_sortierung_topangebote_name"
-msgstr "Top Angebote sortierung"
+msgstr "Sorting of top offers"
 
 msgid "suchspecials_sortierung_topangebote_desc"
-msgstr "Wie sollen die Artikel bei den Top Angeboten standardm&auml;&szlig;ig sortiert werden?"
+msgstr "Specify the default sorting for top offers."
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_name"
-msgstr "In k&uuml;rze Verf&uuml;gbar sortierung"
+msgstr "Sorting of \"Available soon\" items"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_desc"
-msgstr "Wie sollen die Artikel bei In k&uuml;rze Verf&uuml;gbar standardm&auml;&szlig;ig sortiert werden?"
+msgstr "Specify the default sorting for items marked as \"Available soon\"."
 
 msgid "suchspecials_sortierung_topbewertet_name"
-msgstr "Top bewertet sortierung"
+msgstr "Sorting of \"Top rated\" items"
 
 msgid "suchspecials_sortierung_topbewertet_desc"
-msgstr "Wie sollen die Artikel bei Top bewertet standardm&auml;&szlig;ig sortiert werden?"
+msgstr "Specify the default sorting for items marked as \"Top rated\"."
 
 msgid "auswahlassistent_nutzen_name"
-msgstr "Auswahlassistent nutzen"
+msgstr "Use selection wizard"
 
 msgid "auswahlassistent_nutzen_desc"
-msgstr "Wollen Sie den Auswahlassistent nutzen?"
+msgstr "Here you can enable the selection wizard for your JTL-Shop. Please note that you must also enter a licence for the selection wizard in the online shop connection of JTL-Wawi."
 
 msgid "auswahlassistent_anzeigeformat_name"
-msgstr "Anzeigeformat der Antworten"
+msgstr "Displaying format for answers"
 
 msgid "auswahlassistent_anzeigeformat_desc"
-msgstr "Wie sollen die Antworten angezeigt werden?"
+msgstr "Specify how the possible answers will be displayed. In order for images to be displayed, they must be stored in the characteristics in JTL-Wawi."
 
 msgid "auswahlassistent_allefragen_name"
-msgstr "Alle Fragen direkt anzeigen"
+msgstr "Show all questions directly"
 
 msgid "auswahlassistent_allefragen_desc"
-msgstr "Sollen direkt alle Fragen angezeigt werden?"
+msgstr "Specify whether all questions are directly visible (Yes) or are to be displayed one after another (No)."
 
 msgid "auswahlassistent_anzahl_anzeigen_name"
-msgstr "Anzahl Artikel hinter jeder Antwort"
+msgstr "Number of items after each answer"
 
 msgid "auswahlassistent_anzahl_anzeigen_desc"
-msgstr "Soll die Anzahl der Artikel hinter jeder Antwort stehen?"
+msgstr "Specify whether to state the number of items to which the answer applies after each answer."
 
 msgid "rma_number_gen_name"
-msgstr "RMA Nummber Generierung"
+msgstr "Generation of return authorisation numbers"
 
 msgid "rma_number_gen_desc"
-msgstr "Wie soll die RMA Nummer generiert werden?"
+msgstr "Specify how to generate return authorisation numbers."
 
 msgid "rma_number_incr_name"
-msgstr "Erhöhung der fortlaufenden Nummer um"
+msgstr "Increase the consecutive number by"
 
 msgid "rma_number_incr_desc"
-msgstr "Um welchen Zahlenwert soll die fortlaufende Nummer bei jeder Warenrücksendung erhöht werden"
+msgstr "Specify the value by which the consecutive number is increased when goods are returned."
 
 msgid "rma_number_startvalue_name"
-msgstr "Anfangswert der fortlaufenden Nummer"
+msgstr "Start value for consecutive number"
 
 msgid "rma_number_startvalue_desc"
-msgstr "Welchen Startwert soll die fortlaufende Nummer erhalten"
+msgstr "Specify at which value the consecutive number starts."
 
 msgid "rma_receiver_head_name"
-msgstr "Empfängeranschrift für die Warenrücksendung"
+msgstr "Address of recipient for goods return"
 
 msgid "rma_receiver_head_desc"
 msgstr ""
 
 msgid "rma_receiver_email_name"
-msgstr "Empfänger Emailadresse"
+msgstr "Email address of recipient"
 
 msgid "rma_receiver_email_desc"
-msgstr "Welche Emailadresse soll bei einer Warenrücksendungen informiert werden?"
+msgstr "Specify the email address to which information on the goods return is to be sent."
 
 msgid "rma_receiver_name_name"
-msgstr "Empfänger Name"
+msgstr "Name of recipient"
 
 msgid "rma_receiver_name_desc"
-msgstr "Wie soll der Empfängername lauten?"
+msgstr "Enter the name of the recipient."
 
 msgid "rma_receiver_name_extra_name"
-msgstr "Empfänger Name Zusatz"
+msgstr "Name 2 of recipient"
 
 msgid "rma_receiver_name_extra_desc"
-msgstr "Wie soll der Empfänger Zusatzname lauten?"
+msgstr "Enter name 2 of the recipient."
 
 msgid "rma_receiver_street_name"
-msgstr "Empfänger Strasse + Hausnummer"
+msgstr "Street name and street number of the recipient."
 
 msgid "rma_receiver_street_desc"
-msgstr "Wie soll die Empfänger Strasse lauten?"
+msgstr "Enter the street name and street number of the recipient."
 
 msgid "rma_receiver_town_name"
-msgstr "Empfänger Ort"
+msgstr "City of recipient"
 
 msgid "rma_receiver_town_desc"
-msgstr "Wie soll der Empfänger Ort lauten?"
+msgstr "Enter the name of the city in which the recipient is located."
 
 msgid "caching_types_disabled_name"
 msgstr "caching_types_disabled"
@@ -3203,94 +3215,94 @@ msgid "caching_types_disabled_desc"
 msgstr ""
 
 msgid "caching_activated_name"
-msgstr "Objekt-Cache aktivieren?"
+msgstr "Enable object cache"
 
 msgid "caching_activated_desc"
-msgstr "Soll der Cache genutzt werden?"
+msgstr "Specify whether to use the object cache of JTL-Shop."
 
 msgid "caching_method_name"
-msgstr "Methode"
+msgstr "Method"
 
 msgid "caching_method_desc"
-msgstr "Welche Cache-Methode soll genutzt werden?"
+msgstr "Specify the method that is to be used for the cache. This is partly determined by the configuration of your web server. Click on \"Show advanced settings\" in order to configure the individual methods more precisely."
 
 msgid "caching_redis_host_name"
-msgstr "Redis-Host"
+msgstr "Redis host"
 
 msgid "caching_redis_host_desc"
-msgstr "Host/Socket für Methode Redis"
+msgstr "If you have selected the Redis method, define the host/socket here."
 
 msgid "caching_redis_port_name"
-msgstr "Redis-Port"
+msgstr "Redis port"
 
 msgid "caching_redis_port_desc"
-msgstr "Port für Methode Redis (bei Verwendung von Socket freilassen)"
+msgstr "If you have selected the Redis method, specify the port here. If you are using a socket, leave this field empty."
 
 msgid "caching_redis_db_name"
-msgstr "Redis-DB"
+msgstr "Redis DB"
 
 msgid "caching_redis_db_desc"
-msgstr "Datenbank-Nummer für Methode Redis (leer lassen für Standard)"
+msgstr "If you have selected the Redis method, specify the database number here. If you want the standard setting, leave this field empty."
 
 msgid "caching_redis_pass_name"
-msgstr "Redis-Passwort"
+msgstr "Redis password"
 
 msgid "caching_redis_pass_desc"
-msgstr "optionales Passwort für Methode Redis"
+msgstr "If you have selected the Redis method and opted for using a password, enter the password here."
 
 msgid "caching_redis_persistent_name"
-msgstr "Redis-Persistenz"
+msgstr "Redis persistence"
 
 msgid "caching_redis_persistent_desc"
-msgstr "persistente Verbindung bevorzugen?"
+msgstr "If you have selected the Redis method, specify whether a persistent connection should be preferred."
 
 msgid "caching_memcache_port_name"
-msgstr "Memcache(d)-Port"
+msgstr "Memcache(d) port"
 
 msgid "caching_memcache_port_desc"
-msgstr "Port für Methode Memcache(d)"
+msgstr "If you have selected the Memcache(d) method, specify the port here."
 
 msgid "caching_memcache_host_name"
-msgstr "Memcache(d)-Host"
+msgstr "Memcache(d) host"
 
 msgid "caching_memcache_host_desc"
-msgstr "Host für Methode Memcache(d)"
+msgstr "If you have selected the Memcache(d) method, define the host here."
 
 msgid "caching_lifetime_name"
-msgstr "Lifetime"
+msgstr "Life time"
 
 msgid "caching_lifetime_desc"
-msgstr "Zeit, die der Cache gültig ist in Sekunden"
+msgstr "Specify how many seconds data is saved in the cache."
 
 msgid "caching_debug_name"
 msgstr "Debugging"
 
 msgid "caching_debug_desc"
-msgstr "Debugging aktivieren?"
+msgstr "Specify whether to enable debugging."
 
 msgid "caching_debug_method_name"
-msgstr "Debug-Methode"
+msgstr "Debugging method"
 
 msgid "caching_debug_method_desc"
-msgstr "Debugging-Methode"
+msgstr "Specify the debugging method that is to be used."
 
 msgid "caching_rediscluster_hosts_name"
-msgstr "Cluster-Hosts"
+msgstr "Cluster hosts"
 
 msgid "caching_rediscluster_hosts_desc"
-msgstr "Cluster-Hosts (Name:Port, mit Komma getrennt)"
+msgstr "Cluster hosts (Name:Port, separated by comma)"
 
 msgid "caching_rediscluster_strategy_name"
-msgstr "Strategie"
+msgstr "Strategy"
 
 msgid "caching_rediscluster_strategy_desc"
-msgstr "Strategie"
+msgstr "Strategy"
 
 msgid "compile_check_name"
-msgstr "Compile-Check aktivieren?"
+msgstr "Enable compile check"
 
 msgid "compile_check_desc"
-msgstr "Achtung, Änderungen an Templates werden nicht sichbar, wenn deaktiviert"
+msgstr "This enables the compile check. Changes to templates do not become visible when the compile check is disabled."
 
 msgid "shop_logo_name"
 msgstr "shop_logo"

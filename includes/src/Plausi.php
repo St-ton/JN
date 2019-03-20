@@ -1,11 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
 
 /**
  * Class Plausi
+ * @package JTL
  */
 class Plausi
 {
@@ -43,17 +46,17 @@ class Plausi
      */
     public function setPostVar($variables, $hasHTML = null, bool $toEntities = false): bool
     {
-        if (is_array($variables) && count($variables) > 0) {
-            if (is_array($hasHTML)) {
-                $excludeKeys = array_fill_keys($hasHTML, 1);
-                $filter      = array_diff_key($variables, $excludeKeys);
-                $excludes    = array_intersect_key($variables, $excludeKeys);
+        if (\is_array($variables) && \count($variables) > 0) {
+            if (\is_array($hasHTML)) {
+                $excludeKeys = \array_fill_keys($hasHTML, 1);
+                $filter      = \array_diff_key($variables, $excludeKeys);
+                $excludes    = \array_intersect_key($variables, $excludeKeys);
                 if ($toEntities) {
-                    array_walk($excludes, function (&$value) {
-                        $value = htmlentities($value);
+                    \array_walk($excludes, function (&$value) {
+                        $value = \htmlentities($value);
                     });
                 }
-                $this->xPostVar_arr = array_merge($variables, $filter, $excludes);
+                $this->xPostVar_arr = \array_merge($variables, $filter, $excludes);
             } else {
                 $this->xPostVar_arr = $variables;
             }
@@ -70,7 +73,7 @@ class Plausi
      */
     public function setPlausiVar($variables): bool
     {
-        if (!is_array($variables) || count($variables) === 0) {
+        if (!\is_array($variables) || \count($variables) === 0) {
             return false;
         }
         $this->xPlausiVar_arr = $variables;

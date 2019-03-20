@@ -4,25 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\Items;
+namespace JTL\Filter\Items;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\StateSQL;
-use Filter\Type;
-use Session\Frontend;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\Filter\Type;
+use JTL\MagicCompatibilityTrait;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class SearchSpecial
- * @package Filter\Items
+ * @package JTL\Filter\Items
  */
 class SearchSpecial extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -42,7 +44,7 @@ class SearchSpecial extends AbstractFilter
         parent::__construct($productFilter);
         $this->setIsCustom(false)
              ->setUrlParam('qf')
-             ->setFrontendName(\Shop::Lang()->get('specificProducts'))
+             ->setFrontendName(Shop::Lang()->get('specificProducts'))
              ->setVisibility($this->getConfig('navigationsfilter')['allgemein_suchspecialfilter_benutzen'])
              ->setType($this->getConfig('navigationsfilter')['search_special_filter_type'] === 'O'
                  ? Type::OR
@@ -108,27 +110,27 @@ class SearchSpecial extends AbstractFilter
             }
             switch ($val[0]) {
                 case \SEARCHSPECIALS_BESTSELLER:
-                    $this->setName(\Shop::Lang()->get('bestsellers'));
+                    $this->setName(Shop::Lang()->get('bestsellers'));
                     break;
                 case \SEARCHSPECIALS_SPECIALOFFERS:
-                    $this->setName(\Shop::Lang()->get('specialOffers'));
+                    $this->setName(Shop::Lang()->get('specialOffers'));
                     break;
                 case \SEARCHSPECIALS_NEWPRODUCTS:
-                    $this->setName(\Shop::Lang()->get('newProducts'));
+                    $this->setName(Shop::Lang()->get('newProducts'));
                     break;
                 case \SEARCHSPECIALS_TOPOFFERS:
-                    $this->setName(\Shop::Lang()->get('topOffers'));
+                    $this->setName(Shop::Lang()->get('topOffers'));
                     break;
                 case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $this->setName(\Shop::Lang()->get('upcomingProducts'));
+                    $this->setName(Shop::Lang()->get('upcomingProducts'));
                     break;
                 case \SEARCHSPECIALS_TOPREVIEWS:
-                    $this->setName(\Shop::Lang()->get('topReviews'));
+                    $this->setName(Shop::Lang()->get('topReviews'));
                     break;
                 default:
                     // invalid search special ID
-                    \Shop::$is404        = true;
-                    \Shop::$kSuchspecial = 0;
+                    Shop::$is404        = true;
+                    Shop::$kSuchspecial = 0;
                     break;
             }
         }
@@ -324,7 +326,7 @@ class SearchSpecial extends AbstractFilter
             $state->setGroupBy(['tartikel.kArtikel']);
             switch ($i) {
                 case \SEARCHSPECIALS_BESTSELLER:
-                    $name    = \Shop::Lang()->get('bestsellers');
+                    $name    = Shop::Lang()->get('bestsellers');
                     $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                         ? (int)$min
                         : 100;
@@ -338,7 +340,7 @@ class SearchSpecial extends AbstractFilter
                     $state->addCondition('ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl);
                     break;
                 case \SEARCHSPECIALS_SPECIALOFFERS:
-                    $name = \Shop::Lang()->get('specialOffer');
+                    $name = Shop::Lang()->get('specialOffer');
                     if (true || !$this->isInitialized()) {
                         $state->addJoin((new Join())
                             ->setComment('special offer JOIN1 from ' . __METHOD__)
@@ -363,7 +365,7 @@ class SearchSpecial extends AbstractFilter
                     $state->addCondition($tsonderpreise . '.kKundengruppe = ' . $this->getCustomerGroupID());
                     break;
                 case \SEARCHSPECIALS_NEWPRODUCTS:
-                    $name = \Shop::Lang()->get('newProducts');
+                    $name = Shop::Lang()->get('newProducts');
                     $days = (($age = $this->getConfig('boxen')['box_neuimsortiment_alter_tage']) > 0)
                         ? (int)$age
                         : 30;
@@ -371,15 +373,15 @@ class SearchSpecial extends AbstractFilter
                         AND DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < tartikel.dErstellt');
                     break;
                 case \SEARCHSPECIALS_TOPOFFERS:
-                    $name = \Shop::Lang()->get('topOffer');
+                    $name = Shop::Lang()->get('topOffer');
                     $state->addCondition("tartikel.cTopArtikel = 'Y'");
                     break;
                 case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                    $name = \Shop::Lang()->get('upcomingProducts');
+                    $name = Shop::Lang()->get('upcomingProducts');
                     $state->addCondition('NOW() < tartikel.dErscheinungsdatum');
                     break;
                 case \SEARCHSPECIALS_TOPREVIEWS:
-                    $name = \Shop::Lang()->get('topReviews');
+                    $name = Shop::Lang()->get('topReviews');
                     if (!$this->productFilter->hasRatingFilter()) {
                         $state->addJoin((new Join())
                             ->setComment('top reviews JOIN from ' . __METHOD__)

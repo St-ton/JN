@@ -1,13 +1,5 @@
 {include file='tpl_inc/header.tpl'}
 
-{if isset($isShopRoot)}
-    {if $isShopRoot}
-        {$cHinweis = __('ftpValidConnection')}
-    {else}
-        {$cFehler = __('ftpInvalidShopRoot')}
-    {/if}
-{/if}
-
 {include file='tpl_inc/seite_header.tpl' cTitel=__('ftp') cBeschreibung=__('ftpDesc') cDokuURL=__('ftpUrl')}
 
 <div id="content" class="container-fluid">

@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "navigationsfilter"
-msgstr "Produktfilter"
+msgstr "Artikelfilter"
 
 msgid "navigationsfilterDesc"
-msgstr "Konfigurieren Sie hier die Filter- und Anzeigemöglichkeiten von Artikelübersichten."
+msgstr "Hier stellen Sie die verschiedenen Filtermöglichkeiten in JTL-Shop ein, beispielsweise auf Artikelübersichtsseiten."
 
 msgid "navigationsfilterUrl"
 msgstr "https://jtl-url.de/5u1xg"
@@ -19,4 +19,3 @@ msgstr " ist ungültig."
 
 msgid "overlapps"
 msgstr " überschneidet sich mit anderen."
-

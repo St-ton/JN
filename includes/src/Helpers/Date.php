@@ -4,16 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
 use DateInterval;
 use DateTime;
 use Exception;
-use Shop;
+use JTL\Shop;
 
 /**
  * Class Date
- * @package Helpers
+ * @package JTL\Helpers
  * @since 5.0.0
  */
 class Date

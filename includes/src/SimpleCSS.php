@@ -4,13 +4,16 @@
  *  (c) 2010 Andreas Juetten <andreasjuetten@gmx.de>
  */
 
-define('LF', "\n\n");
+namespace JTL;
 
 /**
  * Class SimpleCSS
+ * @package JTL
  */
 class SimpleCSS
 {
+    protected const LF = "\n\n";
+
     /**
      * @var array
      */
@@ -25,7 +28,7 @@ class SimpleCSS
     public function addCSS($cSelector, $cAttribute, $cValue): self
     {
         if (isset($this->cCSS_arr[$cSelector])) {
-            $this->cCSS_arr[$cSelector] = array_merge($this->cCSS_arr[$cSelector], [$cAttribute => $cValue]);
+            $this->cCSS_arr[$cSelector] = \array_merge($this->cCSS_arr[$cSelector], [$cAttribute => $cValue]);
         } else {
             $this->cCSS_arr[$cSelector] = [$cAttribute => $cValue];
         }
@@ -39,35 +42,35 @@ class SimpleCSS
      */
     public function addFile(string $filename): bool
     {
-        if (!file_exists($filename)) {
+        if (!\file_exists($filename)) {
             return false;
         }
-        $data              = file_get_contents($filename);
-        $data              = preg_replace('!/\*.*?\*/!s', '', $data);
-        $split             = preg_split('/\{|\}/', $data);
-        $dataCount         = count($split);
+        $data              = \file_get_contents($filename);
+        $data              = \preg_replace('!/\*.*?\*/!s', '', $data);
+        $split             = \preg_split('/\{|\}/', $data);
+        $dataCount         = \count($split);
         $selectors         = [];
         $cssBaseAttributes = [];
         for ($i = 0; $i < $dataCount; $i++) {
             if ($i % 2 === 0) {
                 $cssBaseAttributes = [];
-                $selectors         = explode(',', $split[$i]);
+                $selectors         = \explode(',', $split[$i]);
             } else {
-                $attributes = explode(';', $split[$i]);
+                $attributes = \explode(';', $split[$i]);
                 $attributes = $this->trimCSSData($attributes);
                 foreach ($attributes as $attribute) {
-                    $tmp = explode(':', $attribute);
-                    if (is_array($tmp) && count($tmp) === 2) {
-                        $name                     = trim($tmp[0]);
-                        $cssBaseAttributes[$name] = trim($tmp[1]);
+                    $tmp = \explode(':', $attribute);
+                    if (\is_array($tmp) && \count($tmp) === 2) {
+                        $name                     = \trim($tmp[0]);
+                        $cssBaseAttributes[$name] = \trim($tmp[1]);
                     }
                 }
 
                 foreach ($selectors as $selector) {
-                    $selector = trim($selector);
-                    $selector = preg_replace('#\s+#', ' ', $selector);
+                    $selector = \trim($selector);
+                    $selector = \preg_replace('#\s+#', ' ', $selector);
                     if (isset($this->cCSS_arr[$selector])) {
-                        $this->cCSS_arr[$selector] = array_merge($this->cCSS_arr[$selector], $cssBaseAttributes);
+                        $this->cCSS_arr[$selector] = \array_merge($this->cCSS_arr[$selector], $cssBaseAttributes);
                     } else {
                         $this->cCSS_arr[$selector] = $cssBaseAttributes;
                     }
@@ -75,7 +78,7 @@ class SimpleCSS
             }
         }
 
-        return count($this->cCSS_arr) > 0;
+        return \count($this->cCSS_arr) > 0;
     }
 
     /**
@@ -86,7 +89,7 @@ class SimpleCSS
     {
         $css = [];
         foreach ($data as $cData) {
-            $cData = trim($cData);
+            $cData = \trim($cData);
             if ($cData !== '') {
                 $css[] = $cData;
             }
@@ -101,7 +104,7 @@ class SimpleCSS
      */
     public function getSelector($selector)
     {
-        return is_array($this->cCSS_arr) && count($this->cCSS_arr) && isset($this->cCSS_arr[$selector])
+        return \is_array($this->cCSS_arr) && \count($this->cCSS_arr) && isset($this->cCSS_arr[$selector])
             ? $this->cCSS_arr[$selector]
             : false;
     }
@@ -114,9 +117,9 @@ class SimpleCSS
     public function getAttribute($selector, $key)
     {
         $item = $this->getSelector($selector);
-        if (is_array($item) && count($item)) {
+        if (\is_array($item) && \count($item)) {
             foreach ($item as $attrKey => $value) {
-                if (strcasecmp($attrKey, $key) === 0) {
+                if (\strcasecmp($attrKey, $key) === 0) {
                     return $value;
                 }
             }
@@ -130,7 +133,7 @@ class SimpleCSS
      */
     public function getCSS(): array
     {
-        return is_array($this->cCSS_arr) && count($this->cCSS_arr)
+        return \is_array($this->cCSS_arr) && \count($this->cCSS_arr)
             ? $this->cCSS_arr
             : [];
     }
@@ -141,15 +144,15 @@ class SimpleCSS
     public function renderCSS(): string
     {
         $ret = '';
-        if (is_array($this->cCSS_arr) && count($this->cCSS_arr)) {
+        if (\is_array($this->cCSS_arr) && \count($this->cCSS_arr)) {
             foreach ($this->cCSS_arr as $selector => $attribute) {
-                $ret .= $selector . ' {' . LF;
+                $ret .= $selector . ' {' . self::LF;
                 foreach ($attribute as $cKey => $cValue) {
-                    if (mb_strlen($cKey) && mb_strlen($cValue)) {
-                        $ret .= '   ' . $cKey . ': ' . $cValue . ';' . LF;
+                    if (\mb_strlen($cKey) && \mb_strlen($cValue)) {
+                        $ret .= '   ' . $cKey . ': ' . $cValue . ';' . self::LF;
                     }
                 }
-                $ret .= '}' . LF;
+                $ret .= '}' . self::LF;
             }
         }
 
@@ -162,7 +165,7 @@ class SimpleCSS
      */
     public function getTemplatePath(string $dir): string
     {
-        return realpath(PFAD_ROOT . PFAD_TEMPLATES . basename($dir)) . '/';
+        return \realpath(\PFAD_ROOT . \PFAD_TEMPLATES . \basename($dir)) . '/';
     }
 
     /**
@@ -185,20 +188,20 @@ class SimpleCSS
         switch ($type) {
             case 'color':
                 // rgb(255,255,255)
-                if (preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
+                if (\preg_match('/rgb(\s*)\(([\d\s]+),([\d\s]+),([\d\s]+)\)/', $value, $matches)) {
                     return $this->rgb2html((int)$matches[2], (int)$matches[3], (int)$matches[4]);
                 } // #fff or #ffffff
-                if (preg_match('/#([\w\d]+)/', $value, $matches)) {
-                    return trim($matches[0]);
+                if (\preg_match('/#([\w\d]+)/', $value, $matches)) {
+                    return  \trim($matches[0]);
                 }
                 break;
 
             case 'size':
                 // 1.2em 15% '12 px'
-                if (preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
+                if (\preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
                     $out            = [];
                     $out['numeric'] = (float)$matches[1];
-                    $out['unit']    = trim($matches[2]);
+                    $out['unit']    = \trim($matches[2]);
 
                     return $out;
                 }
@@ -219,20 +222,20 @@ class SimpleCSS
      */
     public function rgb2html($r, $g, $b): string
     {
-        if (is_array($r) && count($r) === 3) {
+        if (\is_array($r) && \count($r) === 3) {
             [$r, $g, $b] = $r;
         }
         $r = (int)$r;
         $g = (int)$g;
         $b = (int)$b;
 
-        $r = dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
-        $g = dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
-        $b = dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
+        $r = \dechex($r < 0 ? 0 : ($r > 255 ? 255 : $r));
+        $g = \dechex($g < 0 ? 0 : ($g > 255 ? 255 : $g));
+        $b = \dechex($b < 0 ? 0 : ($b > 255 ? 255 : $b));
 
-        $color  = (mb_strlen($r) < 2 ? '0' : '') . $r;
-        $color .= (mb_strlen($g) < 2 ? '0' : '') . $g;
-        $color .= (mb_strlen($b) < 2 ? '0' : '') . $b;
+        $color  = (\mb_strlen($r) < 2 ? '0' : '') . $r;
+        $color .= (\mb_strlen($g) < 2 ? '0' : '') . $g;
+        $color .= (\mb_strlen($b) < 2 ? '0' : '') . $b;
 
         return '#' . $color;
     }
@@ -243,23 +246,23 @@ class SimpleCSS
      */
     public function html2rgb($color)
     {
-        if (mb_strpos($color, '#') === 0) {
-            $color = mb_substr($color, 1);
+        if (\mb_strpos($color, '#') === 0) {
+            $color = \mb_substr($color, 1);
         }
-        if (mb_strlen($color) === 6) {
+        if (\mb_strlen($color) === 6) {
             [$r, $g, $b] = [
                 $color[0] . $color[1],
                 $color[2] . $color[3],
                 $color[4] . $color[5]
             ];
-        } elseif (mb_strlen($color) === 3) {
+        } elseif (\mb_strlen($color) === 3) {
             [$r, $g, $b] = [$color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]];
         } else {
             return false;
         }
-        $r = hexdec($r);
-        $g = hexdec($g);
-        $b = hexdec($b);
+        $r = \hexdec($r);
+        $g = \hexdec($g);
+        $b = \hexdec($b);
 
         return [$r, $g, $b];
     }

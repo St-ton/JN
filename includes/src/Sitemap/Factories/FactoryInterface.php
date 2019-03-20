@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\DbInterface;
+use Generator;
+use JTL\DB\DbInterface;
 
 /**
  * Interface FactoryInterface
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 interface FactoryInterface
 {
@@ -26,7 +27,7 @@ interface FactoryInterface
     /**
      * @param array $languages
      * @param array $customerGroups
-     * @return \Generator
+     * @return Generator
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator;
+    public function getCollection(array $languages, array $customerGroups): Generator;
 }

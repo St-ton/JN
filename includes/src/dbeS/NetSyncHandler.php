@@ -4,11 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace dbeS;
+namespace JTL\dbeS;
+
+use Exception;
+use JTL\DB\DbInterface;
+use Psr\Log\LoggerInterface;
+use stdClass;
 
 /**
  * Class NetSyncHandler
- * @package dbeS
+ * @package JTL\dbeS
  */
 class NetSyncHandler
 {
@@ -18,32 +23,39 @@ class NetSyncHandler
     private static $instance;
 
     /**
-     * @throws \Exception
+     * @var DbInterface
      */
-    public function __construct()
+    private $db;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * NetSyncHandler constructor.
+     * @param DbInterface     $db
+     * @param LoggerInterface $logger
+     * @throws Exception
+     */
+    public function __construct(DbInterface $db, LoggerInterface $logger)
     {
         if (self::$instance !== null) {
-            throw new \Exception('Class ' . __CLASS__ . ' already created');
+            throw new Exception('Class ' . __CLASS__ . ' already created');
         }
         self::$instance = $this;
-        $this->init();
-        if (!$this->isAuthed()) {
+        $this->db       = $db;
+        $this->logger   = $logger;
+        if (!$this->isAuthenticated()) {
             static::throwResponse(NetSyncResponse::ERRORLOGIN);
         }
         $this->request((int)$_REQUEST['e']);
     }
 
     /**
-     *
-     */
-    protected function init()
-    {
-    }
-
-    /**
      * @return bool
      */
-    protected function isAuthed()
+    protected function isAuthenticated(): bool
     {
         // by token
         if (isset($_REQUEST['t'])) {
@@ -56,7 +68,7 @@ class NetSyncHandler
         $cName   = \urldecode($_REQUEST['uid']);
         $cPass   = \urldecode($_REQUEST['upwd']);
         $bAuthed = (\strlen($cName) > 0 && \strlen($cPass) > 0)
-            ? (new Synclogin())->checkLogin($cName, $cPass)
+            ? (new Synclogin($this->db, $this->logger))->checkLogin($cName, $cPass)
             : false;
         if ($bAuthed) {
             \session_start();
@@ -70,17 +82,17 @@ class NetSyncHandler
      * @param int        $nCode
      * @param null|mixed $oData
      */
-    protected static function throwResponse($nCode, $oData = null)
+    protected static function throwResponse($nCode, $oData = null): void
     {
-        $oResponse         = new \stdClass();
-        $oResponse->nCode  = $nCode;
-        $oResponse->cToken = '';
-        $oResponse->oData  = null;
+        $response         = new stdClass();
+        $response->nCode  = $nCode;
+        $response->cToken = '';
+        $response->oData  = null;
         if ($nCode === 0) {
-            $oResponse->cToken = \session_id();
-            $oResponse->oData  = $oData;
+            $response->cToken = \session_id();
+            $response->oData  = $oData;
         }
-        echo \json_encode($oResponse);
+        echo \json_encode($response);
         exit;
     }
 
@@ -92,20 +104,15 @@ class NetSyncHandler
     }
 
     /**
-     * @param \Exception $oException
+     * @param string          $class
+     * @param DbInterface     $db
+     * @param LoggerInterface $logger
      */
-    public static function exception($oException)
+    public static function create(string $class, DbInterface $db, LoggerInterface $logger): void
     {
-    }
-
-    /**
-     * @param string $cClass
-     */
-    public static function create($cClass)
-    {
-        if (self::$instance === null && \class_exists($cClass)) {
-            new $cClass;
-            \set_exception_handler([$cClass, 'exception']);
+        if (self::$instance === null && \class_exists($class)) {
+            new $class($db, $logger);
+            \set_exception_handler([$class, 'exception']);
         }
     }
 
@@ -161,5 +168,61 @@ class NetSyncHandler
         \readfile($filename);
         \unlink($filename);
         exit;
+    }
+
+    /**
+     * @param string $baseDir
+     * @return array
+     */
+    protected function getFolderStruct(string $baseDir): array
+    {
+        $folders = [];
+        $baseDir = \realpath($baseDir);
+        foreach (\scandir($baseDir, \SCANDIR_SORT_ASCENDING) as $folder) {
+            if ($folder === '.' || $folder === '..' || $folder[0] === '.') {
+                continue;
+            }
+            $pathName = $baseDir . \DIRECTORY_SEPARATOR . $folder;
+            if (\is_dir($pathName)) {
+                $systemFolder              = new SystemFolder($folder, $pathName);
+                $systemFolder->oSubFolders = $this->getFolderStruct($pathName);
+                $folders[]                 = $systemFolder;
+            }
+        }
+
+        return $folders;
+    }
+
+    /**
+     * @param string $baseDir
+     * @param bool   $preview
+     * @return array
+     */
+    protected function getFilesStruct(string $baseDir, $preview = false): array
+    {
+        $index   = 0;
+        $files   = [];
+        $baseDir = \realpath($baseDir);
+        foreach (\scandir($baseDir, \SCANDIR_SORT_ASCENDING) as $file) {
+            if ($file === '.' || $file === '..' || $file[0] === '.') {
+                continue;
+            }
+            $pathName = $baseDir . \DIRECTORY_SEPARATOR . $file;
+            if (\is_file($pathName)) {
+                $pathinfo = \pathinfo($pathName);
+                $files[]  = new SystemFile(
+                    $index++,
+                    $pathName,
+                    \basename($pathName),
+                    $pathinfo['filename'],
+                    $pathinfo['dirname'],
+                    $pathinfo['extension'],
+                    \filemtime($pathName),
+                    \filesize($pathName)
+                );
+            }
+        }
+
+        return $files;
     }
 }

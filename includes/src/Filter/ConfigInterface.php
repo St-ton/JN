@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
 /**
- * Class Config
- * @package Filter
+ * Interface ConfigInterface
+ * @package JTL\Filter
  */
 interface ConfigInterface
 {

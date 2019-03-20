@@ -6,6 +6,9 @@
  * @created Fri, 16 Mar 2018 18:35:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20180316183500 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Add redis cluster config';
 
     /**
@@ -34,7 +37,7 @@ class Migration_20180316183500 extends Migration implements IMigration
         $this->setConfig(
             'caching_rediscluster_hosts',
             '',
-            CONF_CACHING,
+            \CONF_CACHING,
             'Cluster-Hosts',
             'text',
             110,
@@ -46,7 +49,7 @@ class Migration_20180316183500 extends Migration implements IMigration
         $this->setConfig(
             'caching_rediscluster_strategy',
             'N',
-            CONF_CACHING,
+            \CONF_CACHING,
             'Strategie',
             'selectbox',
             111,

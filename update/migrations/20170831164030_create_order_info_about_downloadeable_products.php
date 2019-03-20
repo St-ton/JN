@@ -6,6 +6,9 @@
  * @created Thu, 31 Aug 2017 16:40:30 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170831164030 extends Migration implements IMigration
 {
-    protected $author = 'msc';
+    protected $author      = 'msc';
     protected $description = 'create_order_info_about_downloadeable_products';
 
     public function up()

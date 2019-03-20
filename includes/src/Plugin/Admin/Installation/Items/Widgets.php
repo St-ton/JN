@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class Widgets
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class Widgets extends AbstractItem
 {
@@ -36,7 +37,7 @@ class Widgets extends AbstractItem
             if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $widget               = new \stdClass();
+            $widget               = new stdClass();
             $widget->kPlugin      = $this->plugin->kPlugin;
             $widget->cTitle       = $widgetData['Title'];
             $widget->cClass       = $this->plugin->bExtension === 1 // @todo

@@ -6,6 +6,9 @@
  * @created Mon, 12 Sep 2016 17:30:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -20,7 +23,7 @@
  */
 class Migration_20160913123000 extends Migration implements IMigration
 {
-    protected $author = 'andy';
+    protected $author      = 'andy';
     protected $description = 'Create admin favorite table';
 
     public function up()
@@ -39,6 +42,6 @@ class Migration_20160913123000 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DROP TABLE `tadminfavs`");
+        $this->execute('DROP TABLE `tadminfavs`');
     }
 }

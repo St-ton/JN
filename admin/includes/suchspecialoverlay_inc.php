@@ -4,6 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\DB\ReturnType;
+use JTL\Template;
+use JTL\Alert\Alert;
+
 /**
  * @return array
  */
@@ -13,10 +18,10 @@ function gibAlleSuchspecialOverlays()
     $searchspecialOverlayTypes = Shop::Container()->getDB()->query(
         'SELECT kSuchspecialOverlay
             FROM tsuchspecialoverlay',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($searchspecialOverlayTypes as $searchspecialOverlayType) {
-        $overlays[] = Media\Image\Overlay::getInstance(
+        $overlays[] = JTL\Media\Image\Overlay::getInstance(
             $searchspecialOverlayType->kSuchspecialOverlay,
             (int)$_SESSION['kSprache']
         );
@@ -27,11 +32,11 @@ function gibAlleSuchspecialOverlays()
 
 /**
  * @param int $overlayID
- * @return Media\Image\Overlay
+ * @return JTL\Media\Image\Overlay
  */
 function gibSuchspecialOverlay(int $overlayID)
 {
-    return Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
+    return JTL\Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
 }
 
 /**
@@ -49,9 +54,10 @@ function speicherEinstellung(
     int $lang = null,
     string $template = null
 ): bool {
-    $overlay = Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
+    $overlay = JTL\Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
     if ($overlay->getType() <= 0) {
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('invalidOverlay'), 'invalidOverlay');
         return false;
     }
     $overlay->setActive((int)$post['nAktiv'])
@@ -61,14 +67,38 @@ function speicherEinstellung(
             ->setPriority((int)$post['nPrio']);
 
     if (mb_strlen($files['name']) > 0) {
+        $template    = $template ?: Template::getInstance()->getName();
+        $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
+        if (!is_writable($overlayPath)) {
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_ERROR,
+                sprintf(__('errorOverlayWritePermissions'), PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE),
+                'errorOverlayWritePermissions',
+                ['saveInSession' => true]
+            );
+
+            return false;
+        }
+
         loescheBild($overlay);
         $overlay->setImageName(
-            Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
+            JTL\Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
             mappeFileTyp($files['type'])
         );
-        speicherBild($files, $overlay);
+        $imageCreated = speicherBild($files, $overlay);
     }
-    $overlay->save();
+    if (!isset($imageCreated) || $imageCreated) {
+        $overlay->save();
+    } else {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_ERROR,
+            __('errorFileUploadGeneral'),
+            'errorFileUploadGeneral',
+            ['saveInSession' => true]
+        );
+
+        return false;
+    }
 
     return true;
 }
@@ -207,40 +237,20 @@ function speicherOverlay($im, $extension, $path, $quality = 80)
     }
     switch ($extension) {
         case '.jpg':
-            if (!function_exists('imagejpeg')) {
-                return false;
-            }
-
-            return imagejpeg($im, $path, $quality);
-            break;
+            return function_exists('imagejpeg') ? imagejpeg($im, $path, $quality) : false;
         case '.png':
-            if (!function_exists('imagepng')) {
-                return false;
-            }
-
-            return imagepng($im, $path);
-            break;
+            return function_exists('imagepng') ? imagepng($im, $path) : false;
         case '.gif':
-            if (!function_exists('imagegif')) {
-                return false;
-            }
-
-            return imagegif($im, $path);
-            break;
+            return function_exists('imagegif') ? imagegif($im, $path) : false;
         case '.bmp':
-            if (!function_exists('imagewbmp')) {
-                return false;
-            }
-
-            return imagewbmp($im, $path);
-            break;
+            return function_exists('imagewbmp') ? imagewbmp($im, $path) : false;
+        default:
+            return false;
     }
-
-    return false;
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0.0
  * @param string $image
  * @param string $width
  * @param string $height
@@ -285,26 +295,25 @@ function erstelleOverlay($image, $width, $height, $size, $transparency, $extensi
  * @param int    $transparency
  * @param string $extension
  * @param string $path
+ * @return bool
  */
-function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): void
+function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): bool
 {
 //    $conf = Shop::getSettings([CONF_BILDER]);
 //    $bSkalieren    = !($conf['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
-
     [$width, $height] = getimagesize($image);
     $factor           = $size / $width;
 
-    $im = ladeOverlay($image, $size, $height * $factor, $transparency);
-    speicherOverlay($im, $extension, $path);
+    return speicherOverlay(ladeOverlay($image, $size, $height * $factor, $transparency), $extension, $path);
 }
 
 
 /**
  * @param array $files
- * @param \Media\Image\Overlay $overlay
+ * @param JTL\Media\Image\Overlay $overlay
  * @return bool
  */
-function speicherBild(array $files, Media\Image\Overlay $overlay): bool
+function speicherBild(array $files, JTL\Media\Image\Overlay $overlay): bool
 {
     if ($files['type'] === 'image/jpeg'
         || $files['type'] === 'image/pjpeg'
@@ -322,20 +331,23 @@ function speicherBild(array $files, Media\Image\Overlay $overlay): bool
                 ['size' => IMAGE_SIZE_XS,  'factor' => 1],
                 ['size' => IMAGE_SIZE_SM, 'factor' => 2],
                 ['size' => IMAGE_SIZE_MD,  'factor' => 3],
-                ['size' => IMAGE_SIZE_LG, 'factor' => 4],
+                ['size' => IMAGE_SIZE_LG, 'factor' => 4]
             ];
 
             foreach ($sizesToCreate as $sizeToCreate) {
                 if (!is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
                     mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
                 }
-                erstelleFixedOverlay(
+                $imageCreated = erstelleFixedOverlay(
                     $original,
                     $overlay->getSize() * $sizeToCreate['factor'],
                     $overlay->getTransparance(),
                     $ext,
                     PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
                 );
+                if (!$imageCreated) {
+                    return false;
+                }
             }
 
             return true;
@@ -346,9 +358,9 @@ function speicherBild(array $files, Media\Image\Overlay $overlay): bool
 }
 
 /**
- * @param \Media\Image\Overlay $overlay
+ * @param JTL\Media\Image\Overlay $overlay
  */
-function loescheBild(Media\Image\Overlay $overlay): void
+function loescheBild(JTL\Media\Image\Overlay $overlay): void
 {
     foreach ($overlay->getPathSizes() as $path) {
         $path = PFAD_ROOT . $path . $overlay->getImageName();

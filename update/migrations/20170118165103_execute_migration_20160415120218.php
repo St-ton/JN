@@ -6,6 +6,9 @@
  * @created Wed, 18 Jan 2017 16:51:03 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170118165103 extends Migration implements IMigration
 {
-    protected $author = 'msc';
+    protected $author      = 'msc';
     protected $description = 'Execute migration 20160415120218 a second time.';
 
     public function up()
@@ -40,6 +43,5 @@ class Migration_20170118165103 extends Migration implements IMigration
 
     public function down()
     {
-        
     }
 }

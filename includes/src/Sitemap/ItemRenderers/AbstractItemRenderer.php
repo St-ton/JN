@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\ItemRenderers;
+namespace JTL\Sitemap\ItemRenderers;
 
 /**
  * Class AbstractItemRenderer
- * @package Sitemap\ItemRenderers
+ * @package JTL\Sitemap\ItemRenderers
  */
 abstract class AbstractItemRenderer implements RendererInterface
 {

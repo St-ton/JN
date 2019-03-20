@@ -4,25 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Items\Tag;
-use Filter\Join;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\StateSQL;
-use Filter\Type;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Items\Tag;
+use JTL\Filter\Join;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\StateSQL;
+use JTL\Filter\Type;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class BaseTag
- * @package Filter\States
+ * @package JTL\Filter\States
  */
 class BaseTag extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -40,7 +42,7 @@ class BaseTag extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setFrontendName(\Shop::Lang()->get('tags'))
+        $this->setFrontendName(Shop::Lang()->get('tags'))
              ->setIsCustom(false)
              ->setUrlParam('t');
     }

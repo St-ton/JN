@@ -9,19 +9,19 @@ msgid "configureComparelistURL"
 msgstr "https://jtl-url.de/4djgz"
 
 msgid "configureComparelistDesc"
-msgstr "Konfigurieren Sie hier die Vergleichsliste im Shop."
+msgstr "Mithilfe der Vergleichsliste können Ihre Kunden ähnliche Artikel miteinander vergleichen. Hier können Sie verschiedene Einstellungen zur Darstellung der Vergleichsliste vornehmen und einsehen, welche Produkte Ihre Kunden miteinander verglichen haben."
 
 msgid "last20Compares"
 msgstr "Alle Vergleiche"
 
 msgid "topCompareProducts"
-msgstr "Top Artikel die verglichen wurden"
+msgstr "Häufigste Vergleiche"
 
 msgid "compareID"
 msgstr "Vergleichsnummer"
 
 msgid "compareProducts"
-msgstr "Artikel die verglichen wurden"
+msgstr "Verglichene Artikel"
 
 msgid "compareDate"
 msgstr "Vergleichsdatum"

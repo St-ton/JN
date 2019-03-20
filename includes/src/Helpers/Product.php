@@ -4,33 +4,34 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Artikel;
-use CheckBox;
-use DB\ReturnType;
-use JTL\SeoHelper;
-use Kampagne;
-use Extensions\Konfiggruppe;
-use Extensions\Konfigitem;
-use Extensions\Konfigurator;
-use Kundengruppe;
-use Preise;
-use Session\Frontend;
-use Shop;
-use SimpleMail;
-use Smarty;
-use Sprache;
+use function Functional\group;
+use JTL\Alert\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\Cart\WarenkorbPos;
+use JTL\CheckBox;
+use JTL\DB\ReturnType;
+use JTL\Extensions\Konfiggruppe;
+use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Konfigurator;
+use JTL\Kampagne;
+use JTL\Customer\Kundengruppe;
+use JTL\Catalog\Product\Preise;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\SimpleMail;
+use JTL\Smarty\JTLSmarty;
+use JTL\Sprache;
+use JTL\Catalog\Tag;
+use JTL\Catalog\TagArticle;
+use JTL\Catalog\UnitsOfMeasure;
 use stdClass;
-use StringHandler;
-use Tag;
-use TagArticle;
-use UnitsOfMeasure;
-use WarenkorbPos;
+use Illuminate\Support\Collection;
 
 /**
  * Class Product
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Product
 {
@@ -228,7 +229,7 @@ class Product
         $propertyValues = [];
         $exists         = true;
         // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $oVariationKombiKind_arr = $db->query(
+        $children = $db->query(
             'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
                 FROM teigenschaftkombiwert
                 JOIN tartikel
@@ -241,11 +242,11 @@ class Product
                 ORDER BY tartikel.kArtikel',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (\count($oVariationKombiKind_arr) === 0) {
+        if (\count($children) === 0) {
             return [];
         }
-        $parentID = (int)$oVariationKombiKind_arr[0]->kVaterArtikel;
-        foreach ($oVariationKombiKind_arr as $oVariationKombiKind) {
+        $parentID = (int)$children[0]->kVaterArtikel;
+        foreach ($children as $oVariationKombiKind) {
             if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft])
                 || !\is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
             ) {
@@ -373,7 +374,7 @@ class Product
                     exit();
                 }
                 $propValue                = new stdClass();
-                $propValue->cFreifeldWert = StringHandler::filterXSS(
+                $propValue->cFreifeldWert = Text::filterXSS(
                     self::getSelectedVariationValue($oEigenschaft->kEigenschaft)
                 );
                 $propValue->kEigenschaft  = $oEigenschaft->kEigenschaft;
@@ -498,7 +499,7 @@ class Product
                 }
                 $val                = new stdClass();
                 $val->cFreifeldWert = $db->escape(
-                    StringHandler::filterXSS(self::getSelectedVariationValue($prop->kEigenschaft))
+                    Text::filterXSS(self::getSelectedVariationValue($prop->kEigenschaft))
                 );
                 $val->kEigenschaft  = $prop->kEigenschaft;
                 $val->cTyp          = $prop->cTyp;
@@ -835,9 +836,10 @@ class Product
     public static function showAvailabilityForm(Artikel $product, string $config): int
     {
         if ($config !== 'N'
+            && $product->cLagerBeachten === 'Y'
             && ((int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
                 || (int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
-                || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull === 'Y'))
+                || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull !== 'Y'))
         ) {
             switch ($config) {
                 case 'Y':
@@ -884,7 +886,7 @@ class Product
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($xsell) > 0) {
-                $xsellgruppen                     = \Functional\group($xsell, function ($e) {
+                $xsellgruppen                     = group($xsell, function ($e) {
                     return $e->kXSellGruppe;
                 });
                 $xSelling->Standard->XSellGruppen = [];
@@ -921,20 +923,19 @@ class Product
                     $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
                 }
                 $xsell = Shop::Container()->getDB()->query(
-                    "SELECT {$productID} AS kArtikel,
-                        {$selectorXSellArtikel} AS kXSellArtikel,
+                    "SELECT " . $productID . " AS kArtikel, " . $selectorXSellArtikel . " AS kXSellArtikel,
                         SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
                         JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
                         WHERE (txsellkauf.kArtikel IN (
                                 SELECT tartikel.kArtikel
                                 FROM tartikel
-                                WHERE tartikel.kVaterArtikel = {$productID}
-                            ) OR txsellkauf.kArtikel = {$productID})
-                            AND {$filterXSellParentArtikel} != {$productID}
+                                WHERE tartikel.kVaterArtikel = " . $productID . "
+                            ) OR txsellkauf.kArtikel = " . $productID . ")
+                            AND " . $filterXSellParentArtikel . " != " . $productID . "
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT {$anzahl}",
+                        LIMIT " . $anzahl,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
@@ -1060,7 +1061,7 @@ class Product
         if (SimpleMail::checkBlacklist($_POST['email'])) {
             $ret['email'] = 3;
         }
-        if (StringHandler::filterEmailAddress($_POST['email']) === false) {
+        if (Text::filterEmailAddress($_POST['email']) === false) {
             $ret['email'] = 2;
         }
         if (!$_POST['email']) {
@@ -1109,15 +1110,15 @@ class Product
     public static function getProductQuestionFormDefaults(): stdClass
     {
         $msg             = new stdClass();
-        $msg->cNachricht = isset($_POST['nachricht']) ? StringHandler::filterXSS($_POST['nachricht']) : null;
-        $msg->cAnrede    = isset($_POST['anrede']) ? StringHandler::filterXSS($_POST['anrede']) : null;
-        $msg->cVorname   = isset($_POST['vorname']) ? StringHandler::filterXSS($_POST['vorname']) : null;
-        $msg->cNachname  = isset($_POST['nachname']) ? StringHandler::filterXSS($_POST['nachname']) : null;
-        $msg->cFirma     = isset($_POST['firma']) ? StringHandler::filterXSS($_POST['firma']) : null;
-        $msg->cMail      = isset($_POST['email']) ? StringHandler::filterXSS($_POST['email']) : null;
-        $msg->cFax       = isset($_POST['fax']) ? StringHandler::filterXSS($_POST['fax']) : null;
-        $msg->cTel       = isset($_POST['tel']) ? StringHandler::filterXSS($_POST['tel']) : null;
-        $msg->cMobil     = isset($_POST['mobil']) ? StringHandler::filterXSS($_POST['mobil']) : null;
+        $msg->cNachricht = isset($_POST['nachricht']) ? Text::filterXSS($_POST['nachricht']) : null;
+        $msg->cAnrede    = isset($_POST['anrede']) ? Text::filterXSS($_POST['anrede']) : null;
+        $msg->cVorname   = isset($_POST['vorname']) ? Text::filterXSS($_POST['vorname']) : null;
+        $msg->cNachname  = isset($_POST['nachname']) ? Text::filterXSS($_POST['nachname']) : null;
+        $msg->cFirma     = isset($_POST['firma']) ? Text::filterXSS($_POST['firma']) : null;
+        $msg->cMail      = isset($_POST['email']) ? Text::filterXSS($_POST['email']) : null;
+        $msg->cFax       = isset($_POST['fax']) ? Text::filterXSS($_POST['fax']) : null;
+        $msg->cTel       = isset($_POST['tel']) ? Text::filterXSS($_POST['tel']) : null;
+        $msg->cMobil     = isset($_POST['mobil']) ? Text::filterXSS($_POST['mobil']) : null;
         if (\mb_strlen($msg->cAnrede) === 1) {
             if ($msg->cAnrede === 'm') {
                 $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
@@ -1194,7 +1195,7 @@ class Product
 
         $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
         Shop::Container()->getAlertService()->addAlert(
-            \Alert::TYPE_SUCCESS,
+            Alert::TYPE_SUCCESS,
             Shop::Lang()->get('thankYouForQuestion', 'messages'),
             'thankYouForQuestion'
         );
@@ -1288,7 +1289,7 @@ class Product
                     Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
                 }
                 Shop::Container()->getAlertService()->addAlert(
-                    \Alert::TYPE_SUCCESS,
+                    Alert::TYPE_SUCCESS,
                     Shop::Lang()->get('thankYouForNotificationSubscription', 'messages'),
                     'thankYouForNotificationSubscription'
                 );
@@ -1316,7 +1317,7 @@ class Product
         $conf = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         if (!$_POST['email']) {
             $ret['email'] = 1;
-        } elseif (StringHandler::filterEmailAddress($_POST['email']) === false) {
+        } elseif (Text::filterEmailAddress($_POST['email']) === false) {
             $ret['email'] = 2;
         }
         if (SimpleMail::checkBlacklist($_POST['email'])) {
@@ -1354,13 +1355,13 @@ class Product
         $msg  = new stdClass();
         $conf = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         if (!empty($_POST['vorname']) && $conf['artikeldetails']['benachrichtigung_abfragen_vorname'] !== 'N') {
-            $msg->cVorname = StringHandler::filterXSS($_POST['vorname']);
+            $msg->cVorname = Text::filterXSS($_POST['vorname']);
         }
         if (!empty($_POST['nachname']) && $conf['artikeldetails']['benachrichtigung_abfragen_nachname'] !== 'N') {
-            $msg->cNachname = StringHandler::filterXSS($_POST['nachname']);
+            $msg->cNachname = Text::filterXSS($_POST['nachname']);
         }
         if (!empty($_POST['email'])) {
-            $msg->cMail = StringHandler::filterXSS($_POST['email']);
+            $msg->cMail = Text::filterXSS($_POST['email']);
         }
 
         return $msg;
@@ -1406,7 +1407,7 @@ class Product
             && \count($_SESSION['oArtikelUebersichtKey_arr']) > 0
         ) {
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
-            if (!($collection instanceof \Tightenco\Collect\Support\Collection)) {
+            if (!($collection instanceof Collection)) {
                 collect($collection);
             }
             // Such die Position des aktuellen Artikels im Array der Artikelübersicht
@@ -1607,14 +1608,14 @@ class Product
         if (Request::verifyGPCDataInt('produktTag') !== 1) {
             return null;
         }
-        $tagString       = StringHandler::filterXSS(Request::verifyGPDataString('tag'));
+        $tagString       = Text::filterXSS(Request::verifyGPDataString('tag'));
         $variKindArtikel = Request::verifyGPDataString('variKindArtikel');
         if (\mb_strlen($tagString) > 0) {
             if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
                 $linkHelper = Shop::Container()->getLinkService();
                 \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
                     '?a=' . (int)$_POST['a'] . '&tag=' .
-                    StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
+                    Text::htmlentities(Text::filterXSS($_POST['tag'])) .
                     '&r=' . \R_LOGIN_TAG . '&produktTag=1', true, 303);
                 exit();
             }
@@ -1695,8 +1696,8 @@ class Product
                         $newTag           = new Tag();
                         $newTag->kSprache = Shop::getLanguage();
                         $newTag->cName    = $tagString;
-                        $newTag->cSeo     = SeoHelper::getSeo($tagString);
-                        $newTag->cSeo     = SeoHelper::checkSeo($newTag->cSeo);
+                        $newTag->cSeo     = Seo::getSeo($tagString);
+                        $newTag->cSeo     = Seo::checkSeo($newTag->cSeo);
                         $newTag->nAktiv   = 0;
                         $tagID            = $newTag->insertInDB();
                         if ($tagID > 0) {
@@ -2240,10 +2241,10 @@ class Product
     }
 
     /**
-     * @param int              $configID
-     * @param Smarty\JTLSmarty $smarty
+     * @param int       $configID
+     * @param JTLSmarty $smarty
      * @former holeKonfigBearbeitenModus()
-     * @since 5.0.0
+     * @since  5.0.0
      */
     public static function getEditConfigMode($configID, $smarty): void
     {

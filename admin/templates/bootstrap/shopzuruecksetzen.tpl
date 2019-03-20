@@ -4,7 +4,7 @@
 {literal}
     <script>
         $(document).ready(function(){
-            $('input[type="checkbox"]').change(function(){
+            $('input[type="checkbox"]').on('change', function(){
                 var itemsChecked = '';
                 $('input[type="checkbox"]:checked').next().each(function(i){
                     itemsChecked += $(this).prev().val();
@@ -19,17 +19,17 @@
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', !$("#backupDone").is(':checked'));
                 }
             });
-            $('#backupDone').change(function(){
+            $('#backupDone').on('change', function(){
                 if (this.checked) {
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', false);
                 } else {
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', true);
                 }
             });
-            $('#submitZuruecksetzen').click(function(){
+            $('#submitZuruecksetzen').on('click', function(){
                 $('#formZuruecksetzen').submit();
             });
-            $('button[data-target=".zuruecksetzen-modal"]').click(function(){
+            $('button[data-target=".zuruecksetzen-modal"]').on('click', function(){
                 var itemsToDelete = '';
                 $('input[type="checkbox"]:checked').next().each(function(i){
                     itemsToDelete += '<li class="list-group-item list-group-item-warning">' + $(this).text() + '</li>';

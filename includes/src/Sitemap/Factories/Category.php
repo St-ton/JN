@@ -4,30 +4,32 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Factories;
+namespace JTL\Sitemap\Factories;
 
-use DB\ReturnType;
+use Generator;
+use JTL\DB\ReturnType;
+use JTL\Catalog\Category\KategorieListe;
+use PDO;
+use JTL\Sitemap\Items\Category as Item;
 use function Functional\first;
 use function Functional\map;
 
 /**
  * Class Category
- * @package Sitemap\Factories
+ * @package JTL\Sitemap\Factories
  */
 final class Category extends AbstractFactory
 {
     /**
-     * @param array $languages
-     * @param array $customerGroups
-     * @return \Generator
+     * @inheritdoc
      */
-    public function getCollection(array $languages, array $customerGroups): \Generator
+    public function getCollection(array $languages, array $customerGroups): Generator
     {
         $languageIDs    = map($languages, function ($e) {
             return (int)$e->kSprache;
         });
         $customerGroup  = first($customerGroups);
-        $categoryHelper = new \KategorieListe();
+        $categoryHelper = new KategorieListe();
         $res            = $this->db->queryPrepared(
             "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung AS dlm, 
                 tseo.cSeo, tkategoriepict.cPfad AS image, tseo.kSprache AS langID
@@ -48,11 +50,11 @@ final class Category extends AbstractFactory
             ],
             ReturnType::QUERYSINGLE
         );
-        while (($category = $res->fetch(\PDO::FETCH_OBJ)) !== false) {
+        while (($category = $res->fetch(PDO::FETCH_OBJ)) !== false) {
             $category->kKategorie = (int)$category->kKategorie;
             $category->langID     = (int)$category->langID;
             if ($categoryHelper->nichtLeer($category->kKategorie, $customerGroup) === true) {
-                $item = new \Sitemap\Items\Category($this->config, $this->baseURL, $this->baseImageURL);
+                $item = new Item($this->config, $this->baseURL, $this->baseImageURL);
                 $item->generateData($category, $languages);
                 yield $item;
             }

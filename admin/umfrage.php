@@ -4,19 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
+use JTL\Nice;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $db          = Shop::Container()->getDB();
-$cHinweis    = '';
-$cFehler     = '';
+$alertHelper = Shop::Container()->getAlertService();
 $step        = 'umfrage_uebersicht';
 $kUmfrage    = 0;
 $kUmfrageTMP = Request::verifyGPCDataInt('kUmfrage') > 0
@@ -31,7 +37,7 @@ $oSpracheTMP = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 $oNice       = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-        $cHinweis .= saveAdminSectionSettings(CONF_UMFRAGE, $_POST);
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_UMFRAGE, $_POST), 'saveSettings');
     }
     if (Request::verifyGPCDataInt('umfrage') === 1 && Form::validateToken()) {
         if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
@@ -46,15 +52,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         DATE_FORMAT(dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de
                         FROM tumfrage
                         WHERE kUmfrage = " . $kUmfrage,
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
-                $survey->kKundengruppe_arr = StringHandler::parseSSK($survey->cKundengruppe);
+                $survey->kKundengruppe_arr = Text::parseSSK($survey->cKundengruppe);
 
                 $smarty->assign('oUmfrage', $survey)
                        ->assign('s1', Request::verifyGPCDataInt('s1'));
             } else {
-                $cFehler .= __('errorPollNotFound') . '<br />';
-                $step     = 'umfrage_uebersicht';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPollNotFound'), 'errorPollNotFound');
+                $step = 'umfrage_uebersicht';
             }
         }
         if (isset($_GET['a']) && $_GET['a'] === 'a_loeschen') {
@@ -69,7 +75,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
                                tumfragefrageantwort.kUmfrageFrageAntwort
                         WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
@@ -85,7 +91,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                             ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
                                tumfragematrixoption.kUmfrageMatrixOption
                         WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
@@ -160,9 +166,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         $db->delete('tumfrage', 'kUmfrage', $kUmfrage);
                         $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $kUmfrage]);
                     }
-                    $survey->cSeo = \JTL\SeoHelper::checkSeo(
-                        \JTL\SeoHelper::getSeo(mb_strlen($cSeo) > 0 ? $cSeo : $cName)
-                    );
+                    $survey->cSeo = Seo::checkSeo(Seo::getSeo(mb_strlen($cSeo) > 0 ? $cSeo : $cName));
                     if (isset($kUmfrage) && $kUmfrage > 0) {
                         $survey->kUmfrage = $kUmfrage;
                         $db->insert('tumfrage', $survey);
@@ -184,13 +188,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
                     $kUmfrageTMP = $kUmfrage;
 
-                    $cHinweis .= __('successPollCreateNextSteps') . '<br />';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_SUCCESS,
+                        __('successPollCreateNextSteps'),
+                        'successPollCreateNextSteps'
+                    );
                     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
                 } else {
-                    $cFehler .= __('errorRewardMissing') . '<br />';
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorRewardMissing'), 'errorRewardMissing');
                 }
             } else {
-                $cFehler .= __('errorDataMissing') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDataMissing'), 'errorDataMissing');
             }
         } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1) {
             $kUmfrage                 = (int)$_POST['kUmfrage'];
@@ -230,8 +238,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $step          = 'umfrage_vorschau';
                     $kUmfrageFrage = (int)$_POST['kUmfrageFrage'];
                     if (!pruefeTyp($cTyp, $kUmfrageFrage)) {
-                        $cFehler .= __('errorQuestionTypeNotCompatible');
-                        $step     = 'umfrage_frage_bearbeiten';
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            __('errorQuestionTypeNotCompatible'),
+                            'errorQuestionTypeNotCompatible'
+                        );
+                        $step = 'umfrage_frage_bearbeiten';
                     }
                     $db->delete('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
                 }
@@ -265,11 +277,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oAnzahlAUndOVorhanden
                 );
 
-                $cHinweis .= __('successQuestionSave') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionSave'), 'successQuestionSave');
                 Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
-                $step     = 'umfrage_frage_erstellen';
-                $cFehler .= __('errorMinNameTypeMissing') . '<br />';
+                $step = 'umfrage_frage_erstellen';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMinNameTypeMissing'), 'errorMinNameTypeMissing');
             }
         } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1) {
             // Umfrage loeschen
@@ -283,7 +295,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         'SELECT kUmfrageFrage
                             FROM tumfragefrage
                             WHERE kUmfrage = ' . $kUmfrage,
-                        \DB\ReturnType::ARRAY_OF_OBJECTS
+                        ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($oUmfrageFrage_arr as $question) {
                         loescheFrage($question->kUmfrageFrage);
@@ -298,13 +310,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                               ON tumfragedurchfuehrungantwort.kUmfrageDurchfuehrung = 
                                  tumfragedurchfuehrung.kUmfrageDurchfuehrung
                             WHERE tumfragedurchfuehrung.kUmfrage = ' . $kUmfrage,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
-                $cHinweis .= __('successPollDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPollDelete'), 'successPollDelete');
                 Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             } else {
-                $cFehler .= __('successAtLeastOnePoll') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('successAtLeastOnePoll'), 'successAtLeastOnePoll');
             }
         } elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1) {
             // Frage loeschen
@@ -317,7 +329,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     loescheFrage($kUmfrageFrage);
                 }
 
-                $cHinweis = __('successQuestionDelete') . '<br>';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDelete'), 'successQuestionDelete');
             }
             // Bestimmte Antworten loeschen
             if (isset($_POST['kUmfrageFrageAntwort'])
@@ -334,10 +346,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                                 ON tumfragedurchfuehrungantwort.kUmfrageFrageAntwort = 
                                    tumfragefrageantwort.kUmfrageFrageAntwort
                             WHERE tumfragefrageantwort.kUmfrageFrageAntwort = ' . $kUmfrageFrageAntwort,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
-                $cHinweis .= __('successAnswerDelete') . '<br>';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successAnswerDelete'), 'successAnswerDelete');
             }
             // Bestimmte Optionen loeschen
             if (isset($_POST['kUmfrageMatrixOption'])
@@ -353,11 +365,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                                 ON tumfragedurchfuehrungantwort.kUmfrageMatrixOption = 
                                    tumfragematrixoption.kUmfrageMatrixOption
                             WHERE tumfragematrixoption.kUmfrageMatrixOption = ' . $kUmfrageMatrixOption,
-                        \DB\ReturnType::AFFECTED_ROWS
+                        ReturnType::AFFECTED_ROWS
                     );
                 }
 
-                $cHinweis .= __('successOptionDelete') . '<br />';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successOptionDelete'), 'successOptionDelete');
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
         } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
@@ -370,15 +382,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
                     WHERE kUmfrage = ' . $kUmfrageTMP,
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
             if (count($oUmfrageDurchfuehrung_arr) > 0) {
                 $step = 'umfrage_statistik';
                 $smarty->assign('oUmfrageStats', holeUmfrageStatistik($kUmfrageTMP));
             } else {
-                $step     = 'umfrage_vorschau';
-                $cFehler .= __('errorNoStatistic');
+                $step = 'umfrage_vorschau';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoStatistic'), 'errorNoStatistic');
             }
         } elseif (isset($_GET['a']) && $_GET['a'] === 'zeige_sonstige') {
             // Umfragestatistik Sonstige Texte anzeigen
@@ -437,11 +449,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
                         FROM tumfrage
                         WHERE kUmfrage = " . $kUmfrage,
-                    \DB\ReturnType::SINGLE_OBJECT
+                    ReturnType::SINGLE_OBJECT
                 );
                 if ($survey->kUmfrage > 0) {
                     $survey->cKundengruppe_arr = [];
-                    foreach (StringHandler::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
+                    foreach (Text::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
                         if ($kKundengruppe == -1) {
                             $survey->cKundengruppe_arr[] = 'Alle';
                         } else {
@@ -482,7 +494,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $smarty->assign('oUmfrage', $survey);
                 }
             } else {
-                $cFehler .= __('errorPollSelect') . '<br>';
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPollSelect'), 'errorPollSelect');
             }
         }
         if ($kUmfrageTMP > 0
@@ -506,7 +518,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             'SELECT COUNT(*) AS nAnzahl
                 FROM tumfrage
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         );
         $pagination  = (new Pagination())
             ->setItemCount((int)$surveyCount->nAnzahl)
@@ -523,11 +535,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 GROUP BY tumfrage.kUmfrage
                 ORDER BY dGueltigVon DESC
                 LIMIT ' . $pagination->getLimitSQL(),
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($surveys as $i => $survey) {
             $survey->cKundengruppe_arr = [];
-            foreach (StringHandler::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
+            foreach (Text::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
                 if ($kKundengruppe == -1) {
                     $surveys[$i]->cKundengruppe_arr[] = 'Alle';
                 } else {
@@ -535,7 +547,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         'SELECT cName
                             FROM tkundengruppe
                             WHERE kKundengruppe = ' . (int)$kKundengruppe,
-                        \DB\ReturnType::SINGLE_OBJECT
+                        ReturnType::SINGLE_OBJECT
                     );
                     if (!empty($oKundengruppe->cName)) {
                         $surveys[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
@@ -552,7 +564,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         'SELECT kKundengruppe, cName
             FROM tkundengruppe
             ORDER BY cStandard DESC',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $coupons        = $db->query(
         "SELECT tkupon.kKupon, tkuponsprache.cName
@@ -565,7 +577,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 AND tkupon.cAktiv = 'Y'
                 AND tkuponsprache.cISOSprache = '" . $oSpracheTMP->cISO . "'
             ORDER BY tkupon.cName",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oKundengruppe_arr', $customerGroups)
@@ -576,7 +588,5 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
 $smarty->assign('Sprachen', $Sprachen)
        ->assign('kSprache', $_SESSION['kSprache'])
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('umfrage.tpl');

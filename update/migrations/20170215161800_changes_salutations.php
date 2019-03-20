@@ -6,6 +6,9 @@
  * @created Wed, 15 Feb 2017 16:18:00 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Migration
  *
@@ -22,7 +25,7 @@
  */
 class Migration_20170215161800 extends Migration implements IMigration
 {
-    protected $author = 'ms';
+    protected $author      = 'ms';
     protected $description = 'changes female salutation to ms and adds general salutation';
 
     public function up()

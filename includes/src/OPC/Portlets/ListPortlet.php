@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class ListPortlet
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class ListPortlet extends Portlet
 {
@@ -55,13 +56,13 @@ class ListPortlet extends Portlet
         return [
             'count' => [
                 'label'   => __('Item Count'),
-                'type'    => 'number',
+                'type'    => InputType::NUMBER,
                 'default' => 3,
                 'dspl_width' => 50,
             ],
             'type'  => [
                 'label'      => __('List Style'),
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'default'    => 'disc',
                 'dspl_width' => 50,
                 'options'    => [

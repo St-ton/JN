@@ -4,11 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Backend\JSONAPI;
-use Helpers\Form;
-use Backend\AdminIO;
+use JTL\Backend\JSONAPI;
+use JTL\Helpers\Form;
+use JTL\Backend\AdminIO;
+use JTL\IO\IOError;
+use JTL\Shop;
+use JTL\Backend\TwoFA;
 
-/** @global \Backend\AdminAccount $oAccount */
+/** @global \JTL\Backend\AdminAccount $oAccount */
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -47,8 +50,8 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCurrencyConversion', 'getCurrencyConversionIO')
    ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
    ->register('getNotifyDropIO')
-   ->register('getNewTwoFA', [Backend\TwoFA::class, 'getNewTwoFA'])
-   ->register('genTwoFAEmergencyCodes', [Backend\TwoFA::class, 'genTwoFAEmergencyCodes'])
+   ->register('getNewTwoFA', [TwoFA::class, 'getNewTwoFA'])
+   ->register('genTwoFAEmergencyCodes', [TwoFA::class, 'genTwoFAEmergencyCodes'])
    ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
@@ -56,7 +59,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('getRemoteData', 'getRemoteDataIO', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('getShopInfo', 'getShopInfoIO', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('truncateJtllog', ['Jtllog', 'truncateLog'], null, 'DASHBOARD_VIEW')
+   ->register('truncateJtllog', [JTL\Jtllog::class, 'truncateLog'], null, 'DASHBOARD_VIEW')
    ->register('addFav')
    ->register('reloadFavs')
    ->register('loadStats', 'loadStats', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')
@@ -77,7 +80,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('dbupdaterStatusTpl', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
    ->register('dbupdaterMigration', null, $dbupdaterInc, 'SHOP_UPDATE_VIEW')
    ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
-   ->register('redirectCheckAvailability', ['Redirect', 'checkAvailability'])
+   ->register('redirectCheckAvailability', [JTL\Redirect::class, 'checkAvailability'])
    ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
    ->register('getRandomPassword', 'getRandomPasswordIO', $accountInc, 'ACCOUNT_VIEW')
    ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')

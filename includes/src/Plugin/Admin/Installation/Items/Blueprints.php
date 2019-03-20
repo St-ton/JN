@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Blueprints
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class Blueprints extends AbstractItem
 {
@@ -33,11 +33,10 @@ class Blueprints extends AbstractItem
         $base = $this->plugin->bExtension === 1
             ? \PFAD_ROOT . \PLUGIN_DIR .
             $this->plugin->cVerzeichnis . '/' .
-            \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS
+            \PFAD_PLUGIN_BLUEPRINTS
             : \PFAD_ROOT . \PFAD_PLUGIN .
             $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION .
-            $this->plugin->nVersion . '/' .
-            \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS;
+            $this->plugin->nVersion . '/' . \PFAD_PLUGIN_BLUEPRINTS;
         foreach ($this->getNode() as $i => $blueprint) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);

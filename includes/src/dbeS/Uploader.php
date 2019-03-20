@@ -4,30 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace dbeS;
+namespace JTL\dbeS;
 
-use Extensions\Upload;
-use Extensions\UploadDatei;
+use JTL\Extensions\Upload;
+use JTL\Extensions\UploadDatei;
 
 /**
  * Class Uploader
- * @package dbeS
+ * @package JTL\dbeS
  */
 class Uploader extends NetSyncHandler
 {
-    /**
-     *
-     */
-    protected function init()
-    {
-    }
-
     /**
      * @param int $request
      */
     protected function request($request)
     {
-        if (Upload::checkLicense()) {
+        if (!Upload::checkLicense()) {
             self::throwResponse(NetSyncResponse::ERRORNOLICENSE);
         }
         switch ($request) {
@@ -55,7 +48,6 @@ class Uploader extends NetSyncHandler
                                 $oUpload->nBytes
                             );
                         }
-
                         self::throwResponse(NetSyncResponse::OK, $systemFiles);
                     }
                 }

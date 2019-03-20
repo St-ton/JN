@@ -96,7 +96,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nTransparenz">{__('transparancy')}</label>
+                                <label for="nTransparenz">{__('transparency')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nTransparenz" class="form-control combo" id="nTransparenz">
@@ -180,7 +180,7 @@
     }
 
     $(document).ready(function () {
-        $('form #cSuchspecialOverlayBild').change(function(e){
+        $('form #cSuchspecialOverlayBild').on('change', function(e){
             $('form div.alert').slideUp();
             var filesize= this.files[0].size;
             {/literal}

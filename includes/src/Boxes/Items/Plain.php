@@ -4,11 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Shop;
 
 /**
  * Class Plain
- * @package Boxes\Items
+ *
+ * @package JTL\Boxes\Items
  */
 final class Plain extends AbstractBox
 {
@@ -28,6 +31,6 @@ final class Plain extends AbstractBox
     public function map(array $boxData): void
     {
         parent::map($boxData);
-        $this->setShow(!empty($this->getContent(\Shop::getLanguageID())));
+        $this->setShow(!empty($this->getContent(Shop::getLanguageID())));
     }
 }

@@ -6,16 +6,16 @@
  * @since         5.0
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 use Exception;
-use Session\Frontend;
-use Shop;
-use Smarty\JTLSmarty;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class SimpleCaptchaService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class SimpleCaptchaService implements CaptchaServiceInterface
 {

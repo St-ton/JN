@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Pagination;
+namespace JTL\Pagination;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Operation
- * @package Pagination
+ * @package JTL\Pagination
  */
 class Operation extends Enum
 {

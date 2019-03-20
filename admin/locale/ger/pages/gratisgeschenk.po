@@ -6,10 +6,10 @@ msgid "ggActiveProducts"
 msgstr "Aktive Geschenke"
 
 msgid "ggCommonBuyedProducts"
-msgstr "am häufigsten gekauft"
+msgstr "Am häufigsten gekauft"
 
 msgid "ggLast100Products"
-msgstr "Letzten 100"
+msgstr "Letzte 100"
 
 msgid "ggOrderValueMin"
 msgstr "Bestellbar ab"

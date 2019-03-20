@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Gallery
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Gallery extends Portlet
 {
@@ -116,7 +117,7 @@ class Gallery extends Portlet
         return [
             'gllry_height' => [
                 'label'      => 'Höhe der Vorschaubilder',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => 250,
                 'dspl_width' => 50,
             ],
@@ -126,7 +127,7 @@ class Gallery extends Portlet
             ],
             'gllry_images' => [
                 'label'      => 'Bilder',
-                'type'       => 'image-set',
+                'type'       => InputType::IMAGE_SET,
                 'default'    => [],
                 'useColumns' => true,
             ],

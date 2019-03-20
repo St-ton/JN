@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Blueprints
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Blueprints extends AbstractItem
 {
@@ -30,7 +30,7 @@ class Blueprints extends AbstractItem
         ) {
             return InstallCode::MISSING_BLUEPRINTS;
         }
-        $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_BLUEPRINTS;
+        $base = $dir . \PFAD_PLUGIN_BLUEPRINTS;
         foreach ($node['Blueprints'][0]['Blueprint'] as $i => $blueprint) {
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);

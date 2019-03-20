@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Events;
+namespace JTL\Events;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Event
- * @package Events
+ * @package JTL\Events
  */
 class Event extends Enum
 {

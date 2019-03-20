@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace dbeS;
+namespace JTL\dbeS;
 
 /**
  * Class NetSyncResponse
- * @package dbeS
+ * @package JTL\dbeS
  */
 class NetSyncResponse
 {

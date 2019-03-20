@@ -6,9 +6,9 @@
                     <p class="key">{$oModul->cName}
                         <span class="value {if $oModul->bActive}success{/if}">
                             {if $oModul->bActive}
-                                <span class="label label-success pull-right">Aktiv</span>
+                                <span class="label label-success pull-right">{__('active')}</span>
                             {else}
-                                <a href="{$oModul->cURL}" target="_blank" rel="noopener">Jetzt kaufen</a>
+                                <a href="{$oModul->cURL}" target="_blank" rel="noopener">{__('buyNow')}</a>
                             {/if}
                         </span>
                     </p>

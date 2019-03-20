@@ -4,18 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Boxes\FactoryInterface;
-use Boxes\Renderer\RendererInterface;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use Filter\ProductFilter;
-use Smarty\JTLSmarty;
+use JTL\Boxes\FactoryInterface;
+use JTL\Boxes\Renderer\RendererInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Filter\ProductFilter;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Interface BoxServiceInterface
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 interface BoxServiceInterface
 {

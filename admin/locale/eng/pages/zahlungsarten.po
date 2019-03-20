@@ -118,3 +118,9 @@ msgstr "Wawi-Abholung zurücksetzen"
 
 msgid "installedPaymentTypes"
 msgstr "Installierte Zahlungsarten"
+
+msgid "successPaymentMethodSave"
+msgstr "Payment method saved."
+
+msgid "errorPaymentMethodNotFound"
+msgstr "Payment method not found."

@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Heading
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Heading extends Portlet
 {
@@ -57,7 +58,7 @@ class Heading extends Portlet
         return [
             'level' => [
                 'label'      => __('Level'),
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     '1' => '1',
                     '2' => '2',
@@ -72,7 +73,7 @@ class Heading extends Portlet
             ],
             'text'  => [
                 'label'      => __('Text'),
-                'type'       => 'text',
+                'type'       => InputType::TEXT,
                 'default'    => __('Heading'),
                 'dspl_width' => 50,
             ],

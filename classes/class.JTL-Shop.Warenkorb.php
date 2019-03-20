@@ -1384,7 +1384,7 @@ class Warenkorb
 
             /** @var WarenkorbPos $oPosition */
             foreach ($this->PositionenArr as $i => $oPosition) {
-                if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && get_class($oPosition->Artikel) === 'Artikel') {
+                if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && is_object($oPosition->Artikel) && get_class($oPosition->Artikel) === 'Artikel') {
                     $oPosition->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $oPosition->nAnzahl);
                     WarenkorbPos::setEstimatedDelivery($oPosition, $oPosition->Artikel->nMinDeliveryDays, $oPosition->Artikel->nMaxDeliveryDays);
                     if (isset($oPosition->Artikel->nMinDeliveryDays) && $oPosition->Artikel->nMinDeliveryDays > $longestMinDeliveryDays) {

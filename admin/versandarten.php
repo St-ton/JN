@@ -573,6 +573,7 @@ if ($step === 'neue Versandart') {
     $smarty->assign('sprachen', $sprachen)
            ->assign('zahlungsarten', $zahlungsarten)
            ->assign('versandlaender', $versandlaender)
+           ->assign('sortedCountries', getSortedCountries())
            ->assign('versandberechnung', $versandberechnung)
            ->assign('waehrung', $standardwaehrung->cName)
            ->assign('kundengruppen', $db->query(

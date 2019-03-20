@@ -370,3 +370,23 @@ function getMissingShippingClassCombi()
 
     return $res;
 }
+
+function getSortedCountries(): array
+{
+    $countries = Shop::Container()->getDB()->query(
+        'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch',
+        ReturnType::ARRAY_OF_OBJECTS
+    );
+
+    $countriesByContinent = [];
+    foreach ($countries as $country) {
+        $countriesByContinent[$country->cKontinent][] = $country;
+        if ((int)$country->nEU === 1) {
+            $countriesByContinent['Europäische Union'][] = $country;
+        } elseif ($country->cKontinent === 'Europa') {
+            $countriesByContinent['Nicht Europäische Union in Europa'][] = $country;
+        }
+    }
+
+    return $countriesByContinent;
+}

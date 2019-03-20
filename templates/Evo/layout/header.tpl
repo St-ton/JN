@@ -78,6 +78,14 @@
         </style>
     {/if}
     <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    {*Prevent auto-execution of scripts when no explicit dataType was provided (See gh-2432)*}
+    <script>
+        jQuery.ajaxPrefilter( function( s ) {
+            if ( s.crossDomain ) {
+                s.contents.script = false;
+            }
+        } );
+    </script>
     {include file='layout/header_inline_js.tpl'}
 </head>
 {assign var="isFluidContent" value=false}

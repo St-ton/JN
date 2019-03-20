@@ -17,6 +17,14 @@
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css" />
 
     {$admin_js}
+    <script>
+        // Prevent auto-execution of scripts when no explicit dataType was provided (See gh-2432)
+        jQuery.ajaxPrefilter( function( s ) {
+            if ( s.crossDomain ) {
+                s.contents.script = false;
+            }
+        } );
+    </script>
     <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js"></script>
 

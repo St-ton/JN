@@ -190,7 +190,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 }
             }
             //bestseller tabelle füllen
-            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && is_object($Position->Artikel)) {
                 //Lagerbestand verringern
                 aktualisiereLagerbestand(
                     $Position->Artikel,

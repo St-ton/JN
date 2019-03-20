@@ -16,6 +16,7 @@
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
+        "ext-posix": "*",
         "ext-simplexml": "*",
         "ext-soap": "*",
         "ext-xml": "*",
@@ -47,7 +48,8 @@
         "gettext/gettext": "^4.6",
         "jtl/oauth2-client": "^1.0",
         "squizlabs/php_codesniffer": "^3.4",
-        "illuminate/container": "^5.7"
+        "illuminate/container": "^5.7",
+        "symfony/console": "^4.2"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

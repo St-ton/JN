@@ -1,0 +1,56 @@
+#!/usr/bin/env php
+<?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+/*if (PHP_SAPI !== 'cli') {
+    echo 'Warning: ShopCli should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
+}
+
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
+
+if (function_exists('set_time_limit')) {
+    @set_time_limit(0);
+}
+
+if (function_exists('ini_set')) {
+    @ini_set('display_errors', 1);
+
+    if (strlen(ini_get('date.timezone')) == 0) {
+        @ini_set('date.timezone', 'Europe/Berlin');
+    }
+
+    $memoryInBytes = function ($value) {
+        $unit  = strtolower(substr($value, -1, 1));
+        $value = (int)$value;
+        switch ($unit) {
+            case 'g':
+                $value *= 1024;
+            // no break
+            case 'm':
+                $value *= 1024;
+            // no break
+            case 'k':
+                $value *= 1024;
+        }
+
+        return $value;
+    };
+
+    $memoryLimit = trim(ini_get('memory_limit'));
+
+    if ($memoryLimit != -1 && $memoryInBytes($memoryLimit) < 1024 * 1024 * 1024) {
+        @ini_set('memory_limit', '1G');
+    }
+    unset($memoryInBytes, $memoryLimit);
+}*/
+
+require_once 'build/components/vue-installer/vendor/autoload.php';
+require_once 'includes/vendor/autoload.php';
+require_once 'includes/defines.php';
+require_once 'includes/config.JTL-Shop.ini.php';
+
+$application = new \JTL\Console\Application();
+$application->run();

@@ -22,6 +22,11 @@ class VueInstaller
     private $post;
 
     /**
+     * @var bool
+     */
+    private $cli;
+
+    /**
      * @var NiceDB
      */
     private $db;
@@ -44,19 +49,21 @@ class VueInstaller
     /**
      * Installer constructor.
      *
-     * @param string     $task
+     * @param string $task
      * @param array|null $post
+     * @param bool $cli
      */
-    public function __construct($task, $post = null)
+    public function __construct($task, $post = null, $cli = false)
     {
-        $this->task  = $task;
-        $this->post  = $post;
+        $this->task = $task;
+        $this->post = $post;
+        $this->cli  = $cli;
     }
 
     /**
      *
      */
-    public function run(): void
+    public function run(): ?array
     {
         switch ($this->task) {
             case 'installedcheck':
@@ -83,7 +90,12 @@ class VueInstaller
             default:
                 break;
         }
-        $this->output();
+
+        if (!$this->cli) {
+            $this->output();
+        } else {
+            return $this->payload;
+        }
     }
 
     /**

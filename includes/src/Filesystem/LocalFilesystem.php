@@ -288,7 +288,7 @@ class LocalFilesystem extends AbstractFilesystem
      */
     protected function mapFileInfo(SplFileInfo $file) : FileInfo
     {
-        $location = $this->removePathPrefix($file->getPath());
+        $location = $this->removePathPrefix($file->getPathname());
 
         $options = [
             'path' => (string)$location,

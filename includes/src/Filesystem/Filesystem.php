@@ -6,7 +6,10 @@
 
 namespace JTL\Filesystem;
 
+use Exception;
 use Generator;
+use JTL\Path;
+use ZipArchive;
 
 /**
  * Class Filesystem

@@ -43,7 +43,7 @@ class PluginLoader extends AbstractLoader
         } elseif (($extension = $this->loadFromCache()) !== null) {
             $getText = Shop::Container()->getGetText();
             $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $languageCode);
-            $getText->loadPluginLocale($extension->getPluginID(), $extension);
+            $getText->loadPluginLocale('base', $extension);
 
             return $extension;
         }
@@ -81,12 +81,13 @@ class PluginLoader extends AbstractLoader
         $id        = (int)$obj->kPlugin;
         $paths     = $this->loadPaths($obj->cVerzeichnis);
         $extension = new Plugin();
+        $extension->setID($id);
         $extension->setIsExtension(true);
         $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
         $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
+        $this->loadAdminMenu($extension);
         $extension->setState((int)$obj->nStatus);
-        $extension->setID($id);
         $extension->setBootstrap(true);
         $extension->setLinks($this->loadLinks($id));
         $extension->setPluginID($obj->cPluginID);
@@ -95,14 +96,13 @@ class PluginLoader extends AbstractLoader
         $extension->setCache($this->loadCacheData($extension));
         $getText = Shop::Container()->getGetText();
         $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
-        $getText->loadPluginLocale($obj->cPluginID, $extension);
+        $getText->loadPluginLocale('base', $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));
         $extension->setWidgets($this->loadWidgets($extension));
         $extension->setMailTemplates($this->loadMailTemplates($extension));
         $extension->setPaymentMethods($this->loadPaymentMethods($extension));
 
-        $this->loadAdminMenu($extension);
         $this->saveToCache($extension);
 
         return $extension;

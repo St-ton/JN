@@ -116,6 +116,11 @@ abstract class AbstractPlugin implements PluginInterface
     protected $paymentMethods;
 
     /**
+     * @return void
+     */
+    abstract protected function translate();
+
+    /**
      * @inheritdoc
      */
     public function getID(): int
@@ -353,6 +358,7 @@ abstract class AbstractPlugin implements PluginInterface
     public function setLocalization(Localization $localization): void
     {
         $this->localization = $localization;
+        $this->translate();
     }
 
     /**

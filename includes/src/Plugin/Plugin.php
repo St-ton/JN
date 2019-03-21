@@ -28,4 +28,22 @@ class Plugin extends AbstractPlugin
 
         return $xml['jtlshopplugin'][0]['Version'] ?? '0';
     }
+
+    /**
+     * @return void
+     */
+    protected function translate()
+    {
+        $descKey     = $this->getPluginID() . '_desc';
+        $description = __($descKey);
+
+        if ($description !== $descKey) {
+            $this->meta->setDescription($description);
+        }
+
+        foreach ($this->getAdminMenu()->getItems() as $adminMenu) {
+            $adminMenu->cName = __($adminMenu->cName);
+            $adminMenu->name  = __($adminMenu->name);
+        }
+    }
 }

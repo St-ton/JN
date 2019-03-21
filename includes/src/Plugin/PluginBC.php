@@ -176,4 +176,12 @@ class PluginBC extends AbstractPlugin
     {
         $this->calledHookID = $id;
     }
+
+    /**
+     * @return void
+     */
+    protected function translate()
+    {
+        // BC Plugin has no translation
+    }
 }

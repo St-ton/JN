@@ -35,16 +35,16 @@ class Migration_20190130130822 extends Migration implements IMigration
             JOIN teinstellungenconf c
                 ON c.kEinstellungenConf = w.kEinstellungenConf
                 AND c.cWertName = 'bewertungserinnerung_nutzen'
-                AND w.nSort = 2
-            SET w.cWert = 'N'"
+                AND w.cWert = 'N'
+            SET w.nSort = 2"
         );
         $this->execute(
             "UPDATE teinstellungenconfwerte w
             JOIN teinstellungenconf c
                 ON c.kEinstellungenConf = w.kEinstellungenConf
                 AND c.cWertName = 'bewertungserinnerung_nutzen'
-                AND w.nSort = 3
-            SET w.cWert = 'Y'"
+                AND w.cWert = 'Y'
+            SET w.nSort = 3"
         );
         $this->execute("INSERT INTO teinstellungenconfwerte(
                 kEinstellungenConf,
@@ -53,7 +53,7 @@ class Migration_20190130130822 extends Migration implements IMigration
                 nSort)
             VALUES(
                 (SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName = 'bewertungserinnerung_nutzen'),
-                '',
+                'An Newslettereinwilligung koppeln',
                 'B',
                 1)"
         );

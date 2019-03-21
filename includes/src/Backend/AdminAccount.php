@@ -90,10 +90,8 @@ class AdminAccount
     private function initDefaults(): void
     {
         if (!isset($_SESSION['AdminAccount'])) {
-            $default                   = Sprache::getDefaultLanguage();
             $adminAccount              = new stdClass();
-            $adminAccount->kSprache    = $default->kSprache;
-            $adminAccount->cISO        = $default->cISO;
+            $adminAccount->language    = 'de-DE';
             $adminAccount->kAdminlogin = null;
             $adminAccount->oGroup      = null;
             $adminAccount->cLogin      = null;
@@ -288,7 +286,6 @@ class AdminAccount
                     unset($_SESSION[$i]);
                 }
             }
-
             if (!isset($oAdmin->kSprache)) {
                 $oAdmin->kSprache = Shop::getLanguage();
             }
@@ -298,11 +295,11 @@ class AdminAccount
             if (!$this->getIsTwoFaAuthenticated()) {
                 return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED, $cLogin);
             }
-
             return $this->handleLoginResult($this->logged()
                 ? AdminLoginStatus::LOGIN_OK
                 : AdminLoginStatus::ERROR_NOT_AUTHORIZED, $cLogin);
         }
+
         $this->setRetryCount($oAdmin->cLogin);
 
         return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
@@ -532,8 +529,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $admin->cMail;
             $_SESSION['AdminAccount']->cPass       = $admin->cPass;
-            $_SESSION['AdminAccount']->kSprache    = (int)$admin->kSprache;
-            $_SESSION['AdminAccount']->cISO        = $admin->cISO;
+            $_SESSION['AdminAccount']->language    = $admin->language;
 
             if (!\is_object($group)) {
                 $group                    = new stdClass();

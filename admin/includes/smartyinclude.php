@@ -152,11 +152,11 @@ foreach ($adminMenu as $rootName => $rootEntry) {
     $rootKey++;
 }
 
-if (isset($_SESSION['AdminAccount']->kSprache)) {
-    $smarty->assign(
-        'language',
-        $db->select('tsprache', 'kSprache', $_SESSION['AdminAccount']->kSprache)
-    );
+if (isset($_SESSION['AdminAccount']->language)) {
+    $tag = $_SESSION['AdminAccount']->language;
+
+    $smarty->assign('language', $tag)
+           ->assign('languageName', Locale::getDisplayLanguage($tag, $tag));
 }
 
 if (is_array($currentTemplateDir)) {
@@ -188,5 +188,5 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('notifications', Notification::getInstance())
        ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('favorites', $oAccount->favorites())
-       ->assign('languages', Shop::Lang()->getInstalled())
+       ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

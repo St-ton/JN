@@ -1765,7 +1765,7 @@ msgstr "Yes"
 msgid "bewertungserinnerung_nutzen_value(N)"
 msgstr "Never"
 
-msgid "bewertungserinnerung_nutzen_value(nlbound)"
+msgid "bewertungserinnerung_nutzen_value(B)"
 msgstr "Bind to newletter consent"
 
 msgid "bewertung_guthaben_nutzen_value(Y)"

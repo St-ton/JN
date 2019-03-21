@@ -18,9 +18,9 @@
         {/if}
         <div class="col-sm-2">
             {if $nPage === 0}
-                {if $oBox->getFilter($nPage) === true}
+                {if \Functional\true($oBox->getFilter())}
                     {__('visibleOnAllPages')}
-                {elseif empty($oBox->getFilter($nPage))}
+                {elseif \Functional\false($oBox->getFilter())}
                     {__('deactivatedOnAllPages')}
                 {else}
                     {__('visibleOnSomePages')}
@@ -36,12 +36,16 @@
             {/if}
         </div>
         <div class="col-sm-2 col-xs-6{if $oBox->getContainerID() > 0} boxSubName{/if}">
-            <input class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && is_array($oBox->getFilter($nPage)))} tristate{/if}"
+            <input class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter()))} tristate{/if}"
                    style="margin-right: 5px;"
                    type="checkbox"
                    name="aktiv[]"
-                   {if $oBox->isVisibleOnPage($nPage)}checked="checked"{/if} value="{$oBox->getID()}">
+                   {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
             <input type="hidden" name="box[]" value="{$oBox->getID()}">
+            {*prevents overwriting specific visibility when indeterminate checkbox is set on 'all pages' view*}
+            {if $nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter())}
+                <input type="hidden" name="ignore[]" value="{$oBox->getID()}">
+            {/if}
             <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->getSort()}"
                    autocomplete="off" id="{$oBox->getSort()}">
         </div>

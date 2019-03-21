@@ -49,7 +49,7 @@
 
         {if $isCurrenctCustomer === true}
             {row}
-                {col cols=2 md=1}
+                {col cols=2 md=1 class="mb-2"}
                     {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>"}
                         {dropdownitem class="text-center"}
                             {button type="submit" variant="link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
@@ -120,7 +120,7 @@
                         {/dropdownitem}
                     {/dropdown}
                 {/col}
-                {col cols=10 md=5}
+                {col cols=10 md=5 class="mb-2"}
                     {dropdown id='wlName' variant='light' text=$CWunschliste->cName}
                     {foreach $oWunschliste_arr as $wishlist}
                         {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
@@ -129,7 +129,7 @@
                     {/foreach}
                     {/dropdown}
                 {/col}
-                {col cols=12 md=6}
+                {col cols=12 md=6 class="mb-2"}
                 {if $hasItems === true || !empty($wlsearch)}
                     <div id="wishlist-search">
                         {form
@@ -251,9 +251,9 @@
                 {col cols=12}
                     {collapse id="edit-wishlist-name" visible=false class='mb-3'}
                     {form
-                    method="post"
-                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                    name="Wunschliste"
+                        method="post"
+                        action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                        name="Wunschliste"
                     }
                         {input type="hidden" name="wla" value="1"}
                         {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
@@ -308,25 +308,36 @@
                 {input type="hidden" name="cSuche" value=$wlsearch}
             {/if}
             {if !empty($CWunschliste->CWunschlistePos_arr)}
+                {row class="gallery"}
                 {foreach $CWunschliste->CWunschlistePos_arr as $wlPosition}
-                    {row class='row-table mb-5'}
-                    {col cols=6 class="text-center d-sm-block pr-1 mb-2"}
-                        {row}
-                            {col md=6}
-                                {link href=$wlPosition->Artikel->cURLFull}
-                                    {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->cVorschaubildURL fluid=true}
-                                {/link}
-                            {/col}
-
-                            {col cols=12 md=6 class="product-detail text-center text-md-left mb-2"}
-                                {link href=$wlPosition->Artikel->cURL}{$wlPosition->cArtikelName}{/link}
-                                {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
-                                    <p>{lang key='productOutOfStock' section='productDetails'}</p>
-                                {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-                                    <p>{lang key='priceOnApplication' section='global'}</p>
-                                {else}
-                                    {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='wishlist'}
-                                {/if}
+                    {col cols=12 md=4 class="product-wrapper mb-5"}
+                        <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" class="product-cell text-center hover-enabled">
+                            {if $isCurrenctCustomer === true}
+                                {button
+                                    type="submit"
+                                    variant="link"
+                                    name="remove" value=$wlPosition->kWunschlistePos
+                                    title="{lang key='wishlistremoveItem' section='login'}"
+                                    class="wishlist-pos-delete float-right text-decoration-none mb-2 fs-large"
+                                    data=["toggle"=>"tooltip"]
+                                }
+                                    &times;
+                                {/button}
+                            {/if}
+                            {link class="image-box mx-auto clearer d-block" href=$wlPosition->Artikel->cURLFull}
+                                {image alt=$wlPosition->Artikel->cName src=$wlPosition->Artikel->Bilder[0]->cURLNormal fluid=true}
+                            {/link}
+                            {link href=$wlPosition->Artikel->cURL class="caption my-2"}
+                                {$wlPosition->cArtikelName}
+                            {/link}
+                            {if $wlPosition->Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+                                <p class="caption text-decoration-none">{lang key='productOutOfStock' section='productDetails'}</p>
+                            {elseif $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                                <p class="caption text-decoration-none">{lang key='priceOnApplication' section='global'}</p>
+                            {else}
+                                {include file='productdetails/price.tpl' Artikel=$wlPosition->Artikel tplscope='wishlist'}
+                            {/if}
+                            <div class="product-characteristics">
                                 {foreach $wlPosition->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft}
                                     {if $CWunschlistePosEigenschaft->cFreifeldWert}
                                         <p>
@@ -338,64 +349,61 @@
                                         {$CWunschlistePosEigenschaft->cEigenschaftWertName}{if $wlPosition->CWunschlistePosEigenschaft_arr|@count > 1 && !$CWunschlistePosEigenschaft@last}</p>{/if}
                                     {/if}
                                 {/foreach}
-                            {/col}
-                        {/row}
-                    {/col}
-
-                    {col cols=6 class="mb-2"}
-                        {textarea readonly=($isCurrenctCustomer !== true) rows="5" name="Kommentar_{$wlPosition->kWunschlistePos}"}{$wlPosition->cKommentar}{/textarea}
-                    {/col}
-                    {if $wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-                        {col class='text-right mb-2'}
-                            {link
-                                href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
-                                class="btn btn-secondary"
-                                title="{lang key='wishlistremoveItem' section='login'}"
-                            }
-                                <span class="fa fa-trash"></span>
-                            {/link}
-                        {/col}
-                    {else}
-                        {col cols=12 class='text-right mb-2'}
-                        {input
-                            readonly=($isCurrenctCustomer !== true)
-                            name="Anzahl_{$wlPosition->kWunschlistePos}"
-                            class="wunschliste_anzahl d-inline-block mr-3 w-auto" type="text"
-                            value="{$wlPosition->fAnzahl|replace_delim}"
-                        }
-                        {$wlPosition->Artikel->cEinheit}
-                        {buttongroup}
-                                {if $wlPosition->Artikel->bHasKonfig}
-                                    {link href=$wlPosition->Artikel->cURLFull
-                                        class="btn btn-primary"
-                                        title="{lang key='product' section='global'} {lang key='configure' section='global'}"
-                                    }
-                                        <span class="fa fa-cogs"></span>
-                                    {/link}
-                                {else}
-                                    {button
-                                        name="addToCart"
-                                        value=$wlPosition->kWunschlistePos
-                                        variant="primary"
-                                        title="{lang key='wishlistaddToCart' section='login'}"
-                                    }
-                                        <span class="fas fa-shopping-cart"></span>
-                                    {/button}
+                            </div>
+                            <div class="expandable pb-3">
+                                {textarea
+                                    readonly=($isCurrenctCustomer !== true)
+                                    rows="5"
+                                    name="Kommentar_{$wlPosition->kWunschlistePos}"
+                                    class="my-3"
+                                }{$wlPosition->cKommentar}{/textarea}
+                                {if !($wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
+                                    {inputgroup}
+                                        {input readonly=($isCurrenctCustomer !== true)
+                                            type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                            min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                            required=($wlPosition->Artikel->fAbnahmeintervall > 0)
+                                            step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
+                                            class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
+                                            aria=["label"=>"{lang key='quantity'}"]
+                                            value="{$wlPosition->fAnzahl}"
+                                            data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                        }
+                                        {if $wlPosition->Artikel->cEinheit}
+                                            {inputgroupappend}
+                                                {inputgrouptext class="unit form-control"}
+                                                    {$wlPosition->Artikel->cEinheit}
+                                                {/inputgrouptext}
+                                            {/inputgroupappend}
+                                        {/if}
+                                        {inputgroupaddon append=true}
+                                            {if $wlPosition->Artikel->bHasKonfig}
+                                                {link href=$wlPosition->Artikel->cURLFull
+                                                    class="btn btn-primary ml-3"
+                                                    title="{lang key='product' section='global'} {lang key='configure' section='global'}"
+                                                }
+                                                    <span class="fa fa-cogs"></span>
+                                                {/link}
+                                            {else}
+                                                {button
+                                                    type="submit"
+                                                    name="addToCart"
+                                                    value=$wlPosition->kWunschlistePos
+                                                    variant="primary"
+                                                    class="ml-3"
+                                                    title="{lang key='wishlistaddToCart' section='login'}"
+                                                }
+                                                    <span class="fas fa-shopping-cart"></span>
+                                                {/button}
+                                            {/if}
+                                        {/inputgroupaddon}
+                                    {/inputgroup}
                                 {/if}
-                                {if $isCurrenctCustomer === true}
-                                    {button
-                                        type="submit"
-                                        name="remove" value=$wlPosition->kWunschlistePos
-                                        title="{lang key='wishlistremoveItem' section='login'}"
-                                    }
-                                        <span class="fa fa-trash"></span>
-                                    {/button}
-                                {/if}
-                            {/buttongroup}
-                        {/col}
-                    {/if}
-                    {/row}
+                            </div>
+                        </div>
+                    {/col}
                 {/foreach}
+                {/row}
                 {row}
                     {col cols=12}
                         {buttongroup class="float-right mb-3"}

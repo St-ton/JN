@@ -805,9 +805,11 @@ class Wunschliste
             $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $upd);
 
             // Ist eine Anzahl gesezt
-            if ((int)$_POST['Anzahl_' . $kWunschlistePos] > 0) {
-                $fAnzahl = (float)$_POST['Anzahl_' . $kWunschlistePos];
-                $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, (object)['fAnzahl' => $fAnzahl]);
+            if (isset($_POST['Anzahl_' . $kWunschlistePos])) {
+                $quantity = str_replace(',', '.', $_POST['Anzahl_' . $kWunschlistePos]);
+                if ((float)$quantity > 0) {
+                    $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, (object)['fAnzahl' => (float)$quantity]);
+                }
             }
         }
 

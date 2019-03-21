@@ -46,7 +46,9 @@
             <tr>
                 <td>{$versandart->cName}<br />
                     {foreach $versandart->land_arr as $land}
-                        <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}"><span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span></a>
+                        <a href="#" data-toggle="modal" data-target="#zuschlagliste-modal" data-versandart="{$versandart->kVersandart}" data-iso="{$land}">
+                            <span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span>
+                        </a>
                     {/foreach}
                 </td>
                 <td>
@@ -97,3 +99,86 @@
         </tbody>
     </table>
 </div>
+<div class="modal fade" id="zuschlagliste-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fa fa-times"></i>
+                </button>
+                <h4 class="modal-title">Zuschlagliste für </h4>
+            </div>
+            <div class="modal-body">
+                <div id="zuschlaglisten">
+
+                </div>
+                <form id="zuschlag-new" method="post" action="versandarten.php">
+                    {$jtl_token}
+                    <input type="hidden" name="neuerZuschlag" value="1" />
+                    <input type="hidden" name="kVersandart" value="0" />
+                    <input type="hidden" name="cISO" value="" />
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{__('createNewList')}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="input-group">
+                        <span class="input-group-addon">
+                            <label for="cName">{__('isleList')}</label>
+                        </span>
+                                <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" required/>
+                            </div>
+                            {foreach $sprachen as $sprache}
+                                {assign var=cISO value=$sprache->cISO}
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                    </span>
+                                    <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value=""/>
+                                </div>
+                            {/foreach}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <label for="fZuschlag">{__('additionalFee')} ({__('amount')})</label>
+                                </span>
+                                <input type="text" id="fZuschlag" name="fZuschlag" value="" class="form-control price_large" required>
+                            </div>
+                        </div>
+                        {__('plz')} <input type="text" name="cPLZ" class="form-control zipcode" /> {__('orPlzRange')}
+                        <div class="input-group">
+                            <input type="text" name="cPLZAb" class="form-control zipcode" />
+                            <span class="input-group-addon">&ndash;</span>
+                            <input type="text" name="cPLZBis" class="form-control zipcode" />
+                        </div>
+                        <div class="panel-footer">
+                            <div class="btn-group">
+                                <button type="submit" value="" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> {__('createNew')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="zuschlagliste-cancel-btn">
+                    <i class="fa fa-times"></i>
+                    {__('cancel')}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{literal}
+<script>
+    $(document).ready(function () {
+        $('a[data-target="#zuschlagliste-modal"]').click(function () {
+            $('#zuschlaglisten').html('');
+            $('#zuschlag-new input[name="kVersandart"').val($(this).data('versandart'));
+            $('#zuschlag-new input[name="cISO"').val($(this).data('iso'));
+            ioCall('updateZuschlagsListen', [$(this).data('versandart'), $(this).data('iso')], function (data) {
+                $('#zuschlaglisten').html(data.body);
+            });
+        });
+    });
+</script>
+{/literal}

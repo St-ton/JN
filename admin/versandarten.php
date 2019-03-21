@@ -740,11 +740,11 @@ if ($step === 'Zuschlagsliste') {
     $smarty->assign('Versandart', $Versandart)
            ->assign('Zuschlaege', $Zuschlaege)
            ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('Land', $db->select('tland', 'cISO', $cISO))
-           ->assign('sprachen', Sprache::getAllLanguages());
+           ->assign('Land', $db->select('tland', 'cISO', $cISO));
 }
 
 $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]])
        ->assign('oWaehrung', $db->select('twaehrung', 'cStandard', 'Y'))
        ->assign('step', $step)
+       ->assign('sprachen', Sprache::getAllLanguages())
        ->display('versandarten.tpl');

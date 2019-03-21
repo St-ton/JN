@@ -30,33 +30,164 @@ class Migration_20190319092706 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 3 WHERE kEinstellungenConf = 12 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 12 AND cWert = "Y"');
-        $this->execute('INSERT INTO teinstellungenconfwerte VALUES(12, "Ja, optionale Angabe", "O", 1)') ;
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 3 WHERE kEinstellungenConf = 15 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 15 AND cWert = "Y"');
-        $this->execute('INSERT INTO teinstellungenconfwerte VALUES(15, "Ja, optionale Angabe", "O", 1)') ;
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 3 WHERE kEinstellungenConf = 302 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 302 AND cWert = "Y"');
-        $this->execute('INSERT INTO teinstellungenconfwerte VALUES(302, "Ja, optionale Angabe", "O", 1)') ;
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 3 WHERE kEinstellungenConf = 289 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 289 AND cWert = "Y"');
-        $this->execute('INSERT INTO teinstellungenconfwerte VALUES(289, "Ja, optionale Angabe", "O", 1)') ;
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 3
+                WHERE teinstellungenconf.cWertName='kundenregistrierung_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='kundenregistrierung_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
+        $this->execute("INSERT INTO teinstellungenconfwerte VALUES(
+                  (SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName = 'kundenregistrierung_abfragen_anrede'),
+                  'Ja, optionale Angabe', 'O', 1)");
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 3
+                WHERE teinstellungenconf.cWertName='lieferadresse_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='lieferadresse_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
+        $this->execute("INSERT INTO teinstellungenconfwerte VALUES(
+                  (SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName = 'lieferadresse_abfragen_anrede'),
+                  'Ja, optionale Angabe', 'O', 1)");
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 3
+                WHERE teinstellungenconf.cWertName='kontakt_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='kontakt_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
+        $this->execute("INSERT INTO teinstellungenconfwerte VALUES(
+                  (SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName = 'kontakt_abfragen_anrede'),
+                  'Ja, optionale Angabe', 'O', 1)");
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 3
+                WHERE teinstellungenconf.cWertName='produktfrage_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='produktfrage_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
+        $this->execute("INSERT INTO teinstellungenconfwerte VALUES(
+                  (SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName = 'produktfrage_abfragen_anrede'),
+                  'Ja, optionale Angabe', 'O', 1)");
     }
 
     public function down()
     {
-        $this->execute('DELETE FROM teinstellungenconfwerte WHERE kEinstellungenConf = 12 AND nSort = 1');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 12 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 1 WHERE kEinstellungenConf = 12 AND cWert = "Y"');
-        $this->execute('DELETE FROM teinstellungenconfwerte WHERE kEinstellungenConf = 15 AND nSort = 1');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 15 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 1 WHERE kEinstellungenConf = 15 AND cWert = "Y"');
-        $this->execute('DELETE FROM teinstellungenconfwerte WHERE kEinstellungenConf = 302 AND nSort = 1');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 302 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 1 WHERE kEinstellungenConf = 302 AND cWert = "Y"');
-        $this->execute('DELETE FROM teinstellungenconfwerte WHERE kEinstellungenConf = 289 AND nSort = 1');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 2 WHERE kEinstellungenConf = 289 AND cWert = "N"');
-        $this->execute('UPDATE teinstellungenconfwerte SET nSort = 1 WHERE kEinstellungenConf = 289 AND cWert = "Y"');
+        $this->execute(
+            "DELETE teinstellungenconfwerte
+              FROM teinstellungenconfwerte 
+              JOIN teinstellungenconf USING(kEinstellungenConf)
+              WHERE teinstellungenconf.cWertName='kundenregistrierung_abfragen_anrede'
+                AND teinstellungenconfwerte.nSort = 1"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='kundenregistrierung_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 1
+                WHERE teinstellungenconf.cWertName='kundenregistrierung_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
+
+        $this->execute(
+            "DELETE teinstellungenconfwerte
+              FROM teinstellungenconfwerte 
+              JOIN teinstellungenconf USING(kEinstellungenConf)
+              WHERE teinstellungenconf.cWertName='lieferadresse_abfragen_anrede'
+                AND teinstellungenconfwerte.nSort = 1"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='lieferadresse_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 1
+                WHERE teinstellungenconf.cWertName='lieferadresse_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
+
+        $this->execute(
+            "DELETE teinstellungenconfwerte
+              FROM teinstellungenconfwerte 
+              JOIN teinstellungenconf USING(kEinstellungenConf)
+              WHERE teinstellungenconf.cWertName='kontakt_abfragen_anrede'
+                AND teinstellungenconfwerte.nSort = 1"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='kontakt_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 1
+                WHERE teinstellungenconf.cWertName='kontakt_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
+
+        $this->execute(
+            "DELETE teinstellungenconfwerte
+              FROM teinstellungenconfwerte 
+              JOIN teinstellungenconf USING(kEinstellungenConf)
+              WHERE teinstellungenconf.cWertName='produktfrage_abfragen_anrede'
+                AND teinstellungenconfwerte.nSort = 1"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 2
+                WHERE teinstellungenconf.cWertName='produktfrage_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'N'"
+        );
+        $this->execute(
+            "UPDATE teinstellungenconfwerte
+                JOIN teinstellungenconf USING(kEinstellungenConf)
+                SET teinstellungenconfwerte.nSort = 1
+                WHERE teinstellungenconf.cWertName='produktfrage_abfragen_anrede'
+                    AND teinstellungenconfwerte.cWert = 'Y'"
+        );
     }
 }

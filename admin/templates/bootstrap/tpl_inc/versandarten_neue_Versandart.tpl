@@ -572,34 +572,34 @@
             <div class="panel-heading">
                 <h3 class="panel-title">{__('shipToCountries')}</h3>
             </div>
-            {foreach $sortedCountries as $continent => $countries}
-                <div class="row collapsed" data-toggle="collapse" data-target="#collapse-{$continent}">>
-                    <div class="col-md-6">
-                        {$continent}
+            {foreach $continents as $continentKey => $continent}
+                <div class="row">
+                    <div class="col-md-6 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
+                        {$continent->name}
                     </div>
-                    <div class="col-md-2">
-                        {count($countries)} Länder
+                    <div class="col-md-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
+                        {$continent->countriesCount} Länder
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
                         0 ausgewählt
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 select-all-continent" data-continent="continent-{$continentKey}">
                         Alle auswählen
                     </div>
                 </div>
-                <div class="row collapse in" id="collapse-{$continent}">
+                <div class="row collapse in" id="collapse-continent-{$continentKey}">
                     <div class="col-md-12">
-                        <table class="table" style="margin-top: 10px;">
+                        <table class="table">
                             <tbody>
                             <tr>
-                                {foreach $countries as $country}
-                                {if $country@index % 3 === 0}
+                                {foreach $continent->countries as $country}
+                                {if $country@index % 5 === 0}
                                 <td style="height:0;border:0 none;" colspan="2"></td>
                             </tr>
                             <tr>
                                 {/if}
                                 <td>
-                                    <input type="checkbox" name="land[]" id="country_{$country->cISO}" value="{$country->cISO}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($country->cISO,$gewaehlteLaender)} checked="checked"{/if} />
+                                    <input type="checkbox" name="land[]" data-id="country_{$country->cISO}" value="{$country->cISO}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($country->cISO,$gewaehlteLaender)} checked="checked"{/if} />
                                     <label for="country_{$country->cISO}">{$country->cName}</label>
                                 </td>
                                 {/foreach}
@@ -614,116 +614,25 @@
         {literal}
             <script type="text/javascript">
                 <!--
-                Array.prototype.contains = function (elem) {
-                    var i;
-                    for (i = 0; i < this.length; i++) {
-                        if (this[i] == elem) {
-                            return true;
-                        }
+                $('.select-all-continent').click(function(){
+                    $(this).toggleClass('all-selected');
+                    var continent = $(this).data('continent');
+                    if ($(this).hasClass('all-selected')) {
+                        $('#collapse-' + continent + ' input[name="land[]"]').each(function () {
+                            $('input[data-id="' + $(this).data('id') + '"]').prop('checked', true);
+                        });
+                    } else {
+                        $('#collapse-' + continent + ' input[name="land[]"]').each(function () {
+                            $('input[data-id="' + $(this).data('id') + '"]').prop('checked', false);
+                        })
                     }
-
-                    return false;
-                };
-
-                var Nordasien = ['MN', 'RU'],
-                    Ostasien = ['CN', 'TW', 'JP', 'KP', 'KR'],
-                    Suedasien = ['BD', 'BT', 'IN', 'MV', 'NP', 'PK', 'LK'],
-                    Suedostasien = ['BN', 'ID', 'KH', 'LA', 'MY', 'MM', 'PH', 'SG', 'TH', 'TL', 'VN'],
-                    Vorderasien = ['EG', 'AM', 'AZ', 'BH', 'GE', 'IQ', 'IR', 'IL', 'YE', 'JO', 'QA', 'KW', 'LB', 'OM', 'PS', 'SA', 'SY', 'TR', 'AE', 'CY'],
-                    Zentralasien = ['AF', 'KZ', 'KG', 'TJ', 'TM', 'ZU'],
-                    Asien = ['MN', 'RU', 'CN', 'TW', 'JP', 'KP', 'KR', 'BD', 'BT', 'IN', 'MV', 'NP', 'PK', 'LK', 'BN', 'ID', 'KH', 'LA', 'MY', 'MM', 'PH', 'SG', 'TH', 'TL', 'VN', 'EG', 'AM', 'AZ', 'BH', 'GE', 'IQ', 'IR', 'IL', 'YE', 'JO', 'QA', 'KW', 'LB', 'OM', 'PS', 'SA', 'SY', 'TR', 'AE', 'AF', 'KG', 'TJ', 'TM'],
-                    Europa = ['AL', 'AD', 'BE', 'BA', 'BG', 'DK', 'DE', 'EE', 'FI', 'FR', 'GR', 'IE', 'IT', 'KZ', 'HR', 'LV', 'LI', 'LT', 'LU', 'MT', 'MK', 'MD', 'MC', 'ME', 'NL', 'NO', 'AT', 'PL', 'PT', 'RO', 'RU', 'SM', 'SE', 'CH', 'RS', 'SK', 'SI', 'ES', 'CZ', 'TR', 'UA', 'HU', 'GB', 'VA', 'BY', 'FO', 'GI', 'SJ', 'CY', 'IS', 'YU'],
-                    Europa_EU = ['BE', 'BG', 'DK', 'DE', 'EE', 'FI', 'FR', 'GR', 'HR', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'AT', 'PL', 'PT', 'RO', 'SE', 'SK', 'SI', 'ES', 'CZ', 'HU', 'GB', 'CY'],
-                    Europa_nichtEU = ['AL', 'AD', 'BA', 'CH', 'IL', 'KZ', 'LI', 'MK', 'MD', 'MC', 'ME', 'NO', 'RU', 'SM', 'CH', 'RS', 'TR', 'UA', 'VA', 'BY', 'FO', 'GI', 'SJ', 'IS', 'YU'],
-                    Afrika = ['EG', 'DZ', 'AO', 'GQ', 'ET', 'BJ', 'BW', 'BF', 'BI', 'DJ', 'CI', 'ER', 'GA', 'GM', 'GH', 'GN', 'GW', 'CM', 'CV', 'KE', 'KM', 'CD', 'CG', 'LS', 'LR', 'LY', 'MG', 'MW', 'ML', 'MA', 'MR', 'MU', 'MZ', 'NA', 'NE', 'NG', 'RW', 'ZM', 'ST', 'SN', 'SC', 'SL', 'ZW', 'SO', 'ZA', 'SD', 'SZ', 'TZ', 'TG', 'TD', 'TN', 'UG', 'CF'],
-                    Nordamerika = ['CA', 'MX', 'US', 'BM', 'GL', 'PM'],
-                    Mittelamerika = ['BZ', 'CR', 'SV', 'GT', 'HN', 'NI', 'PA'],
-                    Suedamerika = ['AR', 'BO', 'BR', 'CL', 'CO', 'EC', 'FK', 'GF', 'GY', 'PY', 'PE', 'SR', 'UY', 'VE'],
-                    Karibik = ['AG', 'BS', 'BB', 'CU', 'DM', 'DO', 'GD', 'HAT', 'JM', 'KN', 'LC', 'VC', 'TT', 'AI', 'AW', 'KY', 'GP', 'MQ', 'MS', 'AN', 'PR', 'TC', 'VG', 'VI'],
-                    Ozeanien = ['AU', 'FJ', 'KI', 'MH', 'FM', 'NR', 'NZ', 'PW', 'PG', 'SB', 'WS', 'TO', 'TV', 'VU', 'AS', 'GU', 'UM', 'MP', 'PF', 'NC', 'WF', 'PN', 'NF', 'CK', 'NU', 'TK'],
-                    Welt = ['MN', 'RU', 'CN', 'TW', 'JP', 'KP', 'KR', 'BD', 'BT', 'IN', 'MV', 'NP', 'PK', 'LK', 'BN', 'ID', 'KH', 'LA', 'MY', 'MM', 'PH', 'SG', 'TH', 'TL', 'VN', 'EG', 'AM', 'AZ', 'BH', 'GE', 'IQ', 'IR', 'IL', 'YE', 'JO', 'QA', 'KW', 'LB', 'OM', 'PS', 'SA', 'SY', 'TR', 'AE', 'CY', 'AF', 'KZ', 'KG', 'TJ', 'TM', 'ZU', 'AL', 'AD', 'BE', 'BA', 'BG', 'DK', 'DE', 'EE', 'FI', 'FR', 'GR', 'IE', 'IL', 'IT', 'KZ', 'HR', 'LV', 'LI', 'LT', 'LU', 'MT', 'MK', 'MD', 'MC', 'ME', 'NL', 'NO', 'AT', 'PL', 'PT', 'RO', 'RU', 'SM', 'SE', 'CH', 'RS', 'SK', 'SI', 'ES', 'CZ', 'TR', 'UA', 'HU', 'GB', 'VA', 'BY', 'FO', 'GI', 'SJ', 'SJ', 'CY', 'EG', 'DZ', 'AO', 'GQ', 'ET', 'BJ', 'BW', 'BF', 'BI', 'DJ', 'CI', 'ER', 'GA', 'GM', 'GH', 'GN', 'GW', 'CM', 'CV', 'KE', 'KM', 'CD', 'CG', 'LS', 'LR', 'LY', 'MG', 'MW', 'ML', 'MA', 'MR', 'MU', 'MZ', 'NA', 'NE', 'NG', 'RW', 'ZM', 'ST', 'SN', 'SC', 'SL', 'ZW', 'SO', 'ZA', 'SD', 'SZ', 'TZ', 'TG', 'TD', 'TN', 'UG', 'CF', 'CA', 'MX', 'US', 'BM', 'GL', 'PM', 'BZ', 'CR', 'SV', 'GT', 'HN', 'NI', 'PA', 'AR', 'BO', 'BR', 'CL', 'CO', 'EC', 'FK', 'GF', 'GY', 'PY', 'PE', 'SR', 'UY', 'VE', 'AG', 'BS', 'BB', 'CU', 'DM', 'DO', 'GD', 'HAT', 'JM', 'KN', 'LC', 'VC', 'TT', 'AI', 'AW', 'KY', 'GP', 'MQ', 'MS', 'AN', 'PR', 'TC', 'VG', 'VI', 'AU', 'FJ', 'KI', 'MH', 'FM', 'NR', 'NZ', 'PW', 'PG', 'SB', 'WS', 'TO', 'TV', 'VU', 'AS', 'GU', 'UM', 'MP', 'PF', 'NC', 'WF', 'PN', 'NF', 'CK', 'NU', 'TK'];
-
-                function toggle(region) {
-                    var i;
-                    if (document.versandart_neu.elements['land[]']) {
-                        switch (region) {
-                            case 'Europa_EU':
-                                for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++) {
-                                    if (Europa_EU.contains(document.versandart_neu.elements['land[]'][i].value))
-                                        document.versandart_neu.elements['land[]'][i].checked = true;
-                                }
-                                break;
-                            case 'Europa_nichtEU':
-                                for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++) {
-                                    if (Europa_nichtEU.contains(document.versandart_neu.elements['land[]'][i].value))
-                                        document.versandart_neu.elements['land[]'][i].checked = true;
-                                }
-                                break;
-                            case 'Europa':
-                                for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++) {
-                                    if (Europa_EU.contains(document.versandart_neu.elements['land[]'][i].value))
-                                        document.versandart_neu.elements['land[]'][i].checked = true;
-                                }
-                                break;
-                            case 'Nordamerika':
-                                for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++) {
-                                    if (Nordamerika.contains(document.versandart_neu.elements['land[]'][i].value))
-                                        document.versandart_neu.elements['land[]'][i].checked = true;
-                                }
-                                break;
-                            case 'Asien':
-                                for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++) {
-                                    if (Asien.contains(document.versandart_neu.elements['land[]'][i].value))
-                                        document.versandart_neu.elements['land[]'][i].checked = true;
-                                }
-                                break;
-                            case 'allesAus':
-                                for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++)
-                                    document.versandart_neu.elements['land[]'][i].checked = false;
-                                break;
-                            case 'allesAn':
-                                for (i = 0; i < document.versandart_neu.elements['land[]'].length; i++)
-                                    document.versandart_neu.elements['land[]'][i].checked = true;
-                                break;
-                        }
-                    }
-                }
+                });
+                $('input[name="land[]"]').change(function () {
+                    $('input[data-id="' + $(this).data('id') + '"]').prop('checked', $(this).prop('checked'));
+                });
                 //-->
             </script>
         {/literal}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('shipToCountries')}</h3>
-            </div>
-            <div class="panel-body">
-                <div class="btn-group">
-                    <a onclick="toggle('Europa_EU');" class="btn btn-default">{__('checkEU')}</a>
-                    <a onclick="toggle('Europa_nichtEU');" class="btn btn-default">{__('checkNonEU')}</a>
-                    <a onclick="toggle('Europa');" class="btn btn-default">{__('checkEurope')}</a>
-                    <a onclick="toggle('Nordamerika');" class="btn btn-default">{__('checkNA')}</a>
-                    <a onclick="toggle('Asien');" class="btn btn-default">{__('checkAsia')}</a>
-                    <a onclick="toggle('allesAus');" class="btn btn-danger">{__('checkAllOff')}</a>
-                    <a onclick="toggle('allesAn');" class="btn btn-primary">{__('checkAllOn')}</a>
-                </div>
-                <table class="table" style="margin-top: 10px;">
-                    <tbody>
-                    <tr>
-                        {foreach $versandlaender as $versandland}
-                        {if $versandland@index % 3 === 0}
-                        <td style="height:0;border:0 none;" colspan="4"></td>
-                    </tr>
-                    <tr>
-                        {/if}
-                        <td>
-                            <input type="checkbox" name="land[]" id="country_{$versandland->cISO}" value="{$versandland->cISO}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($versandland->cISO,$gewaehlteLaender)} checked="checked"{/if} />
-                            <label for="country_{$versandland->cISO}">{$versandland->cName}</label>
-                        </td>
-                        {/foreach}
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
         <div class="save_wrapper btn-group">
             <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{__('createShippingType')}{else}{__('modifyedShippingType')}{/if}"
                     class="btn btn-primary">

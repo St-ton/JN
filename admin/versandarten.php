@@ -340,7 +340,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         : 0;
 
     $Versandart->cLaender = '';
-    $Laender              = $_POST['land'];
+    $Laender              = array_unique($_POST['land']);
     if (is_array($Laender)) {
         foreach ($Laender as $Land) {
             $Versandart->cLaender .= $Land . ' ';
@@ -573,7 +573,7 @@ if ($step === 'neue Versandart') {
     $smarty->assign('sprachen', $sprachen)
            ->assign('zahlungsarten', $zahlungsarten)
            ->assign('versandlaender', $versandlaender)
-           ->assign('sortedCountries', getSortedCountries())
+           ->assign('continents', getContinents())
            ->assign('versandberechnung', $versandberechnung)
            ->assign('waehrung', $standardwaehrung->cName)
            ->assign('kundengruppen', $db->query(

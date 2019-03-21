@@ -371,7 +371,10 @@ function getMissingShippingClassCombi()
     return $res;
 }
 
-function getSortedCountries(): array
+/**
+ * @return array
+ */
+function getContinents(): array
 {
     $countries = Shop::Container()->getDB()->query(
         'SELECT *, cDeutsch AS cName FROM tland ORDER BY cDeutsch',
@@ -388,5 +391,14 @@ function getSortedCountries(): array
         }
     }
 
-    return $countriesByContinent;
+    $continents = [];
+    foreach ($countriesByContinent as $continent => $countries) {
+        $continentTMP                 = new stdClass();
+        $continentTMP->name           = $continent;
+        $continentTMP->countries      = $countries;
+        $continentTMP->countriesCount = count($countries);
+        $continents[]                 = $continentTMP;
+    }
+
+    return $continents;
 }

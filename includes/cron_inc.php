@@ -36,6 +36,6 @@ if (PHP_SAPI === 'cli') {
         flush();
     }
 }
-$db    = Shop::Container()->getDB();
-$queue = new Queue($db, $logger, new JobFactory($db, $logger));
-$queue->run(new Checker($db, $logger));
+$db     = Shop::Container()->getDB();
+$runner = new Queue($db, $logger, new JobFactory($db, $logger));
+$runner->run(new Checker($db, $logger));

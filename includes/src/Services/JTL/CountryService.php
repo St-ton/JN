@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -11,7 +11,6 @@ use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Cache\JTLCacheInterface;
-use JTL\Shop;
 
 /**
  * Class CountryService
@@ -58,10 +57,10 @@ class CountryService implements CountryServiceInterface
         $countries = $this->db->query('SELECT * FROM tland', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($countries as $country) {
             $countryTMP = new Country($country->cISO);
-            $countryTMP->setEU($country->nEU)
-                      ->setContinent($country->cKontinent)
-                      ->setNameDE($country->cDeutsch)
-                      ->setNameEN($country->cEnglisch);
+            $countryTMP->setEU((int)$country->nEU)
+                       ->setContinent($country->cKontinent)
+                       ->setNameDE($country->cDeutsch)
+                       ->setNameEN($country->cEnglisch);
 
             $this->getCountryList()->push($countryTMP);
         }

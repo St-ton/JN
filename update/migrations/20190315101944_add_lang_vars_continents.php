@@ -43,7 +43,7 @@ class Migration_20190315101944 extends Migration implements IMigration
         $this->setLocalization('ger', 'global', 'Afrika', 'Afrika');
         $this->setLocalization('eng', 'global', 'Afrika', 'Africa');
         $this->setLocalization('ger', 'global', 'Antarktis', 'Antarktis');
-        $this->setLocalization('eng', 'global', 'Antarktis', 'Africa');
+        $this->setLocalization('eng', 'global', 'Antarktis', 'Antarctica');
     }
 
     public function down()

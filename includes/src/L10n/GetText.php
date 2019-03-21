@@ -43,14 +43,23 @@ class GetText
      */
     public function __construct()
     {
-        $this->setLanguage($_SESSION['AdminAccount']->language ?? 'de-DE')
+        $this->setLanguage($_SESSION['AdminAccount']->language ?? $this->getDefaultLanguage())
              ->loadAdminLocale();
     }
 
     /**
+     * @return string
+     */
+    public function getDefaultLanguage(): string
+    {
+        return 'de-DE';
+    }
+
+    /**
+     * @param string $inLanguage
      * @return array
      */
-    public function getAdminLanguages(): array
+    public function getAdminLanguages(string $inLanguage): array
     {
         $languages  = [];
         $localeDirs = \array_diff(
@@ -59,7 +68,10 @@ class GetText
         );
 
         foreach ($localeDirs as $dir) {
-            $languages[$dir] = \Locale::getDisplayLanguage($dir, $_SESSION['AdminAccount']->language ?? 'de-DE');
+            $languages[$dir] = \Locale::getDisplayLanguage(
+                $dir,
+                $_SESSION['AdminAccount']->language ?? $inLanguage ?? $this->getDefaultLanguage()
+            );
         }
 
         return $languages;

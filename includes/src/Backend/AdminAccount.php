@@ -12,6 +12,7 @@ use function Functional\map;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
+use JTL\L10n\GetText;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
 use JTL\Mapper\AdminLoginStatusToLogLevel;
 use JTL\Model\AuthLogEntry;
@@ -64,21 +65,25 @@ class AdminAccount
 
     /**
      * AdminAccount constructor.
-     * @param DbInterface               $db
+     * @param DbInterface                   $db
      * @param LoggerInterface               $logger
      * @param AdminLoginStatusMessageMapper $statusMessageMapper
      * @param AdminLoginStatusToLogLevel    $levelMapper
+     * @param GetText                       $getText
+     * @throws \Exception
      */
     public function __construct(
         DbInterface $db,
         LoggerInterface $logger,
         AdminLoginStatusMessageMapper $statusMessageMapper,
-        AdminLoginStatusToLogLevel $levelMapper
+        AdminLoginStatusToLogLevel $levelMapper,
+        GetText $getText
     ) {
         $this->db            = $db;
         $this->authLogger    = $logger;
         $this->messageMapper = $statusMessageMapper;
         $this->levelMapper   = $levelMapper;
+        $this->getText       = $getText;
         Backend::getInstance();
         $this->initDefaults();
         $this->validateSession();
@@ -91,7 +96,7 @@ class AdminAccount
     {
         if (!isset($_SESSION['AdminAccount'])) {
             $adminAccount              = new stdClass();
-            $adminAccount->language    = 'de-DE';
+            $adminAccount->language    = $this->getText->getDefaultLanguage();
             $adminAccount->kAdminlogin = null;
             $adminAccount->oGroup      = null;
             $adminAccount->cLogin      = null;
@@ -164,10 +169,10 @@ class AdminAccount
         $now  = (new DateTime())->format('U');
         $hash = \md5($mail . Shop::Container()->getCryptoService()->randomString(30));
         $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
-        $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $mail, $upd);
+        $res  = $this->db->update('tadminlogin', 'cMail', $mail, $upd);
         if ($res > 0) {
             require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-            $user                   = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
+            $user                   = $this->db->select('tadminlogin', 'cMail', $mail);
             $obj                    = new stdClass();
             $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $mail;
             $obj->cHash             = $hash;

@@ -188,5 +188,5 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('notifications', Notification::getInstance())
        ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('favorites', $oAccount->favorites())
-       ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages())
+       ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages($_SESSION['AdminAccount']->language))
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

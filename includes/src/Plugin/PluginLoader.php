@@ -35,14 +35,14 @@ class PluginLoader extends AbstractLoader
         if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
             $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
         }
+        $getText       = Shop::Container()->getGetText();
         $languageCode  = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
-        $languageTag   = $_SESSION['AdminAccount']->language ?? 'de-DE';
+        $languageTag   = $_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage();
         $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID . '_' . $languageTag;
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
         } elseif (($extension = $this->loadFromCache()) !== null) {
-            $getText = Shop::Container()->getGetText();
             $getText->setLanguage($languageTag);
             $getText->loadPluginLocale('base', $extension);
 
@@ -95,7 +95,7 @@ class PluginLoader extends AbstractLoader
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
         $getText = Shop::Container()->getGetText();
-        $getText->setLanguage($_SESSION['AdminAccount']->language ?? 'de-DE');
+        $getText->setLanguage($_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage());
         $getText->loadPluginLocale('base', $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));

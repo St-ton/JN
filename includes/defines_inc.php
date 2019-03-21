@@ -46,6 +46,7 @@ define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
 define('CONF_FTP', 127);
+define('CONF_CRON', 128);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -275,6 +276,9 @@ define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
 define('PLUGIN_BOOTSTRAPPER', 'Bootstrap.php');
 define('OLD_BOOTSTRAPPER', 'bootstrap.php');
+
+define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
+
 // Red. Param
 define('R_MINDESTMENGE', 1);
 define('R_LAGER', 2);

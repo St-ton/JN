@@ -128,17 +128,18 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             break;
 
         case 'resort':
-            $ePosition = $_REQUEST['position'];
-            $boxes     = $_REQUEST['box'] ?? [];
-            $sort_arr  = $_REQUEST['sort'] ?? [];
-            $aktiv_arr = $_REQUEST['aktiv'] ?? [];
-            $boxCount  = count($boxes);
-            $bValue    = $_REQUEST['box_show'] ?? false;
-            $bOk       = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
+            $ePosition  = $_REQUEST['position'];
+            $boxes      = $_REQUEST['box'] ?? [];
+            $sort_arr   = $_REQUEST['sort'] ?? [];
+            $aktiv_arr  = $_REQUEST['aktiv'] ?? [];
+            $ignore_arr = $_REQUEST['ignore'] ?? [];
+            $boxCount   = count($boxes);
+            $bValue     = $_REQUEST['box_show'] ?? false;
+            $bOk        = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
 
             foreach ($boxes as $i => $box) {
                 $idx = 'box-filter-' . $box;
-                $boxAdmin->sort($box, $pageID, $sort_arr[$i], in_array($box, $aktiv_arr));
+                $boxAdmin->sort($box, $pageID, $sort_arr[$i], in_array($box, $aktiv_arr), in_array($box, $ignore_arr));
                 $boxAdmin->filterBoxVisibility((int)$box, $pageID, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41

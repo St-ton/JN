@@ -33,7 +33,7 @@ class Migration_20170109114728 extends Migration implements IMigration
         $this->setConfig(
             'suche_fulltext',
             'N',
-            4,
+            \CONF_ARTIKELUEBERSICHT,
             'Volltextsuche verwenden',
             'selectbox',
             105,
@@ -49,7 +49,7 @@ class Migration_20170109114728 extends Migration implements IMigration
         $this->setConfig(
             'suche_min_zeichen',
             '4',
-            4,
+            \CONF_ARTIKELUEBERSICHT,
             'Mindestzeichenanzahl des Suchausdrucks',
             'number',
             180,
@@ -65,7 +65,7 @@ class Migration_20170109114728 extends Migration implements IMigration
         $this->setConfig(
             'suche_min_zeichen',
             '4',
-            4,
+            \CONF_ARTIKELUEBERSICHT,
             'Mindestzeichenanzahl des Suchausdrucks',
             'number',
             180,

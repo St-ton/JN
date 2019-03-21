@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 wir haben Ihre Kundengruppe geändert. Sie müßten ab sofort andere Preise als den Standardpreis angezeigt bekommen.
 

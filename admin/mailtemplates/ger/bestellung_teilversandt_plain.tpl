@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr} hat sich geändert.
 

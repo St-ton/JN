@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear customer,
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
 Your order at {$Einstellungen.global.global_shopname} has been cancelled.
 Order number: {$Bestellung->cBestellNr}

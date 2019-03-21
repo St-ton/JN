@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,<br>
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
 wunschgemäß haben wir für Sie in unserem Onlineshop unter
 <strong><a href="{$ShopURL}" target="_blank" style="color: #313131;">{$ShopURL}</a></strong> ein Kundenkonto für Sie eingerichtet.<br>

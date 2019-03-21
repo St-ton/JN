@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 vielen Dank für die Registrierung in unserem Onlineshop unter <a href="{$ShopURL}" target="_blank"><strong>{$ShopURL}</strong></a><br>
 <br>

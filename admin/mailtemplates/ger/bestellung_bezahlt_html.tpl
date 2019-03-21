@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 die Zahlung für Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} vom {$Bestellung->dErstelldatum_de} in Höhe von {$Bestellung->WarensummeLocalized[0]} ist per {$Bestellung->Zahlungsart->cName} bei uns eingegangen.<br>
 <br>

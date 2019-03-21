@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 wir freuen uns Ihnen mitteilen zu dürfen, dass auf Ihrem Kundenkonto ein Gutschein für Sie hinterlegt wurde. 
 

@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 wie von Ihnen gewünscht haben wir heute Ihr Kundenkonto mit der
 Emailadresse {$Kunde->cMail} gelöscht.<br>

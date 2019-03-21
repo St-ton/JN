@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dürfen:<br>
 <br>

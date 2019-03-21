@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear customer,<br>
+Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
 we are happy to tell you that you may use the following coupon ({$Kupon->AngezeigterName}) in our online shop:<br>
 <br>

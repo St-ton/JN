@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear customer,<br>
+Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
 The tracking status for order no. {$Bestellung->cBestellNr} has changed.<br>
 <br>

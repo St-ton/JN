@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 möchten Sie Ihre Erfahrungen mit Ihren kürzlich bei uns erworbenen Produkten mit anderen teilen, so würden wir uns sehr freuen, wenn Sie eine Bewertung abgeben.<br>
 <br>

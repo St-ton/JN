@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 vielen Dank für Ihre Bewertung eines Artikels. Ihr Guthaben Bonus in Höhe von {$oBewertungGuthabenBonus->fGuthabenBonusLocalized} steht Ihnen ab sofort zur Verfügung.<br>
 Sie können Ihr Guthaben jederzeit bei einem Ihrer nächsten Einkäufe einlösen.<br>

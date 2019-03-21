@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Sehr geehrter Kunde,
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde aktualisiert.<br>
 <br>

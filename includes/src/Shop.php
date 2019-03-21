@@ -7,8 +7,6 @@
 namespace JTL;
 
 use Exception;
-use function Functional\first;
-use function Functional\tail;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginConfig;
 use JTL\Boxes\Renderer\DefaultRenderer;
@@ -16,6 +14,8 @@ use JTL\Cache\JTLCache;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Cron\Admin\Controller as CronController;
+use JTL\Cron\Starter\StarterFactory;
 use JTL\DB\DbInterface;
 use JTL\DB\NiceDB;
 use JTL\DB\ReturnType;
@@ -29,8 +29,8 @@ use JTL\Filter\ProductFilter;
 use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
 use JTL\Mapper\AdminLoginStatusToLogLevel;
@@ -38,10 +38,10 @@ use JTL\Mapper\PageTypeToPageName;
 use JTL\Media\Media;
 use JTL\Network\JTLApi;
 use JTL\OPC;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
-use JTL\Plugin\Helper as PluginHelper;
 use JTL\ProcessingHandler\NiceDBHandler;
 use JTL\Services\Container;
 use JTL\Services\DefaultServicesInterface;
@@ -56,13 +56,14 @@ use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
-use JTL\Cron\Admin\Controller as CronController;
-use Psr\Log\LoggerInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Psr\Log\LoggerInterface;
 use stdClass;
+use function Functional\first;
+use function Functional\tail;
 
 /**
  * Class Shop
@@ -952,6 +953,8 @@ final class Shop
         Dispatcher::getInstance()->fire(Event::RUN);
 
         self::$productFilter->initStates(self::getParameters());
+        $starterFactory = new StarterFactory(self::getConfig([\CONF_CRON])['cron']);
+        $starterFactory->getStarter()->start();
 
         return self::$productFilter;
     }

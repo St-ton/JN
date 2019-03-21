@@ -49,6 +49,10 @@ class ImageCache extends Job
         $images   = MediaImage::getImages($type, true, $index, $this->getLimit());
         $totalAll = MediaImage::getProductImageCount();
         $this->logger->debug('Uncached images: ' . $total . '/' . $totalAll);
+        if ($index >= $totalAll) {
+            $index  = 0;
+            $images = MediaImage::getImages($type, true, $index, $this->getLimit());
+        }
         while (\count($images) === 0 && $index < $totalAll) {
             $index += $this->getLimit();
             $images = MediaImage::getImages($type, true, $index, $this->getLimit());

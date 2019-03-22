@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Cron\Jobs;
+namespace JTL\Cron\Job;
 
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
@@ -13,9 +13,9 @@ use JTL\TrustedShops;
 
 /**
  * Class TSRating
- * @package JTL\Cron\Jobs
+ * @package JTL\Cron\Job
  */
-class TSRating extends Job
+final class TSRating extends Job
 {
     /**
      * @inheritdoc

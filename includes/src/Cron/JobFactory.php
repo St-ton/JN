@@ -7,7 +7,7 @@
 namespace JTL\Cron;
 
 use InvalidArgumentException;
-use JTL\Cron\Jobs\Dummy;
+use JTL\Cron\Job\Dummy;
 use JTL\DB\DbInterface;
 use JTL\Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;

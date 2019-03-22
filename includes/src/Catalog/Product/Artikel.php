@@ -1412,7 +1412,9 @@ class Artikel
                 break;
         }
 
-        if (!\file_exists(\PFAD_ROOT . $imagePath)) {
+        if (\file_exists(\PFAD_ROOT . $imagePath)) {
+            [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
+        } else {
             $req = MediaImage::toRequest($imagePath);
 
             if (!\is_object($req)) {
@@ -1438,13 +1440,10 @@ class Artikel
                 $old_width  = $width;
                 $old_height = $height;
 
-                $scale = \min($size['width'] / $old_width, $size['height'] / $old_height);
-
+                $scale  = \min($size['width'] / $old_width, $size['height'] / $old_height);
                 $width  = \ceil($scale * $old_width);
                 $height = \ceil($scale * $old_height);
             }
-        } else {
-            [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
         }
 
         return (object)[

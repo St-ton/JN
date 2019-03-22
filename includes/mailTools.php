@@ -21,9 +21,10 @@ use JTL\Smarty\SmartyResourceNiceDB;
 use JTL\TrustedShops;
 
 /**
- * @param array                 $params
- * @param \JTL\Smarty\JTLSmarty $smarty
+ * @param array     $params
+ * @param JTLSmarty $smarty
  * @return string
+ * @deprecated since 5.0.0
  */
 function includeMailTemplate($params, $smarty)
 {
@@ -69,9 +70,11 @@ function includeMailTemplate($params, $smarty)
  * @param stdClass      $data
  * @param null|stdClass $mail
  * @return null|bool|stdClass
+ * @deprecated since 5.0.0
  */
 function sendeMail($moduleID, $data, $mail = null)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db       = Shop::Container()->getDB();
     $mailTPL  = null;
     $bodyHtml = '';
@@ -97,7 +100,7 @@ function sendeMail($moduleID, $data, $mail = null)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
                ->setTemplateDir(PFAD_ROOT . PFAD_EMAILTEMPLATES);
-    if (MAILTEMPLATE_USE_SECURITY) {
+    if (\MAILTEMPLATE_USE_SECURITY) {
         $smarty->activateBackendSecurityMode();
     }
     if (!isset($data->tkunde)) {
@@ -143,16 +146,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 : $db->select('tsprache', 'cShopStandard', 'Y');
         }
     }
-    $oKunde = lokalisiereKunde($lang, $data->tkunde);
-
-    $smarty->assign('int_lang', $lang)//assign the current language for includeMailTemplate()
-               ->assign('Firma', $data->tfirma)
-               ->assign('Kunde', $oKunde)
-               ->assign('Kundengruppe', $data->tkundengruppe)
-               ->assign('NettoPreise', $data->tkundengruppe->nNettoPreise)
-               ->assign('ShopLogoURL', Shop::getLogo(true))
-               ->assign('ShopURL', Shop::getURL());
-
+    $oKunde                = lokalisiereKunde($lang, $data->tkunde);
     $AGB                   = new stdClass();
     $WRB                   = new stdClass();
     $WRBForm               = new stdClass();
@@ -171,11 +165,19 @@ function sendeMail($moduleID, $data, $mail = null)
     $WRBForm->cContentHtml = $oAGBWRB->cWRBFormContentHtml ?? '';
     $WRBForm->cContentText = $oAGBWRB->cWRBFormContentText ?? '';
 
-    $smarty->assign('AGB', $AGB)
-               ->assign('WRB', $WRB)
-               ->assign('DSE', $DSE)
-               ->assign('WRBForm', $WRBForm)
-               ->assign('IP', Text::htmlentities(Text::filterXSS(Request::getRealIP())));
+    $smarty->assign('int_lang', $lang)//assign the current language for includeMailTemplate()
+           ->assign('Firma', $data->tfirma)
+           ->assign('Kunde', $oKunde)
+           ->assign('Einstellungen', $config)
+           ->assign('Kundengruppe', $data->tkundengruppe)
+           ->assign('NettoPreise', $data->tkundengruppe->nNettoPreise)
+           ->assign('ShopLogoURL', Shop::getLogo(true))
+           ->assign('ShopURL', Shop::getURL())
+           ->assign('AGB', $AGB)
+           ->assign('WRB', $WRB)
+           ->assign('DSE', $DSE)
+           ->assign('WRBForm', $WRBForm)
+           ->assign('IP', Text::htmlentities(Text::filterXSS(Request::getRealIP())));
 
     $data = lokalisiereInhalt($data);
     // ModulId von einer Plugin Emailvorlage vorhanden?
@@ -228,13 +230,12 @@ function sendeMail($moduleID, $data, $mail = null)
         return false;
     }
     $mail->kEmailvorlage = $mailTPL->kEmailvorlage;
-
-    $localization      = $db->select(
+    $localization        = $db->select(
         $cTableSprache,
         ['kEmailvorlage', 'kSprache'],
         [(int)$mailTPL->kEmailvorlage, (int)$lang->kSprache]
     );
-    $mailTPL->cBetreff = injectSubject($data, $localization->cBetreff ?? null);
+    $mailTPL->cBetreff   = injectSubject($data, $localization->cBetreff ?? null);
     if (isset($mailTPL->oEinstellungAssoc_arr['cEmailSenderName'])) {
         $senderName = $mailTPL->oEinstellungAssoc_arr['cEmailSenderName'];
     }
@@ -251,8 +252,8 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_BESTELLBESTAETIGUNG:
             $smarty->assign('Bestellung', $data->tbestellung)
-                       ->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null)
-                       ->assign('oTrustedShopsBewertenButton', null);
+                   ->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null)
+                   ->assign('oTrustedShopsBewertenButton', null);
             if (isset($data->tbestellung->Zahlungsart->cModulId)
                 && mb_strlen($data->tbestellung->Zahlungsart->cModulId) > 0
             ) {
@@ -273,14 +274,10 @@ function sendeMail($moduleID, $data, $mail = null)
             }
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 $langID   = $_SESSION['cISOSprache'] ?? 'ger'; //workaround for testmails from backend
-                $ts       = new TrustedShops(-1, Text::convertISO2ISO639($langID));
-                $tsRating = $ts->holeKundenbewertungsstatus(
-                    Text::convertISO2ISO639($langID)
-                );
-                if ($tsRating !== false
-                    && mb_strlen($tsRating->cTSID) > 0
-                    && $tsRating->nStatus == 1
-                ) {
+                $langCode = Text::convertISO2ISO639($langID);
+                $ts       = new TrustedShops(-1, $langCode);
+                $tsRating = $ts->holeKundenbewertungsstatus($langCode);
+                if ($tsRating !== false && mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $data->tbestellung->oRechnungsadresse->cMail,
                         $data->tbestellung->cBestellNr
@@ -316,7 +313,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache']);
                 $ts       = new TrustedShops(-1, $langCode);
                 $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
+                if (mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $data->tbestellung->oRechnungsadresse->cMail,
                         $data->tbestellung->cBestellNr
@@ -328,7 +325,7 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_PASSWORT_VERGESSEN:
             $smarty->assign('passwordResetLink', $data->passwordResetLink)
-                       ->assign('Neues_Passwort', $data->neues_passwort);
+                   ->assign('Neues_Passwort', $data->neues_passwort);
             break;
 
         case MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN:
@@ -348,7 +345,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache']);
                 $ts       = new TrustedShops(-1, $langCode);
                 $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
+                if (mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $data->tbestellung->oRechnungsadresse->cMail,
                         $data->tbestellung->cBestellNr
@@ -387,12 +384,12 @@ function sendeMail($moduleID, $data, $mail = null)
                 $senderMail = $config['artikeldetails']['produktfrage_absender_mail'];
             }
             $smarty->assign('Nachricht', $data->tnachricht)
-                       ->assign('Artikel', $data->tartikel);
+                   ->assign('Artikel', $data->tartikel);
             break;
 
         case MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR:
             $smarty->assign('Benachrichtigung', $data->tverfuegbarkeitsbenachrichtigung)
-                       ->assign('Artikel', $data->tartikel);
+                   ->assign('Artikel', $data->tartikel);
             break;
 
         case MAILTEMPLATE_WUNSCHLISTE:
@@ -402,14 +399,10 @@ function sendeMail($moduleID, $data, $mail = null)
         case MAILTEMPLATE_BEWERTUNGERINNERUNG:
             $smarty->assign('Bestellung', $data->tbestellung);
             if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $ts       = new TrustedShops(
-                    -1,
-                    Text::convertISO2ISO639($_SESSION['cISOSprache'])
-                );
-                $tsRating = $ts->holeKundenbewertungsstatus(
-                    Text::convertISO2ISO639($_SESSION['cISOSprache'])
-                );
-                if (mb_strlen($tsRating->cTSID) > 0 && $tsRating->nStatus == 1) {
+                $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache'] ?? 'ger');
+                $ts       = new TrustedShops(-1, $langCode);
+                $tsRating = $ts->holeKundenbewertungsstatus($langCode);
+                if (mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
                     $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
                         $data->tbestellung->oRechnungsadresse->cMail,
                         $data->tbestellung->cBestellNr
@@ -424,11 +417,11 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_KUNDENWERBENKUNDEN:
             $smarty->assign('Neukunde', $data->oNeukunde)
-                       ->assign('Bestandskunde', $data->oBestandskunde);
+                   ->assign('Bestandskunde', $data->oBestandskunde);
             break;
 
         case MAILTEMPLATE_KUNDENWERBENKUNDENBONI:
-            $smarty->assign('BestandskundenBoni', $data->BestandskundenBoni)
+                $smarty->assign('BestandskundenBoni', $data->BestandskundenBoni)
                        ->assign('Neukunde', $data->oNeukunde)
                        ->assign('Bestandskunde', $data->oBestandskunde);
             break;
@@ -441,9 +434,10 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_CHECKBOX_SHOPBETREIBER:
             $smarty->assign('oCheckBox', $data->oCheckBox)
-                       ->assign('oKunde', $data->oKunde)
-                       ->assign('cAnzeigeOrt', $data->cAnzeigeOrt)
-                       ->assign('oSprache', $lang);
+                   ->assign('oKunde', $data->oKunde)
+                   ->assign('cAnzeigeOrt', $data->cAnzeigeOrt)
+                   ->assign('cAnzeigeOrt', $data->cAnzeigeOrt)
+                   ->assign('oSprache', $lang);
             if (empty($data->oKunde->cVorname) && empty($data->oKunde->cNachname)) {
                 $subjectLineCustomer = $data->oKunde->cMail;
             } else {
@@ -461,11 +455,9 @@ function sendeMail($moduleID, $data, $mail = null)
                 false
             );
             $smarty->assign('oKunde', $data->tkunde)
-                       ->assign('oBewertungGuthabenBonus', $data->oBewertungGuthabenBonus);
+                   ->assign('oBewertungGuthabenBonus', $data->oBewertungGuthabenBonus);
             break;
     }
-
-    $smarty->assign('Einstellungen', $config);
 
     $pluginBody = isset($mailTPL->kPlugin) && $mailTPL->kPlugin > 0 ? '_' . $mailTPL->kPlugin : '';
 
@@ -513,7 +505,7 @@ function sendeMail($moduleID, $data, $mail = null)
         $bodyText .= "\n\n" . $heading . "\n\n" . $AGB->cContentText;
     }
     if ((int)$mailTPL->nDSE === 1) {
-        $heading = 'Datenschutzerklärung';//Shop::Lang()->get('agb');
+        $heading = Shop::Lang()->get('dse');
         if (mb_strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br /><h3>' . $heading . '</h3>' . $DSE->cContentHtml;
         }
@@ -627,6 +619,7 @@ function sendeMail($moduleID, $data, $mail = null)
 /**
  * @param string $cEmail
  * @return bool
+ * @deprecated since 5.0.0
  */
 function pruefeGlobaleEmailBlacklist($cEmail)
 {
@@ -646,6 +639,7 @@ function pruefeGlobaleEmailBlacklist($cEmail)
 
 /**
  * @param object $mail
+ * @deprecated since 5.0.0
  */
 function verschickeMail($mail)
 {
@@ -771,8 +765,9 @@ function verschickeMail($mail)
 
 /**
  * @param object $object
- * @param string        $subject
+ * @param string $subject
  * @return mixed
+ * @deprecated since 5.0.0
  */
 function injectSubject($object, $subject)
 {
@@ -809,6 +804,7 @@ function injectSubject($object, $subject)
 /**
  * @param object $object
  * @return mixed
+ * @deprecated since 5.0.0
  */
 function lokalisiereInhalt($object)
 {
@@ -823,6 +819,7 @@ function lokalisiereInhalt($object)
  * @param object         $lang
  * @param stdClass|Kunde $customer
  * @return mixed
+ * @deprecated since 5.0.0
  */
 function lokalisiereKunde($lang, $customer)
 {
@@ -871,6 +868,7 @@ function lokalisiereKunde($lang, $customer)
  * @param object        $lang
  * @param Lieferadresse $deliveryAddress
  * @return object
+ * @deprecated since 5.0.0
  */
 function lokalisiereLieferadresse($lang, $deliveryAddress)
 {
@@ -894,29 +892,10 @@ function lokalisiereLieferadresse($lang, $deliveryAddress)
 }
 
 /**
- * @deprecated since 4.05.2 - use getPDFAttachments instead
- * This function produces inconsistency between attachment and name if one or more attachment doesnt exist!
- * @param string $pdfString
- * @return array
- */
-function bauePDFArrayZumVeschicken($pdfString)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $files     = [];
-    $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    foreach (explode(';', $pdfString) as $item) {
-        if (mb_strlen($item) > 0 && file_exists($uploadDir . $item)) {
-            $files[] = $item;
-        }
-    }
-
-    return $files;
-}
-
-/**
  * @param string $pdfString
  * @param string $nameString
  * @return stdClass[]
+ * @deprecated since 5.0.0
  */
 function getPDFAttachments($pdfString, $nameString)
 {
@@ -939,24 +918,6 @@ function getPDFAttachments($pdfString, $nameString)
 }
 
 /**
- * @param string $fileName
- * @return array
- * @deprecated since 4.05 - use getPDFAttachments instead
- */
-function baueDateinameArrayZumVeschicken($fileName)
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $fileNames = [];
-    foreach (explode(';', $fileName) as $item) {
-        if (mb_strlen($item) > 0) {
-            $fileNames[] = $item;
-        }
-    }
-
-    return $fileNames;
-}
-
-/**
  * mail functions
  *
  * @param string $fromName
@@ -967,6 +928,7 @@ function baueDateinameArrayZumVeschicken($fileName)
  * @param string $text
  * @param string $html
  * @return bool
+ * @deprecated since 5.0.0
  */
 function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text, $html = '')
 {
@@ -1024,6 +986,7 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
 /**
  * @param string $string
  * @return string
+ * @deprecated since 5.0.0
  */
 function encode_iso88591($string)
 {

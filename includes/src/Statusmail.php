@@ -7,15 +7,18 @@
 namespace JTL;
 
 use DateTime;
-use function Functional\first;
-use function Functional\map;
 use InvalidArgumentException;
 use JTL\Cron\LegacyCron;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Mail\Mail\Attachment;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use SmartyException;
 use stdClass;
+use function Functional\first;
+use function Functional\map;
 
 /**
  * Class Statusmail
@@ -65,8 +68,8 @@ class Statusmail
                 "DELETE tcron, tjobqueue
                     FROM tcron
                     LEFT JOIN tjobqueue 
-                        ON tjobqueue.kCron = tcron.kCron
-                    WHERE tcron.cJobArt = 'statusemail'",
+                        ON tjobqueue.cronID = tcron.cronID
+                    WHERE tcron.jobType = 'statusemail'",
                 ReturnType::DEFAULT
             );
             foreach ($_POST['cIntervall_arr'] as $interval) {
@@ -97,7 +100,7 @@ class Statusmail
     {
         $d = new DateTime();
         $d->modify('+1 days');
-        $d->setTime(0, 0, 0);
+        $d->setTime(0, 0);
         $oCron = new LegacyCron(
             0,
             $id,
@@ -198,7 +201,7 @@ class Statusmail
         );
         foreach ($customerGroups as $oKundengruppe) {
             $productData            = $this->db->queryPrepared(
-                'SELECT COUNT(*) AS nAnzahl
+                'SELECT COUNT(*) AS cnt
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
@@ -208,7 +211,7 @@ class Statusmail
                 ReturnType::SINGLE_OBJECT
             );
             $product                = new stdClass();
-            $product->nAnzahl       = (int)$productData->nAnzahl;
+            $product->nAnzahl       = (int)$productData->cnt;
             $product->kKundengruppe = (int)$oKundengruppe->kKundengruppe;
             $product->cName         = $oKundengruppe->cName;
 
@@ -223,8 +226,8 @@ class Statusmail
      */
     private function getNewCustomersCount(): int
     {
-        $oKunde = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tkunde
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -234,9 +237,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oKunde->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -244,8 +245,8 @@ class Statusmail
      */
     private function getNewCustomerSalesCount(): int
     {
-        $customerData = $this->db->queryPrepared(
-            'SELECT COUNT(DISTINCT(tkunde.kKunde)) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(DISTINCT(tkunde.kKunde)) AS cnt
                 FROM tkunde
                 JOIN tbestellung 
                     ON tbestellung.kKunde = tkunde.kKunde
@@ -259,9 +260,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$customerData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -271,8 +270,8 @@ class Statusmail
      */
     private function getOrderCount(): int
     {
-        $orderData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -281,9 +280,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$orderData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -293,8 +290,8 @@ class Statusmail
      */
     private function getOrderCountForNewCustomers(): int
     {
-        $orderData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 JOIN tkunde 
                     ON tkunde.kKunde = tbestellung.kKunde
@@ -306,9 +303,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$orderData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -318,8 +313,8 @@ class Statusmail
      */
     private function getIncomingPaymentsCount(): int
     {
-        $orderData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
@@ -329,9 +324,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$orderData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -341,8 +334,8 @@ class Statusmail
      */
     private function getShippedOrdersCount(): int
     {
-        $orderData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tbestellung
                 WHERE tbestellung.dErstellt >= :from
                     AND tbestellung.dErstellt < :to
@@ -352,9 +345,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$orderData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -364,8 +355,8 @@ class Statusmail
      */
     private function getVisitorCount(): int
     {
-        $visitorData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
                     AND dZeit < :to 
@@ -375,9 +366,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$visitorData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -387,8 +376,8 @@ class Statusmail
      */
     private function getBotVisitCount(): int
     {
-        $visitorData = $this->db->queryPrepared(
-            "SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            "SELECT COUNT(*) AS cnt
                 FROM tbesucherarchiv
                 WHERE dZeit >= :from
                     AND dZeit < :to
@@ -398,9 +387,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$visitorData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -410,8 +397,8 @@ class Statusmail
      */
     private function getRatingsCount(): int
     {
-        $ratingData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE dDatum >= :from
                     AND dDatum < :to
@@ -421,9 +408,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$ratingData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -433,8 +418,8 @@ class Statusmail
      */
     private function getNonApprovedRatingsCount(): int
     {
-        $ratingData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE dDatum >= :from
                     AND dDatum < :to
@@ -444,9 +429,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$ratingData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -456,12 +439,8 @@ class Statusmail
      */
     private function getRatingCreditsCount(): stdClass
     {
-        $oTMP                 = new stdClass();
-        $oTMP->nAnzahl        = 0;
-        $oTMP->fSummeGuthaben = 0;
-
-        $oBewertung = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl, sum(fGuthabenBonus) AS fSummeGuthaben
+        $rating = $this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt, SUM(fGuthabenBonus) AS fSummeGuthaben
                 FROM tbewertungguthabenbonus
                 WHERE dDatum >= :from
                     AND dDatum < :to',
@@ -472,13 +451,11 @@ class Statusmail
             ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0) {
-            $oTMP                 = new stdClass();
-            $oTMP->nAnzahl        = (int)$oBewertung->nAnzahl;
-            $oTMP->fSummeGuthaben = $oBewertung->fSummeGuthaben;
-        }
+        $res                 = new stdClass();
+        $res->nAnzahl        = (int)$rating->cnt;
+        $res->fSummeGuthaben = $rating->fSummeGuthaben;
 
-        return $oTMP;
+        return $res;
     }
 
     /**
@@ -488,8 +465,8 @@ class Statusmail
      */
     private function getTagCount(): int
     {
-        $tagData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM ttagkunde
                 JOIN ttag 
                     ON ttag.kTag = ttagkunde.kTag
@@ -501,9 +478,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$tagData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -513,8 +488,8 @@ class Statusmail
      */
     private function getNonApprovedTagsCounts(): int
     {
-        $tagData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM ttagkunde
                 JOIN ttag 
                     ON ttag.kTag = ttagkunde.kTag
@@ -526,9 +501,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$tagData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -538,8 +511,8 @@ class Statusmail
      */
     private function getNewCustomerPromotionsCount(): int
     {
-        $oKwK = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tkundenwerbenkunden
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -548,9 +521,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oKwK->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -560,8 +531,8 @@ class Statusmail
      */
     private function getSuccessfulNewCustomerPromotionsCount(): int
     {
-        $oKwK = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tkundenwerbenkunden
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -572,9 +543,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$oKwK->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -584,8 +553,8 @@ class Statusmail
      */
     private function getSentWishlistCount(): int
     {
-        $wishlistData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                     FROM twunschlisteversand
                     WHERE dZeit >= :from
                         AND dZeit < :to',
@@ -594,9 +563,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$wishlistData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -606,8 +573,8 @@ class Statusmail
      */
     private function getSurveyParticipationsCount(): int
     {
-        $surveyData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tumfragedurchfuehrung
                 WHERE dDurchgefuehrt >= :from
                     AND dDurchgefuehrt < :to',
@@ -616,9 +583,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$surveyData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -628,8 +593,8 @@ class Statusmail
      */
     private function getNewsCommentsCount(): int
     {
-        $newsCommentData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -639,9 +604,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$newsCommentData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -651,8 +614,8 @@ class Statusmail
      */
     private function getNonApprovedCommentsCount(): int
     {
-        $newsCommentData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tnewskommentar
                 WHERE dErstellt >= :from
                     AND dErstellt < :to
@@ -662,9 +625,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$newsCommentData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -674,8 +635,8 @@ class Statusmail
      */
     private function getAvailabilityNotificationsCount(): int
     {
-        $availabilityData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tverfuegbarkeitsbenachrichtigung
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -684,9 +645,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$availabilityData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -696,8 +655,8 @@ class Statusmail
      */
     private function getProductInquriesCount(): int
     {
-        $inquiryData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tproduktanfragehistory
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -706,9 +665,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$inquiryData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -718,8 +675,8 @@ class Statusmail
      */
     private function getComparisonsCount(): int
     {
-        $comparisonData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tvergleichsliste
                 WHERE dDate >= :from
                     AND dDate < :to',
@@ -728,9 +685,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$comparisonData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -740,8 +695,8 @@ class Statusmail
      */
     private function getCouponUsageCount(): int
     {
-        $couponData = $this->db->queryPrepared(
-            'SELECT COUNT(*) AS nAnzahl
+        return (int)$this->db->queryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tkuponkunde
                 WHERE dErstellt >= :from
                     AND dErstellt < :to',
@@ -750,9 +705,7 @@ class Statusmail
                 'to'   => $this->dateEnd
             ],
             ReturnType::SINGLE_OBJECT
-        );
-
-        return (int)$couponData->nAnzahl;
+        )->cnt;
     }
 
     /**
@@ -937,28 +890,30 @@ class Statusmail
         }
 
         if (\count($logLevels) > 0) {
-            $mail->oLogEntry_arr   = $this->getLogEntries($logLevels);
-            $cLogFilePath          = \tempnam(\sys_get_temp_dir(), 'jtl');
-            $fileStream            = \fopen($cLogFilePath, 'w');
-            $attachment            = new stdClass();
-            $attachment->cFilePath = $cLogFilePath;
-            $smarty                = Shop::Smarty()->assign('oMailObjekt', $mail);
+            $mail->oLogEntry_arr = $this->getLogEntries($logLevels);
+            $logfile             = \tempnam(\sys_get_temp_dir(), 'jtl');
+            $info                = \pathinfo($logfile);
+            $fileStream          = \fopen($logfile, 'wb');
+            $attachment          = new Attachment();
+            $attachment->setFileName($info['filename']);
+            $attachment->setDir($info['dirname'] . '/');
+            $smarty = Shop::Smarty()->assign('oMailObjekt', $mail);
             if ($mailType === 'text') {
-                 \fwrite(
-                     $fileStream,
-                     $smarty->fetch(\PFAD_ROOT . \PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl')
-                 );
-                $attachment->cName = 'jtl-log-digest.txt';
+                \fwrite(
+                    $fileStream,
+                    $smarty->fetch(\PFAD_ROOT . \PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl')
+                );
+                $attachment->setName('jtl-log-digest.txt');
             } else {
-                 \fwrite(
-                     $fileStream,
-                     $smarty->fetch(\PFAD_ROOT . \PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl')
-                 );
-                $attachment->cName = 'jtl-log-digest.html';
+                \fwrite(
+                    $fileStream,
+                    $smarty->fetch(\PFAD_ROOT . \PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl')
+                );
+                $attachment->setName('jtl-log-digest.html');
             }
 
             \fclose($fileStream);
-            $mail->mail->oAttachment_arr = [$attachment];
+            $mail->mail->attachment = $attachment;
         }
 
         $mail->mail->toEmail = $statusMail->cEmail;
@@ -1012,21 +967,25 @@ class Statusmail
                 break;
         }
 
-        $mail = $this->generate(
+        $data = $this->generate(
             $statusMail,
             \date_create()->modify('-1 ' . $interval)->format('Y-m-d H:i:s'),
             \date_create()->format('Y-m-d H:i:s')
         );
+        if ($data) {
+            $data->cIntervall = $intervalLoc . ' Status-Email';
 
-        if ($mail) {
-            $mail->cIntervall = (\JTL_CHARSET !== 'utf-8'
-                    ? Text::convertISO($intervalLoc)
-                    : $intervalLoc) . ' Status-Email';
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mail   = $mail->createFromTemplateID(\MAILTEMPLATE_STATUSEMAIL, $data);
+            $mail->setToMail($statusMail->cEmail);
+            if (!empty($data->mail->attachment)) {
+                $mail->setAttachments([$data->mail->attachment]);
+            }
+            $sent = $mailer->send($mail);
 
-            $sent = \sendeMail(\MAILTEMPLATE_STATUSEMAIL, $mail, $mail->mail) !== false;
-
-            if (isset($mail->mail->oAttachment_arr)) {
-                \unlink($mail->mail->oAttachment_arr[0]->cFilePath);
+            foreach ($mail->getAttachments() as $attachment) {
+                \unlink($attachment->getFullPath());
             }
         }
 

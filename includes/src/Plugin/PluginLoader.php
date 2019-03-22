@@ -80,12 +80,15 @@ class PluginLoader extends AbstractLoader
     {
         $id        = (int)$obj->kPlugin;
         $paths     = $this->loadPaths($obj->cVerzeichnis);
-        $getText   = Shop::Container()->getGetText();
         $extension = new Plugin();
+        $getText   = Shop::Container()->getGetText();
+
+        $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
         $extension->setID($id);
         $extension->setIsExtension(true);
         $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
+        $getText->loadPluginLocale('base', $extension);
         $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
         $this->loadAdminMenu($extension);
         $extension->setState((int)$obj->nStatus);
@@ -95,8 +98,6 @@ class PluginLoader extends AbstractLoader
         $extension->setPriority((int)$obj->nPrio);
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
-        $getText->setLangIso($_SESSION['AdminAccount']->cISO ?? $currentLanguageCode);
-        $getText->loadPluginLocale('base', $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));
         $extension->setWidgets($this->loadWidgets($extension));

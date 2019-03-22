@@ -32,7 +32,7 @@
                         {foreach $plugin->getLocalization()->getLangVars() as $var}
                             <tr>
                                 <td><strong>{$var->name}</strong></td>
-                                <td>{$var->description}</td>
+                                <td>{__($var->description)}</td>
                             </tr>
                             {foreach $languages as $lang}
                                 <tr>

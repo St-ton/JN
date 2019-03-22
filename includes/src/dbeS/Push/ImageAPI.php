@@ -74,7 +74,7 @@ final class ImageAPI extends AbstractPush
      */
     private function getProductImages(int $productID, int $imageNo, int $cgroupID): array
     {
-        $noQry         = $productID === $imageNo
+        $noQry = $productID === $imageNo
             ? ''
             : ' AND tartikelpict.nNr = ' . $imageNo;
 

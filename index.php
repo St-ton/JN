@@ -13,6 +13,7 @@ $NaviFilter = Shop::run();
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 Cart::checkAdditions();
 $file = Shop::getEntryPoint();
+
 if ($file !== null && !Shop::$is404) {
     require PFAD_ROOT . basename($file);
 }

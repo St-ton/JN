@@ -56,7 +56,7 @@ class IpAnonymizer
      *
      * @var string
      */
-    private $placeholderIP;
+    private $placeholderIP = '0.0.0.0';
 
     /**
      * flag for old fashioned anonymization ("do not anonymize again")

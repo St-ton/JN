@@ -8,10 +8,11 @@ namespace JTL\Backend;
 
 use DateTime;
 use Exception;
-use function Functional\map;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
 use JTL\Mapper\AdminLoginStatusToLogLevel;
 use JTL\Model\AuthLogEntry;
@@ -20,6 +21,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use Psr\Log\LoggerInterface;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class AdminAccount
@@ -157,26 +159,29 @@ class AdminAccount
     /**
      * creates hashes and sends mails for forgotten admin passwords
      *
-     * @param string $mail - the admin account's email address
+     * @param string $email - the admin account's email address
      * @return bool - true if valid admin account
      * @throws Exception
      */
-    public function prepareResetPassword(string $mail): bool
+    public function prepareResetPassword(string $email): bool
     {
         $now  = (new DateTime())->format('U');
-        $hash = \md5($mail . Shop::Container()->getCryptoService()->randomString(30));
+        $hash = \md5($email . Shop::Container()->getCryptoService()->randomString(30));
         $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
-        $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $mail, $upd);
+        $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $email, $upd);
         if ($res > 0) {
             require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-            $user                   = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $mail);
+            $user                   = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $email);
             $obj                    = new stdClass();
-            $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $mail;
+            $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $email;
             $obj->cHash             = $hash;
             $obj->mail              = new stdClass();
-            $obj->mail->toEmail     = $mail;
+            $obj->mail->toEmail     = $email;
             $obj->mail->toName      = $user->cLogin;
-            \sendeMail(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj);
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
             return true;
         }

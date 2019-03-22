@@ -23,7 +23,6 @@ $cSuche           = null;
 $step             = null;
 $CWunschliste     = null;
 $action           = null;
-$action           = null;
 $kWunschlistePos  = null;
 $oWunschliste_arr = [];
 $linkHelper       = LinkHelper::getInstance();
@@ -139,7 +138,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
             if ($userOK === true) {
                 $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
                 if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $oWunschliste->cName) {
-                    $oWunschliste->cName = $_POST['wishlistName'];
+                    $oWunschliste->cName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wishlistName']));
                     Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $oWunschliste);
                 }
                 if (!empty($oWunschliste->kKunde) && !empty($_SESSION['Kunde']->kKunde) &&

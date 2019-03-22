@@ -862,7 +862,7 @@ class VersandartHelper
         $arrVersandpositionen = [];
         if (is_array($PositionenArr)) {
             foreach ($PositionenArr as $Pos) {
-                if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL  && is_object($Pos->Artikel)) {
                     unset($oVersandPos);
                     $oVersandPos = self::gibArtikelabhaengigeVersandkosten(
                         $cLand,

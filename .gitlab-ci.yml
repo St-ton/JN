@@ -1,5 +1,4 @@
 stages:
-  #  - codeclimate
   - test
   - cleanUpTest
   - build
@@ -48,16 +47,6 @@ stages:
       docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
       echo ""
     fi
-  }
-  function codeQuality() {
-    docker run \
-      --env SOURCE_CODE="$PWD" \
-      --volume "$PWD":/code \
-      --volume /var/run/docker.sock:/var/run/docker.sock \
-      -i \
-      "registry.gitlab.com/gitlab-org/security-products/codequality:$SP_VERSION" /code
-
-    cat gl-code-quality-report.json
   }
   function buildProcess() {
     export RAND_CHAR=$(date +%s|sha256sum|head -c 6)
@@ -125,29 +114,29 @@ stages:
   function deployProcess() {
     export PHP_VERSION=$1;
     export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
-    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
-    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH
+    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH;
 
-    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "
-        require_once '${DOWNLOAD_PATH}/includes/globalinclude.php'; \
-        \$time    = date('YmdHis'); \
-        \$manager = new MigrationManager(); \
-
-        try {
-          \$result = \$manager->migrate($time);
-        } catch (Exception \$e) {
-          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
-          \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
-          echo \$result;
-          exit(1);
-        }
+      require_once '${DEPLOY_PATH}/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$result = \$manager->migrate(\$time); \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
       ";
     fi
   }
+
 
 #code_quality:
 #  stage: codeclimate

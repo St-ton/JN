@@ -6,12 +6,14 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\Customer\Kunde;
+use JTL\Customer\Kundendatenhistory;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Text;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundendatenhistory;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Sprache;
@@ -74,7 +76,9 @@ final class Customer extends AbstractSync
                 $obj                     = new stdClass();
                 $obj->tkunde             = $customer;
                 if ($customer->cMail) {
-                    \sendeMail(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj));
                 }
             }
             $this->db->update('tkunde', 'kKunde', (int)$customerData->kKunde, (object)['cAktiv' => 'Y']);
@@ -179,7 +183,9 @@ final class Customer extends AbstractSync
                 $obj->tkunde     = $customer;
                 $obj->tgutschein = $voucher;
                 if ($customer->cMail) {
-                    \sendeMail(\MAILTEMPLATE_GUTSCHEIN, $obj);
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_GUTSCHEIN, $obj));
                 }
             }
         }
@@ -263,7 +269,10 @@ final class Customer extends AbstractSync
                 // Mail an Kunden mit Info, dass Zugang verändert wurde
                 $obj         = new stdClass();
                 $obj->tkunde = $customer;
-                \sendeMail(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
+
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
             }
 
             $customer->cPasswort    = $oldCustomer->cPasswort;
@@ -276,7 +285,10 @@ final class Customer extends AbstractSync
                 // Mail an Kunden mit Info, dass Kundengruppe verändert wurde
                 $obj         = new stdClass();
                 $obj->tkunde = $customer;
-                \sendeMail(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
+
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj));
             }
             // Hausnummer extrahieren
             $this->extractStreet($customer);
@@ -367,7 +379,9 @@ final class Customer extends AbstractSync
             $obj         = new stdClass();
             $obj->tkunde = $customer;
             if ($customer->cMail) {
-                \sendeMail(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
             }
             unset($customer->cPasswortKlartext, $customer->Anrede);
             $kInetKunde = $customer->insertInDB();

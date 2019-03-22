@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Cron\Jobs;
+namespace JTL\Cron\Job;
 
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
@@ -14,9 +14,9 @@ use stdClass;
 
 /**
  * Class Export
- * @package JTL\Cron\Jobs
+ * @package JTL\Cron\Job
  */
-class Export extends Job
+final class Export extends Job
 {
     /**
      * @inheritdoc

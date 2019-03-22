@@ -1,0 +1,39 @@
+<?php declare(strict_types=1);
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
+ */
+
+namespace JTL\Mail\Template;
+
+use JTL\Catalog\Product\Preise;
+use JTL\Smarty\JTLSmarty;
+
+/**
+ * Class RatingBonus
+ * @package JTL\Mail\Template
+ */
+class RatingBonus extends AbstractTemplate
+{
+    protected $id = \MAILTEMPLATE_BEWERTUNG_GUTHABEN;
+
+    /**
+     * @inheritdoc
+     */
+    public function preRender(JTLSmarty $smarty, $data): void
+    {
+        parent::preRender($smarty, $data);
+        if ($data === null) {
+            return;
+        }
+        $waehrung = $this->db->select('twaehrung', 'cStandard', 'Y');
+
+        $data->oBewertungGuthabenBonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(
+            $data->oBewertungGuthabenBonus->fGuthabenBonus,
+            $waehrung,
+            false
+        );
+        $smarty->assign('oKunde', $data->tkunde)
+               ->assign('oBewertungGuthabenBonus', $data->oBewertungGuthabenBonus);
+    }
+}

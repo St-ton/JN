@@ -10,12 +10,14 @@ use DateTime;
 use InvalidArgumentException;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
+use JTL\Cron\Job\Statusmail;
 use JTL\Cron\Type;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Mapper\JobTypeToJob;
+use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -89,9 +91,29 @@ final class Controller
     {
         $mapper = new JobTypeToJob();
         try {
-            $mapper->map($post['type']);
+            $class = $mapper->map($post['type']);
         } catch (InvalidArgumentException $e) {
             return -1;
+        }
+        if ($class === Statusmail::class) {
+            $jobs  = $this->db->selectAll('tstatusemail', 'nAktiv', 1);
+            $count = 0;
+            foreach ($jobs as $job) {
+                $date              = new DateTime($post['date']);
+                $ins               = new stdClass();
+                $ins->frequency    = (int)$job->nInterval * 24;
+                $ins->jobType      = $post['type'];
+                $ins->name         = 'statusemail';
+                $ins->tableName    = 'tstatusemail';
+                $ins->foreignKey   = 'id';
+                $ins->foreignKeyID = (int)$job->id;
+                $ins->startTime    = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
+                $ins->startDate    = $date->format('Y-m-d H:i:s');
+                $this->db->insert('tcron', $ins);
+                ++$count;
+            }
+
+            return $count;
         }
         $date           = new DateTime($post['date']);
         $ins            = new stdClass();

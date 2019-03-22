@@ -1,21 +1,20 @@
 <?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Cron\Jobs;
+namespace JTL\Cron\Job;
 
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\GeneralDataProtection\TableCleaner;
 
 /**
- * Class GeneralDataProtect
- * @package JTL\Cron\Jobs
+ * Class Store
+ * @package JTL\Cron\Job
  */
-class GeneralDataProtect extends Job
+final class Store extends Job
 {
     /**
      * @inheritdoc
@@ -23,8 +22,11 @@ class GeneralDataProtect extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $tableCleaner = new TableCleaner();
-        $tableCleaner->execute();
+
+        if ($this->getJobData() !== null) {
+            $this->setFinished(true);
+        }
+
         $this->setFinished(true);
 
         return $this;

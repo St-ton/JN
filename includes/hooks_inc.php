@@ -744,12 +744,14 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  * after template switch in sendeMail()
  *
  * @file mailTools.php
- * @param \JTL\Smarty\JTLSmarty  - mailsmarty
- * @param mail
- * @param kEmailvorlage
- * @param kSprache
- * @param cPluginBody
+ * @param \JTL\Smarty\JTLSmarty mailsmarty
+ * @param object mail - null since 5.0.0
+ * @param int kEmailvorlage
+ * @param int kSprache
+ * @param string cPluginBody - empty string since 5.0.0
  * @param Emailvorlage
+ * @param \JTL\Mail\Template\TemplateInterface template - since 5.0.0
+ * @param \JTL\Mail\Template\Model model - since 5.0.0
  */
 define('HOOK_MAILTOOLS_INC_SWITCH', 100);
 
@@ -1155,12 +1157,13 @@ define('HOOK_ARTIKEL_XML_BEARBEITEDELETES', 152);
  * in sendeMail() before actually sending an email
  *
  * @file mailTools.php
- * @param \JTL\Smarty\JTLSmarty  - mailsmarty
- * @param mail
- * @param kEmailvorlage
- * @param kSprache
- * @param cPluginBody
- * @param Emailvorlage
+ * @param \JTL\Smarty\JTLSmarty mailsmarty
+ * @param mail - MailInterface since 5.0.0
+ * @param int kEmailvorlage - 0 since 5.0.0
+ * @param int kSprache
+ * @param string cPluginBody - empty string since 5.0.0
+ * @param object Emailvorlage - null since 5.0.0
+ * @param \JTL\Mail\Template\TemplateInterface template - since 5.0.0
  */
 define('HOOK_MAILTOOLS_SENDEMAIL_ENDE', 153);
 

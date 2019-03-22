@@ -121,6 +121,7 @@ class LegacyCron
             $ins               = new stdClass();
             $ins->foreignKeyID = $this->kKey;
             $ins->foreignKey   = $this->cKey;
+            $ins->tableName    = $this->cTabelle;
             $ins->name         = $this->cName;
             $ins->jobType      = $this->cJobArt;
             $ins->frequency    = $this->nAlleXStd;

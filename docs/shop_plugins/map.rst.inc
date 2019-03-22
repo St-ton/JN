@@ -11,10 +11,10 @@
   Allgemeines über Hooks im JTL-Shop.
 
 :doc:`/shop_plugins/hinweise`
-    Allgemeine Hinweise, Tipps und Tricks zur Entwicklung von Plugins, insbesondere für Shop 4.
+    Allgemeine Hinweise, Tipps und Tricks zur Entwicklung von Plugins, insbesondere für Shop 4+.
 
 :doc:`/shop_plugins/cache`
-  Der Umgang mit dem Objektcache in Shop4.
+  Der Umgang mit dem Objektcache im JTL-Shop.
 
 :doc:`/shop_plugins/hook_list`
   Die einzelnen Hooks des JTL-Shops.

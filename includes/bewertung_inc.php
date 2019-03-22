@@ -6,9 +6,11 @@
 
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Kunde;
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Shop;
 
 /**
  * Fügt für einen bestimmten Artikel, in einer bestimmten Sprache eine Bewertung hinzu.
@@ -467,7 +469,9 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
     $obj                          = new stdClass();
     $obj->tkunde                  = new Kunde($ratingBonus->kKunde);
     $obj->oBewertungGuthabenBonus = $ratingBonus;
-    sendeMail(MAILTEMPLATE_BEWERTUNG_GUTHABEN, $obj);
+    $mailer                       = Shop::Container()->get(Mailer::class);
+    $mail                         = new Mail();
+    $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_BEWERTUNG_GUTHABEN, $obj));
 
     return $reward;
 }

@@ -16,6 +16,8 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Sprache;
@@ -752,7 +754,10 @@ class Kunde
             $obj                 = new stdClass();
             $obj->tkunde         = $this;
             $obj->neues_passwort = $clearTextPassword;
-            \sendeMail(\MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PASSWORT_VERGESSEN, $obj));
         } else {
             $this->cPasswort = $passwordService->hash($password);
 
@@ -824,7 +829,10 @@ class Kunde
             '?' . \http_build_query($linkParams, null, '&');
         $obj->cHash             = $key;
         $obj->neues_passwort    = 'Es ist leider ein Fehler aufgetreten. Bitte kontaktieren Sie uns.';
-        \sendeMail(\MAILTEMPLATE_PASSWORT_VERGESSEN, $obj);
+
+        $mailer = Shop::Container()->get(Mailer::class);
+        $mail   = new Mail();
+        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PASSWORT_VERGESSEN, $obj));
 
         return true;
     }
@@ -951,7 +959,12 @@ class Kunde
         Shop::Container()->getLogService()->notice($logMessage);
 
         if ($confirmationMail) {
-            \sendeMail(\MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, (object)['tkunde' => $this]);
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(
+                \MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT,
+                (object)['tkunde' => $this]
+            ));
         }
     }
 
@@ -1094,5 +1107,49 @@ class Kunde
             $logMessage,
             (object)['kKunde' => $customerID]
         );
+    }
+
+    /**
+     * @param object $lang
+     * @return $this
+     */
+    public function localize($lang): self
+    {
+        if (Shop::Lang()->gibISO() !== $lang->cISO) {
+            Shop::Lang()->setzeSprache($lang->cISO);
+        }
+        if ($this->cAnrede === 'w') {
+            $this->cAnredeLocalized = Shop::Lang()->get('salutationW');
+        } elseif ($this->cAnrede === 'm') {
+            $this->cAnredeLocalized = Shop::Lang()->get('salutationM');
+        } else {
+            $this->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
+        }
+        if ($this->cLand !== null) {
+            $cISOLand = $this->cLand;
+            $sel_var  = 'cDeutsch';
+            if (mb_convert_case($lang->cISO, MB_CASE_LOWER) !== 'ger') {
+                $sel_var = 'cEnglisch';
+            }
+            $land = Shop::Container()->getDB()->select(
+                'tland',
+                'cISO',
+                $this->cLand,
+                null,
+                null,
+                null,
+                null,
+                false,
+                $sel_var . ' AS cName, cISO'
+            );
+            if (isset($land->cName)) {
+                $this->cLand = $land->cName;
+            }
+        }
+        if (isset($_SESSION['Kunde'], $cISOLand)) {
+            $_SESSION['Kunde']->cLand = $cISOLand;
+        }
+
+        return $this;
     }
 }

@@ -348,7 +348,7 @@ class Warenkorb
                 }
             }
         }
-        $options = Artikel::getDefaultOptions();
+        $options = Artikel::getDefaultOptions(true);
         if ($kKonfigitem > 0) {
             $options->nKeineSichtbarkeitBeachten = 1;
         }

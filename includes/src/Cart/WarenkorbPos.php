@@ -515,7 +515,7 @@ class WarenkorbPos
         $obj->fMwSt                     = $this->fMwSt;
         $obj->nAnzahl                   = $this->nAnzahl;
         $obj->nPosTyp                   = $this->nPosTyp;
-        $obj->cHinweis                  = $this->cHinweis;
+        $obj->cHinweis                  = $this->cHinweis ?? '';
         $obj->cUnique                   = $this->cUnique;
         $obj->cResponsibility           = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
         $obj->kKonfigitem               = $this->kKonfigitem;

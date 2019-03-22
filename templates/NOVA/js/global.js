@@ -258,7 +258,35 @@ function lazyLoadMenu(viewport){
                 });
             });
         });
+
+        $('#evo-nav-wrapper .nav-item.dropdown .nav-link').attr('data-toggle','');
+        $('#evo-nav-wrapper .nav-item.btn-link[data-toggle="collapse"]').attr('data-toggle','dropdown');
     }
+}
+
+function addCopyToClipboardListener() {
+    var clipboard = new ClipboardJS('.btn.copyToClipboard');
+
+    clipboard.on('success', function(e) {
+        $(e.trigger).tooltip({title: 'copied'});
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+    });
+}
+
+function addCloseMenuDropdownListener() {
+    $(document).on("click", function (event) {
+        var clickover = $(event.target);
+        var _opened   = $("#evo-main-nav-wrapper .collapse.show");
+        var _parents  = clickover.parents(".collapse.show");
+        if (_opened[0] !== undefined && !clickover.hasClass("collapse") && _parents.length === 0) {
+            $(".nav-item[data-target='#" + _opened[0].id + "']").click();
+        }
+    });
 }
 
 function initWow()
@@ -318,13 +346,14 @@ $(document).ready(function () {
             url: url,
             title: typeof e.currentTarget.title !== 'undefined' ? e.currentTarget.title : '',
             keyboard: true,
-            tabindex: -1
+            tabindex: -1,
+            buttons: false
         });
         e.stopPropagation();
         return false;
     });
 
-    $(document).on('click', '.pagination-ajax li:not(.active) a', function(e) {
+    $(document).on('click', '.pagination-ajax a:not(.active)', function(e) {
         var url = $(this).attr('href');
         history.pushState(null, null, url);
         loadContent(url);
@@ -525,5 +554,7 @@ $(document).ready(function () {
     regionsToState();
     compatibility();
     addValidationListener();
+    addCopyToClipboardListener();
+    addCloseMenuDropdownListener();
     initWow();
 });

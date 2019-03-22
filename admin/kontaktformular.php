@@ -8,19 +8,20 @@ use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cTab     = 'config';
-$step     = 'uebersicht';
+$cTab        = 'config';
+$step        = 'uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 if (isset($_GET['del']) && (int)$_GET['del'] > 0 && Form::validateToken()) {
     Shop::Container()->getDB()->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
     Shop::Container()->getDB()->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
 
-    $cHinweis = __('successSubjectDelete');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectDelete'), 'successSubjectDelete');
 }
 
 if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateToken()) {
@@ -52,8 +53,8 @@ if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateTo
         Shop::Container()->getDB()->insert('tspezialcontentsprache', $spezialContent3);
         unset($spezialContent1, $spezialContent2, $spezialContent3);
     }
-    $cHinweis .= __('successContentSave');
-    $cTab      = 'content';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContentSave'), 'successContentSave');
+    $cTab = 'content';
 }
 
 if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateToken()) {
@@ -74,11 +75,15 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
         $kKontaktBetreff = 0;
         if ((int)$_POST['kKontaktBetreff'] === 0) {
             $kKontaktBetreff = Shop::Container()->getDB()->insert('tkontaktbetreff', $neuerBetreff);
-            $cHinweis       .= __('successSubjectCreate');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
         } else {
             $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
             Shop::Container()->getDB()->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $neuerBetreff);
-            $cHinweis .= sprintf(__('successSubjectSave'), $neuerBetreff->cName);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successSubjectSave'), $neuerBetreff->cName),
+                'successSubjectSave'
+            );
         }
         $sprachen                             = Sprache::getAllLanguages();
         $neuerBetreffSprache                  = new stdClass();
@@ -100,19 +105,20 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
             );
             Shop::Container()->getDB()->insert('tkontaktbetreffsprache', $neuerBetreffSprache);
         }
-
-        $smarty->assign('hinweis', $cHinweis);
     } else {
-        $error = __('errorSubjectSave');
-        $step  = 'betreff';
-        $smarty->assign('cFehler', $error);
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSubjectSave'), 'errorSubjectSave');
+        $step = 'betreff';
     }
     $cTab = 'subjects';
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
-    $cHinweis .= saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST);
-    $cTab      = 'config';
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST),
+        'saveSettings'
+    );
+    $cTab = 'config';
 }
 
 if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) ||
@@ -182,7 +188,6 @@ if ($step === 'betreff') {
 
 $smarty->assign('step', $step)
        ->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
        ->assign('cTab', $cTab)
        ->display('kontaktformular.tpl');
 

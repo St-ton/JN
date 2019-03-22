@@ -35,7 +35,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\first;
 use function Functional\flatten;
 use function Functional\group;

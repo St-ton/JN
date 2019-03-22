@@ -4,18 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Link\LinkInterface;
+use JTL\Shop;
 
 /**
  * @param \JTL\Link\LinkGroupInterface $linkGroup
  * @param int                          $kVaterLink
- * @return \Tightenco\Collect\Support\Collection
+ * @return \Illuminate\Support\Collection
  */
 function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
 {
     $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
+    $oNew_arr   = new \Illuminate\Support\Collection();
     $lh         = Shop::Container()->getLinkService();
     foreach ($linkGroup->getLinks() as $link) {
         $link->setLevel(count($lh->getParentIDs($link->getID())));
@@ -202,7 +203,7 @@ function getLinkVar($kLink, $var)
 function getGesetzteKundengruppen($link)
 {
     $ret = [];
-    if ($link instanceof \JTL\Link\LinkInterface) {
+    if ($link instanceof LinkInterface) {
         $cGroups = $link->getCustomerGroups();
         if (count($cGroups) === 0) {
             $ret[0] = true;
@@ -213,7 +214,10 @@ function getGesetzteKundengruppen($link)
 
         return $ret;
     }
-    if (!isset($link->cKundengruppen) || !$link->cKundengruppen || mb_convert_case($link->cKundengruppen, MB_CASE_LOWER) === 'null') {
+    if (!isset($link->cKundengruppen)
+        || !$link->cKundengruppen
+        || mb_convert_case($link->cKundengruppen, MB_CASE_LOWER) === 'null'
+    ) {
         $ret[0] = true;
 
         return $ret;

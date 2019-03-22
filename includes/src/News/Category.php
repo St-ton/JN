@@ -12,7 +12,7 @@ use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\flatten;
 use function Functional\map;
 
@@ -201,7 +201,7 @@ class Category implements CategoryInterface
             $this->previewImages[$langID]    = $groupLanguage->cPreviewImage;
             $this->isActive                  = (bool)$groupLanguage->nAktiv;
             $this->dateLastModified          = \date_create($groupLanguage->dLetzteAktualisierung);
-            $this->parentID                  = (int)$groupLanguage->kParent;
+            $this->parentID                  = (int)($groupLanguage->kParent ?? 0);
             $this->level                     = (int)$groupLanguage->lvl;
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;

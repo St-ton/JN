@@ -33,33 +33,33 @@
             {buttongroup class="pagination-group"}
                 {if in_array('pagi', $parts)}
                     {if $oPagination->getPage() > 0}
-                        {link class="btn btn-primary" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"}
+                        {link class="btn btn-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}{$cUrlAppend}{$cAnchor}"}
                             &laquo;
                         {/link}
                     {/if}
                     {if $oPagination->getLeftRangePage() > 0}
-                        {link class="btn btn-primary"  href="{$cThisUrl}?{$oPagination->getId()}_nPage=0{$cUrlAppend}{$cAnchor}"}
+                        {link class="btn btn-link"  href="{$cThisUrl}?{$oPagination->getId()}_nPage=0{$cUrlAppend}{$cAnchor}"}
                             1
                         {/link}
                     {/if}
                     {if $oPagination->getLeftRangePage() > 1}
-                        {button variant="primary" href="#" disabled=true}&hellip;{/button}
+                        {button variant="link" href="#" disabled=true}&hellip;{/button}
                     {/if}
                     {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
-                        {link class="btn btn-primary {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
+                        {link class="btn btn-link {if $oPagination->getPage() === $i}active{elseif $i > 0 && $i < $oPagination->getPageCount() - 1}d-none d-sm-block{/if}" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}{$cUrlAppend}{$cAnchor}"}
                             {$i+1}
                         {/link}
                     {/for}
                     {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 2}
-                        {button variant="primary" href="#" disabled=true}&hellip;{/button}
+                        {button variant="link" href="#" disabled=true}&hellip;{/button}
                     {/if}
                     {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 1}
-                        {link class="btn btn-primary" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}{$cUrlAppend}{$cAnchor}"}
+                        {link class="btn btn-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}{$cUrlAppend}{$cAnchor}"}
                             {$oPagination->getPageCount()}
                         {/link}
                     {/if}
                     {if $oPagination->getPage() < $oPagination->getPageCount() - 1}
-                        {link class="btn btn-primary" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"}
+                        {link class="btn btn-link" href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}{$cUrlAppend}{$cAnchor}"}
                             &raquo;
                         {/link}
                     {/if}

@@ -9,7 +9,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Kunde;
 use JTL\Checkout\Kupon;
@@ -1433,9 +1433,8 @@ function getPaymentSurchageDiscount($paymentMethod)
                 false,
                 'cGebuehrname'
             );
-            if (isset($name_spr->cGebuehrname)) {
-                $specialPosition->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname;
-            }
+            
+            $specialPosition->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname ?? '';
             if ($paymentMethod->cAufpreisTyp === 'prozent') {
                 if ($paymentMethod->fAufpreis > 0) {
                     $specialPosition->cGebuehrname[$Sprache->cISO] .= ' +';

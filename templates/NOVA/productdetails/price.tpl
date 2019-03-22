@@ -49,7 +49,7 @@
             {/block}
         </strong>
         {if $tplscope === 'detail'}
-            <div class="price-note">
+            <div class="price-note mb-3">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}
                     <span class="price_label per_unit"> {lang key='vpePer'} 1 {$Artikel->cEinheit}</span>
                 {/if}
@@ -70,7 +70,7 @@
                 {/if}
                 
                 {block name='detail-vat-info'}
-                    <p class="vat_info text-muted top5">
+                    <p class="vat_info text-muted">
                         {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
                     </p>
                 {/block}

@@ -1,3 +1,16 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"X-Generator: Poedit 2.2.1\n"
+
 msgid "artikel_artikelanzeigefilter_value(1)"
 msgstr "Alle Artikel anzeigen"
 
@@ -278,7 +291,7 @@ msgid "suche_fulltext_value(B)"
 msgstr "Volltextsuche (Boolean Mode)"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(verfuegbarkeit)"
-msgstr "nur anzeigen, ob verfügbar "
+msgstr "nur anzeigen, ob verfügbar"
 
 msgid "artikeluebersicht_lagerbestandsanzeige_value(genau)"
 msgstr "Genauen Lagerbestand anzeigen"
@@ -323,7 +336,7 @@ msgid "artikeluebersicht_artikelsortierung_value(1)"
 msgstr "Artikelname von A bis Z"
 
 msgid "artikeluebersicht_artikelsortierung_value(2)"
-msgstr "Name absteigend"
+msgstr "Artikelname von Z bis A"
 
 msgid "artikeluebersicht_artikelsortierung_value(3)"
 msgstr "Preis aufsteigend"
@@ -395,13 +408,13 @@ msgid "artikeluebersicht_sonderpreisanzeige_value(2)"
 msgstr "Zusätzlich den alten Preis anzeigen"
 
 msgid "topbest_anzeigen_value(Top)"
-msgstr "Nur Top-Artikel anzeigen"
+msgstr "Nur Top-Angebote anzeigen"
 
 msgid "topbest_anzeigen_value(Bestseller)"
 msgstr "Nur Bestseller anzeigen"
 
 msgid "topbest_anzeigen_value(TopBest)"
-msgstr "Top-Artikel und Bestseller anzeigen"
+msgstr "Top-Angebote und Bestseller anzeigen"
 
 msgid "topbest_anzeigen_value(N)"
 msgstr "Nein"
@@ -440,7 +453,7 @@ msgid "artikeluebersicht_anzahl_pfeile_value(Y)"
 msgstr "Immer"
 
 msgid "artikeluebersicht_anzahl_pfeile_value(I)"
-msgstr "Wenn Intervall vorhanden"
+msgstr "Wenn Abnahmeintervall vorhanden"
 
 msgid "artikeluebersicht_anzahl_pfeile_value(N)"
 msgstr "Nicht anzeigen"
@@ -500,7 +513,7 @@ msgid "artikel_variationspreisanzeige_value(0)"
 msgstr "Keine Variationsaufpreise anzeigen"
 
 msgid "artikel_lagerbestandsanzeige_value(verfuegbarkeit)"
-msgstr "nur anzeigen, ob verfügbar "
+msgstr "nur anzeigen, ob verfügbar"
 
 msgid "artikel_lagerbestandsanzeige_value(genau)"
 msgstr "Genauen Lagerbestand anzeigen"
@@ -611,7 +624,7 @@ msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "Nein"
 
 msgid "artikeldetails_varikombi_vorschautext_value(W)"
-msgstr "\"Weitere Varianten\""
+msgstr "„Weitere Variationen“"
 
 msgid "artikeldetails_varikombi_vorschautext_value(S)"
 msgstr "Variation mit kleinster Sortiernummer"
@@ -620,7 +633,7 @@ msgid "artikeldetails_anzahl_pfeile_value(Y)"
 msgstr "Immer"
 
 msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "\"Wenn Abnahmeintervall vorhanden\""
+msgstr "„Wenn Abnahmeintervall vorhanden“"
 
 msgid "artikeldetails_anzahl_pfeile_value(N)"
 msgstr "Nicht anzeigen"
@@ -1592,10 +1605,10 @@ msgid "exportformate_quot_value( )"
 msgstr "Mit Leerzeichen maskieren"
 
 msgid "exportformate_quot_value(qq)"
-msgstr "Mit "" maskieren"
+msgstr "Mit \"\" maskieren"
 
 msgid "exportformate_quot_value(q)"
-msgstr "maskieren zu \\\""
+msgstr "Mit \\\" maskieren"
 
 msgid "exportformate_quot_value(')"
 msgstr "Mit ' maskieren"
@@ -1604,7 +1617,7 @@ msgid "exportformate_equot_value(N)"
 msgstr "Nicht maskieren"
 
 msgid "exportformate_equot_value(\\')"
-msgstr "maskieren zu \\'"
+msgstr "maskieren mit \\'"
 
 msgid "exportformate_equot_value(bq)"
 msgstr "Mit \" maskieren"
@@ -2276,7 +2289,7 @@ msgid "suchspecials_sortierung_bestseller_value(1)"
 msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_bestseller_value(2)"
-msgstr "Name absteigend"
+msgstr "Name von Z bis A"
 
 msgid "suchspecials_sortierung_bestseller_value(3)"
 msgstr "Preis aufsteigend"
@@ -2315,7 +2328,7 @@ msgid "suchspecials_sortierung_sonderangebote_value(1)"
 msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_sonderangebote_value(2)"
-msgstr "Name absteigend"
+msgstr "Name von Z bis A"
 
 msgid "suchspecials_sortierung_sonderangebote_value(3)"
 msgstr "Preis aufsteigend"
@@ -2354,7 +2367,7 @@ msgid "suchspecials_sortierung_neuimsortiment_value(1)"
 msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(2)"
-msgstr "Name absteigend"
+msgstr "Name von Z bis A"
 
 msgid "suchspecials_sortierung_neuimsortiment_value(3)"
 msgstr "Preis aufsteigend"
@@ -2393,7 +2406,7 @@ msgid "suchspecials_sortierung_topangebote_value(1)"
 msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_topangebote_value(2)"
-msgstr "Name absteigend"
+msgstr "Name von Z bis A"
 
 msgid "suchspecials_sortierung_topangebote_value(3)"
 msgstr "Preis aufsteigend"
@@ -2432,7 +2445,7 @@ msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(1)"
 msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(2)"
-msgstr "Name absteigend"
+msgstr "Name von Z bis A"
 
 msgid "suchspecials_sortierung_inkuerzeverfuegbar_value(3)"
 msgstr "Preis aufsteigend"
@@ -2471,7 +2484,7 @@ msgid "suchspecials_sortierung_topbewertet_value(1)"
 msgstr "Name von A bis Z"
 
 msgid "suchspecials_sortierung_topbewertet_value(2)"
-msgstr "Name absteigend"
+msgstr "Name von Z bis A"
 
 msgid "suchspecials_sortierung_topbewertet_value(3)"
 msgstr "Preis aufsteigend"
@@ -2619,3 +2632,12 @@ msgstr "Ja"
 
 msgid "ftp_ssl_value(0)"
 msgstr "Nein"
+
+msgid "cron_type_value(N)"
+msgstr "deaktiviert"
+
+msgid "cron_type_value(tpl)"
+msgstr "Template-gesteuert"
+
+msgid "cron_type_value(s2s)"
+msgstr "Curl Server-to-Server"

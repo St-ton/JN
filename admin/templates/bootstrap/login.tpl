@@ -17,8 +17,8 @@
             </p>
             <div id="login_outer" class="panel panel-default">
                 <div class="panel-body">
-                    {if isset($cFehler) && $cFehler}
-                        <div class="alert alert-danger">{$cFehler}</div>
+                    {if $alertError}
+                        {include file='snippets/alert_list.tpl'}
                         <script type="text/javascript">
                             {literal}
                             $(document).ready(function () {

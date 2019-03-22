@@ -5,7 +5,7 @@
  */
 
 use JTL\Helpers\URL;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Pagination\Pagination;
@@ -67,6 +67,12 @@ switch ($controller->getPageType($params)) {
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
         $breadCrumbName = $overview->getName();
+        $newsCategory   = new \News\Category($db);
+        $newsCategory->load($kNewsKategorie);
+
+        $cMetaTitle       = $newsCategory->getMetaTitle();
+        $cMetaDescription = $newsCategory->getMetaDescription();
+        $cMetaKeywords    = $newsCategory->getMetaKeyword();
         break;
     case ViewType::NEWS_OVERVIEW:
         Shop::setPageType(PAGE_NEWS);

@@ -11,6 +11,7 @@ use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Alert\Alert;
 
 /**
  * @param int $kAdminlogin
@@ -732,9 +733,10 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
             break;
     }
 
-    $smarty->assign('hinweis', $messages['notice'])
-           ->assign('fehler', $messages['error'])
-           ->assign('action', $step)
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'userManagementNote');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'userManagementError');
+
+    $smarty->assign('action', $step)
            ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }

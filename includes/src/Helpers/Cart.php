@@ -8,7 +8,7 @@ namespace JTL\Helpers;
 
 use function Functional\filter;
 use function Functional\map;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;
@@ -540,7 +540,8 @@ class Cart
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('configError', 'productDetails'),
-                'configError'
+                'configError',
+                ['dismissable' => false]
             );
             Shop::Smarty()->assign('aKonfigerror_arr', $errors)
                 ->assign('aKonfigitemerror_arr', $itemErrors);
@@ -573,7 +574,8 @@ class Cart
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('compareMaxlimit', 'errorMessages'),
-                'compareMaxlimit'
+                'compareMaxlimit',
+                ['dismissable' => false]
             );
 
             return false;
@@ -640,7 +642,8 @@ class Cart
                             $alertHelper->addAlert(
                                 Alert::TYPE_ERROR,
                                 Shop::Lang()->get('comparelistProductexists', 'messages'),
-                                'comparelistProductexists'
+                                'comparelistProductexists',
+                                ['dismissable' => false]
                             );
                         }
                     }
@@ -750,7 +753,7 @@ class Cart
                             Shop::Lang()->get('wishlistProductadded', 'messages'),
                             'wishlistProductadded'
                         );
-                        if ($redirect === true) {
+                        if ($redirect === true && !Request::isAjaxRequest()) {
                             \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
                             exit;
                         }
@@ -1995,7 +1998,7 @@ class Cart
     public static function checkOrderAmountAndStock(array $conf = []): string
     {
         $cart         = Frontend::getCart();
-        $cHinweis     = '';
+        $notice       = '';
         $cArtikelName = '';
         $bVorhanden   = false;
         $cISOSprache  = Shop::getLanguageCode();
@@ -2017,10 +2020,10 @@ class Cart
         $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
 
         if ($bVorhanden) {
-            $cHinweis = \sprintf(Shop::Lang()->get('orderExpandInventory', 'basket'), '<ul>' . $cArtikelName . '</ul>');
+            $notice = \sprintf(Shop::Lang()->get('orderExpandInventory', 'basket'), '<ul>' . $cArtikelName . '</ul>');
         }
 
-        return $cHinweis;
+        return $notice;
     }
 
     /**

@@ -6,6 +6,5 @@
     {include
         file='productdetails/pushed_success.tpl'
         Artikel=$zuletztInWarenkorbGelegterArtikel
-        cartNote={lang key='basketAdded' section='messages'}
     }
 {/if}

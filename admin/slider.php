@@ -13,14 +13,14 @@ use JTL\Slider;
 use JTL\Sprache;
 use JTL\DB\ReturnType;
 use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
-$cFehler     = '';
-$cHinweis    = '';
+$alertHelper = Shop::Container()->getAlertService();
 $_kSlider    = 0;
 $redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
 $action      = isset($_REQUEST['action']) && Form::validateToken()
@@ -107,14 +107,16 @@ switch ($action) {
                 $oExtension->kInitial      = $slider->getID();
                 Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
 
+                $alertHelper->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    __('successSliderSave'),
+                    'successSliderSave',
+                    ['saveInSession' => true]
+                );
                 header('Location: ' . $redirectUrl);
                 exit;
             }
-            $cFehler .= __('errorSliderSave');
-
-            if (empty($cFehler)) {
-                $cHinweis = __('successSliderSave');
-            }
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderSave'), 'errorSliderSave');
         }
         break;
 }
@@ -124,8 +126,8 @@ switch ($action) {
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);
         if (!is_object($slider)) {
-            $cFehler = __('errorSliderNotFound');
-            $action  = 'view';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $action = 'view';
         }
         break;
 
@@ -153,8 +155,8 @@ switch ($action) {
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
-            $cFehler = __('errorSliderNotFound');
-            $action  = 'view';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $action = 'view';
             break;
         }
         break;
@@ -173,16 +175,14 @@ switch ($action) {
             header('Location: ' . $redirectUrl);
             exit;
         }
-        $cFehler = __('errorSliderRemove');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderRemove'), 'errorSliderRemove');
         break;
 
     default:
         break;
 }
 
-$smarty->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cAction', $action)
+$smarty->assign('cAction', $action)
        ->assign('kSlider', $kSlider)
        ->assign('validPageTypes', (new BoxAdmin(Shop::Container()->getDB()))->getMappedValidPageTypes())
        ->assign('oSlider_arr', Shop::Container()->getDB()->query(

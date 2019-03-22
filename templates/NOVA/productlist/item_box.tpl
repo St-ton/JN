@@ -18,7 +18,7 @@
 
             {block name='searchspecial-overlay'}
                 {if isset($Artikel->oSuchspecialBild)}
-                    {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_XS) alt=$alt}
+                    {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
                 {/if}
             {/block}
 
@@ -54,7 +54,7 @@
     {/block}
     {form id="buy_form_{$Artikel->kArtikel}" action="{$ShopURL}/" class="form form-basket evo-validate d-none d-md-block" data=["toggle" => "basket-add"]}
         {block name='productlist-delivery-status'}
-            <div class="delivery-status my-3">
+            <div class="delivery-status py-3">
                 {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
                 {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
                     <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
@@ -94,7 +94,7 @@
                 {/if}
             </div>
         {/block}
-        <div class="expandable">
+        <div class="expandable pb-3">
             {block name='form-expandable'}
             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0}
                 <div class="basket-variations">
@@ -112,7 +112,7 @@
                             {lang key='chooseVariations' section='messages'}
                         {/alert}
                     {else}
-                        {inputgroup class="quantity-wrapper mt-1"}
+                        {inputgroup class="quantity-wrapper"}
                                 {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
                                         step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
                                         id="quantity{$Artikel->kArtikel}"
@@ -130,10 +130,6 @@
                                     {/inputgroupaddon}
                         {/inputgroup}
                     {/if}
-                {/formgroup}
-            {else}
-                {formgroup}
-                    {link class="btn btn-secondary btn-md btn-block mt-1" role="button" href=$Artikel->cURLFull}{lang key='details'}{/link}
                 {/formgroup}
             {/if}
             {/block}

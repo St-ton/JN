@@ -6,7 +6,7 @@
 
 namespace JTL\Catalog\Wishlist;
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
@@ -75,6 +75,8 @@ class Wunschliste
      * @var Kunde
      */
     public $oKunde;
+
+    private const CACHE_ID = 'wishlistsWithCount';
 
     /**
      * @param int $kWunschliste
@@ -510,7 +512,7 @@ class Wunschliste
     public function ueberpruefePositionen(): string
     {
         $cArtikel_arr = [];
-        $hinweis      = '';
+        $notice       = '';
         $db           = Shop::Container()->getDB();
         foreach ($this->CWunschlistePos_arr as $wlPosition) {
             if (!isset($wlPosition->kArtikel) || (int)$wlPosition->kArtikel <= 0) {
@@ -542,7 +544,7 @@ class Wunschliste
                                 );
                                 if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
                                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                    $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                                     break;
                                 }
@@ -577,7 +579,7 @@ class Wunschliste
                                         && empty($oEigenschaftWertVorhanden->cFreifeldWert)
                                     ) {
                                         $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                        $hinweis       .= '<br />' .
+                                        $notice        .= '<br />' .
                                             Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->kArtikel);
@@ -591,19 +593,20 @@ class Wunschliste
                     }
                 } else {
                     $cArtikel_arr[] = $wlPosition->cArtikelName;
-                    $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                    $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                 }
             } else {
                 $cArtikel_arr[] = $wlPosition->cArtikelName;
-                $hinweis       .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
-        $hinweis .= \implode(', ', $cArtikel_arr);
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $hinweis, 'wlNote');
 
-        return $hinweis;
+        $notice .= \implode(', ', $cArtikel_arr);
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'wlNote');
+
+        return $notice;
     }
 
     /**
@@ -770,6 +773,8 @@ class Wunschliste
      */
     public static function update(int $id): string
     {
+        Shop::Container()->getCache()->flush(self::CACHE_ID);
+
         $db = Shop::Container()->getDB();
         if (isset($_POST['WunschlisteName']) && \mb_strlen($_POST['WunschlisteName']) > 0) {
             $name = Text::htmlentities(
@@ -790,17 +795,21 @@ class Wunschliste
         foreach ($positions as $position) {
             $kWunschlistePos = (int)$position->kWunschlistePos;
             // Ist ein Kommentar vorhanden
-            if (\mb_strlen($_POST['Kommentar_' . $kWunschlistePos]) > 0) {
-                $upd             = new stdClass();
-                $upd->cKommentar = Text::htmlentities(
-                    Text::filterXSS($db->escape(\mb_substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))
-                );
-                $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $upd);
+            if (!isset($_POST['Kommentar_' . $kWunschlistePos])) {
+                break;
             }
+            $upd             = new stdClass();
+            $upd->cKommentar = Text::htmlentities(
+                Text::filterXSS($db->escape(\mb_substr($_POST['Kommentar_' . $kWunschlistePos], 0, 254)))
+            );
+            $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $upd);
+
             // Ist eine Anzahl gesezt
-            if ((int)$_POST['Anzahl_' . $kWunschlistePos] > 0) {
-                $fAnzahl = (float)$_POST['Anzahl_' . $kWunschlistePos];
-                $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, (object)['fAnzahl' => $fAnzahl]);
+            if (isset($_POST['Anzahl_' . $kWunschlistePos])) {
+                $quantity = str_replace(',', '.', $_POST['Anzahl_' . $kWunschlistePos]);
+                if ((float)$quantity > 0) {
+                    $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, (object)['fAnzahl' => (float)$quantity]);
+                }
             }
         }
 
@@ -1094,5 +1103,29 @@ class Wunschliste
         $upd->nOeffentlich = 1;
         $upd->cURLID       = $urlID;
         Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $wishlistID, $upd);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getWishlists(): array
+    {
+        if (($wishlists = Shop::Container()->getCache()->get(self::CACHE_ID)) !== false) {
+            return $wishlists;
+        }
+
+        $wishlists = Shop::Container()->getDB()->queryPrepared(
+            'SELECT tw.*, COUNT(twp.kArtikel) AS productCount
+                FROM twunschliste AS tw
+                    LEFT JOIN twunschlistepos AS twp USING (kWunschliste)
+                WHERE kKunde = :customerID
+                GROUP BY tw.kWunschliste
+                ORDER BY tw.nStandard DESC',
+            ['customerID' => Frontend::getCustomer()->getID()],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        Shop::Container()->getCache()->set(self::CACHE_ID, $wishlists, [CACHING_GROUP_OBJECT]);
+
+        return $wishlists;
     }
 }

@@ -17,6 +17,7 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\SmartyResourceNiceDB;
 use JTL\Session\Frontend;
+use JTL\Alert\Alert;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -200,8 +201,9 @@ function gibStaticHtml(
  */
 function speicherVorlage($post)
 {
-    $tpl    = null;
-    $checks = pruefeVorlage(
+    $alertHelper = Shop::Container()->getAlertService();
+    $tpl         = null;
+    $checks      = pruefeVorlage(
         $post['cName'],
         $post['kKundengruppe'],
         $post['cBetreff'],
@@ -270,10 +272,18 @@ function speicherVorlage($post)
             $upd->cInhaltText   = $tpl->cInhaltText;
             $upd->dStartZeit    = $tpl->dStartZeit;
             Shop::Container()->getDB()->update('tnewslettervorlage', 'kNewsletterVorlage', $kNewsletterVorlage, $upd);
-            $GLOBALS['cHinweis'] .= sprintf(__('successNewsletterTemplateEdit'), $tpl->cName) .'<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successNewsletterTemplateEdit'), $tpl->cName),
+                'successNewsletterTemplateEdit'
+            );
         } else {
-            $kNewsletterVorlage   = Shop::Container()->getDB()->insert('tnewslettervorlage', $tpl);
-            $GLOBALS['cHinweis'] .= sprintf(__('successNewsletterTemplateSave'), $tpl->cName) .'<br />';
+            $kNewsletterVorlage = Shop::Container()->getDB()->insert('tnewslettervorlage', $tpl);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                sprintf(__('successNewsletterTemplateSave'), $tpl->cName),
+                'successNewsletterTemplateSave'
+            );
         }
         $tpl->kNewsletterVorlage = $kNewsletterVorlage;
 

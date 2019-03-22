@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -51,11 +52,11 @@ class Tabs extends Portlet
         return [
             'tabs' => [
                 'label'   => 'Tabs',
-                'type'    => 'textlist',
+                'type'    => InputType::TEXT_LIST,
                 'default' => ['Tab eins', 'Tab zwei', 'Tab drei'],
             ],
             'uniqid' => [
-                'type'    => 'hidden',
+                'type'    => InputType::HIDDEN,
                 'default' => \uniqid('', false),
             ]
         ];

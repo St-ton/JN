@@ -10,6 +10,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
@@ -63,11 +64,10 @@ switch ($kSektion) {
 }
 
 $standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
-$cHinweis         = '';
-$cFehler          = '';
 $section          = null;
 $step             = 'uebersicht';
 $oSections        = [];
+$alertHelper      = Shop::Container()->getAlertService();
 if ($kSektion > 0) {
     $step    = 'einstellungen bearbeiten';
     $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
@@ -154,7 +154,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
     }
 
     $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
-    $cHinweis    = __('successConfigSave');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
     if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
         $tagsToFlush[] = CACHING_GROUP_CORE;
@@ -279,7 +279,5 @@ $smarty->configLoad('german.conf', 'einstellungen')
        ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
        ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
        ->assign('step', $step)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('waehrung', $standardwaehrung->cName)
        ->display('einstellungen.tpl');

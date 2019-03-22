@@ -11,6 +11,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -18,16 +19,19 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'kwk_uebersicht';
+$step        = 'kwk_uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
 setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-    $cHinweis .= saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST);
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST),
+        'saveSettings'
+    );
 }
 if (Request::verifyGPCDataInt('KwK') === 1
     && Request::verifyGPCDataInt('nichtreggt_loeschen') === 1
@@ -38,9 +42,9 @@ if (Request::verifyGPCDataInt('KwK') === 1
         foreach ($kwkIDs as $id) {
             Shop::Container()->getDB()->delete('tkundenwerbenkunden', 'kKundenWerbenKunden', (int)$id);
         }
-        $cHinweis .= __('successNewCustomerDelete') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewCustomerDelete'), 'successNewCustomerDelete');
     } else {
-        $cFehler .= __('errorAtLeastOneNewCustomer') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewCustomer'), 'errorAtLeastOneNewCustomer');
     }
 }
 if ($step === 'kwk_uebersicht') {
@@ -132,7 +136,5 @@ if ($step === 'kwk_uebersicht') {
 }
 $smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('kundenwerbenkunden.tpl');

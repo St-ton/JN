@@ -3,6 +3,9 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {strip}
+{if !isset($i)}
+    {assign var=i value=0}
+{/if}
 {assign var=max_subsub_items value=4}
 
 {block name='megamenu-categories'}
@@ -33,15 +36,22 @@
         {/if}
         {foreach $categories as $category}
             {assign var=isDropdown value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
+            {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
+                {assign var=activeParent value=$activeParents[$i]}
+            {/if}
             {if $isDropdown}
-                {navitemdropdown text=$category->cKurzbezeichnung
+                <li class="nav-item pb-2 dropdown{if $category->kKategorie == $activeId
+                || ((isset($activeParent)
+                && isset($activeParent->kKategorie))
+                && $activeParent->kKategorie == $category->kKategorie)} active{/if}" data-tab="{$category@iteration}">
+                    {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
+                        {$category->cName}
+                    {/link}
+                    <div class="dropdown-menu">
+                {*{navitemdropdown text=$category->cKurzbezeichnung
                     data=["tab"=>$category@iteration]
-                    class="{if $category@first} pl-0 pr-2{else}px-2{/if}{if $category->kKategorie == $activeId} active{/if}"}
-                    {container class="pt-2"}
-                        {link href=$category->cURLFull title=$category->cSeo class="title"}
-                            {$category->cName}
-                        {/link}
-                        <hr class="my-2 d-none d-md-block">
+                    class="{if $category->kKategorie == $activeId} active{/if}"}*}
+                    {container class="pt-md-2"}
                         {row}
                             {assign var=hasInfoColumn value=false}
                         {if $Einstellungen.template.megamenu.show_maincategory_info !== 'N'
@@ -50,7 +60,7 @@
                             || !empty($category->cBeschreibung))}
                             {assign var=hasInfoColumn value=true}
                         {/if}
-                            {col lg="{if $hasInfoColumn}9{else}12{/if}" class="mega-categories{if $hasInfoColumn} hasInfoColumn{/if} pt-3"}
+                            {col lg="{if $hasInfoColumn}9{else}12{/if}" class="mega-categories{if $hasInfoColumn} hasInfoColumn{/if} pt-md-3"}
                                 {row}
                                     {if $category->bUnterKategorien}
                                         {if !empty($category->Unterkategorien)}
@@ -60,7 +70,7 @@
                                         {/if}
                                         {foreach $sub_categories as $sub}
                                             {col cols=12 md=6 lg=3}
-                                                {dropdownitem tag="div" active=$sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie) class="p-0 mb-6"}
+                                                {dropdownitem tag="div" active=$sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie) class="p-0 mb-md-6"}
                                                     <div class="category-wrapper">
                                                         {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                             <div class="d-none d-md-block">
@@ -128,7 +138,11 @@
                             {/if}
                         {/row}
                     {/container}
-                {/navitemdropdown}
+
+                    </div>
+                </li>
+                {*{/navitemdropdown}*}
+
             {else}
                 {navitem href=$category->cURLFull title=$category->cSeo
                     data=["tab"=>$category@iteration] class="{if $category->kKategorie == $activeId}active{/if}"}
@@ -157,23 +171,13 @@
         {assign var=linkSEOHersteller value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
         {navitemdropdown text="{if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}" data=["tab"=>"manufacturer"]}
             {container}
-                <div class="manufacturer">
-                    {if isset($linkSEOHersteller)}
-                        {link href=$linkSEOHersteller->getURL() title=$linkSEOHersteller->getName()}
-                            {$linkSEOHersteller->getName()}
-                        {/link}
-                    {else}
-                        {lang key='manufacturers'}
-                    {/if}
-                </div>
-                <hr class="my-2 d-none d-md-block">
                 {row}
                     {foreach $manufacturers as $hst}
                         {col cols=12 md=6 lg=3}
                             {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller)}
                                 <div class="category-wrapper manufacturer mt-3">
                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
-                                        <div class="d-none d-md-block">
+                                        <div class="d-none d-md-block mb-3">
                                             {link href=$hst->cURLFull title=$hst->cSeo}
                                                 {image lazy=true data=["src" => $hst->cBildURLNormal]
                                                      src="{$imageBaseURL}gfx/trans.png" alt=$hst->cName|escape:'html'}

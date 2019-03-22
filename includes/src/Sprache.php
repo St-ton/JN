@@ -17,7 +17,7 @@ use JTL\News\Category;
 use JTL\News\Item;
 use JTL\Session\Frontend;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Sprache

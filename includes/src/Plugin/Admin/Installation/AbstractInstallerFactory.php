@@ -26,7 +26,7 @@ use JTL\Plugin\Admin\Installation\Items\Templates;
 use JTL\Plugin\Admin\Installation\Items\Uninstall;
 use JTL\Plugin\Admin\Installation\Items\Widgets;
 use JTL\Plugin\InstallCode;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class AbstractInstallerFactory

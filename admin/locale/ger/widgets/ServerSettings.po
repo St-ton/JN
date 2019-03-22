@@ -1,0 +1,5 @@
+msgid "ServerSettings_title"
+msgstr "Server Konfiguration"
+
+msgid "ServerSettings_desc"
+msgstr "Zeigt relevante Serverkonfigurationen"

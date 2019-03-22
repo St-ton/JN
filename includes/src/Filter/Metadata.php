@@ -15,7 +15,7 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\MagicCompatibilityTrait;
 use JTL\Catalog\Product\MerkmalWert;
 use JTL\Shop;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;
@@ -518,7 +518,6 @@ class Metadata implements MetadataInterface
             return \strip_tags($this->metaKeywords);
         }
         // Kategorieattribut?
-        $catKeyWords = '';
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue());
             if (!empty($category->cMetaKeywords)) {
@@ -538,66 +537,75 @@ class Metadata implements MetadataInterface
         // Keine eingestellten Metas vorhanden => baue Standard Metas
         $keywordsMeta = '';
         if (\is_array($products) && \count($products) > 0) {
-            \shuffle($products); // Shuffle alle Artikel
-            $maxIdx           = \min(6, \count($products));
-            $productName      = '';
-            $excludes         = self::getExcludes();
-            $excludedKeywords = isset($excludes[$_SESSION['cISOSprache']]->cKeywords)
-                ? \explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords)
-                : [];
-            for ($i = 0; $i < $maxIdx; ++$i) {
-                $extProductName = self::getFilteredString(
-                    $products[$i]->cName,
-                    $excludedKeywords
-                ); // Filter nicht erlaubte Keywords
-                if (\mb_strpos($extProductName, ' ') !== false) {
-                    // Wenn der Dateiname aus mehreren Wörtern besteht
-                    $subName = '';
-                    foreach (\explode(' ', $extProductName) as $j => $tmp) {
-                        if (\mb_strlen($tmp) > 2) {
-                            $tmp      = \str_replace(',', '', $tmp);
-                            $subName .= $j > 0
-                                ? ', ' . $tmp
-                                : $tmp;
-                        }
-                    }
-                    $productName .= $subName;
-                } elseif ($i > 0) {
-                    $productName .= ', ' . $products[$i]->cName;
-                } else {
-                    $productName .= $products[$i]->cName;
-                }
-            }
-            $keywordsMeta = $productName;
-            $unique       = [];
-            $metaArr      = \explode(', ', $keywordsMeta);
-            if (\is_array($metaArr) && \count($metaArr) > 1) {
-                foreach ($metaArr as $cMeta) {
-                    if (!\in_array($cMeta, $unique, true)) {
-                        $unique[] = $cMeta;
-                    }
-                }
-                $keywordsMeta = \implode(', ', $unique);
+            foreach ($products as $product) {
+                $keywordsMeta .= $product->cName . ' ';
             }
         } elseif (!empty($category->kKategorie)) {
-            // Hat die aktuelle Kategorie Unterkategorien?
             if ($category->bUnterKategorien) {
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
                 if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
-                    $catNames    = map($sub->Unterkategorien, function ($e) {
+                    $catNames     = map($sub->Unterkategorien, function ($e) {
                         return \strip_tags($e->cName);
                     });
-                    $catKeyWords = \implode(', ', \array_filter($catNames));
+                    $keywordsMeta = \implode(' ', \array_filter($catNames));
                 }
             } elseif (!empty($category->cBeschreibung)) { // Hat die aktuelle Kategorie eine Beschreibung?
-                $catKeyWords = $category->cBeschreibung;
+                $keywordsMeta = $category->cBeschreibung;
             }
-
-            return \strip_tags(\str_replace('"', '', $catKeyWords));
         }
 
-        return \strip_tags(Text::htmlentitydecode(\str_replace('"', '', $keywordsMeta), \ENT_NOQUOTES));
+        return $this::getTopMetaKeywords($keywordsMeta);
+    }
+
+    /**
+     * Get the most frequent keywords from a given text
+     * @param string $text the text to analyze
+     * @param int $maxWords maximum amount of keywords to return
+     * @param boolean $asArray default = false - return concatenated keywords-string. true to return keywords-array
+     * @return string|array
+     */
+    public static function getTopMetaKeywords(string $text, int $maxWords = 10, bool $asArray = false)
+    {
+        // remove text-format-clutter
+        $text = \str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.', '"'], ' ', $text);
+        // sanitize and lowercase text
+        $text = \StringHandler::removeDoubleSpaces(
+            \preg_replace(
+                '/[^a-zA-Z0-9üÜäÄöÖß-]/u',
+                ' ',
+                \StringHandler::htmlentitydecode(\strtolower(\strip_tags($text)))
+            )
+        );
+        // text to array
+        $wordsArray = \explode(' ', $text);
+        // minimum word length
+        $minimumWordLength = (int)Shop::getSettingValue(\CONF_METAANGABEN, 'global_meta_keywords_laenge');
+
+        $wordsArray = \array_filter($wordsArray, function ($value) use ($minimumWordLength) {
+            return \strlen($value) >= $minimumWordLength;
+        });
+        // filter keywords from global keywords blacklist
+        $excludes     = self::getExcludes();
+        $excludeWords = \explode(' ', $excludes[Shop::getLanguageCode()]->cKeywords ?? '');
+        $wordsArray   = \array_udiff($wordsArray, $excludeWords, 'strcasecmp');
+        $keywords     = array();
+        // count word occurrences
+        while (($c_word = \array_shift($wordsArray)) !== null) {
+            if (\array_key_exists($c_word, $keywords)) {
+                $keywords[$c_word]++;
+            } else {
+                $keywords[$c_word] = 1;
+            }
+        }
+        // sort by occurrences and build final keywords array
+        \arsort($keywords);
+        $finalKeywordsArray = \array_slice(\array_keys($keywords), 0, $maxWords);
+        if ($asArray) {
+            return $finalKeywordsArray;
+        }
+
+        return \implode(',', $finalKeywordsArray);
     }
 
     /**

@@ -13,19 +13,20 @@ use JTL\Template;
 use JTL\DB\ReturnType;
 use JTL\Link\LinkGroupInterface;
 use JTL\Boxes\Type;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-$cHinweis   = '';
-$cFehler    = '';
-$pageID     = Request::verifyGPCDataInt('page');
-$boxService = Shop::Container()->getBoxService();
-$boxAdmin   = new BoxAdmin(Shop::Container()->getDB());
-$bOk        = false;
-$linkID     = Request::verifyGPCDataInt('linkID');
-$boxID      = Request::verifyGPCDataInt('item');
+$pageID      = Request::verifyGPCDataInt('page');
+$boxService  = Shop::Container()->getBoxService();
+$boxAdmin    = new BoxAdmin(Shop::Container()->getDB());
+$bOk         = false;
+$linkID      = Request::verifyGPCDataInt('linkID');
+$boxID       = Request::verifyGPCDataInt('item');
+$alertHelper = Shop::Container()->getAlertService();
+
 if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
@@ -37,7 +38,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                         ++$cnt;
                     }
                 }
-                $cHinweis = $cnt . __('successBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, $cnt . __('successBoxDelete'), 'successBoxDelete');
             }
             break;
 
@@ -48,16 +49,16 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 // Neuer Container
                 $bOk = $boxAdmin->create(0, $pageID, $ePosition);
                 if ($bOk) {
-                    $cHinweis = __('successContainerCreate');
+                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContainerCreate'), 'successContainerCreate');
                 } else {
-                    $cFehler = __('errorContainerCreate');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorContainerCreate'), 'errorContainerCreate');
                 }
             } else {
                 $bOk = $boxAdmin->create($boxID, $pageID, $ePosition, $kContainer);
                 if ($bOk) {
-                    $cHinweis = __('successBoxCreate');
+                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxCreate'), 'successBoxCreate');
                 } else {
-                    $cFehler = __('errorBoxCreate');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxCreate'), 'errorBoxCreate');
                 }
             }
             break;
@@ -65,9 +66,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
         case 'del':
             $bOk = $boxAdmin->delete($boxID);
             if ($bOk) {
-                $cHinweis = __('successBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxDelete'), 'successBoxDelete');
             } else {
-                $cFehler = __('errorBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxDelete'), 'errorBoxDelete');
             }
             break;
 
@@ -120,45 +121,45 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             }
 
             if ($bOk) {
-                $cHinweis = __('successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
-                $cFehler = __('errorBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
         case 'resort':
-            $ePosition = $_REQUEST['position'];
-            $boxes     = $_REQUEST['box'] ?? [];
-            $sort_arr  = $_REQUEST['sort'] ?? [];
-            $aktiv_arr = $_REQUEST['aktiv'] ?? [];
-            $boxCount  = count($boxes);
-            $bValue    = $_REQUEST['box_show'] ?? false;
-            $bOk       = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
-            if ($bOk) {
-                $cHinweis = __('successBoxEdit');
-            } else {
-                $cFehler = __('errorBoxEdit');
-            }
+            $ePosition  = $_REQUEST['position'];
+            $boxes      = $_REQUEST['box'] ?? [];
+            $sort_arr   = $_REQUEST['sort'] ?? [];
+            $aktiv_arr  = $_REQUEST['aktiv'] ?? [];
+            $ignore_arr = $_REQUEST['ignore'] ?? [];
+            $boxCount   = count($boxes);
+            $bValue     = $_REQUEST['box_show'] ?? false;
+            $bOk        = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
 
             foreach ($boxes as $i => $box) {
                 $idx = 'box-filter-' . $box;
-                $boxAdmin->sort($box, $pageID, $sort_arr[$i], in_array($box, $aktiv_arr));
+                $boxAdmin->sort($box, $pageID, $sort_arr[$i], in_array($box, $aktiv_arr), in_array($box, $ignore_arr));
                 $boxAdmin->filterBoxVisibility((int)$box, $pageID, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || $pageID > 0) {
                 $boxAdmin->setVisibility($pageID, $ePosition, isset($_REQUEST['box_show']));
             }
-            $cHinweis = __('successBoxRefresh');
+            if ($bOk) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxRefresh'), 'successBoxRefresh');
+            } else {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxesVisibilityEdit'), 'errorBoxesVisibilityEdit');
+            }
             break;
 
         case 'activate':
             $bActive = (bool)$_REQUEST['value'];
             $bOk     = $boxAdmin->activate($boxID, 0, $bActive);
             if ($bOk) {
-                $cHinweis = __('successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
-                $cFehler = __('errorBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
@@ -167,9 +168,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             $bValue    = (bool)$_GET['value'];
             $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
             if ($bOk) {
-                $cHinweis = __('successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
-                $cFehler = __('errorBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
@@ -211,9 +212,7 @@ $filterMapping = \Functional\reindex($filterMapping, function ($e) {
 $filterMapping = \Functional\map($filterMapping, function ($e) {
     return $e->name;
 });
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('filterMapping', $filterMapping)
+$smarty->assign('filterMapping', $filterMapping)
        ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
        ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))
        ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])

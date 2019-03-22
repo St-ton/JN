@@ -2,12 +2,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{card no-body=true class="clearfix notification-alert bg-{if isset($type)}{$type}{else}info{/if} {if isset($inline)} m-0{/if}"}
+{card no-body=true class="clearfix {if isset($inline)} m-0{/if}"}
     {if isset($title)}
         {cardheader}{$title}{/cardheader}
     {/if}
 
-    {cardbody}{$body}{/cardbody}
+    {cardbody class="notification-alert bg-{if isset($type)}{$type}{else}info{/if}"}
+        {$body}
+    {/cardbody}
 
     {if isset($buttons)}
         {cardfooter}

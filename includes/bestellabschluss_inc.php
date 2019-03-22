@@ -256,6 +256,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $oRechnungsadresse->cVorname      = $customer->cVorname;
     $oRechnungsadresse->cNachname     = $customer->cNachname;
     $oRechnungsadresse->cFirma        = $customer->cFirma;
+    $oRechnungsadresse->cZusatz       = $customer->cZusatz;
     $oRechnungsadresse->cStrasse      = $customer->cStrasse;
     $oRechnungsadresse->cHausnummer   = $customer->cHausnummer;
     $oRechnungsadresse->cAdressZusatz = $customer->cAdressZusatz;

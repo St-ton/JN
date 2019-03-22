@@ -28,7 +28,6 @@
                         </div>
                     </li>
                 {else}
-                    {*{assign var=rootEntryName value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}*}
                     <li id="root-menu-entry-{$rootEntryName}"
                         class="{if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->key === $currentMenuPath[0]}current{/if}">
@@ -42,7 +41,8 @@
                         <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">
                             {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
                                 {if $oLinkGruppe->oLink_arr|@count > 0}
-                                    {assign var=entryName value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                                    {assign var=entryName
+                                            value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                                     <li id="dropdown-header-{$entryName}"
                                         class="backend-dropdown-header
                                                {if $oLinkGruppe->key === $currentMenuPath[1]}expanded current{/if}">
@@ -76,7 +76,6 @@
             function toggleSidebar()
             {
                 var sidebar = $('.backend-sidebar');
-                var width, endWidth;
 
                 if(sidebar.hasClass('collapsed')) {
                     expandSidebar();
@@ -172,9 +171,12 @@
                     ul.css('height', 'auto');
                     height = ul.height();
                     ul.css({ height: '0px' });
-                    ul.animate({ height: height }, 400, 'swing', function() { ul.css({ height: '' }); });
+                    ul.animate({ height: height }, 400, 'swing', function() {
+                        ul.css({ height: '' });
+                    }).css('display', '');
                     li.addClass('compact-expanded');
                 }
+
 
                 return false;
             }

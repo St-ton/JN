@@ -3,10 +3,11 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
-<div class="delivery-status p-3 px-3 mb-3">
+<div class="delivery-status {if !isset($availability) && !isset($shippingTime)}p-3 mt-3 mb-4{/if}">
 {block name='delivery-status'}
-    {row}
-        {col cols=6}
+    {row class='align-items-center'}
+        {if !isset($shippingTime)}
+        {col cols="{if !isset($availability) && !isset($shippingTime)}6{else}12{/if}"}
             {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
                 <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
             {elseif !$Artikel->nErscheinendesProdukt}
@@ -20,9 +21,9 @@
                 ($Artikel->cLagerKleinerNull === 'N' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I' || $Artikel->cLagerKleinerNull === 'Y' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
                     <span class="status status-1">{lang key='supplierStockNotice' printf=$Artikel->fLieferzeit}</span>
                 {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
-                    <span class="status status-{$Artikel->Lageranzeige->nStatus}">{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
+                    <span class="status status-{$Artikel->Lageranzeige->nStatus}"><span class="fas fa-truck mr-2"></span>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
                 {elseif $anzeige === 'ampel'}
-                    <span class="status status-{$Artikel->Lageranzeige->nStatus}">{$Artikel->Lageranzeige->AmpelText}</span>
+                    <span class="status status-{$Artikel->Lageranzeige->nStatus}"><span class="fas fa-truck mr-2"></span>{$Artikel->Lageranzeige->AmpelText}</span>
                 {/if}
                 {include file='productdetails/warehouse.tpl' tplscope='detail'}
             {else}
@@ -48,13 +49,17 @@
                 <div class="delivery-status">{lang key='deliveryStatus'}: {$Artikel->cLieferstatus}</div>
             {/if}
         {/col}
-        {col cols=6}
+        {/if}
+        {if !isset($availability)}
+        {col cols="{if !isset($availability) && !isset($shippingTime)}6{else}12{/if}"}
             {if $Artikel->cEstimatedDelivery}
                 <div class="estimated-delivery">
-                    {lang key='shippingTime'}: <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
+                    {if !isset($availability) && !isset($shippingTime)}{lang key='shippingTime'}:{/if}
+                    <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
                 </div>
             {/if}
         {/col}
+        {/if}
     {/row}
 {/block}
 </div>

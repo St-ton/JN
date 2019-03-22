@@ -17,11 +17,6 @@
         {col cols=12 md=6 class="product-gallery"}
             {include file='productdetails/image.tpl'}
             {*{image src=$Artikel->Bilder[0]->cURLNormal fluid=true class="mx-auto d-block" alt="Responsive image"}*}
-            {if $Artikel->bHasKonfig}
-                {block name='productdetails-config-summary'}
-                    {include file='productdetails/config_sidebar.tpl'}
-                {/block}
-            {/if}
         {/col}
         {col cols=12 md=6 class="product-info"}
             <div class="h1 d-xs-block d-sm-none text-center">{$Artikel->cName}</div>
@@ -29,13 +24,13 @@
             <div class="product-info-inner">
                 <div class="product-headline d-none d-sm-block">
                     {block name='productdetails-info-product-title'}
-                        <h1 class="product-title" itemprop="name">{$Artikel->cName}</h1>
+                        <h1 class="product-title mb-3" itemprop="name">{$Artikel->cName}</h1>
                     {/block}
                 </div>
 
                 {block name='productdetails-info-essential-wrapper'}
                 {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
-                    {row class="info-essential mb-2"}
+                    {row class="info-essential mb-3"}
                         {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                             {block name='productdetails-info-rating-wrapper'}
                                 {col class="rating-wrapper" itemprop="aggregateRating" itemscope=true itemtype="http://schema.org/AggregateRating"}
@@ -54,8 +49,8 @@
                         {/if}
                         {block name='productdetails-info-essential'}
                             {if isset($Artikel->cArtNr) || isset($Artikel->dMHD)}
-                                {col cols=12}
-                                    <p class="text-muted product-sku">{lang key='sortProductno'}: <span
+                                {col cols=12 class='product-sku'}
+                                    <p class="text-muted mb-0">{lang key='sortProductno'}: <span
                                                 itemprop="sku">{$Artikel->cArtNr}</span></p>
                                     {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                                         <p title="{lang key='productMHDTool'}"
@@ -76,7 +71,7 @@
                                     {block name='productdetails-info-category'}
                                         {col cols=12 class="product-category word-break"}
                                             <span class="text-muted">{lang key='category'}: </span>
-                                            {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
+                                            {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-1}
                                             <a href="{$Brotnavi[$i_kat]->getURLFull()}" itemprop="category">{$Brotnavi[$i_kat]->getName()}</a>
                                         {/col}
                                     {/block}
@@ -123,14 +118,14 @@
                 {block name='productdetails-info-description-wrapper'}
                 {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                     {block name='productdetails-info-description'}
-                        <div class="shortdesc mb-5 d-none d-md-flex" itemprop="description">
+                        <div class="shortdesc mb-2 d-none d-md-flex" itemprop="description">
                             {$Artikel->cKurzBeschreibung}
                         </div>
                     {/block}
                 {/if}
                 {/block}
 
-                <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <div class="product-offer mb-5" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                     <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                     {block name='productdetails-info-hidden'}
                         {if !($Artikel->nIstVater)}
@@ -156,21 +151,12 @@
                         <!-- VARIATIONEN -->
                         {include file='productdetails/variation.tpl' simple=$Artikel->isSimpleVariation showMatrix=$showMatrix}
                     {/block}
-                    {if $Artikel->bHasKonfig}
-                        {block name='productdetails-config'}
-                            {row id="product-configurator"}
-                                {include file='productdetails/config_container.tpl'}
-                            {/row}
-                        {/block}
-                    {/if}
 
                     {row}
                         {block name='productdetails-info-price'}
-                            {if !$Artikel->bHasKonfig}
-                                {col cols=12}
-                                    {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
-                                {/col}
-                            {/if}
+                            {col cols=12}
+                                {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
+                            {/col}
                         {/block}
                         {block name='productdetails-info-stock'}
                             {col cols=12}
@@ -180,23 +166,22 @@
                     {/row}
                     {*UPLOADS product-specific files, e.g. for customization*}
                     {include file="snippets/uploads.tpl" tplscope='product'}
+
                     {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
-                    {include file='productdetails/basket.tpl'}
-                    <hr>
+                    {if !$Artikel->bHasKonfig}
+                        {include file='productdetails/basket.tpl'}
+                    {/if}
                 </div>
             </div>{* /product-info-inner *}
             {/block}{* productdetails-info *}
         {/col}
-        {*{if $Artikel->bHasKonfig}
+        {if $Artikel->bHasKonfig}
             {block name='productdetails-config'}
-                {col id="product-configurator" cols=12}
-                    <div class="product-config mt-2">
-                        *}{*KONFIGURATOR*}{*
-                        {include file='productdetails/config.tpl'}
-                    </div>
-                {/col}
+                {row id="product-configurator"}
+                    {include file='productdetails/config_container.tpl'}
+                {/row}
             {/block}
-        {/if}*}
+        {/if}
     {/row}
     {block name='details-matrix'}
         {include file='productdetails/matrix.tpl'}

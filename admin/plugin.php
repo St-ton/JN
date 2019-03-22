@@ -4,13 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
 use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
+use JTL\Plugin\Admin\Installation\MigrationManager;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
+use JTL\Plugin\Plugin;
+use JTL\Shop;
+use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -19,8 +23,8 @@ $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-$cHinweis        = '';
-$cFehler         = '';
+$notice          = '';
+$errorMsg        = '';
 $step            = 'plugin_uebersicht';
 $invalidateCache = false;
 $bError          = false;
@@ -29,6 +33,7 @@ $kPlugin         = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
 $oPlugin         = null;
+$alertHelper     = Shop::Container()->getAlertService();
 if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
@@ -80,9 +85,9 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
             }
         }
         if ($bError) {
-            $cFehler = __('errorConfigSave');
+            $errorMsg = __('errorConfigSave');
         } else {
-            $cHinweis = __('successConfigSave');
+            $notice = __('successConfigSave');
         }
     }
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
@@ -97,13 +102,27 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         $oPlugin = $loader->init($kPlugin, $invalidateCache);
     }
     if ($oPlugin !== null) {
+        if (ADMIN_MIGRATION && $oPlugin instanceof Plugin) {
+            Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+            $manager    = new MigrationManager(
+                $db,
+                $oPlugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                $oPlugin->getPluginID(),
+                Version::parse($oPlugin->getMeta()->getVersion())
+            );
+            $migrations = count($manager->getMigrations());
+            if ($migrations > 0) {
+                $smarty->assign('manager', $manager)
+                       ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
+            }
+        }
         $smarty->assign('oPlugin', $oPlugin);
         if ($updated === true) {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
                 'plugin'   => $oPlugin,
                 'hasError' => &$bError,
-                'msg'      => &$cHinweis,
-                'error'    => $cFehler,
+                'msg'      => &$notice,
+                'error'    => $errorMsg,
                 'options'  => $oPlugin->getConfig()->getOptions()
             ]);
         }
@@ -127,8 +146,12 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         }
     }
 }
+$alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
+$alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
+
 $smarty->assign('oPlugin', $oPlugin)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
+       ->assign('hasDifferentVersions', false)
+       ->assign('currentDatabaseVersion', 0)
+       ->assign('currentFileVersion', 0)
        ->display('plugin.tpl');

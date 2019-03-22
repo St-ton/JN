@@ -621,88 +621,90 @@ function saveCoupon($oKupon, $oSprache_arr)
 /**
  * Send notification emails to all customers admitted to this Kupon
  *
- * @param Kupon $oKupon
+ * @param Kupon $coupon
  */
-function informCouponCustomers($oKupon)
+function informCouponCustomers($coupon)
 {
-    augmentCoupon($oKupon);
-    $db             = Shop::Container()->getDB();
-    $oStdSprache    = $db->select('tsprache', 'cShopStandard', 'Y');
-    $oStdWaehrung   = $db->select('twaehrung', 'cStandard', 'Y');
-    $defaultOptions = Artikel::getDefaultOptions();
+    augmentCoupon($coupon);
+    $db              = Shop::Container()->getDB();
+    $defaultLang     = $db->select('tsprache', 'cShopStandard', 'Y');
+    $defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
+    $defaultOptions  = Artikel::getDefaultOptions();
     // lokalisierter Kuponwert und MBW
-    $oKupon->cLocalizedWert = $oKupon->cWertTyp === 'festpreis'
-        ? Preise::getLocalizedPriceString($oKupon->fWert, $oStdWaehrung, false)
-        : $oKupon->fWert . ' %';
-    $oKupon->cLocalizedMBW  = Preise::getLocalizedPriceString($oKupon->fMindestbestellwert, $oStdWaehrung, false);
+    $coupon->cLocalizedWert = $coupon->cWertTyp === 'festpreis'
+        ? Preise::getLocalizedPriceString($coupon->fWert, $defaultCurrency, false)
+        : $coupon->fWert . ' %';
+    $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
     // kKunde-Array aller auserwaehlten Kunden
-    $kKunde_arr   = Text::parseSSK($oKupon->cKunden);
-    $oKundeDB_arr = $db->query(
+    $customerIDs  = Text::parseSSK($coupon->cKunden);
+    $customerData = $db->query(
         'SELECT kKunde
             FROM tkunde
             WHERE TRUE
-                ' . ((int)$oKupon->kKundengruppe === -1
-                    ? 'AND TRUE'
-                    : 'AND kKundengruppe = ' . (int)$oKupon->kKundengruppe) . '
-                ' . ($oKupon->cKunden === '-1'
-                    ? 'AND TRUE'
-                    : 'AND kKunde IN (' . implode(',', $kKunde_arr) . ')'),
+                ' . ((int)$coupon->kKundengruppe === -1
+            ? 'AND TRUE'
+            : 'AND kKundengruppe = ' . (int)$coupon->kKundengruppe) . '
+                ' . ($coupon->cKunden === '-1'
+            ? 'AND TRUE'
+            : 'AND kKunde IN (' . implode(',', $customerIDs) . ')'),
         ReturnType::ARRAY_OF_OBJECTS
     );
-    // Artikel-Nummern
-    $oArtikelDB_arr = [];
-    $cArtNr_arr     = Text::parseSSK($oKupon->cArtikel);
-
-    if (count($cArtNr_arr) > 0) {
-        $oArtikelDB_arr = $db->query(
+    $productIDs   = [];
+    $itemNumbers  = Text::parseSSK($coupon->cArtikel);
+    if (count($itemNumbers) > 0) {
+        $itemNumbers = array_map(function ($e) {
+            return '"' . $e . '"';
+        }, $itemNumbers);
+        $productData = $db->query(
             'SELECT kArtikel
                 FROM tartikel
-                WHERE cArtNr IN (' . implode(',', $cArtNr_arr) . ')',
+                WHERE cArtNr IN (' . implode(',', $itemNumbers) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
+        $productIDs  = array_map(function ($e) {
+            return (int)$e->kArtikel;
+        }, $productData);
     }
-    foreach ($oKundeDB_arr as $oKundeDB) {
-        $oKunde   = new Kunde($oKundeDB->kKunde);
-        $oSprache = Shop::Lang()->getIsoFromLangID($oKunde->kSprache);
-        if (!$oSprache) {
-            $oSprache = $oStdSprache;
+    foreach ($customerData as $oKundeDB) {
+        $customer = new Kunde($oKundeDB->kKunde);
+        $language = Shop::Lang()->getIsoFromLangID($customer->kSprache);
+        if (!$language) {
+            $language = $defaultLang;
         }
-        $oKuponsprache  = $db->select(
+        $localized  = $db->select(
             'tkuponsprache',
             ['kKupon', 'cISOSprache'],
-            [$oKupon->kKupon, $oSprache->cISO]
+            [$coupon->kKupon, $language->cISO]
         );
-        $oKategorie_arr = [];
-        if ($oKupon->cKategorien !== '-1') {
-            $kKategorie_arr = array_map('\intval', Text::parseSSK($oKupon->cKategorien));
-            foreach ($kKategorie_arr as $kKategorie) {
-                if ($kKategorie > 0) {
-                    $oKategorie       = new Kategorie($kKategorie, $oKunde->kSprache, $oKunde->kKundengruppe);
-                    $oKategorie->cURL = $oKategorie->cURLFull;
-                    $oKategorie_arr[] = $oKategorie;
+        $categories = [];
+        if ($coupon->cKategorien !== '-1') {
+            foreach (array_map('\intval', Text::parseSSK($coupon->cKategorien)) as $categoryID) {
+                if ($categoryID > 0) {
+                    $category       = new Kategorie($categoryID, $customer->kSprache, $customer->kKundengruppe);
+                    $category->cURL = $category->cURLFull;
+                    $categories[]   = $category;
                 }
             }
         }
-        // Artikel
-        $oArtikel_arr = [];
-        foreach ($oArtikelDB_arr as $oArtikelDB) {
-            $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel(
-                $oArtikelDB->kArtikel,
+        $products = [];
+        foreach ($productIDs as $productID) {
+            $product = new Artikel();
+            $product->fuelleArtikel(
+                $productID,
                 $defaultOptions,
-                $oKunde->kKundengruppe,
-                $oKunde->kSprache,
+                $customer->kKundengruppe,
+                $customer->kSprache,
                 true
             );
-            $oArtikel_arr[] = $oArtikel;
+            $products[] = $product;
         }
         // put all together
-        $oKupon->Kategorien      = $oKategorie_arr;
-        $oKupon->Artikel         = $oArtikel_arr;
-        $oKupon->AngezeigterName = $oKuponsprache->cName;
+        $coupon->Kategorien      = $categories;
+        $coupon->Artikel         = $products;
+        $coupon->AngezeigterName = $localized->cName;
         $obj                     = new stdClass();
-        $obj->tkupon             = $oKupon;
-        $obj->tkunde             = $oKunde;
+        $obj->tkupon             = $coupon;
+        $obj->tkunde             = $customer;
         sendeMail(MAILTEMPLATE_KUPON, $obj);
     }
 }

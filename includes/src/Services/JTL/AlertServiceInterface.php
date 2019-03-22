@@ -6,8 +6,8 @@
 
 namespace JTL\Services\JTL;
 
-use JTL\Alert;
-use Tightenco\Collect\Support\Collection;
+use JTL\Alert\Alert;
+use Illuminate\Support\Collection;
 
 /**
  * Interface AlertServiceInterface

@@ -74,7 +74,7 @@
 {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
 || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
     {if $tabanzeige}
-        {tabs id="product-tabs" class="nav nav-tabs" swipeable=true}
+        {tabs id="product-tabs" swipeable=true}
         {if $useDescription}
             {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc" class="nav-item" swipeable=true}
                 <div id="tab-description">
@@ -185,7 +185,7 @@
                     }
                         {lang key='description' section='productDetails'} <i class="fa fa-chevron-down float-right"></i>
                     {/cardheader}
-                    {collapse id="tab-description" class="mb-5 {if $setActiveClass.description}show{/if}"
+                    {collapse id="tab-description" class="mb-5" visible=$setActiveClass.description
                         data=["parent"=>"#tabAccordion"]
                         aria=["labelledby"=>"tab-description-head"]
                     }
@@ -233,7 +233,7 @@
                     }
                         {lang section='productDownloads' key='downloadSection'} <i class="fa fa-chevron-down float-right"></i>
                     {/cardheader}
-                    {collapse id="tab-downloads" class="mb-5 {if $setActiveClass.downloads}show{/if}"
+                    {collapse id="tab-downloads" class="mb-5" visible=$setActiveClass.downloads
                         data=["parent"=>"#tabAccordion"]
                         aria=["labelledby"=>"tab-downloads-head"]
                     }
@@ -258,7 +258,7 @@
                         }
                             {$separatedTab.name} <i class="fa fa-chevron-down float-right"></i>
                         {/cardheader}
-                        {collapse id="tab-{$separatedTab.id}" class="mb-5 {if $setActiveClass.separatedTabs && $separatedTab@first}show{/if}"
+                        {collapse id="tab-{$separatedTab.id}" class="mb-5" visible=($setActiveClass.separatedTabs && $separatedTab@first)
                             data=["parent"=>"#tabAccordion"]
                             aria=["labelledby"=>"tab-{$separatedTab.id}-head"]
                         }
@@ -283,7 +283,7 @@
                     }
                         {lang key='Votes'} <i class="fa fa-chevron-down float-right"></i>
                     {/cardheader}
-                    {collapse id="tab-votes" class="mb-5 {if $setActiveClass.votes}show{/if}"
+                    {collapse id="tab-votes" class="mb-5" visible=$setActiveClass.votes
                         data=["parent"=>"#tabAccordion"]
                         aria=["labelledby"=>"tab-votes-head"]
                     }
@@ -307,7 +307,7 @@
                     }
                         {lang key='productQuestion' section='productDetails'} <i class="fa fa-chevron-down float-right"></i>
                     {/cardheader}
-                    {collapse id="tab-question" class="mb-5 {if $setActiveClass.questionOnItem}show{/if}"
+                    {collapse id="tab-question" class="mb-5" visible=$setActiveClass.questionOnItem
                         data=["parent"=>"#tabAccordion"]
                         aria=["labelledby"=>"tab-question-head"]
                     }
@@ -331,7 +331,7 @@
                     }
                         {lang key='priceFlow' section='productDetails'} <i class="fa fa-chevron-down float-right"></i>
                     {/cardheader}
-                    {collapse id="tab-priceFlow" class="mb-5 {if $setActiveClass.priceFlow}show{/if}"
+                    {collapse id="tab-priceFlow" class="mb-5" visible=$setActiveClass.priceFlow
                         data=["parent"=>"#tabAccordion"]
                         aria=["labelledby"=>"tab-priceFlow-head"]
                     }
@@ -355,7 +355,7 @@
                     }
                         {lang key='notifyMeWhenProductAvailableAgain'} <i class="fa fa-chevron-down float-right"></i>
                     {/cardheader}
-                    {collapse id="tab-availabilityNotification" class="mb-5 {if $setActiveClass.availabilityNotification}show{/if}"
+                    {collapse id="tab-availabilityNotification" class="mb-5" visible=$setActiveClass.availabilityNotification
                         data=["parent"=>"#tabAccordion"]
                         aria=["labelledby"=>"tab-availabilityNotification-head"]
                     }
@@ -381,7 +381,7 @@
                         }
                             {$cMedienTyp} <i class="fa fa-chevron-down float-right"></i>
                         {/cardheader}
-                        {collapse id="tab-{$cMedienTypId}" class="mb-5 {if $setActiveClass.mediaGroup && $cMedienTyp@first}show{/if}"
+                        {collapse id="tab-{$cMedienTypId}" class="mb-5" visible=($setActiveClass.mediaGroup && $cMedienTyp@first)
                             data=["parent"=>"#tabAccordion"]
                             aria=["labelledby"=>"tab-{$cMedienTypId}-head"]
                         }
@@ -406,7 +406,7 @@
                     }
                         {lang key='productTags' section='productDetails'} <i class="fa fa-chevron-down float-right"></i>
                     {/cardheader}
-                    {collapse id="tab-tags" class="mb-5 {if $setActiveClass.tags}show{/if}"
+                    {collapse id="tab-tags" class="mb-5" visible=$setActiveClass.tags
                         data=["parent"=>"#tabAccordion"]
                         aria=["labelledby"=>"tab-tags-head"]
                     }

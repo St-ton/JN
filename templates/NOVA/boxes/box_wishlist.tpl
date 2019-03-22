@@ -8,13 +8,14 @@
         {listgroup}
             {assign var=maxItems value=$oBox->getItemCount()}
             {foreach $oBox->getItems() as $oWunschlistePos}
+                {if $oWunschlistePos@iteration > $maxItems}{break}{/if}
                 {listgroupitem data-id=$oWunschlistePos->kArtikel class="border-0"}
-                    {if $oWunschlistePos@iteration > $maxItems}{break}{/if}
                     {link class="remove float-right"
                         href=$oWunschlistePos->cURL
                         data=["name"=>"Wunschliste.remove",
                             "toggle"=>"product-actions",
-                            "value"=>"{ldelim}'a':{$oWunschlistePos->kWunschlistePos}{rdelim}"]
+                            "value"=>['a'=>$oWunschlistePos->kWunschlistePos]|json_encode|escape:'html'
+                        ]
                         aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]
                     }
                         <span class="fa fa-trash"></span>
@@ -28,8 +29,8 @@
                 {/listgroupitem}
             {/foreach}
         {/listgroup}
-        <hr>
-        {link href="{get_static_route id='jtl.php'}?wl={$oBox->getWishListID()}" class="btn btn-secondary btn-block btn-sm"}
+        <hr class="my-4">
+        {link href="{get_static_route id='wunschliste.php'}?wl={$oBox->getWishListID()}" class="btn btn-secondary btn-block btn-sm"}
             {lang key='goToWishlist'}
         {/link}
     {/card}

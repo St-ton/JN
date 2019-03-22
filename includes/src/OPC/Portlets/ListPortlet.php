@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -55,13 +56,13 @@ class ListPortlet extends Portlet
         return [
             'count' => [
                 'label'   => __('Item Count'),
-                'type'    => 'number',
+                'type'    => InputType::NUMBER,
                 'default' => 3,
                 'dspl_width' => 50,
             ],
             'type'  => [
                 'label'      => __('List Style'),
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'default'    => 'disc',
                 'dspl_width' => 50,
                 'options'    => [

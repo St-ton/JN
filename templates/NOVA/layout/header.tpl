@@ -32,8 +32,8 @@
             <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
             <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
         {else}
-            <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
-            <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
+            <meta itemprop="image" content="{$ShopLogoURL}" />
+            <meta property="og:image" content="{$ShopLogoURL}" />
         {/if}
     {/block}
 
@@ -100,7 +100,7 @@
 
 {has_boxes position='left' assign='hasLeftPanel'}
 {block name='body-tag'}
-    <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
+    <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}{if $isFluidTemplate} class="unboxed-layout"{/if}>
 {/block}
 
 {if !$bExclusive}
@@ -113,27 +113,26 @@
             {include file='layout/header_composer_menu.tpl'}
         {/if}
         {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
-        <header class="d-print-none container-fluid {if $isSticky}sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
+        <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 
             {block name='header-container-inner'}
-                {if !$isFluidTemplate}
-                    <div class="container px-0 px-lg-3 clearfix">
-                {/if}
+
+                <div class="container px-md-4 clearfix">
                 {block name='header-branding-top-bar'}
-                    <div id="top-bar" class="text-right d-none d-md-block">
+                    <div id="top-bar" class="pt-2 text-right d-none d-md-block">
                         {include file='layout/header_top_bar.tpl'}
                     </div>
                 {/block}
 
                 {block name='header-category-nav'}
 
-                    {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md px-0 accordion row"}
-                        {col id="logo" md=3 order=2 order-md=1}
+                    {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-0"}
+                        {col id="logo" md=3 order=2 order-md=1 class="mr-auto pb-lg-4"}
                             {block name='logo'}
-                                <div class="navbar-brand" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
+                                <div class="navbar-brand ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                     <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                     <meta itemprop="url" content="{$ShopURL}">
-                                    <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
+                                    <meta itemprop="logo" content="{$ShopLogoURL}">
 
                                     {link href=$ShopURL title=$Einstellungen.global.global_shopname}
                                     {if isset($ShopLogoURL)}
@@ -145,9 +144,9 @@
                                 </div>
                             {/block}
                         {/col}
-                        {col id="shop-nav" md=4 order=3 order-md=3 class=""}
+                        {col id="shop-nav" order=3 order-md=3 class="col-auto"}
                             {block name='header-branding-shop-nav'}
-                                <div class="d-flex float-right">
+                                <div class="d-flex text-right">
                                     {include file='layout/header_nav_icons.tpl'}
                                 </div>
                             {/block}
@@ -157,18 +156,17 @@
                             {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}
                         {/col}
 
-
                         {col cols=12 order=5}
                             {*categories*}
                             <div id="navbarToggler" class="collapse navbar-collapse mt-2" data-parent="#evo-main-nav-wrapper">
                                 {navbarnav class="megamenu show"}
                                     {include file='snippets/categories_mega.tpl'}
                                 {/navbarnav}
-                                <span class="TabNav_Indicator"></span>
+                                <span class="TabNav_Indicator d-none d-md-block"></span>
                             </div>
                         {/col}
-                        {col cols=12 md=5 order=6 order-md=2}
-                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="mt-2 d-md-flex float-md-right"}
+                        {col order=6 cols=12 md="auto" order-md=2 class="col-auto"}
+                            {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex mx-auto float-md-right"}
                                 {include file='layout/header_nav_search.tpl'}
                             {/collapse}
                         {/col}
@@ -176,9 +174,7 @@
 
                 {/block}
 
-                {if !$isFluidTemplate}
-                    </div>{* /container-block *}
-                {/if}
+                </div>
             {/block}
         </header>
     {/block}
@@ -207,11 +203,11 @@
     {/if}
 {/block}
 {block name='main-wrapper-starttag'}
-    <main id="main-wrapper" class="container{if $isFluidTemplate}-fluid{/if}{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if} mt-0 mt-md-6 pt-4 px-4">
+    <main id="main-wrapper" class="{if $bExclusive} exclusive{/if}{if $hasLeftPanel} aside-active{/if}">
 {/block}
 {block name='content-all-starttags'}
     {block name='content-wrapper-starttag'}
-        <div id="content-wrapper">
+        <div id="content-wrapper" class="container mt-0 mt-md-6 pt-4 px-md-4">
     {/block}
 
     {block name='product-pagination'}

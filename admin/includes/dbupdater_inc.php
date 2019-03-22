@@ -4,22 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Update\IMigration;
+use JTL\DB\ReturnType;
 use JTL\IO\IOError;
 use JTL\IO\IOFile;
-use JTL\Update\MigrationManager;
+use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
+use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\Template;
+use JTL\Update\IMigration;
+use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
-use JTL\DB\ReturnType;
 
 /**
  * Stellt alle Werte die fuer das Update in der DB wichtig sind zurueck
  *
  * @return bool
  */
-function resetteUpdateDB()
+function resetteUpdateDB(): bool
 {
     $db      = Shop::Container()->getDB();
     $columns = $db->query('SHOW COLUMNS FROM tversion', ReturnType::ARRAY_OF_OBJECTS);
@@ -88,36 +90,33 @@ function resetteUpdateDB()
 }
 
 /**
- * @param string $cPfad
+ * @param string $path
  * @return bool
  */
-function loescheVerzeichnisUpdater($cPfad)
+function loescheVerzeichnisUpdater(string $path): bool
 {
-    $bLinux = true;
-    // Linux oder Windows?
-    if (mb_strpos($cPfad, '\\') !== false) {
-        $bLinux = false;
+    $isLinux = true;
+    if (mb_strpos($path, '\\') !== false) {
+        $isLinux = false;
     }
-
-    if ($bLinux) {
-        if (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '/') === false) {
-            $cPfad .= '/';
+    if ($isLinux) {
+        if (mb_strpos(mb_substr($path, mb_strlen($path) - 1, 1), '/') === false) {
+            $path .= '/';
         }
-    } elseif (mb_strpos(mb_substr($cPfad, mb_strlen($cPfad) - 1, 1), '\\') === false) {
-        $cPfad .= '\\';
+    } elseif (mb_strpos(mb_substr($path, mb_strlen($path) - 1, 1), '\\') === false) {
+        $path .= '\\';
     }
-
-    if (is_dir($cPfad) && is_writable($cPfad)) {
-        if (($dirhandle = opendir($cPfad)) !== false) {
+    if (is_dir($path) && is_writable($path)) {
+        if (($dirhandle = opendir($path)) !== false) {
             while (($file = readdir($dirhandle)) !== false) {
                 if ($file !== '.' && $file !== '..' && $file !== '.svn' && $file !== '.git' && $file !== '.gitkeep') {
-                    if (is_dir($cPfad . $file) && is_writable($cPfad . $file)) {
-                        loescheVerzeichnisUpdater($cPfad . $file);
+                    if (is_dir($path . $file) && is_writable($path . $file)) {
+                        loescheVerzeichnisUpdater($path . $file);
                     }
-                    if (is_dir($cPfad . $file) && is_writable($cPfad . $file)) {
-                        @rmdir($cPfad . $file);
+                    if (is_dir($path . $file) && is_writable($path . $file)) {
+                        @rmdir($path . $file);
                     } else {
-                        @unlink($cPfad . $file);
+                        @unlink($path . $file);
                     }
                 }
             }
@@ -128,19 +127,19 @@ function loescheVerzeichnisUpdater($cPfad)
 
         return false;
     }
-    echo $cPfad . __('errorIsNoDir') . '<br>';
+    echo $path . __('errorIsNoDir') . '<br>';
 
     return false;
 }
 
 /**
- * @param string $cDatei
+ * @param string $file
  * @return bool
  */
-function updateZeilenBis($cDatei)
+function updateZeilenBis($file): bool
 {
-    if (file_exists($cDatei)) {
-        $dir_handle = fopen($cDatei, 'r');
+    if (file_exists($file)) {
+        $dir_handle = fopen($file, 'r');
         $nRow       = 1;
         while ($cData = fgets($dir_handle)) {
             $nRow++;
@@ -156,13 +155,13 @@ function updateZeilenBis($cDatei)
 }
 
 /**
- * @param int $nVersion
+ * @param int $version
  */
-function updateFertig(int $nVersion)
+function updateFertig(int $version): void
 {
     Shop::Container()->getDB()->query(
         'UPDATE tversion
-            SET nVersion = ' . $nVersion . ",
+            SET nVersion = ' . $version . ",
             nZeileVon = 1,
             nZeileBis = 0,
             nFehler = 0,
@@ -237,7 +236,6 @@ function dbupdaterBackup()
     try {
         $file = $updater->createSqlDumpFile();
         $updater->createSqlDump($file);
-
         $file   = basename($file);
         $params = http_build_query(['action' => 'download', 'file' => $file], '', '&');
         $url    = Shop::getAdminURL() . '/dbupdater.php?' . $params;
@@ -259,46 +257,56 @@ function dbupdaterBackup()
 function dbupdaterDownload($file)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
-
     if (!preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
         return new IOError('Wrong download request');
     }
-
     $filePath = PFAD_ROOT . PFAD_EXPORT_BACKUP . $file;
 
-    if (!file_exists($filePath)) {
-        return new IOError('Download file does not exist');
-    }
-
-    return new IOFile($filePath, 'application/x-gzip');
+    return file_exists($filePath)
+        ? new IOFile($filePath, 'application/x-gzip')
+        : new IOError('Download file does not exist');
 }
 
 /**
+ * @param int|null $pluginID
  * @return array
  * @throws SmartyException
  * @throws Exception
  */
-function dbupdaterStatusTpl()
+function dbupdaterStatusTpl($pluginID = null)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
-
-    $smarty   = Shop::Smarty();
-    $updater  = new Updater();
-    $template = Template::getInstance();
-
+    $smarty                 = Shop::Smarty();
+    $updater                = new Updater();
+    $template               = Template::getInstance();
+    $manager                = null;
     $currentFileVersion     = $updater->getCurrentFileVersion();
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
     $version                = $updater->getVersion();
     $updatesAvailable       = $updater->hasPendingUpdates();
     $updateError            = $updater->error();
-
-    if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
-        $smarty->assign('manager', new MigrationManager());
+    if (ADMIN_MIGRATION === true) {
+        if ($pluginID !== null && is_numeric($pluginID)) {
+            $db      = Shop::Container()->getDB();
+            $loader  = new PluginLoader($db, Shop::Container()->getCache());
+            $plugin  = $loader->init($pluginID);
+            $manager = new PluginMigrationManager(
+                $db,
+                $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                $plugin->getPluginID(),
+                Version::parse($plugin->getMeta()->getVersion())
+            );
+            $smarty->assign('migrationURL', 'plugin.php')
+                   ->assign('pluginID', $pluginID);
+        } else {
+            $manager = new MigrationManager();
+        }
     }
 
     $smarty->assign('updatesAvailable', $updatesAvailable)
            ->assign('currentFileVersion', $currentFileVersion)
            ->assign('currentDatabaseVersion', $currentDatabaseVersion)
+           ->assign('manager', $manager)
            ->assign('hasDifferentVersions', !Version::parse($currentDatabaseVersion)
                                                  ->equals(Version::parse($currentFileVersion)))
            ->assign('version', $version)
@@ -313,16 +321,29 @@ function dbupdaterStatusTpl()
 }
 
 /**
- * @param null|int $id
- * @param null|int $version
+ * @param null|int    $id
+ * @param null|int    $version
  * @param null|string $dir
+ * @param null|int    $pluginID
  * @return array|IOError
  */
-function dbupdaterMigration($id = null, $version = null, $dir = null)
+function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID = null)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     try {
-        $manager = new MigrationManager();
+        if ($pluginID !== null && is_numeric($pluginID)) {
+            $db      = Shop::Container()->getDB();
+            $loader  = new PluginLoader($db, Shop::Container()->getCache());
+            $plugin  = $loader->init($pluginID);
+            $manager = new PluginMigrationManager(
+                $db,
+                $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                $plugin->getPluginID(),
+                Version::parse($plugin->getMeta()->getVersion())
+            );
+        } else {
+            $manager = new MigrationManager();
+        }
 
         if ($id !== null && in_array($dir, [IMigration::UP, IMigration::DOWN], true)) {
             $manager->executeMigrationById($id, $dir);

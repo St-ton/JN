@@ -4,36 +4,42 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Cart\Warenkorb;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Navigation;
+use JTL\Catalog\NavigationEntry;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\DB\ReturnType;
+use JTL\ExtensionPoint;
+use JTL\Filter\Metadata;
+use JTL\Filter\SearchResults;
+use JTL\Firma;
 use JTL\Helpers\Category;
 use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
-use JTL\Alert;
-use JTL\Catalog\Product\Artikel;
-use JTL\ExtensionPoint;
-use JTL\Firma;
+use JTL\Helpers\Text;
 use JTL\Kampagne;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Catalog\Product\Preise;
+use JTL\Link\Link;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Helpers\Text;
 use JTL\Template;
 use JTL\Visitor;
-use JTL\Cart\Warenkorb;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
 
 $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
 $tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
-$shopLogo   = Shop::getLogo();
 $shopURL    = Shop::getURL();
 $cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
 $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
+$link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
 $themeDir   = empty($conf['template']['theme']['theme_default'])
     ? 'evo'
     : $conf['template']['theme']['theme_default'];
@@ -65,12 +71,10 @@ $specialPageTypes   = [
     PAGE_MEINKONTO,
     PAGE_LOGIN
 ];
-if (in_array($pagetType, $specialPageTypes, true)) {
-    $mapper           = new \JTL\Mapper\PageTypeToLinkType();
-    $metaData         = $linkHelper->buildSpecialPageMeta($mapper->map($pagetType));
-    $cMetaTitle       = $metaData->cTitle;
-    $cMetaDescription = $metaData->cDesc;
-    $cMetaKeywords    = $metaData->cKeywords;
+if ($link !== null) {
+    $cMetaTitle       = $link->getMetaTitle();
+    $cMetaDescription = $link->getMetaDescription();
+    $cMetaKeywords    = $link->getMetaKeyword();
 }
 if (is_object($globalMetaData)) {
     if (empty($cMetaTitle)) {
@@ -81,6 +85,19 @@ if (is_object($globalMetaData)) {
     }
     if (empty($cMetaKeywords)) {
         $cMetaKeywords = $globalMetaData->Meta_Keywords;
+    }
+    $cMetaTitle       = Metadata::prepareMeta(
+        $cMetaTitle,
+        null,
+        (int)$conf['metaangaben']['global_meta_maxlaenge_title']
+    );
+    $cMetaDescription = Metadata::prepareMeta(
+        $cMetaDescription,
+        null,
+        (int)$conf['metaangaben']['global_meta_maxlaenge_description']
+    );
+    if (empty($cMetaKeywords) && $link !== null && !empty($link->getContent())) {
+        $cMetaKeywords = Metadata::getTopMetaKeywords($link->getContent());
     }
 }
 if (!isset($AktuelleKategorie)) {
@@ -147,8 +164,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('bNoIndex', $NaviFilter->getMetaData()->checkNoIndex())
        ->assign('bAjaxRequest', Request::isAjaxRequest())
        ->assign('jtl_token', Form::getTokenInput())
-       ->assign('ShopLogoURL', $shopLogo)
-       ->assign('ShopLogoURL_abs', $shopLogo === '' ? '' : ($shopURL . $shopLogo))
+       ->assign('ShopLogoURL', Shop::getLogo(true))
        ->assign('nSeitenTyp', $pagetType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
@@ -165,24 +181,25 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
        ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
        ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
-       ->assign('Suchergebnisse', $oSuchergebnisse ?? new \JTL\Filter\SearchResults())
+       ->assign('Suchergebnisse', $oSuchergebnisse ?? new SearchResults())
        ->assign('cSessionID', session_id())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
-       ->assign('shopFaviconURL', Shop::getFaviconURL());
+       ->assign('shopFaviconURL', Shop::getFaviconURL())
+       ->assign('wishlists', Wunschliste::getWishlists());
 
-$nav = new \JTL\Catalog\Navigation(Shop::Lang(), Shop::Container()->getLinkService());
+$nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
 $nav->setProductFilter($NaviFilter);
 $nav->setCategoryList($expandedCategories);
 if (isset($AktuellerArtikel) && $AktuellerArtikel instanceof Artikel) {
     $nav->setProduct($AktuellerArtikel);
 }
-if (isset($link) && $link instanceof \JTL\Link\Link) {
+if (isset($link) && $link instanceof Link) {
     $nav->setLink($link);
 }
 if (isset($breadCrumbName, $breadCrumbURL)) {
-    $breadCrumbEntry = new \JTL\Catalog\NavigationEntry();
+    $breadCrumbEntry = new NavigationEntry();
     $breadCrumbEntry->setURL($breadCrumbURL);
     $breadCrumbEntry->setName($breadCrumbName);
     $breadCrumbEntry->setURLFull($breadCrumbURL);

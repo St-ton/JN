@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 use JTL\Shop;
@@ -123,7 +124,7 @@ class Container extends Portlet
             ],
             'background-flag' => [
                 'label'   => 'Hintergrund nutzen?',
-                'type'    => 'radio',
+                'type'    => InputType::RADIO,
                 'options' => [
                     'image' => 'mitlaufendes Bild (parallax)',
                     'video' => 'Hintergrundvideo',
@@ -133,7 +134,7 @@ class Container extends Portlet
                 'inline'  => true,
             ],
             'src'             => [
-                'type'                 => 'image',
+                'type'                 => InputType::IMAGE,
                 'collapseControlStart' => true,
                 'showOnProp'           => 'background-flag',
                 'showOnPropValue'      => 'image',
@@ -142,13 +143,13 @@ class Container extends Portlet
             ],
             'min-height'      => [
                 'label'              => 'Mindesthöhe in px',
-                'type'               => 'number',
+                'type'               => InputType::NUMBER,
                 'default'            => 300,
                 'dspl_width'         => 50,
             ],
             'video-src'       => [
                 'label'                => 'Video',
-                'type'                 => 'video',
+                'type'                 => InputType::VIDEO,
                 'collapseControlStart' => true,
                 'showOnProp'           => 'background-flag',
                 'showOnPropValue'      => 'video',
@@ -156,7 +157,7 @@ class Container extends Portlet
             ],
             'video-poster'    => [
                 'label'              => 'Platzhalterbild',
-                'type'               => 'image',
+                'type'               => InputType::IMAGE,
                 'dspl_width'         => 100,
                 'collapseControlEnd' => true,
             ],

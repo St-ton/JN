@@ -2488,7 +2488,9 @@ class Artikel
             ) {
                 $value->cName .= $outOfStock;
             }
-            if ($tmpVariation->cPfad && \file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad)) {
+            if ($tmpVariation->cPfad
+                && \file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad)
+            ) {
                 $this->cVariationenbilderVorhanden = true;
                 $value->cBildPfadMini              = \PFAD_VARIATIONSBILDER_MINI . $tmpVariation->cPfad;
                 $value->cBildPfad                  = \PFAD_VARIATIONSBILDER_NORMAL . $tmpVariation->cPfad;
@@ -3789,12 +3791,11 @@ class Artikel
                 $return = true;
                 if ($this->cAktivSonderpreis === 'Y' && $this->dSonderpreisEnde_en !== null) {
                     $endDate = new DateTime($this->dSonderpreisEnde_en);
-                    $endDate->modify('+1 days');
-                    $return = ($endDate >= new DateTime());
+                    $return  = $endDate >= (new DateTime())->setTime(0, 0);
                 } elseif ($this->cAktivSonderpreis === 'N' && $this->dSonderpreisStart_en !== null) {
-                    //do not use cached result if a special price started in the mean time
+                    // do not use cached result if a special price started in the mean time
                     $startDate = new DateTime($this->dSonderpreisStart_en);
-                    $today     = new DateTime();
+                    $today     = (new DateTime())->setTime(0, 0);
                     $endDate   = $this->dSonderpreisEnde_en === null
                         ? $today
                         : new DateTime($this->dSonderpreisEnde_en);
@@ -4310,13 +4311,7 @@ class Artikel
                 $this->cHerstellerBildURLNormal = $imageBaseURL . $this->cHerstellerBildNormal;
             }
         }
-        //datum umformatieren
         $this->dErstellt_de = \date_format(\date_create($this->dErstellt), 'd.m.Y');
-        // Sonderzeichen im Artikelnamen nach HTML Entities codieren
-        if ($this->conf['global']['global_artikelname_htmlentities'] === 'Y') {
-            $this->cName = Text::htmlentities($this->cName);
-        }
-        //Artikel kann in WK gelegt werden?
         if ($this->nErscheinendesProdukt && $this->conf['global']['global_erscheinende_kaeuflich'] !== 'Y') {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_NICHTVORBESTELLBAR;
         }
@@ -5504,8 +5499,8 @@ class Artikel
             return '';
         }
         // set default values
-        $minDeliveryDays = (\mb_strlen(\trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
-        $maxDeliveryDays = (\mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
+        $minDeliveryDays = \mb_strlen(\trim($favShipping->nMinLiefertage)) > 0 ? (int)$favShipping->nMinLiefertage : 2;
+        $maxDeliveryDays = \mb_strlen(\trim($favShipping->nMaxLiefertage)) > 0 ? (int)$favShipping->nMaxLiefertage : 3;
         // get all pieces (even invisible) to calc delivery
         $nAllPieces = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
@@ -6110,9 +6105,9 @@ class Artikel
         $ust         = '';
         $versand     = '';
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
-            $versand             = ', ';
-            $versandfreielaender = $this->gibMwStVersandLaenderString();
-            if ($versandfreielaender && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
+            $versand   = ', ';
+            $countries = $this->gibMwStVersandLaenderString();
+            if ($countries && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
                 if ($this->conf['global']['global_versandkostenfrei_darstellung'] === 'D') {
                     $cLaenderAssoc_arr = $this->gibMwStVersandLaenderString(false);
                     $cLaender          = '';
@@ -6131,7 +6126,7 @@ class Artikel
                     $versand .= '<a href="' .
                         $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
                         '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="' .
-                        $versandfreielaender . ', ' . Shop::Lang()->get('else') . ' ' .
+                        $countries . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">' .
                         Shop::Lang()->get('noShippingcostsTo') . '</a>';
                 }
@@ -6191,50 +6186,38 @@ class Artikel
         $shippingFreeCountries = isset($this->Preise->fVK[0])
             ? $helper->getFreeShippingCountries($this->Preise->fVK[0], $kKundengruppe, $this->kVersandklasse)
             : '';
-        if ($shippingFreeCountries) {
-            $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
-                return \mb_strlen($e) > 0 ? "'" .  \trim($e) . "'" : null;
-            }));
-            $count   = \count($codes);
-            $sql     = 'cISO IN (' . \implode(',', $codes) . ')';
-            $string  = '';
-            $cacheID = 'jtl_ola_' . \md5($sql);
-            if (($countryData = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $countryData = Shop::Container()->getDB()->query(
-                    'SELECT cISO, cDeutsch, cEnglisch 
-                        FROM tland WHERE ' . $sql,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                Shop::Container()->getCache()->set(
-                    $cacheID,
-                    $countryData,
-                    [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
-                );
-            }
-            $countriesAssoc = [];
-            $german         = (!isset($_SESSION['cISOSprache']) || Shop::getLanguageCode() === 'ger');
-            foreach ($countryData as $i => $country) {
-                if ($asString) {
-                    $string .= $german === true
-                        ? $country->cDeutsch
-                        : $country->cEnglisch;
-                    if ($count > ($i + 1)) {
-                        $string .= ', ';
-                    }
-                } else {
-                    $string                         = $german === true
-                        ? $country->cDeutsch
-                        : $country->cEnglisch;
-                    $countriesAssoc[$country->cISO] = $string;
-                }
-            }
-
-            return $asString
-                ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', $string)
-                : $countriesAssoc;
+        if (empty($shippingFreeCountries)) {
+            return $asString ? '' : [];
+        }
+        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
+            return \mb_strlen($e) > 0 ? "'" . \trim($e) . "'" : null;
+        }));
+        $sql     = 'cISO IN (' . \implode(',', $codes) . ')';
+        $cacheID = 'jtl_ola_' . \md5($sql);
+        if (($countryData = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $countryData = Shop::Container()->getDB()->query(
+                'SELECT cISO, cDeutsch, cEnglisch 
+                    FROM tland WHERE ' . $sql,
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            Shop::Container()->getCache()->set(
+                $cacheID,
+                $countryData,
+                [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
+            );
+        }
+        $german    = (!isset($_SESSION['cISOSprache'])
+            || Shop::getLanguageCode() === 'ger'
+            || $_SESSION['cISOSprache'] === 'ger');
+        $row       = $german ? 'cDeutsch' : 'cEnglisch';
+        $countries = [];
+        foreach ($countryData as $item) {
+            $countries[$item->cISO] = $item->$row;
         }
 
-        return $asString ? '' : [];
+        return $asString
+            ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))
+            : $countries;
     }
 
     /**
@@ -6327,38 +6310,11 @@ class Artikel
             $description = $this->getMetaDescription($expandedCategories);
         }
 
-        $description          = \str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'], ' ', $description);
-        $description          = Text::htmlentitydecode(\strip_tags($description));
-        $confMinKeyLen        = (int)$this->conf['metaangaben']['global_meta_keywords_laenge'];
-        $cacheID              = 'meta_keywords_' . Shop::getLanguageID();
-        $_descriptionKeywords = \explode(' ', Text::removeDoubleSpaces(
-            \preg_replace('/[^a-zA-Z0-9üÜäÄöÖß-]/u', ' ', $description)
-        ));
-        $descriptionKeywords  = \array_filter($_descriptionKeywords, function ($value) use ($confMinKeyLen) {
-            return \mb_strlen($value) >= $confMinKeyLen;
-        });
+        $metaKeywords = Metadata::getTopMetaKeywords($description);
 
-        if (($excludeWords = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $exclude      = Shop::Container()->getDB()->select(
-                'texcludekeywords',
-                'cISOSprache',
-                Shop::getLanguageCode() ?? Sprache::getDefaultLanguage()->cISO
-            );
-            $excludeWords = isset($exclude->cKeywords)
-                ? \explode(' ', $exclude->cKeywords)
-                : [];
-            Shop::Container()->getCache()->set($cacheID, $excludeWords, [\CACHING_GROUP_OPTION]);
-        }
+        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => $metaKeywords]);
 
-        $keywords = \str_replace(
-            '"',
-            '',
-            \implode(',', \array_udiff(\array_unique($descriptionKeywords), $excludeWords, 'strcasecmp'))
-        );
-
-        \executeHook(\HOOK_ARTIKEL_INC_METAKEYWORDS, ['keywords' => $keywords]);
-
-        return $keywords;
+        return $metaKeywords;
     }
 
     /**
@@ -6405,10 +6361,7 @@ class Artikel
             );
         }
         if (!empty($this->cName)) {
-            $title = (!isset($this->conf['global']['global_artikelname_htmlentities'])
-                || $this->conf['global']['global_artikelname_htmlentities'] === 'N')
-                ? Text::htmlentities($this->cName)
-                : $this->cName;
+            $title = $this->cName;
         }
         $title = \str_replace('"', '', $title) . $globalMetaTitle;
 
@@ -6597,13 +6550,17 @@ class Artikel
         if (!$taxText && $this->AttributeAssoc === null) {
             $taxText = $this->gibAttributWertNachName(\ART_ATTRIBUT_STEUERTEXT);
         }
+        $countries       = $this->gibMwStVersandLaenderString(false);
+        $countriesString = \count($countries) > 0
+            ? Shop::Lang()->get('noShippingCostsAtExtended', 'basket', \implode(', ', $countries))
+            : '';
 
         return [
             'net'                   => $net,
             'text'                  => $taxText,
             'tax'                   => $this->mwstFormat(Tax::getSalesTax($this->kSteuerklasse)),
-            'shippingFreeCountries' => $this->gibMwStVersandLaenderString(),
-            'countries'             => $this->gibMwStVersandLaenderString(false),
+            'shippingFreeCountries' => $countriesString,
+            'countries'             => $countries,
             'shippingClass'         => $this->cVersandklasse
         ];
     }

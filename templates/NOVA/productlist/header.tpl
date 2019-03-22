@@ -93,7 +93,7 @@
 {include file='selectionwizard/index.tpl'}
 
 {if count($Suchergebnisse->getProducts()) > 0}
-    <div id="improve_search" class="clearfix">
+    <div id="improve_search" class="mb-3">
         {include file='productlist/result_options.tpl'}
     </div>
 {/if}

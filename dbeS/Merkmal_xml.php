@@ -1,6 +1,1 @@
-<?php
-/**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- */
-die('should not see me');
+<?php // removed in 5.0.0

@@ -7,13 +7,13 @@
 namespace Services\JTL\Validation\Rules;
 
 use JTL\Services\JTL\Validation\Rules\Integer;
-use PHPUnit\Framework\TestCase;
+use Tests\BaseTestCase;
 
 /**
  * Class IntegerTest
  * @package Services\JTL\Validation\Rules
  */
-class IntegerTest extends TestCase
+class IntegerTest extends BaseTestCase
 {
     public function test()
     {

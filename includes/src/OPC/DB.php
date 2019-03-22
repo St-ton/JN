@@ -213,7 +213,7 @@ class DB
     public function getPortlet(string $class): Portlet
     {
         if ($class === '') {
-            throw new InvalidArgumentException("The OPC portlet class name '$class' is invalid.");
+            throw new InvalidArgumentException('The OPC portlet class name "' . $class . '" is invalid.');
         }
 
         $plugin      = null;
@@ -223,16 +223,21 @@ class DB
         $fromPlugin  = $isInstalled && (int)$portletDB->kPlugin > 0;
 
         if ($fromPlugin) {
-            $loader = new PluginLoader($this->shopDB, Shop::Container()->getCache());
-            $plugin = $loader->init((int)$portletDB->kPlugin);
-            $file   = $plugin->getPaths()->getPortletsPath() . $portletDB->cClass . '/' . $portletDB->cClass . '.php';
-            require_once $file;
+            $loader    = new PluginLoader($this->shopDB, Shop::Container()->getCache());
+            $plugin    = $loader->init((int)$portletDB->kPlugin);
+            $fullClass = '\Plugin\\' . $plugin->getPluginID() . '\Portlets\\' . $class;
+        } else {
+            $fullClass = '\JTL\OPC\Portlets\\' . $class;
         }
 
         if ($isInstalled && $isActive) {
             /** @var Portlet $portlet */
-            $fullClass = "\\JTL\\OPC\\Portlets\\$class";
-            $portlet   = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
+            if (\class_exists($fullClass)) {
+                $portlet = new $fullClass($class, $portletDB->kPortlet, $portletDB->kPlugin);
+            } else {
+                $portlet = new Portlet($class, $portletDB->kPortlet, $portletDB->kPlugin);
+            }
+
             return $portlet
                 ->setTitle($portletDB->cTitle)
                 ->setGroup($portletDB->cGroup)

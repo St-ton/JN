@@ -8,7 +8,7 @@ namespace JTL\Plugin\Data;
 
 use JTL\Plugin\Admin\InputType;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 use function Functional\first;
 use function Functional\group;
 

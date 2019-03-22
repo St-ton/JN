@@ -53,7 +53,7 @@
                         href="{$category->cURLFull}"
                         router-data=["toggle"=>"collapse","target"=>"#category_box_{$category->kKategorie}_{$i}"]
                     }*}
-                        <a class="nav-link py-3" target="_self" href="{$category->cURLFull}" data-toggle="collapse"
+                        <a class="nav-link py-3 px-2" target="_self" href="{$category->cURLFull}" data-toggle="collapse"
                            data-target="#category_box_{$category->kKategorie}_{$i}"
                            aria-expanded="{if $category->kKategorie == $activeId
                            || ((isset($activeParent)

@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace Tests\Services\JTL;
 
 use JTL\Services\JTL\CryptoService;
 use JTL\Services\JTL\PasswordService;
-use PHPUnit\Framework\TestCase;
+use Tests\BaseTestCase;
 
 /**
  * Class PasswordServiceTest
  * @package Services\JTL
  */
-class PasswordServiceTest extends TestCase
+class PasswordServiceTest extends BaseTestCase
 {
     public function test_generate()
     {

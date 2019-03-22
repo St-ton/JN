@@ -7,7 +7,7 @@
 namespace JTL\Helpers;
 
 use function Functional\group;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cart\WarenkorbPos;
 use JTL\CheckBox;
@@ -27,7 +27,7 @@ use JTL\Catalog\Tag;
 use JTL\Catalog\TagArticle;
 use JTL\Catalog\UnitsOfMeasure;
 use stdClass;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Product

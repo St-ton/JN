@@ -34,8 +34,11 @@ class Migration_20180319103900 extends Migration implements IMigration
         $this->removeConfig('advanced_page_cache');
         $this->execute("DELETE FROM teinstellungen WHERE cName = '' AND cWert = ''");
         $this->execute("DELETE FROM teinstellungen WHERE kEinstellungenSektion = 8 AND cName LIKE 'box_%_anzeigen'");
-        $this->execute("INSERT INTO teinstellungenconf (kEinstellungenSektion, cName, cBeschreibung, cWertName, cInputTyp, cModulId, nSort, nStandardAnzeigen) 
-          (SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, '' AS cBeschreibung, teinstellungen.cName AS cWertName, 'text' AS cInputTyp, teinstellungen.cModulId, 0 AS nSort, 1 AS nStandardAnzeigen 
+        $this->execute("INSERT INTO teinstellungenconf (kEinstellungenSektion, cName, cBeschreibung, cWertName, 
+                                cInputTyp, cModulId, nSort, nStandardAnzeigen) 
+          (SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, '' AS cBeschreibung, 
+                  teinstellungen.cName AS cWertName, 'text' AS cInputTyp, teinstellungen.cModulId,
+                  0 AS nSort, 1 AS nStandardAnzeigen 
                 FROM teinstellungen
                 LEFT JOIN teinstellungenconf
                     ON teinstellungenconf.cWertName = teinstellungen.cName
@@ -44,7 +47,7 @@ class Migration_20180319103900 extends Migration implements IMigration
         $this->setConfig(
             'admin_login_logger_mode',
             '1',
-            CONF_GLOBAL,
+            \CONF_GLOBAL,
             'Adminloginversuche loggen?',
             'listbox',
             1503,

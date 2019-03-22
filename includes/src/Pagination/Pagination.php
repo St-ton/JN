@@ -6,7 +6,7 @@
 
 namespace JTL\Pagination;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Class Pagination
@@ -130,7 +130,7 @@ class Pagination
     private $items;
 
     /**
-     * @var array|\Tightenco\Collect\Support\Collection
+     * @var array|Collection
      */
     private $pageItems;
 
@@ -211,7 +211,7 @@ class Pagination
     }
 
     /**
-     * @param array|\Tightenco\Collect\Support\Collection $items - item array to be paginated and sorted
+     * @param array|Collection $items - item array to be paginated and sorted
      * @return $this
      */
     public function setItemArray($items): self
@@ -508,7 +508,7 @@ class Pagination
     }
 
     /**
-     * @return array|\Tightenco\Collect\Support\Collection|null
+     * @return array|Collection|null
      */
     public function getPageItems()
     {

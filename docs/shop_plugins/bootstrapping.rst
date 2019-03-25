@@ -73,7 +73,7 @@ EventDispatcher
 Innerhalb der *boot()*-Methode können EventListener registriert werden, die sich als flexiblere Alternative zu Hooks anbieten.
 Im Vergleich zu den via info.xml registrierten Hooks können EventListener dynamisch generiert werden.
 
-Jeder Hook erzeugt automatisch auch ein Event mit dem Namen `shop.hook.<HOOK-ID>`.
+Jeder Hook erzeugt automatisch auch ein Event mit dem Namen ``shop.hook.<HOOK-ID>``.
 Um also beispielsweise den Hook HOOK_ARTIKEL_CLASS_FUELLEARTIKEL zu nutzen, lässt sich folgendes innerhalb der *boot()*-Methode schreiben:
 
 .. code-block:: php
@@ -82,5 +82,7 @@ Um also beispielsweise den Hook HOOK_ARTIKEL_CLASS_FUELLEARTIKEL zu nutzen, läs
         $args['oArtikel']->cName = 'Neuer Name';
     });
 
+Dies hat den Vorteil, dass der Listener z.B. nur in Abhängigkeit einer Plugin-Option registriert werden kann und somit anders als bei statischen Hooks die in der info.xml registriert wurden der Hook nicht immer ausgeführt werden muss.
+Auch muss so der objektorientierte Kontext des Bootstrappers nicht verlassen werden, während Hooks jeweils nur PHP-Dateien mit funktionalem Code aufrufen können.
 
 Innerhalb des Bootstrappers hat man via ``$this->getPlugin()`` immer Zugriff auf die Instanz des Plugins, via ``$this->getDB()`` auf die Datenbank sowie via ``$this->getCache()`` auf den Objektcache.

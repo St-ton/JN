@@ -1815,17 +1815,17 @@ class Warenkorb
                 AND va.cLaender LIKE '%" . $countryCode . "%'
                 AND (va.cVersandklassen = '-1'
                     OR va.cVersandklassen IN (" . \implode(',', $shippingClasses) . "))
-                AND (va.cKundengruppen = '-1' " . $customerGroupSQL . ")
+                AND (va.cKundengruppen = '-1' " . $customerGroupSQL . ')
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
                     va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
-                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND " . $totalWeight . " <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND " . $maxPrices . " <= vas.fBis )
+                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND ' . $totalWeight . ' <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND ' . $maxPrices . ' <= vas.fBis )
                     )
-                ORDER BY minPrice, nSort ASC LIMIT 1",
+                ORDER BY minPrice, nSort ASC LIMIT 1',
             ReturnType::SINGLE_OBJECT
         );
 

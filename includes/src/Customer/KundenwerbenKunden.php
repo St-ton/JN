@@ -7,10 +7,11 @@
 namespace JTL\Customer;
 
 use JTL\Catalog\Product\Preise;
-use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Shop;
 use stdClass;
 
@@ -175,12 +176,12 @@ class KundenwerbenKunden
             $conf = Shop::getSettings([\CONF_GLOBAL, \CONF_KUNDENWERBENKUNDEN]);
             if ($conf['kundenwerbenkunden']['kwk_nutzen'] === 'Y') {
                 $guthaben             = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
-                $mail                 = new stdClass();
-                $mail->tkunde         = new Kunde($customer->kKunde);
+                $data                 = new stdClass();
+                $data->tkunde         = new Kunde($customer->kKunde);
                 $oKundeTMP            = new Kunde();
-                $mail->oNeukunde      = $oKundeTMP->holRegKundeViaEmail($email);
-                $mail->oBestandskunde = $mail->tkunde;
-                $mail->Einstellungen  = $conf;
+                $data->oNeukunde      = $oKundeTMP->holRegKundeViaEmail($email);
+                $data->oBestandskunde = $data->tkunde;
+                $data->Einstellungen  = $conf;
                 // Update das Guthaben vom Bestandskunden
                 Shop::Container()->getDB()->query(
                     'UPDATE tkunde
@@ -201,9 +202,11 @@ class KundenwerbenKunden
                 $oKundenWerbenKundenBoni->fGuthaben = Preise::getLocalizedPriceString(
                     (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben']
                 );
-                $mail->BestandskundenBoni           = $oKundenWerbenKundenBoni;
+                $data->BestandskundenBoni           = $oKundenWerbenKundenBoni;
                 // verschicke Email an Bestandskunden
-                \sendeMail(\MAILTEMPLATE_KUNDENWERBENKUNDENBONI, $mail);
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENWERBENKUNDENBONI, $data));
             }
         }
 
@@ -215,15 +218,17 @@ class KundenwerbenKunden
      */
     public function sendeEmailanNeukunde(): self
     {
-        $oMail                       = new stdClass();
-        $oMail->oBestandskunde       = new Kunde($this->kKunde);
-        $oMail->oNeukunde            = $this;
-        $this->fGuthabenLocalized    = Preise::getLocalizedPriceString($this->fGuthaben);
-        $oMail->oNeukunde->fGuthaben = $this->fGuthabenLocalized;
-        $oMail->tkunde               = $oMail->oNeukunde;
-        $oMail->tkunde->cMail        = $this->cEmail;
+        $data                       = new stdClass();
+        $data->oBestandskunde       = new Kunde($this->kKunde);
+        $data->oNeukunde            = $this;
+        $this->fGuthabenLocalized   = Preise::getLocalizedPriceString($this->fGuthaben);
+        $data->oNeukunde->fGuthaben = $this->fGuthabenLocalized;
+        $data->tkunde               = $data->oNeukunde;
+        $data->tkunde->cMail        = $this->cEmail;
 
-        \sendeMail(\MAILTEMPLATE_KUNDENWERBENKUNDEN, $oMail);
+        $mailer = Shop::Container()->get(Mailer::class);
+        $mail   = new Mail();
+        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENWERBENKUNDEN, $data));
 
         return $this;
     }

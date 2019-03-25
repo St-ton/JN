@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Cron\Jobs;
+namespace JTL\Cron\Job;
 
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
@@ -14,9 +14,9 @@ use JTL\Media\MediaImage;
 
 /**
  * Class ImageCache
- * @package JTL\Cron\Jobs
+ * @package JTL\Cron\Job
  */
-class ImageCache extends Job
+final class ImageCache extends Job
 {
     /**
      * @var int

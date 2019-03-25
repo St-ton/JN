@@ -1445,15 +1445,15 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param      $kBestellung
-     * @param      $nType
-     * @param null $oAdditional
+     * @param      $orderID
+     * @param      $type
+     * @param null $additional
      * @return $this
      */
-    public function sendMail($kBestellung, $nType, $oAdditional = null)
+    public function sendMail($orderID, $type, $additional = null)
     {
-        if ($nType != MAILTEMPLATE_BESTELLUNG_AKTUALISIERT) {
-            parent::sendMail($kBestellung, $nType, $oAdditional);
+        if ($type !== MAILTEMPLATE_BESTELLUNG_AKTUALISIERT) {
+            parent::sendMail($orderID, $type, $additional);
         }
 
         return $this;

@@ -12,6 +12,8 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Link\Link;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use stdClass;
 
@@ -575,16 +577,17 @@ class CheckBox
         }
         $conf = Shop::getSettings([\CONF_EMAILS]);
         if (!empty($conf['emails']['email_master_absender'])) {
-            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-            $mail                = new stdClass();
-            $mail->oCheckBox     = $checkBox;
-            $mail->oKunde        = $customer;
-            $mail->tkunde        = $customer;
-            $mail->cAnzeigeOrt   = $this->mappeCheckBoxOrte($location);
-            $mail->mail          = new stdClass();
-            $mail->mail->toEmail = $conf['emails']['email_master_absender'];
+            $data                = new stdClass();
+            $data->oCheckBox     = $checkBox;
+            $data->oKunde        = $customer;
+            $data->tkunde        = $customer;
+            $data->cAnzeigeOrt   = $this->mappeCheckBoxOrte($location);
+            $data->mail          = new stdClass();
+            $data->mail->toEmail = $conf['emails']['email_master_absender'];
 
-            \sendeMail(\MAILTEMPLATE_CHECKBOX_SHOPBETREIBER, $mail);
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_CHECKBOX_SHOPBETREIBER, $data));
         }
 
         return true;

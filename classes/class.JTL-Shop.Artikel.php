@@ -3561,10 +3561,9 @@ class Artikel
     }
 
     /**
-     * @param bool $withVariations
      * @return stdClass
      */
-    public static function getDefaultOptions($withVariations = false)
+    public static function getDefaultOptions()
     {
         $options                    = new stdClass();
         $options->nMerkmale         = 1;
@@ -3572,7 +3571,7 @@ class Artikel
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
         $options->nDownload         = 1;
-        $options->nVariationen      = $withVariations ? 1 : 0;
+        $options->nVariationen      = 0;
 
         return $options;
     }

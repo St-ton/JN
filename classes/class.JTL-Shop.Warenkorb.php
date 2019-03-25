@@ -248,8 +248,9 @@ class Warenkorb
 
         $NeuePosition = new WarenkorbPos();
         //kopiere Artikel in Warenkorbpos
-        $NeuePosition->Artikel               = new Artikel();
-        $oArtikelOptionen                    = Artikel::getDefaultOptions(true);
+        $NeuePosition->Artikel          = new Artikel();
+        $oArtikelOptionen               = Artikel::getDefaultOptions();
+        $oArtikelOptionen->nVariationen = 1;
         if ($kKonfigitem > 0) {
             $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
         }

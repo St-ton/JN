@@ -11,6 +11,7 @@ use Exception;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
+use JTL\L10n\GetText;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
@@ -18,7 +19,6 @@ use JTL\Mapper\AdminLoginStatusToLogLevel;
 use JTL\Model\AuthLogEntry;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Sprache;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use function Functional\map;
@@ -65,22 +65,31 @@ class AdminAccount
     private $db;
 
     /**
+     * @var GetText
+     */
+    private $getText;
+
+    /**
      * AdminAccount constructor.
-     * @param DbInterface               $db
+     * @param DbInterface                   $db
      * @param LoggerInterface               $logger
      * @param AdminLoginStatusMessageMapper $statusMessageMapper
      * @param AdminLoginStatusToLogLevel    $levelMapper
+     * @param GetText                       $getText
+     * @throws \Exception
      */
     public function __construct(
         DbInterface $db,
         LoggerInterface $logger,
         AdminLoginStatusMessageMapper $statusMessageMapper,
-        AdminLoginStatusToLogLevel $levelMapper
+        AdminLoginStatusToLogLevel $levelMapper,
+        GetText $getText
     ) {
         $this->db            = $db;
         $this->authLogger    = $logger;
         $this->messageMapper = $statusMessageMapper;
         $this->levelMapper   = $levelMapper;
+        $this->getText       = $getText;
         Backend::getInstance();
         $this->initDefaults();
         $this->validateSession();
@@ -92,10 +101,8 @@ class AdminAccount
     private function initDefaults(): void
     {
         if (!isset($_SESSION['AdminAccount'])) {
-            $default                   = Sprache::getDefaultLanguage();
             $adminAccount              = new stdClass();
-            $adminAccount->kSprache    = $default->kSprache;
-            $adminAccount->cISO        = $default->cISO;
+            $adminAccount->language    = $this->getText->getDefaultLanguage();
             $adminAccount->kAdminlogin = null;
             $adminAccount->oGroup      = null;
             $adminAccount->cLogin      = null;
@@ -170,8 +177,7 @@ class AdminAccount
         $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
         $res  = Shop::Container()->getDB()->update('tadminlogin', 'cMail', $email, $upd);
         if ($res > 0) {
-            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-            $user                   = Shop::Container()->getDB()->select('tadminlogin', 'cMail', $email);
+            $user                   = $this->db->select('tadminlogin', 'cMail', $email);
             $obj                    = new stdClass();
             $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $email;
             $obj->cHash             = $hash;
@@ -293,7 +299,6 @@ class AdminAccount
                     unset($_SESSION[$i]);
                 }
             }
-
             if (!isset($oAdmin->kSprache)) {
                 $oAdmin->kSprache = Shop::getLanguage();
             }
@@ -303,11 +308,11 @@ class AdminAccount
             if (!$this->getIsTwoFaAuthenticated()) {
                 return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED, $cLogin);
             }
-
             return $this->handleLoginResult($this->logged()
                 ? AdminLoginStatus::LOGIN_OK
                 : AdminLoginStatus::ERROR_NOT_AUTHORIZED, $cLogin);
         }
+
         $this->setRetryCount($oAdmin->cLogin);
 
         return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
@@ -537,8 +542,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin      = $admin->cLogin;
             $_SESSION['AdminAccount']->cMail       = $admin->cMail;
             $_SESSION['AdminAccount']->cPass       = $admin->cPass;
-            $_SESSION['AdminAccount']->kSprache    = (int)$admin->kSprache;
-            $_SESSION['AdminAccount']->cISO        = $admin->cISO;
+            $_SESSION['AdminAccount']->language    = $admin->language;
 
             if (!\is_object($group)) {
                 $group                    = new stdClass();

@@ -127,6 +127,11 @@ class Versandart
     public $cPriceLocalized;
 
     /**
+     * @var array
+     */
+    public $surcharges = [];
+
+    /**
      * Versandart constructor.
      * @param int $kVersandart
      */
@@ -167,7 +172,23 @@ class Versandart
             (int)$this->kVersandart
         );
 
+        $this->loadSurcharges();
+
         return 1;
+    }
+
+    public function loadSurcharges(): void
+    {
+        $surcharges = Shop::Container()->getDB()->queryPrepared(
+            'SELECT kVersandzuschlag
+                FROM tversandzuschlag
+                WHERE kVersandart = :kVersandart',
+            ['kVersandart' => $this->kVersandart],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($surcharges as $surcharge) {
+            $this->surcharges[] = new Versandzuschlag($surcharge->kVersandzuschlag);
+        }
     }
 
     /**

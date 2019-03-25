@@ -87,7 +87,6 @@ class Config
                 }
             }
             $this->options->push($cfg);
-            Shop::dbg($cfg);
         }
 
         return $this;

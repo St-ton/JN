@@ -19,7 +19,7 @@ final class Customers extends AbstractPush
     private const LIMIT_CUSTOMERS = 100;
 
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {

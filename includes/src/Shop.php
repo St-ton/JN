@@ -2044,7 +2044,8 @@ final class Shop
                 $container->getDB(),
                 $container->getBackendLogService(),
                 new AdminLoginStatusMessageMapper(),
-                new AdminLoginStatusToLogLevel()
+                new AdminLoginStatusToLogLevel(),
+                $container->getGetText()
             );
         });
 

@@ -21,7 +21,7 @@ class GetText
     /**
      * @var null|string
      */
-    private $langIso;
+    private $langTag;
 
     /**
      * @var null|\Gettext\Translator
@@ -43,8 +43,38 @@ class GetText
      */
     public function __construct()
     {
-        $this->setLangIso($_SESSION['AdminAccount']->cISO ?? Shop::getLanguageCode() ?? 'ger')
+        $this->setLanguage($_SESSION['AdminAccount']->language ?? $this->getDefaultLanguage())
              ->loadAdminLocale();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultLanguage(): string
+    {
+        return 'de-DE';
+    }
+
+    /**
+     * @param string $inLanguage
+     * @return array
+     */
+    public function getAdminLanguages(string $inLanguage): array
+    {
+        $languages  = [];
+        $localeDirs = \array_diff(
+            \scandir(\PFAD_ROOT . \PFAD_ADMIN . 'locale/', \SCANDIR_SORT_ASCENDING),
+            ['..','.']
+        );
+
+        foreach ($localeDirs as $dir) {
+            $languages[$dir] = \Locale::getDisplayLanguage(
+                $dir,
+                $_SESSION['AdminAccount']->language ?? $inLanguage ?? $this->getDefaultLanguage()
+            );
+        }
+
+        return $languages;
     }
 
     /**
@@ -71,7 +101,7 @@ class GetText
      */
     public function getMoPath(string $dir, string $domain): string
     {
-        return $dir . 'locale/' . $this->langIso . '/' . $domain . '.mo';
+        return $dir . 'locale/' . $this->langTag . '/' . $domain . '.mo';
     }
 
     /**
@@ -119,18 +149,18 @@ class GetText
     }
 
     /**
-     * @param string $langIso
-     * @return $this
+     * @param string $langTag
+     * @return GetText
      */
-    public function setLangIso(string $langIso): self
+    public function setLanguage(string $langTag): self
     {
-        if ($this->langIso !== $langIso) {
+        if ($this->langTag !== $langTag) {
             $this->translations = [];
             $this->translator   = new Translator();
             $this->translator->register();
         }
 
-        $this->langIso = $langIso;
+        $this->langTag = $langTag;
 
         return $this;
     }

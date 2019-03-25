@@ -98,7 +98,7 @@ class Country
      */
     public function getNameForLangISO(string $langISO): string
     {
-        return locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $langISO);
+        return \locale_get_display_region('sl-Latn-' . $this->getISO() . '-nedis', $langISO);
     }
 
     /**

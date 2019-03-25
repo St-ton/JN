@@ -1,6 +1,8 @@
 {includeMailTemplate template=header type=plain}
 
-Wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu können.
+Guten Tag,
+
+wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu können.
 
 Bitte klicken Sie den folgenden Freischaltcode, um Newsletter zu empfangen:
 {$NewsletterEmpfaenger->cFreischaltURL}

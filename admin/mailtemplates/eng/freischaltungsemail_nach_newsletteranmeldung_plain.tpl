@@ -1,6 +1,8 @@
 {includeMailTemplate template=header type=plain}
 
-We're pleased to welcome you as a new newsletter subscriber at {$Firma->cName}.
+Hello,
+
+we're pleased to welcome you as a new newsletter subscriber at {$Firma->cName}.
 
 Please click the activation code below to receive your newsletter:
 {$NewsletterEmpfaenger->cFreischaltURL}

@@ -98,6 +98,9 @@ class Migration_20190319092706 extends Migration implements IMigration
         $this->execute("INSERT INTO teinstellungenconfwerte VALUES(
                   (SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName = 'produktfrage_abfragen_anrede'),
                   'Ja, optionale Angabe', 'O', 1)");
+
+        $this->setLocalization('ger', 'global', 'noSalutation', 'Keine Anrede');
+        $this->setLocalization('eng', 'global', 'noSalutation', 'No salutation');
     }
 
     public function down()
@@ -189,5 +192,7 @@ class Migration_20190319092706 extends Migration implements IMigration
                 WHERE teinstellungenconf.cWertName='produktfrage_abfragen_anrede'
                     AND teinstellungenconfwerte.cWert = 'Y'"
         );
+
+        $this->removeLocalization('noSalutation');
     }
 }

@@ -42,7 +42,9 @@
                                         label-for="salutation"
                                     }
                                         {select name="anrede" id="salutation" required=($Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y')}
-                                            <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
+                                            <option value="" selected="selected" {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}disabled{/if}>
+                                                {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                                            </option>
                                             <option value="w"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                                             <option value="m"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                                         {/select}

@@ -15,7 +15,9 @@
                     {/if}
                 </label>
                 <select name="{$prefix}[{$name}][anrede]" id="{$prefix}-{$name}-salutation" class="form-control" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}required{/if} autocomplete="shipping sex">
-                    <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
+                    <option value="" selected="selected" {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}disabled{/if}>
+                        {if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                    </option>
                     <option value="w"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                     <option value="m"{if isset($Lieferadresse->cAnrede) && $Lieferadresse->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                 </select>

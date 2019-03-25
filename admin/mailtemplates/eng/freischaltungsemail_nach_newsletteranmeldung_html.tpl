@@ -1,6 +1,8 @@
 {includeMailTemplate template=header type=html}
 
-We're pleased to welcome you as a new newsletter subscriber at {$Firma->cName}.<br>
+Hello,<br><br>
+
+we're pleased to welcome you as a new newsletter subscriber at {$Firma->cName}.<br>
 <br>
 Please click the activation code below to receive your newsletter:<br>
 <a href="{$NewsletterEmpfaenger->cFreischaltURL}">{$NewsletterEmpfaenger->cFreischaltURL}</a><br>

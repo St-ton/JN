@@ -506,10 +506,10 @@ function validateCoupon($oKupon)
     $oKupon->cArtikel = Text::createSSK($validArtNrs);
 
     if ($oKupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
-        $cLandISO_arr = Text::parseSSK($oKupon->cLieferlaender);
+        $cLandISO_arr  = Text::parseSSK($oKupon->cLieferlaender);
+        $countryHelper = Shop::Container()->getCountryService();
         foreach ($cLandISO_arr as $cLandISO) {
-            $res = Shop::Container()->getDB()->select('tland', 'cISO', $cLandISO);
-            if ($res === null) {
+            if ($countryHelper->getCountry($cLandISO) === null) {
                 $cFehler_arr[] = sprintf(__('errorISOInvalid'), $cLandISO);
             }
         }

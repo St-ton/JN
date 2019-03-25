@@ -109,9 +109,6 @@
                 <h4 class="modal-title">Zuschlagliste für </h4>
             </div>
             <div class="modal-body">
-                <div id="zuschlaglisten">
-
-                </div>
                 <form id="zuschlag-new" method="post" action="versandarten.php">
                     {$jtl_token}
                     <input type="hidden" name="neuerZuschlag" value="1" />
@@ -152,13 +149,16 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button type="submit" value="" class="btn btn-primary">
+                                <button id="zuschlag-new-submit" type="submit" value="" class="btn btn-primary">
                                     <i class="fa fa-save"></i> {__('createNew')}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
+                <div id="zuschlaglisten">
+
+                </div>
                 <button type="button" class="btn btn-danger" data-dismiss="modal" id="zuschlagliste-cancel-btn">
                     <i class="fa fa-times"></i>
                     {__('cancel')}
@@ -176,6 +176,12 @@
             $('#zuschlag-new input[name="kVersandart"').val($(this).data('versandart'));
             $('#zuschlag-new input[name="cISO"').val($(this).data('iso'));
             ioCall('getZuschlagsListen', [$(this).data('versandart'), $(this).data('iso')], function (data) {
+                $('#zuschlaglisten').html(data.body);
+            });
+        });
+        $('#zuschlag-new-submit').click(function(e){
+            e.preventDefault();
+            ioCall('createZuschlagsListe', [$('#zuschlag-new').serializeArray()], function (data) {
                 $('#zuschlaglisten').html(data.body);
             });
         });

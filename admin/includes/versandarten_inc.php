@@ -10,6 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Checkout\Versandart;
+use \JTL\Checkout\Versandzuschlag;
 
 /**
  * @param float $fPreis
@@ -421,4 +422,32 @@ function getZuschlagsListen($shippingType, $ISO)
     $result->body = $smarty->assign('zuschlaglisten', $zuschlaege)
                            ->fetch('tpl_inc/zuschlaglisten.tpl');
     return $result;
+}
+
+/**
+ * @param $surcharge
+ * @return stdClass
+ * @throws SmartyException
+ */
+function createZuschlagsListe(array $surcharge)
+{
+    $post = [];
+    foreach ($surcharge as $item) {
+        $post[$item['name']] = $item['value'];
+    }
+    $languages    = Sprache::getAllLanguages();
+    $surchargeTMP = (new Versandzuschlag())
+                    ->setISO($post['cISO'])
+                    ->setSurcharge($post['fZuschlag'])
+                    ->setShippingMethod($post['kVersandart'])
+                    ->setTitle($post['cName']);
+
+    foreach ($languages as $lang) {
+        if (isset($post['cName_' . $lang->cISO])) {
+            $surchargeTMP->setName($post['cName_' . $lang->cISO], $lang->kSprache);
+        }
+    }
+    $surchargeTMP->save();
+
+    return getZuschlagsListen($post['kVersandart'], $post['cISO']);
 }

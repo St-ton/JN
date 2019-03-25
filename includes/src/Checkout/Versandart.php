@@ -184,7 +184,8 @@ class Versandart
         $surcharges       = Shop::Container()->getDB()->queryPrepared(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
-                WHERE kVersandart = :kVersandart',
+                WHERE kVersandart = :kVersandart
+                ORDER BY kVersandzuschlag DESC',
             ['kVersandart' => $this->kVersandart],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -199,8 +200,8 @@ class Versandart
      */
     public function getSurchargesForCountry(string $ISO): Collection
     {
-        return $this->surcharges->filter(function (Versandzuschlag $alert) use ($ISO) {
-            return $alert->getISO() === $ISO;
+        return $this->surcharges->filter(function (Versandzuschlag $surcharge) use ($ISO) {
+            return $surcharge->getISO() === $ISO;
         });
     }
 

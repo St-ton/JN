@@ -120,16 +120,36 @@ class Versandzuschlag
             $names = $db->queryPrepared(
                 'SELECT vzs.cName, s.kSprache 
                     FROM tversandzuschlag AS vz
-                    LEFT JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
-                    LEFT JOIN tsprache as s ON s.cISO = vzs.cISOSprache
+                    JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
+                    JOIN tsprache as s ON s.cISO = vzs.cISOSprache
                     WHERE vz.kVersandzuschlag = :id',
                 ['id' => $id],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-
             foreach ($names as $name) {
                 $this->setName($name->cName, (int)$name->kSprache);
             }
+        }
+    }
+
+    public function save(): void
+    {
+        $db                     = Shop::Container()->getDB();
+        $surcharge              = new \stdClass();
+        $surcharge->cName       = $this->getTitle();
+        $surcharge->kVersandart = $this->getShippingMethod();
+        $surcharge->cIso        = $this->getISO();
+        $surcharge->fZuschlag   = $this->getSurcharge();
+        $surchargeNew           = $db->insert('tversandzuschlag', $surcharge);
+
+
+        foreach ($this->getNames() as $key => $name) {
+            $surchargeLang                   = new \stdClass();
+            $surchargeLang->cName            = $name;
+            $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
+            $surchargeLang->kVersandzuschlag = $surchargeNew;
+
+            $db->insert('tversandzuschlagsprache', $surchargeLang);
         }
     }
 
@@ -250,9 +270,9 @@ class Versandzuschlag
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getZIPCodes(): array
+    public function getZIPCodes(): ?array
     {
         return $this->ZIPCodes;
     }
@@ -280,9 +300,9 @@ class Versandzuschlag
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getZIPAreas(): array
+    public function getZIPAreas(): ?array
     {
         return $this->ZIPAreas;
     }

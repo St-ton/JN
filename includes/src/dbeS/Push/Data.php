@@ -19,7 +19,7 @@ final class Data extends AbstractPush
     private const LIMIT_AVAILABILITY_MSGS = 100;
 
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {

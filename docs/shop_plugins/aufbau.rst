@@ -662,6 +662,75 @@ Beispiel für eine dynamische Option:
 
 In diesem Beispie würden entsprechend die 3 Auswahlmöglichkeiten "Wert A", "Wert B" und "Wert C" zur Auswahl stehen.
 
+Übersetzungen von Settings
+--------------------------
+
+Ab Shop 5.0.0 können Plugin-Optionen mehrsprachig gestaltet werden.
+Dies betrifft in jedem ``<Setting>``-Element die Knoten ``<Name>`` und ``<Description>`` sowie die Werte von ``<SelectboxOptions>`` und ``<RadioOptions>``.
+Die jeweiligen Werte können als msgid-Schlüssel in der base.po des Plugins angegeben und übersetzt werden.
+
+Generell muss hierzu im Unteroder *locale* des Plugins für jede zu übersetzende Sprache ein Unterordner mit zurgehörigen IETF Language Tag und darin die Datei *base.po* erstellt werden.
+Angenommen man möchte die folgende Option in die Sprachen Englisch und Deutsch übersetzen:
+
+.. code-block:: xml
+
+	<Setting type="selectbox" initialValue="Y" sort="1" conf="Y">
+        <Name>Finden Sie das hier hilfreich?</Name>
+        <Description>Stellt eine simple Ja/Nein-Frage</Description>
+        <ValueName>myplugin_is_helpful</ValueName>
+        <SelectboxOptions>
+            <Option value="Y" sort="0">Ja</Option>
+            <Option value="N" sort="1">Nein</Option>
+			<Option value="V" sort="2">Vielleicht</Option>
+        </SelectboxOptions>
+    </Setting>
+
+So können die folgenden Strings übersetzt werden:
+* Finden Sie das hier hilfreich?
+* Stellt eine simple Ja/Nein-Frage
+* Ja
+* Nein
+* Vielleicht
+
+Also folgende zwei Dateien erstellen: ``myplugin/locale/de-DE/base.po`` und ``myplugin/locale/en-US/base.po``.
+
+Der Inhalt könnte im Deutschen folgendermaßen aussehen:
+
+.. code-block:: xml
+
+	msgid "Ja"
+	msgstr "Ja"
+
+	msgid "Nein"
+	msgstr "Nein"
+
+	msgid "Finden Sie das hier hilfreich?"
+	msgstr "Finden Sie das hier hilfreich?"
+
+	msgid "Stellt eine simple Ja/Nein-Frage"
+	msgstr "Stellt eine simple Ja/Nein-Frage"
+
+
+Und im Englischen:
+
+.. code-block:: xml
+
+	msgid "Ja"
+	msgstr "Yes"
+
+	msgid "Nein"
+	msgstr "No"
+
+	msgid "Finden Sie das hier hilfreich?"
+	msgstr "Do you find this helpful?"
+
+	msgid "Stellt eine simple Ja/Nein-Frage"
+	msgstr "Asks a simple yes/no question"
+
+
+Anschließend müssen die .po-Dateien nur noch z.B. mit `Poedit <https://poedit.net/PoEdit>`_ zur base.mo kompliliert werden.
+In unserem Beispiel haben wir jetzt den String "Vielleicht" nicht übersetzt. Dieser würde somit in allen Sprachen unverändert ausgegeben werden.
+
 
 Frontend Links
 --------------

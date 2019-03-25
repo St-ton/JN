@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Cron\Jobs;
+namespace JTL\Cron\Job;
 
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
@@ -12,9 +12,9 @@ use JTL\Cron\QueueEntry;
 
 /**
  * Class Statusmail
- * @package JTL\Cron\Jobs
+ * @package JTL\Cron\Job
  */
-class Statusmail extends Job
+final class Statusmail extends Job
 {
     /**
      * @inheritdoc
@@ -41,10 +41,6 @@ class Statusmail extends Job
 
             return $this;
         }
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'smartyInclude.php';
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statusemail_inc.php';
-
         $statusMail = new \JTL\Statusmail($this->db);
         $this->setFinished($statusMail->send($jobData));
 

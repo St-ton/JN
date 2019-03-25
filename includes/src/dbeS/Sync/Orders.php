@@ -15,6 +15,9 @@ use JTL\Customer\KundenwerbenKunden;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Shop;
 use JTL\Sprache;
 use stdClass;
 
@@ -168,10 +171,13 @@ final class Orders extends AbstractSync
                 $module->cancelOrder($orderID);
             } else {
                 if (!empty($customer->cMail) && ($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)) {
-                    $mail              = new stdClass;
-                    $mail->tkunde      = $customer;
-                    $mail->tbestellung = $tmpOrder;
-                    \sendeMail(\MAILTEMPLATE_BESTELLUNG_STORNO, $mail);
+                    $data              = new stdClass;
+                    $data->tkunde      = $customer;
+                    $data->tbestellung = $tmpOrder;
+
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_STORNO, $data));
                 }
                 $this->db->update(
                     'tbestellung',
@@ -205,10 +211,13 @@ final class Orders extends AbstractSync
                 $customer = new Kunde($tmpOrder->kKunde);
                 $tmpOrder->fuelleBestellung();
                 if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && \strlen($customer->cMail) > 0) {
-                    $oMail              = new stdClass;
-                    $oMail->tkunde      = $customer;
-                    $oMail->tbestellung = $tmpOrder;
-                    \sendeMail(\MAILTEMPLATE_BESTELLUNG_RESTORNO, $oMail);
+                    $data              = new stdClass;
+                    $data->tkunde      = $customer;
+                    $data->tbestellung = $tmpOrder;
+
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_RESTORNO, $data));
                 }
                 $this->db->update(
                     'tbestellung',
@@ -466,10 +475,13 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
             } else {
-                $mail              = new stdClass;
-                $mail->tkunde      = $customer;
-                $mail->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
-                \sendeMail(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $mail);
+                $data              = new stdClass;
+                $data->tkunde      = $customer;
+                $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
+
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $data));
             }
         }
         \executeHook(\HOOK_BESTELLUNGEN_XML_BEARBEITEUPDATE, [
@@ -576,23 +588,26 @@ final class Orders extends AbstractSync
             if (($status === \BESTELLUNG_STATUS_VERSANDT && (int)$shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT)
                 || ($status === \BESTELLUNG_STATUS_TEILVERSANDT && $bLieferschein === true)
             ) {
-                $cMailType = $status === \BESTELLUNG_STATUS_VERSANDT
+                $mailType = $status === \BESTELLUNG_STATUS_VERSANDT
                     ? \MAILTEMPLATE_BESTELLUNG_VERSANDT
                     : \MAILTEMPLATE_BESTELLUNG_TEILVERSANDT;
-                $module    = $this->getPaymentMethod($order->kBestellung);
+                $module   = $this->getPaymentMethod($order->kBestellung);
                 if (!isset($updatedOrder->oVersandart->cSendConfirmationMail)
                     || $updatedOrder->oVersandart->cSendConfirmationMail !== 'N'
                 ) {
                     if ($module) {
-                        $module->sendMail((int)$order->kBestellung, $cMailType);
+                        $module->sendMail((int)$order->kBestellung, $mailType);
                     } else {
                         if ($customer === null) {
                             $customer = new Kunde((int)$shopOrder->kKunde);
                         }
-                        $mail              = new stdClass;
-                        $mail->tkunde      = $customer;
-                        $mail->tbestellung = $updatedOrder;
-                        \sendeMail($cMailType, $mail);
+                        $data              = new stdClass;
+                        $data->tkunde      = $customer;
+                        $data->tbestellung = $updatedOrder;
+
+                        $mailer = Shop::Container()->get(Mailer::class);
+                        $mail   = new Mail();
+                        $mailer->send($mail->createFromTemplateID($mailType, $data));
                     }
                 }
                 /** @var Lieferschein $oLieferschein */
@@ -618,10 +633,13 @@ final class Orders extends AbstractSync
                     if (($updatedOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG)
                         && \strlen($customer->cMail) > 0
                     ) {
-                        $mail              = new stdClass;
-                        $mail->tkunde      = $customer;
-                        $mail->tbestellung = $updatedOrder;
-                        \sendeMail(\MAILTEMPLATE_BESTELLUNG_BEZAHLT, $mail);
+                        $data              = new stdClass;
+                        $data->tkunde      = $customer;
+                        $data->tbestellung = $updatedOrder;
+
+                        $mailer = Shop::Container()->get(Mailer::class);
+                        $mail   = new Mail();
+                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_BEZAHLT, $data));
                     }
                 }
             }

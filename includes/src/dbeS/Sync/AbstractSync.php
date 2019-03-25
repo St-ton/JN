@@ -15,6 +15,8 @@ use JTL\dbeS\Starter;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Customer\Kundengruppe;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Redirect;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
@@ -247,7 +249,10 @@ abstract class AbstractSync
                 ? ($msg->cVorname . ' ' . $msg->cNachname)
                 : $msg->cMail;
             $obj->mail                             = $mail;
-            \sendeMail(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj));
 
             $upd                    = new stdClass();
             $upd->nStatus           = 1;

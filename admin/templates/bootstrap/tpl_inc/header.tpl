@@ -39,8 +39,7 @@
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {getCurrentPage assign='currentPage'}
-    <div class="backend-wrapper container-fluid
-         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+    <div class="backend-wrapper container-fluid{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         {include file='tpl_inc/backend_sidebar.tpl'}
         <div class="backend-main">
             <nav class="backend-navbar">

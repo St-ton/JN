@@ -10,7 +10,7 @@
     {row}
         {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0"}
             {link class="btn btn-link" data=["toggle" => "collapse"] href="#filter-collapsible" aria=["expanded" => {$Einstellungen.template.productlist.initial_display_filter === 'Y'}, "controls" => "filter-collapsible"]}
-                <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filterAndSort'}
+                <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
                 <i class="fas fa-chevron-down"></i>
             {/link}
         {/col}
@@ -19,35 +19,35 @@
                 {dropdown class="filter-type-FilterItemSort btn-group  mb-2" variant="light" text="{lang key='sorting' section='productOverview'}"}
                 {foreach $Suchergebnisse->getSortingOptions() as $option}
                     {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                    {$option->getName()}
+                        {$option->getName()}
                     {/dropdownitem}
                 {/foreach}
                 {/dropdown}
                 {dropdown class="filter-type-FilterItemLimits btn-group  mb-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
                 {foreach $Suchergebnisse->getLimitOptions() as $option}
                     {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                    {$option->getName()}
+                        {$option->getName()}
                     {/dropdownitem}
                 {/foreach}
                 {/dropdown}
                 {if isset($oErweiterteDarstellung->nDarstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])}
                     {buttongroup class="mb-2"}
-                    {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
-                    id="ed_list"
-                    class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
-                    role="button"
-                    title="{lang key='list' section='productOverview'}"
-                    }
-                        <span class="fa fa-th-list"></span>
-                    {/link}
-                    {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
-                    id="ed_gallery"
-                    class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
-                    role="button"
-                    title="{lang key='gallery' section='productOverview'}"
-                    }
-                        <span class="fa fa-th-large"></span>
-                    {/link}
+                        {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
+                            id="ed_list"
+                            class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
+                            role="button"
+                            title="{lang key='list' section='productOverview'}"
+                        }
+                            <span class="fa fa-th-list"></span>
+                        {/link}
+                        {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
+                            id="ed_gallery"
+                            class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
+                            role="button"
+                            title="{lang key='gallery' section='productOverview'}"
+                        }
+                            <span class="fa fa-th-large"></span>
+                        {/link}
                     {/buttongroup}
                 {/if}
             {/block}

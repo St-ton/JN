@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Cron\Jobs;
+namespace JTL\Cron\Job;
 
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
@@ -14,9 +14,9 @@ use JTL\Media\MediaImage;
 
 /**
  * Class ImageCache
- * @package JTL\Cron\Jobs
+ * @package JTL\Cron\Job
  */
-class ImageCache extends Job
+final class ImageCache extends Job
 {
     /**
      * @var int
@@ -49,6 +49,10 @@ class ImageCache extends Job
         $images   = MediaImage::getImages($type, true, $index, $this->getLimit());
         $totalAll = MediaImage::getProductImageCount();
         $this->logger->debug('Uncached images: ' . $total . '/' . $totalAll);
+        if ($index >= $totalAll) {
+            $index  = 0;
+            $images = MediaImage::getImages($type, true, $index, $this->getLimit());
+        }
         while (\count($images) === 0 && $index < $totalAll) {
             $index += $this->getLimit();
             $images = MediaImage::getImages($type, true, $index, $this->getLimit());

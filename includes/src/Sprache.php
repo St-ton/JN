@@ -498,7 +498,7 @@ class Sprache
             'cName',
             $varName
         );
-        if ($exists === null) {
+        if ($exists === null && $this->currentLanguageID > 0) {
             $ins             = new stdClass();
             $ins->kSprachISO = $this->currentLanguageID;
             $ins->cSektion   = $sectionName;

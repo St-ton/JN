@@ -7,20 +7,23 @@
 namespace JTL;
 
 use Exception;
-use function Functional\first;
-use function Functional\tail;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginConfig;
+use JTL\Boxes\Factory as BoxFactory;
+use JTL\Boxes\FactoryInterface as BoxFactoryInterface;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Cache\JTLCache;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Cron\Admin\Controller as CronController;
+use JTL\Cron\Starter\StarterFactory;
 use JTL\DB\DbInterface;
 use JTL\DB\NiceDB;
 use JTL\DB\ReturnType;
 use JTL\DB\Services\GcService;
 use JTL\DB\Services\GcServiceInterface;
+use JTL\Debug\JTLDebugBar;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Filter\Config;
@@ -29,47 +32,69 @@ use JTL\Filter\ProductFilter;
 use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Mail\Hydrator\DefaultsHydrator;
+use JTL\Mail\Mailer;
+use JTL\Mail\Renderer\SmartyRenderer;
+use JTL\Mail\Validator\MailValidator;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
 use JTL\Mapper\AdminLoginStatusToLogLevel;
 use JTL\Mapper\PageTypeToPageName;
 use JTL\Media\Media;
 use JTL\Network\JTLApi;
-use JTL\OPC;
+use JTL\OPC\DB;
+use JTL\OPC\Locker;
+use JTL\OPC\PageDB;
+use JTL\OPC\PageService;
+use JTL\OPC\Service as OPCService;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
-use JTL\Plugin\Helper as PluginHelper;
 use JTL\ProcessingHandler\NiceDBHandler;
 use JTL\Services\Container;
 use JTL\Services\DefaultServicesInterface;
+use JTL\Services\JTL\AlertService;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Services\JTL\BoxService;
+use JTL\Services\JTL\BoxServiceInterface;
 use JTL\Services\JTL\CaptchaService;
 use JTL\Services\JTL\CaptchaServiceInterface;
+use JTL\Services\JTL\CryptoService;
+use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Services\JTL\LinkService;
+use JTL\Services\JTL\LinkServiceInterface;
+use JTL\Services\JTL\NewsService;
+use JTL\Services\JTL\NewsServiceInterface;
+use JTL\Services\JTL\PasswordService;
+use JTL\Services\JTL\PasswordServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Services\JTL\Validation\RuleSet;
 use JTL\Services\JTL\Validation\ValidationService;
 use JTL\Services\JTL\Validation\ValidationServiceInterface;
+use JTL\Services\JTL\CountryService;
+use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
-use JTL\Cron\Admin\Controller as CronController;
-use Psr\Log\LoggerInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
+use Psr\Log\LoggerInterface;
 use stdClass;
+use function Functional\first;
+use function Functional\tail;
 
 /**
  * Class Shop
  * @package JTL
  * @method static JTLCacheInterface Cache()
  * @method static Sprache Lang()
- * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = Smarty\ContextType::FRONTEND)
+ * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = ContextType::FRONTEND)
  * @method static Media Media()
  * @method static Events\Dispatcher Event()
  * @method static bool has(string $key)
@@ -952,6 +977,8 @@ final class Shop
         Dispatcher::getInstance()->fire(Event::RUN);
 
         self::$productFilter->initStates(self::getParameters());
+        $starterFactory = new StarterFactory(self::getConfig([\CONF_CRON])['cron']);
+        $starterFactory->getStarter()->start();
 
         return self::$productFilter;
     }
@@ -1922,20 +1949,20 @@ final class Shop
 
         $container->singleton(JTLCacheInterface::class, JTLCache::class);
 
-        $container->singleton(Services\JTL\LinkServiceInterface::class, Services\JTL\LinkService::class);
+        $container->singleton(LinkServiceInterface::class, LinkService::class);
 
-        $container->singleton(Services\JTL\AlertServiceInterface::class, Services\JTL\AlertService::class);
+        $container->singleton(AlertServiceInterface::class, AlertService::class);
 
-        $container->singleton(Services\JTL\NewsServiceInterface::class, Services\JTL\NewsService::class);
+        $container->singleton(NewsServiceInterface::class, NewsService::class);
 
-        $container->singleton(Services\JTL\CryptoServiceInterface::class, Services\JTL\CryptoService::class);
+        $container->singleton(CryptoServiceInterface::class, CryptoService::class);
 
-        $container->singleton(Services\JTL\PasswordServiceInterface::class, Services\JTL\PasswordService::class);
+        $container->singleton(PasswordServiceInterface::class, PasswordService::class);
 
-        $container->singleton(Services\JTL\CountryServiceInterface::class, Services\JTL\CountryService::class);
+        $container->singleton(CountryServiceInterface::class, CountryService::class);
 
-        $container->singleton(Debug\JTLDebugBar::class, function (Container $container) {
-            return new Debug\JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
+        $container->singleton(JTLDebugBar::class, function (Container $container) {
+            return new JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
         });
 
         $container->singleton('BackendAuthLogger', function (Container $container) {
@@ -1977,24 +2004,24 @@ final class Shop
 
         $container->singleton(GcServiceInterface::class, GcService::class);
 
-        $container->singleton(OPC\Service::class);
+        $container->singleton(OPCService::class);
 
-        $container->singleton(OPC\PageService::class);
+        $container->singleton(PageService::class);
 
-        $container->singleton(OPC\DB::class);
+        $container->singleton(DB::class);
 
-        $container->singleton(OPC\PageDB::class);
+        $container->singleton(PageDB::class);
 
-        $container->singleton(OPC\Locker::class);
+        $container->singleton(Locker::class);
 
-        $container->bind(Boxes\FactoryInterface::class, function () {
-            return new Boxes\Factory(Shopsetting::getInstance()->getAll());
+        $container->bind(BoxFactoryInterface::class, function () {
+            return new BoxFactory(Shopsetting::getInstance()->getAll());
         });
 
-        $container->singleton(Services\JTL\BoxServiceInterface::class, function (Container $container) {
+        $container->singleton(BoxServiceInterface::class, function (Container $container) {
             $smarty = self::Smarty();
 
-            return new Services\JTL\BoxService(
+            return new BoxService(
                 Shopsetting::getInstance()->getAll(),
                 $container->getBoxFactory(),
                 $container->getDB(),
@@ -2006,9 +2033,7 @@ final class Shop
 
         $container->singleton(CaptchaServiceInterface::class, function () {
             return new CaptchaService(new SimpleCaptchaService(
-                !(Frontend::get('bAnti_spam_already_checked', false)
-                    || Frontend::getCustomer()->isLoggedIn()
-                )
+                !(Frontend::get('bAnti_spam_already_checked', false) || Frontend::getCustomer()->isLoggedIn())
             ));
         });
 
@@ -2021,6 +2046,16 @@ final class Shop
                 new AdminLoginStatusMessageMapper(),
                 new AdminLoginStatusToLogLevel()
             );
+        });
+
+        $container->bind(Mailer::class, function (Container $container) {
+            $db        = $container->getDB();
+            $settings  = Shopsetting::getInstance();
+            $smarty    = new SmartyRenderer($db);
+            $hydrator  = new DefaultsHydrator($smarty->getSmarty(), $db, $settings);
+            $validator = new MailValidator($db, $settings->getAll());
+
+            return new Mailer($hydrator, $smarty, $settings, $validator);
         });
 
         $container->bind(CronController::class);

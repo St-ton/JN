@@ -152,12 +152,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
     $rootKey++;
 }
 
-if (isset($_SESSION['AdminAccount']->language)) {
-    $tag = $_SESSION['AdminAccount']->language;
 
-    $smarty->assign('language', $tag)
-           ->assign('languageName', Locale::getDisplayLanguage($tag, $tag));
-}
 
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
@@ -167,6 +162,9 @@ if (empty($template->version)) {
 } else {
     $adminTplVersion = $template->version;
 }
+
+$langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getDefaultLanguage();
+
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', Form::getTokenInput())
        ->assign('shopURL', $shopURL)
@@ -188,5 +186,7 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('notifications', Notification::getInstance())
        ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('favorites', $oAccount->favorites())
-       ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages($_SESSION['AdminAccount']->language))
+       ->assign('language', $langTag)
+       ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
+       ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages($langTag))
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

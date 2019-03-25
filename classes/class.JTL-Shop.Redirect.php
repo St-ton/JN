@@ -381,7 +381,7 @@ class Redirect
                     (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')
                 ) {
                     $oItem           = new self();
-                    $oItem->cFromUrl = $cUrl;
+                    $oItem->cFromUrl = $cUrl . (!empty($cUrlQueryString) ? '?' . $cUrlQueryString : '');
                     $oItem->cToUrl   = '';
                     unset($oItem->kRedirect);
                     $oItem->kRedirect = Shop::DB()->insert('tredirect', $oItem);

@@ -84,7 +84,12 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_NEWSLETTERARCHIV,
         \PAGE_EIGENE,
         \PAGE_AUSWAHLASSISTENT,
-        \PAGE_BESTELLABSCHLUSS
+        \PAGE_BESTELLABSCHLUSS,
+        \PAGE_404,
+        \PAGE_BESTELLSTATUS,
+        \PAGE_NEWSMONAT,
+        \PAGE_NEWSDETAIL,
+        \PAGE_NEWSKATEGORIE
     ];
 
     /**

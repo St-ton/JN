@@ -21,7 +21,7 @@ class StoreID extends AbstractItem
     {
         $baseNode = $this->getBaseNode();
         if (isset($baseNode['StoreID'])) {
-            if (preg_match("/\\w+/", $baseNode['StoreID']) !== 1) {
+            if (preg_match('/\\w+/', $baseNode['StoreID']) !== 1) {
                 return InstallCode::INVALID_STORE_ID;
             }
         }

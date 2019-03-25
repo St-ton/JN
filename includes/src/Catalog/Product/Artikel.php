@@ -1412,7 +1412,9 @@ class Artikel
                 break;
         }
 
-        if (!\file_exists(\PFAD_ROOT . $imagePath)) {
+        if (\file_exists(\PFAD_ROOT . $imagePath)) {
+            [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
+        } else {
             $req = MediaImage::toRequest($imagePath);
 
             if (!\is_object($req)) {
@@ -1438,13 +1440,10 @@ class Artikel
                 $old_width  = $width;
                 $old_height = $height;
 
-                $scale = \min($size['width'] / $old_width, $size['height'] / $old_height);
-
+                $scale  = \min($size['width'] / $old_width, $size['height'] / $old_height);
                 $width  = \ceil($scale * $old_width);
                 $height = \ceil($scale * $old_height);
             }
-        } else {
-            [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
         }
 
         return (object)[
@@ -3777,12 +3776,11 @@ class Artikel
                 $return = true;
                 if ($this->cAktivSonderpreis === 'Y' && $this->dSonderpreisEnde_en !== null) {
                     $endDate = new DateTime($this->dSonderpreisEnde_en);
-                    $endDate->modify('+1 days');
-                    $return = ($endDate >= new DateTime());
+                    $return  = $endDate >= (new DateTime())->setTime(0, 0);
                 } elseif ($this->cAktivSonderpreis === 'N' && $this->dSonderpreisStart_en !== null) {
-                    //do not use cached result if a special price started in the mean time
+                    // do not use cached result if a special price started in the mean time
                     $startDate = new DateTime($this->dSonderpreisStart_en);
-                    $today     = new DateTime();
+                    $today     = (new DateTime())->setTime(0, 0);
                     $endDate   = $this->dSonderpreisEnde_en === null
                         ? $today
                         : new DateTime($this->dSonderpreisEnde_en);

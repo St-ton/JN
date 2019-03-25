@@ -11,6 +11,10 @@ html {
   }
 }
 
+.fs-large {
+  font-size: large;
+}
+
 .alert-info,
 .bg-info {
   background-color: #F5F7FA;
@@ -203,10 +207,10 @@ body.unboxed-layout {
     #nav-comparelist-collapse,
     #nav-wishlist-collapse,
     #nav-cart-collapse,
-    #nav-account-collapse {
+    #nav-account-collapse,
+    #nav-search-collapse {
       max-height: 400px;
       z-index: $zindex-sticky;
-      overflow-y: auto;
       overflow-x: hidden;
       position: absolute;
       top: 50px;
@@ -428,16 +432,36 @@ ul.partlist-items {
   &.imgswatches {
     display: block;
     .variation {
-      background: #fff !important;
+      background: #fff;
       color: $gray-700 !important;
-      min-width: 45px;
+      border: 1px solid $gray;
+      box-sizing: content-box;
+      border-radius: 2px;
+      opacity: 1;
+      min-width: 50px;
+      max-width: 150px;
+      padding: 0 8px;
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
       img {
         max-width: 45px;
         max-height: 45px;
       }
       &:hover,
       &.active {
-        border: 1px solid $gray-dark;
+        vertical-align: top;
+        background: $gray-lighter;
+        border: 1px solid #fff;
+        opacity: 1;
+        overflow: visible;
+        white-space: normal;
+        z-index: 1;
+        height: auto;
       }
       &.active img{
         filter: grayscale(0);
@@ -865,14 +889,18 @@ ul.partlist-items {
           background: #fff;
           opacity: 1;
         }
-        .image-wrapper, .image-box, .product-actions, .caption, .form-basket  { z-index: $zindex-dropdown + 1; }
+        .image-wrapper, .image-box, .product-actions, .caption,
+        .form-basket, .price_wrapper, .product-characteristics { z-index: $zindex-dropdown + 2; }
+        .wishlist-pos-delete {z-index: $zindex-dropdown + 4;}
         .overlay-img { z-index: $zindex-dropdown + 3; left: -18px; top: -16px;  }
         .quantity-wrapper,
         .price_wrapper,
         .image-box,
         .caption,
         .form-basket,
-        .form-basket .delivery-status { position: relative; }
+        .form-basket .delivery-status,
+        .wishlist-pos-delete,
+        .product-characteristics{ position: relative; }
         .expandable { opacity: 1; }
       }
     }
@@ -2230,6 +2258,10 @@ input.form-control[name="wishlist-url"] {
   :after {
     content: "";
   }
+}
+
+.clearer {
+  clear: both;
 }
 
 .comparelist {

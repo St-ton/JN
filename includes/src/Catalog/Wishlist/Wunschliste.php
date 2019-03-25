@@ -9,12 +9,14 @@ namespace JTL\Catalog\Wishlist;
 use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
-use JTL\Customer\Kunde;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -805,9 +807,11 @@ class Wunschliste
             $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, $upd);
 
             // Ist eine Anzahl gesezt
-            if ((int)$_POST['Anzahl_' . $kWunschlistePos] > 0) {
-                $fAnzahl = (float)$_POST['Anzahl_' . $kWunschlistePos];
-                $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, (object)['fAnzahl' => $fAnzahl]);
+            if (isset($_POST['Anzahl_' . $kWunschlistePos])) {
+                $quantity = str_replace(',', '.', $_POST['Anzahl_' . $kWunschlistePos]);
+                if ((float)$quantity > 0) {
+                    $db->update('twunschlistepos', 'kWunschlistePos', $kWunschlistePos, (object)['fAnzahl' => (float)$quantity]);
+                }
             }
         }
 
@@ -887,11 +891,11 @@ class Wunschliste
         if (\count($recipients) === 0) {
             return Shop::Lang()->get('noEmail', 'messages');
         }
-        $msg                 = '';
-        $conf                = Shop::getSettings([\CONF_GLOBAL]);
-        $oMail               = new stdClass();
-        $oMail->tkunde       = $_SESSION['Kunde'];
-        $oMail->twunschliste = self::buildPrice(new Wunschliste($id));
+        $msg                = '';
+        $conf               = Shop::getSettings([\CONF_GLOBAL]);
+        $data               = new stdClass();
+        $data->tkunde       = $_SESSION['Kunde'];
+        $data->twunschliste = self::buildPrice(new Wunschliste($id));
 
         $oWunschlisteVersand                    = new stdClass();
         $oWunschlisteVersand->kWunschliste      = $id;
@@ -900,7 +904,7 @@ class Wunschliste
             \count($recipients),
             (int)$conf['global']['global_wunschliste_max_email']
         );
-        $oWunschlisteVersand->nAnzahlArtikel    = \count($oMail->twunschliste->CWunschlistePos_arr);
+        $oWunschlisteVersand->nAnzahlArtikel    = \count($data->twunschliste->CWunschlistePos_arr);
 
         Shop::Container()->getDB()->insert('twunschlisteversand', $oWunschlisteVersand);
 
@@ -910,11 +914,13 @@ class Wunschliste
             // Email auf "Echtheit" prüfen
             $cEmail = Text::filterXSS($recipients[$i]);
             if (!SimpleMail::checkBlacklist($cEmail)) {
-                $oMail->mail          = new stdClass();
-                $oMail->mail->toEmail = $cEmail;
-                $oMail->mail->toName  = $cEmail;
-                // Emails senden
-                \sendeMail(\MAILTEMPLATE_WUNSCHLISTE, $oMail);
+                $data->mail          = new stdClass();
+                $data->mail->toEmail = $cEmail;
+                $data->mail->toName  = $cEmail;
+
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_WUNSCHLISTE, $data));
             } else {
                 $validEmails[] = $cEmail;
             }

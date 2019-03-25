@@ -338,10 +338,11 @@ final class BoxAdmin
      * @param int      $pageID
      * @param int      $nSort
      * @param bool|int $active
+     * @param bool     $ignore
      * @return bool
      * @former sortBox()
      */
-    public function sort(int $boxID, int $pageID, int $nSort, $active = true): bool
+    public function sort(int $boxID, int $pageID, int $nSort, $active = true, $ignore = false): bool
     {
         $active         = (int)$active;
         $validPageTypes = $this->getValidPageTypes();
@@ -351,19 +352,35 @@ final class BoxAdmin
                 if (!$ok) {
                     break;
                 }
-                $ok = $this->db->queryPrepared(
-                    'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
+                if ($ignore) {
+                    $ok = $this->db->queryPrepared(
+                        'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
+                        VALUES (:boxID, :validPageType, :sort, :active)
+                        ON DUPLICATE KEY UPDATE
+                          nSort = :sort',
+                        [
+                            'boxID'         => $boxID,
+                            'validPageType' => $validPageType,
+                            'sort'          => $nSort,
+                            'active'        => $active
+                        ],
+                        ReturnType::DEFAULT
+                    );
+                } else {
+                    $ok = $this->db->queryPrepared(
+                        'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
                         VALUES (:boxID, :validPageType, :sort, :active)
                         ON DUPLICATE KEY UPDATE
                           nSort = :sort, bAktiv = :active',
-                    [
-                        'boxID'         => $boxID,
-                        'validPageType' => $validPageType,
-                        'sort'          => $nSort,
-                        'active'        => $active
-                    ],
-                    ReturnType::DEFAULT
-                );
+                        [
+                            'boxID'         => $boxID,
+                            'validPageType' => $validPageType,
+                            'sort'          => $nSort,
+                            'active'        => $active
+                        ],
+                        ReturnType::DEFAULT
+                    );
+                }
             }
 
             return $ok !== 0;

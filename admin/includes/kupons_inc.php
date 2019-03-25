@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Catalog\Product\Artikel;
-use JTL\Catalog\Hersteller;
 use JTL\Catalog\Category\Kategorie;
-use JTL\Customer\Kunde;
-use JTL\Checkout\Kupon;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Shop;
-use JTL\Helpers\Text;
+use JTL\Checkout\Kupon;
+use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
-
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Shop;
 
 /**
  * @param array $kKupon_arr
@@ -705,7 +705,9 @@ function informCouponCustomers($coupon)
         $obj                     = new stdClass();
         $obj->tkupon             = $coupon;
         $obj->tkunde             = $customer;
-        sendeMail(MAILTEMPLATE_KUPON, $obj);
+        $mailer                  = Shop::Container()->get(Mailer::class);
+        $mail                    = new Mail();
+        $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_KUPON, $obj));
     }
 }
 

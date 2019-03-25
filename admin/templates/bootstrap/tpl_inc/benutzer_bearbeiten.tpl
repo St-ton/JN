@@ -111,16 +111,16 @@ $(document).ready(function() {
                     <div class="item">
                         <div class="input-group{if isset($cError_arr.kSprache)} error{/if}">
                             <span class="input-group-addon">
-                                <label for="kSprache">{__('language')}</label>
+                                <label for="language">{__('language')}</label>
                             </span>
                             <span class="input-group-wrap">
-                                <select id="kSprache" class="form-control" name="kSprache">
-                                    {foreach $languages as $language}
-                                        <option value="{$language->kSprache}"
-                                                {if isset($oAccount->kSprache) && (int)$oAccount->kSprache === $language->kSprache}
+                                <select id="language" class="form-control" name="language">
+                                    {foreach $languages as $langTag => $langName}
+                                        <option value="{$langTag}"
+                                                {if isset($oAccount->language) && $oAccount->language === $langTag}
                                                     selected="selected"
                                                 {/if}>
-                                            {$language->cNameEnglisch}
+                                            {$langName}
                                         </option>
                                     {/foreach}
                                 </select>

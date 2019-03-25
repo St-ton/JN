@@ -27,6 +27,7 @@ use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Services\JTL\NewsServiceInterface;
 use JTL\Services\JTL\PasswordServiceInterface;
+use JTL\Services\JTL\CountryServiceInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
@@ -148,4 +149,10 @@ interface DefaultServicesInterface extends ContainerInterface
      * @return JTLDebugBar
      */
     public function getDebugBar(): JTLDebugBar;
+
+
+    /**
+     * @return CountryServiceInterface
+     */
+    public function getCountryService() : CountryServiceInterface;
 }

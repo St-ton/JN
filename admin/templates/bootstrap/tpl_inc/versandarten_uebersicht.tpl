@@ -175,7 +175,7 @@
             $('#zuschlaglisten').html('');
             $('#zuschlag-new input[name="kVersandart"').val($(this).data('versandart'));
             $('#zuschlag-new input[name="cISO"').val($(this).data('iso'));
-            ioCall('updateZuschlagsListen', [$(this).data('versandart'), $(this).data('iso')], function (data) {
+            ioCall('getZuschlagsListen', [$(this).data('versandart'), $(this).data('iso')], function (data) {
                 $('#zuschlaglisten').html(data.body);
             });
         });

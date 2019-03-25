@@ -9,6 +9,7 @@ use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Checkout\Versandart;
 
 /**
  * @param float $fPreis
@@ -411,17 +412,10 @@ function getContinents(): array
  * @return stdClass
  * @throws SmartyException
  */
-function updateZuschlagsListen($shippingType, $ISO)
+function getZuschlagsListen($shippingType, $ISO)
 {
     $smarty     = JTLSmarty::getInstance(false, ContextType::BACKEND);
-    $db         = Shop::Container()->getDB();
-    $zuschlaege = $db->selectAll(
-        'tversandzuschlag',
-        ['kVersandart', 'cISO'],
-        [(int)$shippingType, $ISO],
-        '*',
-        'fZuschlag'
-    );
+    $zuschlaege = (new Versandart($shippingType))->getSurchargesForCountry($ISO);
 
     $result       = new stdClass();
     $result->body = $smarty->assign('zuschlaglisten', $zuschlaege)

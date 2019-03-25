@@ -9,6 +9,7 @@ namespace JTL\Checkout;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
+use Illuminate\Support\Collection;
 
 /**
  * Class Versandart
@@ -127,9 +128,9 @@ class Versandart
     public $cPriceLocalized;
 
     /**
-     * @var array
+     * @var Collection
      */
-    public $surcharges = [];
+    public $surcharges;
 
     /**
      * Versandart constructor.
@@ -179,7 +180,8 @@ class Versandart
 
     public function loadSurcharges(): void
     {
-        $surcharges = Shop::Container()->getDB()->queryPrepared(
+        $this->surcharges = new Collection();
+        $surcharges       = Shop::Container()->getDB()->queryPrepared(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
                 WHERE kVersandart = :kVersandart',
@@ -187,8 +189,19 @@ class Versandart
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($surcharges as $surcharge) {
-            $this->surcharges[] = new Versandzuschlag($surcharge->kVersandzuschlag);
+            $this->surcharges->push(new Versandzuschlag($surcharge->kVersandzuschlag));
         }
+    }
+
+    /**
+     * @param string $ISO
+     * @return Collection
+     */
+    public function getSurchargesForCountry(string $ISO): Collection
+    {
+        return $this->surcharges->filter(function (Versandzuschlag $alert) use ($ISO) {
+            return $alert->getISO() === $ISO;
+        });
     }
 
     /**

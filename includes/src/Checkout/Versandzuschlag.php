@@ -8,6 +8,7 @@ namespace JTL\Checkout;
 
 use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Versandzuschlag
@@ -15,6 +16,18 @@ use JTL\DB\ReturnType;
  */
 class Versandzuschlag
 {
+    use MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected static $mapping = [
+        'kVersandzuschlag' => 'SurchargeID',
+        'cISO'             => 'ISO',
+        'cName'            => 'Title',
+        'fZuschlag'        => 'Surcharge'
+    ];
+
     /**
      * @var int
      */
@@ -48,7 +61,7 @@ class Versandzuschlag
     /**
      * @var array
      */
-    public $ZIPAreas;
+    public $ZIPAreas = [];
 
     /**
      * @var array
@@ -100,7 +113,7 @@ class Versandzuschlag
                 if ($zip->cPLZ !== null) {
                     $this->setZIPCode($zip->cPLZ);
                 } elseif ($zip->cPLZAb !== null && $zip->cPLZBis !== null) {
-                    $this->setZIPArea($zip->cPLZAb, $zip->cPLZBis);
+                    $this->setZIPArea((int)$zip->cPLZAb, (int)$zip->cPLZBis);
                 }
             }
 
@@ -133,7 +146,7 @@ class Versandzuschlag
         }
 
         foreach ($this->getZIPAreas() as $zipArea) {
-            if ($zip >= $zipArea->ZIPFrom && $zip <= $zipArea->ZIPTo) {
+            if ($zipArea->isInArea((int)$zip)) {
                 return true;
             }
         }
@@ -286,13 +299,13 @@ class Versandzuschlag
     }
 
     /**
-     * @param string $ZIPTo
-     * @param string $ZIPFrom
+     * @param int $ZIPFrom
+     * @param int $ZIPTo
      * @return Versandzuschlag
      */
-    public function setZIPArea(string $ZIPFrom, string $ZIPTo): self
+    public function setZIPArea(int $ZIPFrom, int $ZIPTo): self
     {
-        $this->ZIPAreas[] = (object)['ZIPTo' => $ZIPTo, 'ZIPFrom' => $ZIPFrom];
+        $this->ZIPAreas[] = new VersandzuschlagBereich($ZIPTo, $ZIPFrom);
 
         return $this;
     }

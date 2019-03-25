@@ -302,7 +302,9 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($kArtikel > 0) {
-        $oArtikel = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions(true));
+        $options               = Artikel::getDefaultOptions();
+        $options->nVariationen = 1;
+        $oArtikel              = (new Artikel())->fuelleArtikel($kArtikel, $options);
     }
 
     $soldOut = [];

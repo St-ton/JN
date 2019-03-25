@@ -77,7 +77,9 @@ $similarArticles = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, Artikel::getDefaultOptions(true));
+    $options               = Artikel::getDefaultOptions();
+    $options->nVariationen = 1;
+    $oVariKindArtikel      = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,

@@ -7,6 +7,7 @@
 namespace JTL\Plugin\Data;
 
 use JTL\Plugin\Admin\InputType;
+use JTL\Shop;
 use stdClass;
 use Illuminate\Support\Collection;
 use function Functional\first;
@@ -69,32 +70,18 @@ class Config
                 ? \unserialize($base->currentValue, ['allowed_classes' => false])
                 : $base->currentValue;
 
-            $msgid         = $cfg->valueID . '_name';
-            $cfg->niceName = __($msgid);
-            if ($cfg->niceName === $msgid) {
-                $cfg->niceName = $base->name;
-            }
-            $msgid            = $cfg->valueID . '_desc';
-            $cfg->description = __($msgid);
-            if ($cfg->description === $msgid) {
-                $cfg->description = $base->description;
-            }
+            $cfg->niceName    = $base->name;
+            $cfg->description = $base->description;
             if (!empty($cfg->sourceFile)
                 && ($cfg->inputType === InputType::SELECT || $cfg->inputType === InputType::RADIO)
             ) {
                 $cfg->options = $this->getDynamicOptions($cfg);
             } elseif (!($base->confValue === null && $base->confNicename === null)) {
                 foreach ($values as $value) {
-                    $opt        = new stdClass();
-                    $opt->value = $value->confValue;
-                    $opt->sort  = (int)$value->confSort;
-
-                    $msgid         = $cfg->valueID . '_value(' . $value->confValue . ')';
-                    $opt->niceName = __($msgid);
-
-                    if ($opt->niceName === $msgid) {
-                        $opt->niceName = $value->confNicename;
-                    }
+                    $opt           = new stdClass();
+                    $opt->value    = $value->confValue;
+                    $opt->sort     = (int)$value->confSort;
+                    $opt->niceName = $value->confNicename;
 
                     $cfg->options[] = $opt;
                 }

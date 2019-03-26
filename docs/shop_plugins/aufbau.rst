@@ -1613,7 +1613,7 @@ Erstellt werden können die json-Datein über den Export im OPC Control Center.
 
 
 Änderungen von Shop Version 4.X zu 5.X.Y
-========================================
+----------------------------------------
 
 Hier eine kurze Zusammenfassung aller Änderungen für Plugins von Shop 4.X zu 5.X
 

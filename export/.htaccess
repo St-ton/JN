@@ -1,4 +1,4 @@
-<FilesMatch ".+\.ph(ar|p|tml)$">
+<FilesMatch ".+\.ph(ar|(p[\d]?)|tml)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>

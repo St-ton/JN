@@ -393,7 +393,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
         'SELECT * FROM tsprache',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $smarty->assign('languages', $languages)
+    $smarty->assign('pluginLanguages', $languages)
            ->assign('plugin', $loader->init($kPlugin))
            ->assign('kPlugin', $kPlugin);
 }

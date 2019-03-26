@@ -836,29 +836,9 @@ function lokalisiereKunde($lang, $customer)
         }
     }
     $customer = GeneralObject::deepCopy($customer);
-    if (isset($customer->cLand)) {
-        $cISOLand = $customer->cLand;
-        $sel_var  = 'cDeutsch';
-        if (mb_convert_case($lang->cISO, MB_CASE_LOWER) !== 'ger') {
-            $sel_var = 'cEnglisch';
-        }
-        $land = Shop::Container()->getDB()->select(
-            'tland',
-            'cISO',
-            $customer->cLand,
-            null,
-            null,
-            null,
-            null,
-            false,
-            $sel_var . ' AS cName, cISO'
-        );
-        if (isset($land->cName)) {
-            $customer->cLand = $land->cName;
-        }
-    }
-    if (isset($_SESSION['Kunde'], $cISOLand)) {
-        $_SESSION['Kunde']->cLand = $cISOLand;
+
+    if (isset($_SESSION['Kunde'], $customer->cLand)) {
+        $_SESSION['Kunde']->cLand = $customer->cLand;
     }
 
     return $customer;

@@ -1603,3 +1603,27 @@ msgstr "Origin"
 
 msgid "errorFileUploadGeneral"
 msgstr "An error occurred while uploading the file."
+
+msgid "Europa"
+msgstr "Europe"
+
+msgid "Asien"
+msgstr "Asia"
+
+msgid "Nordamerika"
+msgstr "North America"
+
+msgid "Suedamerika"
+msgstr "South America"
+
+msgid "Ozeanien"
+msgstr "Oceania"
+
+msgid "Afrika"
+msgstr "Africa"
+
+msgid "Antarktis"
+msgstr "Antarctica"
+
+msgid "date"
+msgstr "Date"

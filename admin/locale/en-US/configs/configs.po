@@ -914,7 +914,7 @@ msgid "produktfrage_abfragen_anrede_name"
 msgstr "Prompt title"
 
 msgid "produktfrage_abfragen_anrede_desc"
-msgstr "Specify whether to prompt the title."
+msgstr "Specify whether to prompt the title. Independent of this setting, JTL-Shop uses a gender neutral title in frontend and mails (e.g. 'Dear John Doe'). The title can be set in mail templates or in print templates in JTL-Wawi."
 
 msgid "produktfrage_abfragen_vorname_name"
 msgstr "Prompt first name"
@@ -1100,7 +1100,7 @@ msgid "kundenregistrierung_abfragen_anrede_name"
 msgstr "Prompt title"
 
 msgid "kundenregistrierung_abfragen_anrede_desc"
-msgstr "Specify whether to prompt the title."
+msgstr "Specify whether to prompt the title.  Independent of this setting, JTL-Shop uses a gender neutral title in frontend and mails (e.g. 'Dear John Doe'). The title can be set in mail templates or in print templates in JTL-Wawi."
 
 msgid "kundenregistrierung_pflicht_vorname_name"
 msgstr "Prompt first name"
@@ -1238,7 +1238,7 @@ msgid "lieferadresse_abfragen_anrede_name"
 msgstr "Prompt title"
 
 msgid "lieferadresse_abfragen_anrede_desc"
-msgstr "Specify whether to prompt the title."
+msgstr "Specify whether to prompt the title.  Independent of this setting, JTL-Shop uses a gender neutral title in frontend and mails (e.g. 'Dear John Doe'). The title can be set in mail templates or in print templates in JTL-Wawi."
 
 msgid "lieferadresse_abfragen_titel_name"
 msgstr "Prompt academic title"
@@ -2240,7 +2240,7 @@ msgid "kontakt_abfragen_anrede_name"
 msgstr "Prompt title"
 
 msgid "kontakt_abfragen_anrede_desc"
-msgstr "Specify whether to prompt the title."
+msgstr "Specify whether to prompt the title.  Independent of this setting, JTL-Shop uses a gender neutral title in frontend and mails (e.g. 'Dear John Doe'). The title can be set in mail templates or in print templates in JTL-Wawi."
 
 msgid "kontakt_abfragen_vorname_name"
 msgstr "Prompt first name"

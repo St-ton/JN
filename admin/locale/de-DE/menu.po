@@ -270,6 +270,9 @@ msgstr "Kundenimport"
 msgid "Import newsletter recipient"
 msgstr "Newsletter-Empfänger importieren"
 
+msgid "Zip code import"
+msgstr "PLZ Import"
+
 # Mid Menu
 msgid "Export"
 msgstr "Export"

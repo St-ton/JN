@@ -8,11 +8,8 @@ Emailadresse des Kunden: {$Nachricht->cMail}
 
 Frage: {$Nachricht->cNachricht}
 
-{if !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname)
-|| !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cNachname) || !empty($Nachricht->cFirma)
-|| !empty($Nachricht->cAnredeLocalized) && !empty($Nachricht->cVorname) && !empty($Nachricht->cNachname)}
+{if !empty($Nachricht->cVorname) || !empty($Nachricht->cNachname) || !empty($Nachricht->cFirma)}
     Anfrage von:
-    {if !empty($Nachricht->cAnredeLocalized)}{$Nachricht->cAnredeLocalized} {/if}
     {if !empty($Nachricht->cVorname)}{$Nachricht->cVorname} {/if}
     {if !empty($Nachricht->cNachname)}{$Nachricht->cNachname}{/if}
     {if !empty($Nachricht->cFirma)}{$Nachricht->cFirma}{/if}

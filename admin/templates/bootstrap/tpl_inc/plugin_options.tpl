@@ -37,7 +37,7 @@
                     {/if}
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="{$confItem->valueID}">{$confItem->niceName}</label>
+                            <label for="{$confItem->valueID}">{__($confItem->niceName)}</label>
                         </span>
                         <span class="input-group-wrap">
                         {if $confItem->inputType === JTL\Plugin\Admin\InputType::SELECT}
@@ -48,7 +48,7 @@
                                     {else}
                                         {assign var=selected value=($confItem->value == $option->value)}
                                     {/if}
-                                    <option value="{$option->value}"{if $selected} selected{/if}>{$option->niceName}</option>
+                                    <option value="{$option->value}"{if $selected} selected{/if}>{__($option->niceName)}</option>
                                 {/foreach}
                             </select>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::COLORPICKER}
@@ -90,7 +90,7 @@
                                        type="radio" name="{$confItem->valueID}[]"
                                        value="{$option->value}"{if $confItem->value == $option->cWert} checked="checked"{/if} />
                                 <label for="opt-{$option->kPluginEinstellungenConf}-{$option@iteration}">
-                                    {$option->niceName}
+                                    {__($option->niceName)}
                                 </label> <br />
                             {/foreach}
                         </div>
@@ -99,7 +99,7 @@
                         {/if}
                         </span>
                         {if $confItem->description|strlen > 0}
-                            <span class="input-group-addon">{getHelpDesc cDesc=$confItem->description}</span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=__($confItem->description)}</span>
                         {/if}
                     </div>
                 {/if}

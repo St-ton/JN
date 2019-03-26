@@ -35,6 +35,7 @@ use JTL\Checkout\Versandart;
 use JTL\Catalog\Warenlager;
 use stdClass;
 use function Functional\select;
+use JTL\Country\Country;
 
 /**
  * Class Artikel
@@ -6188,29 +6189,21 @@ class Artikel
             return $asString ? '' : [];
         }
         $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), function ($e) {
-            return \mb_strlen($e) > 0 ? "'" . \trim($e) . "'" : null;
+            return \trim($e);
         }));
-        $sql     = 'cISO IN (' . \implode(',', $codes) . ')';
-        $cacheID = 'jtl_ola_' . \md5($sql);
-        if (($countryData = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $countryData = Shop::Container()->getDB()->query(
-                'SELECT cISO, cDeutsch, cEnglisch 
-                    FROM tland WHERE ' . $sql,
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+        $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries);
+        if (($countries = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $countries = Shop::Container()->getCountryService()->getFilteredCountryList($codes)->map(
+                function (Country $country) {
+                    return $country->getName();
+                }
+            )->toArray();
+
             Shop::Container()->getCache()->set(
                 $cacheID,
-                $countryData,
+                $countries,
                 [\CACHING_GROUP_CORE, \CACHING_GROUP_CATEGORY, \CACHING_GROUP_OPTION]
             );
-        }
-        $german    = (!isset($_SESSION['cISOSprache'])
-            || Shop::getLanguageCode() === 'ger'
-            || $_SESSION['cISOSprache'] === 'ger');
-        $row       = $german ? 'cDeutsch' : 'cEnglisch';
-        $countries = [];
-        foreach ($countryData as $item) {
-            $countries[$item->cISO] = $item->$row;
         }
 
         return $asString

@@ -9,7 +9,7 @@ namespace JTL\Mail\Template;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class Wishlist
+ * Class ProductAvailable
  * @package JTL\Mail\Template
  */
 class ProductAvailable extends AbstractTemplate

@@ -10,7 +10,7 @@
     {if empty($smarty.session.Kunde->kKunde)}
         <span class="d-none d-md-inline-block">{lang key='login'}</span>
     {else}
-        <span class="d-none d-md-inline-block">{lang key='hello'}, {if $smarty.session.Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $smarty.session.Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if} {$smarty.session.Kunde->cNachname}</span>
+        <span class="d-none d-md-inline-block">{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</span>
     {/if}
 {/navitem}
 {include file='layout/header_shop_nav_compare.tpl'}

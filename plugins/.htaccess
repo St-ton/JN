@@ -1,5 +1,3 @@
-RewriteEngine off
-Options -Indexes
 <FilesMatch ".+\.ph(ar|p|tml)$">
     <IfModule mod_authz_core.c>
         Require all denied

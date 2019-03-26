@@ -1,5 +1,5 @@
 Options -Indexes
-<Files *.php>
+<FilesMatch ".+\.ph(ar|p|tml)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
@@ -7,4 +7,4 @@ Options -Indexes
         Order Deny,Allow
         Deny from all
     </IfModule>
-</Files>
+</FilesMatch>

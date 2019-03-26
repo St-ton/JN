@@ -388,7 +388,7 @@ final class MigrationManager
                 "INSERT INTO tpluginmigration (kMigration, nVersion, pluginID, dExecuted)
                     VALUES ('%s', '%s', '%s', '%s')",
                 $migration->getId(),
-                \sprintf('%d%02d', $this->version->getMajor(), $this->version->getMinor()),
+                (string)$this->version,
                 $this->pluginID,
                 $executed->format('Y-m-d H:i:s')
             );

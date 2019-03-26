@@ -10,7 +10,7 @@
     {$Kunde->cZusatz}
     <br />
 {/if}
-{if $Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if} {$Kunde->cTitel} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cTitel} {$Kunde->cVorname} {$Kunde->cNachname}
 <br />{$Kunde->cStrasse} {$Kunde->cHausnummer}<br />{if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br />{/if}
 {$Kunde->cPLZ} {$Kunde->cOrt}<br />{if $Kunde->cBundesland}{$Kunde->cBundesland}<br />{/if}
 {if $Kunde->angezeigtesLand}{$Kunde->angezeigtesLand}{else}{$Kunde->cLand}{/if}<br />

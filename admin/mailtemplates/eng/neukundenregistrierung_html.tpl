@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
 Thank you very much for registering in our online shop at <a href="{$ShopURL}" target="_blank"><strong>{$ShopURL}</strong></a><br>
 <br>
@@ -24,7 +24,7 @@ Please review your account details:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}<br>
+							{$Kunde->cVorname} {$Kunde->cNachname}<br>
 							{$Kunde->cStrasse} {$Kunde->cHausnummer}<br>
 							{if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br>{/if}
 							{$Kunde->cPLZ} {$Kunde->cOrt}<br>

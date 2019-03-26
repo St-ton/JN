@@ -84,7 +84,7 @@ if (Form::validateToken()) {
     } elseif (isset($_POST['newsletterabonnent_neu']) && (int)$_POST['newsletterabonnent_neu'] === 1) {
         // Newsletterabonnenten hinzufuegen
         $oNewsletter               = new stdClass();
-        $oNewsletter->cAnrede      = $_POST['cAnrede'];
+        $oNewsletter->cAnrede      = $_POST['cAnrede'] ?? '';
         $oNewsletter->cVorname     = $_POST['cVorname'];
         $oNewsletter->cNachname    = $_POST['cNachname'];
         $oNewsletter->cEmail       = $_POST['cEmail'];

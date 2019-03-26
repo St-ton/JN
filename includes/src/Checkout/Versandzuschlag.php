@@ -22,7 +22,7 @@ class Versandzuschlag
      * @var array
      */
     protected static $mapping = [
-        'kVersandzuschlag' => 'SurchargeID',
+        'kVersandzuschlag' => 'ID',
         'cISO'             => 'ISO',
         'cName'            => 'Title',
         'fZuschlag'        => 'Surcharge'
@@ -31,7 +31,7 @@ class Versandzuschlag
     /**
      * @var int
      */
-    public $surchargeID;
+    public $ID;
 
     /**
      * @var string
@@ -75,7 +75,7 @@ class Versandzuschlag
     public function __construct(int $id = 0)
     {
         if ($id > 0) {
-            $this->setSurchargeID($id)
+            $this->setID($id)
                  ->loadFromDB($id);
         }
     }
@@ -110,9 +110,9 @@ class Versandzuschlag
             );
 
             foreach ($zips as $zip) {
-                if ($zip->cPLZ !== null) {
+                if (!empty($zip->cPLZ)) {
                     $this->setZIPCode($zip->cPLZ);
-                } elseif ($zip->cPLZAb !== null && $zip->cPLZBis !== null) {
+                } elseif (!empty($zip->cPLZAb) && !empty($zip->cPLZBis)) {
                     $this->setZIPArea((int)$zip->cPLZAb, (int)$zip->cPLZBis);
                 }
             }
@@ -132,7 +132,10 @@ class Versandzuschlag
         }
     }
 
-    public function save(): void
+    /**
+     * @param bool $update
+     */
+    public function save(bool $update = false): void
     {
         $db                     = Shop::Container()->getDB();
         $surcharge              = new \stdClass();
@@ -140,32 +143,38 @@ class Versandzuschlag
         $surcharge->kVersandart = $this->getShippingMethod();
         $surcharge->cIso        = $this->getISO();
         $surcharge->fZuschlag   = $this->getSurcharge();
-        $surchargeNew           = $db->insert('tversandzuschlag', $surcharge);
 
+        if ($update) {
+            $db->update('tversandzuschlag', 'kVersandzuschlag', $this->getID(), $surcharge);
+        } else {
+            $surchargeNew = $db->insert('tversandzuschlag', $surcharge);
+            foreach ($this->getNames() as $key => $name) {
+                $surchargeLang                   = new \stdClass();
+                $surchargeLang->cName            = $name;
+                $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
+                $surchargeLang->kVersandzuschlag = $surchargeNew;
 
-        foreach ($this->getNames() as $key => $name) {
-            $surchargeLang                   = new \stdClass();
-            $surchargeLang->cName            = $name;
-            $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
-            $surchargeLang->kVersandzuschlag = $surchargeNew;
-
-            $db->insert('tversandzuschlagsprache', $surchargeLang);
+                $db->insert('tversandzuschlagsprache', $surchargeLang);
+            }
         }
     }
 
     /**
-     * @param string $zip
+     * @param null|string $zip
      * @return bool
      */
-    public function hasZIPCode(string $zip): bool
+    public function hasZIPCode(?string $zip): bool
     {
-        foreach ($this->getZIPCodes() as $zipTMP) {
+        if ($zip === null) {
+            return false;
+        }
+        foreach ($this->getZIPCodes() ?? [] as $zipTMP) {
             if ($zip === $zipTMP) {
                 return true;
             }
         }
 
-        foreach ($this->getZIPAreas() as $zipArea) {
+        foreach ($this->getZIPAreas() ?? [] as $zipArea) {
             if ($zipArea->isInArea((int)$zip)) {
                 return true;
             }
@@ -177,18 +186,18 @@ class Versandzuschlag
     /**
      * @return int
      */
-    public function getSurchargeID(): int
+    public function getID(): int
     {
-        return $this->surchargeID;
+        return $this->ID;
     }
 
     /**
      * @param int $id
      * @return Versandzuschlag
      */
-    public function setSurchargeID(int $id): self
+    public function setID(int $id): self
     {
-        $this->surchargeID = $id;
+        $this->ID = $id;
 
         return $this;
     }
@@ -325,7 +334,7 @@ class Versandzuschlag
      */
     public function setZIPArea(int $ZIPFrom, int $ZIPTo): self
     {
-        $this->ZIPAreas[] = new VersandzuschlagBereich($ZIPTo, $ZIPFrom);
+        $this->ZIPAreas[] = new VersandzuschlagBereich($ZIPFrom, $ZIPTo);
 
         return $this;
     }

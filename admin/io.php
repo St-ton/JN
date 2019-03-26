@@ -89,6 +89,10 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
    ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
    ->register('getZuschlagsListen', 'getZuschlagsListen', $versandartenInc, 'SHOP_UPDATE_VIEW')
-   ->register('createZuschlagsListe', 'createZuschlagsListe', $versandartenInc, 'SHOP_UPDATE_VIEW');
+   ->register('createZuschlagsListe', 'createZuschlagsListe', $versandartenInc, 'SHOP_UPDATE_VIEW')
+   ->register('deleteZuschlagsListe', 'deleteZuschlagsListe', $versandartenInc, 'SHOP_UPDATE_VIEW')
+   ->register('updateZuschlagsListe', 'updateZuschlagsListe', $versandartenInc, 'SHOP_UPDATE_VIEW')
+   ->register('deleteZuschlagsListeZIP', 'deleteZuschlagsListeZIP', $versandartenInc, 'SHOP_UPDATE_VIEW')
+   ->register('createZuschlagsListeZIP', 'createZuschlagsListeZIP', $versandartenInc, 'SHOP_UPDATE_VIEW');
 
 $io->respondAndExit($io->handleRequest($_REQUEST['io']));

@@ -77,7 +77,7 @@ class VersandzuschlagBereich
      */
     public function isInArea(int $zip): bool
     {
-        return ($this->getZIPFrom() >= $zip && $this->getZIPTo() <= $zip);
+        return ($this->getZIPFrom() <= $zip && $this->getZIPTo() >= $zip);
     }
 
     /**

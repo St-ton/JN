@@ -104,50 +104,50 @@ if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
     $step = 'Zuschlagsliste';
 }
 
-if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken()) {
-    $step = 'Zuschlagsliste';
-    $db->queryPrepared(
-        'DELETE tversandzuschlag, tversandzuschlagsprache
-            FROM tversandzuschlag
-            LEFT JOIN tversandzuschlagsprache
-              ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-            WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag',
-        ['kVersandzuschlag' => $_GET['delzus']],
-        ReturnType::DEFAULT
-    );
-    $db->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteSurchargeList'), 'successlistDelete');
-}
+//if (isset($_GET['delzus']) && (int)$_GET['delzus'] > 0 && Form::validateToken()) {
+//    $step = 'Zuschlagsliste';
+//    $db->queryPrepared(
+//        'DELETE tversandzuschlag, tversandzuschlagsprache
+//            FROM tversandzuschlag
+//            LEFT JOIN tversandzuschlagsprache
+//              ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
+//            WHERE tversandzuschlag.kVersandzuschlag = :kVersandzuschlag',
+//        ['kVersandzuschlag' => $_GET['delzus']],
+//        ReturnType::DEFAULT
+//    );
+//    $db->delete('tversandzuschlagplz', 'kVersandzuschlag', (int)$_GET['delzus']);
+//    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+//    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteSurchargeList'), 'successlistDelete');
+//}
 // Zuschlagliste editieren
-if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
-    $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
-    $cISO             = Text::convertISO6392ISO(Request::verifyGPDataString('cISO'));
-    if ($kVersandzuschlag > 0 && (mb_strlen($cISO) > 0 && $cISO !== 'noISO')) {
-        $step = 'Zuschlagsliste';
-        $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
-        if (isset($fee->kVersandzuschlag) && $fee->kVersandzuschlag > 0) {
-            $fee->oVersandzuschlagSprache_arr = [];
-            $oVersandzuschlagSprache_arr      = $db->selectAll(
-                'tversandzuschlagsprache',
-                'kVersandzuschlag',
-                (int)$fee->kVersandzuschlag
-            );
-            foreach ($oVersandzuschlagSprache_arr as $localized) {
-                $fee->oVersandzuschlagSprache_arr[$localized->cISOSprache] = $localized;
-            }
-        }
-        $smarty->assign('oVersandzuschlag', $fee);
-    }
-}
-
-if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && Form::validateToken()) {
-    $step = 'Zuschlagsliste';
-    $db->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteZIP'), 'successZIPDelete');
-}
-
+//if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
+//    $kVersandzuschlag = Request::verifyGPCDataInt('editzus');
+//    $cISO             = Text::convertISO6392ISO(Request::verifyGPDataString('cISO'));
+//    if ($kVersandzuschlag > 0 && (mb_strlen($cISO) > 0 && $cISO !== 'noISO')) {
+//        $step = 'Zuschlagsliste';
+//        $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
+//        if (isset($fee->kVersandzuschlag) && $fee->kVersandzuschlag > 0) {
+//            $fee->oVersandzuschlagSprache_arr = [];
+//            $oVersandzuschlagSprache_arr      = $db->selectAll(
+//                'tversandzuschlagsprache',
+//                'kVersandzuschlag',
+//                (int)$fee->kVersandzuschlag
+//            );
+//            foreach ($oVersandzuschlagSprache_arr as $localized) {
+//                $fee->oVersandzuschlagSprache_arr[$localized->cISOSprache] = $localized;
+//            }
+//        }
+//        $smarty->assign('oVersandzuschlag', $fee);
+//    }
+//}
+//
+//if (isset($_GET['delplz']) && (int)$_GET['delplz'] > 0 && Form::validateToken()) {
+//    $step = 'Zuschlagsliste';
+//    $db->delete('tversandzuschlagplz', 'kVersandzuschlagPlz', (int)$_GET['delplz']);
+//    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+//    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteZIP'), 'successZIPDelete');
+//}
+//
 if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && Form::validateToken()) {
     $step          = 'Zuschlagsliste';
     $oZipValidator = new ZipValidator($_POST['cISO']);

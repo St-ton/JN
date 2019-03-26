@@ -10,7 +10,8 @@ use JTL\DB\ReturnType;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Checkout\Versandart;
-use \JTL\Checkout\Versandzuschlag;
+use JTL\Checkout\Versandzuschlag;
+use JTL\Alert\Alert;
 
 /**
  * @param float $fPreis
@@ -450,4 +451,157 @@ function createZuschlagsListe(array $surcharge)
     $surchargeTMP->save();
 
     return getZuschlagsListen($post['kVersandart'], $post['cISO']);
+}
+
+/**
+ * @param $surchargeID
+ * @return object
+ */
+function deleteZuschlagsListe($surchargeID)
+{
+    Shop::Container()->getDB()->queryPrepared(
+        'DELETE tversandzuschlag, tversandzuschlagsprache, tversandzuschlagplz
+            FROM tversandzuschlag
+            LEFT JOIN tversandzuschlagsprache USING(kVersandzuschlag)
+            LEFT JOIN tversandzuschlagplz USING(kVersandzuschlag)
+            WHERE tversandzuschlag.kVersandzuschlag = :surchargeID',
+        ['surchargeID' => $surchargeID],
+        ReturnType::DEFAULT
+    );
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+
+    return (object)['surchargeID' => $surchargeID];
+}
+
+/**
+ * @param array $surcharge
+ * @return array
+ */
+function updateZuschlagsListe(array $surcharge)
+{
+    $post = [];
+    foreach ($surcharge as $item) {
+        $post[$item['name']] = $item['value'];
+    }
+    $surchargeTMP = (new Versandzuschlag((int)$post['kVersandzuschlag']))
+        ->setTitle($post['cName'])
+        ->setSurcharge($post['fZuschlag']);
+
+    $surchargeTMP->save(true);
+
+    return $post;
+}
+
+/**
+ * @param $surchargeID
+ * @param $ZIP
+ * @return string
+ */
+function deleteZuschlagsListeZIP($surchargeID, $ZIP)
+{
+    $partsZIP = explode('-', $ZIP);
+    if (count($partsZIP) === 1) {
+        Shop::Container()->getDB()->queryPrepared(
+            'DELETE 
+            FROM tversandzuschlagplz
+            WHERE kVersandzuschlag = :surchargeID
+              AND cPLZ = :ZIP',
+            [
+                'surchargeID' => $surchargeID,
+                'ZIP' => $partsZIP[0]
+            ],
+            ReturnType::DEFAULT
+        );
+    } elseif (count($partsZIP) === 2) {
+        Shop::Container()->getDB()->queryPrepared(
+            'DELETE 
+            FROM tversandzuschlagplz
+            WHERE kVersandzuschlag = :surchargeID
+              AND cPLZab = :ZIPFrom
+              AND cPLZbis = :ZIPTo',
+            [
+                'surchargeID' => $surchargeID,
+                'ZIPFrom' => $partsZIP[0],
+                'ZIPTo' => $partsZIP[1]
+            ],
+            ReturnType::DEFAULT
+        );
+    }
+
+    return (object)['surchargeID' => $surchargeID, 'ZIP' => $ZIP];
+}
+
+/**
+ * @param array $data
+ * @return string
+ * @throws SmartyException
+ */
+function createZuschlagsListeZIP(array $data)
+{
+    Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
+
+    $post = [];
+    foreach ($data as $item) {
+        $post[$item['name']] = $item['value'];
+    }
+    $alertHelper   = Shop::Container()->getAlertService();
+    $db            = Shop::Container()->getDB();
+    $smarty        = JTLSmarty::getInstance(false, ContextType::BACKEND);
+    $surcharge     = new Versandzuschlag((int)$post['kVersandzuschlag']);
+    $oZipValidator = new ZipValidator($surcharge->getISO());
+    $ZuschlagPLZ   = new stdClass();
+
+    $ZuschlagPLZ->kVersandzuschlag = $surcharge->getID();
+    if (!empty($post['cPLZ'])) {
+        $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($post['cPLZ']);
+    } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
+        if ($ZuschlagPLZ->cPLZAb > $ZuschlagPLZ->cPLZBis) {
+            $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($post['cPLZBis']);
+            $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($post['cPLZAb']);
+        } else {
+            $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($post['cPLZAb']);
+            $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($post['cPLZBis']);
+        }
+    }
+
+    if (empty($ZuschlagPLZ->cPLZ) && empty($ZuschlagPLZ->cPLZAb)) {
+        $szErrorString = $oZipValidator->getError();
+        if ($szErrorString !== '') {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, $szErrorString, 'errorZIPValidator');
+        } else {
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPMissing'), 'errorZIPMissing');
+        }
+    } elseif (!empty($ZuschlagPLZ->cPLZ) && $surcharge->hasZIPCode($ZuschlagPLZ->cPLZ)) {
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            sprintf(
+                __('errorZIPOverlap'),
+                $ZuschlagPLZ->cPLZ,
+                'overlap'
+            ),
+            'errorZIPOverlap'
+        );
+    } elseif ((!empty($ZuschlagPLZ->cPLZAb) && $surcharge->hasZIPCode($ZuschlagPLZ->cPLZAb))
+        || (!empty($ZuschlagPLZ->cPLZBis) && $surcharge->hasZIPCode($ZuschlagPLZ->cPLZBis))
+    ) {
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            sprintf(
+                __('errorZIPAreaOverlap'),
+                $ZuschlagPLZ->cPLZAb . '-' . $ZuschlagPLZ->cPLZBis,
+                'overlap'
+            ),
+            'errorZIPAreaOverlap'
+        );
+    } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
+    }
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
+
+    $message = $smarty->assign('alertList', $alertHelper)
+                      ->fetch('snippets/alert_list.tpl');
+    $badges  = $smarty->assign('zuschlagliste', new Versandzuschlag($surcharge->getID()))
+                      ->fetch('snippets/zuschlagliste_plz_badges.tpl');
+
+    return (object)['message' => $message, 'badges' => $badges];
 }

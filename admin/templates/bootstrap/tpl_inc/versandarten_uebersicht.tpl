@@ -141,12 +141,6 @@
                                 <input type="text" id="fZuschlag" name="fZuschlag" value="" class="form-control price_large" required>
                             </div>
                         </div>
-                        {__('plz')} <input type="text" name="cPLZ" class="form-control zipcode" /> {__('orPlzRange')}
-                        <div class="input-group">
-                            <input type="text" name="cPLZAb" class="form-control zipcode" />
-                            <span class="input-group-addon">&ndash;</span>
-                            <input type="text" name="cPLZBis" class="form-control zipcode" />
-                        </div>
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button id="zuschlag-new-submit" type="submit" value="" class="btn btn-primary">

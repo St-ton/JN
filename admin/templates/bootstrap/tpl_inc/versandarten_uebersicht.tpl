@@ -132,12 +132,11 @@
                                 <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" required/>
                             </div>
                             {foreach $sprachen as $sprache}
-                                {assign var=cISO value=$sprache->cISO}
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cName_{$sprache->cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
                                     </span>
-                                    <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value=""/>
+                                    <input class="form-control" type="text" id="cName_{$sprache->cISO}" name="cName_{$sprache->cISO}" value=""/>
                                 </div>
                             {/foreach}
                             <div class="input-group">

@@ -1,17 +1,21 @@
 <form id="surcharge-form-{$zuschlagliste->getID()}">
-    <input type="hidden" name="kVersandzuschlag" value="{$zuschlagliste->getID()}">
+    <input type="hidden" name="kVersandzuschlag" value="{$zuschlagliste->getID()}"/>
     <div class="row">
         <div class="col-md-5 text-right">Zuschlagliste:</div>
-        <div class="col-md-7 text-left"><input name="cName" value="{$zuschlagliste->getTitle()}"></div>
+        <div class="col-md-7 text-left"><input name="cName" value="{$zuschlagliste->getTitle()}"/></div>
     </div>
     <div class="row">
         <div class="col-md-5 text-right">Zuschlag:</div>
-        <div class="col-md-7 text-left"><input name="fZuschlag" value="{$zuschlagliste->getSurcharge()}"></div>
+        <div class="col-md-7 text-left"><input name="fZuschlag" value="{$zuschlagliste->getSurcharge()}"/></div>
     </div>
-    <div class="row">
-        <div class="col-md-5 text-right">Angezeigter Name:</div>
-        <div class="col-md-7 text-left">{$zuschlagliste->getName($smarty.session.kSprache)}</div>
-    </div>
+    {foreach $sprachen as $sprache}
+        <div class="row">
+            <div class="col-md-5 text-right">{__('showedName')} ({$sprache->cNameDeutsch}):</div>
+            <div class="col-md-7 text-left">
+                <input type="text" name="cName_{$sprache->cISO}" value="{$zuschlagliste->getName($sprache->kSprache)}"/>
+            </div>
+        </div>
+    {/foreach}
     <div class="row">
         <div class="col-md-5 text-right">PLZ:</div>
         <div class="col-md-7 text-left">

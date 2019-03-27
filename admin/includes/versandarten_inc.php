@@ -389,6 +389,7 @@ function getZuschlagsListen($shippingType, $ISO)
 
     $result       = new stdClass();
     $result->body = $smarty->assign('zuschlaglisten', $zuschlaege)
+                           ->assign('sprachen', Sprache::getAllLanguages())
                            ->fetch('tpl_inc/zuschlaglisten.tpl');
     return $result;
 }
@@ -451,10 +452,17 @@ function updateZuschlagsListe(array $surcharge)
     foreach ($surcharge as $item) {
         $post[$item['name']] = $item['value'];
     }
+    $languages    = Sprache::getAllLanguages();
     $surchargeTMP = (new Versandzuschlag((int)$post['kVersandzuschlag']))
         ->setTitle($post['cName'])
         ->setSurcharge($post['fZuschlag']);
 
+    foreach ($languages as $lang) {
+        if (isset($post['cName_' . $lang->cISO])) {
+            $surchargeTMP->setName($post['cName_' . $lang->cISO], $lang->kSprache);
+        }
+    }
+    error_log(json_encode($surchargeTMP));
     $surchargeTMP->save(true);
 
     return $post;

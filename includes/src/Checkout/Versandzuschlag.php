@@ -147,13 +147,21 @@ class Versandzuschlag
         if ($update) {
             $db->update('tversandzuschlag', 'kVersandzuschlag', $this->getID(), $surcharge);
         } else {
-            $surchargeNew = $db->insert('tversandzuschlag', $surcharge);
-            foreach ($this->getNames() as $key => $name) {
-                $surchargeLang                   = new \stdClass();
-                $surchargeLang->cName            = $name;
-                $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
-                $surchargeLang->kVersandzuschlag = $surchargeNew;
-
+            $this->setID($db->insert('tversandzuschlag', $surcharge));
+        }
+        foreach ($this->getNames() as $key => $name) {
+            $surchargeLang                   = new \stdClass();
+            $surchargeLang->cName            = $name;
+            $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
+            $surchargeLang->kVersandzuschlag = $this->getID();
+            if ($update) {
+                $db->update(
+                    'tversandzuschlagsprache',
+                    ['kVersandzuschlag', 'cISOSprache'],
+                    [$this->getID(), $surchargeLang->cISOSprache],
+                    $surchargeLang
+                );
+            } else {
                 $db->insert('tversandzuschlagsprache', $surchargeLang);
             }
         }

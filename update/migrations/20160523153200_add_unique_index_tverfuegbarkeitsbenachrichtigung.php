@@ -11,16 +11,7 @@ use JTL\Update\Migration;
 use JTL\Update\MigrationHelper;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
+ * Class Migration_20160523153200
  */
 class Migration_20160523153200 extends Migration implements IMigration
 {

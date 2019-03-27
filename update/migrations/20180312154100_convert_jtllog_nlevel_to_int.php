@@ -10,22 +10,11 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180312154100
  */
 class Migration_20180312154100 extends Migration implements IMigration
 {
-    protected $author      = 'Felix Moche';
+    protected $author      = 'fm';
     protected $description = 'Update tjtllog.nLevel to INT';
 
     public function up()

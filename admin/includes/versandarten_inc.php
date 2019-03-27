@@ -523,7 +523,7 @@ function createZuschlagsListeZIP(array $data)
     if (!empty($post['cPLZ'])) {
         $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($post['cPLZ']);
     } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
-        if ($ZuschlagPLZ->cPLZAb > $ZuschlagPLZ->cPLZBis) {
+        if ($post['cPLZAb'] > $post['cPLZBis']) {
             $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($post['cPLZBis']);
             $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($post['cPLZAb']);
         } else {

@@ -46,7 +46,13 @@
             <tr>
                 <td>{$versandart->cName}<br />
                     {foreach $versandart->land_arr as $land}
-                        <a href="#" data-toggle="modal" data-target="#zuschlagliste-modal" data-versandart="{$versandart->kVersandart}" data-iso="{$land}">
+                        <a href="#"
+                           data-toggle="modal"
+                           data-target="#zuschlagliste-modal"
+                           data-shipping-method="{$versandart->kVersandart}"
+                           data-iso="{$land}"
+                           data-shipping-method-name="{$versandart->cName}"
+                        >
                             <span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span>
                         </a>
                     {/foreach}
@@ -106,7 +112,7 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
-                <h4 class="modal-title">Zuschlagliste für </h4>
+                <h4 class="modal-title">Zuschlagliste für <span id="surcharge-modal-title"></span></h4>
             </div>
             <div class="modal-body">
                 <form id="zuschlag-new" method="post" action="versandarten.php">
@@ -168,9 +174,10 @@
         activateAjaxLoadingSpinner();
         $('a[data-target="#zuschlagliste-modal"]').click(function () {
             $('#zuschlaglisten').html('');
-            $('#zuschlag-new input[name="kVersandart"').val($(this).data('versandart'));
+            $('#surcharge-modal-title').html($(this).data('shipping-method-name') + ', ' + $(this).data('iso'));
+            $('#zuschlag-new input[name="kVersandart"').val($(this).data('shipping-method'));
             $('#zuschlag-new input[name="cISO"').val($(this).data('iso'));
-            ioCall('getZuschlagsListen', [$(this).data('versandart'), $(this).data('iso')], function (data) {
+            ioCall('getZuschlagsListen', [$(this).data('shipping-method'), $(this).data('iso')], function (data) {
                 $('#zuschlaglisten').html(data.body);
             });
         });

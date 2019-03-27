@@ -30,6 +30,16 @@ class Migration implements JsonSerializable
     protected $executed;
 
     /**
+     * @var string|null
+     */
+    protected $author;
+
+    /**
+     * @var string|null
+     */
+    protected $description;
+
+    /**
      * Migration constructor.
      *
      * @param DbInterface $db
@@ -60,23 +70,19 @@ class Migration implements JsonSerializable
     }
 
     /**
-     * @return null
+     * @return string|null
      */
-    public function getAuthor()
+    public function getAuthor(): ?string
     {
-        return (isset($this->author) && $this->author !== null)
-            ? $this->author
-            : null;
+        return $this->author;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return (isset($this->description) && $this->description !== null)
-            ? $this->description
-            : $this->info;
+        return $this->description ?? $this->info;
     }
 
     /**

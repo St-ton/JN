@@ -294,7 +294,7 @@ function dbupdaterStatusTpl($pluginID = null)
                 $db,
                 $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
                 $plugin->getPluginID(),
-                Version::parse($plugin->getMeta()->getVersion())
+                $plugin->getMeta()->getSemVer()
             );
             $smarty->assign('migrationURL', 'plugin.php')
                    ->assign('pluginID', $pluginID);
@@ -339,7 +339,7 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
                 $db,
                 $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
                 $plugin->getPluginID(),
-                Version::parse($plugin->getMeta()->getVersion())
+                $plugin->getMeta()->getSemVer()
             );
         } else {
             $manager = new MigrationManager();

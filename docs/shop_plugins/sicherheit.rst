@@ -17,14 +17,14 @@ Ein Beispiel für unsicheren Code (BITTE NIEMALS SO ETWAS PROGRAMMIEREN!!!):
 
     <?php
 
-    $db = Shop::Container()->getDB();
+    $db = JTL\Shop::Container()->getDB();
     $productId = $_POST['productId'];
     $query = "
         SELECT cArtNr, cName, cBeschreibung
         FROM tartikel
         WHERE kArtikel = $productId
     ";
-    $productInfo = $db->executeQuery($query, \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $productInfo = $db->executeQuery($query, JTL\DB\ReturnType::ARRAY_OF_OBJECTS);
 
 Das Problem hierbei ist, dass ein Angreifer nun Schadcode über die Variable $productId in den SQL-Query einschleusen
 kann.
@@ -49,7 +49,7 @@ Validierungsfunktionen genutzt werden (ACHTUNG! Auch dieses Beispiel ist nicht e
 
     <?php
 
-    $db = Shop::Container()->getDB();
+    $db = JTL\Shop::Container()->getDB();
 
     // validiert, dass es sich bei der Variable um eine Ganzzahl handelt.
     $productId = filter_input(INPUT_POST, 'productId', FILTER_VALIDATE_INT);
@@ -63,7 +63,7 @@ Validierungsfunktionen genutzt werden (ACHTUNG! Auch dieses Beispiel ist nicht e
         FROM tartikel
         WHERE kArtikel = $productId
     ";
-    $productInfo = $db->executeQuery($query, \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $productInfo = $db->executeQuery($query, JTL\DB\ReturnType::ARRAY_OF_OBJECTS);
 
 
 Prepared Statements
@@ -82,7 +82,7 @@ Der JTL-Shop stellt eine einfache Möglichkeit bereit, PreparedStatements auszuf
 
     <?php
 
-    $db = Shop::Container()->getDB();
+    $db = JTL\Shop::Container()->getDB();
 
     // validiert, dass es sich bei der Variable um eine Ganzzahl handelt.
     $productId = filter_input(INPUT_POST, 'productId', FILTER_VALIDATE_INT);
@@ -96,7 +96,7 @@ Der JTL-Shop stellt eine einfache Möglichkeit bereit, PreparedStatements auszuf
         FROM tartikel
         WHERE kArtikel = :productId
     ";
-    $productInfo = $db->executeQueryPrepared($query, ['productId' => $productId], \DB\ReturnType::ARRAY_OF_OBJECTS);
+    $productInfo = $db->executeQueryPrepared($query, ['productId' => $productId], JTL\DB\ReturnType::ARRAY_OF_OBJECTS);
 
 
 Hinweis zu Pluginzertifizierungen

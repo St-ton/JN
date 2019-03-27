@@ -1,12 +1,12 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 vielen Dank für die Registrierung in unserem Onlineshop unter {$ShopURL}
 
 Zur Kontrolle hier noch einmal Ihre Kundendaten:
 
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}

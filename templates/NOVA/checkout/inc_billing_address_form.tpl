@@ -19,9 +19,15 @@
         {/col}
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
             {col md=5}
-                {formgroup class="{if isset($fehlendeAngaben.anrede)} has-error{/if}" label-for="salutation" label="{lang key='salutation' section='account data'}"}
-                {select name="anrede" id="salutation" required=true autocomplete="billing sex"}
-                    <option value="" selected="selected" disabled>{lang key='salutation' section='account data'}</option>
+                {formgroup
+                    class="{if isset($fehlendeAngaben.anrede)} has-error{/if}"
+                    label-for="salutation"
+                    label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                }
+                {select name="anrede" id="salutation" required=($Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y') autocomplete="billing sex"}
+                    <option value="" selected="selected" {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}disabled{/if}>
+                        {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                    </option>
                     <option value="w" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'w'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                     <option value="m" {if isset($cPost_var['anrede']) && $cPost_var['anrede'] === 'm'}selected="selected"{elseif isset($Kunde->cAnrede) && $Kunde->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                 {/select}
@@ -201,7 +207,7 @@
                 {select name="land" id="country" class="country-input" required=true autocomplete="billing country"}
                     <option value="" disabled>{lang key='country' section='account data'}</option>
                     {foreach $laender as $land}
-                        <option value="{$land->cISO}" {if $cIso === $land->cISO}selected="selected"{/if}>{$land->cName}</option>
+                        <option value="{$land->getISO()}" {if $cIso === $land->getISO()}selected="selected"{/if}>{$land->getName()}</option>
                     {/foreach}
                 {/select}
                 {if isset($fehlendeAngaben.land)}

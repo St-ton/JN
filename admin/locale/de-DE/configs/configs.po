@@ -927,7 +927,7 @@ msgid "produktfrage_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 
 msgid "produktfrage_abfragen_anrede_desc"
-msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll."
+msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll.  Unabhängig von dieser Einstellung verwendet der JTL-Shop standardmäßig in Frontend und E-Mails eine geschlechtsneutrale Briefanrede (z.B. 'Guten Tag Max Mustermann'). Die Briefanrede kann in E-Mail-Vorlagen oder in den Druckvorlagen der Wawi entsprechend angepasst werden."
 
 msgid "produktfrage_abfragen_vorname_name"
 msgstr "Vorname abfragen"
@@ -1113,7 +1113,7 @@ msgid "kundenregistrierung_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 
 msgid "kundenregistrierung_abfragen_anrede_desc"
-msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll."
+msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll.  Unabhängig von dieser Einstellung verwendet der JTL-Shop standardmäßig in Frontend und E-Mails eine geschlechtsneutrale Briefanrede (z.B. 'Guten Tag Max Mustermann'). Die Briefanrede kann in E-Mail-Vorlagen oder in den Druckvorlagen der Wawi entsprechend angepasst werden."
 
 msgid "kundenregistrierung_pflicht_vorname_name"
 msgstr "Vorname abfragen"
@@ -1251,7 +1251,7 @@ msgid "lieferadresse_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 
 msgid "lieferadresse_abfragen_anrede_desc"
-msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll."
+msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll.  Unabhängig von dieser Einstellung verwendet der JTL-Shop standardmäßig in Frontend und E-Mails eine geschlechtsneutrale Briefanrede (z.B. 'Guten Tag Max Mustermann'). Die Briefanrede kann in E-Mail-Vorlagen oder in den Druckvorlagen der Wawi entsprechend angepasst werden."
 
 msgid "lieferadresse_abfragen_titel_name"
 msgstr "Titel abfragen"
@@ -2253,7 +2253,7 @@ msgid "kontakt_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 
 msgid "kontakt_abfragen_anrede_desc"
-msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll."
+msgstr "Hier legen Sie fest, ob die Anrede abgefragt werden soll. Unabhängig von dieser Einstellung verwendet der JTL-Shop standardmäßig in Frontend und E-Mails eine geschlechtsneutrale Briefanrede (z.B. 'Guten Tag Max Mustermann'). Die Briefanrede kann in E-Mail-Vorlagen oder in den Druckvorlagen der Wawi entsprechend angepasst werden."
 
 msgid "kontakt_abfragen_vorname_name"
 msgstr "Vorname abfragen"

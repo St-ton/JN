@@ -42,8 +42,16 @@
                                 {if $Einstellungen.kontakt.kontakt_abfragen_anrede !== 'N'}
                                     <div class="col-xs-12 col-md-6">
                                         <div class="form-group float-label-control">
-                                            <label for="salutation" class="control-label">{lang key='salutation' section='account data'}</label>
-                                            <select name="anrede" id="salutation" class="form-control" required>
+                                            <label for="salutation" class="control-label">
+                                                {lang key='salutation' section='account data'}
+                                                {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'O'}
+                                                    <span class="optional"> - {lang key='optional'}</span>
+                                                {/if}
+                                            </label>
+                                            <select name="anrede" id="salutation" class="form-control" {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}required{/if}>
+                                                <option value="" selected="selected" {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}disabled{/if}>
+                                                    {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                                                </option>
                                                 <option value="w"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                                                 <option value="m"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                                             </select>

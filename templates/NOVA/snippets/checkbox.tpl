@@ -13,7 +13,12 @@
 {if !empty($checkboxes)}
     {foreach $checkboxes as $cb}
         {formgroup}
-            {checkbox id="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}" required=$cb->nPflicht === 1}
+            {checkbox
+                id="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}"
+                name={$cb->cID}
+                required=$cb->nPflicht === 1
+                checked=$cb->isActive
+            }
                {$cb->cName}
                 {if !empty($cb->cLinkURL)}
                     <span class='moreinfo'>({link href=$cb->cLinkURL class='popup checkbox-popup'}{lang key='read' section='account data'}{/link})</span>

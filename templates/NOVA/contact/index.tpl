@@ -37,8 +37,14 @@
                         {row}
                             {if $Einstellungen.kontakt.kontakt_abfragen_anrede !== 'N'}
                                 {col cols=12 md=6}
-                                    {formgroup label="{lang key='salutation' section='account data'}" label-for="salutation"}
-                                        {select name="anrede" id="salutation" required=true}
+                                    {formgroup
+                                        label="{lang key='salutation' section='account data'}{if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                                        label-for="salutation"
+                                    }
+                                        {select name="anrede" id="salutation" required=($Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y')}
+                                            <option value="" selected="selected" {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}disabled{/if}>
+                                                {if $Einstellungen.kontakt.kontakt_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                                            </option>
                                             <option value="w"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'w'} selected="selected"{/if}>{lang key='salutationW'}</option>
                                             <option value="m"{if isset($Vorgaben->cAnrede) && $Vorgaben->cAnrede === 'm'} selected="selected"{/if}>{lang key='salutationM'}</option>
                                         {/select}
@@ -162,9 +168,7 @@
                                     label="{lang key='message' section='contact'}"
                                     label-for="message"
                                 }
-                                    {textarea name="nachricht" rows="10" id="message" required=true}
-                                        {if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}
-                                    {/textarea}
+                                    {textarea name="nachricht" rows="10" id="message" required=true}{if isset($Vorgaben->cNachricht)}{$Vorgaben->cNachricht}{/if}{/textarea}
                                     {if !empty($fehlendeAngaben.nachricht)}
                                         <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
                                             {lang key='fillOut'}

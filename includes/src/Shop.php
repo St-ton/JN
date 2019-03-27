@@ -74,6 +74,8 @@ use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Services\JTL\Validation\RuleSet;
 use JTL\Services\JTL\Validation\ValidationService;
 use JTL\Services\JTL\Validation\ValidationServiceInterface;
+use JTL\Services\JTL\CountryService;
+use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -1957,6 +1959,8 @@ final class Shop
 
         $container->singleton(PasswordServiceInterface::class, PasswordService::class);
 
+        $container->singleton(CountryServiceInterface::class, CountryService::class);
+
         $container->singleton(JTLDebugBar::class, function (Container $container) {
             return new JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
         });
@@ -2040,7 +2044,8 @@ final class Shop
                 $container->getDB(),
                 $container->getBackendLogService(),
                 new AdminLoginStatusMessageMapper(),
-                new AdminLoginStatusToLogLevel()
+                new AdminLoginStatusToLogLevel(),
+                $container->getGetText()
             );
         });
 

@@ -108,7 +108,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 $db,
                 $oPlugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
                 $oPlugin->getPluginID(),
-                Version::parse($oPlugin->getMeta()->getVersion())
+                $oPlugin->getMeta()->getSemVer()
             );
             $migrations = count($manager->getMigrations());
             if ($migrations > 0) {

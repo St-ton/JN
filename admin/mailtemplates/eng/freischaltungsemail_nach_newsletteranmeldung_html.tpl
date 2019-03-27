@@ -1,14 +1,8 @@
 {includeMailTemplate template=header type=html}
 
-{if isset($Kunde->kKunde) && $Kunde->kKunde > 0}
-    Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
-    <br>
-{else}
-    Dear {$NewsletterEmpfaenger->cNachname},<br>
-    <br>
-{/if}
+Hello,<br><br>
 
-We're pleased to welcome you as a new newsletter subscriber at {$Firma->cName}.<br>
+we're pleased to welcome you as a new newsletter subscriber at {$Firma->cName}.<br>
 <br>
 Please click the activation code below to receive your newsletter:<br>
 <a href="{$NewsletterEmpfaenger->cFreischaltURL}">{$NewsletterEmpfaenger->cFreischaltURL}</a><br>

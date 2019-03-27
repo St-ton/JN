@@ -98,9 +98,14 @@ class Tax
                 || (\strcasecmp($billingCountryCode, 'GR') === 0
                     && \strcasecmp(\mb_substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
-            $deliveryCountry = $db->select('tland', 'cISO', $deliveryCountryCode);
-            $shopCountry     = $db->select('tland', 'cISO', $merchantCountryCode);
-            if (!empty($deliveryCountry->nEU) && !empty($shopCountry->nEU)) {
+            $countryHelper   = Shop::Container()->getCountryService();
+            $deliveryCountry = $countryHelper->getCountry($deliveryCountryCode);
+            $shopCountry     = $countryHelper->getCountry($merchantCountryCode);
+            if ($deliveryCountry !== null
+                && $shopCountry !== null
+                && $deliveryCountry->isEU()
+                && $shopCountry->isEU()
+            ) {
                 $UstBefreiungIGL = true;
             }
         }

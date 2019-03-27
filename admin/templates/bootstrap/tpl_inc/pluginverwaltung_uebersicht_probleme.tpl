@@ -42,7 +42,7 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                        <td class="tcenter">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="tcenter">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
@@ -95,7 +95,7 @@
                             </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                        <td class="tcenter">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
@@ -150,7 +150,7 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                        <td class="tcenter">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter">
@@ -209,7 +209,7 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter plugin-version">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable() } <span class="label label-danger error">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                        <td class="tcenter plugin-version">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable() } <span class="label label-danger error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="tcenter plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                         <td class="tcenter plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="tcenter plugin-lang-vars">

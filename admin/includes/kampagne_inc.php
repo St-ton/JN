@@ -1403,38 +1403,23 @@ function checkGesamtStatZeitParam()
         $dateEnd   = $spanParts[1] ?? '';
         if (mb_strlen($dateEnd) === 0) {
             [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
-
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
-            $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
-                (int)$startMonth . '-' .
-                (int)$startDay;
-
-            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$startYear;
-            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$startMonth;
-            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$startDay;
-            $_SESSION['Kampagne']->cToDate               = (int)$startYear . '-' .
-                (int)$startMonth . '-' .
-                (int)$startDay;
+            [$cTagEnde, $cMonatEnde, $cJahrEnde] = explode('.', $dateStart);
         } else {
             [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
             [$cTagEnde, $cMonatEnde, $cJahrEnde] = explode('.', $dateEnd);
-
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
-            $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
-                (int)$startMonth . '-' .
-                (int)$startDay;
-
-            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$cJahrEnde;
-            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$cMonatEnde;
-            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$cTagEnde;
-            $_SESSION['Kampagne']->cToDate               = (int)$cJahrEnde . '-' .
-                (int)$cMonatEnde . '-' .
-                (int)$cTagEnde;
         }
+        $_SESSION['Kampagne']->cToDate_arr['nJahr']    = (int)$cJahrEnde;
+        $_SESSION['Kampagne']->cToDate_arr['nMonat']   = (int)$cMonatEnde;
+        $_SESSION['Kampagne']->cToDate_arr['nTag']     = (int)$cTagEnde;
+        $_SESSION['Kampagne']->cToDate                 = (int)$cJahrEnde . '-' .
+            (int)$cMonatEnde . '-' .
+            (int)$cTagEnde;
+        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
+        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
+        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
+        $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
+            (int)$startMonth . '-' .
+            (int)$startDay;
         // Int String Work Around
         $cMonat = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
         if ($cMonat < 10) {

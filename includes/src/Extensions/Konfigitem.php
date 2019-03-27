@@ -523,45 +523,11 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @param bool $bForceNetto
-     * @param bool $bConvertCurrency
-     * @return float|int
-     */
-    public function getPreis($bForceNetto = false, $bConvertCurrency = false)
-    {
-        $fVKPreis    = 0.0;
-        $isConverted = false;
-        if ($this->oArtikel && $this->bPreis) {
-            $fVKPreis = $this->oArtikel->Preise->fVKNetto ?? 0;
-            $fSpecial = $this->oPreis->getPreis($bConvertCurrency);
-            if ($fSpecial != 0) {
-                if ($this->oPreis->getTyp() === Konfigitempreis::PRICE_TYPE_SUM) {
-                    $fVKPreis += $fSpecial;
-                } elseif ($this->oPreis->getTyp() === Konfigitempreis::PRICE_TYPE_PERCENTAGE) {
-                    $fVKPreis *= (100 + $fSpecial) / 100;
-                }
-            }
-        } elseif ($this->oPreis) {
-            $fVKPreis    = $this->oPreis->getPreis($bConvertCurrency);
-            $isConverted = true;
-        }
-        if ($bConvertCurrency && !$isConverted) {
-            $fVKPreis *= Frontend::getCurrency()->getConversionFactor();
-        }
-        if (!$bForceNetto && !Frontend::getCustomerGroup()->isMerchant()) {
-            $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
-        }
-
-        return $fVKPreis;
-    }
-
-    /**
      * @param bool $forceNet
      * @param bool $convertCurrency
-     * @param int $totalAmount
      * @return float|int
      */
-    public function getFullPrice(bool $forceNet = false, bool $convertCurrency = false, $totalAmount = 1)
+    public function getPreis(bool $forceNet = false, bool $convertCurrency = false)
     {
         $fVKPreis    = 0.0;
         $isConverted = false;
@@ -580,14 +546,24 @@ class Konfigitem implements JsonSerializable
             $isConverted = true;
         }
         if ($convertCurrency && !$isConverted) {
-            $waehrung  = $_SESSION['Waehrung'] ?? Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-            $fVKPreis *= (float)$waehrung->fFaktor;
+            $fVKPreis *= Frontend::getCurrency()->getConversionFactor();
         }
-        if (!$forceNet && !Frontend::getCustomerGroup()->getIsMerchant()) {
+        if (!$forceNet && !Frontend::getCustomerGroup()->isMerchant()) {
             $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
         }
 
-        return $fVKPreis * $this->fAnzahl * $totalAmount;
+        return $fVKPreis;
+    }
+
+    /**
+     * @param bool $forceNet
+     * @param bool $convertCurrency
+     * @param int $totalAmount
+     * @return float|int
+     */
+    public function getFullPrice(bool $forceNet = false, bool $convertCurrency = false, $totalAmount = 1)
+    {
+        return $this->getPreis($forceNet, $convertCurrency) * $this->fAnzahl * $totalAmount;
     }
 
     /**

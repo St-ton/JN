@@ -132,4 +132,33 @@ class CountryService implements CountryServiceInterface
 
         return $countryMatch ? $countryMatch->getISO() : null;
     }
+
+    /**
+     * @param bool $getEU - get all countries in EU and all countries in Europe not in EU
+     * @return array
+     */
+    public function getCountriesByContinent(bool $getEU = false): array
+    {
+        $continentsTMP = [];
+        $continents    = [];
+        foreach ($this->getCountryList() as $country) {
+            $continentsTMP[$country->getContinent()][] = $country;
+            if ($getEU) {
+                if ($country->isEU()) {
+                    $continentsTMP[__('europeanUnion')][] = $country;
+                } elseif ($country->getContinent() === __('Europa')) {
+                    $continentsTMP[__('notEuropeanUnionEurope')][] = $country;
+                }
+            }
+        }
+        foreach ($continentsTMP as $continent => $countries) {
+            $continents[] = (object)[
+                'name'           => $continent,
+                'countries'      => $countries,
+                'countriesCount' => \count($countries)
+            ];
+        }
+
+        return $continents;
+    }
 }

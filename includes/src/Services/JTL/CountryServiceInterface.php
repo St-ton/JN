@@ -44,4 +44,10 @@ interface CountryServiceInterface
      * @return null|string
      */
     public function getIsoByCountryName(string $countryName): ?string;
+
+    /**
+     * @param bool $getEU
+     * @return array
+     */
+    public function getCountriesByContinent(bool $getEU = false): array;
 }

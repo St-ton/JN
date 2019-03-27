@@ -1627,3 +1627,9 @@ msgstr "Antarktis"
 
 msgid "date"
 msgstr "Datum"
+
+msgid "europeanUnion"
+msgstr "Europäische Union"
+
+msgid "notEuropeanUnionEurope"
+msgstr "Nicht Europäische Union in Europa"

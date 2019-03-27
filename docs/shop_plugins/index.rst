@@ -6,6 +6,7 @@ Plugins
 
     allgemein
     aufbau
+    bootstrapping
     variablen
     hooks
     hinweise

@@ -78,7 +78,7 @@ Um also beispielsweise den Hook HOOK_ARTIKEL_CLASS_FUELLEARTIKEL zu nutzen, läs
 
 .. code-block:: php
 
-	$dispatcher->listen('shop.hook.' . \HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, function (array $args) {
+    $dispatcher->listen('shop.hook.' . \HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, function (array $args) {
         $args['oArtikel']->cName = 'Neuer Name';
     });
 

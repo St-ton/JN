@@ -571,5 +571,5 @@ function createZuschlagsListeZIP(array $data)
     $badges  = $smarty->assign('zuschlagliste', new Versandzuschlag($surcharge->getID()))
                       ->fetch('snippets/zuschlagliste_plz_badges.tpl');
 
-    return (object)['message' => $message, 'badges' => $badges];
+    return (object)['message' => $message, 'badges' => $badges, 'surchargeID' => $surcharge->getID()];
 }

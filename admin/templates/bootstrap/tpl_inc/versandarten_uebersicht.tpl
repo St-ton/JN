@@ -165,6 +165,7 @@
 {literal}
 <script>
     $(document).ready(function () {
+        activateAjaxLoadingSpinner();
         $('a[data-target="#zuschlagliste-modal"]').click(function () {
             $('#zuschlaglisten').html('');
             $('#zuschlag-new input[name="kVersandart"').val($(this).data('versandart'));

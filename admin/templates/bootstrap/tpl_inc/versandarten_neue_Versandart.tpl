@@ -581,7 +581,7 @@
                         {$continent->countriesCount} Länder
                     </div>
                     <div class="col-md-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
-                        0 ausgewählt
+                        {$continent->countriesSelectedCount} ausgewählt
                     </div>
                     <div class="col-md-2 select-all-continent" data-continent="continent-{$continentKey}">
                         Alle auswählen

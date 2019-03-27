@@ -33,16 +33,17 @@
         <input type="hidden" name="kVersandzuschlag" value="{$zuschlagliste->getID()}">
         {__('plz')} <input type="text" name="cPLZ" class="form-control zipcode" /> {__('orPlzRange')}
         <div class="input-group">
-            <input type="text" name="cPLZAb" class="form-control zipcode" />
+            <input type="number" name="cPLZAb" class="form-control zipcode" />
             <span class="input-group-addon">&ndash;</span>
-            <input type="text" name="cPLZBis" class="form-control zipcode" />
+            <input type="number" name="cPLZBis" class="form-control zipcode" />
         </div>
         <button type="submit" class="btn btn-sm">PLZ hinzufügen</button>
     </form>
 </div>
 
 <script>
-    $('.surcharge-remove[data-surcharge-id="{$zuschlagliste->getID()}"]').click(function () {
+    $('.surcharge-remove[data-surcharge-id="{$zuschlagliste->getID()}"]').click(function (e) {
+        e.preventDefault();
         ioCall('deleteZuschlagsListe', [$(this).data('surcharge-id')], function (data) {
             if (data.surchargeID > 0) {
                 $('.surcharge-box[data-surcharge-id="' + data.surchargeID + '"]').remove();
@@ -60,18 +61,18 @@
         ioCall('createZuschlagsListeZIP', [$('#add-zip-{$zuschlagliste->getID()}').serializeArray()], function (data) {
             $('#collapse-surcharge-zip-add-{$zuschlagliste->getID()} .alert-message').html(data.message);
             $('#zip-badge-{$zuschlagliste->getID()}').html(data.badges);
-            setBadgeClick();
+            setBadgeClick(data.surchargeID);
         });
     });
 
-    function setBadgeClick() {
-        $('.zip-badge[data-surcharge-id="{$zuschlagliste->getID()}"]').click(function(e){
+    function setBadgeClick(surchargeID) {
+        $('.zip-badge[data-surcharge-id="' + surchargeID + '"]').click(function(e){
             e.preventDefault();
             ioCall('deleteZuschlagsListeZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
                 $('.zip-badge[data-surcharge-id="' + data.surchargeID + '"][data-zip="' + data.ZIP + '"]').remove();
             });
         });
     }
-    setBadgeClick();
+    setBadgeClick({$zuschlagliste->getID()});
 </script>
 

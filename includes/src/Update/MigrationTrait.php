@@ -7,9 +7,9 @@
 namespace JTL\Update;
 
 use InvalidArgumentException;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
-use JTL\Shop;
 
 /**
  * Trait MigrationTrait
@@ -18,71 +18,76 @@ use JTL\Shop;
 trait MigrationTrait
 {
     /**
+     * @var DbInterface
+     */
+    protected $db;
+
+    /**
      * executes query and returns misc data
      *
-     * @param string   $query        - Statement to be executed
-     * @param int      $return       - what should be returned.
-     * @param int|bool $echo         print current stmt
-     * @param bool     $bExecuteHook should function \executeHook be executed
-     *                               1  - single fetched object
-     *                               2  - array of fetched objects
-     *                               3  - affected rows
-     *                               8  - fetched assoc array
-     *                               9  - array of fetched assoc arrays
-     *                               10 - result of querysingle
-     * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
+     * @param string $query - Statement to be executed
+     * @param int    $return - what should be returned.
+     * @return mixed
      * @throws InvalidArgumentException
      */
-    protected function __execute($query, $return, $echo = false, $bExecuteHook = false)
+    protected function __execute($query, $return)
     {
         if (\JTL_CHARSET === 'iso-8859-1') {
             $query = Text::utf8_convert_recursive($query, false);
         }
 
-        return Shop::Container()->getDB()->executeQuery($query, $return, $echo, $bExecuteHook);
+        return $this->getDB()->executeQuery($query, $return);
+    }
+
+    /**
+     * @return DbInterface
+     */
+    protected function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    protected function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
     }
 
     /**
      * @param string $query
-     * @param bool   $echo
-     * @param bool   $bExecuteHook
-     * @return array|object|int
+     * @return int
      */
-    public function execute($query, $echo = false, $bExecuteHook = false)
+    public function execute($query)
     {
-        return $this->__execute($query, ReturnType::AFFECTED_ROWS, $echo, $bExecuteHook);
+        return $this->__execute($query, ReturnType::AFFECTED_ROWS);
     }
 
     /**
      * @param string $query
-     * @param bool   $echo
-     * @param bool   $bExecuteHook
-     * @return array|object|int
+     * @return \stdClass|bool
      */
-    public function fetchOne($query, $echo = false, $bExecuteHook = false)
+    public function fetchOne($query)
     {
-        return $this->__execute($query, ReturnType::SINGLE_OBJECT, $echo, $bExecuteHook);
+        return $this->__execute($query, ReturnType::SINGLE_OBJECT);
     }
 
     /**
      * @param string $query
-     * @param bool   $echo
-     * @param bool   $bExecuteHook
-     * @return array|object|int
+     * @return array
      */
-    public function fetchAll($query, $echo = false, $bExecuteHook = false)
+    public function fetchAll($query)
     {
-        return $this->__execute($query, ReturnType::ARRAY_OF_OBJECTS, $echo, $bExecuteHook);
+        return $this->__execute($query, ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
      * @param string $query
-     * @param bool   $echo
-     * @param bool   $bExecuteHook
-     * @return array|object|int
+     * @return array
      */
-    public function fetchArray($query, $echo = false, $bExecuteHook = false)
+    public function fetchArray($query)
     {
-        return $this->__execute($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS, $echo, $bExecuteHook);
+        return $this->__execute($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
     }
 }

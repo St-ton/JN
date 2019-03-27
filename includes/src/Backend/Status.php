@@ -183,7 +183,7 @@ class Status
      */
     protected function hasPendingUpdates(): bool
     {
-        return (new Updater())->hasPendingUpdates();
+        return (new Updater(Shop::Container()->getDB()))->hasPendingUpdates();
     }
 
     /**

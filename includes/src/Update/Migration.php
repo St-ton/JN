@@ -8,6 +8,7 @@ namespace JTL\Update;
 
 use DateTime;
 use JsonSerializable;
+use JTL\DB\DbInterface;
 
 /**
  * Class Migration
@@ -31,11 +32,13 @@ class Migration implements JsonSerializable
     /**
      * Migration constructor.
      *
+     * @param DbInterface $db
      * @param null|string   $info
      * @param DateTime|null $executed
      */
-    public function __construct($info = null, DateTime $executed = null)
+    public function __construct(DbInterface $db, $info = null, DateTime $executed = null)
     {
+        $this->setDB($db);
         $this->info     = \ucfirst(\strtolower($info));
         $this->executed = $executed;
     }

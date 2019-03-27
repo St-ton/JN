@@ -19,8 +19,9 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
-$oUpdater    = new Updater();
+$db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
+$oUpdater    = new Updater($db);
 if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
     $csrfOK = true;
     // Check if shop version is new enough for csrf validation
@@ -30,7 +31,7 @@ if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
         $csrfOK = Form::validateToken();
     }
     $loginName = isset($_POST['benutzer'])
-        ? Text::filterXSS(Shop::Container()->getDB()->escape($_POST['benutzer']))
+        ? Text::filterXSS($db->escape($_POST['benutzer']))
         : '---';
     if ($csrfOK === true) {
         switch ($oAccount->login($_POST['benutzer'], $_POST['passwort'])) {

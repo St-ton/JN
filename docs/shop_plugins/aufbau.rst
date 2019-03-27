@@ -118,10 +118,10 @@ Analog verhält es sich bei einem Update. Hat man die Version 1.07 von einem Plu
 SQL/Migrationen (ab Version 5.X)
 --------------------------------
 
-Ab Shop 5.0.0 wird der Unterordner ``sql`` nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
+Ab Shop 5.0.0 wird der Unterordner *sq*` nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
 Stattdessen können Plugins - wie der Shop selbst - Migrationen nutzen.
 
-Diese müssen nicht via XML definiert werden, sondern im Unterodner ``Migrations`` des Plugin-Verzeichnisses liegen.
+Diese müssen nicht via XML definiert werden, sondern im Unterodner *Migrations* des Plugin-Verzeichnisses liegen.
 Das Namensschema der Datei- und somit auch Klassennamen lautet ``Migration<YYYYMMDDHHmi>.php``.
 
 Alle Plugin-Migrationen müssen das Interface ``JTL\Update\IMigration`` implementieren und im Namespace ``Plugin\<PLUGIN-ID>\Migrations`` liegen.
@@ -155,7 +155,7 @@ Ein Beispiel könnte wie folgt lauten:
 	    }
 	}
 
-Bei der Installation des Plugins werden automatisch die up()-Methoden aller Migrationen ausgeführt, bei der Deinstallation entsprechend alle down()-Methoden.
+Bei der Installation des Plugins werden automatisch die up()-Methoden aller Migrationen ausgeführt, bei der Deinstallation entsprechend alle down()-Methoden. Hier entfällt auch die Beschränkung auf die Erstellung von Tabellen mit dem Präfix ``xplugin_<PLUGIN-ID>``.
 
 Adminmenü Verzeichnisstruktur
 -----------------------------

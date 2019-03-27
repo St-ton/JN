@@ -18,6 +18,7 @@ Als weiteren Parameter akzeptiert die Funktion ein stdClass-Objekt, das im Smart
 Befindet sich in diesem Objekt eine Eigenschaft mit dem Namen *tkunde*, so wird versucht, die Mail an die im Kundenkonto hinterlegte Email-Adresse zu versenden.
 
 .. code-block:: php
+
     $data = new stdClass();
     $data->tkunde = new Kunde(1);
     $data->test = 123;
@@ -33,6 +34,7 @@ Darüber hinaus ermöglicht die neue Klasse ``JTL\Mail\Mail`` eine flexiblere Ko
 Um ein Plugin-Template analog dem o.g. Beispiel zu versenden, könnte der entsprechende Code so aussehen:
 
 .. code-block:: php
+
     $data = new stdClass();
     $data->tkunde = new \JTL\Customer\Kunde(1);
     $data->test = 123;
@@ -46,6 +48,7 @@ Um ein Plugin-Template analog dem o.g. Beispiel zu versenden, könnte der entspr
 Alternativ lassen sich Email aber auch ohne die Vorlage versenden.
 
 .. code-block:: php
+
 	$mailer = JTL\Shop::Container()->get(\JTL\Mail\Mailer::class);
 	$mail = new JTL\Mail\Mail\Mail();
 	$mail->setToName('Test');

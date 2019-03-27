@@ -12,6 +12,7 @@ Plugins
     hinweise
     container
     cache
+    mailing
     hook_list
     fehlercodes
     short_checkout

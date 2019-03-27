@@ -19,6 +19,9 @@
 :doc:`/shop_plugins/cache`
   Der Umgang mit dem Objektcache im JTL-Shop.
 
+:doc:`/shop_plugins/mailing`
+  Versenden von Emails.
+
 :doc:`/shop_plugins/hook_list`
   Die einzelnen Hooks des JTL-Shops.
 

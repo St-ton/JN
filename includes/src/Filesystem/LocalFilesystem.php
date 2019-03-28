@@ -6,7 +6,9 @@
 
 namespace JTL\Filesystem;
 
+use Exception;
 use Generator;
+use JTL\Path;
 use SplFileInfo;
 use FilesystemIterator;
 use RecursiveIteratorIterator;
@@ -249,7 +251,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function listContents($directory = '', $recursive = false) : Generator
+    public function listContents($directory = '', $recursive = false, $excludeDirs = []) : Generator
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -258,7 +260,7 @@ class LocalFilesystem extends AbstractFilesystem
         }
 
         $iterator = $recursive
-            ? $this->getRecursiveDirectoryIterator($location)
+            ? $this->getRecursiveDirectoryIterator($location, RecursiveIteratorIterator::SELF_FIRST, $excludeDirs)
             : $this->getDirectoryIterator($location);
 
         foreach ($iterator as $file) {
@@ -321,14 +323,25 @@ class LocalFilesystem extends AbstractFilesystem
 
     /**
      * @param string $path
-     * @param int    $mode
+     * @param int $mode
+     * @param array $excludeDirs
      *
      * @return RecursiveIteratorIterator
      */
-    protected function getRecursiveDirectoryIterator($path, $mode = RecursiveIteratorIterator::SELF_FIRST)
-    {
-        $iterator = new RecursiveIteratorIterator(
+    protected function getRecursiveDirectoryIterator(
+        $path,
+        $mode = RecursiveIteratorIterator::SELF_FIRST,
+        array $excludeDirs = []
+    ) {
+        /*$iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+            $mode
+        );*/
+        $iterator = new RecursiveIteratorIterator(
+            new DirectoryFilter(
+                new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+                $excludeDirs
+            ),
             $mode
         );
 
@@ -343,5 +356,39 @@ class LocalFilesystem extends AbstractFilesystem
     protected function getDirectoryIterator($path)
     {
         return new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
+    }
+
+    /**
+     * @param string $fileName
+     * @param array $excludeDirs
+     * @param callable|null $callback
+     * @return bool
+     * @throws Exception
+     */
+    public function zip(string $fileName, array $excludeDirs = [], callable $callback = null): bool
+    {
+        $files      = $this->listContents(PFAD_ROOT, true, $excludeDirs);
+        $zipArchive = new \ZipArchive();
+        $count      = count(iterator_to_array($this->listContents(PFAD_ROOT, true)));
+        $index      = 0;
+
+        if (($code = $zipArchive->open($fileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
+            throw new Exception('Archive file could not be created.', $code);
+        }
+
+        foreach ($files as $file) {
+            if (!$file->isDir()) {
+                $zipArchive->addFile(PFAD_ROOT.$file->getPath(), $file->getPath());
+
+                if (is_callable($callback)) {
+                    $callback($count, $index);
+                    ++$index;
+                }
+            }
+        }
+
+        $zipArchive->close();
+
+        return true;
     }
 }

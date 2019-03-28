@@ -7,7 +7,8 @@
 namespace JTL\Console\Command\Backup;
 
 use JTL\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,10 +20,9 @@ class FilesCommand extends Command
         $this
             ->setName('backup:files')
             ->setDescription('Backup shop content')
-            ->addArgument('file', InputArgument::REQUIRED)
             ->addOption(
                 'exclude-dir',
-                null,
+                'x',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Exclude directory'
             );
@@ -30,17 +30,22 @@ class FilesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $io = $this->getIO();
-        $shop = $this->getController('shop');
-
-        $archivePath = $input->getArgument('file');
-        $excludeDirectories = $this->getOption('exclude-dir');
+        $io                 = $this->getIO();
+        $archivePath        = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
+        $excludeDirectories = array_merge(['export',
+            'templates_c',
+            'admin/templates_c',
+            'dbeS/tmp',
+            'dbeS/logs',
+            'jtllogs',
+            'install/logs'], $this->getOption('exclude-dir'));
+        $localFilesystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
 
         $io
             ->progress(
-                function ($mycb) use ($shop, $archivePath, $excludeDirectories) {
-                    $shop->createBackup($archivePath, (array) $excludeDirectories, function ($percent, $count, $index) use (&$mycb) {
-                        $mycb($percent, $count, $index);
+                function ($mycb) use ($localFilesystem, $archivePath, $excludeDirectories) {
+                    $localFilesystem->zip($archivePath, $excludeDirectories, function ($count, $index) use (&$mycb) {
+                        $mycb($count, $index);
                     });
                 },
                 'Creating archive [%bar%] %percent:3s%%'

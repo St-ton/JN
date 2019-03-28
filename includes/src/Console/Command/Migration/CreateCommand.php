@@ -7,7 +7,7 @@
 namespace JTL\Console\Command\Migration;
 
 use JTL\Console\Command\Command;
-use JTL\Update\MigrationManager;
+use JTL\Update\MigrationHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -39,7 +39,7 @@ class CreateCommand extends Command
             $description = $this->getIO()->ask('Short migration description');
             $input->setArgument('description', $description);
         }
-        if (strlen($author) < 5) {
+        if (strlen($author) < 2) {
             $author = $this->getIO()->ask('Migration author');
             $input->setArgument('author', $author);
         }
@@ -54,10 +54,9 @@ class CreateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $description      = trim($input->getArgument('description'));
-        $author           = trim($input->getArgument('author'));
-        $migrationManager = new MigrationManager();
-        $migrationPath    = $migrationManager->create($description, $author);
+        $description   = trim($input->getArgument('description'));
+        $author        = trim($input->getArgument('author'));
+        $migrationPath = MigrationHelper::create($description, $author);
 
         $output->writeln("<info>Created Migration:</info> <comment>'".$migrationPath."'</comment>");
     }

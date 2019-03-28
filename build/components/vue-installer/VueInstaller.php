@@ -91,11 +91,7 @@ class VueInstaller
                 break;
         }
 
-        if (!$this->cli) {
-            $this->output();
-        } else {
-            return $this->payload;
-        }
+        return $this->output();
     }
 
     /**
@@ -135,10 +131,15 @@ class VueInstaller
     /**
      *
      */
-    private function output(): void
+    private function output(): ?array
     {
-        echo json_encode($this->payload);
-        exit(0);
+
+        if (!$this->cli) {
+            echo json_encode($this->payload);
+            exit(0);
+        } else {
+            return $this->payload;
+        }
     }
 
     /**
@@ -206,7 +207,15 @@ class VueInstaller
             $this->payload['secretKey'] = $blowfishKey;
             $this->db->query('SET FOREIGN_KEY_CHECKS=1', ReturnType::DEFAULT);
         }
-        $this->sendResponse();
+
+        if (!$this->cli) {
+            $this->sendResponse();
+        } else {
+            $this->payload['error'] = !$this->responseStatus;
+            $this->payload['msg']   = $this->responseStatus === true && empty($this->responseMessage)
+                ? 'Erfolgreich ausgeführt'
+                : $this->responseMessage;
+        }
 
         return $this;
     }
@@ -255,13 +264,13 @@ define('DB_PASS','" . $credentials['pass'] . "');
 define('BLOWFISH_KEY', '" . $blowfishKey . "');
 
 //enables printing of warnings/infos/errors for the shop frontend
-define('SHOP_LOG_LEVEL', 0);
+define('SHOP_LOG_LEVEL', E_ALL);
 //enables printing of warnings/infos/errors for the dbeS sync
-define('SYNC_LOG_LEVEL', 0);
+define('SYNC_LOG_LEVEL', E_ALL ^ E_NOTICE ^ E_DEPRECATED ^ E_WARNING);
 //enables printing of warnings/infos/errors for the admin backend
-define('ADMIN_LOG_LEVEL', 0);
+define('ADMIN_LOG_LEVEL', E_ALL);
 //enables printing of warnings/infos/errors for the smarty templates
-define('SMARTY_LOG_LEVEL', 0);
+define('SMARTY_LOG_LEVEL', E_ALL);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
             $file = fopen(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');

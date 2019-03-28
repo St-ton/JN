@@ -7,12 +7,14 @@
 namespace JTL\Console;
 
 use JTL\Console\Command\Backup\DatabaseCommand;
+use JTL\Console\Command\Backup\FilesCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
 use JTL\Console\Command\InstallCommand;
 use JTL\Console\Command\Migration\CreateCommand;
 use JTL\Console\Command\Migration\MigrateCommand;
 use JTL\Console\Command\Migration\StatusCommand;
+use JTL\Console\Command\Plugin\CreateMigrationCommand;
 use JTL\Shop;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -45,7 +47,7 @@ class Application extends BaseApplication
 
     public function __construct()
     {
-        $this->devMode     = APPLICATION_BUILD_SHA === '#DEV#' ?? false;
+        $this->devMode     = !empty(APPLICATION_BUILD_SHA) && APPLICATION_BUILD_SHA === '#DEV#' ?? false;
         $this->isInstalled = defined('DB_HOST') && Shop::Container()->getDB()->isConnected();
 
         parent::__construct('JTL-Shop', APPLICATION_VERSION.' - '.($this->devMode ? 'develop' : 'production'));
@@ -81,13 +83,16 @@ class Application extends BaseApplication
             $cmds[] = new DatabaseCommand();
             $cmds[] = new DeleteTemplateCacheCommand();
             $cmds[] = new DeleteFileCacheCommand();
-            $cmds[] = new InstallCommand();
+            $cmds[] = new FilesCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();
             }
+            if (PLUGIN_DEV_MODE) {
+                $cmds[] = new CreateMigrationCommand();
+            }
         } else {
-            // Install Command only
+            $cmds[] = new InstallCommand();
         }
 
         return $cmds;

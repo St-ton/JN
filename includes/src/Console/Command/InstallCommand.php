@@ -9,6 +9,7 @@ namespace JTL\Console\Command;
 use Exception;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
+use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -85,7 +86,7 @@ class InstallCommand extends Command
 
     protected function configure()
     {
-        $this->steps       = 5;
+        $this->steps       = 6;
         $this->currentStep = 1;
         $this->currentUser = trim(getenv('USER'));
 
@@ -103,11 +104,18 @@ class InstallCommand extends Command
             ->addOption('sync-user', null, InputOption::VALUE_REQUIRED, 'Wawi-Sync user', 'sync')
             ->addOption('sync-password', null, InputOption::VALUE_REQUIRED, 'Wawi-Sync password', 'random')
             ->addOption(
-                'target-owner',
+                'file-owner',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Set file mod',
-                sprintf('%s:%s', $this->currentUser, $this->currentUser)
+                'Set file owner, needs root permissions',
+                sprintf('%s', $this->currentUser)
+            )
+            ->addOption(
+                'file-group',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Set file group, needs root permissions',
+                sprintf('%s', $this->currentUser)
             );
     }
 
@@ -139,16 +147,24 @@ class InstallCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int|null
      * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io              = $this->getIO();
         $uri             = $this->getOption('shop-url');
-        $host            = $this->getOption('database-host');
-        $socket          = $this->getOption('database-socket');
-        $fileOwner       = $this->getOption('target-owner');
+        $fileOwner       = $this->getOption('file-owner');
+        $fileGroup       = $this->getOption('file-group');
+        $dbHost          = $this->getOption('database-host');
+        $dbSocket        = $this->getOption('database-socket');
+        $dbName          = $this->getOption('database-name');
+        $dbUser          = $this->getOption('database-user');
+        $dbPass          = $this->getOption('database-password');
+        $adminUser       = $this->getOption('admin-user');
+        $adminPass       = $this->getOption('admin-password');
+        $syncUser        = $this->getOption('sync-user');
+        $syncPass        = $this->getOption('sync-password');
         $localFilesystem = new Filesystem((new LocalFilesystem(['root' => PFAD_ROOT])));
 
         if ($uri !== null) {
@@ -160,14 +176,53 @@ class InstallCommand extends Command
                 throw new Exception("Invalid Shop url '{$uri}'");
             }
         }
-        define('URL_SHOP', $uri);
+        $parsedUri = parse_url($uri);
+        $uri       = $parsedUri['scheme'].'://'.$parsedUri['host']
+            .(empty($parsedUri['path']) ? '/' : $parsedUri['path']);
+        defined('URL_SHOP') || define('URL_SHOP', $uri);
 
-        if (empty($host) && empty($socket)) {
-            throw new Exception("Invalid database host '".$host."' or socket '".$socket."'");
+        if (empty($dbHost) && empty($dbSocket)) {
+            throw new Exception("Invalid database host '".$dbHost."' or socket '".$dbSocket."'");
         }
 
-        /*$io->setStep($this->currentStep++, $this->steps, 'Setting permissions');
+        $io->setStep($this->currentStep++, $this->steps, 'Check if shop is installed');
+        $installCheck = (new \VueInstaller('installedcheck', [], true))->run();
+
+        if ($installCheck['installed']) {
+            $io->warning('Shop is already installed');
+            return 1;
+        }
+        $io->success('Shop can be installed');
+
+        $io->setStep($this->currentStep++, $this->steps, 'System check');
+        $systemCheckResults = (new \VueInstaller('systemcheck', [], true))->run();
+        $systemCheckFailed  = false;
+
+        foreach ($systemCheckResults['testresults'] as $resultGroup) {
+            foreach ($resultGroup as $test) {
+                $result = (int)$test->getResult();
+                if (isset($result) && $result !== 0) {
+                    $systemCheckFailed = true;
+                }
+            }
+        }
+
+        if ($systemCheckFailed) {
+            if (isset($systemCheckResults['testresults'])) {
+                $this->printSystemCheckTable($systemCheckResults['testresults']['recommendations']);
+            }
+            $io->error('Failed');
+            return 1;
+        }
+        $io->success('All requirements are met');
+
+        $io->setStep($this->currentStep++, $this->steps, 'Setting permissions');
         if ($this->currentUser !== $fileOwner) {
+            $paths = $localFilesystem->listContents(PFAD_ROOT, true);
+            foreach ($paths as $path) {
+                $localFilesystem->chown($path->getPath(), $fileOwner);
+                $localFilesystem->chgrp($path->getPath(), $fileGroup);
+            }
             $localFilesystem->chown(PFAD_ROOT, $fileOwner);
         }
 
@@ -175,33 +230,115 @@ class InstallCommand extends Command
             $localFilesystem->chmod($path, 0777);
         }
 
-        $io->overwrite('  Permissions updated');
-        $io->writeln('');*/
+        $io->success('Permissions updated');
 
-        $dircheck = (new \VueInstaller('dircheck', [], true))->run();
+        $dirCheck = (new \VueInstaller('dircheck', [], true))->run();
 
-        if (in_array(false, $dircheck['testresults'])) {
-            $this->printMigrationTable($dircheck['testresults'], $localFilesystem);
+        if (in_array(false, $dirCheck['testresults'])) {
+            $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
             $io->error('File permissions are incorrect.');
             return 1;
         }
+
+        $io->setStep($this->currentStep++, $this->steps, 'DB credential check');
+        $dbCredentials      = [
+            'host'   => $dbHost,
+            'socket' => $dbSocket,
+            'name'   => $dbName,
+            'user'   => $dbUser,
+            'pass'   => $dbPass
+        ];
+        $dbCredentialsCheck = (new \VueInstaller('credentialscheck', $dbCredentials, true))->run();
+
+        if ($dbCredentialsCheck['error']) {
+            $io->error($dbCredentialsCheck['msg']);
+            return 1;
+        } else {
+            $io->success('Credentials matched');
+        }
+
+        $io->setStep($this->currentStep++, $this->steps, 'JTL-Shop install');
+
+        $posts = [
+            'db'    => $dbCredentials,
+            'admin' => ['name' => $adminUser, 'pass' => $adminPass],
+            'wawi'  => ['name' => $syncUser, 'pass' => $syncPass],
+        ];
+
+        $installed = (new \VueInstaller('doinstall', $posts, true))->run();
+
+        if ($installed['error']) {
+            $io->error(implode(' | ', $installed['msg']));
+        } else {
+            $io->success('Successful installed');
+        }
+
+        $io->writeln('  <info>Admin-Login</info>');
+        $io->writeln("    Username <comment>".$adminUser."</comment>");
+        $io->writeln("    Password <comment>".$adminPass."</comment>");
+        $io->writeln('');
+        $io->writeln('  <info>Sync-Login</info>');
+        $io->writeln("    Username <comment>".$syncUser."</comment>");
+        $io->writeln("    Password <comment>".$syncPass."</comment>");
+
+        $io->setStep($this->currentStep++, $this->steps, 'Remove install dir and set new permissions for config file');
+
+        if ($localFilesystem->exists('/install')) {
+            $localFilesystem->deleteDirectory('/install');
+        }
+
+        if ($localFilesystem->exists('/includes/config.JTL-Shop.ini.php')) {
+            $localFilesystem->chmod('/includes/config.JTL-Shop.ini.php', 0644);
+            $localFilesystem->chown('/includes/config.JTL-Shop.ini.php', $fileOwner);
+            $localFilesystem->chgrp('/includes/config.JTL-Shop.ini.php', $fileGroup);
+        }
+
+        $io->success('Installation completed.');
+
+        return 0;
     }
 
     /**
-     * @param $list
+     * @param array $recommendations
+     */
+    protected function printSystemCheckTable(array $recommendations)
+    {
+        $rows    = [];
+        $headers = ['Name', 'Requirement', 'Actual Value'];
+
+        foreach ($recommendations as $recommendation) {
+            $rows[] = [
+                $recommendation->getName(),
+                $recommendation->getRequiredState(),
+                (int)$recommendation->getResult() === 0
+                    ? '<info> ✔ </info>'
+                    : '<comment> '.$recommendation->getCurrentState().' </comment>'
+            ];
+        }
+
+        $tableStyle = new TableStyle();
+        $tableStyle->setPadType(STR_PAD_BOTH);
+        $this->getIO()->writeln('');
+        $this->getIO()->table($headers, $rows, ['style' => $tableStyle]);
+    }
+
+    /**
+     * @param array $list
      * @param Filesystem $localFilesystem
      */
-    protected function printMigrationTable($list, Filesystem $localFilesystem)
+    protected function printDirCheckTable(array $list, Filesystem $localFilesystem)
     {
         $rows    = [];
         $headers = ['File/Dir', 'Correct permission', 'Permission'];
 
         foreach ($list as $path => $val) {
-            dump($localFilesystem->getMeta($path)->getPerms());
-            $rows[] = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', ''];
+            $permission = substr(sprintf('%o', $localFilesystem->getMeta($path)->getPerms()), -4);
+            $rows[]     = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', $permission];
         }
 
+        $tableStyle = new TableStyle();
+        $tableStyle->setPadType(STR_PAD_BOTH);
         $this->getIO()->writeln('');
-        $this->getIO()->table($headers, $rows);
+        $this->getIO()->table($headers, $rows, ['style' => $tableStyle]);
     }
 }

@@ -149,10 +149,9 @@ class ConsoleIO extends OutputStyle
         $lastRedraw  = microtime(true);
 
         $callback = function (
-            $percent,
             $total,
             $current,
-            $message = null
+            $message = ''
         ) use (
             &$progress,
             &$lastRedraw,

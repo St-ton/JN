@@ -11739,7 +11739,6 @@ input[type=file].file-loading, .file-loading input[type=file] {
   border-width: 2px;
   position: relative;
   overflow: hidden;
-  z-index: 1000;
 }
 .btn-secondary:hover {
   color: #212529;
@@ -11961,6 +11960,10 @@ html {
 .alert .alert-heading {
   margin: -0.75rem -1.25rem;
   padding: 0.75rem 1.25rem;
+}
+
+.fs-large {
+  font-size: large;
 }
 
 .alert-info,
@@ -12258,10 +12261,10 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
   #evo-main-nav-wrapper #nav-comparelist-collapse,
 #evo-main-nav-wrapper #nav-wishlist-collapse,
 #evo-main-nav-wrapper #nav-cart-collapse,
-#evo-main-nav-wrapper #nav-account-collapse {
+#evo-main-nav-wrapper #nav-account-collapse,
+#evo-main-nav-wrapper #nav-search-collapse {
     max-height: 400px;
     z-index: 1020;
-    overflow-y: auto;
     overflow-x: hidden;
     position: absolute;
     top: 50px;
@@ -12475,16 +12478,35 @@ ul.partlist-items {
   display: block;
 }
 .swatches.imgswatches .variation {
-  background: #fff !important;
+  background: #fff;
   color: #525252 !important;
-  min-width: 45px;
+  border: 1px solid #707070;
+  box-sizing: content-box;
+  border-radius: 2px;
+  opacity: 1;
+  min-width: 50px;
+  max-width: 150px;
+  padding: 0 8px;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .swatches.imgswatches .variation img {
   max-width: 45px;
   max-height: 45px;
 }
 .swatches.imgswatches .variation:hover, .swatches.imgswatches .variation.active {
-  border: 1px solid #525252;
+  vertical-align: top;
+  background: #f5f7fa;
+  border: 1px solid #fff;
+  opacity: 1;
+  overflow: visible;
+  white-space: normal;
+  z-index: 1;
+  height: auto;
 }
 .swatches.imgswatches .variation.active img {
   filter: grayscale(0);
@@ -12902,8 +12924,13 @@ ul.partlist-items {
     background: #fff;
     opacity: 1;
   }
-  .gallery .product-cell.hover-enabled:hover .image-wrapper, .gallery .product-cell.hover-enabled:hover .image-box, .gallery .product-cell.hover-enabled:hover .product-actions, .gallery .product-cell.hover-enabled:hover .caption, .gallery .product-cell.hover-enabled:hover .form-basket, .gallery .product-cell.hover-enabled.active .image-wrapper, .gallery .product-cell.hover-enabled.active .image-box, .gallery .product-cell.hover-enabled.active .product-actions, .gallery .product-cell.hover-enabled.active .caption, .gallery .product-cell.hover-enabled.active .form-basket {
-    z-index: 1001;
+  .gallery .product-cell.hover-enabled:hover .image-wrapper, .gallery .product-cell.hover-enabled:hover .image-box, .gallery .product-cell.hover-enabled:hover .product-actions, .gallery .product-cell.hover-enabled:hover .caption,
+.gallery .product-cell.hover-enabled:hover .form-basket, .gallery .product-cell.hover-enabled:hover .price_wrapper, .gallery .product-cell.hover-enabled:hover .product-characteristics, .gallery .product-cell.hover-enabled.active .image-wrapper, .gallery .product-cell.hover-enabled.active .image-box, .gallery .product-cell.hover-enabled.active .product-actions, .gallery .product-cell.hover-enabled.active .caption,
+.gallery .product-cell.hover-enabled.active .form-basket, .gallery .product-cell.hover-enabled.active .price_wrapper, .gallery .product-cell.hover-enabled.active .product-characteristics {
+    z-index: 1002;
+  }
+  .gallery .product-cell.hover-enabled:hover .wishlist-pos-delete, .gallery .product-cell.hover-enabled.active .wishlist-pos-delete {
+    z-index: 1004;
   }
   .gallery .product-cell.hover-enabled:hover .overlay-img, .gallery .product-cell.hover-enabled.active .overlay-img {
     z-index: 1003;
@@ -12915,12 +12942,16 @@ ul.partlist-items {
 .gallery .product-cell.hover-enabled:hover .image-box,
 .gallery .product-cell.hover-enabled:hover .caption,
 .gallery .product-cell.hover-enabled:hover .form-basket,
-.gallery .product-cell.hover-enabled:hover .form-basket .delivery-status, .gallery .product-cell.hover-enabled.active .quantity-wrapper,
+.gallery .product-cell.hover-enabled:hover .form-basket .delivery-status,
+.gallery .product-cell.hover-enabled:hover .wishlist-pos-delete,
+.gallery .product-cell.hover-enabled:hover .product-characteristics, .gallery .product-cell.hover-enabled.active .quantity-wrapper,
 .gallery .product-cell.hover-enabled.active .price_wrapper,
 .gallery .product-cell.hover-enabled.active .image-box,
 .gallery .product-cell.hover-enabled.active .caption,
 .gallery .product-cell.hover-enabled.active .form-basket,
-.gallery .product-cell.hover-enabled.active .form-basket .delivery-status {
+.gallery .product-cell.hover-enabled.active .form-basket .delivery-status,
+.gallery .product-cell.hover-enabled.active .wishlist-pos-delete,
+.gallery .product-cell.hover-enabled.active .product-characteristics {
     position: relative;
   }
   .gallery .product-cell.hover-enabled:hover .expandable, .gallery .product-cell.hover-enabled.active .expandable {
@@ -14278,6 +14309,10 @@ input.form-control[name=wishlist-url] {
 
 .no-chevron :after {
   content: "";
+}
+
+.clearer {
+  clear: both;
 }
 
 .comparelist {

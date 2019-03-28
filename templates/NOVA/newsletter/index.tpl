@@ -21,12 +21,6 @@
 
                 {form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate"}
                     <fieldset>
-                        {formgroup label="{lang key='newslettertitle' section='newsletter'}" label-for="newslettertitle"}
-                            {select id="newslettertitle" name="cAnrede"}
-                                <option value="w"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'w')} selected="selected"{/if}>{lang key='salutationW'}</option>
-                                <option value="m"{if (isset($oKunde->cAnrede) && $oKunde->cAnrede === 'm')} selected="selected"{/if}>{lang key='salutationM'}</option>
-                            {/select}
-                        {/formgroup}
                         {if !empty($oPlausi->cPost_arr.cVorname)}
                             {assign var=inputVal_firstname value=$oPlausi->cPost_arr.cVorname}
                         {elseif !empty($oKunde->cVorname)}

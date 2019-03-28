@@ -216,17 +216,6 @@
                     <div class="panel-body">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cAnrede">{__('newslettersubscriberanrede')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" name="cAnrede" id="cAnrede">
-                                    <option value="m">{__('mister')}</option>
-                                    <option value="w">{__('madame')}</option>
-                                </select>
-                            </span>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
                                 <label for="cVorname">{__('firstName')}</label>
                             </span>
                             <input class="form-control" type="text" name="cVorname" id="cVorname" value="{if isset($oNewsletter->cVorname)}{$oNewsletter->cVorname}{/if}" />

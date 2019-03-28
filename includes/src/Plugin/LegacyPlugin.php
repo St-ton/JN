@@ -11,6 +11,7 @@ use JTL\DB\DbInterface;
 use JTL\Mapper\PluginState;
 use JTL\Shop;
 use JTL\XMLParser;
+use JTLShop\SemVer\Version;
 
 /**
  * Class LegacyPlugin
@@ -198,19 +199,19 @@ class LegacyPlugin extends PluginBC
     }
 
     /**
-     * @return int
+     * @return Version
      */
-    public function getCurrentVersion(): int
+    public function getCurrentVersion(): Version
     {
         $path = \PFAD_ROOT . \PFAD_PLUGIN . $this->getPaths()->getBaseDir();
         if (!\is_dir($path) || !\file_exists($path . '/' . \PLUGIN_INFO_FILE)) {
-            return 0;
+            return Version::parse('0.0.0');
         }
         $parser  = new XMLParser();
         $xml     = $parser->parse($path . '/' . \PLUGIN_INFO_FILE);
         $version = \count($xml['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
 
-        return (int)$xml['jtlshop3plugin'][0]['Install'][0]['Version'][$version . ' attr']['nr'];
+        return Version::parse($xml['jtlshop3plugin'][0]['Install'][0]['Version'][$version . ' attr']['nr']);
     }
 
     /**

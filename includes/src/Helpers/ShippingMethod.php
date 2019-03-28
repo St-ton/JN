@@ -17,6 +17,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Checkout\Versandart;
 use stdClass;
+use JTL\Country\Country;
 
 /**
  * Class ShippingMethod
@@ -1309,25 +1310,12 @@ class ShippingMethod
             \mb_strlen($oVersandart->cLaender) . '_' .
             Shop::getLanguageID();
         if (($vkfls = Shop::Container()->getCache()->get($cacheID)) === false) {
-            // remove empty strings
-            $countryCodes = \array_filter(\explode(' ', $oVersandart->cLaender));
-            // only select the needed row
-            $select = $_SESSION['cISOSprache'] === 'ger'
-                ? 'cDeutsch'
-                : 'cEnglisch';
-            // generate IN sql statement with stringified country isos
-            $sql       = ' cISO IN (' . \implode(', ', \array_map(function ($iso) {
-                return "'" . $iso . "'";
-            }, $countryCodes)) . ')';
-            $countries = Shop::Container()->getDB()->query(
-                'SELECT ' . $select . ' AS name
-                FROM tland
-                WHERE ' . $sql,
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $countries = Shop::Container()->getCountryService()->getFilteredCountryList(
+                \array_filter(\explode(' ', $oVersandart->cLaender))
+            )->toArray();
             // re-concatinate isos with "," for the final output
-            $resultString = \implode(', ', \array_map(function ($e) {
-                return $e->name;
+            $resultString = \implode(', ', \array_map(function (Country $e) {
+                return $e->getName();
             }, $countries));
 
             $vkfls = \sprintf(Shop::Lang()->get('noShippingCostsAtExtended', 'basket'), $resultString);
@@ -1413,31 +1401,28 @@ class ShippingMethod
         if (empty($customerGroupID)) {
             $customerGroupID = Kundengruppe::getDefaultGroupID();
         }
-        $conf    = Shop::getSettings([\CONF_KUNDEN]);
-        $colName = Sprache::getInstance()->gibISO() === 'ger' ? 'cDeutsch' : 'cEnglisch';
+        $conf          = Shop::getSettings([\CONF_KUNDEN]);
+        $countryHelper = Shop::Container()->getCountryService();
 
         if (!$force && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $ignoreConf)) {
-            $countries = Shop::Container()->getDB()->query(
-                'SELECT DISTINCT tland.cISO, ' . $colName . " AS cName
+            $countryISOFilter = Shop::Container()->getDB()->query(
+                "SELECT DISTINCT tland.cISO
                     FROM tland
                     INNER JOIN tversandart ON FIND_IN_SET(tland.cISO, REPLACE(tversandart.cLaender, ' ', ','))
                     WHERE (tversandart.cKundengruppen = '-1'
                         OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0)
                         " . (\count($filterISO) > 0
                     ? "AND tland.cISO IN ('" . \implode("','", $filterISO) . "')"
-                    : '') .
-                    ' ORDER BY CONVERT(' . $colName . ' USING utf8) COLLATE utf8_german2_ci',
+                    : ''),
                 ReturnType::ARRAY_OF_OBJECTS
             );
+            $countries        = $countryHelper->getFilteredCountryList(
+                \Functional\map($countryISOFilter, function ($country) {
+                    return $country->cISO;
+                })
+            )->toArray();
         } else {
-            $countries = Shop::Container()->getDB()->query(
-                'SELECT cISO, ' . $colName . ' AS cName
-                    FROM tland ' . (\count($filterISO) > 0
-                        ? "WHERE tland.cISO IN ('" . \implode("','", $filterISO) . "')"
-                        : '') .
-                ' ORDER BY CONVERT(' . $colName . ' USING utf8) COLLATE utf8_german2_ci',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $countries = $countryHelper->getFilteredCountryList($filterISO, true)->toArray();
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_GIBBELIEFERBARELAENDER, [
             'oLaender_arr' => &$countries

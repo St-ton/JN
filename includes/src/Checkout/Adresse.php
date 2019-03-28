@@ -190,10 +190,10 @@ class Adresse
     }
 
     /**
-     * @param string $anrede
+     * @param null|string $anrede
      * @return string
      */
-    public function mappeAnrede(string $anrede): string
+    public function mappeAnrede(?string $anrede): string
     {
         switch (\mb_convert_case($anrede, \MB_CASE_LOWER)) {
             case 'm':

@@ -16,7 +16,7 @@
                         <label for="country">{lang key='country' section='account data'}</label>
                         <select name="land" id="country" class="form-control">
                             {foreach $laender as $land}
-                                <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
+                                <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->getISO() && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->getISO())}selected{/if}>{$land->getName()}</option>
                             {/foreach}
                         </select>
                         &nbsp;

@@ -11,7 +11,6 @@
 {else}
     {if $Kunde->cFirma}{$Kunde->cFirma}<br />{/if}
     {if $Kunde->cZusatz}{$Kunde->cZusatz}<br />{/if}
-    {if $Kunde->cAnrede === 'w'}{lang key='salutationW'}{elseif $Kunde->cAnrede === 'm'}{lang key='salutationM'}{/if}
     {$Kunde->cTitel} {$Kunde->cVorname} {$Kunde->cNachname}<br />
     {$Kunde->cStrasse} {$Kunde->cHausnummer}<br />
     {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br />{/if}

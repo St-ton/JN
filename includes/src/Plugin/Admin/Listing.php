@@ -112,7 +112,9 @@ final class Listing
                 $pluginLoader->setPlugin(new LegacyPlugin());
                 $plugin = $pluginLoader->init($pluginID->kPlugin, true);
             }
-            $plugin->getMeta()->setUpdateAvailable($plugin->getMeta()->getVersion() < $plugin->getCurrentVersion());
+            $plugin->getMeta()->setUpdateAvailable(
+                $plugin->getCurrentVersion()->greaterThan($plugin->getMeta()->getSemVer())
+            );
             if ($plugin->getMeta()->isUpdateAvailable()) {
                 $code = $this->validator->validateByPluginID($pluginID->kPlugin, true);
                 if ($code !== InstallCode::OK) {

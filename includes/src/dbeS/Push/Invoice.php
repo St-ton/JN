@@ -16,7 +16,7 @@ use PaymentMethod;
 final class Invoice extends AbstractPush
 {
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {
@@ -28,15 +28,7 @@ final class Invoice extends AbstractPush
         if ($orderID <= 0 || $langID <= 0) {
             return $this->pushError('Wrong params (kBestellung: ' . $orderID . ', kSprache: ' . $langID . ').');
         }
-        $order = $this->db->query(
-            'SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
-            FROM tbestellung
-            LEFT JOIN tzahlungsart
-              ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
-            WHERE tbestellung.kBestellung = ' . $orderID . ' 
-            LIMIT 1',
-            ReturnType::SINGLE_OBJECT
-        );
+        $order = $this->getOrder($orderID);
         if (!$order) {
             return $this->pushError('Keine Bestellung mit kBestellung ' . $orderID . ' gefunden!');
         }
@@ -57,6 +49,24 @@ final class Invoice extends AbstractPush
         }
 
         return $this->pushError('Fehler beim Erstellen der Rechnung (kBestellung: ' . $order->kBestellung . ').');
+    }
+
+    /**
+     * @param int $id
+     * @return array|int|object
+     */
+    private function getOrder(int $id)
+    {
+        return $this->db->queryPrepared(
+            'SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
+            FROM tbestellung
+            LEFT JOIN tzahlungsart
+              ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
+            WHERE tbestellung.kBestellung = :oid 
+            LIMIT 1',
+            ['oid' => $id],
+            ReturnType::SINGLE_OBJECT
+        );
     }
 
     /**

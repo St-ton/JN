@@ -4,13 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
+use JTL\Alert\Alert;
 use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -222,7 +224,9 @@ function processImport($fmt, $data)
             $kunde->cHausnummer       = $tmp->cHausnummer;
             $obj                      = new stdClass();
             $obj->tkunde              = $kunde;
-            sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
+            $mailer                   = Shop::Container()->get(Mailer::class);
+            $mail                     = new Mail();
+            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
         }
 
         return __('importRecord') . $kunde->cVorname . ' ' . $kunde->cNachname;

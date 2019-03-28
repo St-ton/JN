@@ -674,18 +674,19 @@ Angenommen man möchte die folgende Option in die Sprachen Englisch und Deutsch 
 
 .. code-block:: xml
 
-	<Setting type="selectbox" initialValue="Y" sort="1" conf="Y">
+    <Setting type="selectbox" initialValue="Y" sort="1" conf="Y">
         <Name>Finden Sie das hier hilfreich?</Name>
         <Description>Stellt eine simple Ja/Nein-Frage</Description>
         <ValueName>myplugin_is_helpful</ValueName>
         <SelectboxOptions>
             <Option value="Y" sort="0">Ja</Option>
             <Option value="N" sort="1">Nein</Option>
-			<Option value="V" sort="2">Vielleicht</Option>
+            <Option value="V" sort="2">Vielleicht</Option>
         </SelectboxOptions>
     </Setting>
 
 So können die folgenden Strings übersetzt werden:
+
 * Finden Sie das hier hilfreich?
 * Stellt eine simple Ja/Nein-Frage
 * Ja

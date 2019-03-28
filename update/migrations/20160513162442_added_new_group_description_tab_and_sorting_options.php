@@ -10,18 +10,7 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20160513162442
  */
 class Migration_20160513162442 extends Migration implements IMigration
 {
@@ -29,7 +18,12 @@ class Migration_20160513162442 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`) VALUES (1650,5,'Beschreibungs-Tab','',NULL,NULL,NULL,1450,1,0,'N')");
+        $this->execute(
+            "INSERT INTO `teinstellungenconf` 
+              (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,
+               `cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
+               VALUES (1650,5,'Beschreibungs-Tab','',NULL,NULL,NULL,1450,1,0,'N')"
+        );
         $this->execute('UPDATE `teinstellungenconf` SET nSort=1470 WHERE kEinstellungenConf=191');
         $this->execute('UPDATE `teinstellungenconf` SET nSort=1480 WHERE kEinstellungenConf=496');
         $this->execute('UPDATE `teinstellungenconf` SET nSort=1460 WHERE kEinstellungenConf=482');

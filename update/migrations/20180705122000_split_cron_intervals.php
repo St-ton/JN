@@ -6,11 +6,10 @@
  * @created Thu, 05 Jun 2018 12:20:00 +0200
  */
 
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 
 /**
  * Class Migration_20180705122000
@@ -22,7 +21,7 @@ class Migration_20180705122000 extends Migration implements IMigration
 
     public function up()
     {
-        $statusMail = Shop::Container()->getDB()->query('SELECT * FROM tstatusemail', ReturnType::SINGLE_OBJECT);
+        $statusMail = $this->getDB()->query('SELECT * FROM tstatusemail', ReturnType::SINGLE_OBJECT);
         $updates    = [];
         if ($statusMail !== false) {
             foreach (Text::parseSSK($statusMail->cIntervall) as $interval) {
@@ -53,7 +52,7 @@ class Migration_20180705122000 extends Migration implements IMigration
             ADD COLUMN `id` INT NOT NULL AUTO_INCREMENT,
             ADD PRIMARY KEY (`id`)');
         foreach ($updates as $update) {
-            Shop::Container()->getDB()->insert('tstatusemail', $update);
+            $this->getDB()->insert('tstatusemail', $update);
         }
     }
 

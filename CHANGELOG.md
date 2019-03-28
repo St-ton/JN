@@ -1,10 +1,16 @@
 # JTL-Shop Changelog
 
-## [4.06.11]
+## [4.06.12]
+
+Dieses Update enthält Bugfixes und Sicherheitsupdates.
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl40612
+
+## [4.06.11] - 2018-11-30
 
 Dieses Update enthält einen Bugfix zur Unterstützung von MySQL-Server 5.5 und kleiner. 
 
-## [4.06.10]
+## [4.06.10] - 2018-11-30
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.
 

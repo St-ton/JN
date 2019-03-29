@@ -183,7 +183,8 @@
         $('#zuschlag-new-submit').click(function(e){
             e.preventDefault();
             ioCall('createZuschlagsListe', [$('#zuschlag-new').serializeArray()], function (data) {
-                $('#zuschlaglisten').html(data.body);
+                console.log(data);
+                $('#zuschlaglisten').html(data.surcharges.body);
             });
         });
     });

@@ -578,13 +578,13 @@
                         {$continent->name}
                     </div>
                     <div class="col-md-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
-                        {$continent->countriesCount} Länder
+                        {$continent->countriesCount} {__('countries')}
                     </div>
                     <div class="col-md-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
-                        {$continent->countriesSelectedCount} ausgewählt
+                        {$continent->countriesSelectedCount} {__('countriesSelected')}
                     </div>
                     <div class="col-md-2 select-all-continent" data-continent="continent-{$continentKey}">
-                        Alle auswählen
+                        {__('selectAll')}
                     </div>
                 </div>
                 <div class="row collapse in" id="collapse-continent-{$continentKey}">

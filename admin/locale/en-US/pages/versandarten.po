@@ -337,3 +337,18 @@ msgstr "Surcharge list deleted."
 
 msgid "successDeleteZIP"
 msgstr "ZIP / ZIP-area deleted."
+
+msgid "surchargeListFor"
+msgstr "Surcharge list for "
+
+msgid "surchargeList"
+msgstr "Surcharge list"
+
+msgid "surcharge"
+msgstr "Surcharge"
+
+msgid "addZIP"
+msgstr "Add ZIP"
+
+msgid "countriesSelected"
+msgstr "selected"

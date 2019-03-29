@@ -337,3 +337,18 @@ msgstr "Zuschlagsliste erfolgreich gelöscht."
 
 msgid "successDeleteZIP"
 msgstr "PLZ/PLZ-Bereich erfolgreich gelöscht."
+
+msgid "surchargeListFor"
+msgstr "Zuschlagliste für "
+
+msgid "surchargeList"
+msgstr "Zuschlagliste"
+
+msgid "surcharge"
+msgstr "Zuschlag"
+
+msgid "addZIP"
+msgstr "PLZ hinzufügen"
+
+msgid "countriesSelected"
+msgstr "ausgewählt"

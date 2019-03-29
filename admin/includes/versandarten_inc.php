@@ -462,7 +462,6 @@ function updateZuschlagsListe(array $surcharge)
             $surchargeTMP->setName($post['cName_' . $lang->cISO], $lang->kSprache);
         }
     }
-    error_log(json_encode($surchargeTMP));
     $surchargeTMP->save(true);
 
     return $post;

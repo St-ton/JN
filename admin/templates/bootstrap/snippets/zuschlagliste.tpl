@@ -1,11 +1,11 @@
 <form id="surcharge-form-{$zuschlagliste->getID()}">
     <input type="hidden" name="kVersandzuschlag" value="{$zuschlagliste->getID()}"/>
     <div class="row">
-        <div class="col-md-5 text-right">Zuschlagliste:</div>
+        <div class="col-md-5 text-right">{__('surchargeList')}:</div>
         <div class="col-md-7 text-left"><input name="cName" value="{$zuschlagliste->getTitle()}"/></div>
     </div>
     <div class="row">
-        <div class="col-md-5 text-right">Zuschlag:</div>
+        <div class="col-md-5 text-right">{__('surcharge')}:</div>
         <div class="col-md-7 text-left"><input name="fZuschlag" value="{$zuschlagliste->getSurcharge()}"/></div>
     </div>
     {foreach $sprachen as $sprache}
@@ -17,7 +17,7 @@
         </div>
     {/foreach}
     <div class="row">
-        <div class="col-md-5 text-right">PLZ:</div>
+        <div class="col-md-5 text-right">{__('plz')}:</div>
         <div class="col-md-7 text-left">
             {include file="snippets/zuschlagliste_plz_badges.tpl"}
         </div>
@@ -41,7 +41,7 @@
             <span class="input-group-addon">&ndash;</span>
             <input type="number" name="cPLZBis" class="form-control zipcode" />
         </div>
-        <button type="submit" class="btn btn-sm">PLZ hinzufügen</button>
+        <button type="submit" class="btn btn-sm">{__('addZIP')}</button>
     </form>
 </div>
 
@@ -79,4 +79,3 @@
     }
     setBadgeClick({$zuschlagliste->getID()});
 </script>
-

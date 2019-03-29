@@ -13,7 +13,7 @@
         <ul>
             <li class="btn btn-primary dropdown">
                 <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                    <i class="fa fa-plus"></i> Neue Versandart anlegen
+                    <i class="fa fa-plus"></i> {__('createShippingMethod')}
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
                 {foreach $versandberechnungen as $versandberechnung}
@@ -37,7 +37,7 @@
             <th>{__('shippingclasses')}</th>
             <th>{__('customerclass')}</th>
             <th>{__('paymentMethods')}</th>
-            <th>Versandpreis</th>
+            <th>{__('shippingPrice')}</th>
             <th></th>
         </tr>
         </thead>
@@ -112,7 +112,7 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
-                <h4 class="modal-title">Zuschlagliste für <span id="surcharge-modal-title"></span></h4>
+                <h4 class="modal-title">{__('surchargeListFor')} <span id="surcharge-modal-title"></span></h4>
             </div>
             <div class="modal-body">
                 <form id="zuschlag-new" method="post" action="versandarten.php">

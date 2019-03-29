@@ -1633,3 +1633,6 @@ msgstr "Europäische Union"
 
 msgid "notEuropeanUnionEurope"
 msgstr "Nicht Europäische Union in Europa"
+
+msgid "countries"
+msgstr "Länder"

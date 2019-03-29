@@ -401,6 +401,7 @@ function getZuschlagsListen($shippingType, $ISO)
  */
 function createZuschlagsListe(array $surcharge)
 {
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT]);
     $post = [];
     foreach ($surcharge as $item) {
         $post[$item['name']] = $item['value'];
@@ -428,6 +429,7 @@ function createZuschlagsListe(array $surcharge)
  */
 function deleteZuschlagsListe($surchargeID)
 {
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     Shop::Container()->getDB()->queryPrepared(
         'DELETE tversandzuschlag, tversandzuschlagsprache, tversandzuschlagplz
             FROM tversandzuschlag
@@ -437,7 +439,6 @@ function deleteZuschlagsListe($surchargeID)
         ['surchargeID' => $surchargeID],
         ReturnType::DEFAULT
     );
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     return (object)['surchargeID' => $surchargeID];
 }
@@ -448,6 +449,7 @@ function deleteZuschlagsListe($surchargeID)
  */
 function updateZuschlagsListe(array $surcharge)
 {
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     $post = [];
     foreach ($surcharge as $item) {
         $post[$item['name']] = $item['value'];
@@ -474,6 +476,7 @@ function updateZuschlagsListe(array $surcharge)
  */
 function deleteZuschlagsListeZIP($surchargeID, $ZIP)
 {
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     $partsZIP = explode('-', $ZIP);
     if (count($partsZIP) === 1) {
         Shop::Container()->getDB()->queryPrepared(
@@ -513,6 +516,7 @@ function deleteZuschlagsListeZIP($surchargeID, $ZIP)
  */
 function createZuschlagsListeZIP(array $data)
 {
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 
     $post = [];
@@ -571,7 +575,6 @@ function createZuschlagsListeZIP(array $data)
     } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
     }
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');

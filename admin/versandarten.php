@@ -149,6 +149,7 @@ if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
 //    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleteZIP'), 'successZIPDelete');
 //}
 //
+Shop::dbg(new Versandart(24));
 if (isset($_POST['neueZuschlagPLZ']) && (int)$_POST['neueZuschlagPLZ'] === 1 && Form::validateToken()) {
     $step          = 'Zuschlagsliste';
     $oZipValidator = new ZipValidator($_POST['cISO']);

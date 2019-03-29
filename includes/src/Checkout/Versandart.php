@@ -178,8 +178,19 @@ class Versandart
         return 1;
     }
 
+    /**
+     * load zip surcharges for shipping method
+     */
     public function loadSurcharges(): void
     {
+        $cache   = Shop::Container()->getCache();
+        $cacheID = 'surchargeFullShippingMethod' . $this->kVersandart;
+        if (($surcharges = $cache->get($cacheID)) !== false) {
+            $this->surcharges = $surcharges;
+
+            return;
+        }
+
         $this->surcharges = new Collection();
         $surcharges       = Shop::Container()->getDB()->queryPrepared(
             'SELECT kVersandzuschlag
@@ -192,6 +203,8 @@ class Versandart
         foreach ($surcharges as $surcharge) {
             $this->surcharges->push(new Versandzuschlag($surcharge->kVersandzuschlag));
         }
+
+        $cache->set($cacheID, $this->surcharges, [\CACHING_GROUP_OBJECT]);
     }
 
     /**

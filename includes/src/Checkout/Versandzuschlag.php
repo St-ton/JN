@@ -94,7 +94,7 @@ class Versandzuschlag
             ReturnType::SINGLE_OBJECT
         );
 
-        if ($surcharge !== null) {
+        if ($surcharge !== 0) {
             $this->setTitle($surcharge->cName)
                  ->setISO($surcharge->cISO)
                  ->setSurcharge((float)$surcharge->fZuschlag)
@@ -149,20 +149,22 @@ class Versandzuschlag
         } else {
             $this->setID($db->insert('tversandzuschlag', $surcharge));
         }
-        foreach ($this->getNames() as $key => $name) {
-            $surchargeLang                   = new \stdClass();
-            $surchargeLang->cName            = $name;
-            $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
-            $surchargeLang->kVersandzuschlag = $this->getID();
-            if ($update) {
-                $db->update(
-                    'tversandzuschlagsprache',
-                    ['kVersandzuschlag', 'cISOSprache'],
-                    [$this->getID(), $surchargeLang->cISOSprache],
-                    $surchargeLang
-                );
-            } else {
-                $db->insert('tversandzuschlagsprache', $surchargeLang);
+        if ($this->getID() !== 0) {
+            foreach ($this->getNames() as $key => $name) {
+                $surchargeLang                   = new \stdClass();
+                $surchargeLang->cName            = $name;
+                $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
+                $surchargeLang->kVersandzuschlag = $this->getID();
+                if ($update) {
+                    $db->update(
+                        'tversandzuschlagsprache',
+                        ['kVersandzuschlag', 'cISOSprache'],
+                        [$this->getID(), $surchargeLang->cISOSprache],
+                        $surchargeLang
+                    );
+                } else {
+                    $db->insert('tversandzuschlagsprache', $surchargeLang);
+                }
             }
         }
     }

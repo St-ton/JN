@@ -9,6 +9,7 @@ namespace JTL\Update;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
@@ -31,10 +32,17 @@ class MigrationManager
     protected $executedMigrations;
 
     /**
-     * MigrationManager constructor.
+     * @var DbInterface
      */
-    public function __construct()
+    protected $db;
+
+    /**
+     * MigrationManager constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
     {
+        $this->db = $db;
         static::$migrations = [];
     }
 
@@ -208,7 +216,7 @@ class MigrationManager
                         ));
                     }
 
-                    $migration = new $class($info, $date);
+                    $migration = new $class($this->db, $info, $date);
 
                     if (!\is_subclass_of($migration, IMigration::class)) {
                         throw new \InvalidArgumentException(\sprintf(

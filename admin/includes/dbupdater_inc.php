@@ -184,7 +184,7 @@ function dbUpdateIO()
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     $template = Template::getInstance();
-    $updater  = new Updater();
+    $updater  = new Updater(Shop::Container()->getDB());
 
     try {
         if ((int)$template->version === 5) {
@@ -231,7 +231,7 @@ function dbupdaterBackup()
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
 
-    $updater = new Updater();
+    $updater = new Updater(Shop::Container()->getDB());
 
     try {
         $file = $updater->createSqlDumpFile();
@@ -277,7 +277,8 @@ function dbupdaterStatusTpl($pluginID = null)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
     $smarty                 = Shop::Smarty();
-    $updater                = new Updater();
+    $db                     = Shop::Container()->getDB();
+    $updater                = new Updater($db);
     $template               = Template::getInstance();
     $manager                = null;
     $currentFileVersion     = $updater->getCurrentFileVersion();
@@ -287,7 +288,6 @@ function dbupdaterStatusTpl($pluginID = null)
     $updateError            = $updater->error();
     if (ADMIN_MIGRATION === true) {
         if ($pluginID !== null && is_numeric($pluginID)) {
-            $db      = Shop::Container()->getDB();
             $loader  = new PluginLoader($db, Shop::Container()->getCache());
             $plugin  = $loader->init($pluginID);
             $manager = new PluginMigrationManager(
@@ -299,7 +299,7 @@ function dbupdaterStatusTpl($pluginID = null)
             $smarty->assign('migrationURL', 'plugin.php')
                    ->assign('pluginID', $pluginID);
         } else {
-            $manager = new MigrationManager();
+            $manager = new MigrationManager($db);
         }
     }
 
@@ -330,9 +330,9 @@ function dbupdaterStatusTpl($pluginID = null)
 function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID = null)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+    $db = Shop::Container()->getDB();
     try {
         if ($pluginID !== null && is_numeric($pluginID)) {
-            $db      = Shop::Container()->getDB();
             $loader  = new PluginLoader($db, Shop::Container()->getCache());
             $plugin  = $loader->init($pluginID);
             $manager = new PluginMigrationManager(
@@ -342,9 +342,8 @@ function dbupdaterMigration($id = null, $version = null, $dir = null, $pluginID 
                 $plugin->getMeta()->getSemVer()
             );
         } else {
-            $manager = new MigrationManager();
+            $manager = new MigrationManager($db);
         }
-
         if ($id !== null && in_array($dir, [IMigration::UP, IMigration::DOWN], true)) {
             $manager->executeMigrationById($id, $dir);
         }

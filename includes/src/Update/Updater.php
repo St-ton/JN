@@ -8,8 +8,9 @@ namespace JTL\Update;
 
 use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Network;
+use JTL\Network\JTLApi;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
@@ -28,12 +29,18 @@ class Updater
     protected static $isVerified = false;
 
     /**
-     * Constructor
-     *
+     * @var DbInterface
+     */
+    protected $db;
+
+    /**
+     * Updater constructor.
+     * @param DbInterface $db
      * @throws Exception
      */
-    public function __construct()
+    public function __construct(DbInterface $db)
     {
+        $this->db = $db;
         $this->verify();
     }
 
@@ -51,17 +58,17 @@ class Updater
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
             if ($dbVersionShort < 400) {
-                $count = (int)Shop::Container()->getDB()->query(
-                    "SELECT * FROM `ttemplate` WHERE `eTyp`='admin'",
+                $count = (int)$this->db->query(
+                    "SELECT * FROM `ttemplate` WHERE `eTyp` = 'admin'",
                     ReturnType::AFFECTED_ROWS
                 );
                 if ($count === 0) {
-                    Shop::Container()->getDB()->query(
+                    $this->db->query(
                         "ALTER TABLE `ttemplate` 
                             CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL",
                         ReturnType::AFFECTED_ROWS
                     );
-                    Shop::Container()->getDB()->query(
+                    $this->db->query(
                         "INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')",
                         ReturnType::AFFECTED_ROWS
                     );
@@ -69,7 +76,7 @@ class Updater
             }
 
             if ($dbVersionShort < 404) {
-                Shop::Container()->getDB()->query(
+                $this->db->query(
                     'ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL',
                     ReturnType::AFFECTED_ROWS
                 );
@@ -97,7 +104,7 @@ class Updater
             return true;
         }
 
-        $manager = new MigrationManager();
+        $manager = new MigrationManager($this->db);
 
         return \count($manager->getPendingMigrations()) > 0;
     }
@@ -154,7 +161,7 @@ class Updater
      */
     public function getVersion(): stdClass
     {
-        $v = Shop::Container()->getDB()->query('SELECT * FROM tversion', ReturnType::SINGLE_OBJECT);
+        $v = $this->db->query('SELECT * FROM tversion', ReturnType::SINGLE_OBJECT);
 
         if ($v === null) {
             throw new Exception('Unable to identify application version');
@@ -202,7 +209,7 @@ class Updater
         }
 
         if (empty($targetVersion)) {
-            $api               = Shop::Container()->get(Network\JTLApi::class);
+            $api               = Shop::Container()->get(JTLApi::class);
             $availableUpdates  = $api->getAvailableVersions() ?? [];
             $versionCollection = new VersionCollection();
 
@@ -318,20 +325,18 @@ class Updater
     {
         $currentLine = 0;
         $sqls        = $this->getSqlUpdates($currentVersion);
-
         try {
-            Shop::Container()->getDB()->beginTransaction();
-
+            $this->db->beginTransaction();
             foreach ($sqls as $i => $sql) {
                 $currentLine = $i;
-                Shop::Container()->getDB()->query($sql, ReturnType::AFFECTED_ROWS);
+                $this->db->query($sql, ReturnType::AFFECTED_ROWS);
             }
         } catch (PDOException $e) {
             $code  = (int)$e->errorInfo[1];
-            $error = Shop::Container()->getDB()->escape($e->errorInfo[2]);
+            $error = $this->db->escape($e->errorInfo[2]);
 
             if (!\in_array($code, [1062, 1060, 1267], true)) {
-                Shop::Container()->getDB()->rollback();
+                $this->db->rollback();
 
                 $errorCountForLine = 1;
                 $version           = $this->getVersion();
@@ -340,7 +345,7 @@ class Updater
                     $errorCountForLine = $version->nFehler + 1;
                 }
 
-                Shop::Container()->getDB()->queryPrepared(
+                $this->db->queryPrepared(
                     'UPDATE tversion SET
                          nZeileVon = 1, 
                          nZeileBis = :rw, 
@@ -374,7 +379,7 @@ class Updater
      */
     protected function updateByMigration(Version $targetVersion)
     {
-        $manager           = new MigrationManager();
+        $manager           = new MigrationManager($this->db);
         $pendingMigrations = $manager->getPendingMigrations();
         if (\count($pendingMigrations) === 0) {
             $this->setVersion($targetVersion);
@@ -394,7 +399,7 @@ class Updater
      */
     protected function executeMigrations(): void
     {
-        foreach ((new MigrationManager())->migrate() as $migration) {
+        foreach ((new MigrationManager($this->db))->migrate() as $migration) {
             if ($migration->error !== null) {
                 throw new Exception($migration->error);
             }
@@ -407,8 +412,7 @@ class Updater
      */
     protected function setVersion(Version $targetVersion): void
     {
-        $db              = Shop::Container()->getDB();
-        $tVersionColumns = $db->executeQuery('SHOW COLUMNS FROM `tversion`', ReturnType::ARRAY_OF_OBJECTS);
+        $tVersionColumns = $this->db->executeQuery('SHOW COLUMNS FROM `tversion`', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($tVersionColumns as $column) {
             if ($column->Field === 'nVersion') {
                 if ($column->Type !== 'varchar(20)') {
@@ -423,7 +427,7 @@ class Updater
             throw new Exception('New database version can\'t be set.');
         }
 
-        $db->queryPrepared(
+        $this->db->queryPrepared(
             "UPDATE tversion SET 
                 nVersion = :ver, 
                 nZeileVon = 1, 

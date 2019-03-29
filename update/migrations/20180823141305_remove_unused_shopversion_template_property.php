@@ -6,24 +6,12 @@
  * @created Thu, 23 Aug 2018 14:13:05 +0200
  */
 
+use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shop;
-use JTL\DB\ReturnType;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * setLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180823141305
  */
 class Migration_20180823141305 extends Migration implements IMigration
 {
@@ -37,7 +25,9 @@ class Migration_20180823141305 extends Migration implements IMigration
 
     public function down()
     {
-        $db = Shop::Container()->getDB();
-        $db->query('ALTER TABLE `ttemplate` ADD `shopversion` int(11) DEFAULT NULL AFTER `version`', ReturnType::DEFAULT);
+        $this->getDB()->query(
+            'ALTER TABLE `ttemplate` ADD `shopversion` int(11) DEFAULT NULL AFTER `version`',
+            ReturnType::DEFAULT
+        );
     }
 }

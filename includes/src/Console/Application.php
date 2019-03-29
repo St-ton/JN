@@ -8,6 +8,7 @@ namespace JTL\Console;
 
 use JTL\Console\Command\Backup\DatabaseCommand;
 use JTL\Console\Command\Backup\FilesCommand;
+use JTL\Console\Command\Cache\DbesTmpCommand;
 use JTL\Console\Command\Cache\DeleteFileCacheCommand;
 use JTL\Console\Command\Cache\DeleteTemplateCacheCommand;
 use JTL\Console\Command\InstallCommand;
@@ -81,9 +82,10 @@ class Application extends BaseApplication
             $cmds[] = new MigrateCommand();
             $cmds[] = new StatusCommand();
             $cmds[] = new DatabaseCommand();
+            $cmds[] = new FilesCommand();
             $cmds[] = new DeleteTemplateCacheCommand();
             $cmds[] = new DeleteFileCacheCommand();
-            $cmds[] = new FilesCommand();
+            $cmds[] = new DbesTmpCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

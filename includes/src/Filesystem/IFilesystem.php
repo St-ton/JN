@@ -53,7 +53,7 @@ interface IFilesystem
 
     public function exists($path) : bool;
 
-    public function listContents($directory, $recursive = false, $excludeDirs = []) : Generator;
+    public function listContents($directory, $recursive = false) : Generator;
 
     public function makeDirectory($path, $mode = null, $recursive = false) : bool;
 
@@ -63,5 +63,5 @@ interface IFilesystem
 
     public function deleteDirectory($directory, $preserve = false) : bool;
 
-    public function zip(string $fileName, array $excludeDirs = [], callable $callback = null) : bool;
+    public function zip(string $fileName, callable $callback = null) : bool;
 }

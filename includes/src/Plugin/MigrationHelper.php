@@ -241,10 +241,7 @@ final class MigrationHelper
             return strtolower($text);
         };
 
-        $filePath = implode(
-            '_',
-            array_filter([$timestamp, $asFilePath($description)])
-        );
+        $filePath = 'Migration'.$timestamp;
 
         $relPath       = 'plugins/'.$pluginDir.'/Migrations';
         $migrationPath = $relPath.'/'.$filePath.'.php';

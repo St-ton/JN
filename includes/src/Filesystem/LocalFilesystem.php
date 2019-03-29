@@ -251,7 +251,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function listContents($directory = '', $recursive = false, $excludeDirs = []) : Generator
+    public function listContents($directory = '', $recursive = false) : Generator
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -260,7 +260,7 @@ class LocalFilesystem extends AbstractFilesystem
         }
 
         $iterator = $recursive
-            ? $this->getRecursiveDirectoryIterator($location, RecursiveIteratorIterator::SELF_FIRST, $excludeDirs)
+            ? $this->getRecursiveDirectoryIterator($location)
             : $this->getDirectoryIterator($location);
 
         foreach ($iterator as $file) {
@@ -324,15 +324,11 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * @param string $path
      * @param int $mode
-     * @param array $excludeDirs
      *
      * @return RecursiveIteratorIterator
      */
-    protected function getRecursiveDirectoryIterator(
-        $path,
-        $mode = RecursiveIteratorIterator::SELF_FIRST,
-        array $excludeDirs = []
-    ) {
+    protected function getRecursiveDirectoryIterator($path, $mode = RecursiveIteratorIterator::SELF_FIRST)
+    {
         /*$iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
             $mode
@@ -340,7 +336,7 @@ class LocalFilesystem extends AbstractFilesystem
         $iterator = new RecursiveIteratorIterator(
             new DirectoryFilter(
                 new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
-                $excludeDirs
+                $this->options['exclude_dirs']
             ),
             $mode
         );
@@ -360,14 +356,13 @@ class LocalFilesystem extends AbstractFilesystem
 
     /**
      * @param string $fileName
-     * @param array $excludeDirs
      * @param callable|null $callback
      * @return bool
      * @throws Exception
      */
-    public function zip(string $fileName, array $excludeDirs = [], callable $callback = null): bool
+    public function zip(string $fileName, callable $callback = null): bool
     {
-        $files      = $this->listContents(PFAD_ROOT, true, $excludeDirs);
+        $files      = $this->listContents(PFAD_ROOT, true);
         $zipArchive = new \ZipArchive();
         $count      = count(iterator_to_array($this->listContents(PFAD_ROOT, true)));
         $index      = 0;

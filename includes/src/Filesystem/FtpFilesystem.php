@@ -274,7 +274,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function listContents($directory, $recursive = false, $excludeDirs = []) : Generator
+    public function listContents($directory, $recursive = false) : Generator
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -285,12 +285,20 @@ class FtpFilesystem extends AbstractFilesystem
             yield $info;
 
             if ($recursive && $info->isDir()) {
-                $sub = $this->listContents($info->getPathname(), $recursive, $excludeDirs);
+                $sub = $this->listContents($info->getPathname(), $recursive);
                 foreach ($sub as $s) {
                     yield $s;
                 }
             }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function zip(string $fileName, callable $callback = null): bool
+    {
+        throw new RuntimeException();
     }
 
     protected function isDir($directory)
@@ -569,10 +577,5 @@ class FtpFilesystem extends AbstractFilesystem
             $this->fsGroup = $meta->getGroup();
             $this->delete($file);
         }
-    }
-
-    public function zip(string $fileName, array $excludeDirs = [], callable $callback = null): bool
-    {
-        throw new RuntimeException();
     }
 }

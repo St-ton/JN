@@ -6,7 +6,7 @@
  * @created {$created}
  */
 
-namespace Plugin\{$pluginDir}\Migration
+namespace Plugin\{$pluginDir}\Migration;
 
 use JTL\Plugin\Migration;
 use JTL\Update\IMigration;
@@ -25,7 +25,7 @@ use JTL\Update\IMigration;
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_{$timestamp} extends Migration implements IMigration
+class Migration{$timestamp} extends Migration implements IMigration
 {
     protected $author = '{$author}';
     protected $description = '{$description}';

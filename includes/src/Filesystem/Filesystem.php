@@ -131,11 +131,11 @@ class Filesystem implements IFilesystem
         return $this->getAdapter()->exists($path);
     }
 
-    public function listContents($directory, $recursive = false, $excludeDirs = []) : Generator
+    public function listContents($directory, $recursive = false) : Generator
     {
         $directory = Path::clean($directory);
 
-        return $this->getAdapter()->listContents($directory, $recursive, $excludeDirs);
+        return $this->getAdapter()->listContents($directory, $recursive);
     }
 
     public function makeDirectory($path, $mode = null, $recursive = false) : bool
@@ -316,9 +316,9 @@ class Filesystem implements IFilesystem
         return true;
     }
 
-    public function zip(string $fileName, array $excludeDirs = [], callable $callback = null): bool
+    public function zip(string $fileName, callable $callback = null): bool
     {
-        return $this->getAdapter()->zip($fileName, $excludeDirs, $callback);
+        return $this->getAdapter()->zip($fileName, $callback);
     }
 
     public function getOwner($identity)

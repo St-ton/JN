@@ -32,7 +32,7 @@ abstract class AbstractFilesystem implements IFilesystem
     public function __construct(array $options = [])
     {
         $this->options = array_merge(
-            ['root' => null],
+            ['root' => null, 'exclude_dirs' => []],
             $options
         );
 

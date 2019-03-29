@@ -39,12 +39,15 @@ class FilesCommand extends Command
             'dbeS/logs',
             'jtllogs',
             'install/logs'], $this->getOption('exclude-dir'));
-        $localFilesystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+        $localFilesystem    = new Filesystem(new LocalFilesystem([
+            'root'         => PFAD_ROOT,
+            'exclude_dirs' => $excludeDirectories
+        ]));
 
         $io
             ->progress(
                 function ($mycb) use ($localFilesystem, $archivePath, $excludeDirectories) {
-                    $localFilesystem->zip($archivePath, $excludeDirectories, function ($count, $index) use (&$mycb) {
+                    $localFilesystem->zip($archivePath, function ($count, $index) use (&$mycb) {
                         $mycb($count, $index);
                     });
                 },

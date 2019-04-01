@@ -5402,7 +5402,7 @@ class Artikel
     /**
      * @param string $countryCode ISO Alpha-2 Country-Code e.g. DE
      * @param int    $shippingID  special shippingID, if null will select cheapest
-     * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment
+     * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment or that are excluded
      */
     public function getFavourableShipping($countryCode, $shippingID = null)
     {

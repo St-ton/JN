@@ -9,6 +9,7 @@ namespace JTL\Checkout;
 use JTL\Shop;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
+use JTL\Catalog\Product\Preise;
 
 /**
  * Class Versandzuschlag
@@ -25,7 +26,9 @@ class Versandzuschlag
         'kVersandzuschlag' => 'ID',
         'cISO'             => 'ISO',
         'cName'            => 'Title',
-        'fZuschlag'        => 'Surcharge'
+        'fZuschlag'        => 'Surcharge',
+        'kVersandart'      => 'ShippingMethod',
+        'cPreisLocalized'  => 'PriceLocalized'
     ];
 
     /**
@@ -69,6 +72,10 @@ class Versandzuschlag
     public $names;
 
     /**
+     * @var string
+     */
+    public $priceLocalized;
+    /**
      * Versandzuschlag constructor.
      * @param int $id
      */
@@ -98,7 +105,8 @@ class Versandzuschlag
             $this->setTitle($surcharge->cName)
                  ->setISO($surcharge->cISO)
                  ->setSurcharge((float)$surcharge->fZuschlag)
-                 ->setShippingMethod((int)$surcharge->kVersandart);
+                 ->setShippingMethod((int)$surcharge->kVersandart)
+                 ->setPriceLocalized();
 
             $zips = $db->queryPrepared(
                 'SELECT vzp.cPLZ, vzp.cPLZAb, vzp.cPLZBis 
@@ -351,7 +359,7 @@ class Versandzuschlag
 
 
     /**
-     * @param int|null $idx
+     * @param int $idx
      * @return string
      */
     public function getName(int $idx = null): string
@@ -384,5 +392,24 @@ class Versandzuschlag
     public function setNames(array $names): void
     {
         $this->names = $names;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPriceLocalized(): string
+    {
+        return $this->priceLocalized;
+    }
+
+    /**
+     * @param string $priceLocalized
+     * @return Versandzuschlag
+     */
+    public function setPriceLocalized(string $priceLocalized = null): self
+    {
+        $this->priceLocalized = Preise::getLocalizedPriceString($priceLocalized ?? $this->getSurcharge());
+
+        return $this;
     }
 }

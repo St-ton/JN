@@ -219,6 +219,18 @@ class Versandart
     }
 
     /**
+     * @param string $zip
+     * @param string $ISO
+     * @return Versandzuschlag|null
+     */
+    public function getSurchargeForZip(string $zip, string $ISO): ?Versandzuschlag
+    {
+        return $this->getSurchargesForCountry($ISO)->filter(function (Versandzuschlag $surcharge) use ($zip) {
+            return $surcharge->hasZIPCode($zip);
+        })->pop();
+    }
+
+    /**
      * @return int
      */
     public function insertInDB(): int

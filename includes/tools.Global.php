@@ -2730,7 +2730,8 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
     $versandarten = Shop::DB()->query(
         "SELECT *
             FROM tversandart
-            WHERE cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
+            WHERE cIgnoreShippingProposal != 'Y'
+                AND cNurAbhaengigeVersandart = '" . $cNurAbhaengigeVersandart . "'
                 AND cLaender LIKE '%" . $cISO . "%'
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE '^([0-9 -]* )?" . $versandklassen . " ')

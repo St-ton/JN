@@ -56,7 +56,6 @@
     $('.surcharge-update[data-surcharge-id="{$zuschlagliste->getID()}"]').click(function(e){
         e.preventDefault();
         ioCall('saveZuschlagsListe', [$('#surcharge-form-{$zuschlagliste->getID()}').serializeArray()], function (data) {
-            console.log(data);
             if (data.error) {
                 $('#surcharge-form-{$zuschlagliste->getID()}').prepend(data.message);
             }

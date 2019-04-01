@@ -285,10 +285,10 @@ msgid "errorShippingMethodDuplicated"
 msgstr "Versandart konnte nicht dupliziert werden."
 
 msgid "errorZIPOverlap"
-msgstr "Die PLZ %s überschneidet sich mit %s.<br/>Bitte geben Sie eine andere PLZ an."
+msgstr "Die PLZ %s überschneidet sich mit einer PLZ in dem Versandzuschlag „%s“.<br/>Bitte geben Sie eine andere PLZ an."
 
 msgid "errorZIPAreaOverlap"
-msgstr "Der PLZ-Bereich %s überschneidet sich mit %s.<br/>Bitte geben Sie einen anderen PLZ-Bereich an."
+msgstr "Der PLZ-Bereich %s überschneidet sich mit einer PLZ in dem Versandzuschlag „%s“.<br/>Bitte geben Sie einen anderen PLZ-Bereich an."
 
 msgid "successZIPAdd"
 msgstr "PLZ wurde erfolgreich hinzugefügt."

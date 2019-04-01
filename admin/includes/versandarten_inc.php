@@ -384,6 +384,7 @@ function getMissingShippingClassCombi()
  */
 function getZuschlagsListen($shippingType, $ISO)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
     $smarty     = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $zuschlaege = (new Versandart($shippingType))->getSurchargesForCountry($ISO);
 
@@ -401,7 +402,6 @@ function getZuschlagsListen($shippingType, $ISO)
  */
 function saveZuschlagsListe(array $surcharge)
 {
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 
     $alertHelper = Shop::Container()->getAlertService();
@@ -430,8 +430,6 @@ function saveZuschlagsListe(array $surcharge)
                 ->setSurcharge($surcharge)
                 ->setShippingMethod($post['kVersandart'])
                 ->setTitle($post['cName']);
-
-            $surchargeLists = getZuschlagsListen($post['kVersandart'], $post['cISO']);
         }
         foreach ($languages as $lang) {
             if (isset($post['cName_' . $lang->cISO])) {
@@ -443,8 +441,10 @@ function saveZuschlagsListe(array $surcharge)
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');
 
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+
     return (object)[
-        'surcharges' => $surchargeLists ?? '',
+        'surcharges' => isset($post['kVersandzuschlag']) ? '' : getZuschlagsListen($post['kVersandart'], $post['cISO']),
         'message'    => $message,
         'error'      => $alertHelper->alertTypeExists(Alert::TYPE_ERROR)
     ];
@@ -517,19 +517,19 @@ function deleteZuschlagsListeZIP($surchargeID, $ZIP)
  */
 function createZuschlagsListeZIP(array $data)
 {
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 
     $post = [];
     foreach ($data as $item) {
         $post[$item['name']] = $item['value'];
     }
-    $alertHelper   = Shop::Container()->getAlertService();
-    $db            = Shop::Container()->getDB();
-    $smarty        = JTLSmarty::getInstance(false, ContextType::BACKEND);
-    $surcharge     = new Versandzuschlag((int)$post['kVersandzuschlag']);
-    $oZipValidator = new ZipValidator($surcharge->getISO());
-    $ZuschlagPLZ   = new stdClass();
+    $alertHelper    = Shop::Container()->getAlertService();
+    $db             = Shop::Container()->getDB();
+    $smarty         = JTLSmarty::getInstance(false, ContextType::BACKEND);
+    $surcharge      = new Versandzuschlag((int)$post['kVersandzuschlag']);
+    $shippingMethod = new Versandart($surcharge->getShippingMethod());
+    $oZipValidator  = new ZipValidator($surcharge->getISO());
+    $ZuschlagPLZ    = new stdClass();
 
     $ZuschlagPLZ->kVersandzuschlag = $surcharge->getID();
     if (!empty($post['cPLZ'])) {
@@ -544,6 +544,13 @@ function createZuschlagsListeZIP(array $data)
         }
     }
 
+    $zipMatchSurcharge = $shippingMethod->getSurchargesForCountry($surcharge->getISO())
+        ->filter(function (Versandzuschlag $surchargeTMP) use ($ZuschlagPLZ) {
+            return ((isset($ZuschlagPLZ->cPLZ) && $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZ))
+                || (isset($ZuschlagPLZ->cPLZAb) && $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZAb))
+                || (isset($ZuschlagPLZ->cPLZBis) && $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZBis)));
+        })->pop();
+
     if (empty($ZuschlagPLZ->cPLZ) && empty($ZuschlagPLZ->cPLZAb)) {
         $szErrorString = $oZipValidator->getError();
         if ($szErrorString !== '') {
@@ -551,31 +558,21 @@ function createZuschlagsListeZIP(array $data)
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPMissing'), 'errorZIPMissing');
         }
-    } elseif (!empty($ZuschlagPLZ->cPLZ) && $surcharge->hasZIPCode($ZuschlagPLZ->cPLZ)) {
+    } elseif ($zipMatchSurcharge !== null) {
         $alertHelper->addAlert(
             Alert::TYPE_ERROR,
             sprintf(
-                __('errorZIPOverlap'),
-                $ZuschlagPLZ->cPLZ,
-                'overlap'
+                isset($ZuschlagPLZ->cPLZ) ? __('errorZIPOverlap') : __('errorZIPAreaOverlap'),
+                $ZuschlagPLZ->cPLZ ?? $ZuschlagPLZ->cPLZAb . ' - ' . $ZuschlagPLZ->cPLZBis,
+                $zipMatchSurcharge->getTitle()
             ),
             'errorZIPOverlap'
-        );
-    } elseif ((!empty($ZuschlagPLZ->cPLZAb) && $surcharge->hasZIPCode($ZuschlagPLZ->cPLZAb))
-        || (!empty($ZuschlagPLZ->cPLZBis) && $surcharge->hasZIPCode($ZuschlagPLZ->cPLZBis))
-    ) {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            sprintf(
-                __('errorZIPAreaOverlap'),
-                $ZuschlagPLZ->cPLZAb . '-' . $ZuschlagPLZ->cPLZBis,
-                'overlap'
-            ),
-            'errorZIPAreaOverlap'
         );
     } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
     }
+
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');

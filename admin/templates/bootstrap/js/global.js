@@ -746,6 +746,7 @@ function activateAjaxLoadingSpinner() {
     var $loading = $('#loadingSpinner');
     $(document)
     .ajaxStart(function () {
+        $('#alert-list').remove();
         $loading.removeClass('hide');
     })
     .ajaxStop(function () {

@@ -126,9 +126,9 @@
                         </div>
                         <div class="panel-body">
                             <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cName">{__('isleList')}</label>
-                        </span>
+                                <span class="input-group-addon">
+                                    <label for="cName">{__('isleList')}</label>
+                                </span>
                                 <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" required/>
                             </div>
                             {foreach $sprachen as $sprache}
@@ -182,8 +182,10 @@
         });
         $('#zuschlag-new-submit').click(function(e){
             e.preventDefault();
-            ioCall('createZuschlagsListe', [$('#zuschlag-new').serializeArray()], function (data) {
-                console.log(data);
+            ioCall('saveZuschlagsListe', [$('#zuschlag-new').serializeArray()], function (data) {
+                if (data.error) {
+                    $('#zuschlag-new').prepend(data.message);
+                }
                 $('#zuschlaglisten').html(data.surcharges.body);
             });
         });

@@ -399,9 +399,11 @@ function getZuschlagsListen($shippingType, $ISO)
  * @return stdClass
  * @throws SmartyException
  */
-function createZuschlagsListe(array $surcharge)
+function saveZuschlagsListe(array $surcharge)
 {
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+    Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
+
     $alertHelper = Shop::Container()->getAlertService();
     $smarty      = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $post        = [];
@@ -413,30 +415,38 @@ function createZuschlagsListe(array $surcharge)
     if (!$post['cName']) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListNameMissing'), 'errorListNameMissing');
     }
-    if ($surcharge === 0) {
+    if (empty($surcharge)) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListPriceMissing'), 'errorListPriceMissing');
     }
     if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
-        $languages    = Sprache::getAllLanguages();
-        $surchargeTMP = (new Versandzuschlag())
-            ->setISO($post['cISO'])
-            ->setSurcharge($surcharge)
-            ->setShippingMethod($post['kVersandart'])
-            ->setTitle($post['cName']);
+        $languages = Sprache::getAllLanguages();
+        if (isset($post['kVersandzuschlag'])) {
+            $surchargeTMP = (new Versandzuschlag((int)$post['kVersandzuschlag']))
+                ->setTitle($post['cName'])
+                ->setSurcharge($post['fZuschlag']);
+        } else {
+            $surchargeTMP = (new Versandzuschlag())
+                ->setISO($post['cISO'])
+                ->setSurcharge($surcharge)
+                ->setShippingMethod($post['kVersandart'])
+                ->setTitle($post['cName']);
 
+            $surchargeLists = getZuschlagsListen($post['kVersandart'], $post['cISO']);
+        }
         foreach ($languages as $lang) {
             if (isset($post['cName_' . $lang->cISO])) {
                 $surchargeTMP->setName($post['cName_' . $lang->cISO] ?: $post['cName'], $lang->kSprache);
             }
         }
-        $surchargeTMP->save();
+        $surchargeTMP->save(isset($post['kVersandzuschlag']));
     }
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');
 
     return (object)[
-        'surcharges' => getZuschlagsListen($post['kVersandart'], $post['cISO']),
-        'message'    => $message
+        'surcharges' => $surchargeLists ?? '',
+        'message'    => $message,
+        'error'      => $alertHelper->alertTypeExists(Alert::TYPE_ERROR)
     ];
 }
 
@@ -458,32 +468,6 @@ function deleteZuschlagsListe($surchargeID)
     );
 
     return (object)['surchargeID' => $surchargeID];
-}
-
-/**
- * @param array $surcharge
- * @return array
- */
-function updateZuschlagsListe(array $surcharge)
-{
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-    $post = [];
-    foreach ($surcharge as $item) {
-        $post[$item['name']] = $item['value'];
-    }
-    $languages    = Sprache::getAllLanguages();
-    $surchargeTMP = (new Versandzuschlag((int)$post['kVersandzuschlag']))
-        ->setTitle($post['cName'])
-        ->setSurcharge($post['fZuschlag']);
-
-    foreach ($languages as $lang) {
-        if (isset($post['cName_' . $lang->cISO])) {
-            $surchargeTMP->setName($post['cName_' . $lang->cISO], $lang->kSprache);
-        }
-    }
-    $surchargeTMP->save(true);
-
-    return $post;
 }
 
 /**

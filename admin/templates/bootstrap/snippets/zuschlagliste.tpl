@@ -32,7 +32,6 @@
     </div>
 </form>
 <div class="row collapse" id="collapse-surcharge-zip-add-{$zuschlagliste->getID()}">
-    <div class="alert-message"></div>
     <form id="add-zip-{$zuschlagliste->getID()}">
         <input type="hidden" name="kVersandzuschlag" value="{$zuschlagliste->getID()}">
         {__('plz')} <input type="text" name="cPLZ" class="form-control zipcode" /> {__('orPlzRange')}
@@ -56,14 +55,17 @@
     });
     $('.surcharge-update[data-surcharge-id="{$zuschlagliste->getID()}"]').click(function(e){
         e.preventDefault();
-        ioCall('updateZuschlagsListe', [$('#surcharge-form-{$zuschlagliste->getID()}').serializeArray()], function (data) {
-            //TODO
+        ioCall('saveZuschlagsListe', [$('#surcharge-form-{$zuschlagliste->getID()}').serializeArray()], function (data) {
+            console.log(data);
+            if (data.error) {
+                $('#surcharge-form-{$zuschlagliste->getID()}').prepend(data.message);
+            }
         });
     });
     $('#add-zip-{$zuschlagliste->getID()} button[type="submit"]').click(function(e){
         e.preventDefault();
         ioCall('createZuschlagsListeZIP', [$('#add-zip-{$zuschlagliste->getID()}').serializeArray()], function (data) {
-            $('#collapse-surcharge-zip-add-{$zuschlagliste->getID()} .alert-message').html(data.message);
+            $('#add-zip-{$zuschlagliste->getID()}').prepend(data.message);
             $('#zip-badge-{$zuschlagliste->getID()}').html(data.badges);
             setBadgeClick(data.surchargeID);
         });

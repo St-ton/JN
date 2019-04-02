@@ -20,7 +20,8 @@ use JTLShop\SemVer\Version;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SHOP_UPDATE_VIEW', true, true);
 
-$updater  = new Updater();
+$db       = Shop::Container()->getDB();
+$updater  = new Updater($db);
 $template = Template::getInstance();
 $feSmarty = new JTLSmarty(true, ContextType::FRONTEND);
 $feSmarty->clearCompiledTemplate();
@@ -34,7 +35,7 @@ $updatesAvailable = $updater->hasPendingUpdates();
 $updateError      = $updater->error();
 
 $smarty->assign('updatesAvailable', $updatesAvailable)
-       ->assign('manager', ADMIN_MIGRATION ? new MigrationManager() : null)
+       ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($db) : null)
        ->assign('isPluginManager', false)
        ->assign('migrationURL', 'dbupdater.php')
        ->assign('currentFileVersion', $fileVersion)

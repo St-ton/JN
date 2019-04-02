@@ -677,7 +677,8 @@ class ShippingMethod
         $shippingMethods = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
             FROM tversandart
-            WHERE cNurAbhaengigeVersandart = :depOnly
+            WHERE cIgnoreShippingProposal != 'Y'
+                AND cNurAbhaengigeVersandart = :depOnly
                 AND cLaender LIKE :iso
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE :sClasses)

@@ -218,6 +218,7 @@ ifndef('MAX_REVISIONS', 5);
 ifndef('SHOW_DEBUG_BAR', false);
 
 // security
+ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_USE_SECURITY', true);

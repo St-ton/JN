@@ -7,7 +7,6 @@
 namespace JTL\Smarty;
 
 use JTL\Backend\AdminTemplate;
-use JTL\Cache\JTLCacheInterface;
 use JTL\Events\Dispatcher;
 use JTL\Plugin\Helper;
 use JTL\Shop;
@@ -21,11 +20,6 @@ use JTL\Template;
  */
 class JTLSmarty extends \SmartyBC
 {
-    /**
-     * @var JTLCacheInterface
-     */
-    public $jtlCache;
-
     /**
      * @var array
      */

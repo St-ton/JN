@@ -3,11 +3,11 @@
  * Create news lang table
  */
 
+use JTL\DB\ReturnType;
+use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shop;
-use JTL\DB\ReturnType;
 
 /**
  * Class Migration_20180801165500
@@ -19,7 +19,7 @@ class Migration_20180801165500 extends Migration implements IMigration
 
     public function up()
     {
-        $db = Shop::Container()->getDB();
+        $db = $this->getDB();
         DBMigrationHelper::migrateToInnoDButf8('tnews');
         DBMigrationHelper::migrateToInnoDButf8('tnewskategorie');
 

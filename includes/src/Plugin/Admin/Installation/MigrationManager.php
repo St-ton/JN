@@ -283,7 +283,7 @@ final class MigrationManager
                             $filePath
                         ));
                     }
-                    $migration = new $class('Plugin migration from ' . $this->pluginID, $date);
+                    $migration = new $class($this->db, 'Plugin migration from ' . $this->pluginID, $date);
                     /** @var IMigration $migration */
                     if (!\is_subclass_of($migration, IMigration::class)) {
                         throw new InvalidArgumentException(\sprintf(

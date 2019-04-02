@@ -142,7 +142,7 @@ function installGuiElements(obj, elmIds)
             handlerName = 'on' + capitalize(elmId);
 
             if (obj[handlerName]) {
-                elm.off('click').click(obj[handlerName]);
+                elm.off('click').on('click', obj[handlerName]);
             }
         } else if (elm.tagName() === 'form') {
             handlerName = 'on' + capitalize(elmId);
@@ -154,7 +154,7 @@ function installGuiElements(obj, elmIds)
             handlerName = 'on' + capitalize(elmId);
 
             if (obj[handlerName]) {
-                elm.off('click').click(obj[handlerName]);
+                elm.off('click').on('click', obj[handlerName]);
             }
         }
 

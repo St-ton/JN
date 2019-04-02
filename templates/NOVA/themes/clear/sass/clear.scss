@@ -1,0 +1,33 @@
+// theme variables
+@import "variables";
+
+// bootstrap
+@import "../../base/bootstrap/scss/bootstrap.scss";
+@import "../../base/bootstrap-select/bootstrap-select.scss";
+
+// slick slider
+@import "../../base/slick/slick.scss";
+
+// fileinput
+@import "../../base/fileinput/fileinput.min.scss";
+
+// wow animation
+@import "../base/wow/animate.css";
+
+// slider
+@import "../base/slider/slider.css";
+
+// theme mixins
+@import "mixins";
+
+// theme fonts
+@import "fonts";
+
+// theme buttons
+@import "components/buttons";
+
+// theme tooltip
+@import "components/tooltip";
+
+// theme base
+@import "base";

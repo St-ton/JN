@@ -4,20 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
+
+use JTL\Shop;
 
 /**
  * Class IpAnonymizer
- * @package GeneralDataProtection
- *
+ * @package JTL\GeneralDataProtection
  * v4
  * anonymize()       : 255.255.255.34 -> 255.255.255.0
  * anonymizeLegacy() : 255.255.255.34 -> 255.255.255.*
- *
  * v6
  * anonymize()       : 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 -> 2001:db8:85a3:8d3:0:0:0:0   (also cuts leading zeros!)
  * anonymizeLegacy() : 2001:0db8:85a3:08d3:1319:8a2e:0370:7347 -> 2001:0db8:85a3:08d3:*:*:*:*
- *
  */
 class IpAnonymizer
 {
@@ -57,7 +56,7 @@ class IpAnonymizer
      *
      * @var string
      */
-    private $placeholderIP;
+    private $placeholderIP = '0.0.0.0';
 
     /**
      * flag for old fashioned anonymization ("do not anonymize again")
@@ -85,7 +84,7 @@ class IpAnonymizer
     public function __construct(string $szIP = '', bool $bBeautify = false)
     {
         try {
-            $this->logger = \Shop::Container()->getLogService();
+            $this->logger = Shop::Container()->getLogService();
         } catch (\Exception $e) {
             $this->logger = null;
         }
@@ -116,7 +115,7 @@ class IpAnonymizer
      */
     private function init(): void
     {
-        if ($this->ip === '' || \strpos($this->ip, '*') !== false) {
+        if ($this->ip === '' || \mb_strpos($this->ip, '*') !== false) {
             // if there is an old fashioned anonymization or
             // an empty string, we do nothing (but set a flag)
             $this->oldFashionedAnon = true;
@@ -125,7 +124,7 @@ class IpAnonymizer
         }
         // any ':' means, we got an IPv6-address
         // ("::127.0.0.1" or "::ffff:127.0.0.3" is valid too!)
-        if (\strpos($this->ip, ':') !== false) {
+        if (\mb_strpos($this->ip, ':') !== false) {
             $this->rawIp = @\inet_pton($this->ip);
         } else {
             $this->rawIp = @\inet_pton($this->rmLeadingZero($this->ip));
@@ -187,14 +186,14 @@ class IpAnonymizer
             return $this->ip;
         }
         $readableIP = \inet_ntop(\inet_pton($this->ipMask) & $this->rawIp);
-        if ($this->beautifyFlag === true && \strpos($readableIP, '::') !== false) {
-            $colonPos      = \strpos($readableIP, '::');
-            $strEnd        = \strlen($readableIP) - 2;
-            $blockCount    = \count(
+        if ($this->beautifyFlag === true && \mb_strpos($readableIP, '::') !== false) {
+            $colonPos    = \mb_strpos($readableIP, '::');
+            $strEnd      = \mb_strlen($readableIP) - 2;
+            $blockCount  = \count(
                 \preg_split('/:/', \str_replace('::', ':', $readableIP), -1, \PREG_SPLIT_NO_EMPTY)
             );
-            $replacement   = '';
-            $diff          = 8 - $blockCount;
+            $replacement = '';
+            $diff        = 8 - $blockCount;
             for ($i = 0; $i < $diff; $i++) {
                 ($replacement === '') ? $replacement .= '0' : $replacement .= ':0';
             }
@@ -223,7 +222,7 @@ class IpAnonymizer
         $maskParts             = \preg_split('/[\.:]/', $this->ipMask);
         $ipParts               = \preg_split('/[\.:]/', $this->ip);
         $len                   = \count($ipParts);
-        (4 === $len) ? $szGlue = '.' : $szGlue = ':';
+        ($len === 4) ? $szGlue = '.' : $szGlue = ':';
         for ($i = 0; $i < $len; $i++) {
             (\hexdec($maskParts[$i]) !== 0) ?: $ipParts{$i} = '*';
         }
@@ -269,7 +268,7 @@ class IpAnonymizer
      */
     public function getPlaceholder(): string
     {
-        return $this->szPlaceholderIP;
+        return $this->placeholderIP;
     }
 
     /**
@@ -282,7 +281,7 @@ class IpAnonymizer
     private function rmLeadingZero(string $szIpString): string
     {
         $ipParts = \preg_split('/[\.:]/', $szIpString);
-        $glue    = \strpos($szIpString, '.') !== false ? '.' : ':';
+        $glue    = \mb_strpos($szIpString, '.') !== false ? '.' : ':';
 
         return \implode($glue, \array_map(function ($e) {
             return (int)$e;

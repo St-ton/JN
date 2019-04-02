@@ -4,20 +4,21 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
-use Plugin\AbstractExtension;
-use Plugin\ExtensionLoader;
-use Plugin\Helper;
-use Plugin\InstallCode;
-use Plugin\PluginLoader;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\PluginLoader;
+use JTL\Sprache;
 
 /**
  * Class Uninstaller
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin\Installation
  */
 final class Uninstaller
 {
@@ -60,10 +61,10 @@ final class Uninstaller
         }
         $data = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if ((int)$data->bExtension === 1) {
-            $loader = new ExtensionLoader($this->db, $this->cache);
+            $loader = new PluginLoader($this->db, $this->cache);
             $plugin = $loader->init($pluginID);
         } else {
-            $loader = new PluginLoader($this->db, $this->cache);
+            $loader = new LegacyPluginLoader($this->db, $this->cache);
             $plugin = $loader->init($pluginID);//
         }
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
@@ -95,7 +96,7 @@ final class Uninstaller
     }
 
     /**
-     * @param AbstractExtension $plugin
+     * @param PluginInterface $plugin
      * @return array
      * @throws \Exception
      */
@@ -234,7 +235,7 @@ final class Uninstaller
         }
         if (\count($links) === 2) {
             $oldLocalization = $this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink);
-            $languages       = \Sprache::getAllLanguages(2);
+            $languages       = Sprache::getAllLanguages(2);
             foreach ($oldLocalization as $item) {
                 $this->db->update(
                     'tlinksprache',

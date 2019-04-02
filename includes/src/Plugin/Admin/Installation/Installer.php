@@ -4,23 +4,28 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Helpers\Text;
+use JTL\Plugin\Admin\Validation\ValidatorInterface;
+use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\PluginLoader;
+use JTL\Plugin\State;
+use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
-use Plugin\AbstractExtension;
-use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\ExtensionLoader;
-use Plugin\Helper;
-use Plugin\InstallCode;
-use Plugin\PluginLoader;
-use Plugin\State;
+use stdClass;
 
 /**
  * Class Installer
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin\Installation
  */
 final class Installer
 {
@@ -50,7 +55,7 @@ final class Installer
     private $extensionValidator;
 
     /**
-     * @var AbstractExtension|null
+     * @var PluginInterface|null
      */
     private $plugin;
 
@@ -95,17 +100,17 @@ final class Installer
     }
 
     /**
-     * @return AbstractExtension|null
+     * @return PluginInterface|null
      */
-    public function getPlugin(): ?AbstractExtension
+    public function getPlugin(): ?PluginInterface
     {
         return $this->plugin;
     }
 
     /**
-     * @param AbstractExtension|null $plugin
+     * @param PluginInterface|null $plugin
      */
-    public function setPlugin(AbstractExtension $plugin): void
+    public function setPlugin(PluginInterface $plugin): void
     {
         $this->plugin = $plugin;
     }
@@ -122,7 +127,7 @@ final class Installer
         $validator = $this->pluginValidator;
         $baseDir   = \PFAD_ROOT . \PFAD_PLUGIN . \basename($this->dir);
         if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
-            $baseDir           = \PFAD_ROOT . \PFAD_EXTENSIONS . \basename($this->dir);
+            $baseDir           = \PFAD_ROOT . \PLUGIN_DIR . \basename($this->dir);
             $validator         = $this->extensionValidator;
             $this->isExtension = true;
             if (!\file_exists($baseDir . '/' . \PLUGIN_INFO_FILE)) {
@@ -162,28 +167,30 @@ final class Installer
         $basePath         = \PFAD_ROOT . \PFAD_PLUGIN . $this->dir . \DIRECTORY_SEPARATOR;
         $lastVersionKey   = null;
         $modern           = false;
-        $plugin           = new \stdClass();
+        $plugin           = new stdClass();
         $p                = null;
         // @todo:
         if (\is_array($versionNode)) {
             $lastVersionKey = \count($versionNode) / 2 - 1;
             $version        = (int)$versionNode[$lastVersionKey . ' attr']['nr'];
             $versionedDir   = $basePath . \PFAD_PLUGIN_VERSION . $version . \DIRECTORY_SEPARATOR;
-            $loader         = new PluginLoader($this->db, \Shop::Container()->getCache());
+            $loader         = new LegacyPluginLoader($this->db, Shop::Container()->getCache());
+            $bootstrapper   = $versionedDir . \OLD_BOOTSTRAPPER;
         } else {
             $version      = $baseNode['Version'];
-            $basePath     = \PFAD_ROOT . \PFAD_EXTENSIONS . $this->dir . \DIRECTORY_SEPARATOR;
+            $basePath     = \PFAD_ROOT . \PLUGIN_DIR . $this->dir . \DIRECTORY_SEPARATOR;
             $versionedDir = $basePath;
             $versionNode  = [];
             $modern       = true;
-            $loader       = new ExtensionLoader($this->db, \Shop::Container()->getCache());
+            $loader       = new PluginLoader($this->db, Shop::Container()->getCache());
+            $bootstrapper = $versionedDir . \PLUGIN_BOOTSTRAPPER;
         }
         $tags = empty($baseNode['Install'][0]['FlushTags'])
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
         if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
-            && \strlen($baseNode['LicenceClass']) > 0
-            && \strlen($baseNode['LicenceClassFile']) > 0
+            && \mb_strlen($baseNode['LicenceClass']) > 0
+            && \mb_strlen($baseNode['LicenceClassFile']) > 0
         ) {
             $licenceClass     = $baseNode['LicenceClass'];
             $licenceClassName = $baseNode['LicenceClassFile'];
@@ -197,6 +204,7 @@ final class Installer
         $plugin->cIcon                = $baseNode['Icon'] ?? null;
         $plugin->cVerzeichnis         = $this->dir;
         $plugin->cPluginID            = $baseNode['PluginID'];
+        $plugin->cStoreID             = $baseNode['StoreID'] ?? null;
         $plugin->cFehler              = '';
         $plugin->cLizenz              = '';
         $plugin->cLizenzKlasse        = $licenceClass;
@@ -209,14 +217,14 @@ final class Installer
         $plugin->dErstellt            = $lastVersionKey !== null
             ? $versionNode[$lastVersionKey]['CreateDate']
             : $baseNode['CreateDate'];
-        $plugin->bBootstrap           = \is_file($versionedDir . 'bootstrap.php') ? 1 : 0;
+        $plugin->bBootstrap           = \is_file($bootstrapper) ? 1 : 0;
         foreach ($tags as $_tag) {
             if (\defined(\trim($_tag))) {
                 $tagsToFlush[] = \constant(\trim($_tag));
             }
         }
         if (\count($tagsToFlush) > 0) {
-            \Shop::Container()->getCache()->flushTags($tagsToFlush);
+            Shop::Container()->getCache()->flushTags($tagsToFlush);
         }
         $licenceClassFile = $versionedDir . \PFAD_PLUGIN_LICENCE . $plugin->cLizenzKlasseName;
         if ($this->plugin !== null
@@ -242,8 +250,8 @@ final class Installer
         }
 
         $factory = $this->isExtension
-            ? new PluginInstallerFactory($this->db, $xml, $plugin)
-            : new ExtensionInstallerFactory($this->db, $xml, $plugin);
+            ? new LegacyPluginInstallerFactory($this->db, $xml, $plugin)
+            : new PluginInstallerFactory($this->db, $xml, $plugin);
         $res     = $factory->install();
         if ($res !== InstallCode::OK) {
             $this->uninstaller->uninstall($kPlugin);
@@ -263,7 +271,7 @@ final class Installer
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
 
-            if (!isset($hits1[0]) || \strlen($hits1[0]) !== \strlen($i)) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
             }
             $nVersionTMP = (int)$versionData['nr'];
@@ -334,16 +342,16 @@ final class Installer
         $line     = '';
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
-            if ($data !== '' && \strpos($data, '--') !== 0) {
-                if (\strpos($data, 'CREATE TABLE') !== false) {
+            if ($data !== '' && \mb_strpos($data, '--') !== 0) {
+                if (\mb_strpos($data, 'CREATE TABLE') !== false) {
                     $line .= \trim($data);
-                } elseif (\strpos($data, 'INSERT') !== false) {
+                } elseif (\mb_strpos($data, 'INSERT') !== false) {
                     $line .= \trim($data);
                 } else {
                     $line .= \trim($data);
                 }
 
-                if (\substr($data, \strlen($data) - 1, 1) === ';') {
+                if (\mb_substr($data, \mb_strlen($data) - 1, 1) === ';') {
                     $sqlLines[] = $line;
                     $line       = '';
                 }
@@ -355,13 +363,13 @@ final class Installer
     }
 
     /**
-     * @param \stdClass $plugin
+     * @param stdClass $plugin
      * @param string    $pluginPath
      * @param Version   $targetVersion
      * @return array|Version
      * @throws \Exception
      */
-    private function updateByMigration(\stdClass $plugin, string $pluginPath, Version $targetVersion)
+    private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion)
     {
         $path              = $pluginPath . \DIRECTORY_SEPARATOR . \PFAD_PLUGIN_MIGRATIONS;
         $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID, $targetVersion);
@@ -376,13 +384,13 @@ final class Installer
     /**
      * @param string    $sqlFile
      * @param int       $version
-     * @param \stdClass $plugin
+     * @param stdClass $plugin
      * @return int
-     * @throws \Exceptions\CircularReferenceException
-     * @throws \Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former logikSQLDatei()
      */
-    private function validateSQL(string $sqlFile, $version, \stdClass $plugin): int
+    private function validateSQL(string $sqlFile, $version, stdClass $plugin): int
     {
         if (empty($sqlFile)
             || (int)$version < 100
@@ -397,32 +405,32 @@ final class Installer
         }
         $sqlRegEx = '/xplugin[_]{1}' . $plugin->cPluginID . '[_]{1}[a-zA-Z0-9_]+/';
         foreach ($lines as $sql) {
-            $sql = \StringHandler::removeNumerousWhitespaces($sql);
-            if (\stripos($sql, 'create table') !== false) {
+            $sql = Text::removeNumerousWhitespaces($sql);
+            if (\mb_stripos($sql, 'create table') !== false) {
                 // when using "create table if not exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
+                $index = (\mb_stripos($sql, 'create table if not exists') !== false) ? 5 : 2;
                 $tmp   = \explode(' ', $sql);
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (!isset($hits[0]) || \strlen($hits[0]) !== \strlen($table)) {
+                if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_CREATE;
                 }
                 $exists = $this->db->select('tplugincustomtabelle', 'cTabelle', $table);
                 if (!isset($exists->kPluginCustomTabelle) || !$exists->kPluginCustomTabelle) {
-                    $customTable           = new \stdClass();
+                    $customTable           = new stdClass();
                     $customTable->kPlugin  = $plugin->kPlugin;
                     $customTable->cTabelle = $table;
 
                     $this->db->insert('tplugincustomtabelle', $customTable);
                 }
-            } elseif (\stripos($sql, 'drop table') !== false) {
+            } elseif (\mb_stripos($sql, 'drop table') !== false) {
                 // SQL versucht eine Tabelle zu löschen => prüfen ob es sich um eine Plugintabelle handelt
                 // when using "drop table if exists" statement, the table name is at index 5, otherwise at 2
-                $index = (\stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
-                $tmp   = \explode(' ', \StringHandler::removeNumerousWhitespaces($sql));
+                $index = (\mb_stripos($sql, 'drop table if exists') !== false) ? 4 : 2;
+                $tmp   = \explode(' ', Text::removeNumerousWhitespaces($sql));
                 $table = \str_replace(["'", '`'], '', $tmp[$index]);
                 \preg_match($sqlRegEx, $table, $hits);
-                if (\strlen($hits[0]) !== \strlen($table)) {
+                if (\mb_strlen($hits[0]) !== \mb_strlen($table)) {
                     return InstallCode::SQL_WRONG_TABLE_NAME_DELETE;
                 }
             }
@@ -430,7 +438,7 @@ final class Installer
             $this->db->query($sql, ReturnType::DEFAULT);
             $errNo = $this->db->getErrorCode();
             if ($errNo) {
-                \Shop::Container()->getLogService()->withName('kPlugin')->error(
+                Shop::Container()->getLogService()->withName('kPlugin')->error(
                     'SQL Fehler beim Installieren des Plugins (' . $plugin->cName . '): ' .
                     \str_replace("'", '', $this->db->getErrorMessage()),
                     [$plugin->kPlugin]
@@ -475,6 +483,25 @@ final class Installer
             $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
             $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
+            $customLangVars = $this->db->queryPrepared(
+                'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
+                    tpluginsprachvariablecustomsprache.kPluginSprachvariable AS oldID, tpluginsprachvariable.cName
+                    FROM tpluginsprachvariablecustomsprache
+                    JOIN tpluginsprachvariable
+                        ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
+                    WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
+                ['pid' => $oldPluginID],
+                ReturnType::ARRAY_OF_OBJECTS,
+                true
+            );
+            foreach ($customLangVars as $langVar) {
+                $this->db->update(
+                    'tpluginsprachvariablecustomsprache',
+                    ['kPlugin', 'kPluginSprachvariable'],
+                    [$oldPluginID, $langVar->oldID],
+                    (object)['kPluginSprachvariable' => $langVar->newID]
+                );
+            }
             $pluginConf = $this->db->query(
                 'SELECT *
                     FROM tplugineinstellungen
@@ -491,7 +518,7 @@ final class Installer
                         $conf->cName
                     );
                     if (!isset($confData[$name])) {
-                        $confData[$name]          = new \stdClass();
+                        $confData[$name]          = new stdClass();
                         $confData[$name]->kPlugin = $oldPluginID;
                         $confData[$name]->cName   = \str_replace(
                             'kPlugin_' . $pluginID . '_',
@@ -583,7 +610,7 @@ final class Installer
             // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
             $oObj = $this->db->select('tboxvorlage', 'kCustomID', $oldPluginID, 'eTyp', 'plugin');
             if (isset($oObj->kBoxvorlage) && (int)$oObj->kBoxvorlage > 0) {
-                $upd              = new \stdClass();
+                $upd              = new stdClass();
                 $upd->kBoxvorlage = $oObj->kBoxvorlage;
                 $this->db->update('tboxen', 'kCustomID', $oldPluginID, $upd);
             } else {

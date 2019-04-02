@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
 /**
  * Class LinkTypeToPageType
- * @package Mapper
+ * @package JTL\Mapper
  */
 class LinkTypeToPageType
 {

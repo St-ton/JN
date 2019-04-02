@@ -1,25 +1,25 @@
 <?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
 
-use DB\DbInterface;
-use Plugin\AbstractExtension;
-use Smarty\JTLSmarty;
+use JTL\DB\DbInterface;
+use JTL\Plugin\PluginInterface;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class AbstractWidget
- * @package Widgets
+ * @package JTL\Widgets
  */
 interface WidgetInterface
 {
     /**
-     * @param JTLSmarty $smarty
-     * @param DbInterface  $db
-     * @param \Plugin|\Plugin\Extension $oPlugin
+     * @param JTLSmarty       $smarty
+     * @param DbInterface     $db
+     * @param PluginInterface $oPlugin
      */
     public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $oPlugin = null);
 
@@ -44,14 +44,14 @@ interface WidgetInterface
     public function setDB(DbInterface $oDB): void;
 
     /**
-     * @return AbstractExtension
+     * @return PluginInterface
      */
-    public function getPlugin(): AbstractExtension;
+    public function getPlugin(): PluginInterface;
 
     /**
-     * @param AbstractExtension $oPlugin
+     * @param PluginInterface $oPlugin
      */
-    public function setPlugin(AbstractExtension $oPlugin): void;
+    public function setPlugin(PluginInterface $oPlugin): void;
 
     /**
      *

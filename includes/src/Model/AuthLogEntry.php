@@ -4,12 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Model;
+namespace JTL\Model;
+
+use JTL\Backend\AdminLoginStatus;
 
 /**
  * Class AuthLogEntry
- *
- * @package Model
+ * @package JTL\Model
  */
 class AuthLogEntry
 {
@@ -26,7 +27,7 @@ class AuthLogEntry
     /**
      * @var int
      */
-    public $code = \AdminLoginStatus::ERROR_UNKNOWN;
+    public $code = AdminLoginStatus::ERROR_UNKNOWN;
 
     /**
      * @return array

@@ -4,10 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
-use Helpers\Form;
-use Helpers\Request;
-use Helpers\Cart;
+use JTL\Helpers\Product;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Cart;
+use JTL\Alert\Alert;
+use JTL\Kampagne;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
@@ -15,7 +21,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 Shop::run();
 $conf             = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $params           = Shop::getParameters();
-$cURLID           = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
+$cURLID           = Text::filterXSS(Request::verifyGPDataString('wlid'));
 $kWunschliste     = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)
     ? Request::verifyGPCDataInt('wl') //one of multiple customer wishlists
     : ($params['kWunschliste'] //default wishlist from Shop class
@@ -28,7 +34,7 @@ $action           = null;
 $kWunschlistePos  = null;
 $wishlists        = [];
 $linkHelper       = Shop::Container()->getLinkService();
-$customerID       = Session\Frontend::getCustomer()->getID();
+$customerID       = Frontend::getCustomer()->getID();
 $alertHelper      = Shop::Container()->getAlertService();
 
 if ($kWunschliste === 0 && $customerID > 0 && empty($_SESSION['Wunschliste']->kWunschliste)) {
@@ -54,6 +60,7 @@ if ($action !== null && Form::validateToken()) {
         $userOK       = $customerID === (int)$wl->kKunde;
         switch ($action) {
             case 'addToCart':
+                Wunschliste::update($kWunschliste);
                 $wishlistPosition = Wunschliste::getWishListPositionDataByID($kWunschlistePos);
                 if (isset($wishlistPosition->kArtikel) && $wishlistPosition->kArtikel > 0) {
                     $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
@@ -80,12 +87,12 @@ if ($action !== null && Form::validateToken()) {
                     ['kWunschliste', 'kKunde'],
                     [$kWunschliste, $customerID]
                 );
-                if (!empty($wlData->kWunschliste) && strlen($wlData->cURLID) > 0) {
+                if (!empty($wlData->kWunschliste) && mb_strlen($wlData->cURLID) > 0) {
                     $step = 'wunschliste anzeigen';
                     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
                     if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
-                            $mails = explode(' ', StringHandler::filterXSS($_POST['email']));
+                            $mails = explode(' ', Text::filterXSS($_POST['email']));
                             $alertHelper->addAlert(
                                 Alert::TYPE_NOTE,
                                 Wunschliste::send($mails, $kWunschliste),
@@ -163,7 +170,7 @@ if ($action !== null && Form::validateToken()) {
                 }
                 $wl = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
                 if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $wl->cName) {
-                    $wl->cName = $_POST['wishlistName'];
+                    $wl->cName = Text::htmlentities(Text::filterXSS($_POST['wishlistName']));
                     Shop::Container()->getDB()->update(
                         'twunschliste',
                         'kWunschliste',
@@ -205,7 +212,7 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'createNew':
-                $CWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
+                $CWunschlisteName = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
                 $alertHelper->addAlert(
                     Alert::TYPE_NOTE,
                     Wunschliste::save($CWunschlisteName),
@@ -258,8 +265,8 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'search':
-                $searchQuery = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-                if ($userOK === true && strlen($searchQuery) > 0) {
+                $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+                if ($userOK === true && mb_strlen($searchQuery) > 0) {
                     $wishlist                      = new Wunschliste($kWunschliste);
                     $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
                 }
@@ -269,8 +276,8 @@ if ($action !== null && Form::validateToken()) {
                 break;
         }
     } elseif ($action === 'search' && $kWunschliste > 0) {
-        $searchQuery = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-        if (strlen($searchQuery) > 0) {
+        $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+        if (mb_strlen($searchQuery) > 0) {
             $wishlist                      = new Wunschliste($kWunschliste);
             $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
         }
@@ -285,7 +292,7 @@ if (Request::verifyGPCDataInt('wlidmsg') > 0) {
     );
 }
 if (Request::verifyGPCDataInt('error') === 1) {
-    if (strlen($cURLID) > 0) {
+    if (mb_strlen($cURLID) > 0) {
         $wl = Shop::Container()->getDB()->select('twunschliste', 'cURLID', $cURLID);
         if (!isset($wl->kWunschliste, $wl->nOeffentlich) || $wl->kWunschliste >= 0 || $wl->nOeffentlich <= 0) {
             $alertHelper->addAlert(
@@ -345,6 +352,7 @@ if ($customerID > 0) {
 }
 Shop::Smarty()->assign('CWunschliste', $wishlist)
     ->assign('oWunschliste_arr', $wishlists)
+    ->assign('newWL', Request::verifyGPCDataInt('newWL'))
     ->assign('wlsearch', $searchQuery)
     ->assign('Link', $link)
     ->assign('hasItems', !empty($wishlist->CWunschlistePos_arr))
@@ -357,7 +365,8 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
     $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
     if (isset($campaign->kKampagne, $campaign->cWert)
-        && strtolower($campaign->cWert) === strtolower(Request::verifyGPDataString($campaign->cParameter))
+        && mb_convert_case($campaign->cWert, MB_CASE_LOWER) ===
+        strtolower(Request::verifyGPDataString($campaign->cParameter))
     ) {
         $event               = new stdClass();
         $event->kKampagne    = $campaign->kKampagne;

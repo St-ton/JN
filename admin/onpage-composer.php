@@ -4,18 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
 
 /**
- * @global Smarty\JTLSmarty $smarty
- * @global AdminAccount $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
 
-\Shop::Container()->getGetText()->loadAdminLocale('opc');
+JTL\Shop::Container()->getGetText()->loadAdminLocale('opc');
 
 $pageKey      = Request::verifyGPCDataInt('pageKey');
 $pageId       = Request::verifyGPDataString('pageId');

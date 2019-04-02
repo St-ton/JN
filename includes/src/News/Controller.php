@@ -4,22 +4,28 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
 
-use DB\DbInterface;
-use DB\ReturnType;
-use Helpers\Form;
-use Helpers\URL;
-use Pagination\Pagination;
-use Session\Frontend;
-use Smarty\JTLSmarty;
-use Tightenco\Collect\Support\Collection;
+use function Functional\pluck;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Helpers\URL;
+use JTL\Pagination\Pagination;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\SimpleMail;
+use JTL\Smarty\JTLSmarty;
+use stdClass;
+use Illuminate\Support\Collection;
 use function Functional\every;
 use function Functional\map;
 
 /**
  * Class Controller
- * @package News
+ * @package JTL\News
  */
 class Controller
 {
@@ -73,20 +79,20 @@ class Controller
     public function getPageType(array $params): int
     {
         if (!isset($_SESSION['NewsNaviFilter'])) {
-            $_SESSION['NewsNaviFilter'] = new \stdClass();
+            $_SESSION['NewsNaviFilter'] = new stdClass();
         }
-        if (\Helpers\Request::verifyGPCDataInt('nSort') > 0) {
-            $_SESSION['NewsNaviFilter']->nSort = \Helpers\Request::verifyGPCDataInt('nSort');
-        } elseif (\Helpers\Request::verifyGPCDataInt('nSort') === -1) {
+        if (Request::verifyGPCDataInt('nSort') > 0) {
+            $_SESSION['NewsNaviFilter']->nSort = Request::verifyGPCDataInt('nSort');
+        } elseif (Request::verifyGPCDataInt('nSort') === -1) {
             $_SESSION['NewsNaviFilter']->nSort = -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->nSort)) {
             $_SESSION['NewsNaviFilter']->nSort = 1;
         }
         if ((int)$params['cDatum'] === -1) {
             $_SESSION['NewsNaviFilter']->cDatum = -1;
-        } elseif (\strlen($params['cDatum']) > 0) {
-            $_SESSION['NewsNaviFilter']->cDatum = \substr_count($params['cDatum'], '-') > 0
-                ? \StringHandler::filterXSS($params['cDatum'])
+        } elseif (\mb_strlen($params['cDatum']) > 0) {
+            $_SESSION['NewsNaviFilter']->cDatum = \mb_substr_count($params['cDatum'], '-') > 0
+                ? Text::filterXSS($params['cDatum'])
                 : -1;
         } elseif (!isset($_SESSION['NewsNaviFilter']->cDatum)) {
             $_SESSION['NewsNaviFilter']->cDatum = -1;
@@ -125,9 +131,9 @@ class Controller
 
     /**
      * @param int $id
-     * @return \stdClass|null
+     * @return stdClass|null
      */
-    private function getMonthOverview(int $id): ?\stdClass
+    private function getMonthOverview(int $id): ?stdClass
     {
         return $this->db->queryPrepared(
             "SELECT tnewsmonatsuebersicht.*, tseo.cSeo
@@ -139,7 +145,7 @@ class Controller
                 WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :nmi",
             [
                 'nmi' => $id,
-                'lid' => \Shop::getLanguageID()
+                'lid' => Shop::getLanguageID()
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -200,7 +206,7 @@ class Controller
         } else {
             $category->getOverview(self::getFilterSQL());
         }
-        $items         = $category->filterAndSortItems($customerGroupID, \Shop::getLanguageID());
+        $items         = $category->filterAndSortItems($customerGroupID, Shop::getLanguageID());
         $newsCountShow = ($conf = (int)$this->config['news']['news_anzahl_uebersicht']) > 0
             ? $conf
             : 10;
@@ -219,12 +225,12 @@ class Controller
         $metaKeywords    = $category->getMetaKeyword();
 
         $metaTitle       = $metaTitle === ''
-            ? \Shop::Lang()->get('news', 'news') . ' ' .
-            \Shop::Lang()->get('from') . ' ' .
+            ? Shop::Lang()->get('news', 'news') . ' ' .
+            Shop::Lang()->get('from') . ' ' .
             $this->config['global']['global_shopname']
             : $metaTitle;
         $metaDescription = $metaDescription === ''
-            ? \Shop::Lang()->get('newsMetaDesc', 'news')
+            ? Shop::Lang()->get('newsMetaDesc', 'news')
             : $metaDescription;
         $metaKeywords    = $metaKeywords === ''
             ? $category->buildMetaKeywords()
@@ -296,7 +302,7 @@ class Controller
 
         if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Frontend::getCustomer()->getID() > 0) {
             if ($checkedOK) {
-                $comment             = new \stdClass();
+                $comment             = new stdClass();
                 $comment->kNews      = (int)$data['kNews'];
                 $comment->kKunde     = (int)$_SESSION['Kunde']->kKunde;
                 $comment->nAktiv     = $this->config['news']['news_kommentare_freischalten'] === 'Y'
@@ -304,7 +310,7 @@ class Controller
                     : 1;
                 $comment->cName      = $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname[0] . '.';
                 $comment->cEmail     = $_SESSION['Kunde']->cMail;
-                $comment->cKommentar = \StringHandler::htmlentities(\StringHandler::filterXSS($data['cKommentar']));
+                $comment->cKommentar = Text::htmlentities(Text::filterXSS($data['cKommentar']));
                 $comment->dErstellt  = 'now()';
 
                 \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$comment]);
@@ -312,14 +318,14 @@ class Controller
                 $this->db->insert('tnewskommentar', $comment);
 
                 if ($this->config['news']['news_kommentare_freischalten'] === 'Y') {
-                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
+                    $this->noticeMsg .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
                 } else {
-                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAdd', 'messages') . '<br>';
+                    $this->noticeMsg .= Shop::Lang()->get('newscommentAdd', 'messages') . '<br>';
                 }
             } else {
                 $this->errorMsg .= self::getCommentErrors($checks);
                 $this->smarty->assign('nPlausiValue_arr', $checks)
-                             ->assign('cPostVar_arr', \StringHandler::filterXSS($data));
+                             ->assign('cPostVar_arr', Text::filterXSS($data));
             }
         } elseif ($this->config['news']['news_kommentare_eingeloggt'] === 'N') {
             if ($checkedOK) {
@@ -327,10 +333,10 @@ class Controller
                     $cName  = Frontend::getCustomer()->cVorname . ' ' . Frontend::getCustomer()->cNachname[0] . '.';
                     $cEmail = Frontend::getCustomer()->cMail;
                 } else {
-                    $cName  = \StringHandler::filterXSS($data['cName'] ?? '');
-                    $cEmail = \StringHandler::filterXSS($data['cEmail'] ?? '');
+                    $cName  = Text::filterXSS($data['cName'] ?? '');
+                    $cEmail = Text::filterXSS($data['cEmail'] ?? '');
                 }
-                $comment         = new \stdClass();
+                $comment         = new stdClass();
                 $comment->kNews  = (int)$data['kNews'];
                 $comment->kKunde = Frontend::getCustomer()->getID();
                 $comment->nAktiv = $this->config['news']['news_kommentare_freischalten'] === 'Y'
@@ -339,7 +345,7 @@ class Controller
 
                 $comment->cName      = $cName;
                 $comment->cEmail     = $cEmail;
-                $comment->cKommentar = \StringHandler::htmlentities(\StringHandler::filterXSS($data['cKommentar']));
+                $comment->cKommentar = Text::htmlentities(Text::filterXSS($data['cKommentar']));
                 $comment->dErstellt  = 'now()';
 
                 \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => $comment]);
@@ -347,14 +353,14 @@ class Controller
                 $this->db->insert('tnewskommentar', $comment);
 
                 if ($this->config['news']['news_kommentare_freischalten'] === 'Y') {
-                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br />';
+                    $this->noticeMsg .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br />';
                 } else {
-                    $this->noticeMsg .= \Shop::Lang()->get('newscommentAdd', 'messages') . '<br />';
+                    $this->noticeMsg .= Shop::Lang()->get('newscommentAdd', 'messages') . '<br />';
                 }
             } else {
                 $this->errorMsg .= self::getCommentErrors($checks);
                 $this->smarty->assign('nPlausiValue_arr', $checks)
-                             ->assign('cPostVar_arr', \StringHandler::filterXSS($data));
+                             ->assign('cPostVar_arr', Text::filterXSS($data));
             }
         }
 
@@ -378,11 +384,11 @@ class Controller
         ];
         if (empty($post['cKommentar'])) {
             $checks['cKommentar'] = 1;
-        } elseif (\strlen($post['cKommentar']) > 1000) {
+        } elseif (\mb_strlen($post['cKommentar']) > 1000) {
             $checks['cKommentar'] = 2;
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && $newsID > 0) {
-            $oNewsKommentar = \Shop::Container()->getDB()->queryPrepared(
+            $oNewsKommentar = Shop::Container()->getDB()->queryPrepared(
                 'SELECT COUNT(*) AS nAnzahl
                     FROM tnewskommentar
                     WHERE kNews = :nid
@@ -402,14 +408,14 @@ class Controller
             if (empty($post['cName'])) {
                 $checks['cName'] = 1;
             }
-            if (empty($post['cEmail']) || \StringHandler::filterEmailAddress($post['cEmail']) === false) {
+            if (empty($post['cEmail']) || Text::filterEmailAddress($post['cEmail']) === false) {
                 $checks['cEmail'] = 1;
             }
             if ($config['news']['news_sicherheitscode'] !== 'N' && !Form::validateCaptcha($post)) {
                 $checks['captcha'] = 2;
             }
         }
-        if ((!isset($checks['cName']) || !$checks['cName']) && \SimpleMail::checkBlacklist($post['cEmail'])) {
+        if ((!isset($checks['cName']) || !$checks['cName']) && SimpleMail::checkBlacklist($post['cEmail'])) {
             $checks['cEmail'] = 2;
         }
 
@@ -426,23 +432,23 @@ class Controller
         if ($checks['cKommentar'] > 0) {
             // Kommentarfeld ist leer
             if ($checks['cKommentar'] === 1) {
-                $msg .= \Shop::Lang()->get('newscommentMissingtext', 'errorMessages') . '<br />';
+                $msg .= Shop::Lang()->get('newscommentMissingtext', 'errorMessages') . '<br />';
             } elseif ($checks['cKommentar'] === 2) {
                 // Kommentar ist länger als 1000 Zeichen
-                $msg .= \Shop::Lang()->get('newscommentLongtext', 'errorMessages') . '<br />';
+                $msg .= Shop::Lang()->get('newscommentLongtext', 'errorMessages') . '<br />';
             }
         }
         // Kunde hat bereits einen Newskommentar zu der aktuellen News geschrieben
         if ($checks['nAnzahl'] === 1) {
-            $msg .= \Shop::Lang()->get('newscommentAlreadywritten', 'errorMessages') . '<br />';
+            $msg .= Shop::Lang()->get('newscommentAlreadywritten', 'errorMessages') . '<br />';
         }
         // Kunde ist nicht eingeloggt und das Feld Name oder Email ist leer
         if ($checks['cName'] === 1 || $checks['cEmail'] === 1) {
-            $msg .= \Shop::Lang()->get('newscommentMissingnameemail', 'errorMessages') . '<br />';
+            $msg .= Shop::Lang()->get('newscommentMissingnameemail', 'errorMessages') . '<br />';
         }
         // Emailadresse ist auf der Blacklist
         if ($checks['cEmail'] === 2) {
-            $msg .= \Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />';
+            $msg .= Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />';
         }
 
         return $msg;
@@ -450,11 +456,11 @@ class Controller
 
     /**
      * @param bool $bActiveOnly
-     * @return \stdClass
+     * @return stdClass
      */
-    public static function getFilterSQL(bool $bActiveOnly = false): \stdClass
+    public static function getFilterSQL(bool $bActiveOnly = false): stdClass
     {
-        $sql              = new \stdClass();
+        $sql              = new stdClass();
         $sql->cSortSQL    = '';
         $sql->cDatumSQL   = '';
         $sql->cNewsKatSQL = '';
@@ -482,7 +488,7 @@ class Controller
                 $sql->cSortSQL = ' ORDER BY nNewsKommentarAnzahl';
                 break;
         }
-        if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
+        if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \mb_strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
             $date = \explode('-', $_SESSION['NewsNaviFilter']->cDatum);
             if (\count($date) > 1) {
                 [$nMonat, $nJahr] = $date;
@@ -508,7 +514,7 @@ class Controller
 
     /**
      * @param object $oSQL
-     * @return \stdClass[]
+     * @return stdClass[]
      */
     private function getNewsDates($oSQL): array
     {
@@ -524,16 +530,16 @@ class Controller
                     AND (tnews.cKundengruppe LIKE '%;-1;%' 
                         OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() .
             "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                    AND tnewssprache.languageID = " . \Shop::getLanguageID() . '
+                    AND tnewssprache.languageID = " . Shop::getLanguageID() . '
                 GROUP BY nJahr, nMonat
                 ORDER BY dGueltigVon DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $dates    = [];
         foreach ($dateData as $date) {
-            $oTMP        = new \stdClass();
+            $oTMP        = new stdClass();
             $oTMP->cWert = $date->nMonat . '-' . $date->nJahr;
-            $oTMP->cName = self::mapDateName((string)$date->nMonat, (int)$date->nJahr, \Shop::getLanguageCode());
+            $oTMP->cName = self::mapDateName((string)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
             $dates[]     = $oTMP;
         }
 
@@ -553,29 +559,29 @@ class Controller
         if ($langCode === 'ger') {
             switch ($month) {
                 case '01':
-                    return \Shop::Lang()->get('january', 'news') . ',' . $year;
+                    return Shop::Lang()->get('january', 'news') . ',' . $year;
                 case '02':
-                    return \Shop::Lang()->get('february', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('february', 'news') . ' ' . $year;
                 case '03':
-                    return \Shop::Lang()->get('march', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('march', 'news') . ' ' . $year;
                 case '04':
-                    return \Shop::Lang()->get('april', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('april', 'news') . ' ' . $year;
                 case '05':
-                    return \Shop::Lang()->get('may', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('may', 'news') . ' ' . $year;
                 case '06':
-                    return \Shop::Lang()->get('june', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('june', 'news') . ' ' . $year;
                 case '07':
-                    return \Shop::Lang()->get('july', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('july', 'news') . ' ' . $year;
                 case '08':
-                    return \Shop::Lang()->get('august', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('august', 'news') . ' ' . $year;
                 case '09':
-                    return \Shop::Lang()->get('september', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('september', 'news') . ' ' . $year;
                 case '10':
-                    return \Shop::Lang()->get('october', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('october', 'news') . ' ' . $year;
                 case '11':
-                    return \Shop::Lang()->get('november', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('november', 'news') . ' ' . $year;
                 case '12':
-                    return \Shop::Lang()->get('december', 'news') . ' ' . $year;
+                    return Shop::Lang()->get('december', 'news') . ' ' . $year;
             }
         } else {
             $name .= \date('F', \mktime(0, 0, 0, (int)$month, 1, $year)) . ', ' . $year;
@@ -590,9 +596,9 @@ class Controller
      */
     public function getNewsCategories(int $newsItemID): array
     {
-        $langID         = \Shop::getLanguageID();
-        $newsCategories = \Functional\map(
-            \Functional\pluck($this->db->selectAll(
+        $langID         = Shop::getLanguageID();
+        $newsCategories = map(
+            pluck($this->db->selectAll(
                 'tnewskategorienews',
                 'kNews',
                 $newsItemID,

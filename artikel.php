@@ -4,16 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Alert\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Product\Preisverlauf;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\Session\Frontend;
+use JTL\Extensions\Upload;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 Shop::setPageType(PAGE_ARTIKEL);
 $oPreisverlauf  = null;
 $bPreisverlauf  = false;
@@ -23,14 +34,14 @@ $nonAllowed     = [];
 $conf           = Shopsetting::getInstance()->getAll();
 $shopURL        = Shop::getURL() . '/';
 $alertHelper    = Shop::Container()->getAlertService();
-if ($cHinweis = Product::mapErrorCode(
+if ($productNote = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
     (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0
 )) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'productNote', ['showInAlertListTemplate' => false]);
+    $alertHelper->addAlert(Alert::TYPE_NOTE, $productNote, 'productNote', ['showInAlertListTemplate' => false]);
 }
-if ($cFehler = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'productError');
+if ($productError = Product::mapErrorCode(Request::verifyGPDataString('cFehler'))) {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $productError, 'productError');
 }
 if (isset($_POST['a'])
     && Request::verifyGPCDataInt('addproductbundle') === 1
@@ -42,14 +53,14 @@ if (isset($_POST['a'])
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
 // Warenkorbmatrix Anzeigen auf Artikel Attribut pruefen und falls vorhanden setzen
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'])
-    && strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen']) > 0
+    && mb_strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen']) > 0
 ) {
     $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] =
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigen'];
 }
 // Warenkorbmatrix Anzeigeformat auf Artikel Attribut pruefen und falls vorhanden setzen
 if (isset($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'])
-    && strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat']) > 0
+    && mb_strlen($AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat']) > 0
 ) {
     $conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] =
         $AktuellerArtikel->FunktionsAttribute['warenkorbmatrixanzeigeformat'];
@@ -66,7 +77,9 @@ $similarArticles = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel);
+    $options               = Artikel::getDefaultOptions();
+    $options->nVariationen = 1;
+    $oVariKindArtikel      = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,
@@ -84,7 +97,7 @@ if (Shop::$kVariKindArtikel > 0) {
     $bCanonicalURL = $conf['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
     $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
 }
-if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && \Session\Frontend::getCustomerGroup()->mayViewPrices()) {
+if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Frontend::getCustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0
         ? Shop::$kVariKindArtikel
         : $AktuellerArtikel->kArtikel;
@@ -144,7 +157,7 @@ if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreic
 } else {
     $ratings = $AktuellerArtikel->Bewertungen->oBewertung_arr;
 }
-if (\Session\Frontend::getCustomer()->getID() > 0) {
+if (Frontend::getCustomer()->getID() > 0) {
     $rated = Product::getRatedByCurrentCustomer(
         (int)$AktuellerArtikel->kArtikel,
         (int)$AktuellerArtikel->kVaterArtikel
@@ -193,11 +206,10 @@ if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
 }
 
-$uploads = \Extensions\Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
-$maxSize = \Extensions\Upload::uploadMax();
+$maxSize = Upload::uploadMax();
 $smarty->assign('nMaxUploadSize', $maxSize)
-       ->assign('cMaxUploadSize', \Extensions\Upload::formatGroesse($maxSize))
-       ->assign('oUploadSchema_arr', $uploads)
+       ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
+       ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)
@@ -248,7 +260,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_ARTIKEL_PAGE, ['oArtikel' => $AktuellerArtikel]);
 
 if (Request::isAjaxRequest()) {
-    $smarty->assign('listStyle', isset($_GET['isListStyle']) ? StringHandler::filterXSS($_GET['isListStyle']) : '');
+    $smarty->assign('listStyle', isset($_GET['isListStyle']) ? Text::filterXSS($_GET['isListStyle']) : '');
 }
 
 $smarty->display('productdetails/index.tpl');

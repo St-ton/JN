@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use DB\ReturnType;
-use JTL\SeoHelper;
-use Plugin\InstallCode;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Seo;
+use JTL\Plugin\InstallCode;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class FrontendLinks
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class FrontendLinks extends AbstractItem
 {
@@ -38,7 +40,7 @@ class FrontendLinks extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
             if (empty($links['LinkGroup'])) {
@@ -56,11 +58,11 @@ class FrontendLinks extends AbstractItem
                 'tlinkgroupassociations',
                 (object)['linkGroupID' => $linkGroupID, 'linkID' => $linkID]
             );
-            $allLanguages    = \Sprache::getAllLanguages(2);
-            $linkLang        = new \stdClass();
+            $allLanguages    = Sprache::getAllLanguages(2);
+            $linkLang        = new stdClass();
             $linkLang->kLink = $linkID;
             $bLinkStandard   = false;
-            $defaultLang     = new \stdClass();
+            $defaultLang     = new stdClass();
             $oldLinkID       = $oldPluginID === 0
                 ? null
                 : $this->db->select('tlink', 'kPlugin', $oldPluginID, 'cName', $links['Name']);
@@ -68,10 +70,10 @@ class FrontendLinks extends AbstractItem
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
-                if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    $linkLang->cISOSprache = \strtolower($localized['iso']);
-                } elseif (\strlen($hits2[0]) === \strlen($l)) {
-                    $linkLang->cSeo             = SeoHelper::checkSeo(SeoHelper::getSeo($localized['Seo']));
+                if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
+                    $linkLang->cISOSprache = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
+                } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
+                    $linkLang->cSeo             = Seo::checkSeo(Seo::getSeo($localized['Seo']));
                     $linkLang->cName            = $localized['Name'];
                     $linkLang->cTitle           = $localized['Title'];
                     $linkLang->cContent         = '';
@@ -92,8 +94,8 @@ class FrontendLinks extends AbstractItem
                                     AND kSprache = ' . (int)$allLanguages[$linkLang->cISOSprache]->kSprache,
                             ReturnType::DEFAULT
                         );
-                        $seo           = new \stdClass();
-                        $seo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($localized['Seo']));
+                        $seo           = new stdClass();
+                        $seo->cSeo     = Seo::checkSeo(Seo::getSeo($localized['Seo']));
                         $seo->cKey     = 'kLink';
                         $seo->kKey     = $linkID;
                         $seo->kSprache = $allLanguages[$linkLang->cISOSprache]->kSprache;
@@ -119,10 +121,10 @@ class FrontendLinks extends AbstractItem
      * Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
      *
      * @param array     $languages
-     * @param \stdClass $defaultLang
+     * @param stdClass $defaultLang
      * @param int       $linkID
      */
-    private function addMissingTranslations(array $languages, \stdClass $defaultLang, int $linkID): void
+    private function addMissingTranslations(array $languages, stdClass $defaultLang, int $linkID): void
     {
         foreach ($languages as $language) {
             if ($language->kSprache <= 0) {
@@ -133,8 +135,8 @@ class FrontendLinks extends AbstractItem
                 ['cKey', 'kKey', 'kSprache'],
                 ['kLink', $linkID, (int)$language->kSprache]
             );
-            $seo           = new \stdClass();
-            $seo->cSeo     = SeoHelper::checkSeo(SeoHelper::getSeo($defaultLang->cSeo));
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo(Seo::getSeo($defaultLang->cSeo));
             $seo->cKey     = 'kLink';
             $seo->kKey     = $linkID;
             $seo->kSprache = $language->kSprache;
@@ -153,7 +155,7 @@ class FrontendLinks extends AbstractItem
      */
     private function addLinkFile(int $pluginID, int $linkID, array $links): int
     {
-        $linkFile                      = new \stdClass();
+        $linkFile                      = new stdClass();
         $linkFile->kPlugin             = $pluginID;
         $linkFile->kLink               = $linkID;
         $linkFile->cDatei              = $links['Filename'];
@@ -170,7 +172,7 @@ class FrontendLinks extends AbstractItem
      */
     private function addLink(int $pluginID, array $links): int
     {
-        $link                     = new \stdClass();
+        $link                     = new stdClass();
         $link->kPlugin            = $pluginID;
         $link->cName              = $links['Name'];
         $link->nLinkart           = \LINKTYP_PLUGIN;
@@ -189,7 +191,7 @@ class FrontendLinks extends AbstractItem
      */
     private function addHook(int $pluginID): int
     {
-        $hook             = new \stdClass();
+        $hook             = new stdClass();
         $hook->kPlugin    = $pluginID;
         $hook->nHook      = \HOOK_SEITE_PAGE_IF_LINKART;
         $hook->cDateiname = \PLUGIN_SEITENHANDLER;
@@ -205,7 +207,7 @@ class FrontendLinks extends AbstractItem
     {
         $linkGroup = $this->db->select('tlinkgruppe', 'cName', $name);
         if ($linkGroup === null) {
-            $linkGroup                = new \stdClass();
+            $linkGroup                = new stdClass();
             $linkGroup->cName         = $name;
             $linkGroup->cTemplatename = $name;
             $linkGroup->kLinkgruppe   = $this->db->insert('tlinkgruppe', $linkGroup);

@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Text
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Text extends Portlet
 {
@@ -63,7 +64,7 @@ class Text extends Portlet
         return [
             'text' => [
                 'label'   => 'Text',
-                'type'    => 'richtext',
+                'type'    => InputType::RICHTEXT,
                 'default' => '<p>Rich Text Content</p>',
             ],
         ];

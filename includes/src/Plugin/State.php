@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class State
- * @package Plugin
+ * @package JTL\Plugin
  */
 class State extends Enum
 {

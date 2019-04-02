@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Button
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Button extends Portlet
 {
@@ -135,7 +136,7 @@ class Button extends Portlet
             ],
             'btn-type'              => [
                 'label'      => 'Typ',
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     'default' => 'Standard',
                     'primary' => 'Primär',
@@ -149,7 +150,7 @@ class Button extends Portlet
             ],
             'btn-size'              => [
                 'label'      => 'Größe',
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     'xs' => 'XS',
                     'sm' => 'S',
@@ -161,7 +162,7 @@ class Button extends Portlet
             ],
             'btn-alignment'         => [
                 'label'      => 'Ausrichtung',
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     'inline' => 'ohne',
                     'left'   => 'links',
@@ -173,11 +174,11 @@ class Button extends Portlet
             ],
             'btn-full-width-flag'   => [
                 'label' => 'gesamte Breite nutzen',
-                'type'  => 'checkbox',
+                'type'  => InputType::CHECKBOX,
             ],
             'btn-icon-flag'         => [
                 'label'   => 'Icon?',
-                'type'    => 'radio',
+                'type'    => InputType::RADIO,
                 'options' => [
                     'true'  => 'ja',
                     'false' => 'nein',
@@ -187,7 +188,7 @@ class Button extends Portlet
             ],
             'btn-icon-alignment'    => [
                 'label'                => 'Iconausrichtung',
-                'type'                 => 'select',
+                'type'                 => InputType::SELECT,
                 'options'              => [
                     'left'  => 'links',
                     'right' => 'rechts'
@@ -199,13 +200,13 @@ class Button extends Portlet
             ],
             'btn-icon'              => [
                 'label'              => 'Icon',
-                'type'               => 'icon',
+                'type'               => InputType::ICON,
                 'collapseControlEnd' => true,
                 'dspl_width'         => 100,
             ],
             'btn-link-flag'         => [
                 'label'      => 'Link?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'options'    => [
                     'true'  => 'ja',
                     'false' => 'nein',
@@ -226,7 +227,7 @@ class Button extends Portlet
             ],
             'btn-link-new-tab-flag' => [
                 'label'              => 'In neuem Tab öffnen?',
-                'type'               => 'checkbox',
+                'type'               => InputType::CHECKBOX,
                 'dspl_width'         => 50,
                 'collapseControlEnd' => true,
             ]

@@ -1,0 +1,111 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "exportformats"
+msgstr "Exportformate"
+
+msgid "exportformatsURL"
+msgstr "https://jtl-url.de/ycaxd"
+
+msgid "exportformatsDesc"
+msgstr "Hier können Sie Formate zum Exportieren Ihrer Artikeldaten definieren."
+
+msgid "languageCurrencyCustGrp"
+msgstr "Sprache/Währung/Kundengruppe"
+
+msgid "campaigns"
+msgstr "Kampagne"
+
+msgid "lastModified"
+msgstr "zuletzt erstellt"
+
+msgid "markedElement"
+msgstr "Markiertes Element"
+
+msgid "createExportFile"
+msgstr "Erstelle Exportdatei"
+
+msgid "createExportFileAsync"
+msgstr "Erstelle Exportdatei (asynchron)"
+
+msgid "createExportFileAsyncShort"
+msgstr "Erstellen (asynchron)"
+
+msgid "newExportformat"
+msgstr "Neues Exportformat erstellen"
+
+msgid "modifyExportformat"
+msgstr "Exportformat bearbeiten"
+
+msgid "newExportformatSave"
+msgstr "Neues Exportformat speichern"
+
+msgid "modifyExportformatSave"
+msgstr "Überarbeitetes Exportformat speichern"
+
+msgid "onlyIfNeeded"
+msgstr "Nur angeben, wenn Exportdatei die Kopfzeile enthalten soll"
+
+msgid "template"
+msgstr "Vorlage des Inhalts"
+
+msgid "smartyRules"
+msgstr "Smarty wird genutzt. Achtung: PHP-Tags und Inhalte sind nicht erlaubt."
+
+msgid "download"
+msgstr "Datei herunterladen"
+
+msgid "onlyIfNeededFooter"
+msgstr "Nur angeben, wenn die Fusszeile angehängt werden soll"
+
+msgid "saveSettings"
+msgstr "Einstellungen speichern"
+
+msgid "StartTime"
+msgstr "Startdatum (nur beim Erstellen)"
+
+msgid "encoding"
+msgstr "Zeichenkodierung"
+
+msgid "varikombiOption"
+msgstr "VariationKombi Option"
+
+msgid "varikombiOption1"
+msgstr "Vater- und Kindartikel exportieren"
+
+msgid "varikombiOption2"
+msgstr "Nur Vaterartikel exportieren"
+
+msgid "varikombiOption3"
+msgstr "Nur Kindartikel exportieren"
+
+msgid "splitSize"
+msgstr "Grösse pro Datei (MB)"
+
+msgid "successFormatEdit"
+msgstr "Das Exportformat %s wurde erfolgreich geändert."
+
+msgid "successFormatCreate"
+msgstr "Das Exportformat %s wurde erfolgreich erstellt."
+
+msgid "successFormatDelete"
+msgstr "Exportformat erfolgreich gelöscht."
+
+msgid "errorFormatDelete"
+msgstr "Exportformat konnte nicht gelöscht werden."
+
+msgid "errorFormatCreate"
+msgstr "Das Exportformat %s konnte nicht erstellt werden. Fehlende Schreibrechte?"
+
+msgid "errorExport"
+msgstr "Es ist ein Fehler beim Erstellen der Exportdatei aufgetreten."
+
+msgid "availableFormats"
+msgstr "Vorhandene Exportformate"
+
+msgid "exportAll"
+msgstr "Alle exportieren"
+
+msgid "sureDeleteFormat"
+msgstr "Exportformat löschen?"

@@ -12,7 +12,7 @@
                     </span>
                     <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}" id="orderSearch" />
                     <span class="input-group-btn">
-                        <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Suchen</button>
+                        <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {__('confSearch')}</button>
                     </span>
                 </div>
             </form>
@@ -35,12 +35,12 @@
                         <tr>
                             <th></th>
                             <th class="tleft">{__('orderNumber')}</th>
-                            <th class="tleft">{__('orderCostumer')}</th>
+                            <th class="tleft">{__('customer')}</th>
                             <th class="tleft">{__('orderCostumerRegistered')}</th>
                             <th class="tleft">{__('orderShippingName')}</th>
                             <th class="tleft">{__('orderPaymentName')}</th>
                             <th>{__('orderWawiPickedUp')}</th>
-                            <th>{__('orderStatus')}</th>
+                            <th>{__('status')}</th>
                             <th>{__('orderSum')}</th>
                             <th class="tright">{__('orderDate')}</th>
                             <th class="tright">{__('orderIpAddress')}</th>
@@ -69,7 +69,7 @@
                                 <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{__('yes')}{else}{__('no')}{/if}</td>
                                 <td class="tcenter">
                                     {if $oBestellung->cStatus == 1}
-                                        {__('orderNew')}
+                                        {__('new')}
                                     {elseif $oBestellung->cStatus == 2}
                                         {__('orderInProgress')}
                                     {elseif $oBestellung->cStatus == 3}

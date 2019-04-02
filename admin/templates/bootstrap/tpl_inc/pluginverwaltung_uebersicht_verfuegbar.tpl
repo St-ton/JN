@@ -9,7 +9,7 @@
         // for all found licenses..
         for (var key in vLicenses) {
             // ..bind a click-handler to the plugins checkbox
-            $('input[id="plugin-check-'+key+'"]').click(function(event) {
+            $('input[id="plugin-check-'+key+'"]').on('click', function(event) {
                 // grab the element, which was rising that click-event (click to the checkbox)
                 var oTemp = $(event.currentTarget);
                 szPluginName = oTemp.val();
@@ -58,14 +58,14 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">License Plugin</h4>
+                                    <h4 class="modal-title">{__('licensePlugin')}</h4>
                                 </div>
                                 <div class="modal-body">
                                     {* license.md content goes here via js *}
                                 </div>
                                 <div class="modal-footer">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;Ok</button>
+                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;{__('ok')}</button>
                                         <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('Cancel')}</button>
                                     </div>
                                 </div>
@@ -90,9 +90,9 @@
                                     <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="Achtung: Plugin ist nicht vollständig Shop4-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-danger"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fa fa-warning"></i></span>
                                         {else}
-                                            <span title="Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                         {/if}
                                     {/if}
                                 </td>
@@ -100,7 +100,7 @@
                                     <label for="plugin-check-{$listingItem->getDir()}">{$listingItem->getName()}</label>
                                     <p>{$listingItem->getDescription()}</p>
                                     {if $listingItem->isShop4Compatible() === false && $listingItem->isShop5Compatible() === false}
-                                        <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen.</div>
+                                        <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}
                                 </td>
                                 <td class="tcenter">{$listingItem->getVersion()}</td>
@@ -111,7 +111,7 @@
                         <tfoot>
                         <tr>
                             <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
-                            <td colspan="5"><label for="ALLMSGS4">{__('pluginSelectAll')}</label></td>
+                            <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
                         </tr>
                         </tfoot>
                     </table>

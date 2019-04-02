@@ -4,7 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Checkout\Bestellung;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Plugin\Helper;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 require_once __DIR__ . '/../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -16,12 +23,7 @@ define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 $logger              = Shop::Container()->getLogService();
 $moduleId            = null;
 $Sprache             = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-$conf                = Shop::getSettings([
-    CONF_GLOBAL,
-    CONF_KUNDEN,
-    CONF_KAUFABWICKLUNG,
-    CONF_ZAHLUNGSARTEN
-]);
+$conf                = Shopsetting::getInstance()->getAll();
 $cEditZahlungHinweis = '';
 //Session Hash
 $cPh = Request::verifyGPDataString('ph');
@@ -52,7 +54,7 @@ if (strlen($cSh) > 0) {
         $logger->debug('Notify SH: ' . print_r($_REQUEST, true));
     }
     // Load from Session Hash / Session Hash starts with "_"
-    $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
+    $sessionHash    = substr(Text::htmlentities(Text::filterXSS($cSh)), 1);
     $paymentSession = Shop::Container()->getDB()->select(
         'tzahlungsession',
         'cZahlungsID',
@@ -77,9 +79,9 @@ if (strlen($cSh) > 0) {
     if (session_id() !== $paymentSession->cSID) {
         session_destroy();
         session_id($paymentSession->cSID);
-        $session = \Session\Frontend::getInstance(true, true);
+        $session = Frontend::getInstance(true, true);
     } else {
-        $session = \Session\Frontend::getInstance(false, false);
+        $session = Frontend::getInstance(false, false);
     }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 
@@ -96,9 +98,9 @@ if (strlen($cSh) > 0) {
             if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
                 $logger->debug('Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true));
             }
-            $kPlugin = \Plugin\Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+            $kPlugin = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
             if ($kPlugin > 0) {
-                $loader             = \Plugin\Helper::getLoaderByPluginID($kPlugin);
+                $loader             = Helper::getLoaderByPluginID($kPlugin);
                 $oPlugin            = $loader->init($kPlugin);
                 $GLOBALS['oPlugin'] = $oPlugin;
             }
@@ -166,7 +168,7 @@ if (strlen($cSh) > 0) {
 
 /*** Payment Hash ***/
 
-$session = \Session\Frontend::getInstance();
+$session = Frontend::getInstance();
 if (strlen($cPh) > 0) {
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->debug('Notify request:' . print_r($_REQUEST, true));
@@ -177,8 +179,8 @@ if (strlen($cPh) > 0) {
             LEFT JOIN tzahlungsart ZA
                 ON ZA.kZahlungsart = ZID.kZahlungsart
             WHERE ZID.cId = :hash',
-        ['hash' => StringHandler::htmlentities(StringHandler::filterXSS($cPh))],
-        \DB\ReturnType::SINGLE_OBJECT
+        ['hash' => Text::htmlentities(Text::filterXSS($cPh))],
+        ReturnType::SINGLE_OBJECT
     );
 
     if ($paymentId === false) {
@@ -202,7 +204,7 @@ if ($moduleId !== null) {
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
             $logger->debug('Payment Hash ' . $cPh . ' ergab Order' . print_r($paymentMethod, true));
         }
-        $paymentHash = Shop::Container()->getDB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
+        $paymentHash = Shop::Container()->getDB()->escape(Text::htmlentities(Text::filterXSS($cPh)));
         $paymentMethod->handleNotification($order, $paymentHash, $_REQUEST);
         if ($paymentMethod->redirectOnPaymentSuccess() === true) {
             header('Location: ' . $paymentMethod->getReturnURL($order));

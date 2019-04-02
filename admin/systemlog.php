@@ -4,25 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Filter;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Jtllog;
+use JTL\Shop;
+use JTL\Pagination\Filter;
+use JTL\Pagination\Pagination;
+use JTL\Pagination\Operation;
+use JTL\Alert\Alert;
 
 /**
- * @global Smarty\JTLSmarty $smarty
- * @global AdminAccount     $oAccount
+ * @global \JTL\Smarty\JTLSmarty     $smarty
+ * @global \JTL\Backend\AdminAccount $oAccount
  */
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 
-$cHinweis    = '';
-$cFehler     = '';
+$alertHelper = Shop::Container()->getAlertService();
 $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
-        $cHinweis = __('successSystemLogReset');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSystemLogReset'), 'successSystemLogReset');
     } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update(
@@ -32,23 +35,27 @@ if (Form::validateToken()) {
             (object)['cWert' => $minLogLevel]
         );
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
-        $cHinweis = __('successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         $smarty->assign('cTab', 'config');
     } elseif (Request::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
-            $cHinweis = Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete');
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete'),
+                'successEntriesDelete'
+            );
         }
     }
 }
 
 $filter      = new Filter('syslog');
 $levelSelect = $filter->addSelectfield('Loglevel', 'nLevel');
-$levelSelect->addSelectOption('alle', \Pagination\Operation::CUSTOM);
-$levelSelect->addSelectOption('Debug', \Monolog\Logger::DEBUG, \Pagination\Operation::EQUALS);
-$levelSelect->addSelectOption('Hinweis', \Monolog\Logger::INFO, \Pagination\Operation::EQUALS);
-$levelSelect->addSelectOption('Fehler', \Monolog\Logger::ERROR, \Pagination\Operation::GREATER_THAN_EQUAL);
+$levelSelect->addSelectOption('alle', Operation::CUSTOM);
+$levelSelect->addSelectOption('Debug', \Monolog\Logger::DEBUG, Operation::EQUALS);
+$levelSelect->addSelectOption('Hinweis', \Monolog\Logger::INFO, Operation::EQUALS);
+$levelSelect->addSelectOption('Fehler', \Monolog\Logger::ERROR, Operation::GREATER_THAN_EQUAL);
 $filter->addDaterangefield('Zeitraum', 'dErstellt');
-$searchfield = $filter->addTextfield('Suchtext', 'cLog', \Pagination\Operation::CONTAINS);
+$searchfield = $filter->addTextfield('Suchtext', 'cLog', Operation::CONTAINS);
 $filter->assemble();
 
 $searchString     = $searchfield->getValue();
@@ -79,9 +86,7 @@ foreach ($logData as $log) {
         );
     }
 }
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('oFilter', $filter)
+$smarty->assign('oFilter', $filter)
        ->assign('oPagination', $pagination)
        ->assign('oLog_arr', $logData)
        ->assign('minLogLevel', $minLogLevel)

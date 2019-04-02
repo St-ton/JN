@@ -1,11 +1,37 @@
 stages:
-#  - codeclimate
+  - codeQuality
   - test
   - cleanUpTest
   - build
   - deploy
   - cleanUp
+  - stagingPre
   - staging
+
+.codeQualityScripts: &codeQualityScripts |
+  function codeQualityCheck() {
+    export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
+
+    if [[ -n "$CI_USER_VAR" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
+      echo ""
+    fi
+
+    echo "Code quality check of projekt in docker image codesniffer..."
+
+    docker run \
+      -v $(pwd):/code \
+      -w /code \
+      --name="$CI_CONTAINER_NAME" \
+      $CI_REGISTRY_IMAGE/codesniffer \
+      sh -c "bash build/scripts/global-codesniffer.sh /code"
+
+    docker stop "$CI_CONTAINER_NAME"
+    docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
+
+    echo "Code quality check finished"
+  }
 
 .testingScript: &testingScript |
   export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
@@ -116,58 +142,53 @@ stages:
   }
 
 .devCheckoutScripts: &devCheckoutScripts |
+  export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+  export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
+
+  function downloadProcess() {
+    export RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
+    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+
+    curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $RUNNER_PATH_ZIP -d $EXTRACTION_PATH
+    rm $RUNNER_PATH_ZIP
+  }
   function deployProcess() {
     export PHP_VERSION=$1;
-    export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
-    export DOWNLOAD_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
-    export DOWNLOAD_PATH_ZIP="$DOWNLOAD_PATH.zip";
-    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
-    export MIGRATION_COUNT_BEFORE=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+    export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
+    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
-    curl -o $DOWNLOAD_PATH_ZIP $DOWNLOAD_URL
-    unzip -qo $DOWNLOAD_PATH_ZIP -d $DOWNLOAD_PATH
+    sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH;
 
-    export MIGRATION_COUNT_AFTER=$(ls -1 $DOWNLOAD_PATH/update/migrations/ | wc -l)
+    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "
-        require_once '${DOWNLOAD_PATH}/includes/globalinclude.php'; \
-        \$manager = new MigrationManager(null); \
-        \$manager->migrate(null); \
-        try {
-          \$result = \$manager->migrate(null);
-        } catch (Exception \$e) {
-          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
-          \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
-          echo \$result;
-          exit(1);
-        }
+      require_once '$DEPLOY_PATH/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+          foreach (\$migrations as \$migration) { \
+              echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
+          } \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
       ";
     fi
   }
 
-#code_quality:
-#  stage: codeclimate
-#  services:
-#    - docker:stable-dind
-#  script:
-#    - codeQuality
-#  artifacts:
-#    paths: [gl-code-quality-report.json]
-#  only:
-#    - branches
-#  except:
-#    - master
-#  tags:
-#    - building_testing_docker
-
-test_PHP_7.1:
-  stage: test
-  variables:
-    PHP_VERSION_TEST_STEP: '7.1'
+code_quality:
+  stage: codeQuality
   script:
-    - *testingScript
-    - testing
+    - *codeQualityScripts
+    - codeQualityCheck
+  artifacts:
+    paths: [code-quality-report.txt]
   only:
     - branches
   except:
@@ -200,22 +221,6 @@ test_PHP_7.3:
     - branches
   except:
     - master
-  tags:
-    - build
-
-removeContainerPHP7.1:
-  stage: cleanUpTest
-  variables:
-    PHP_VERSION_TEST_STEP: '7.1'
-  script:
-    - *cleanUpTesting
-    - failedTesting
-  only:
-    - branches
-  except:
-    - master
-    - /^release\/.*$/
-  when: on_failure
   tags:
     - build
 
@@ -301,6 +306,18 @@ removeContainer:
   when: on_failure
   tags:
     - build
+
+stagingPreDeploy:
+  stage: stagingPre
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *devCheckoutScripts
+    - downloadProcess
+  only:
+    - master
+  tags:
+    - dev-checkout
 
 stagingDevPhp72:
   stage: staging

@@ -4,21 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron\Admin;
+namespace JTL\Cron\Admin;
 
-use Cron\JobHydrator;
-use Cron\JobInterface;
-use Cron\Type;
-use DB\DbInterface;
-use DB\ReturnType;
-use Events\Dispatcher;
-use Events\Event;
-use Mapper\JobTypeToJob;
+use DateTime;
+use InvalidArgumentException;
+use JTL\Cron\JobHydrator;
+use JTL\Cron\JobInterface;
+use JTL\Cron\Job\Statusmail;
+use JTL\Cron\Type;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Events\Dispatcher;
+use JTL\Events\Event;
+use JTL\Mapper\JobTypeToJob;
+use JTL\Shop;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 /**
  * Class Controller
- * @package Cron\Admin
+ * @package JTL\Cron\Admin
  */
 final class Controller
 {
@@ -86,16 +91,36 @@ final class Controller
     {
         $mapper = new JobTypeToJob();
         try {
-            $mapper->map($post['type']);
-        } catch (\InvalidArgumentException $e) {
+            $class = $mapper->map($post['type']);
+        } catch (InvalidArgumentException $e) {
             return -1;
         }
-        $date           = new \DateTime($post['date']);
-        $ins            = new \stdClass();
+        if ($class === Statusmail::class) {
+            $jobs  = $this->db->selectAll('tstatusemail', 'nAktiv', 1);
+            $count = 0;
+            foreach ($jobs as $job) {
+                $date              = new DateTime($post['date']);
+                $ins               = new stdClass();
+                $ins->frequency    = (int)$job->nInterval * 24;
+                $ins->jobType      = $post['type'];
+                $ins->name         = 'statusemail';
+                $ins->tableName    = 'tstatusemail';
+                $ins->foreignKey   = 'id';
+                $ins->foreignKeyID = (int)$job->id;
+                $ins->startTime    = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
+                $ins->startDate    = $date->format('Y-m-d H:i:s');
+                $this->db->insert('tcron', $ins);
+                ++$count;
+            }
+
+            return $count;
+        }
+        $date           = new DateTime($post['date']);
+        $ins            = new stdClass();
         $ins->frequency = (int)$post['frequency'];
         $ins->jobType   = $post['type'];
         $ins->name      = 'manuell@' . \date('Y-m-d H:i:s');
-        $ins->startTime = \strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
+        $ins->startTime = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
         $ins->startDate = $date->format('Y-m-d H:i:s');
 
         return $this->db->insert('tcron', $ins);
@@ -144,7 +169,7 @@ final class Controller
                 $job   = new $class($this->db, $this->logger, $this->hydrator);
                 /** @var JobInterface $job */
                 $jobs[] = $job->hydrate($cron);
-            } catch (\InvalidArgumentException $e) {
+            } catch (InvalidArgumentException $e) {
                 $this->logger->info('Invalid cron job found: ' . $cron->jobType);
             }
         }

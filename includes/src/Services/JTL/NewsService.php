@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 
 /**
  * Class NewsService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class NewsService implements NewsServiceInterface
 {

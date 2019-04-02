@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Class Page
- * @package OPC
+ * @package JTL\OPC
  */
 class Page implements \JsonSerializable
 {
@@ -321,9 +321,10 @@ class Page implements \JsonSerializable
 
     /**
      * @param array $data
-     * @return $this
+     * @return Page
+     * @throws \Exception
      */
-    public function deserialize($data): self
+    public function deserialize(array $data): self
     {
         $this->setKey($data['key'] ?? $this->getKey());
         $this->setId($data['id'] ?? $this->getId());

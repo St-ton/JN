@@ -4,21 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\States;
+namespace JTL\Filter\States;
 
-use DB\ReturnType;
-use Filter\AbstractFilter;
-use Filter\FilterInterface;
-use Filter\Join;
-use Filter\ProductFilter;
+use JTL\DB\ReturnType;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\FilterInterface;
+use JTL\Filter\Join;
+use JTL\Filter\ProductFilter;
+use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class BaseAttribute
- * @package Filter\States
+ * @package JTL\Filter\States
  */
 class BaseAttribute extends AbstractFilter
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -76,18 +79,18 @@ class BaseAttribute extends AbstractFilter
         }
         $select = 'tmerkmal.cName';
         $join   = '';
-        if (\Shop::getLanguage() > 0 && !\Sprache::isDefaultLanguageActive()) {
+        if (Shop::getLanguage() > 0 && !Sprache::isDefaultLanguageActive()) {
             $select = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
             $join   = ' JOIN tmerkmalsprache 
                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                             AND tmerkmalsprache.kSprache = ' . \Shop::getLanguage();
+                             AND tmerkmalsprache.kSprache = ' . Shop::getLanguage();
         }
         $attributeValues = $this->productFilter->getDB()->query(
             'SELECT tmerkmalwertsprache.cWert, ' . $select . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 
                     ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND kSprache = ' . \Shop::getLanguage() . '
+                    AND kSprache = ' . Shop::getLanguage() . '
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
                 ' . $join . '
                 WHERE tmerkmalwert.kMerkmalWert = ' . $this->getValue(),
@@ -96,7 +99,7 @@ class BaseAttribute extends AbstractFilter
         if (\count($attributeValues) > 0) {
             $attributeValue = $attributeValues[0];
             unset($attributeValues[0]);
-            if (\strlen($attributeValue->cWert) > 0) {
+            if (\mb_strlen($attributeValue->cWert) > 0) {
                 if (!empty($this->getName())) {
                     $this->setName($attributeValue->cName . ': ' . $attributeValue->cWert);
                 } elseif (!empty($attributeValue->cMMName)) {
@@ -106,9 +109,9 @@ class BaseAttribute extends AbstractFilter
                 }
                 if (\count($attributeValues) > 0) {
                     foreach ($attributeValues as $attr) {
-                        if (isset($attr->cName) && \strlen($attr->cName) > 0) {
+                        if (isset($attr->cName) && \mb_strlen($attr->cName) > 0) {
                             $this->setName($this->getName() . ', ' . $attr->cName . ': ' . $attr->cWert);
-                        } elseif (isset($attr->cMMName) && \strlen($attr->cMMName) > 0) {
+                        } elseif (isset($attr->cMMName) && \mb_strlen($attr->cMMName) > 0) {
                             $this->setName($this->getName() . ', ' . $attr->cMMName . ': ' . $attr->cWert);
                         }
                     }

@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Catalog\Product\Merkmal;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class AuswahlAssistentFrage
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class AuswahlAssistentFrage
 {
@@ -66,6 +68,7 @@ class AuswahlAssistentFrage
     public $oMerkmal;
 
     /**
+     * AuswahlAssistentFrage constructor.
      * @param int  $kAuswahlAssistentFrage
      * @param bool $activeOnly
      */
@@ -82,7 +85,7 @@ class AuswahlAssistentFrage
      */
     private function loadFromDB(int $questionID, bool $activeOnly = true): void
     {
-        $oDbResult = \Shop::Container()->getDB()->query(
+        $oDbResult = Shop::Container()->getDB()->query(
             'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
@@ -121,7 +124,7 @@ class AuswahlAssistentFrage
             if ($activeOnly) {
                 $cAktivSQL = ' AND nAktiv = 1';
             }
-            $data = \Shop::Container()->getDB()->query(
+            $data = Shop::Container()->getDB()->query(
                 'SELECT *
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = ' . $groupID .
@@ -145,14 +148,14 @@ class AuswahlAssistentFrage
     {
         $checks = $this->checkQuestion();
         if (\count($checks) === 0) {
-            $ins                          = new \stdClass();
+            $ins                          = new stdClass();
             $ins->kAuswahlAssistentFrage  = $this->kAuswahlAssistentFrage;
             $ins->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
             $ins->kMerkmal                = $this->kMerkmal;
             $ins->cFrage                  = $this->cFrage;
             $ins->nSort                   = $this->nSort;
             $ins->nAktiv                  = $this->nAktiv;
-            $kAuswahlAssistentFrage       = \Shop::Container()->getDB()->insert('tauswahlassistentfrage', $ins);
+            $kAuswahlAssistentFrage       = Shop::Container()->getDB()->insert('tauswahlassistentfrage', $ins);
 
             if ($kAuswahlAssistentFrage > 0) {
                 return $bPrimary ? $kAuswahlAssistentFrage : true;
@@ -171,14 +174,14 @@ class AuswahlAssistentFrage
     {
         $checks = $this->checkQuestion(true);
         if (\count($checks) === 0) {
-            $upd                          = new \stdClass();
+            $upd                          = new stdClass();
             $upd->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
             $upd->kMerkmal                = $this->kMerkmal;
             $upd->cFrage                  = $this->cFrage;
             $upd->nSort                   = $this->nSort;
             $upd->nAktiv                  = $this->nAktiv;
 
-            \Shop::Container()->getDB()->update(
+            Shop::Container()->getDB()->update(
                 'tauswahlassistentfrage',
                 'kAuswahlAssistentFrage',
                 (int)$this->kAuswahlAssistentFrage,
@@ -202,7 +205,7 @@ class AuswahlAssistentFrage
             && \count($params['kAuswahlAssistentFrage_arr']) > 0
         ) {
             foreach ($params['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
-                \Shop::Container()->getDB()->delete(
+                Shop::Container()->getDB()->delete(
                     'tauswahlassistentfrage',
                     'kAuswahlAssistentFrage',
                     (int)$kAuswahlAssistentFrage
@@ -222,7 +225,7 @@ class AuswahlAssistentFrage
     public function checkQuestion(bool $update = false): array
     {
         $checks = [];
-        if (\strlen($this->cFrage) === 0) {
+        if (\mb_strlen($this->cFrage) === 0) {
             $checks['cFrage'] = 1;
         }
         if ($this->kAuswahlAssistentGruppe === null
@@ -255,7 +258,7 @@ class AuswahlAssistentFrage
     private function isMerkmalTaken(int $kMerkmal, int $kAuswahlAssistentGruppe): bool
     {
         if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-            $oFrage = \Shop::Container()->getDB()->select(
+            $oFrage = Shop::Container()->getDB()->select(
                 'tauswahlassistentfrage',
                 'kMerkmal',
                 $kMerkmal,
@@ -272,12 +275,12 @@ class AuswahlAssistentFrage
     /**
      * @param int  $kMerkmal
      * @param bool $bMMW
-     * @return \Merkmal|\stdClass
+     * @return Merkmal|stdClass
      */
     public static function getMerkmal(int $kMerkmal, bool $bMMW = false)
     {
         return $kMerkmal > 0
-            ? new \Merkmal($kMerkmal, $bMMW)
-            : new \stdClass();
+            ? new Merkmal($kMerkmal, $bMMW)
+            : new stdClass();
     }
 }

@@ -4,15 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
+
+use JTL\MagicCompatibilityTrait;
+use JTL\Sprache;
 
 /**
  * Class AbstractLink
- * @package Link
+ * @package JTL\Link
  */
 abstract class AbstractLink implements LinkInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -60,7 +63,7 @@ abstract class AbstractLink implements LinkInterface
      */
     protected static function parseSSKAdvanced($ssk): array
     {
-        return \is_string($ssk) && \strtolower($ssk) !== 'null'
+        return \is_string($ssk) && \mb_convert_case($ssk, \MB_CASE_LOWER) !== 'null'
             ? \array_map('\intval', \array_map('\trim', \array_filter(\explode(';', $ssk))))
             : [];
     }
@@ -147,7 +150,7 @@ abstract class AbstractLink implements LinkInterface
     public function getNamesCompat(): array
     {
         $byCode    = [];
-        $languages = \Sprache::getAllLanguages(1);
+        $languages = Sprache::getAllLanguages(1);
         foreach ($this->getNames() as $langID => $name) {
             $byCode[$languages[$langID]->cISO] = $name;
         }

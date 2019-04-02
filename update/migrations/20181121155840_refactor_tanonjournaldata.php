@@ -6,12 +6,15 @@
  * @created Wed, 21 Nov 2018 15:58:40 +0100
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20181121155840
  */
 class Migration_20181121155840 extends Migration implements IMigration
 {
-    protected $author = 'mh';
+    protected $author      = 'mh';
     protected $description = 'Refactor tanonjournaldata';
 
     public function up()
@@ -33,17 +36,32 @@ class Migration_20181121155840 extends Migration implements IMigration
             DEFAULT CHARSET=utf8
         ");
 
-        $this->setLocalization('ger', 'account data', 'customerOpenOrders', 'Sie haben noch %d offene Bestellungen%s. Wenn Sie Ihr Kundenkonto jetzt löschen, werden alle 
-        restlichen Daten automatisch gelöscht, sobald alle Bestellungen abgeschlossen sind.');
+        $this->setLocalization(
+            'ger',
+            'account data',
+            'customerOpenOrders',
+            'Sie haben noch %d offene Bestellungen%s. Wenn Sie Ihr Kundenkonto jetzt löschen, werden alle 
+        restlichen Daten automatisch gelöscht, sobald alle Bestellungen abgeschlossen sind.'
+        );
         $this->setLocalization('eng', 'account data', 'customerOpenOrders', 'You have %d open orders%s.
         You can delete your account. The remaining data will be deleted automatically after all orders are finished.');
-        $this->setLocalization('ger', 'account data', 'customerOrdersInCancellationTime', ' und %d Bestellungen deren Retourenfrist noch nicht abgelaufen ist');
-        $this->setLocalization('eng', 'account data', 'customerOrdersInCancellationTime', ' and %d orders in cancellation time');
+        $this->setLocalization(
+            'ger',
+            'account data',
+            'customerOrdersInCancellationTime',
+            ' und %d Bestellungen deren Retourenfrist noch nicht abgelaufen ist'
+        );
+        $this->setLocalization(
+            'eng',
+            'account data',
+            'customerOrdersInCancellationTime',
+            ' and %d orders in cancellation time'
+        );
 
         $this->setConfig(
             'global_cancellation_time',
             14,
-            CONF_GLOBAL,
+            \CONF_GLOBAL,
             'Retourenfrist',
             'number',
             650,

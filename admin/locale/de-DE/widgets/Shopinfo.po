@@ -1,0 +1,5 @@
+msgid "Shopinfo_title"
+msgstr "Shop-Informationen"
+
+msgid "Shopinfo_desc"
+msgstr "JTL-Shop Informationen"

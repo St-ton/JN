@@ -4,15 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\Admin\InputType;
-use Plugin\ExtensionData\Config;
-use Plugin\InstallCode;
+use JTL\Plugin\Admin\InputType;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\InstallCode;
+use stdClass;
 
 /**
  * Class SettingsLinks
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class SettingsLinks extends AbstractItem
 {
@@ -45,10 +46,10 @@ class SettingsLinks extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
+            if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                 $sort = (int)$settingsLinks['sort'];
-            } elseif (\strlen($hits2[0]) === \strlen($i)) {
-                $menuItem             = new \stdClass();
+            } elseif (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
+                $menuItem             = new stdClass();
                 $menuItem->kPlugin    = $pluginID;
                 $menuItem->cName      = $settingsLinks['Name'];
                 $menuItem->cDateiname = '';
@@ -68,7 +69,7 @@ class SettingsLinks extends AbstractItem
                     $j = (string)$j;
                     \preg_match('/[0-9]+\sattr/', $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
-                    if (isset($hits3[0]) && \strlen($hits3[0]) === \strlen($j)) {
+                    if (isset($hits3[0]) && \mb_strlen($hits3[0]) === \mb_strlen($j)) {
                         $type         = $setting['type'];
                         $multiple     = (isset($setting['multiple'])
                             && $setting['multiple'] === 'Y'
@@ -78,8 +79,8 @@ class SettingsLinks extends AbstractItem
                             : $setting['initialValue'];
                         $sort         = $setting['sort'];
                         $cConf        = $setting['conf'];
-                    } elseif (\strlen($hits4[0]) === \strlen($j)) {
-                        $plgnConf          = new \stdClass();
+                    } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
+                        $plgnConf          = new stdClass();
                         $plgnConf->kPlugin = $pluginID;
                         $plgnConf->cName   = \is_array($setting['ValueName'])
                             ? $setting['ValueName']['0']
@@ -101,7 +102,7 @@ class SettingsLinks extends AbstractItem
                         } else {
                             $this->db->insert('tplugineinstellungen', $plgnConf);
                         }
-                        $plgnConf                   = new \stdClass();
+                        $plgnConf                   = new stdClass();
                         $plgnConf->kPlugin          = $pluginID;
                         $plgnConf->kPluginAdminMenu = $menuID;
                         $plgnConf->cName            = $setting['Name'];
@@ -159,13 +160,13 @@ class SettingsLinks extends AbstractItem
                                 foreach ($optNode['Option'] as $y => $option) {
                                     $y = (string)$y;
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                                    if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
+                                    if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];
-                                        $yx    = \substr($y, 0, \strpos($y, ' '));
+                                        $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $optNode['Option'][$yx];
 
-                                        $plgnConfValues                           = new \stdClass();
+                                        $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
                                         $plgnConfValues->cName                    = $cName;
                                         $plgnConfValues->cWert                    = $cWert;
@@ -175,7 +176,7 @@ class SettingsLinks extends AbstractItem
                                     }
                                 }
                             } elseif (\count($optNode) === 2) { // Es gibt nur eine Option
-                                $plgnConfValues                           = new \stdClass();
+                                $plgnConfValues                           = new stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $confID;
                                 $plgnConfValues->cName                    = $optNode['Option'];
                                 $plgnConfValues->cWert                    = $optNode['Option attr']['value'];
@@ -191,13 +192,13 @@ class SettingsLinks extends AbstractItem
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                                    if (isset($hits6[0]) && \strlen($hits6[0]) === \strlen($y)) {
+                                    if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                         $cWert = $option['value'];
                                         $sort  = $option['sort'];
-                                        $yx    = \substr($y, 0, \strpos($y, ' '));
+                                        $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $cName = $optNode['Option'][$yx];
 
-                                        $plgnConfValues                           = new \stdClass();
+                                        $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
                                         $plgnConfValues->cName                    = $cName;
                                         $plgnConfValues->cWert                    = $cWert;
@@ -210,7 +211,7 @@ class SettingsLinks extends AbstractItem
                                     }
                                 }
                             } elseif (\count($optNode) === 2) { // Es gibt nur eine Option
-                                $plgnConfValues                           = new \stdClass();
+                                $plgnConfValues                           = new stdClass();
                                 $plgnConfValues->kPluginEinstellungenConf = $confID;
                                 $plgnConfValues->cName                    = $optNode['Option'];
                                 $plgnConfValues->cWert                    = $optNode['Option attr']['value'];

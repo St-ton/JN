@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
-$chinweis = '';
-$cfehler  = '';
-$db       = Shop::Container()->getDB();
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$db = Shop::Container()->getDB();
 setzeSprache();
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
@@ -55,7 +56,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form
     $db->delete('texcludekeywords', 'cISOSprache', $keywords->cISOSprache);
     $db->insert('texcludekeywords', $keywords);
     Shop::Container()->getCache()->flushAll();
-    $chinweis .= __('successConfigSave') . '<br />';
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
 }
 
 $excludeKeywords = $db->select('texcludekeywords', 'cISOSprache', $_SESSION['cISOSprache']);
@@ -73,6 +74,4 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_METAANGABEN))
        ->assign('oMetaangaben_arr', $metaData)
        ->assign('keywords', $excludeKeywords)
        ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $chinweis)
-       ->assign('fehler', $cfehler)
        ->display('globalemetaangaben.tpl');

@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "warenlager"
+msgstr "Warenlager"
+
+msgid "warenlagerURL"
+msgstr "https://jtl-url.de/2onym"
+
+msgid "warenlagerDesc"
+msgstr "Hier können Sie festlegen, ob die Bestände einzelner Lager in den Artikeldetails angezeigt werden sollen. Markieren Sie dazu ein Lager als \"Im Shop aktiv\" und klicken Sie auf aktualisieren. Über die Optionen können Sie den Anzeigenamen des Lagers anpassen."
+
+msgid "warenlagerIntern"
+msgstr "Interne Bezeichnung"
+
+msgid "watenlagerActive"
+msgstr "Im Shop aktiv"
+
+msgid "warenlagerDesignation"
+msgstr "Bezeichnung ändern"
+
+msgid "successStoreRefresh"
+msgstr "Die Warenlager wurden erfolgreich aktualisiert."

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache;
+namespace JTL\Cache;
 
 /**
  * Interface JTLCacheInterface

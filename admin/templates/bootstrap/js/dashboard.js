@@ -31,7 +31,7 @@ $(function () {
 
         // add click handler for widgets collapse button
         $('<a href="#"><i class="fa fa-chevron-circle-' + (hidden ? 'down' : 'up') + '"></li></a>')
-            .click(function (e) {
+            .on('click', function (e) {
                 if ($widgetContent.is(':hidden')) {
                     ioCall('expandWidget', [widgetId, 1]);
                     $widgetContent.slideDown('fast');
@@ -47,7 +47,7 @@ $(function () {
 
         // add click handler for widgets close button
         $('<a href="#"><i class="fa fa-times"></li></a>')
-            .click(function (e) {
+            .on('click', function (e) {
                 ioCall('closeWidget', [widgetId]);
                 $widget.slideUp('fast');
                 e.preventDefault();

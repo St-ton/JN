@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
 
-use PHPUnit\Framework\TestCase;
+use JTL\Services\JTL\Validation\Rules\DateTime;
+use Tests\BaseTestCase;
 
 /**
  * Class DateTimeTest
  * @package Services\JTL\Validation\Rules
  */
-class DateTimeTest extends TestCase
+class DateTimeTest extends BaseTestCase
 {
     public function test()
     {

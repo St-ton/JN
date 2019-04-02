@@ -4,8 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Tax;
-use Helpers\ShippingMethod;
+use JTL\Alert\Alert;
+use JTL\CheckBox;
+use JTL\Checkout\VCard;
+use JTL\Customer\Kunde;
+use JTL\Customer\Kundendatenhistory;
+use JTL\DB\ReturnType;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Kampagne;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * @param array $post
@@ -22,19 +35,19 @@ function kundeSpeichern(array $post)
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $db   = Shop::Container()->getDB();
     $conf = Shop::getSettings([CONF_GLOBAL, CONF_KUNDENWERBENKUNDEN]);
-    $cart = \Session\Frontend::getCart();
+    $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
          ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
     $edit = (int)$post['editRechnungsadresse'];
     $step = 'formular';
-    Shop::Smarty()->assign('cPost_arr', StringHandler::filterXSS($post));
+    Shop::Smarty()->assign('cPost_arr', Text::filterXSS($post));
     $fehlendeAngaben     = (!$edit)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);
     $knd                 = getKundendaten($post, 1, 0);
     $cKundenattribut_arr = getKundenattribute($post);
-    $kKundengruppe       = \Session\Frontend::getCustomerGroup()->getID();
+    $kKundengruppe       = Frontend::getCustomerGroup()->getID();
     $oCheckBox           = new CheckBox();
     $fehlendeAngaben     = array_merge(
         $fehlendeAngaben,
@@ -98,7 +111,7 @@ function kundeSpeichern(array $post)
 
                 $db->query(
                     'DELETE FROM tkundenattribut WHERE kKunde = ' . (int)$_SESSION['Kunde']->kKunde . $cSQL,
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
                 foreach (array_keys($cKundenattribut_arr) as $kKundenfeld) {
                     $oKundenattribut              = new stdClass();
@@ -122,7 +135,7 @@ function kundeSpeichern(array $post)
                 'nRegistriert',
                 0
             );
-            $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
+            $kKundengruppe = Frontend::getCustomerGroup()->getID();
             if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
                 && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
@@ -146,7 +159,10 @@ function kundeSpeichern(array $post)
             $knd->cPasswortKlartext = $cPasswortKlartext;
             $obj                    = new stdClass();
             $obj->tkunde            = $knd;
-            sendeMail(MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj);
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj));
 
             $knd->cLand = $cLand;
             unset($knd->cPasswortKlartext, $knd->Anrede);
@@ -182,7 +198,7 @@ function kundeSpeichern(array $post)
                         'cid'    => (int)$knd->kKunde,
                         'amount' => (float)$conf['kundenwerbenkunden']['kwk_neukundenguthaben']
                     ],
-                    \DB\ReturnType::AFFECTED_ROWS
+                    ReturnType::AFFECTED_ROWS
                 );
                 $db->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, (object)['nRegistriert' => 1]);
             }
@@ -246,7 +262,7 @@ function gibFormularDaten(int $nCheckout = 0)
         'SELECT * 
             FROM tkundenherkunft 
             ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     Shop::Smarty()->assign('herkunfte', $herkunfte)
@@ -254,7 +270,7 @@ function gibFormularDaten(int $nCheckout = 0)
         ->assign('cKundenattribut_arr', $cKundenattribut_arr)
         ->assign(
             'laender',
-            ShippingMethod::getPossibleShippingCountries(\Session\Frontend::getCustomerGroup()->getID(), false, true)
+            ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID(), false, true)
         )
         ->assign(
             'warning_passwortlaenge',
@@ -285,14 +301,18 @@ function gibKunde()
 function gibKundeFromVCard($vCardFile)
 {
     if (is_file($vCardFile)) {
-        global $Kunde, $hinweis;
+        global $Kunde;
 
         try {
             $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
             $Kunde = $vCard->selectVCard(0)->asKunde();
             Shop::Smarty()->assign('Kunde', $Kunde);
         } catch (Exception $e) {
-            $hinweis = Shop::Lang()->get('uploadError');
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_ERROR,
+                Shop::Lang()->get('uploadError'),
+                'uploadError'
+            );
         }
     }
 }

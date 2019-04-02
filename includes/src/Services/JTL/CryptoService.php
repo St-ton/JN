@@ -4,11 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 /**
  * Class CryptoService
- * @package Services\JTL
+ *
+ * @package JTL\Services\JTL
  */
 class CryptoService implements CryptoServiceInterface
 {
@@ -50,7 +51,7 @@ class CryptoService implements CryptoServiceInterface
      */
     public function encryptXTEA(string $text): string
     {
-        return \strlen($text) > 0
+        return \mb_strlen($text) > 0
             ? (new \XTEA(\BLOWFISH_KEY))->encrypt($text)
             : $text;
     }
@@ -61,7 +62,7 @@ class CryptoService implements CryptoServiceInterface
      */
     public function decryptXTEA(string $text): string
     {
-        return \strlen($text) > 0
+        return \mb_strlen($text) > 0
             ? (new \XTEA(\BLOWFISH_KEY))->decrypt($text)
             : $text;
     }

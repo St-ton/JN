@@ -4,29 +4,31 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services;
+namespace JTL\Services;
 
-use Boxes\FactoryInterface;
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\Services\GcServiceInterface;
-use Debug\JTLDebugBar;
-use Exceptions\CircularReferenceException;
-use Exceptions\ServiceNotFoundException;
-use L10n\GetText;
+use JTL\Backend\AdminAccount;
+use JTL\Boxes\FactoryInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\Services\GcServiceInterface;
+use JTL\Debug\JTLDebugBar;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
+use JTL\L10n\GetText;
+use JTL\OPC\DB;
+use JTL\OPC\Locker;
+use JTL\OPC\PageDB;
+use JTL\OPC\PageService;
+use JTL\OPC\Service;
+use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Services\JTL\BoxServiceInterface;
+use JTL\Services\JTL\CaptchaServiceInterface;
+use JTL\Services\JTL\CryptoServiceInterface;
+use JTL\Services\JTL\LinkServiceInterface;
+use JTL\Services\JTL\NewsServiceInterface;
+use JTL\Services\JTL\PasswordServiceInterface;
+use JTL\Services\JTL\CountryServiceInterface;
 use Monolog\Logger;
-use OPC\DB;
-use OPC\Locker;
-use OPC\PageDB;
-use OPC\PageService;
-use OPC\Service;
-use Services\JTL\BoxServiceInterface;
-use Services\JTL\CaptchaServiceInterface;
-use Services\JTL\CryptoServiceInterface;
-use Services\JTL\LinkServiceInterface;
-use Services\JTL\NewsServiceInterface;
-use Services\JTL\PasswordServiceInterface;
-use Services\JTL\AlertServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -35,7 +37,7 @@ use Psr\Log\LoggerInterface;
  * This interface provides default services, that are provided by JTL-Shop core. Those Services are provided through a
  * separate interface for improving IntelliSense support for external and internal developers
  *
- * @package Services
+ * @package JTL\Services
  */
 interface DefaultServicesInterface extends ContainerInterface
 {
@@ -139,12 +141,18 @@ interface DefaultServicesInterface extends ContainerInterface
     public function getGetText() : GetText;
 
     /**
-     * @return \AdminAccount
+     * @return AdminAccount
      */
-    public function getAdminAccount(): \AdminAccount;
+    public function getAdminAccount(): AdminAccount;
 
     /**
      * @return JTLDebugBar
      */
     public function getDebugBar(): JTLDebugBar;
+
+
+    /**
+     * @return CountryServiceInterface
+     */
+    public function getCountryService() : CountryServiceInterface;
 }

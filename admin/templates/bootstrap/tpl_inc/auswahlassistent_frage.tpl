@@ -24,7 +24,7 @@ cDokuURL=__('auswahlassistentURL')}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cFrage">
-                                {__('aaQuestionName')}
+                                {__('question')}
                                 {if isset($cPlausi_arr.cName)}
                                     <span class="fillout">{__('FillOut')}</span>
                                 {/if}
@@ -33,7 +33,7 @@ cDokuURL=__('auswahlassistentURL')}
                         <input id="cFrage" class="form-control{if isset($cPlausi_arr.cFrage)} fieldfillout{/if}"
                                name="cFrage" type="text"
                                value="{if isset($cPost_arr.cFrage)}{$cPost_arr.cFrage}{elseif isset($oFrage->cFrage)}{$oFrage->cFrage}{/if}">
-                        <span class="input-group-addon">{getHelpDesc cDesc="Wie soll die Frage lauten?"}</span>
+                        <span class="input-group-addon">{getHelpDesc cDesc="{__('hintQuestionName')}"}</span>
                     </div>
 
                     <div class="input-group">
@@ -54,7 +54,7 @@ cDokuURL=__('auswahlassistentURL')}
                                 {/foreach}
                             </select>
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc="In welche Gruppe soll die Frage hinzugefügt werden?"}</span>
+                        <span class="input-group-addon">{getHelpDesc cDesc="{__('hintQuestionGroup')}"}</span>
                     </div>
 
                     <div class="input-group">
@@ -71,7 +71,7 @@ cDokuURL=__('auswahlassistentURL')}
                                 {/foreach}
                             </select>
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc="Welches Merkmal soll die Frage erhalten?"}</span>
+                        <span class="input-group-addon">{getHelpDesc cDesc="{__('hintQuestionAttribute')}"}</span>
                     </div>
 
                     <div class="input-group">
@@ -87,26 +87,26 @@ cDokuURL=__('auswahlassistentURL')}
                                name="nSort" type="text"
                                value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oFrage->nSort)}{$oFrage->nSort}{else}1{/if}">
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc="An welcher Position soll die Frage stehen? (Umso höher desto weiter unten, z.b. 3)"}
+                            {getHelpDesc cDesc="{__('hintQuestionPosition')}"}
                         </span>
                     </div>
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="nAktiv">Aktiv</label>
+                            <label for="nAktiv">{__('active')}</label>
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAktiv" class="form-control" name="nAktiv">
                                 <option value="1"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv == 1) || (isset($oFrage->nAktiv) && $oFrage->nAktiv == 1)} selected{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                                 <option value="0"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv == 0) || (isset($oFrage->nAktiv) && $oFrage->nAktiv == 0)} selected{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                             </select>
                         </span>
                         <span class="input-group-addon">
-                            {getHelpDesc cDesc="Soll die Frage aktiviert sein? (Aktivierte Fragen werden angezeigt)"}
+                            {getHelpDesc cDesc="{__('hintQuestionActive')}"}
                         </span>
                     </div>
                 </div>

@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+
 /**
  * @param string $cBetreff
  * @param string $cText
@@ -16,11 +18,11 @@ function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_a
 {
     $cPlausiValue_arr = [];
     // Betreff prüfen
-    if (strlen($cBetreff) === 0) {
+    if (mb_strlen($cBetreff) === 0) {
         $cPlausiValue_arr['cBetreff'] = 1;
     }
     // Text prüfen
-    if (strlen($cText) === 0) {
+    if (mb_strlen($cText) === 0) {
         $cPlausiValue_arr['cText'] = 1;
     }
     // Kundengruppe prüfen
@@ -55,7 +57,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 function convertDate($string)
 {
     list($dDatum, $dZeit) = explode(' ', $string);
-    if (substr_count(':', $dZeit) === 2) {
+    if (mb_substr_count(':', $dZeit) === 2) {
         list($nStunde, $nMinute) = explode(':', $dZeit);
     } else {
         list($nStunde, $nMinute, $nSekunde) = explode(':', $dZeit);
@@ -71,22 +73,21 @@ function convertDate($string)
  */
 function gibLetzteBildNummer($kNews)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
-
-    $cBild_arr = [];
-    if (is_dir($cUploadVerzeichnis . $kNews)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-        while (false !== ($Datei = readdir($DirHandle))) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                $cBild_arr[] = $Datei;
+    $uploadDir = PFAD_ROOT . PFAD_NEWSBILDER;
+    $images    = [];
+    if (is_dir($uploadDir . $kNews)) {
+        $handle = opendir($uploadDir . $kNews);
+        while (($file = readdir($handle)) !== false) {
+            if ($file !== '.' && $file !== '..') {
+                $images[] = $file;
             }
         }
     }
     $nMax       = 0;
-    $imageCount = count($cBild_arr);
+    $imageCount = count($images);
     if ($imageCount > 0) {
         for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = substr($cBild_arr[$i], 4, (strlen($cBild_arr[$i]) - strpos($cBild_arr[$i], '.')) - 3);
+            $cNummer = mb_substr($images[$i], 4, (mb_strlen($images[$i]) - mb_strpos($images[$i], '.')) - 3);
 
             if ($cNummer > $nMax) {
                 $nMax = $cNummer;
@@ -241,19 +242,19 @@ function holeNewsKategorieBilder($kNewsKategorie, $cUploadVerzeichnis)
 
 /**
  * @param int    $kNews
- * @param string $cUploadVerzeichnis
+ * @param string $uploadDir
  * @return bool
  */
-function loescheNewsBilderDir($kNews, $cUploadVerzeichnis)
+function loescheNewsBilderDir($kNews, $uploadDir)
 {
-    if (is_dir($cUploadVerzeichnis . $kNews)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kNews);
-        while (false !== ($Datei = readdir($DirHandle))) {
+    if (is_dir($uploadDir . $kNews)) {
+        $handle = opendir($uploadDir . $kNews);
+        while (($Datei = readdir($handle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
-                unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
+                unlink($uploadDir . $kNews . '/' . $Datei);
             }
         }
-        rmdir($cUploadVerzeichnis . $kNews);
+        rmdir($uploadDir . $kNews);
 
         return true;
     }

@@ -4,9 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
-use Helpers\Category;
-use Helpers\Request;
+use JTL\Helpers\Product;
+use JTL\Helpers\Category;
+use JTL\Helpers\Request;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\Catalog\Product\Bestseller;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Redirect;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Session\Frontend;
+use JTL\Extensions\AuswahlAssistent;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -14,8 +23,8 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
-/** @global \Smarty\JTLSmarty $smarty */
-/** @global \Filter\ProductFilter $NaviFilter*/
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+/** @global \JTL\Filter\ProductFilter $NaviFilter*/
 $conf               = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
 $doSearch           = true;
@@ -24,7 +33,7 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $params             = Shop::getParameters();
-/** @var \Filter\ProductFilter $NaviFilter */
+/** @var \JTL\Filter\ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
     $kKategorie                  = $NaviFilter->getCategory()->getValue();
     $_SESSION['LetzteKategorie'] = $kKategorie;
@@ -46,7 +55,7 @@ $oSuchergebnisse = $NaviFilter->generateSearchResults($AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
 if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergebnisse->getVisibleProductCount() === 1) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
-        ? (new \Kategorie(
+        ? (new Kategorie(
             $categoryID,
             $NaviFilter->getFilterConfig()->getLanguageID(),
             $NaviFilter->getFilterConfig()->getCustomerGroupID()
@@ -59,8 +68,8 @@ if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergeb
         http_response_code(301);
         $product = $oSuchergebnisse->getProducts()->pop();
         $url     = empty($product->cURL)
-            ? (\Shop::getURL() . '/?a=' . $product->kArtikel)
-            : (\Shop::getURL() . '/' . $product->cURL);
+            ? (JTL\Shop::getURL() . '/?a=' . $product->kArtikel)
+            : (JTL\Shop::getURL() . '/' . $product->cURL);
         header('Location: ' . $url);
         exit;
     }
@@ -80,8 +89,8 @@ if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,
-        \Session\Frontend::getCustomerGroup()->getID(),
-        \Session\Frontend::getCustomerGroup()->mayViewCategories(),
+        Frontend::getCustomerGroup()->getID(),
+        Frontend::getCustomerGroup()->mayViewCategories(),
         false,
         (int)$conf['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'],
         (int)$conf['global']['global_bestseller_minanzahl']
@@ -133,12 +142,12 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
     }
 }
 $oNavigationsinfo = $NaviFilter->getMetaData()->getNavigationInfo($AktuelleKategorie, $expandedCategories);
-if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
+if (mb_strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
     $cCanonicalURL = $NaviFilter->getFilterURL()->getURL(null, true) . ($pages->getCurrentPage() > 1
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');
 }
-\Extensions\AuswahlAssistent::startIfRequired(
+AuswahlAssistent::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
     $params['kKategorie'],
     Shop::getLanguageID(),
@@ -146,7 +155,7 @@ if (strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false) {
     [],
     $NaviFilter
 );
-$pagination = new \Filter\Pagination\Pagination($NaviFilter, new \Filter\Pagination\ItemFactory());
+$pagination = new JTL\Filter\Pagination\Pagination($NaviFilter, new JTL\Filter\Pagination\ItemFactory());
 $pagination->create($pages);
 $smarty->assign('NaviFilter', $NaviFilter)
        ->assign('KategorieInhalt', $categoryContent)
@@ -161,7 +170,7 @@ $smarty->assign('NaviFilter', $NaviFilter)
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-$globalMetaData = \Filter\Metadata::getGlobalMetaData();
+$globalMetaData = JTL\Filter\Metadata::getGlobalMetaData();
 $smarty->assign(
     'meta_title',
     $oNavigationsinfo->generateMetaTitle(

@@ -4,14 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use DB\ReturnType;
+use DateTime;
+use JTL\Checkout\Bestellung;
+use JTL\Cart\Warenkorb;
+use JTL\DB\ReturnType;
+use JTL\Nice;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class Download
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class Download
 {
@@ -118,7 +123,7 @@ class Download
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_DOWNLOADS);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_DOWNLOADS);
     }
 
     /**
@@ -129,7 +134,7 @@ class Download
      */
     private function loadFromDB(int $id, int $languageID, bool $info, int $orderID): void
     {
-        $item = \Shop::Container()->getDB()->select('tdownload', 'kDownload', $id);
+        $item = Shop::Container()->getDB()->select('tdownload', 'kDownload', $id);
         if ($item !== null && isset($item->kDownload) && (int)$item->kDownload > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
@@ -140,14 +145,14 @@ class Download
             $this->nSort     = (int)$this->nSort;
             if ($info) {
                 if (!$languageID) {
-                    $languageID = \Shop::getLanguageID();
+                    $languageID = Shop::getLanguageID();
                 }
                 $this->oDownloadSprache     = new DownloadSprache($item->kDownload, $languageID);
                 $this->oDownloadHistory_arr = DownloadHistory::getHistory($item->kDownload);
             }
             if ($orderID > 0) {
                 $this->kBestellung = $orderID;
-                $order             = \Shop::Container()->getDB()->select(
+                $order             = Shop::Container()->getDB()->select(
                     'tbestellung',
                     'kBestellung',
                     $orderID,
@@ -163,13 +168,13 @@ class Download
                     && $order->dBezahltDatum !== null
                     && $this->getTage() > 0
                 ) {
-                    $paymentDate = new \DateTime($order->dBezahltDatum);
+                    $paymentDate = new DateTime($order->dBezahltDatum);
                     $modifyBy    = $this->getTage() + 1;
                     $paymentDate->modify('+' . $modifyBy . ' day');
                     $this->dGueltigBis = $paymentDate->format('d.m.Y');
                 }
             }
-            $this->oArtikelDownload_arr = \Shop::Container()->getDB()->queryPrepared(
+            $this->oArtikelDownload_arr = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tartikeldownload.*
                     FROM tartikeldownload
                     JOIN tdownload 
@@ -198,7 +203,7 @@ class Download
             $ins->dGueltigBis,
             $ins->kBestellung
         );
-        $kDownload = \Shop::Container()->getDB()->insert('tdownload', $ins);
+        $kDownload = Shop::Container()->getDB()->insert('tdownload', $ins);
         if ($kDownload > 0) {
             return $bPrimary ? $kDownload : true;
         }
@@ -211,7 +216,7 @@ class Download
      */
     public function update(): int
     {
-        $upd                = new \stdClass();
+        $upd                = new stdClass();
         $upd->cID           = $this->cID;
         $upd->cPfad         = $this->cPfad;
         $upd->cPfadVorschau = $this->cPfadVorschau;
@@ -219,7 +224,7 @@ class Download
         $upd->nTage         = $this->nTage;
         $upd->dErstellt     = $this->dErstellt;
 
-        return \Shop::Container()->getDB()->update('tdownload', 'kDownload', (int)$this->kDownload, $upd);
+        return Shop::Container()->getDB()->update('tdownload', 'kDownload', (int)$this->kDownload, $upd);
     }
 
     /**
@@ -227,7 +232,7 @@ class Download
      */
     public function delete(): int
     {
-        return \Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             'DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
                 FROM tdownload
                 JOIN tdownloadsprache 
@@ -273,7 +278,7 @@ class Download
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
             }
-            $items = \Shop::Container()->getDB()->query(
+            $items = Shop::Container()->getDB()->query(
                 'SELECT ' . $cSQLSelect . '
                     FROM tartikeldownload
                     ' . $cSQLJoin . '
@@ -312,7 +317,7 @@ class Download
     }
 
     /**
-     * @param \Warenkorb $cart
+     * @param Warenkorb $cart
      * @return bool
      */
     public static function hasDownloads($cart): bool
@@ -380,7 +385,7 @@ class Download
     public static function checkFile(int $kDownload, int $kKunde, int $kBestellung): int
     {
         if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
-            $order = new \Bestellung($kBestellung);
+            $order = new Bestellung($kBestellung);
             // Existiert die Bestellung und wurde Sie bezahlt?
             if ($order->kBestellung <= 0 || empty($order->dBezahltDatum) || $order->dBezahltDatum === null) {
                 return self::ERROR_ORDER_NOT_FOUND;
@@ -410,7 +415,7 @@ class Download
                     // Check Datum
                     $paymentDate = new \DateTime($order->dBezahltDatum);
                     $paymentDate->modify('+' . ($download->getTage() + 1) . ' day');
-                    if ($download->getTage() > 0 && $paymentDate < new \DateTime()) {
+                    if ($download->getTage() > 0 && $paymentDate < new DateTime()) {
                         return self::ERROR_DOWNLOAD_EXPIRED;
                     }
 
@@ -438,22 +443,22 @@ class Download
     {
         switch ($errorCode) {
             case self::ERROR_ORDER_NOT_FOUND: // Bestellung nicht gefunden
-                $error = \Shop::Lang()->get('dlErrorOrderNotFound');
+                $error = Shop::Lang()->get('dlErrorOrderNotFound');
                 break;
             case self::ERROR_INVALID_CUSTOMER: // Kunde stimmt nicht
-                $error = \Shop::Lang()->get('dlErrorCustomerNotMatch');
+                $error = Shop::Lang()->get('dlErrorCustomerNotMatch');
                 break;
             case self::ERROR_PRODUCT_NOT_FOUND: // Kein Artikel mit Downloads gefunden
-                $error = \Shop::Lang()->get('dlErrorDownloadNotFound');
+                $error = Shop::Lang()->get('dlErrorDownloadNotFound');
                 break;
             case self::ERROR_DOWNLOAD_LIMIT_REACHED: // Maximales Downloadlimit wurde erreicht
-                $error = \Shop::Lang()->get('dlErrorDownloadLimitReached');
+                $error = Shop::Lang()->get('dlErrorDownloadLimitReached');
                 break;
             case self::ERROR_DOWNLOAD_EXPIRED: // Maximales Datum wurde erreicht
-                $error = \Shop::Lang()->get('dlErrorValidityReached');
+                $error = Shop::Lang()->get('dlErrorValidityReached');
                 break;
             case self::ERROR_MISSING_PARAMS: // Paramter fehlen
-                $error = \Shop::Lang()->get('dlErrorWrongParameter');
+                $error = Shop::Lang()->get('dlErrorWrongParameter');
                 break;
             default:
                 $error = '';
@@ -580,7 +585,7 @@ class Download
      */
     public function hasPreview(): bool
     {
-        return \strlen($this->cPfadVorschau) > 0;
+        return \mb_strlen($this->cPfadVorschau) > 0;
     }
 
     /**
@@ -588,10 +593,10 @@ class Download
      */
     public function getExtension(): string
     {
-        if (\strlen($this->cPfad) > 0) {
+        if (\mb_strlen($this->cPfad) > 0) {
             $pathInfo = \pathinfo($this->cPfad);
             if (\is_array($pathInfo)) {
-                return \strtoupper($pathInfo['extension']);
+                return \mb_convert_case($pathInfo['extension'], \MB_CASE_UPPER);
             }
         }
 
@@ -603,10 +608,10 @@ class Download
      */
     public function getPreviewExtension(): string
     {
-        if (\strlen($this->cPfadVorschau) > 0) {
+        if (\mb_strlen($this->cPfadVorschau) > 0) {
             $pathInfo = \pathinfo($this->cPfadVorschau);
             if (\is_array($pathInfo)) {
-                return \strtoupper($pathInfo['extension']);
+                return \mb_convert_case($pathInfo['extension'], \MB_CASE_UPPER);
             }
         }
 
@@ -650,7 +655,7 @@ class Download
      */
     public function getPreview(): string
     {
-        return \Shop::getURL() . '/' . \PFAD_DOWNLOADS_PREVIEW_REL . $this->cPfadVorschau;
+        return Shop::getURL() . '/' . \PFAD_DOWNLOADS_PREVIEW_REL . $this->cPfadVorschau;
     }
 
     /**
@@ -690,7 +695,7 @@ class Download
      */
     private function kopiereMembers()
     {
-        $obj     = new \stdClass();
+        $obj     = new stdClass();
         $members = \array_keys(\get_object_vars($this));
         if (\is_array($members) && \count($members) > 0) {
             foreach ($members as &$member) {
@@ -743,7 +748,7 @@ class Download
 
         $size = @\filesize($filename);
         if ($size) {
-            \header("Content-length: $size");
+            \header('Content-length: ' . $size);
         }
 
         \readfile($filename);

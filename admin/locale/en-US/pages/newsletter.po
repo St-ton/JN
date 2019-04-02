@@ -1,0 +1,237 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "newsletterqueue"
+msgstr "Warteschlange"
+
+msgid "newsletterNewSubscriber"
+msgstr "Abonnenten hinzufügen"
+
+msgid "newsletterURL"
+msgstr "https://jtl-url.de/guvcz"
+
+msgid "newsletterqueuedate"
+msgstr "Start"
+
+msgid "newsletterdraft"
+msgstr "Vorlage"
+
+msgid "newsletterlastsubscriber"
+msgstr "Letzten 20 Newsletter-Abonnenten"
+
+msgid "newsletterSubscriber"
+msgstr "Abonnenten"
+
+msgid "newsletterAllSubscriber"
+msgstr "Alle Abonnenten"
+
+msgid "newsletterSubscripterNotActive"
+msgstr "Inaktive Abonnenten"
+
+msgid "newslettersubscribername"
+msgstr "Abonnent"
+
+msgid "newslettersubscriberanrede"
+msgstr "Anrede"
+
+msgid "newsletterhistory"
+msgstr "Historie"
+
+msgid "newsletterhistorysubject"
+msgstr "Betreff"
+
+msgid "newsletterhistorydate"
+msgstr "Start"
+
+msgid "newsletterdraftcreate"
+msgstr "Vorlage erstellen"
+
+msgid "newsletterNewSearch"
+msgstr "neue Suche"
+
+msgid "newsletteredit"
+msgstr "editieren"
+
+msgid "newsletterprepare"
+msgstr "Versand vorbereiten"
+
+msgid "newslettersend"
+msgstr "Newsletter versenden"
+
+msgid "newsletterHtml"
+msgstr "Inhalt Html"
+
+msgid "newsletterText"
+msgstr "Inhalt Text"
+
+msgid "newsletteroverview"
+msgstr "Newsletter Übersicht"
+
+msgid "newsletteroverviewdesc"
+msgstr ""
+
+msgid "newsletterdraftdesc"
+msgstr "Testen Sie hier Ihre Newsletter-Vorlage vor dem Versenden. "
+
+msgid "newsletterdraftname"
+msgstr "Name der Vorlage"
+
+msgid "newsletterdraftcharacter"
+msgstr "Diese Vorlage versenden als"
+
+msgid "newsletterconfigdesc"
+msgstr "Diese E-Maileinstellungen gelten für den Newsletterversand."
+
+msgid "newsletterartnr"
+msgstr "Artikelnummer"
+
+msgid "newsletternewartnr"
+msgstr "weiteres Artikelfeld"
+
+msgid "newslettercustomergrp"
+msgstr "Newsletter versenden für"
+
+msgid "newslettersendtest"
+msgstr "Newsletter testen"
+
+msgid "newsletterdraftsaveandsend"
+msgstr "speichern, Newsletter versenden"
+
+msgid "newsletterdraftsaveandtest"
+msgstr "speichern, Newsletter testen"
+
+msgid "newsletterdraftdate"
+msgstr "Versenden ab"
+
+msgid "newsletterdraftformat"
+msgstr "(dd/mm/yyyy hh:ii)"
+
+msgid "newsletterdraftcal"
+msgstr "Kalender"
+
+msgid "newsletterdesc"
+msgstr "Verwalten Sie hier Ihre Newsletter sowie Abonnenten. Beachten Sie, dass Newsletter pro Sprache verwaltet werden."
+
+msgid "newslettersubscriberactive"
+msgstr "(*) = nicht aktiviert"
+
+msgid "newslettersubscriberdate"
+msgstr "Eingetragen am"
+
+msgid "newslettersubscriberLastNewsletter"
+msgstr "Letzter Newsletter am"
+
+msgid "newsletterqueueimprovement"
+msgstr "Verschickt"
+
+msgid "newsletterhistorycount"
+msgstr "Anzahl Empfänger"
+
+msgid "newsletterqueuecount"
+msgstr "Anzahl Empfänger"
+
+msgid "newsletterqueuecustomergrp"
+msgstr "Kundengruppen"
+
+msgid "newsletterSubscriberList"
+msgstr "Alle Abonnenten"
+
+msgid "newsletterSubscriberListDesc"
+msgstr ""
+
+msgid "newslettersubscriberSearch"
+msgstr "Abonnentensuche"
+
+msgid "newslettersubscriberSearchSubmit"
+msgstr "Suchen"
+
+msgid "newsletterSendAuthentication"
+msgstr "Wollen Sie den Newsletter wirklich versenden?"
+
+msgid "newsletterSearchBTN"
+msgstr "Suchen"
+
+msgid "newsletterSearch"
+msgstr "Suche"
+
+msgid "newsletterUnlock"
+msgstr "Freischalten"
+
+msgid "newsletterdraftStd"
+msgstr "Standardvorlagen"
+
+msgid "newsletterdraftStdShort"
+msgstr "Standardvorlage"
+
+msgid "newsletterdraftStdUse"
+msgstr "Vorlage benutzen"
+
+msgid "newsletterdraftStdVarSection"
+msgstr "Vorlagen spezifische Variablen"
+
+msgid "newsletterdraftFillOut"
+msgstr "Bitte ausfüllen"
+
+msgid "newsletterPicLink"
+msgstr "Optionaler Bildlink"
+
+msgid "newsletterAltTag"
+msgstr "Alt Tag"
+
+msgid "newsletterOptInIp"
+msgstr "Opt-In IP"
+
+msgid "newsletterOptInDate"
+msgstr "Opt-In Date"
+
+msgid "successNewsletterAboDelete"
+msgstr "Ihre markierten Newsletter-Abonnenten wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNewsletterAbo"
+msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten."
+
+msgid "successNewsletterAbounlock"
+msgstr "Ihre markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet."
+
+msgid "successNewsletterAboAdd"
+msgstr "Newsletter-Empfänger wurde erfolgreich hinzugefügt"
+
+msgid "errorFillEmail"
+msgstr "Bitte füllen Sie das Feld Email aus."
+
+msgid "successDelete"
+msgstr " wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNewsletter"
+msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter"
+
+msgid "errorAtLeastOneHistory"
+msgstr "Fehler: Bitte markieren Sie mindestens eine History."
+
+msgid "successNewsletterTemplateEdit"
+msgstr "Ihre Newslettervorlage %s wurde erfolgreich editiert."
+
+msgid "successNewsletterTemplateSave"
+msgstr "Ihre Newslettervorlage %s wurde erfolgreich gespeichert."
+
+msgid "successNewsletterPrepared"
+msgstr "Der Newsletter %s wurde zum Versenden vorbereitet."
+
+msgid "errorTestTemplateEmpty"
+msgstr "Die Empfänger-Adresse zum Testen ist leer."
+
+msgid "successTestEmailTo"
+msgstr "Die Newslettervorlage %s wurde zum Testen an %s gesendet."
+
+msgid "successNewsletterTemplateDelete"
+msgstr "Die Newslettervorlage wurde erfolgreich gelöscht."
+
+msgid "availableTemplates"
+msgstr "Vorhandene Vorlagen"
+
+msgid "newsletterNoAccount"
+msgstr "Newsletterempfänger ohne Kundenkonto"
+
+msgid "errorEmailExists"
+msgstr "Error: Email already exists"

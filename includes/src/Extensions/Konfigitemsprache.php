@@ -4,12 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
+
+use JTL\Nice;
+use JTL\Shop;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class Konfigitemsprache
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 class Konfigitemsprache
 {
@@ -50,7 +54,7 @@ class Konfigitemsprache
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
     }
 
     /**
@@ -64,16 +68,16 @@ class Konfigitemsprache
         if (!self::checkLicense()) {
             return;
         }
-        $item = \Shop::Container()->getDB()->select(
+        $item            = Shop::Container()->getDB()->select(
             'tkonfigitemsprache',
             'kKonfigitem',
             $kKonfigitem,
             'kSprache',
             $kSprache
         );
-        $defaultLanguage = \Sprache::getDefaultLanguage();
+        $defaultLanguage = Sprache::getDefaultLanguage();
         if ($item !== null && empty($item->cName)) {
-            $localized   = \Shop::Container()->getDB()->select(
+            $localized   = Shop::Container()->getDB()->select(
                 'tkonfigitemsprache',
                 'kKonfigitem',
                 $kKonfigitem,
@@ -87,7 +91,7 @@ class Konfigitemsprache
             $item->cName = $localized->cName;
         }
         if ($item !== null && empty($item->cBeschreibung)) {
-            $localized           = \Shop::Container()->getDB()->select(
+            $localized           = Shop::Container()->getDB()->select(
                 'tkonfigitemsprache',
                 'kKonfigitem',
                 $kKonfigitem,
@@ -114,13 +118,13 @@ class Konfigitemsprache
      */
     public function save(bool $bPrim = true)
     {
-        $ins = new \stdClass();
+        $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
             $ins->$member = $this->$member;
         }
         unset($ins->kKonfigitem, $ins->kSprache);
 
-        $kPrim = \Shop::Container()->getDB()->insert('tkonfigitemsprache', $ins);
+        $kPrim = Shop::Container()->getDB()->insert('tkonfigitemsprache', $ins);
 
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
@@ -134,11 +138,11 @@ class Konfigitemsprache
      */
     public function update(): int
     {
-        $upd                = new \stdClass();
+        $upd                = new stdClass();
         $upd->cName         = $this->getName();
         $upd->cBeschreibung = $this->getBeschreibung();
 
-        return \Shop::Container()->getDB()->update(
+        return Shop::Container()->getDB()->update(
             'tkonfigitemsprache',
             ['kKonfigitem', 'kSprache'],
             [$this->getKonfigitem(), $this->getSprache()],
@@ -151,7 +155,7 @@ class Konfigitemsprache
      */
     public function delete(): int
     {
-        return \Shop::Container()->getDB()->delete(
+        return Shop::Container()->getDB()->delete(
             'tkonfigitemsprache',
             ['kKonfigitem', 'kSprache'],
             [(int)$this->kKonfigitem, (int)$this->kSprache]
@@ -186,7 +190,7 @@ class Konfigitemsprache
      */
     public function setName(string $cName): self
     {
-        $this->cName = \Shop::Container()->getDB()->escape($cName);
+        $this->cName = Shop::Container()->getDB()->escape($cName);
 
         return $this;
     }
@@ -197,7 +201,7 @@ class Konfigitemsprache
      */
     public function setBeschreibung(string $cBeschreibung): self
     {
-        $this->cBeschreibung = \Shop::Container()->getDB()->escape($cBeschreibung);
+        $this->cBeschreibung = Shop::Container()->getDB()->escape($cBeschreibung);
 
         return $this;
     }

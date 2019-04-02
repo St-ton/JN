@@ -4,14 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
-use Helpers\URL;
+use JTL\DB\ReturnType;
+use JTL\Helpers\URL;
+use JTL\Shop;
 
 /**
  * Class NewsCurrentMonth
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class NewsCurrentMonth extends AbstractBox
 {
@@ -23,11 +24,11 @@ final class NewsCurrentMonth extends AbstractBox
     {
         parent::__construct($config);
         $this->addMapping('oNewsMonatsUebersicht_arr', 'Items');
-        $langID       = \Shop::getLanguageID();
+        $langID       = Shop::getLanguageID();
         $sql          = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
-        $newsOverview = \Shop::Container()->getDB()->queryPrepared(
+        $newsOverview = Shop::Container()->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.kNewsMonatsUebersicht, 
                 MONTH(tnews.dGueltigVon) AS nMonat, YEAR( tnews.dGueltigVon ) AS nJahr, COUNT(*) AS nAnzahl
                 FROM tnews

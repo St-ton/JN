@@ -4,14 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use DB\ReturnType;
-use Session\Frontend;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\DB\ReturnType;
+use JTL\Helpers\SearchSpecial;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class SpecialOffers
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class SpecialOffers extends AbstractBox
 {
@@ -26,15 +29,15 @@ final class SpecialOffers extends AbstractBox
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         if ($customerGroupID && Frontend::getCustomerGroup()->mayViewCategories()) {
             $cached         = true;
-            $stockFilterSQL = \Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+            $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
             $limit          = $config['boxen']['box_sonderangebote_anzahl_anzeige'];
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $cacheID        = 'box_special_offer_' . $customerGroupID . '_' .
                 $limit . \md5($stockFilterSQL . $parentSQL);
-            if (($productIDs = \Shop::Container()->getCache()->get($cacheID)) === false) {
+            if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
-                $productIDs = \Shop::Container()->getDB()->queryPrepared(
+                $productIDs = Shop::Container()->getDB()->queryPrepared(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         JOIN tartikelsonderpreis 
@@ -59,14 +62,14 @@ final class SpecialOffers extends AbstractBox
                     return (int)$e->kArtikel;
                 }, $productIDs);
 
-                \Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+                Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
             if (\count($productIDs) > 0) {
                 $this->setShow(true);
-                $products = new \ArtikelListe();
+                $products = new ArtikelListe();
                 $products->getArtikelByKeys($productIDs, 0, \count($productIDs));
                 $this->setProducts($products);
-                $this->setURL(\Helpers\SearchSpecial::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
+                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_SPECIALOFFERS));
                 \executeHook(\HOOK_BOXEN_INC_SONDERANGEBOTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

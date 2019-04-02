@@ -4,11 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
+
+use JTL\Backend\AdminIO;
+use JTL\Shop;
 
 /**
  * Class PageService
- * @package OPC
+ * @package JTL\OPC
  */
 class PageService
 {
@@ -73,10 +76,10 @@ class PageService
     }
 
     /**
-     * @param \AdminIO $io
+     * @param AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io): void
+    public function registerAdminIOFunctions(AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
 
@@ -154,7 +157,7 @@ class PageService
             } elseif ($isEditMode && $editedPageKey > 0) {
                 $this->curPage = $this->getDraft($editedPageKey);
             } else {
-                $curPageUrl    = '/' . \ltrim(\Shop::getRequestUri(), '/');
+                $curPageUrl    = '/' . \ltrim(Shop::getRequestUri(), '/');
                 $curPageId     = $this->createCurrentPageId();
                 $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
                 $this->curPage->setId($curPageId);
@@ -180,8 +183,8 @@ class PageService
     public function createCurrentPageId(): string
     {
         $res              = '';
-        $params           = (object)\Shop::getParameters();
-        $params->kSprache = \Shop::getLanguage();
+        $params           = (object)Shop::getParameters();
+        $params->kSprache = Shop::getLanguage();
 
         if ($params->kKategorie > 0) {
             $res .= 'category:' . $params->kKategorie;
@@ -205,7 +208,7 @@ class PageService
             $res .= 'newscat:' . $params->kNewsKategorie;
         } elseif ($params->kUmfrage > 0) {
             $res .= 'poll:' . $params->kUmfrage;
-        } elseif (\strlen($params->cSuche) > 0) {
+        } elseif (\mb_strlen($params->cSuche) > 0) {
             $res .= 'search:' . \base64_encode($params->cSuche);
         } else {
             $res .= 'other:' . \md5(\serialize($params));
@@ -214,7 +217,7 @@ class PageService
         if (\is_array($params->MerkmalFilter) && \count($params->MerkmalFilter) > 0) {
             $res .= ';attribs:' . \implode(',', $params->MerkmalFilter);
         }
-        if (\strlen($params->cPreisspannenFilter) > 0) {
+        if (\mb_strlen($params->cPreisspannenFilter) > 0) {
             $res .= ';range:' . $params->cPreisspannenFilter;
         }
 

@@ -6,23 +6,15 @@
  * @created Wed, 19 Sep 2018 13:05:19 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * setLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180919130519
  */
 class Migration_20180919130519 extends Migration implements IMigration
 {
-    protected $author = 'fp';
+    protected $author      = 'fp';
     protected $description = 'Create indices for or-filtered attributes';
 
     public function up()

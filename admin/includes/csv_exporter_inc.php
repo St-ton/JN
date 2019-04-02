@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 
 /**
  * If the "Export CSV" button was clicked with the id $exporterId, offer a CSV download and stop execution of current

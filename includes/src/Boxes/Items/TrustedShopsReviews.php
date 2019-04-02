@@ -4,11 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\TrustedShops;
+use stdClass;
 
 /**
  * Class TrustedShopsReviews
- * @package Boxes\Items
+ *
+ * @package JTL\Boxes\Items
  */
 final class TrustedShopsReviews extends AbstractBox
 {
@@ -18,7 +24,7 @@ final class TrustedShopsReviews extends AbstractBox
     private $imagePath = '';
 
     /**
-     * @var \stdClass|null
+     * @var stdClass|null
      */
     private $stats;
 
@@ -39,11 +45,11 @@ final class TrustedShopsReviews extends AbstractBox
         $this->addMapping('cBildPfad', 'ImagePath');
         $this->setShow(false);
         $validISOCodes = ['de', 'en', 'fr', 'es', 'pl'];
-        $langCode      = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
+        $langCode      = Text::convertISO2ISO639(Shop::getLanguageCode());
         if ($config['trustedshops']['trustedshops_nutzen'] === 'Y' && \in_array($langCode, $validISOCodes, true)) {
-            $ts       = new \TrustedShops(-1, $langCode);
+            $ts       = new TrustedShops(-1, $langCode);
             $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \strlen($tsRating->cTSID) > 0) {
+            if (isset($tsRating->cTSID) && (int)$tsRating->nStatus === 1 && \mb_strlen($tsRating->cTSID) > 0) {
                 $localizedURLs = [
                     'de' => 'https://www.trustedshops.com/bewertung/info_' . $tsRating->cTSID . '.html',
                     'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tsRating->cTSID . '.html',
@@ -59,7 +65,7 @@ final class TrustedShopsReviews extends AbstractBox
                     // Prüft alle X Stunden ob ein Zertifikat noch gültig ist
                     $ts->pruefeZertifikat($langCode);
                 }
-                $this->setImagePath(\Shop::getImageBaseURL() . \PFAD_GFX_TRUSTEDSHOPS . $filename);
+                $this->setImagePath(Shop::getImageBaseURL() . \PFAD_GFX_TRUSTEDSHOPS . $filename);
                 $this->setImageURL($localizedURLs[$langCode]);
                 $this->setStats($ts->gibKundenbewertungsStatistik());
             }
@@ -97,9 +103,9 @@ final class TrustedShopsReviews extends AbstractBox
     }
 
     /**
-     * @return null|\stdClass
+     * @return null|stdClass
      */
-    public function getStats(): ?\stdClass
+    public function getStats(): ?stdClass
     {
         return $this->stats;
     }

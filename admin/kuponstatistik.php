@@ -4,22 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Checkout\KuponBestellung;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $step      = 'kuponstatistik_uebersicht';
 $cWhere    = '';
 $coupons   = Shop::Container()->getDB()->query(
     'SELECT kKupon, cName FROM tkupon ORDER BY cName DESC',
-    \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+    ReturnType::ARRAY_OF_ASSOC_ARRAYS
 );
 $oDateShop = Shop::Container()->getDB()->query(
     'SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $startDate = DateTime::createFromFormat('Y-m-j', $oDateShop->startDate);
 $endDate   = DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
@@ -77,7 +82,7 @@ $nCountOrders_arr = Shop::Container()->getDB()->query(
         WHERE dErstellt BETWEEN '" . $dStart . "'
             AND '" . $dEnd . "'
             AND tbestellung.cStatus != " . BESTELLUNG_STATUS_STORNO,
-    \DB\ReturnType::SINGLE_ASSOC_ARRAY
+    ReturnType::SINGLE_ASSOC_ARRAY
 );
 
 $nCountUsedCouponsOrder = 0;
@@ -101,7 +106,7 @@ foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
             LEFT JOIN tbestellung AS bs 
                 ON wk.kWarenkorb = bs.kWarenkorb
             WHERE bs.kBestellung = " . (int)$usedCouponOrder['kBestellung'],
-        \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        ReturnType::ARRAY_OF_ASSOC_ARRAYS
     );
     foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
         $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =

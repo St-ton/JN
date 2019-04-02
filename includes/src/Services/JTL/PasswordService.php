@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
 /**
  * Class PasswordService
- * @package Services\JTL
+ * @package JTL\Services\JTL
  */
 class PasswordService implements PasswordServiceInterface
 {
@@ -68,7 +68,7 @@ class PasswordService implements PasswordServiceInterface
      */
     public function verify($password, $hash)
     {
-        $length = \strlen($hash);
+        $length = \mb_strlen($hash);
         if ($length === 32) {
             // very old md5 hashes
             return \md5($password) === $hash;
@@ -85,7 +85,7 @@ class PasswordService implements PasswordServiceInterface
      */
     public function needsRehash($hash): bool
     {
-        $length = \strlen($hash);
+        $length = \mb_strlen($hash);
 
         return $length === 32 || $length === 40
             ? true

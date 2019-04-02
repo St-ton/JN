@@ -531,8 +531,16 @@ function ipl_core_load_xml($xmlDataString)
             }
 
             if ($errorCode > 0) {
-                $ipl_core_api_customer_message = ipl_core_get_xml_attribute_value('data', 'customer_message', $xmlDataString);
-                $ipl_core_api_merchant_message = ipl_core_get_xml_attribute_value('data', 'merchant_message', $xmlDataString);
+                $ipl_core_api_customer_message = ipl_core_get_xml_attribute_value(
+                    'data',
+                    'customer_message',
+                    $xmlDataString
+                );
+                $ipl_core_api_merchant_message = ipl_core_get_xml_attribute_value(
+                    'data',
+                    'merchant_message',
+                    $xmlDataString
+                );
             }
             break;
 
@@ -720,7 +728,7 @@ function ipl_core_build_attr_list_tag($tagName, $attributes, $childTagName, $chi
 function ipl_core_build_list($tagName, $attributes)
 {
     $list = '';
-    foreach ((array) $attributes as $attribute) {
+    foreach ((array)$attributes as $attribute) {
         $list .= '<' . $tagName . ' ' . ipl_core_build_attr_string($attribute) . '/>';
     }
 
@@ -1106,14 +1114,24 @@ function ipl_core_parse_preauthorize_response($xml)
             }
 
             if (isset($xml->async_capture_params)) {
-                $data['async_amount']          = ipl_core_decode((string)$xml->async_capture_params[0]->tagAttrs['amount']);
-                $data['external_redirect_url'] = ipl_core_decode((string)$xml->async_capture_params[0]->external_redirect_url[0]->tagData);
-                $data['rate_plan_url']         = ipl_core_decode((string)$xml->async_capture_params[0]->rate_plan_url[0]->tagData);
+                $data['async_amount']          = ipl_core_decode(
+                    (string)$xml->async_capture_params[0]->tagAttrs['amount']
+                );
+                $data['external_redirect_url'] = ipl_core_decode(
+                    (string)$xml->async_capture_params[0]->external_redirect_url[0]->tagData
+                );
+                $data['rate_plan_url']         = ipl_core_decode(
+                    (string)$xml->async_capture_params[0]->rate_plan_url[0]->tagData
+                );
             }
             if (isset($xml->campaign)) {
                 $data['campaign_type']              = ipl_core_decode((string)$xml->campaign[0]->type[0]->tagData);
-                $data['campaign_display_text']      = ipl_core_decode((string)$xml->campaign[0]->display_text[0]->tagData);
-                $data['campaign_display_image_url'] = ipl_core_decode((string)$xml->campaign[0]->display_image_url[0]->tagData);
+                $data['campaign_display_text']      = ipl_core_decode(
+                    (string)$xml->campaign[0]->display_text[0]->tagData
+                );
+                $data['campaign_display_image_url'] = ipl_core_decode(
+                    (string)$xml->campaign[0]->display_image_url[0]->tagData
+                );
             }
 
             if (isset($xml->tagAttrs['bptid'])) {
@@ -1121,20 +1139,42 @@ function ipl_core_parse_preauthorize_response($xml)
             }
 
             if (isset($xml->corrected_address)) {
-                $data['corrected_street']    = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['street']);
-                $data['corrected_street_no'] = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['streetno']);
-                $data['corrected_zip']       = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['zip']);
-                $data['corrected_city']      = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['city']);
-                $data['corrected_country']   = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['country']);
+                $data['corrected_street']    = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['street']
+                );
+                $data['corrected_street_no'] = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['streetno']
+                );
+                $data['corrected_zip']       = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['zip']
+                );
+                $data['corrected_city']      = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['city']
+                );
+                $data['corrected_country']   = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['country']
+                );
             }
 
             if (isset($xml->invoice_bank_account)) {
-                $data['account_holder']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']);
-                $data['account_number']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_number']);
-                $data['bank_code']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']);
-                $data['bank_name']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']);
-                $data['invoice_reference'] = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']);
-                $data['invoice_duedate']   = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']);
+                $data['account_holder']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']
+                );
+                $data['account_number']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_number']
+                );
+                $data['bank_code']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']
+                );
+                $data['bank_name']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']
+                );
+                $data['invoice_reference'] = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']
+                );
+                $data['invoice_duedate']   = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']
+                );
             }
 
             if (isset($xml->hire_purchase[0])) {
@@ -1219,20 +1259,42 @@ function ipl_core_parse_prescore_response($xml)
             }
 
             if (isset($xml->corrected_address)) {
-                $data['corrected_street']    = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['street']);
-                $data['corrected_street_no'] = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['streetno']);
-                $data['corrected_zip']       = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['zip']);
-                $data['corrected_city']      = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['city']);
-                $data['corrected_country']   = ipl_core_decode((string)$xml->corrected_address[0]->tagAttrs['country']);
+                $data['corrected_street']    = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['street']
+                );
+                $data['corrected_street_no'] = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['streetno']
+                );
+                $data['corrected_zip']       = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['zip']
+                );
+                $data['corrected_city']      = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['city']
+                );
+                $data['corrected_country']   = ipl_core_decode(
+                    (string)$xml->corrected_address[0]->tagAttrs['country']
+                );
             }
 
             if (isset($xml->invoice_bank_account)) {
-                $data['account_holder']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']);
-                $data['account_number']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_number']);
-                $data['bank_code']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']);
-                $data['bank_name']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']);
-                $data['invoice_reference'] = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']);
-                $data['invoice_duedate']   = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']);
+                $data['account_holder']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']
+                );
+                $data['account_number']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_number']
+                );
+                $data['bank_code']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']
+                );
+                $data['bank_name']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']
+                );
+                $data['invoice_reference'] = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']
+                );
+                $data['invoice_duedate']   = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']
+                );
             }
 
             if (isset($xml->allowed_methods)) {
@@ -1320,12 +1382,24 @@ function ipl_core_parse_capture_response($xml)
 
         case 'xmlParser';
             if (isset($xml->invoice_bank_account)) {
-                $data['account_holder']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']);
-                $data['account_number']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_number']);
-                $data['bank_code']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']);
-                $data['bank_name']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']);
-                $data['invoice_reference'] = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']);
-                $data['invoice_duedate']   = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']);
+                $data['account_holder']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']
+                );
+                $data['account_number']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_number']
+                );
+                $data['bank_code']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']
+                );
+                $data['bank_name']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']
+                );
+                $data['invoice_reference'] = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']
+                );
+                $data['invoice_duedate']   = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']
+                );
             }
 
             $data = ipl_core_parse_tc_documents($xml, $data);
@@ -1385,12 +1459,24 @@ function ipl_core_parse_async_capture_response($xml)
             $data['bpsecure'] = ipl_core_decode((string)$xml->default_params[0]->tagAttrs['bpsecure']);
 
             if (isset($xml->invoice_bank_account)) {
-                $data['account_holder']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']);
-                $data['account_number']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_number']);
-                $data['bank_code']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']);
-                $data['bank_name']         = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']);
-                $data['invoice_reference'] = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']);
-                $data['invoice_duedate']   = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']);
+                $data['account_holder']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']
+                );
+                $data['account_number']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_number']
+                );
+                $data['bank_code']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']
+                );
+                $data['bank_name']         = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']
+                );
+                $data['invoice_reference'] = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']
+                );
+                $data['invoice_duedate']   = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']
+                );
             }
 
             if (isset($xml->hire_purchase[0])) {
@@ -1420,11 +1506,15 @@ function ipl_core_parse_tc_documents($xml, $data)
 {
     if (isset($xml->hire_purchase, $xml->hire_purchase[0]->pdf)) {
         if (isset($xml->hire_purchase[0]->pdf[0]->tagChildren[0])) {
-            $data['standard_information_pdf'] = ipl_core_decode((string)$xml->hire_purchase[0]->pdf[0]->tagChildren[0]->tagData);
+            $data['standard_information_pdf'] = ipl_core_decode(
+                (string)$xml->hire_purchase[0]->pdf[0]->tagChildren[0]->tagData
+            );
         }
 
         if (isset($xml->hire_purchase[0]->pdf[0]->tagChildren[1])) {
-            $data['email_attachment_pdf'] = ipl_core_decode((string)$xml->hire_purchase[0]->pdf[0]->tagChildren[1]->tagData);
+            $data['email_attachment_pdf'] = ipl_core_decode(
+                (string)$xml->hire_purchase[0]->pdf[0]->tagChildren[1]->tagData
+            );
         }
     }
 
@@ -1506,13 +1596,13 @@ function ipl_core_parse_instalment_information($xml, $data)
         $instalmentPlan             = $xml->instl_plan[0];
         $data['instalment_count']   = (int)$instalmentPlan->tagAttrs['num_inst'];
         $data['duration']           = (int)$instalmentPlan->calc[0]->duration[0]->tagData;
-        $data['fee_percent']        = (float) $instalmentPlan->calc[0]->fee_percent[0]->tagData;
+        $data['fee_percent']        = (float)$instalmentPlan->calc[0]->fee_percent[0]->tagData;
         $data['fee_total']          = (int)$instalmentPlan->calc[0]->fee_total[0]->tagData;
         $data['pre_payment_amount'] = (int)$instalmentPlan->calc[0]->pre_payment[0]->tagData;
         $data['total_amount']       = (int)$instalmentPlan->calc[0]->total_amount[0]->tagData;
-        $data['effective_annual']   = (float) $instalmentPlan->calc[0]->eff_anual[0]->tagData;
+        $data['effective_annual']   = (float)$instalmentPlan->calc[0]->eff_anual[0]->tagData;
         // TODO: this should be (int)round(100*float) to be consistent
-        $data['nominal_annual'] = (float) $instalmentPlan->calc[0]->nominal[0]->tagData;
+        $data['nominal_annual'] = (float)$instalmentPlan->calc[0]->nominal[0]->tagData;
         // TODO: response should include surcharge, base_amount and cart_amount to be consistent
 
         // parse the instalment list
@@ -1558,13 +1648,27 @@ function ipl_core_parse_invoice_response($xml)
             break;
         case 'xmlParser';
             if (isset($xml->invoice_bank_account)) {
-                $data['account_holder']       = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']);
-                $data['account_number']       = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['account_number']);
-                $data['bank_code']            = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']);
-                $data['bank_name']            = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']);
-                $data['invoice_reference']    = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']);
-                $data['invoice_duedate']      = ipl_core_decode((string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']);
-                $data['activation_performed'] = ipl_core_decode((int)$xml->invoice_bank_account[0]->tagAttrs['activation_performed']);
+                $data['account_holder']       = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_holder']
+                );
+                $data['account_number']       = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['account_number']
+                );
+                $data['bank_code']            = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_code']
+                );
+                $data['bank_name']            = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['bank_name']
+                );
+                $data['invoice_reference']    = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_reference']
+                );
+                $data['invoice_duedate']      = ipl_core_decode(
+                    (string)$xml->invoice_bank_account[0]->tagAttrs['invoice_duedate']
+                );
+                $data['activation_performed'] = ipl_core_decode(
+                    (int)$xml->invoice_bank_account[0]->tagAttrs['activation_performed']
+                );
             }
             // Transaction Credit
             if (isset($xml->option[0])) {
@@ -1641,13 +1745,25 @@ function ipl_core_parse_get_billpay_bank_data_response($xml)
             break;
         case 'xmlParser';
             if (isset($xml->bank_account)) {
-                $data['account_holder']    = ipl_core_decode((string)$xml->bank_account [0]->tagAttrs['account_holder']);
-                $data['account_number']    = ipl_core_decode((string)$xml->bank_account [0]->tagAttrs['account_number']);
-                $data['bank_code']         = ipl_core_decode((string)$xml->bank_account [0]->tagAttrs['bank_code']);
-                $data['bank_name']         = ipl_core_decode((string)$xml->bank_account [0]->tagAttrs['bank_name']);
-                $data['invoice_reference'] = ipl_core_decode((string)$xml->bank_account [0]->tagAttrs['invoice_reference']);
+                $data['account_holder']    = ipl_core_decode(
+                    (string)$xml->bank_account [0]->tagAttrs['account_holder']
+                );
+                $data['account_number']    = ipl_core_decode(
+                    (string)$xml->bank_account [0]->tagAttrs['account_number']
+                );
+                $data['bank_code']         = ipl_core_decode(
+                    (string)$xml->bank_account [0]->tagAttrs['bank_code']
+                );
+                $data['bank_name']         = ipl_core_decode(
+                    (string)$xml->bank_account [0]->tagAttrs['bank_name']
+                );
+                $data['invoice_reference'] = ipl_core_decode(
+                    (string)$xml->bank_account [0]->tagAttrs['invoice_reference']
+                );
                 if (isset($xml->bank_account [0]->tagAttrs['invoice_duedate'])) {
-                    $data['invoice_duedate'] = ipl_core_decode((string)$xml->bank_account [0]->tagAttrs['invoice_duedate']);
+                    $data['invoice_duedate'] = ipl_core_decode(
+                        (string)$xml->bank_account [0]->tagAttrs['invoice_duedate']
+                    );
                 }
             }
 
@@ -2546,7 +2662,8 @@ class XMLParser
      */
     public function HandleError($code, $line, $col)
     {
-        $this->error = 'XML Parsing Error at ' . $line . ':' . $col . '. Error ' . $code . ': ' . xml_error_string($code);
+        $this->error = 'XML Parsing Error at ' . $line . ':' . $col .
+            '. Error ' . $code . ': ' . xml_error_string($code);
     }
 
     /**
@@ -2735,7 +2852,8 @@ class XMLTag
         //If the tag is a reserved name, output an error
         if (in_array($name, ['tagChildren', 'tagAttrs', 'tagParents', 'tagData', 'tagName'], true)) {
             trigger_error('You have used a reserved name as the name of an XML tag. ' .
-                'Please consult the documentation (http://www.criticaldevelopment.net/xml/) and rename the tag named "' .
+                'Please consult the documentation (http://www.criticaldevelopment.net/xml/) ' .
+                ' and rename the tag named "' .
                 $name . '" to something other than a reserved name.', E_USER_ERROR);
 
             return;

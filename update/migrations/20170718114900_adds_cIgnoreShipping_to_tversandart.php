@@ -6,19 +6,11 @@
  * @created Tue, 18 Jul 2017 11:49:00 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20170718114900
  */
 class Migration_20170718114900 extends Migration implements IMigration
 {
@@ -30,7 +22,7 @@ class Migration_20170718114900 extends Migration implements IMigration
         $this->execute("ALTER TABLE tversandart
             ADD COLUMN cIgnoreShippingProposal CHAR(1) NOT NULL DEFAULT 'N' AFTER cSendConfirmationMail;");
 
-        $bar = $this->execute("UPDATE tversandartzahlungsart AS vz
+        $this->execute("UPDATE tversandartzahlungsart AS vz
                                         JOIN tzahlungsart AS z ON 
                                             vz.kZahlungsart = z.kZahlungsart
                                         JOIN tversandart AS v ON 
@@ -41,13 +33,10 @@ class Migration_20170718114900 extends Migration implements IMigration
                                                 COUNT(nvz.kZahlungsart) 
                                                 FROM tversandartzahlungsart AS nvz 
                                                 WHERE nvz.kVersandart = v.kVersandart) = 1;");
-
-
-
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE tversandart DROP COLUMN cIgnoreShippingProposal");
+        $this->execute('ALTER TABLE tversandart DROP COLUMN cIgnoreShippingProposal');
     }
 }

@@ -4,19 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\ReturnType;
 use DirectoryIterator;
-use Shop;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 use SimpleXMLElement;
-use SimpleXMLObject;
 use stdClass;
-use StringHandler;
 
 /**
  * Class Template
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Template
 {
@@ -239,7 +237,7 @@ class Template
      *
      * @param string    $cOrdner
      * @param bool|null $isAdmin
-     * @return null|SimpleXMLElement|SimpleXMLObject
+     * @return null|SimpleXMLElement
      */
     public function getXML($cOrdner, bool $isAdmin = null)
     {
@@ -260,7 +258,7 @@ class Template
             $oXML = \simplexml_load_string(\file_get_contents($cXMLFile));
         }
 
-        if (\is_a($oXML, 'SimpleXMLElement')) {
+        if (\is_a($oXML, SimpleXMLElement::class)) {
             $oXML->Ordner = $cOrdner;
         } else {
             $oXML = null;
@@ -323,8 +321,8 @@ class Template
         $template->bHasError    = false;
         $template->eTyp         = '';
         $template->cDescription = !empty($xml->Description) ? \trim((string)$xml->Description) : '';
-        if (!StringHandler::is_utf8($template->cDescription)) {
-            $template->cDescription = StringHandler::convertUTF8($template->cDescription);
+        if (!Text::is_utf8($template->cDescription)) {
+            $template->cDescription = Text::convertUTF8($template->cDescription);
         }
 
         if (!empty($xml->Parent)) {
@@ -348,7 +346,7 @@ class Template
             }
         }
         $template->bEinstellungen = isset($xml->Settings->Section) || $template->bChild;
-        if (\strlen($template->cName) === 0) {
+        if (\mb_strlen($template->cName) === 0) {
             $template->cName = $template->cOrdner;
         }
         if ($this->cachingEnabled === true) {

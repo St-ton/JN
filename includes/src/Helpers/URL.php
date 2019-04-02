@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Link\LinkInterface;
-use News\Item;
-use Shop;
-use Sprache;
+use JTL\Link\LinkInterface;
+use JTL\News\Item;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class URL
- * @package Helpers
+ * @package JTL\Helpers
  */
 class URL
 {
@@ -125,7 +125,7 @@ class URL
             $this->path = \preg_replace_callback(
                 '/(%([0-9abcdef][0-9abcdef]))/x',
                 function ($x) {
-                    return '%' . \strtoupper($x[2]);
+                    return '%' . \mb_convert_case($x[2], \MB_CASE_UPPER);
                 },
                 $this->path
             );
@@ -137,12 +137,12 @@ class URL
 
         $scheme = '';
         if ($this->scheme) {
-            $this->scheme = \strtolower($this->scheme);
+            $this->scheme = \mb_convert_case($this->scheme, \MB_CASE_LOWER);
             $scheme       = $this->scheme . '://';
         }
 
         if ($this->host) {
-            $this->host = \strtolower($this->host);
+            $this->host = \mb_convert_case($this->host, \MB_CASE_LOWER);
         }
 
         $this->schemeBasedNormalization();
@@ -191,14 +191,14 @@ class URL
             $unreserved[] = \dechex($octet);
         }
 
-        $unreserved[] = \dechex(\ord('-'));
-        $unreserved[] = \dechex(\ord('.'));
-        $unreserved[] = \dechex(\ord('_'));
-        $unreserved[] = \dechex(\ord('~'));
+        $unreserved[] = \dechex(\mb_ord('-'));
+        $unreserved[] = \dechex(\mb_ord('.'));
+        $unreserved[] = \dechex(\mb_ord('_'));
+        $unreserved[] = \dechex(\mb_ord('~'));
 
         return \preg_replace_callback(\array_map(
             function ($str) {
-                return '/%' . \strtoupper($str) . '/x';
+                return '/%' . \mb_convert_case($str, \MB_CASE_UPPER) . '/x';
             },
             $unreserved
         ), function ($matches) {
@@ -292,7 +292,7 @@ class URL
                         : $prefix . '?k=' . $obj->kKategorie . $lang;
                 case \URLART_SEITE:
                     if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
-                        && \strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
+                        && \mb_strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                     ) {
                         return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
                     }

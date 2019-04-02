@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class CleanupLogs
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * Delete old logs containing personal data.
  * (interval former "interval_clear_logs" = 90 days)
@@ -51,7 +52,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupEmailHistory()
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM temailhistory
             WHERE dSent <= :pDateLimit
             ORDER BY dSent ASC
@@ -70,7 +71,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupContactHistory(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkontakthistory
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC
@@ -89,7 +90,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupCustomerRecruitings(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundenwerbenkunden
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC
@@ -108,7 +109,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupPaymentLogEntries(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tzahlungslog
             WHERE dDatum <= :pDateLimit
             ORDER BY dDatum ASC
@@ -127,7 +128,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupProductInquiries(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tproduktanfragehistory
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC
@@ -146,7 +147,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupAvailabilityInquiries(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
             WHERE dErstellt <= :pDateLimit
             ORDER BY dErstellt ASC
@@ -165,7 +166,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupLogs(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             "DELETE FROM tjtllog
             WHERE
                 (cLog LIKE '%@%' OR cLog LIKE '%kKunde%')
@@ -186,7 +187,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupPaymentConfirmations(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             "DELETE FROM tzahlungseingang
             WHERE
                 cAbgeholt != 'Y'
@@ -209,7 +210,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     private function cleanupCustomerDataHistory(): void
     {
-        \Shop::Container()->getDB()->queryPrepared(
+        Shop::Container()->getDB()->queryPrepared(
             'DELETE FROM tkundendatenhistory
             WHERE
                 dErstellt < MAKEDATE(YEAR(:pNow) - 1, 1)

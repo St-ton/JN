@@ -1,0 +1,132 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "trustedshops"
+msgstr "Trusted Shops"
+
+msgid "trustedshopsURL"
+msgstr "https://jtl-url.de/3wxbl"
+
+msgid "updateProduct"
+msgstr "Käuferprodukte aktualisieren"
+
+msgid "tsProduct"
+msgstr "Käuferschutzprodukt"
+
+msgid "tsCoverage"
+msgstr "Absicherung"
+
+msgid "tsWhatIs"
+msgstr "Was ist Trusted Shops?"
+
+msgid "tsWhatIsRating"
+msgstr "Informationen zu Trusted Shops Kundenbewertung"
+
+msgid "tsRegShop"
+msgstr "Lassen Sie sich jetzt zum Sonderpreis zertifizieren."
+
+msgid "tsDelCertificate"
+msgstr "Zertifikat löschen"
+
+msgid "tsRatingActivate"
+msgstr "Kundenbewertung aktivieren"
+
+msgid "tsRatingDeActivate"
+msgstr "Kundenbewertung deaktivieren"
+
+msgid "tsRatingForm"
+msgstr "Registrieren Sie sich für die Kundenbewertung"
+
+msgid "tsRatingOverview"
+msgstr "Kundenbewertungsübersicht"
+
+msgid "tsRatingConfig"
+msgstr "Einstellungen für Trusted Shops Kundenbewertung"
+
+msgid "tsDeaktiviated"
+msgstr "Ihr Zertifikat wurde von Trusted Shops deaktiviert."
+
+msgid "tsClassic"
+msgstr "Trusted Shops Käuferschutz Classic"
+
+msgid "tsClassicID"
+msgstr "Trusted Shops Classic ID"
+
+msgid "tsClassicIDDesc"
+msgstr "Hier legen Sie fest, ob die Trusted Shops Classic Variante beim Bestellabschluss angezeigt werden soll. Falls eine ID eingegeben wurde, wird Trusted Shops beim Bestellabschluss angezeigt. Bitte aktivieren Sie in der Boxenverwaltung die Box \"Trusted Shops - Gütesiegel\"."
+
+msgid "tsNoTSError"
+msgstr "Trusted Shops ist aus folgendem Grund nicht konfigurierbar:"
+
+msgid "tsNoTSCustomerRatingError"
+msgstr "Die Trusted Shops Kundenbewertung ist aus folgendem Grund nicht konfigurierbar:"
+
+msgid "successDelete"
+msgstr "Ihr Zertifikat wurde erfolgreich für die aktuelle Sprache gelöscht."
+
+msgid "errorCertificateNotFound"
+msgstr "Fehler: Es wurde kein Zertifikat für die aktuelle Sprache gefunden."
+
+msgid "successBuyerProtectSave"
+msgstr "Ihre Käuferschutzprodukte wurden aktualisiert."
+
+msgid "errorBuyerProtectSave"
+msgstr "Fehler: Ihre Käuferschutzprodukte konnten nicht aktualisiert werden."
+
+msgid "errorTSIDMissing"
+msgstr "Fehler: Bitte geben Sie eine tsID ein."
+
+msgid "successStatusSave"
+msgstr "Ihr Status wurde erfolgreich geändert."
+
+msgid "errorStatusSave"
+msgstr "Fehler: Bei der Statusänderung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+
+msgid "errorTSIDOtherLang"
+msgstr "Fehler: Ihre Trusted Shops ID (tsId) wurde bereits für eine andere Sprache verwendet."
+
+msgid "errorTSIDInvalid"
+msgstr "Fehler: Ihre Trusted Shops ID (tsId) ist falsch."
+
+msgid "errorNotRegistered"
+msgstr "Fehler: Sie sind nicht registriert, um die Kundenbewertung zu nutzen. Bitte nutzen Sie den Link zum Formular oben auf dieser Seite."
+
+msgid "errorTSActivateFirst"
+msgstr "Fehler: Sie müssen die Trusted Shops Kundenbewertung erst aktivieren."
+
+msgid "errorCustomerRatingNotFound"
+msgstr "Fehler: Kundenbewertung nicht gefunden."
+
+msgid "successSaveAddTSBox"
+msgstr "Das Trusted Shops Zertifikat wurde erfolgreich gespeichert.<br/> Bitte öffnen Sie über den Menüpunkt \"Inhalte &gt; Seiten\" die \"Boxenverwaltung\" und fügen Sie die Trusted Shops Siegelbox hinzu."
+
+msgid "errorCertificateInvalid"
+msgstr "Fehler: Das Zertifikat zu Ihrer Trusted Shops ID existiert nicht."
+
+msgid "errorCertificateExpired"
+msgstr "Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist abgelaufen."
+
+msgid "errorCertificateBlocked"
+msgstr "Fehler: Das Zertifikat zu Ihrer Trusted Shops ID ist gesperrt."
+
+msgid "errorCertificatePending"
+msgstr "Fehler: Das Zertifikat befindet sich in der Zertifzierungsphase."
+
+msgid "errorCertificateNoExcellence"
+msgstr "Fehler: Das Zertifikat hat keine Excellence-Variante mit Käuferschutz im Checkout-Prozess."
+
+msgid "errorLangMismatch"
+msgstr "Fehler: Die gewählte Sprache stimmt nicht mit Ihrer Trusted Shops ID überein."
+
+msgid "errorWebServiceLoginInvalid"
+msgstr "Fehler: Ihre WebService User ID (wsUser) und Ihr WebService Passwort (wsPassword) konnten nicht verifiziert werden."
+
+msgid "errorCertificateSave"
+msgstr "Fehler: Das Zertifikat konnte nicht gespeichert werden."
+
+msgid "errorTSIDBuyerProtectionMismatch"
+msgstr "Fehler: Ihre Trusted Shops ID entspricht nicht dem ausgewählten Käuferschutz Typ."
+
+msgid "errorSOAP"
+msgstr "Fehler: Interner SOAP-Fehler. Entweder ist das Netzwerkprotokoll SOAP nicht eingebunden oder der Trusted Shops Service ist momentan nicht erreichbar."

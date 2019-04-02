@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
-use Mapper\JobTypeToJob;
+use InvalidArgumentException;
+use JTL\Cron\Job\Dummy;
+use JTL\DB\DbInterface;
+use JTL\Mapper\JobTypeToJob;
 use Psr\Log\LoggerInterface;
 
 /**
  * Class JobFactory
- * @package Cron
+ * @package JTL\Cron
  */
 class JobFactory
 {
@@ -44,8 +46,12 @@ class JobFactory
     public function create(QueueEntry $data): JobInterface
     {
         $mapper = new JobTypeToJob();
-        $class  = $mapper->map($data->jobType);
-        $job    = new $class($this->db, $this->logger, new JobHydrator());
+        try {
+            $class = $mapper->map($data->jobType);
+        } catch (InvalidArgumentException $e) {
+            $class = Dummy::class;
+        }
+        $job = new $class($this->db, $this->logger, new JobHydrator());
         /** @var JobInterface $job */
         $job->hydrate($data);
 

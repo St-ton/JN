@@ -4,11 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session;
+namespace JTL\Session;
+
+use JTL\Catalog\Currency;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class Backend
- * @package Session
+ * @package JTL\Session
  */
 class Backend extends AbstractSession
 {
@@ -37,22 +42,22 @@ class Backend extends AbstractSession
     public function __construct()
     {
         parent::__construct(true, self::DEFAULT_SESSION);
-        self::$instance = $this;
-        $_SESSION['jtl_token'] = $_SESSION['jtl_token'] ?? \Shop::Container()->getCryptoService()->randomString(32);
+        self::$instance        = $this;
+        $_SESSION['jtl_token'] = $_SESSION['jtl_token'] ?? Shop::Container()->getCryptoService()->randomString(32);
         if (!isset($_SESSION['kSprache'], $_SESSION['cISOSprache'])) {
-            $lang                    = \Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+            $lang                    = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
             $_SESSION['kSprache']    = isset($lang->kSprache) ? (int)$lang->kSprache : 1;
             $_SESSION['cISOSprache'] = $lang->cISO ?? 'ger';
         }
-        \Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
+        Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         if (isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === \stdClass::class) {
-            $_SESSION['Kundengruppe'] = new \Kundengruppe($_SESSION['Kundengruppe']->kKundengruppe);
+            $_SESSION['Kundengruppe'] = new Kundengruppe($_SESSION['Kundengruppe']->kKundengruppe);
         }
         if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === \stdClass::class) {
-            $_SESSION['Waehrung'] = new \Currency($_SESSION['Waehrung']->kWaehrung);
+            $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
         if (empty($_SESSION['Sprachen'])) {
-            $_SESSION['Sprachen'] = \Sprache::getInstance()->gibInstallierteSprachen();
+            $_SESSION['Sprachen'] = Sprache::getInstance()->gibInstallierteSprachen();
         }
     }
 
@@ -62,8 +67,8 @@ class Backend extends AbstractSession
     private static function createHash(): string
     {
         return \function_exists('mhash')
-            ? \bin2hex(\mhash(\MHASH_SHA1, \Shop::getApplicationVersion()))
-            : \sha1(\Shop::getApplicationVersion());
+            ? \bin2hex(\mhash(\MHASH_SHA1, Shop::getApplicationVersion()))
+            : \sha1(Shop::getApplicationVersion());
     }
 
     /**

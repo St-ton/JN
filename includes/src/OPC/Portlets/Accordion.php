@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Accordion
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Accordion extends Portlet
 {
@@ -45,13 +46,13 @@ class Accordion extends Portlet
         return [
             'cllps-initial-state' => [
                 'label'      => __('initially expanded'),
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'help'       => __('In the preview and while editing the area is always visible.'),
                 'dspl_width' => 50,
             ],
             'layout'              => [
                 'label'      => __('Display as'),
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'options'    => [
                     'button' => 'Button',
                     'panel'  => 'Panel',
@@ -63,7 +64,7 @@ class Accordion extends Portlet
             ],
             'cllps-button-text'   => [
                 'label'                => 'Buttontext',
-                'type'                 => 'text',
+                'type'                 => InputType::TEXT,
                 'default'              => 'hier ein text',
                 'dspl_width'           => 50,
                 'collapseControlStart' => true,
@@ -73,7 +74,7 @@ class Accordion extends Portlet
             ],
             'cllps-button-type'   => [
                 'label'      => __('Type'),
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     'default' => __('default'),
                     'primary' => __('primary'),
@@ -87,7 +88,7 @@ class Accordion extends Portlet
             ],
             'cllps-button-size'   => [
                 'label'              => __('Size'),
-                'type'               => 'select',
+                'type'               => InputType::SELECT,
                 'options'            => [
                     'xs' => 'XS',
                     'sm' => 'S',

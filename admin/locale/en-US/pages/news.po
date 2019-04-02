@@ -1,0 +1,159 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "news"
+msgstr "News-/Blogsystem"
+
+msgid "newsURL"
+msgstr "https://jtl-url.de/2ek6o"
+
+msgid "newsDesc"
+msgstr "Dieses Modul kann als News bzw. Blogsystem genutzt werden."
+
+msgid "newAdd"
+msgstr "Neuen Beitrag erstellen"
+
+msgid "newEdit"
+msgstr "Beitrag bearbeiten"
+
+msgid "newsPreviewText"
+msgstr "Vorschautext"
+
+msgid "newsValidation"
+msgstr "Erstellt am"
+
+msgid "newsDate"
+msgstr "Erstellt am"
+
+msgid "newsArchive"
+msgstr "Archivieren"
+
+msgid "newsArchiveLast"
+msgstr "Archivierte Beiträge"
+
+msgid "newsPicAdd"
+msgstr "weiteres Bild"
+
+msgid "newsPics"
+msgstr "Verfügbare Bilder"
+
+msgid "newsActivate"
+msgstr "freischalten"
+
+msgid "newsCommentActivate"
+msgstr "Nicht aktive Beitragskommentare"
+
+msgid "newsComments"
+msgstr "Kommentare"
+
+msgid "newsSeo"
+msgstr "SEO"
+
+msgid "newsPraefix"
+msgstr "Monatsübersicht-Präfix"
+
+msgid "newsCatAdd"
+msgstr "Neue Kategorie erstellen"
+
+msgid "newsCatNew"
+msgstr "Kategorie bearbeiten"
+
+msgid "newsCatSort"
+msgstr "Kategorie Sortierung"
+
+msgid "newsCatParent"
+msgstr "Oberkategorie"
+
+msgid "newsCatLastUpdate"
+msgstr "Letzte Aktualisierung"
+
+msgid "newsOverview"
+msgstr "Beiträge"
+
+msgid "newsCatOverview"
+msgstr "Kategorien"
+
+msgid "newsInfinite"
+msgstr "immer"
+
+msgid "newsCommentEdit"
+msgstr "Kommentar editieren"
+
+msgid "newsMetaTitle"
+msgstr "Meta Title"
+
+msgid "newsMetaDescription"
+msgstr "Meta Description"
+
+msgid "newsMetaKeywords"
+msgstr "Meta Keywords"
+
+msgid "newsAuthor"
+msgstr "Autor"
+
+msgid "newsMandatoryFields"
+msgstr "(*) Pflichtfelder"
+
+msgid "newsAlreadyExists"
+msgstr "schon vorhanden"
+
+msgid "newsDeleteCat"
+msgstr "Folgende News-Kategorien und deren Unterkategorien werden gelöscht:"
+
+msgid "newsDeleteNews"
+msgstr "News löschen"
+
+msgid "newsDeleteComment"
+msgstr "Kommentar löschen"
+
+msgid "errorNewsCatFirst"
+msgstr "Fehler: Bitte legen Sie zuerst eine Newskategorie an."
+
+msgid "successNewsCommmentEdit"
+msgstr "Der Newskommentar wurde erfolgreich editiert."
+
+msgid "successNewsDelete"
+msgstr "Ihre markierten News wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNews"
+msgstr "Fehler: Sie müssen mindestens eine News ausgewählt haben."
+
+msgid "successNewsCatDelete"
+msgstr "Ihre markierten Newskategorien wurden erfolgreich gelöscht."
+
+msgid "errorAtLeastOneNewsCat"
+msgstr "Fehler: Bitte markieren Sie mindestens eine Newskategorie."
+
+msgid "successNewsImageDelete"
+msgstr "Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht."
+
+msgid "errorNewsImageDelete"
+msgstr "Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden."
+
+msgid "errorNewsCatNotFound"
+msgstr "Fehler: Die Newskategorie mit der ID %d konnte nicht gefunden werden."
+
+msgid "successNewsCommentUnlock"
+msgstr "Ihre markierten Newskommentare wurden erfolgreich freigeschaltet."
+
+msgid "goOnEdit"
+msgstr " und weiter bearbeiten"
+
+msgid "mainCategory"
+msgstr "Hauptkategorie"
+
+msgid "deleteComment"
+msgstr "Kommentare löschen?"
+
+msgid "successNewsSave"
+msgstr "News saved"
+
+msgid "successNewsCatSave"
+msgstr "News category created"
+
+msgid "successNewsCommentDelete"
+msgstr "News comments deleted."
+
+msgid "errorAtLeastOneNewsComment"
+msgstr "Error: Select at least one comment."

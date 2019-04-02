@@ -18,8 +18,8 @@ GUI.prototype = {
     {
         debuglog('GUI init');
 
-        this.iframe    = iframe;
-        this.tutorial  = tutorial;
+        this.iframe   = iframe;
+        this.tutorial = tutorial;
 
         installGuiElements(this, [
             'sidebarPanel',
@@ -32,6 +32,8 @@ GUI.prototype = {
             'configModalTitle',
             'configModalBody',
             'configForm',
+            'stdConfigButtons',
+            'missingConfigButtons',
             'blueprintModal',
             'blueprintForm',
             'blueprintName',
@@ -63,6 +65,8 @@ GUI.prototype = {
             'restoreUnsavedModal',
             'restoreUnsavedForm',
         ]);
+
+        this.missingConfigButtons.hide();
 
         if(typeof error === 'string' && error.length > 0) {
             this.showError(error);
@@ -278,13 +282,28 @@ GUI.prototype = {
 
         this.setConfigSaveCallback(noop);
         this.setImageSelectCallback(noop);
-        this.io.getConfigPanelHtml(portletData.class, portletData.properties, this.onGetConfigPanelHtml);
+
+        this.io.getConfigPanelHtml(
+            portletData.class,
+            portletData.missingClass,
+            portletData.properties,
+            this.onGetConfigPanelHtml
+        );
+
         this.curPortlet = portlet;
     },
 
     onGetConfigPanelHtml: function(html)
     {
         var portletData = this.curPortlet.data('portlet');
+
+        if (portletData.class === 'MissingPortlet') {
+            this.stdConfigButtons.hide();
+            this.missingConfigButtons.show();
+        } else {
+            this.stdConfigButtons.show();
+            this.missingConfigButtons.hide();
+        }
 
         this.configModalBody.html(html);
         this.configModalTitle.html(portletData.title + ' bearbeiten');
@@ -301,11 +320,19 @@ GUI.prototype = {
         var configObject = this.configForm.serializeControls();
 
         for(var propname in configObject) {
-            var propval  = configObject[propname];
-            var propType = $('[name="' + propname + '"]').data('prop-type');
+            var propval   = configObject[propname];
+            var propInput = $('[name="' + propname + '"]');
 
-            if (propType === 'filter') {
-                propval = JSON.parse(propval);
+            if (propInput.length > 0) {
+                var propType = propInput.data('prop-type');
+
+                if (propType === 'filter') {
+                    propval = JSON.parse(propval);
+                } else if (propInput[0].type === 'radio') {
+                    propval = Boolean(propval);
+                } else if (propInput[0].type === 'number') {
+                    propval = parseInt(propval);
+                }
             }
 
             configObject[propname] = propval;
@@ -363,7 +390,7 @@ GUI.prototype = {
 
     onBtnImportBlueprint: function()
     {
-        $('<input type="file" accept=".json">').change(this.onBlueprintImportChosen.bind(this)).click();
+        $('<input type="file" accept=".json">').on('change', this.onBlueprintImportChosen.bind(this)).click();
     },
 
     onBlueprintImportChosen: function(e)

@@ -4,9 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Debug\DataCollector\Smarty;
-use Helpers\PHPSettings;
+use JTL\Debug\DataCollector\Smarty;
+use JTL\Helpers\PHPSettings;
+use JTL\Profiler;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Template;
 use JTLShop\SemVer\Version;
+use JTL\Session\Frontend;
+use JTL\Plugin\Helper;
+use JTL\Filter\Metadata;
 
 $nStartzeit = microtime(true);
 
@@ -37,7 +44,7 @@ define(
         Version::parse(APPLICATION_VERSION)->getMinor()
     )
 ); // DEPRECATED since 5.0.0
-define('JTL_MINOR_VERSION', (int) Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
+define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
 
 Profiler::start();
 
@@ -72,7 +79,8 @@ $config = Shop::getSettings([CONF_GLOBAL])['global'];
 $lang   = Sprache::getInstance($db, $cache);
 if (PHP_SAPI !== 'cli'
     && $config['kaufabwicklung_ssl_nutzen'] === 'P'
-    && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
+    && (!isset($_SERVER['HTTPS'])
+        || (mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
     $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
         || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))
@@ -82,7 +90,7 @@ if (PHP_SAPI !== 'cli'
     if (!$https) {
         $lang = '';
         if (!Sprache::isDefaultLanguageActive(true)) {
-            $lang = strpos($_SERVER['REQUEST_URI'], '?')
+            $lang = mb_strpos($_SERVER['REQUEST_URI'], '?')
                 ? '&lang=' . $_SESSION['cISOSprache']
                 : '?lang=' . $_SESSION['cISOSprache'];
         }
@@ -98,13 +106,13 @@ if (!JTL_INCLUDE_ONLY_DB) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikelsuchspecial_inc.php';
-    $pluginHooks    = \Plugin\Helper::getHookList();
+    $pluginHooks    = Helper::getHookList();
     $template       = Template::getInstance();
-    $globalMetaData = \Filter\Metadata::getGlobalMetaData();
+    $globalMetaData = Metadata::getGlobalMetaData();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)
-        ? \Session\Frontend::getInstance(true, true, 'JTLCRON')
-        : \Session\Frontend::getInstance();
+        ? Frontend::getInstance(true, true, 'JTLCRON')
+        : Frontend::getInstance();
     $bAdminWartungsmodus = false;
     if ($config['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';

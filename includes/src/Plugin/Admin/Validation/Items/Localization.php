@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Localization
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Localization extends AbstractItem
 {
@@ -32,10 +32,10 @@ class Localization extends AbstractItem
         foreach ($node['Locales'][0]['Variable'] as $t => $var) {
             $t = (string)$t;
             \preg_match('/[0-9]+/', $t, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($t)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($t)) {
                 continue;
             }
-            if (\strlen($var['Name']) === 0) {
+            if (\mb_strlen($var['Name']) === 0) {
                 return InstallCode::INVALID_LANG_VAR_NAME;
             }
             // Nur eine Sprache vorhanden
@@ -47,10 +47,10 @@ class Localization extends AbstractItem
                     return InstallCode::MISSING_LOCALIZED_LANG_VAR;
                 }
                 \preg_match('/[A-Z]{3}/', $var['VariableLocalized attr']['iso'], $hits);
-                if (\strlen($hits[0]) !== \strlen($var['VariableLocalized attr']['iso'])) {
+                if (\mb_strlen($hits[0]) !== \mb_strlen($var['VariableLocalized attr']['iso'])) {
                     return InstallCode::INVALID_LANG_VAR_ISO;
                 }
-                if (\strlen($var['VariableLocalized']) === 0) {
+                if (\mb_strlen($var['VariableLocalized']) === 0) {
                     return InstallCode::INVALID_LOCALIZED_LANG_VAR_NAME;
                 }
             } elseif (isset($var['VariableLocalized'])
@@ -62,14 +62,14 @@ class Localization extends AbstractItem
                     $i = (string)$i;
                     \preg_match('/[0-9]+\sattr/', $i, $hits1);
                     \preg_match('/[0-9]+/', $i, $hits2);
-                    if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
+                    if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                         \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
-                        $len = \strlen($localized['iso']);
-                        if ($len === 0 || \strlen($hits[0]) !== $len) {
+                        $len = \mb_strlen($localized['iso']);
+                        if ($len === 0 || \mb_strlen($hits[0]) !== $len) {
                             return InstallCode::INVALID_LANG_VAR_ISO;
                         }
-                    } elseif (isset($hits2[0]) && \strlen($hits2[0]) === \strlen($i)) {
-                        if (\strlen($localized) === 0) {
+                    } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($i)) {
+                        if (\mb_strlen($localized) === 0) {
                             return InstallCode::INVALID_LOCALIZED_LANG_VAR_NAME;
                         }
                     }

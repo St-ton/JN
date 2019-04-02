@@ -34,14 +34,14 @@
     {literal}
 
     $(document).ready(function () {
-        $('#lang').change(function () {
+        $('#lang').on('change', function () {
             var iso = $('#lang option:selected').val();
             $('.iso_wrapper').slideUp();
             $('#iso_' + iso).slideDown();
             return false;
         });
 
-        $('input[name="nLinkart"]').change(function () {
+        $('input[name="nLinkart"]').on('change', function () {
             var lnk = $('input[name="nLinkart"]:checked').val();
             if (lnk == '1') {
                 $('#option_isActive').slideDown("slow");
@@ -50,14 +50,14 @@
                 $('#option_isActive select').val(1);
             }
         }).trigger('change');
-        $('form input[type=file]').change(function(e){
+        $('form input[type=file]').on('change', function(e){
             $('form div.alert').slideUp();
             var filesize= this.files[0].size;
             {/literal}
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i>{/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -92,13 +92,13 @@
         <div class="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNews->getID() > 0}{__('newsEdit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</h3>
+                    <h3 class="panel-title">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</h3>
                 </div>
                 <div class="table-responsive">
                     <div id="formtable" class="panel-body">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="kkundengruppe">{__('newsCustomerGrp')} *</label>
+                                <label for="kkundengruppe">{__('customerGroup')} *</label>
                             </span>
                             <select id="kkundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
                                 <option value="-1"
@@ -129,7 +129,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="kNewsKategorie">{__('newsCat')} *</label>
+                                <label for="kNewsKategorie">{__('category')} *</label>
                             </span>
                             <select id="kNewsKategorie" class="form-control{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}" name="kNewsKategorie[]" multiple="multiple">
                                 {foreach $oNewsKategorie_arr as $category}
@@ -166,11 +166,11 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nAktiv">{__('newsActive')} *</label>
+                                <label for="nAktiv">{__('active')} *</label>
                             </span>
                             <select class="form-control" id="nAktiv" name="nAktiv">
-                                <option value="1"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 1} selected{/if}{elseif $oNews->getIsActive() === true} selected{/if}>Ja</option>
-                                <option value="0"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 0} selected{/if}{elseif $oNews->getIsActive() === false} selected{/if}>Nein
+                                <option value="1"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 1} selected{/if}{elseif $oNews->getIsActive() === true} selected{/if}>{__('yes')}</option>
+                                <option value="0"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 0} selected{/if}{elseif $oNews->getIsActive() === false} selected{/if}>{__('no')}
                                 </option>
                             </select>
                         </div>
@@ -189,7 +189,7 @@
                         {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="previewImage">{__('newsPreview')}</label>
+                                <label for="previewImage">{__('preview')}</label>
                             </span>
                             <div class="input-group-wrap">
                                 {if !empty($oNews->getPreviewImage())}
@@ -222,12 +222,12 @@
                         {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="lang">Sprache</label>
+                                <label for="lang">{__('language')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="cISO" id="lang">
                                     {foreach $sprachen as $sprache}
-                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
                             </span>
@@ -242,12 +242,12 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
                         </div>
                         <div class="panel-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="cName_{$cISO}">{__('newsHeadline')} *</label>
+                                    <label for="cName_{$cISO}">{__('headline')} *</label>
                                 </span>
                                 <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}" id="cName_{$cISO}" type="text" name="cName_{$cISO}" value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
                             </div>
@@ -277,7 +277,7 @@
                             </div>
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="newstext_{$cISO}">{__('newsText')} *</label>
+                                    <label for="newstext_{$cISO}">{__('text')} *</label>
                                 </span>
                                 <textarea id="newstext_{$cISO}" class="ckeditor" name="text_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.text) && $cPostVar_arr.text}{$cPostVar_arr.text}{else}{$oNews->getContent($langID)}{/if}</textarea>
                             </div>
@@ -293,9 +293,9 @@
                 </div>
             {/foreach}
             <div class="panel btn-group">
-                <button name="speichern" type="button" value="{__('newsSave')}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
+                <button name="speichern" type="button" value="{__('save')}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 {if $oNews->getID() > 0}
-                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newsSave')} und weiter bearbeiten</button>
+                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('save')} {__('goOnEdit')}</button>
                 {/if}
                 <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
             </div>

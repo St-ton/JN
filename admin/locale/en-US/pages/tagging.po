@@ -1,0 +1,72 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "tagging"
+msgstr "Produkttags"
+
+msgid "taggingURL"
+msgstr "https://jtl-url.de/0jlfk"
+
+msgid "taggingDesc"
+msgstr "Shop-Besucher können Artikel im Shop mit Schlagworten versehen (\"taggen\"). Nach Freischaltung der Tag-Begriffe sind diese im Shop öffentlich und können zur Navigation und Filterung genutzt werden. Bitte beachten Sie, dass Produkttags pro Sprache verwaltet werden. Einstellungen zu Produkttags finden Sie unter Einstellungen -> Artikeldetails"
+
+msgid "tags"
+msgstr "Aktive Tags"
+
+msgid "tagnew"
+msgstr "Ziel-Tag"
+
+msgid "mapping"
+msgstr "Aktive Tag-Mappings"
+
+msgid "tagcount"
+msgstr "Taganzahl"
+
+msgid "taggingdetail"
+msgstr "Produkttagging Detailansicht"
+
+msgid "taggingdetailDesc"
+msgstr " "
+
+msgid "taggingProduct"
+msgstr "Produkt"
+
+msgid "taggingdelete"
+msgstr "Markierte löschen"
+
+msgid "taggingdetailTag"
+msgstr "Artikel zum Produkttag:"
+
+msgid "errorTagMapSelf"
+msgstr "Der Tag %s kann nicht auf den gleichen Tagbegriff gemappt werden."
+
+msgid "successTagRefresh"
+msgstr "Die Tags wurden erfolgreich aktualisiert."
+
+msgid "successTagDelete"
+msgstr "Der Tag %s wurde erfolgreich gelöscht."
+
+msgid "successTagMap"
+msgstr "Der Tag %s wurde erfolgreich auf %s gemappt.."
+
+msgid "errorTagNotFound"
+msgstr "Es wurde kein Tag mit der ID %s gefunden."
+
+msgid "errorMapNotFound"
+msgstr "Es wurde kein Mapping mit der ID %s gefunden."
+
+msgid "errorAtLeastOneTag"
+msgstr "Bitte wählen Sie mindestens einen Tag aus."
+
+msgid "errorAtLeastOneMap"
+msgstr "Bitte wählen Sie mindestens ein Mapping aus."
+
+msgid "successMapDelete"
+msgstr "Das Mapping %s wurde erfolgreich gelöscht."
+
+msgid "successTagDeleteProduct"
+msgstr "Der Tag wurde erfolgreich bei Ihren markierten Artikeln gelöscht."
+
+msgid "errorProductTagDelete"
+msgstr "Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gelöscht werden."

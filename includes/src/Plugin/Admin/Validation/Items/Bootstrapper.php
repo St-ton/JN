@@ -4,14 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\AbstractPlugin;
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Bootstrapper
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Bootstrapper extends AbstractItem
 {
@@ -25,7 +24,7 @@ class Bootstrapper extends AbstractItem
         if (!\is_file($classFile)) {
             return InstallCode::OK;
         }
-        $class = \sprintf('%s\\%s', $namespace, 'Bootstrap');
+        $class = \sprintf('Plugin\\%s\\%s', $namespace, 'Bootstrap');
 
         require_once $classFile;
 
@@ -35,7 +34,7 @@ class Bootstrapper extends AbstractItem
 
         $bootstrapper = new $class((object)['cPluginID' => $namespace], null, null);
 
-        return \is_subclass_of($bootstrapper, AbstractPlugin::class)
+        return \is_subclass_of($bootstrapper, \JTL\Plugin\Bootstrapper::class)
             ? InstallCode::OK
             : InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION;
     }

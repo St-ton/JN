@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
 Your order at {$Einstellungen.global.global_shopname} has been updated.
 
@@ -40,7 +40,7 @@ Total: {$Bestellung->WarensummeLocalized[0]}
 
 Your billing address:
 
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
@@ -57,7 +57,7 @@ Email: {$Kunde->cMail}
 {if $Bestellung->Lieferadresse->kLieferadresse>0}
     Your shipping address:
 
-    {$Bestellung->Lieferadresse->cAnrede} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
+    {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
     {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}
     {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}
     {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}

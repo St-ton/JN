@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "newsletterMail"
+msgstr "Newsletter-Empfänger importieren"
+
+msgid "newsletterMailDesc"
+msgstr "Hier haben Sie die Möglichkeit, eine CSV-Datei mit Newsletter-Empfängern zu importieren."
+
+msgid "newsletterURL"
+msgstr "https://jtl-url.de/686sr"
+
+msgid "language"
+msgstr "Kunden diese Sprache zuweisen"
+
+msgid "csvFile"
+msgstr "CSV-Datei mit Kundendaten"
+
+msgid "checkHead"
+msgstr "Überprüfe Kopfzeile..."
+
+msgid "errorFormatUnknown"
+msgstr "- Format nicht erkannt!"
+
+msgid "importPending"
+msgstr "Importiere..."
+
+msgid "errorEmailInvalid"
+msgstr "keine gültige E-Mail-Adresse (%s)! Übergehe diesen Datensatz."
+
+msgid "errorEmailInvalidBlacklist"
+msgstr "keine gültige E-Mail-Adresse: (%s)! Kunde hat sich auf die Blacklist setzen lassen. Übergehe diesen Datensatz."
+
+msgid "errorSurnameMissing"
+msgstr "Kein Nachname. Übergehe diesen Datensatz."
+
+msgid "errorEmailExists"
+msgstr "Newsletter-Empfänger mit dieser E-Mail-Adresse bereits vorhanden: (%s)! Übergehe diesen Datensatz."
+
+msgid "successImport"
+msgstr "Datensatz OK. Importiere: "
+
+msgid "errorImportRow"
+msgstr "Fehler beim Import dieser Zeile."

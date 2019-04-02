@@ -1,4 +1,4 @@
-<a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Favoriten">
+<a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="{__('favorites')}">
     <i class="fa fa-star" aria-hidden="true"></i>
 </a>
 <ul class="dropdown-menu dropdown-menu-right" role="main">
@@ -13,6 +13,6 @@
         <li role="separator" class="divider"></li>
     {/if}
     <li class="icon">
-        <a href="favs.php">Favoriten verwalten <i class="fa fa-pencil"></i></a>
+        <a href="favs.php">{__('manageFavorites')} <i class="fa fa-pencil"></i></a>
     </li>
 </ul>

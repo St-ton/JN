@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+use JTL\Shop;
+
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $NaviFilter = Shop::run();

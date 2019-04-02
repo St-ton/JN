@@ -40,7 +40,7 @@ build_create()
     build_composer_execute;
 
     echo "Create delete files csv";
-    build_create_deleted_files_csv ${APPLICATION_VERSION_STR};
+    build_create_deleted_files_csv;
 
     echo "Move class files";
     build_move_class_files;
@@ -86,12 +86,12 @@ build_create()
 
 build_composer_execute()
 {
-    composer install --no-dev -q -d ${REPOSITORY_DIR}/includes;
+    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/includes;
 }
 
 build_create_deleted_files_csv()
 {
-    local VERSION="${1//[\/\.]/-}";
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//[v]/}";
     local CUR_PWD=$(pwd);
     local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
@@ -138,7 +138,7 @@ build_add_old_files()
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    composer install --no-dev -a -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
 }
 
 build_create_md5_hashfile()
@@ -183,17 +183,17 @@ build_create_config_file()
 build_migrate()
 {
     php -r "
-        require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
-        \$manager = new MigrationManager(null); \
-        \$manager->migrate(null); \
-        try {
-            \$result = \$manager->migrate(null);
-        } catch (Exception \$e) {
-            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations())));
-            \$result = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage());
-            echo \$result;
-            exit(1);
-        }
+    require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
+      \$time    = date('YmdHis'); \
+      \$manager = new MigrationManager(); \
+      try { \
+          \$migrations = \$manager->migrate(\$time); \
+      } catch (Exception \$e) { \
+          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+          echo \$result->message; \
+          return 1; \
+      } \
     ";
 
     echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
@@ -202,10 +202,12 @@ build_migrate()
 
 build_create_db_struct()
 {
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
     local i=0;
     local DB_STRUCTURE='{';
     local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
-    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json;
+    local SCHEMAJSON_PATH="${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json";
 
     while ((i++)); read -r table;
     do
@@ -233,6 +235,8 @@ build_create_db_struct()
     done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
 
     echo "${DB_STRUCTURE}" > ${SCHEMAJSON_PATH};
+
+    echo "  Dbstruct file admin/includes/shopmd5files/dbstruct_${VERSION}.json";
 }
 
 build_create_initial_schema()
@@ -326,7 +330,7 @@ build_add_files_to_patch_dir()
         mkdir /tmp_composer/includes;
         touch /tmp_composer/includes/composer.json;
         git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer/includes/composer.json;
-        composer install --no-dev -q -d /tmp_composer/includes;
+        composer install --no-dev -a -o -q -d /tmp_composer/includes;
 
         while read -r line;
         do

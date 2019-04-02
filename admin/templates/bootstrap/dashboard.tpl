@@ -2,7 +2,7 @@
 {config_load file="$lang.conf" section='login'}
 {config_load file="$lang.conf" section='shopupdate'}
 
-{if permission('DASHBOARD_VIEW')}
+{if 'DASHBOARD_VIEW'|permission}
     <script type="text/javascript" src="../includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="../includes/libs/flashchart/js/swfobject.js"></script>
     <script type="text/javascript" src="{$currentTemplateDir}js/html.sortable.js"></script>
@@ -32,7 +32,7 @@
 {else}
     {include file='tpl_inc/seite_header.tpl' cTitel=__('dashboard')}
     <div class="alert alert-success">
-        <strong>Es stehen keine weiteren Informationen zur Verfügung.</strong>
+        <strong>{__('noMoreInfo')}</strong>
     </div>
 {/if}
 

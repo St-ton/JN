@@ -4,8 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
@@ -71,6 +73,14 @@ if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])
     && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
 ) {
     $_SESSION['dRegZeit'] = time();
+}
+
+if (Request::verifyGPCDataInt('accountDeleted') === 1) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        Shop::Lang()->get('accountDeleted', 'messages'),
+        'accountDeleted'
+    );
 }
 
 executeHook(HOOK_REGISTRIEREN_PAGE);

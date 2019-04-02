@@ -1,11 +1,18 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use JTL\Catalog\Product\Artikel;
+use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class ImageMap
+ * @package JTL
  */
 class ImageMap implements IExtensionPoint
 {
@@ -26,7 +33,7 @@ class ImageMap implements IExtensionPoint
     {
         $this->kSprache      = Shop::getLanguage();
         $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? \Session\Frontend::getCustomerGroup()->getID()
+            ? Session\Frontend::getCustomerGroup()->getID()
             : null;
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $this->kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
@@ -41,7 +48,7 @@ class ImageMap implements IExtensionPoint
     public function init($kInitial, $fetch_all = false): self
     {
         $imageMap = $this->fetch($kInitial, $fetch_all);
-        if (is_object($imageMap)) {
+        if (\is_object($imageMap)) {
             Shop::Smarty()->assign('oImageMap', $imageMap);
         }
 
@@ -57,7 +64,7 @@ class ImageMap implements IExtensionPoint
             'SELECT *, IF((CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0), 1, 0) AS active 
                 FROM timagemap
                 ORDER BY bDatum DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -71,13 +78,13 @@ class ImageMap implements IExtensionPoint
     {
         $db   = Shop::Container()->getDB();
         $cSQL = 'SELECT *
-                        FROM timagemap
-                        WHERE kImageMap = ' . $kImageMap;
+                    FROM timagemap
+                    WHERE kImageMap = ' . $kImageMap;
         if (!$fetchAll) {
             $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
-        $imageMap = $db->query($cSQL, \DB\ReturnType::SINGLE_OBJECT);
-        if (!is_object($imageMap)) {
+        $imageMap = $db->query($cSQL, ReturnType::SINGLE_OBJECT);
+        if (!\is_object($imageMap)) {
             return false;
         }
         $imageMap->oArea_arr = $db->selectAll(
@@ -85,16 +92,16 @@ class ImageMap implements IExtensionPoint
             'kImageMap',
             (int)$imageMap->kImageMap
         );
-        $imageMap->cBildPfad = Shop::getImageBaseURL() . PFAD_IMAGEMAP . $imageMap->cBildPfad;
-        $parsed              = parse_url($imageMap->cBildPfad);
-        $imageMap->cBild     = substr($parsed['path'], strrpos($parsed['path'], '/') + 1);
+        $imageMap->cBildPfad = Shop::getImageBaseURL() . \PFAD_IMAGEMAP . $imageMap->cBildPfad;
+        $parsed              = \parse_url($imageMap->cBildPfad);
+        $imageMap->cBild     = \mb_substr($parsed['path'], \mb_strrpos($parsed['path'], '/') + 1);
         $defaultOptions      = Artikel::getDefaultOptions();
 
-        [$imageMap->fWidth, $imageMap->fHeight]    = getimagesize(PFAD_ROOT . PFAD_IMAGEMAP . $imageMap->cBildPfad);
+        [$imageMap->fWidth, $imageMap->fHeight] = \getimagesize(\PFAD_ROOT . \PFAD_IMAGEMAP . $imageMap->cBild);
         foreach ($imageMap->oArea_arr as &$area) {
             $area->oCoords = new stdClass();
-            $aMap          = explode(',', $area->cCoords);
-            if (count($aMap) === 4) {
+            $aMap          = \explode(',', $area->cCoords);
+            if (\count($aMap) === 4) {
                 $area->oCoords->x = (int)$aMap[0];
                 $area->oCoords->y = (int)$aMap[1];
                 $area->oCoords->w = (int)$aMap[2];
@@ -125,13 +132,13 @@ class ImageMap implements IExtensionPoint
                         'cName'
                     )->cName;
                 }
-                if (strlen($area->cTitel) === 0) {
+                if (\mb_strlen($area->cTitel) === 0) {
                     $area->cTitel = $area->oArtikel->cName;
                 }
-                if (strlen($area->cUrl) === 0) {
+                if (\mb_strlen($area->cUrl) === 0) {
                     $area->cUrl = $area->oArtikel->cURL;
                 }
-                if (strlen($area->cBeschreibung) === 0) {
+                if (\mb_strlen($area->cBeschreibung) === 0) {
                     $area->cBeschreibung = $area->oArtikel->cKurzBeschreibung;
                 }
             }

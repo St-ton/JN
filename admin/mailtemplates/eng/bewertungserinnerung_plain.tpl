@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized}  {$Kunde->cNachname},
+Dear {$Kunde->cVorname}  {$Kunde->cNachname},
 
 We would love it if you could write a rating and share your experience with your recently products.
 

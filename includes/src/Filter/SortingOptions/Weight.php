@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
+use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class Weight
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class Weight extends AbstractSortingOption
 {
@@ -22,7 +23,7 @@ class Weight extends AbstractSortingOption
     {
         parent::__construct($productFilter);
         $this->setOrderBy('tartikel.fGewicht, tartikel.cName');
-        $this->setName(\Shop::Lang()->get('sortWeight'));
+        $this->setName(Shop::Lang()->get('sortWeight'));
         $this->setPriority($this->getConfig('artikeluebersicht')['suche_sortierprio_gewicht']);
         $this->setValue(\SEARCH_SORT_WEIGHT);
     }

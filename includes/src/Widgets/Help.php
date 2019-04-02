@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
 
 /**
  * Class Help
- * @package Widgets
+ * @package JTL\Widgets
  */
 class Help extends AbstractWidget
 {

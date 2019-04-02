@@ -3,6 +3,9 @@
  * Remove caching method "mysql"
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180108142900
  */

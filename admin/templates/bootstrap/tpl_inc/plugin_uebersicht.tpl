@@ -5,6 +5,10 @@
 {/if}
 <div id="content" class="container-fluid">
     <div class="container2">
+        <div id="update-status">
+            {include file='tpl_inc/dbupdater_status.tpl' migrationURL='plugin.php' pluginID=$oPlugin->getID()}
+            {include file='tpl_inc/dbupdater_scripts.tpl'}
+        </div>
         {assign var=hasActiveMenuTab value=false}
         {assign var=hasActiveMenuItem value=false}
         {if $oPlugin !== null && $oPlugin->getAdminMenu()->getItems()->count() > 0}
@@ -23,7 +27,9 @@
                 {/foreach}
             </div>
         {else}
-            <div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> {__('noPluginDataAvailable')}</div>
+            <div class="alert alert-info" role="alert">
+                <i class="fa fa-info-circle"></i> {__('noPluginDataAvailable')}
+            </div>
         {/if}
     </div>
 </div>

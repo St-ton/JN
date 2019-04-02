@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
 use MyCLabs\Enum\Enum;
 
 /**
  * Class Type
- * @package Cron
+ * @package JTL\Cron
  */
 class Type extends Enum
 {
@@ -29,4 +29,6 @@ class Type extends Enum
     public const DATAPROTECTION = 'dataprotection';
 
     public const IMAGECACHE = 'imagecache';
+
+    public const STORE = 'store';
 }

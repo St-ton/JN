@@ -4,11 +4,11 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
 
 /**
  * Class Page
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 final class Page extends AbstractItem
 {

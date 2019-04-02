@@ -17,8 +17,8 @@
             </p>
             <div id="login_outer" class="panel panel-default">
                 <div class="panel-body">
-                    {if isset($cFehler) && $cFehler}
-                        <div class="alert alert-danger">{$cFehler}</div>
+                    {if $alertError}
+                        {include file='snippets/alert_list.tpl'}
                         <script type="text/javascript">
                             {literal}
                             $(document).ready(function () {
@@ -27,10 +27,10 @@
                             {/literal}
                         </script>
                     {elseif isset($pw_updated) && $pw_updated === true}
-                        <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> Passwort wurde erfolgreich geändert.</div>
+                        <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> {__('successPasswordChange')}</div>
                     {else}
                         {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
-                            <p class="text-muted">{__('login')}</p>
+                            <p class="text-muted">{__('loginLong')}</p>
                         {else}
                         {/if}
                     {/if}
@@ -106,15 +106,15 @@
                                 {captchaMarkup getBody=true}
                             {/if}
                         {/if}
-                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">Anmelden</button>
+                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">{__('login')}</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
-                            <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">Benutzer wechseln</button>
+                            <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">{__('changerUser')}</button>
                         {/if}
                     </form>
                 </div>
             </div>
             <p class="forgot-pw-wrap">
-                <a href="pass.php" title="Passwort vergessen"><i class="fa fa-lock"></i> Passwort vergessen?</a>
+                <a href="pass.php" title="Passwort vergessen"><i class="fa fa-lock"></i> {__('forgotPassword')}</a>
             </p>
         </div>
     </div>

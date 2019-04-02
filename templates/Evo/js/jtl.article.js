@@ -29,7 +29,7 @@
             navBadgeAppend: '#shop-nav li.cart-menu',
             boxContainer: 'section#sidebox',
             boxContainerWish: 'section#sidebox',
-            quantity: 'input.quantity',
+            quantity: 'input.quantity'
         },
         modal: {
             id: 'modal-article-dialog',
@@ -81,7 +81,7 @@
 
         getCurrent: function($item) {
             var $current = $item.hasClass('variation') ? $item : $item.closest('.variation');
-            if ($current.context.tagName === 'SELECT') {
+            if ($current.tagName === 'SELECT') {
                 $current = $item.find('option:selected');
             }
 

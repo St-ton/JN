@@ -1,55 +1,207 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Events\Dispatcher;
+use JTL\Plugin\Data\AdminMenu;
+use JTL\Plugin\Data\Cache;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Data\Hook;
+use JTL\Plugin\Data\License;
+use JTL\Plugin\Data\Links;
+use JTL\Plugin\Data\Localization;
+use JTL\Plugin\Data\MailTemplates;
+use JTL\Plugin\Data\Meta;
+use JTL\Plugin\Data\Paths;
+use JTL\Plugin\Data\PaymentMethods;
+use JTL\Plugin\Data\Widget;
 
 /**
  * Interface PluginInterface
- * @package Plugin
+ * @package JTL\Plugin
  */
 interface PluginInterface
 {
     /**
-     * @param Dispatcher $dispatcher
+     * @return int
      */
-    public function boot(Dispatcher $dispatcher);
+    public function getID(): int;
 
     /**
-     * @return mixed
+     * @param int $id
      */
-    public function installed();
+    public function setID(int $id): void;
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function uninstalled();
+    public function getPluginID(): string;
 
     /**
-     * @return mixed
+     * @param string $pluginID
      */
-    public function enabled();
+    public function setPluginID(string $pluginID): void;
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function disabled();
+    public function getState(): int;
 
     /**
-     * @param mixed $oldVersion
-     * @param mixed $newVersion
-     * @return mixed
+     * @param int $state
      */
-    public function updated($oldVersion, $newVersion);
+    public function setState(int $state): void;
 
     /**
-     * @param int         $type
-     * @param string      $title
-     * @param null|string $description
+     * @return Meta
      */
-    public function addNotify($type, $title, $description = null);
+    public function getMeta(): Meta;
+
+    /**
+     * @param Meta $meta
+     */
+    public function setMeta(Meta $meta): void;
+
+    /**
+     * @return Paths
+     */
+    public function getPaths(): Paths;
+
+    /**
+     * @param Paths $paths
+     */
+    public function setPaths(Paths $paths): void;
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int;
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority(int $priority): void;
+
+    /**
+     * @return Config
+     */
+    public function getConfig(): Config;
+
+    /**
+     * @param Config $config
+     */
+    public function setConfig(Config $config): void;
+
+    /**
+     * @return Links
+     */
+    public function getLinks(): Links;
+
+    /**
+     * @param Links $links
+     */
+    public function setLinks(Links $links): void;
+
+    /**
+     * @return License
+     */
+    public function getLicense(): License;
+
+    /**
+     * @param License $license
+     */
+    public function setLicense(License $license): void;
+
+    /**
+     * @return Cache
+     */
+    public function getCache(): Cache;
+
+    /**
+     * @param Cache $cache
+     */
+    public function setCache(Cache $cache): void;
+
+    /**
+     * @return bool
+     */
+    public function isExtension(): bool;
+
+    /**
+     * @param bool $isExtension
+     */
+    public function setIsExtension(bool $isExtension): void;
+
+    /**
+     * @return bool
+     */
+    public function isBootstrap(): bool;
+
+    /**
+     * @param bool $bootstrap
+     */
+    public function setBootstrap(bool $bootstrap): void;
+
+    /**
+     * @return Hook[]
+     */
+    public function getHooks(): array;
+
+    /**
+     * @param Hook[] $hooks
+     */
+    public function setHooks(array $hooks): void;
+
+    /**
+     * @return AdminMenu
+     */
+    public function getAdminMenu(): AdminMenu;
+
+    /**
+     * @param AdminMenu $adminMenu
+     */
+    public function setAdminMenu(AdminMenu $adminMenu): void;
+
+    /**
+     * @return Localization
+     */
+    public function getLocalization(): Localization;
+
+    /**
+     * @param Localization $localization
+     */
+    public function setLocalization(Localization $localization): void;
+
+    /**
+     * @return Widget
+     */
+    public function getWidgets(): Widget;
+
+    /**
+     * @param Widget $widgets
+     */
+    public function setWidgets(Widget $widgets): void;
+
+    /**
+     * @return MailTemplates
+     */
+    public function getMailTemplates(): MailTemplates;
+
+    /**
+     * @param MailTemplates $mailTemplates
+     */
+    public function setMailTemplates(MailTemplates $mailTemplates): void;
+
+    /**
+     * @return PaymentMethods
+     */
+    public function getPaymentMethods(): PaymentMethods;
+
+    /**
+     * @param PaymentMethods $paymentMethods
+     */
+    public function setPaymentMethods(PaymentMethods $paymentMethods): void;
 }

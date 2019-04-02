@@ -6,6 +6,6 @@ $(document).ready(function() {ldelim}
 
 <div class="widget-custom-data">
    <div id="duk_data_wrapper">
-      <p class="ajax_preloader">Wird geladen...</p>
+      <p class="ajax_preloader"></p>
    </div>
 </div>

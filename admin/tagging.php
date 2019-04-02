@@ -4,9 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Seo;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -14,15 +19,14 @@ $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 
-$cHinweis    = '';
-$cFehler     = '';
 $step        = 'uebersicht';
 $settingsIDs = [427, 428, 431, 433, 434, 435, 430];
 $db          = Shop::Container()->getDB();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+$alertHelper = Shop::Container()->getAlertService();
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateToken()) {
@@ -45,14 +49,14 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                 "DELETE FROM tseo
                     WHERE cKey = 'kTag'
                         AND kKey" . $cSQLDel,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             // Deaktivierten Tag in ttag updaten
             $db->query(
                 "UPDATE ttag
                     SET cSeo = ''
                     WHERE kTag" . $cSQLDel,
-                \DB\ReturnType::AFFECTED_ROWS
+                ReturnType::AFFECTED_ROWS
             );
             // nAktiv Reihe updaten
             if (is_array($_POST['nAktiv'])) {
@@ -65,7 +69,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                     );
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = isset($oTag->cName)
-                        ? \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($oTag->cName))
+                        ? Seo::checkSeo(Seo::getSeo($oTag->cName))
                         : '';
                     $oSeo->cKey     = 'kTag';
                     $oSeo->kKey     = $nAktiv;
@@ -89,11 +93,11 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                 WHERE ttag.kSprache = ' . (int)$_SESSION['kSprache'] . ' 
                 GROUP BY ttag.cName
                 ORDER BY Anzahl DESC',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($tags as $tag) {
             if ($tag->cName !== $_POST['mapping_' . $tag->kTag]) {
-                if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
+                if (mb_strlen($_POST['mapping_' . $tag->kTag]) > 0) {
                     $tagmapping_obj           = new stdClass();
                     $tagmapping_obj->kSprache = (int)$_SESSION['kSprache'];
                     $tagmapping_obj->cName    = $tag->cName;
@@ -116,7 +120,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                                 SET nAnzahlTagging = nAnzahlTagging + ' . $tagmapping->nAnzahlTagging . '
                                 WHERE kTag = ' . (int)$Neuertag->kTag . ' 
                                     AND kArtikel = ' . (int)$tagmapping->kArtikel,
-                                \DB\ReturnType::AFFECTED_ROWS
+                                ReturnType::AFFECTED_ROWS
                             ) > 0) {
                                 $db->delete(
                                     'ttagartikel',
@@ -134,20 +138,28 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                                 );
                             }
                         }
-                        $cHinweis .= sprintf(
-                            __('successTagMap'),
-                            $tagmapping_obj->cNamem,
-                            $tagmapping_obj->cNameNeu
-                        ) . '<br />';
+                        $alertHelper->addAlert(
+                            Alert::TYPE_SUCCESS,
+                            sprintf(
+                                __('successTagMap'),
+                                $tagmapping_obj->cNamem,
+                                $tagmapping_obj->cNameNeu
+                            ),
+                            'successTagMap'
+                        );
                     }
 
                     unset($tagmapping_obj);
                 }
             } else {
-                $cHinweis .= sprintf(__('errorTagMapSelf'), $tag->cName);
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(__('errorTagMapSelf'), $tag->cName),
+                    'errorTagMapSelf'
+                );
             }
         }
-        $cHinweis .= __('successTagRefresh') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagRefresh'), 'successTagRefresh');
     } elseif (isset($_POST['delete'])) { // Auswahl loeschen
         if (is_array($_POST['kTag'])) {
             // flush cache before deleting the tags, since they will be removed from ttagartikel
@@ -155,7 +167,7 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
             foreach ($_POST['kTag'] as $kTag) {
                 $kTag = (int)$kTag;
                 $oTag = $db->select('ttag', 'kTag', $kTag);
-                if (strlen($oTag->cName) > 0) {
+                if (mb_strlen($oTag->cName) > 0) {
                     $db->query(
                         "DELETE ttag, tseo
                             FROM ttag
@@ -163,18 +175,26 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
                                 ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
                             WHERE ttag.kTag = " . $kTag,
-                        \DB\ReturnType::DEFAULT
+                        ReturnType::DEFAULT
                     );
                     // also delete possible mappings TO this tag
                     $db->delete('ttagmapping', 'cNameNeu', $oTag->cName);
                     $db->delete('ttagartikel', 'kTag', $kTag);
-                    $cHinweis .= sprintf(__('successTagDelete'), $oTag->cName) . '<br />';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_SUCCESS,
+                        sprintf(__('successTagDelete'), $oTag->cName),
+                        'successTagDelete'
+                    );
                 } else {
-                    $cFehler .= sprintf(__('errorTagNotFound'), $kTag) . '<br />';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorTagNotFound'), $kTag),
+                        'errorTagNotFound'
+                    );
                 }
             }
         } else {
-            $cFehler .= __('errorAtLeastOneTag') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
         }
     }
 } elseif (isset($_POST['tagging']) && (int)$_POST['tagging'] === 2 && Form::validateToken()) { // Mappinglist
@@ -183,21 +203,32 @@ if (isset($_POST['tagging']) && (int)$_POST['tagging'] === 1 && Form::validateTo
             foreach ($_POST['kTagMapping'] as $kTagMapping) {
                 $kTagMapping = (int)$kTagMapping;
                 $oMapping    = $db->select('ttagmapping', 'kTagMapping', $kTagMapping);
-                if (strlen($oMapping->cName) > 0) {
+                if (mb_strlen($oMapping->cName) > 0) {
                     $db->delete('ttagmapping', 'kTagMapping', $kTagMapping);
-
-                    $cHinweis .= sprintf(__('successMapDelete'), $oMapping->cName) . '<br />';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_SUCCESS,
+                        sprintf(__('successMapDelete'), $oMapping->cName),
+                        'successMapDelete'
+                    );
                 } else {
-                    $cFehler .= sprintf(__('errorMapNotFound'), $kTagMapping) . '<br />';
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorMapNotFound'), $kTagMapping),
+                        'errorMapNotFound'
+                    );
                 }
             }
         } else {
-            $cFehler .= __('errorAtLeastOneMap') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneMap'), 'errorAtLeastOneMap');
         }
     }
 } elseif ((isset($_POST['a']) && $_POST['a'] === 'saveSettings') ||
-    (isset($_POST['tagging']) && (int)$_POST['tagging'] === 3)) { // Einstellungen
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    (isset($_POST['tagging']) && (int)$_POST['tagging'] === 3)) {
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSettings($settingsIDs, $_POST),
+        'saveSettings'
+    );
 }
 if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetail') === 1) {
     $step             = 'detail';
@@ -209,10 +240,10 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) &&
         count($_POST['kArtikel_arr']) && Request::verifyGPCDataInt('detailloeschen') === 1) {
         if (loescheTagsVomArtikel($_POST['kArtikel_arr'], Request::verifyGPCDataInt('kTag'))) {
-            $cHinweis = __('successTagDeleteProduct');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagDeleteProduct'), 'successTagDeleteProduct');
         } else {
-            $step    = 'detail';
-            $cFehler = __('errorProductTagDelete');
+            $step = 'detail';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorProductTagDelete'), 'errorProductTagDelete');
         }
     }
     $tagProducts = holeTagDetail(
@@ -229,13 +260,13 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
         'SELECT COUNT(*) AS count
             FROM ttag
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->count;
     $tagMappingCount = (int)$db->query(
         'SELECT COUNT(*) AS count
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->count;
 
     $oPagiTags        = (new Pagination('tags'))
@@ -255,14 +286,14 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
             GROUP BY ttag.cName
             ORDER BY Anzahl DESC
             LIMIT ' . $oPagiTags->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $mapping   = $db->query(
         'SELECT *
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
             LIMIT ' . $oPagiTagMappings->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
@@ -272,7 +303,5 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
            ->assign('Tags', $tags)
            ->assign('Tagmapping', $mapping);
 }
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->display('tagging.tpl');

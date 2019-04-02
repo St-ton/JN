@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 wie von Ihnen gewünscht haben wir heute Ihr Kundenkonto mit der
 Emailadresse {$Kunde->cMail} gelöscht.

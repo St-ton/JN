@@ -29,7 +29,7 @@
             <a data-toggle="tab" role="tab" href="#artikelbewertung">{__('ratingForProduct')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('ratingSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -53,7 +53,7 @@
                                     <th class="tleft">{__('customerName')}</th>
                                     <th class="tleft">{__('ratingText')}</th>
                                     <th class="th-5">{__('ratingStars')}</th>
-                                    <th class="th-6">{__('ratingDate')}</th>
+                                    <th class="th-6">{__('date')}</th>
                                     <th class="th-7">&nbsp;</th>
                                 </tr>
                                 </thead>
@@ -81,15 +81,15 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                        <td colspan="6"><label for="ALLMSGS">{__('ratingSelectAll')}</label></td>
+                                        <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="aktivieren" type="submit" value="{__('ratingActive')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('ratingActive')}</button>
-                                <button name="loeschen" type="submit" value="{__('ratingDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('ratingDelete')}</button>
+                                <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('activate')}</button>
+                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                                     <th class="tleft">{__('customerName')}</th>
                                     <th class="tleft">{__('ratingText')}</th>
                                     <th class="th-5">{__('ratingStars')}</th>
-                                    <th class="th-6">{__('ratingDate')}</th>
+                                    <th class="th-6">{__('date')}</th>
                                     <th class="th-7">&nbsp;</th>
                                 </tr>
                                 </thead>
@@ -160,13 +160,13 @@
                                 <tfoot>
                                 <tr>
                                     <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6"><label for="ALLMSGS3">{__('ratingSelectAll')}</label></td>
+                                    <td colspan="6"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button name="loeschen" type="submit" value="{__('ratingDelete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                            <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                         </div>
                     </div>
                 </form>
@@ -186,7 +186,7 @@
                     <input type="hidden" name="tab" value="artikelbewertung" />
                     <input class="form-control" name="cArtNr" type="text" />
                     <span class="input-group-btn">
-                        <button name="submitSearch" type="submit" value="{__('ratingSearch')}" class="btn btn-info"><i class="fa fa-search"></i> {__('ratingSearch')}</button>
+                        <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fa fa-search"></i> {__('search')}</button>
                     </span>
                 </div>
                 {if isset($cArtNr) && $cArtNr|strlen > 0}
@@ -206,7 +206,7 @@
                                     <th class="tleft">{__('customerName')}</th>
                                     <th class="tleft">{__('ratingText')}</th>
                                     <th class="th-5">{__('ratingStars')}</th>
-                                    <th class="th-6">{__('ratingDate')}</th>
+                                    <th class="th-6">{__('date')}</th>
                                     <th class="th-7">&nbsp;</th>
                                 </tr>
                                 </thead>
@@ -231,13 +231,13 @@
                                 <tfoot>
                                 <tr>
                                     <td><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="6"><label for="ALLMSGS2">{__('ratingSelectAll')}</label></td>
+                                    <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>
                             </table>
                         </div>
                         <div class="panel-footer">
-                            <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('ratingDelete')}</button>
+                            <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                         </div>
                     </div>
                 {else}
@@ -252,7 +252,7 @@
                 <input type="hidden" name="tab" value="einstellungen" />
                 <div class="settings panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__('ratingSettings')}</h3>
+                        <h3 class="panel-title">{__('settings')}</h3>
                     </div>
                     <div class="panel-body">
                         {foreach $oConfig_arr as $oConfig}
@@ -272,7 +272,7 @@
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'listbox'}
                                             <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="form-control combo">
-                                                {foreach $oConfig->ConfWerte $wert}
+                                                {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
@@ -294,7 +294,7 @@
                         {/foreach}
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" value="{__('ragingSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                        <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
             </form>

@@ -4,20 +4,21 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Renderer;
+namespace JTL\Boxes\Renderer;
 
-use \Boxes\Items\BoxInterface;
+use JTL\Boxes\Items\BoxInterface;
+use JTL\Smarty\JTLSmartyTemplateClass;
 
 /**
  * Interface RendererInterface
- * @package Boxes\Renderer
+ * @package JTL\Boxes\Renderer
  */
 interface RendererInterface
 {
     /**
      * RendererInterface constructor.
-     * @param \Smarty\JTLSmartyTemplateClass $smarty
-     * @param BoxInterface|null              $box
+     * @param JTLSmartyTemplateClass $smarty
+     * @param BoxInterface|null      $box
      */
     public function __construct($smarty, BoxInterface $box = null);
 

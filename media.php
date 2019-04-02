@@ -4,7 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Media\Media;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 set_exception_handler(function ($e) {

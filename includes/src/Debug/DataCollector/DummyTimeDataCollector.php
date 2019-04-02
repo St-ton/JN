@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Debug\DataCollector;
+namespace JTL\Debug\DataCollector;
 
 use DebugBar\DataCollector\TimeDataCollector;
 
 /**
  * Class DummyTimeDataCollector
- * @package Debug\DataCollector
+ * @package JTL\Debug\DataCollector
  */
 class DummyTimeDataCollector extends TimeDataCollector
 {

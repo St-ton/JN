@@ -4,9 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Helpers\ShippingMethod;
-use Helpers\Cart;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Cart;
+use JTL\Alert\Alert;
+use JTL\Checkout\Kupon;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
+use JTL\Cart\WarenkorbPers;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
+use JTL\Extensions\Upload;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
@@ -25,7 +32,7 @@ $conf    = Shop::getSettings([
 Shop::setPageType(PAGE_WARENKORB);
 $linkHelper      = Shop::Container()->getLinkService();
 $couponCodeValid = true;
-$cart            = \Session\Frontend::getCart();
+$cart            = Frontend::getCart();
 $kLink           = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 $link            = $linkHelper->getPageLink($kLink);
 $alertHelper     = Shop::Container()->getAlertService();
@@ -40,7 +47,7 @@ if (isset($_POST['land'], $_POST['plz'])
 }
 if ($cart !== null
     && isset($_POST['Kuponcode'])
-    && strlen($_POST['Kuponcode']) > 0
+    && mb_strlen($_POST['Kuponcode']) > 0
     && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
@@ -93,7 +100,7 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['g
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                 AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
         $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true),
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     if (isset($gift->kArtikel) && $gift->kArtikel > 0) {
         if ($gift->fLagerbestand <= 0 && $gift->cLagerKleinerNull === 'N' && $gift->cLagerBeachten === 'Y') {
@@ -107,7 +114,7 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['g
     }
 }
 if (isset($_GET['fillOut'])) {
-    $mbw = \Session\Frontend::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
+    $mbw = Frontend::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
     if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
         $warning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' . Preise::getLocalizedPriceString($mbw);
     } elseif ((int)$_GET['fillOut'] === 8) {
@@ -121,12 +128,12 @@ if (isset($_GET['fillOut'])) {
         $warning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }
-$customerGroupID = ($id = \Session\Frontend::getCustomer()->kKundengruppe) > 0
+$customerGroupID = ($id = Frontend::getCustomer()->kKundengruppe) > 0
     ? $id
-    : \Session\Frontend::getCustomerGroup()->getID();
+    : Frontend::getCustomerGroup()->getID();
 $cCanonicalURL   = $linkHelper->getStaticRoute('warenkorb.php');
-$uploads         = \Extensions\Upload::gibWarenkorbUploads($cart);
-$maxSize         = \Extensions\Upload::uploadMax();
+$uploads         = Upload::gibWarenkorbUploads($cart);
+$maxSize         = Upload::uploadMax();
 
 //alerts
 if (($quickBuyNote = Cart::checkQuickBuy()) !== '') {
@@ -148,7 +155,7 @@ if (($orderAmountStock = Cart::checkOrderAmountAndStock($conf)) !== '') {
 Cart::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $warning)
        ->assign('nMaxUploadSize', $maxSize)
-       ->assign('cMaxUploadSize', \Extensions\Upload::formatGroesse($maxSize))
+       ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
        ->assign('oUploadSchema_arr', $uploads)
        ->assign('Link', $link)
        ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID))

@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL;
+namespace JTL\Services\JTL;
 
-use Alert;
-use Tightenco\Collect\Support\Collection;
+use JTL\Alert\Alert;
+use Illuminate\Support\Collection;
 
 /**
  * Class AlertService
+ * @package JTL\Services\JTL
  */
 class AlertService implements AlertServiceInterface
 {
@@ -37,7 +38,7 @@ class AlertService implements AlertServiceInterface
 
         if (!empty($alerts)) {
             foreach ($alerts as $alertSerialized) {
-                $alert = unserialize($alertSerialized, ['allowed_classes', 'Alert']);
+                $alert = \unserialize($alertSerialized, ['allowed_classes', Alert::class]);
                 if ($alert !== false) {
                     $this->pushAlert($alert);
                 }
@@ -50,7 +51,7 @@ class AlertService implements AlertServiceInterface
      */
     public function addAlert(string $type, string $message, string $key, array $options = null): ?Alert
     {
-        if (trim($message) === '' || trim($type) === '' || trim($key) === '') {
+        if (\trim($message) === '' || \trim($type) === '' || \trim($key) === '') {
             return null;
         }
         $alert = new Alert($type, $message, $key, $options);
@@ -92,7 +93,7 @@ class AlertService implements AlertServiceInterface
      */
     public function alertTypeExists(string $type): bool
     {
-        return count($this->getAlertList()->filter(function (Alert $alert) use ($type) {
+        return \count($this->getAlertList()->filter(function (Alert $alert) use ($type) {
             return $alert->getType() === $type;
         })) > 0;
     }

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -21,7 +21,7 @@ $action   = isset($_GET['action'])
 $step     = 'uebersicht';
 $messages = [
     'notice' => '',
-    'error'  => '',
+    'error'  => ''
 ];
 if (isset($action['erstellen']) && (int)$action['erstellen'] === 1 && Form::validateToken()) {
     $step = exportformatQueueActionErstellen($smarty);

@@ -4,31 +4,34 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Profiler;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $oAccount->permission('PROFILER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
-$tab      = 'uebersicht';
-$cFehler  = '';
-$cHinweis = '';
-$sqlData  = null;
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$tab         = 'uebersicht';
+$sqlData     = null;
+$alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = __('successEntryDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntryDelete'), 'successEntryDelete');
         } else {
-            $cFehler = __('errorEntryDelete');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntryDelete'), 'errorEntryDelete');
         }
     } elseif (isset($_POST['delete-all']) && $_POST['delete-all'] === 'y') {
         $res = deleteProfileRun(true);
         if (is_numeric($res) && $res > 0) {
-            $cHinweis = __('successEntriesDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntriesDelete'), 'successEntriesDelete');
         } else {
-            $cFehler = __('errorEntriesDelete');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntriesDelete'), 'errorEntriesDelete');
         }
     }
 }
@@ -100,8 +103,6 @@ if (count($pluginProfilerData) > 0) {
 $sqlProfilerData = Profiler::getSQLProfiles();
 $smarty->assign('pluginProfilerData', $pluginProfilerData)
        ->assign('sqlProfilerData', $sqlProfilerData)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('tab', $tab)
        ->display('profiler.tpl');
 
@@ -113,14 +114,14 @@ $smarty->assign('pluginProfilerData', $pluginProfilerData)
 function deleteProfileRun(bool $all = false, $runID = 0)
 {
     if ($all === true) {
-        $count = Shop::Container()->getDB()->query('DELETE FROM tprofiler', \DB\ReturnType::AFFECTED_ROWS);
+        $count = Shop::Container()->getDB()->query('DELETE FROM tprofiler', ReturnType::AFFECTED_ROWS);
         Shop::Container()->getDB()->query(
             'ALTER TABLE tprofiler AUTO_INCREMENT = 1',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         Shop::Container()->getDB()->query(
             'ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
 
         return $count;

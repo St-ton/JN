@@ -4,19 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use Filter\Config;
-use Filter\ProductFilter;
-use Filter\Type;
-use OPC\PortletInstance;
-use Tightenco\Collect\Support\Collection;
+use JTL\Catalog\Product\Artikel;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\Config;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\Type;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
+use JTL\Shop;
+use Illuminate\Support\Collection;
 
 /**
  * Class ProductStream
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
-class ProductStream extends \OPC\Portlet
+class ProductStream extends Portlet
 {
     /**
      * @param PortletInstance $instance
@@ -30,7 +35,7 @@ class ProductStream extends \OPC\Portlet
         $style         = $instance->getProperty('listStyle');
 
         return '<div ' . $attributes . ' ' . $dataAttribute . '>'
-            . '<img alt="" src="' . \PFAD_TEMPLATES . 'Evo/portlets/ProductStream/preview.' . $style . '.png" '
+            . '<img alt="" src="' . $this->getTemplateUrl() . 'preview.' . $style . '.png" '
             . 'style="width:98%;filter:grayscale(50%) opacity(60%)">'
             . '<div style="color:#5cbcf6;font-size:40px;font-weight:bold;margin: -1em 0 0 0;line-height:1em;">
                 Produktliste</div>'
@@ -62,7 +67,7 @@ class ProductStream extends \OPC\Portlet
     {
         return [
             'listStyle'    => [
-                'type'    => 'select',
+                'type'    => InputType::SELECT,
                 'label'   => 'Darstellung',
                 'options' => [
                     'gallery'    => 'Galerie',
@@ -81,13 +86,13 @@ class ProductStream extends \OPC\Portlet
             ],
             'productCount' => [
                 'label'              => 'Anzahl sichtbare Artikel',
-                'type'               => 'number',
+                'type'               => InputType::NUMBER,
                 'collapseControlEnd' => true,
                 'dspl_width'         => 50,
                 'default'            => 3,
             ],
             'filters'      => [
-                'type'    => 'filter',
+                'type'    => InputType::FILTER,
                 'label'   => 'Artikelfilter',
                 'default' => [],
             ],
@@ -113,12 +118,12 @@ class ProductStream extends \OPC\Portlet
         $enabledFilters = $instance->getProperty('filters');
         $productFilter  = new ProductFilter(
             Config::getDefault(),
-            \Shop::Container()->getDB(),
-            \Shop::Container()->getCache()
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache()
         );
 
         foreach ($enabledFilters as $enabledFilter) {
-            /** @var \Filter\AbstractFilter $newFilter * */
+            /** @var AbstractFilter $newFilter * */
             $newFilter = new $enabledFilter['class']($productFilter);
             $newFilter->setType(Type::AND);
             $productFilter->addActiveFilter($newFilter, $enabledFilter['value']);
@@ -129,14 +134,14 @@ class ProductStream extends \OPC\Portlet
 
     /**
      * @param PortletInstance $instance
-     * @return \Artikel[]
+     * @return Artikel[]
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {
         $products = [];
-        $options  = \Artikel::getDefaultOptions();
+        $options  = Artikel::getDefaultOptions();
         foreach ($this->getFilteredProductIds($instance) as $kArtikel) {
-            $product = new \Artikel();
+            $product = new Artikel();
             $product->fuelleArtikel($kArtikel, $options);
             $products[] = $product;
         }

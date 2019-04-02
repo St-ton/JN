@@ -8,13 +8,13 @@
                 -{if $oUmfrageStats->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
             </div>
             <div class="col-md-3">
-                <strong>{__('umfrageCustomerGrp')}:</strong><br/>
+                <strong>{__('customerGroup')}:</strong><br/>
                 {foreach $oUmfrageStats->cKundengruppe_arr as $cKundengruppe}
                     {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                 {/foreach}
             </div>
             <div class="col-md-3">
-                <strong>{__('umfrageActive')}:</strong><br/>
+                <strong>{__('active')}:</strong><br/>
                 {$oUmfrageStats->nAktiv}
             </div>
             <div class="col-md-3">
@@ -24,7 +24,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <strong>{__('umfrageText')}:</strong><br/>
+                <strong>{__('description')}:</strong><br/>
                 {$oUmfrageStats->cBeschreibung}
             </div>
         </div>
@@ -34,8 +34,8 @@
                 <h3>{__('umfrageQ')}:</h3>
                 {foreach $oUmfrageStats->oUmfrageFrage_arr as $oUmfrageFrage}
                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
-                        {if $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_SINGLE
-                        || $oUmfrageFrage->cTyp === \Survey\QuestionType::MATRIX_MULTI}
+                        {if $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE
+                        || $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}

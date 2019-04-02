@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "suchspecials"
+msgstr "Besondere Produkte SEO"
+
+msgid "suchspecialURL"
+msgstr "https://jtl-url.de/u38fa"
+
+msgid "suchspecialsDesc"
+msgstr "Hier können Sie angeben, wie die sprechenden Links zu Übersichten besonderer Produkte lauten sollen. Bitte beachten Sie, dass hierfür das SEO Modul installiert werden sein muss, damit diese Einstellungen greifen."
+
+msgid "specialOffers"
+msgstr "Sonderangebote"
+
+msgid "newInAssortment"
+msgstr "Neu im Sortiment"
+
+msgid "topOffers"
+msgstr "Top Angebote"
+
+msgid "shortTermAvailable"
+msgstr "In Kürze verfügbar"
+
+msgid "topreviews"
+msgstr "Top bewertet"
+
+msgid "errorBestsellerExistRename"
+msgstr "Das BestSeller Seo %s war bereits vorhanden und wurde in %s umbenannt."
+
+msgid "errorSpecialExistRename"
+msgstr "Das Sonderangebot Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorNewExistRename"
+msgstr "Das Neu im Sortiment Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorTopProductsExistRename"
+msgstr "Das Top Angebote Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorSoonExistRename"
+msgstr "Das In kürze Verfügbar Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "errorTopRatingExistRename"
+msgstr "Das Top Bewertet Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+
+msgid "successSeoSave"
+msgstr "Ihre Seos wurden erfolgreich gespeichert bzw. aktualisiert."

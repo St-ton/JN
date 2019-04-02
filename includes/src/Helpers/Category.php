@@ -4,19 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use DB\ReturnType;
-use Kategorie;
-use KategorieListe;
-use Session\Frontend;
-use Shop;
-use Sprache;
-use StringHandler;
+use JTL\DB\ReturnType;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class Category
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Category
 {
@@ -110,7 +109,7 @@ class Category
         $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
-        if (false === ($fullCats = Shop::Container()->getCache()->get(self::$cacheID))) {
+        if (($fullCats = Shop::Container()->getCache()->get(self::$cacheID)) === false) {
             if (!empty($_SESSION['oKategorie_arr_new'])) {
                 self::$fullCategories = $_SESSION['oKategorie_arr_new'];
 
@@ -201,7 +200,7 @@ class Category
                 $visibilityJoin       = '';
                 $visibilityWhere      = '';
             }
-            $nodes            = Shop::Container()->getDB()->query(
+            $nodes         = Shop::Container()->getDB()->query(
                 'SELECT node.kKategorie, node.kOberKategorie' . $nameSelect .
                 $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
@@ -233,9 +232,11 @@ class Category
             foreach ($catAttributes as $catAttribute) {
                 $catID = (int)$catAttribute->kKategorie;
                 if ($catAttribute->bIstFunktionsAttribut) {
-                    $functionAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute->cWert;
+                    $functionAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                        $catAttribute->cWert;
                 } else {
-                    $localizedAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute;
+                    $localizedAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                        $catAttribute;
                 }
             }
             foreach ($nodes as &$cat) {
@@ -263,7 +264,7 @@ class Category
                 /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
                 $cat->KategorieAttribute = &$cat->categoryFunctionAttributes;
                 //interne Verlinkung $#k:X:Y#$
-                $cat->cBeschreibung    = StringHandler::parseNewsText($cat->cBeschreibung);
+                $cat->cBeschreibung    = Text::parseNewsText($cat->cBeschreibung);
                 $cat->bUnterKategorien = 0;
                 $cat->Unterkategorien  = [];
                 // Kurzbezeichnung
@@ -272,30 +273,30 @@ class Category
                     : $cat->cName;
                 if ($cat->kOberKategorie === 0) {
                     $fullCats[$cat->kKategorie] = $cat;
-                    $current                     = $cat;
-                    $currentParent               = $cat;
-                    $hierarchy                   = [$cat->kKategorie];
+                    $current                    = $cat;
+                    $currentParent              = $cat;
+                    $hierarchy                  = [$cat->kKategorie];
                 } elseif ($current !== null && $cat->kOberKategorie === $current->kKategorie) {
                     $current->bUnterKategorien = 1;
                     if (!isset($current->Unterkategorien)) {
                         $current->Unterkategorien = [];
                     }
                     $current->Unterkategorien[$cat->kKategorie] = $cat;
-                    $current                                     = $cat;
-                    $hierarchy[]                                 = $cat->kOberKategorie;
-                    $hierarchy                                   = \array_unique($hierarchy);
+                    $current                                    = $cat;
+                    $hierarchy[]                                = $cat->kOberKategorie;
+                    $hierarchy                                  = \array_unique($hierarchy);
                 } elseif ($currentParent !== null && $cat->kOberKategorie === $currentParent->kKategorie) {
-                    $currentParent->bUnterKategorien                   = 1;
+                    $currentParent->bUnterKategorien                  = 1;
                     $currentParent->Unterkategorien[$cat->kKategorie] = $cat;
-                    $current                                           = $cat;
-                    $hierarchy                                         = [$cat->kOberKategorie, $cat->kKategorie];
+                    $current                                          = $cat;
+                    $hierarchy                                        = [$cat->kOberKategorie, $cat->kKategorie];
                 } else {
                     $newCurrent = $fullCats;
                     $i          = 0;
                     foreach ($hierarchy as $_i) {
                         if ($newCurrent[$_i]->kKategorie === $cat->kOberKategorie) {
-                            $current                                     = $newCurrent[$_i];
-                            $current->bUnterKategorien                   = 1;
+                            $current                                    = $newCurrent[$_i];
+                            $current->bUnterKategorien                  = 1;
                             $current->Unterkategorien[$cat->kKategorie] = $cat;
                             \array_splice($hierarchy, $i);
                             $hierarchy[] = $cat->kOberKategorie;
@@ -406,7 +407,7 @@ class Category
             $visibilityJoin       = '';
             $visibilityWhere      = '';
         }
-        $nodes            = Shop::Container()->getDB()->query(
+        $nodes         = Shop::Container()->getDB()->query(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
             $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
@@ -439,9 +440,11 @@ class Category
         foreach ($catAttributes as $catAttribute) {
             $catID = (int)$catAttribute->kKategorie;
             if ($catAttribute->bIstFunktionsAttribut) {
-                $functionAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute->cWert;
+                $functionAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                    $catAttribute->cWert;
             } else {
-                $localizedAttributes[$catID][\strtolower($catAttribute->cName)] = $catAttribute;
+                $localizedAttributes[$catID][\mb_convert_case($catAttribute->cName, \MB_CASE_LOWER)] =
+                    $catAttribute;
             }
         }
         foreach ($nodes as &$cat) {
@@ -469,10 +472,10 @@ class Category
             /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
             $cat->KategorieAttribute = &$cat->categoryFunctionAttributes;
             //interne Verlinkung $#k:X:Y#$
-            $cat->cBeschreibung    = StringHandler::parseNewsText($cat->cBeschreibung);
+            $cat->cBeschreibung    = Text::parseNewsText($cat->cBeschreibung);
             $cat->bUnterKategorien = 0;
             $cat->Unterkategorien  = [];
-            $fullCats[]             = $cat;
+            $fullCats[]            = $cat;
         }
         unset($cat);
         if ($filterEmpty) {

@@ -4,11 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cache;
+namespace JTL\Cache;
 
-use Cache\Methods\cache_null;
-use Helpers\Request;
-use Session\Frontend;
+use JTL\Cache\Methods\CacheNull;
+use JTL\Helpers\Request;
+use JTL\Profiler;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 \define('CACHING_ROOT_DIR', __DIR__ . '/');
 \define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
@@ -28,7 +31,7 @@ use Session\Frontend;
 
 /**
  * Class JTLCache
- * @package Cache
+ * @package JTL\Cache
  */
 final class JTLCache implements JTLCacheInterface
 {
@@ -267,7 +270,7 @@ final class JTLCache implements JTLCacheInterface
             // port for memcache(d) server
             'memcache_host'    => self::DEFAULT_MEMCACHE_HOST,
             // host of memcache(d) server
-            'prefix'           => 'jc_' . (\defined('DB_NAME') ? DB_NAME . '_' : ''),
+            'prefix'           => 'jc_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
             // try to make a quite unique prefix if multiple shops are used
             'lifetime'         => self::DEFAULT_LIFETIME,
             // cache lifetime in seconds
@@ -289,7 +292,7 @@ final class JTLCache implements JTLCacheInterface
         // merge defaults with assigned options and set them
         $this->options = \array_merge($defaults, $options);
         // always add trailing slash
-        if (\substr($this->options['cache_dir'], \strlen($this->options['cache_dir']) - 1) !== '/') {
+        if (\mb_substr($this->options['cache_dir'], \mb_strlen($this->options['cache_dir']) - 1) !== '/') {
             $this->options['cache_dir'] .= '/';
         }
         if ($this->options['method'] !== 'redis' && (int)$this->options['lifetime'] < 0) {
@@ -316,8 +319,8 @@ final class JTLCache implements JTLCacheInterface
     {
         $cache = null;
         /** @var ICachingMethod $className */
-        $className = '\Cache\Methods\cache_' . $methodName;
-        $cache     = new $className($this->options);
+        $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
+        $cache = new $class($this->options);
         if (!empty($cache) && $cache instanceof ICachingMethod) {
             $this->setError($cache->getError());
             if ($cache->isInitialized() && $cache->isAvailable()) {
@@ -326,7 +329,7 @@ final class JTLCache implements JTLCacheInterface
                 return true;
             }
         }
-        $this->setMethod(cache_null::getInstance($this->options));
+        $this->setMethod(CacheNull::getInstance($this->options));
 
         return false;
     }
@@ -349,11 +352,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getJtlCacheConfig(array $config): array
     {
-        // the DB class is needed for this
-        if (!\class_exists('Shop')) {
-            return [];
-        }
-        $cacheInit   = [];
+        $cacheInit = [];
         foreach ($config as $_conf) {
             if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
                 $value = true;
@@ -399,7 +398,7 @@ final class JTLCache implements JTLCacheInterface
             // set the configure caching method
             $this->setCache($this->options['method']);
             // preload shop settings and lang vars to avoid single cache/mysql requests
-            $settings = \Shopsetting::getInstance();
+            $settings = Shopsetting::getInstance();
             $settings->preLoad();
         } else {
             // set fallback null method
@@ -466,7 +465,7 @@ final class JTLCache implements JTLCacheInterface
                         ? ' could not be'
                         : 'successfully') . ' loaded.';
             } else {
-                \Profiler::setCacheProfile('get', (($res !== false) ? 'success' : 'failure'), $cacheID);
+                Profiler::setCacheProfile('get', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
         if ($callback !== null && $this->resultCode !== self::RES_SUCCESS && \is_callable($callback)) {
@@ -503,7 +502,7 @@ final class JTLCache implements JTLCacheInterface
             if ($this->options['debug_method'] === 'echo') {
                 echo '<br />Key ' . $cacheID . (($res !== false) ? 'successfully' : 'could not be') . ' set.';
             } else {
-                \Profiler::setCacheProfile('set', (($res !== false) ? 'success' : 'failure'), $cacheID);
+                Profiler::setCacheProfile('set', (($res !== false) ? 'success' : 'failure'), $cacheID);
             }
         }
         $this->resultCode = $res === false ? self::RES_FAIL : self::RES_SUCCESS;
@@ -633,7 +632,7 @@ final class JTLCache implements JTLCacheInterface
             if ($this->options['debug_method'] === 'echo') {
                 echo '<br />Key ' . $cacheID . ($res !== false ? ' ' : ' not') . ' flushed';
             } else {
-                \Profiler::setCacheProfile('flush', ($res !== false ? 'success' : 'failure'), $cacheID);
+                Profiler::setCacheProfile('flush', ($res !== false ? 'success' : 'failure'), $cacheID);
             }
         }
         if ($hookInfo !== null && \defined('HOOK_CACHE_FLUSH_AFTER') && \function_exists('executeHook')) {
@@ -728,6 +727,7 @@ final class JTLCache implements JTLCacheInterface
             'memcached',
             'null',
             'redis',
+            'redisCluster',
             'session',
             'xcache'
         ];
@@ -738,7 +738,7 @@ final class JTLCache implements JTLCacheInterface
 //
 //        return \array_filter(\array_map(
 //            function ($m) {
-//                return \strpos($m, 'class.cachingMethod') !== false
+//                return \mb_strpos($m, 'class.cachingMethod') !== false
 //                    ? \str_replace(['class.cachingMethod.', '.php'], '', $m)
 //                    : false;
 //            },
@@ -753,7 +753,7 @@ final class JTLCache implements JTLCacheInterface
     {
         $available = [];
         foreach ($this->getAllMethods() as $methodName) {
-            $class = 'Cache\Methods\cache_' . $methodName;
+            $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
             /** @var ICachingMethod $instance */
             $instance               = new $class($this->options);
             $available[$methodName] = [
@@ -791,11 +791,11 @@ final class JTLCache implements JTLCacheInterface
         // add language ID
         if ($languageID === true) {
             $baseID .= '_lid';
-            $lang    = \Shop::getLanguage();
+            $lang    = Shop::getLanguage();
             if ($lang > 0) {
                 $baseID .= $lang;
-            } elseif (\Shop::getLanguage() > 0) {
-                $baseID .= \Shop::getLanguage();
+            } elseif (Shop::getLanguage() > 0) {
+                $baseID .= Shop::getLanguage();
             } else {
                 $baseID .= '0';
             }

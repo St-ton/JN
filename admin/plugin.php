@@ -4,18 +4,27 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Plugin\Admin\Installation\MigrationManager;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Helper;
+use JTL\Plugin\Plugin;
+use JTL\Shop;
+use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-$cHinweis        = '';
-$cFehler         = '';
+$notice          = '';
+$errorMsg        = '';
 $step            = 'plugin_uebersicht';
 $invalidateCache = false;
 $bError          = false;
@@ -24,6 +33,7 @@ $kPlugin         = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
 $oPlugin         = null;
+$alertHelper     = Shop::Container()->getAlertService();
 if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
@@ -39,7 +49,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
                     ['plgn' => $kPlugin, 'kpm' => (int)$_POST['kPluginAdminMenu']],
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 )
                 : [];
             foreach ($plgnConf as $current) {
@@ -53,7 +63,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 $upd->cName   = $current->cWertName;
                 if (isset($_POST[$current->cWertName])) {
                     if (is_array($_POST[$current->cWertName])) {
-                        if ($current->cConf === \Plugin\ExtensionData\Config::TYPE_DYNAMIC) {
+                        if ($current->cConf === Config::TYPE_DYNAMIC) {
                             // selectbox with "multiple" attribute
                             $upd->cWert = serialize($_POST[$current->cWertName]);
                         } else {
@@ -75,37 +85,51 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
             }
         }
         if ($bError) {
-            $cFehler = __('errorConfigSave');
+            $errorMsg = __('errorConfigSave');
         } else {
-            $cHinweis = __('successConfigSave');
+            $notice = __('successConfigSave');
         }
     }
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
         $smarty->assign('defaultTabbertab', Request::verifyGPCDataInt('kPluginAdminMenu'));
     }
-    if (strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
+    if (mb_strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
         $smarty->assign('defaultTabbertab', Request::verifyGPDataString('cPluginTab'));
     }
     $data = $db->select('tplugin', 'kPlugin', $kPlugin);
     if ($data !== null) {
-        $loader  = \Plugin\Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
+        $loader  = Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
         $oPlugin = $loader->init($kPlugin, $invalidateCache);
     }
     if ($oPlugin !== null) {
+        if (ADMIN_MIGRATION && $oPlugin instanceof Plugin) {
+            Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
+            $manager    = new MigrationManager(
+                $db,
+                $oPlugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                $oPlugin->getPluginID(),
+                $oPlugin->getMeta()->getSemVer()
+            );
+            $migrations = count($manager->getMigrations());
+            if ($migrations > 0) {
+                $smarty->assign('manager', $manager)
+                       ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
+            }
+        }
         $smarty->assign('oPlugin', $oPlugin);
         if ($updated === true) {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
                 'plugin'   => $oPlugin,
                 'hasError' => &$bError,
-                'msg'      => &$cHinweis,
-                'error'    => $cFehler,
+                'msg'      => &$notice,
+                'error'    => $errorMsg,
                 'options'  => $oPlugin->getConfig()->getOptions()
             ]);
         }
         foreach ($oPlugin->getAdminMenu()->getItems() as $menu) {
             if ($menu->isMarkdown === true) {
                 $parseDown  = new Parsedown();
-                $content    = $parseDown->text(StringHandler::convertUTF8(file_get_contents($menu->file)));
+                $content    = $parseDown->text(Text::convertUTF8(file_get_contents($menu->file)));
                 $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
             } elseif ($menu->configurable === false
                 && $menu->file !== ''
@@ -122,8 +146,12 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
         }
     }
 }
+$alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
+$alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
+
 $smarty->assign('oPlugin', $oPlugin)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
+       ->assign('hasDifferentVersions', false)
+       ->assign('currentDatabaseVersion', 0)
+       ->assign('currentFileVersion', 0)
        ->display('plugin.tpl');

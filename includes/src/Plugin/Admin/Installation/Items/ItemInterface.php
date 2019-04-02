@@ -4,23 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use DB\DbInterface;
-use Plugin\Plugin;
+use JTL\DB\DbInterface;
+use JTL\Plugin\LegacyPlugin;
 
 /**
  * Interface ItemInterface
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 interface ItemInterface
 {
     /**
      * ItemInterface constructor.
-     * @param DbInterface           $db
-     * @param array|null            $baseNode
-     * @param \stdClass             $plugin
-     * @param \stdClass|Plugin|null $oldPlugin
+     * @param DbInterface                 $db
+     * @param array|null                  $baseNode
+     * @param \stdClass                   $plugin
+     * @param \stdClass|LegacyPlugin|null $oldPlugin
      */
     public function __construct(DbInterface $db = null, array $baseNode = null, $plugin = null, $oldPlugin = null);
 

@@ -4,11 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Widgets;
+namespace JTL\Widgets;
+
+use JTL\Linechart;
+use JTL\Statistik;
 
 /**
  * Class Visitors
- * @package Widgets
+ * @package JTL\Widgets
  */
 class Visitors extends AbstractWidget
 {
@@ -24,7 +27,7 @@ class Visitors extends AbstractWidget
      */
     public function getVisitorsOfCurrentMonth(): array
     {
-        $oStatistik = new \Statistik(\firstDayOfMonth(), \time());
+        $oStatistik = new Statistik(\firstDayOfMonth(), \time());
 
         return $oStatistik->holeBesucherStats(2);
     }
@@ -40,24 +43,24 @@ class Visitors extends AbstractWidget
             $month = 12;
             $year  = \date('Y') - 1;
         }
-        $oStatistik = new \Statistik(\firstDayOfMonth($month, $year), \lastDayOfMonth($month, $year));
+        $oStatistik = new Statistik(\firstDayOfMonth($month, $year), \lastDayOfMonth($month, $year));
 
         return $oStatistik->holeBesucherStats(2);
     }
 
     /**
-     * @return \Linechart
+     * @return Linechart
      */
-    public function getJSON(): \Linechart
+    public function getJSON(): Linechart
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $currentMonth = $this->getVisitorsOfCurrentMonth();
         $lastMonth    = $this->getVisitorsOfLastMonth();
         foreach ($currentMonth as $oCurrentMonth) {
-            $oCurrentMonth->dZeit = \substr($oCurrentMonth->dZeit, 0, 2);
+            $oCurrentMonth->dZeit = \mb_substr($oCurrentMonth->dZeit, 0, 2);
         }
         foreach ($lastMonth as $oLastMonth) {
-            $oLastMonth->dZeit = \substr($oLastMonth->dZeit, 0, 2);
+            $oLastMonth->dZeit = \mb_substr($oLastMonth->dZeit, 0, 2);
         }
 
         $series = [

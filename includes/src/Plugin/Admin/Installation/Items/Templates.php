@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Templates
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class Templates extends AbstractItem
 {
@@ -29,7 +29,7 @@ class Templates extends AbstractItem
     {
         foreach ($this->getNode() as $template) {
             \preg_match('/[a-zA-Z0-9\/_\-]+\.tpl/', $template, $hits);
-            if (\strlen($hits[0]) !== \strlen($template)) {
+            if (\mb_strlen($hits[0]) !== \mb_strlen($template)) {
                 continue;
             }
             $plgnTpl            = new \stdClass();

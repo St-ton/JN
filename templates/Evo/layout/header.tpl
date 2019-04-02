@@ -3,8 +3,8 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='doctype'}<!DOCTYPE html>{/block}
-<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
-      {elseif $nSeitenTyp == URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
+<html {block name='html-attributes'}lang="{$meta_language}" itemscope {if $nSeitenTyp === $smarty.const.URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
+      {elseif $nSeitenTyp === $smarty.const.URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
       {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
 {block name='head'}
 <head>
@@ -16,14 +16,29 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
 
-        <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta itemprop="url" content="{$cCanonicalURL}"/>
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="{$meta_title}" />
         <meta property="og:title" content="{$meta_title}" />
         <meta property="og:description" content="{$meta_description|truncate:1000:'':true}" />
-        <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
         <meta property="og:url" content="{$cCanonicalURL}"/>
+
+        {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->Bilder)}
+            <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLGross}" />
+            <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
+        {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE
+            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif'
+            && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'
+        }
+            <meta itemprop="image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
+            <meta property="og:image" content="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" />
+        {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($oNewsArchiv->getPreviewImage())}
+            <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
+            <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
+        {else}
+            <meta itemprop="image" content="{$ShopLogoURL}" />
+            <meta property="og:image" content="{$ShopLogoURL}" />
+        {/if}
     {/block}
 
     <title itemprop="name">{block name='head-title'}{$meta_title}{/block}</title>
@@ -36,10 +51,6 @@
 
     {block name='head-icons'}
             <link type="image/x-icon" href="{$shopFaviconURL}" rel="icon">
-        {if $nSeitenTyp === 1 && !empty($Artikel->Bilder)}
-            <link rel="image_src" href="{$Artikel->Bilder[0]->cURLGross}">
-            <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
-        {/if}
     {/block}
 
     {block name='head-resources'}
@@ -85,7 +96,7 @@
         </style>
     {/if}
     {block name='head-resources-jquery'}
-        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-1.12.4.min.js"></script>
+        <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
     {/block}
     {include file='layout/header_inline_js.tpl'}
     {$dbgBarHead}
@@ -112,7 +123,7 @@
     {/if}
 
     {block name='header'}
-        {if Shop::isAdmin()}
+        {if \JTL\Shop::isAdmin()}
             {include file='layout/header_composer_menu.tpl'}
         {/if}
         <header class="hidden-print {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'}container-block{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
@@ -134,7 +145,7 @@
                                 {block name='logo'}
                                 <span itemprop="name" class="hidden">{$meta_publisher}</span>
                                 <meta itemprop="url" content="{$ShopURL}">
-                                <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
+                                <meta itemprop="logo" content="{$ShopLogoURL}">
                                 <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                                     {if isset($ShopLogoURL)}
                                         {imageTag src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
@@ -161,14 +172,14 @@
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 <div class="container">
             {/if}
-            
+
             {block name='header-category-nav'}
             <div class="category-nav navbar-wrapper">
                 {include file='layout/header_category_nav.tpl'}
             </div>{* /category-nav *}
             {/block}
-            
-            
+
+
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 </div>{* /container-block *}
             {/if}
@@ -194,7 +205,7 @@
     {block name='content-container-starttag'}
     <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}{/if}">
     {/block}
-    
+
     {block name='content-container-block-starttag'}
     <div class="container-block{if !$isFluidContent} beveled{/if}">
     {/block}
@@ -209,15 +220,15 @@
         </div>
     {/if}
     {/block}
-    
+
     {block name='content-row-starttag'}
     <div class="row">
     {/block}
-    
+
     {block name='content-starttag'}
     <div id="content" class="col-xs-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
     {/block}
-    
+
     {block name='header-breadcrumb'}
         {include file='layout/breadcrumb.tpl'}
     {/block}

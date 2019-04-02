@@ -1,17 +1,6 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('trustedshops') cBeschreibung=__('tsWhatIs')}
 <div id="content" class="container-fluid">
-    {if !empty($hinweis)}
-        <div class="alert alert-info">
-            {$hinweis}
-        </div>
-    {/if}
-    {if !empty($fehler)}
-        <div class="alert alert-danger userError">
-            {$fehler}
-        </div>
-    {/if}
-    
     <div class="container-fluid">
         <table class="table">
             <tr>
@@ -64,5 +53,5 @@
     </div>
     
     <br />
-    <strong><a href="trustedshops.php">{__('tsBack')}</a></strong>
+    <strong><a href="trustedshops.php">{__('back')}</a></strong>
 </div>

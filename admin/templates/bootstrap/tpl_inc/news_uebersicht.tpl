@@ -1,11 +1,11 @@
 <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/sorttable.js"></script>
 <script>
     $(window).on('load', function(){
-        $('#submitDelete').click(function(){
+        $('#submitDelete').on('click', function(){
             $('#' + $(this).data('name') + ' input[data-id="loeschen"]').trigger('click');
         });
 
-        $('#kategorien button[data-target=".delete-modal"]').click(function(){
+        $('#kategorien button[data-target=".delete-modal"]').on('click', function(){
             $('.modal-title').html('{__('newsDeleteCat')}');
             $('#submitDelete').data('name', 'kategorien');
 
@@ -15,16 +15,16 @@
             });
             $('.delete-modal .modal-body').html('<ul class="list-group">' + itemsToDelete + '</ul>');
         });
-        $('#aktiv button[data-target=".delete-modal"]').click(function(){
+        $('#aktiv button[data-target=".delete-modal"]').on('click', function(){
             $('.modal-title').html('{__('newsDeleteNews')}');
             $('#submitDelete').data('name', 'aktiv');
         });
-        $('#inaktiv button[data-target=".delete-modal"]').click(function(){
+        $('#inaktiv button[data-target=".delete-modal"]').on('click', function(){
             $('.modal-title').html('{__('newsDeleteComment')}');
             $('#submitDelete').data('name', 'inaktiv');
         });
 
-        $('#category-list i.nav-toggle').click(function(event) {
+        $('#category-list i.nav-toggle').on('click', function(event) {
             event.stopPropagation();
             var tr = $(this).closest('tr');
             var td = $(this).parent();
@@ -55,7 +55,7 @@
             <a data-toggle="tab" role="tab" href="#kategorien">{__('newsCatOverview')}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('newsSettings')}</a>
+            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
         </li>
     </ul>
 
@@ -78,9 +78,9 @@
                                 <thead>
                                 <tr>
                                     <th class="check">&nbsp;</th>
-                                    <th class="tleft">{__('newsUser')}</th>
-                                    <th class="tleft">{__('newsHeadline')}</th>
-                                    <th class="tleft">{__('newsText')}</th>
+                                    <th class="tleft">{__('visitors')}</th>
+                                    <th class="tleft">{__('headline')}</th>
+                                    <th class="tleft">{__('text')}</th>
                                     <th class="th-5">{__('newsDate')}</th>
                                     <th class="th-6" style="min-width: 140px;"></th>
                                 </tr>
@@ -115,7 +115,7 @@
                                 <tfoot>
                                     <tr>
                                         <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS1">Alle auswählen</label></td>
+                                        <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -149,11 +149,11 @@
                             <thead>
                             <tr>
                                 <th class="check"></th>
-                                <th class="tleft">{__('newsHeadline')}</th>
-                                {*<th class="tleft">{__('newsCategory')}</th>*}
-                                <th class="tleft">{__('newsCustomerGrp')}</th>
+                                <th class="tleft">{__('headline')}</th>
+                                {*<th class="tleft">{__('category')}</th>*}
+                                <th class="tleft">{__('customerGroup')}</th>
                                 <th class="tleft">{__('newsValidation')}</th>
-                                <th>{__('newsActive')}</th>
+                                <th>{__('active')}</th>
                                 <th>{__('newsComments')}</th>
                                 <th>{__('newsCatLastUpdate')}</th>
                                 <th style="min-width: 100px;"></th>
@@ -188,7 +188,7 @@
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                                 <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{__('newsPreview')}">
+                                                   class="btn btn-default" title="{__('preview')}">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
                                             </div>
@@ -246,9 +246,9 @@
                             <thead>
                             <tr>
                                 <th class="check"></th>
-                                <th class="tleft">{__('newsCatName')}</th>
-                                <th class="">{__('newsCatSortShort')}</th>
-                                <th class="th-4">{__('newsActive')}</th>
+                                <th class="tleft">{__('name')}</th>
+                                <th class="">{__('sorting')}</th>
+                                <th class="th-4">{__('active')}</th>
                                 <th class="th-5">{__('newsCatLastUpdate')}</th>
                                 <th class="th-5">&nbsp;</th>
                             </tr>
@@ -356,7 +356,7 @@
                         {/foreach}
                     </div>
                     <div class="panel-footer">
-                        <button type="submit" value="{__('newsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
+                        <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
             </form>
@@ -367,7 +367,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Kommentare löschen?</h4>
+                <h4 class="modal-title">{__('deleteComment')}</h4>
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">

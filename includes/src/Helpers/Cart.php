@@ -4,35 +4,36 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Artikel;
-use Currency;
-use DB\ReturnType;
-use EigenschaftWert;
-use Kampagne;
-use Extensions\Konfigitem;
-use Extensions\Konfigurator;
-use Kunde;
-use Kupon;
-use Lieferadresse;
-use Preise;
-use Rechnungsadresse;
-use Session\Frontend;
-use Shop;
+use function Functional\filter;
+use function Functional\map;
+use JTL\Alert\Alert;
+use JTL\Catalog\Product\Artikel;
+use JTL\Cart\Warenkorb;
+use JTL\Cart\WarenkorbPers;
+use JTL\Cart\WarenkorbPos;
+use JTL\Catalog\Currency;
+use JTL\DB\ReturnType;
+use JTL\Catalog\Product\EigenschaftWert;
+use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Upload;
+use JTL\Kampagne;
+use JTL\Customer\Kunde;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferadresse;
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Rechnungsadresse;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Catalog\Vergleichsliste;
+use JTL\Catalog\Wishlist\Wunschliste;
 use stdClass;
-use StringHandler;
-use Extensions\Upload;
-use Vergleichsliste;
-use Warenkorb;
-use WarenkorbPers;
-use WarenkorbPos;
-use Wunschliste;
-use Alert;
 
 /**
  * Class Cart
- * @package Helpers
+ * @package JTL\Helpers
  */
 class Cart
 {
@@ -197,7 +198,7 @@ class Cart
     }
 
     /**
-     * @return Warenkorb
+     * @return Warenkorb|null
      */
     public function getObject()
     {
@@ -539,16 +540,16 @@ class Cart
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('configError', 'productDetails'),
-                'configError'
+                'configError',
+                ['dismissable' => false]
             );
             Shop::Smarty()->assign('aKonfigerror_arr', $errors)
                 ->assign('aKonfigitemerror_arr', $itemErrors);
-
         }
 
         $nKonfigitem_arr = [];
-        foreach ($configGroups as $nTmpKonfigitem_arr) {
-            $nKonfigitem_arr = \array_merge($nKonfigitem_arr, $nTmpKonfigitem_arr);
+        foreach ($configGroups as $item) {
+            $nKonfigitem_arr = \array_merge($nKonfigitem_arr, $item);
         }
         Shop::Smarty()->assign('fAnzahl', $count)
             ->assign('nKonfigitem_arr', $nKonfigitem_arr)
@@ -573,7 +574,8 @@ class Cart
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('compareMaxlimit', 'errorMessages'),
-                'compareMaxlimit'
+                'compareMaxlimit',
+                ['dismissable' => false]
             );
 
             return false;
@@ -640,7 +642,8 @@ class Cart
                             $alertHelper->addAlert(
                                 Alert::TYPE_ERROR,
                                 Shop::Lang()->get('comparelistProductexists', 'messages'),
-                                'comparelistProductexists'
+                                'comparelistProductexists',
+                                ['dismissable' => false]
                             );
                         }
                     }
@@ -652,7 +655,6 @@ class Cart
                         Shop::Lang()->get('comparelistProductadded', 'messages'),
                         'comparelistProductadded'
                     );
-
                 }
             }
         }
@@ -751,7 +753,7 @@ class Cart
                             Shop::Lang()->get('wishlistProductadded', 'messages'),
                             'wishlistProductadded'
                         );
-                        if ($redirect === true) {
+                        if ($redirect === true && !Request::isAjaxRequest()) {
                             \header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php'), true, 302);
                             exit;
                         }
@@ -779,7 +781,6 @@ class Cart
         $kArtikel      = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([\CONF_GLOBAL]);
-        // Abnahmeintervall
         if ($product->fAbnahmeintervall > 0) {
             $dVielfache = \function_exists('bcdiv')
                 ? \round(
@@ -795,11 +796,9 @@ class Cart
         if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
-        // mbm
         if ($product->fMindestbestellmenge > $qty + $cart->gibAnzahlEinesArtikels($kArtikel)) {
             $redirectParam[] = \R_MINDESTMENGE;
         }
-        // lager beachten
         if ($product->cLagerBeachten === 'Y'
             && $product->cLagerVariation !== 'Y'
             && $product->cLagerKleinerNull !== 'Y'
@@ -808,12 +807,14 @@ class Cart
                 /** @var Artikel $product */
                 $depProduct = $dependent->product;
                 if ($depProduct->fPackeinheit
-                    * ($qty * $dependent->stockFactor + Frontend::getCart()->getDependentAmount(
-                        $depProduct->kArtikel, true
+                    * ($qty * $dependent->stockFactor +
+                        Frontend::getCart()->getDependentAmount(
+                            $depProduct->kArtikel,
+                            true
                         )
                     ) > $depProduct->fLagerbestand
                 ) {
-                    $redirectParam[] = R_LAGER;
+                    $redirectParam[] = \R_LAGER;
                     break;
                 }
             }
@@ -867,7 +868,7 @@ class Cart
             foreach ($attributes as $oEigenschaftwerte) {
                 $oEigenschaftwerte->kEigenschaft = (int)$oEigenschaftwerte->kEigenschaft;
                 if ($var->cTyp === 'PFLICHT-FREIFELD' && $oEigenschaftwerte->kEigenschaft === $var->kEigenschaft) {
-                    if (\strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
+                    if (\mb_strlen($oEigenschaftwerte->cFreifeldWert) > 0) {
                         $bEigenschaftWertDa = true;
                     } else {
                         $redirectParam[] = \R_VARWAEHLEN;
@@ -930,7 +931,6 @@ class Cart
     public static function checkVariboxAmount(array $amounts): bool
     {
         if (\is_array($amounts) && \count($amounts) > 0) {
-            // Wurde die variBox überhaupt mit einer Anzahl gefüllt?
             foreach (\array_keys($amounts) as $cKeys) {
                 if ((float)$amounts[$cKeys] > 0) {
                     return true;
@@ -1089,7 +1089,8 @@ class Cart
             $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Frontend::getCustomer()->isLoggedIn()) {
-            $customerQRY = " OR FIND_IN_SET('" . Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" .
+                Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
         $couponsOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
@@ -1203,7 +1204,8 @@ class Cart
             $categoryQRY .= " OR FIND_IN_SET('" . $id . "', REPLACE(cKategorien, ';', ',')) > 0";
         }
         if (Frontend::getCustomer()->isLoggedIn()) {
-            $customerQRY = " OR FIND_IN_SET('" . Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
+            $customerQRY = " OR FIND_IN_SET('" .
+                Frontend::getCustomer()->getID() . "', REPLACE(cKunden, ';', ',')) > 0";
         }
         $couponOK = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
@@ -1255,7 +1257,7 @@ class Cart
         int $kArtikel,
         bool $bIstVater,
         bool $bExtern = false
-    ) {
+    ): void {
         if (!\is_array($variBoxCounts) || \count($variBoxCounts) === 0) {
             return;
         }
@@ -1269,12 +1271,12 @@ class Cart
             }
             // Switch zwischen 1 Vari und 2
             if ($cKeys[0] === '_') { // 1
-                $cVariation0                         = \substr($cKeys, 1);
+                $cVariation0                         = \mb_substr($cKeys, 1);
                 [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
                 $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
-                $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
+                $oVariKombi->cVariation0                    = Text::filterXSS($cVariation0);
                 $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                 $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
                 $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
@@ -1298,8 +1300,8 @@ class Cart
                 // In die Session einbauen
                 $oVariKombi                                 = new stdClass();
                 $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
-                $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
-                $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
+                $oVariKombi->cVariation0                    = Text::filterXSS($cVariation0);
+                $oVariKombi->cVariation1                    = Text::filterXSS($cVariation1);
                 $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
                 $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
                 $oVariKombi->kEigenschaft1                  = (int)$kEigenschaft1;
@@ -1422,7 +1424,7 @@ class Cart
                 return false;
             }
             if ($nWeiterleitung === 0) {
-                $con = (\strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
+                $con = (\mb_strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = empty($Artikel->cURLFull)
                         ? (Shop::getURL() . '/?a=' . $Artikel->kVaterArtikel .
@@ -1677,10 +1679,11 @@ class Cart
 
                         if (!$gueltig) {
                             $msg = Shop::Lang()->get('quantityNotAvailable', 'messages');
-                            if (!isset($cartNotices) || !in_array($msg, $cartNotices)) {
+                            if (!isset($cartNotices) || !\in_array($msg, $cartNotices)) {
                                 $cartNotices[] = $msg;
                             }
-                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl = $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
+                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl =
+                                $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
                         }
                     }
                     // maximale Bestellmenge des Artikels beachten
@@ -1820,18 +1823,18 @@ class Cart
             return $msg;
         }
         $msg = Shop::Lang()->get('eanNotExist') . ' ' .
-            StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']));
+            Text::htmlentities(Text::filterXSS($_POST['ean']));
         //gibts artikel mit dieser artnr?
         $product = Shop::Container()->getDB()->select(
             'tartikel',
             'cArtNr',
-            StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']))
+            Text::htmlentities(Text::filterXSS($_POST['ean']))
         );
         if (empty($product->kArtikel)) {
             $product = Shop::Container()->getDB()->select(
                 'tartikel',
                 'cBarcode',
-                StringHandler::htmlentities(StringHandler::filterXSS($_POST['ean']))
+                Text::htmlentities(Text::filterXSS($_POST['ean']))
             );
         }
         if (isset($product->kArtikel) && $product->kArtikel > 0) {
@@ -1897,8 +1900,8 @@ class Cart
         ) {
             return $xSelling;
         }
-        $productIDs = \Functional\map(
-            \Functional\filter($cartPositions, function ($p) {
+        $productIDs = map(
+            filter($cartPositions, function ($p) {
                 return isset($p->Artikel->kArtikel);
             }),
             function ($p) {
@@ -1951,7 +1954,8 @@ class Cart
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
                 $cSQLSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
-
+            $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
+                    ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
             $giftsTmp = Shop::Container()->getDB()->query(
                 "SELECT tartikel.kArtikel, tartikelattribut.cWert
                     FROM tartikel
@@ -1963,7 +1967,7 @@ class Cart
                         AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                 Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $cSQLSort . ' LIMIT 20',
+                $cSQLSort . $limit,
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
@@ -1994,7 +1998,7 @@ class Cart
     public static function checkOrderAmountAndStock(array $conf = []): string
     {
         $cart         = Frontend::getCart();
-        $cHinweis     = '';
+        $notice       = '';
         $cArtikelName = '';
         $bVorhanden   = false;
         $cISOSprache  = Shop::getLanguageCode();
@@ -2016,10 +2020,10 @@ class Cart
         $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
 
         if ($bVorhanden) {
-            $cHinweis = \sprintf(Shop::Lang()->get('orderExpandInventory', 'basket'), '<ul>' . $cArtikelName . '</ul>');
+            $notice = \sprintf(Shop::Lang()->get('orderExpandInventory', 'basket'), '<ul>' . $cArtikelName . '</ul>');
         }
 
-        return $cHinweis;
+        return $notice;
     }
 
     /**

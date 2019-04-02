@@ -4,23 +4,26 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Date;
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Date;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Kampagne;
+use JTL\Shop;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
 
-$cHinweis     = '';
-$cFehler      = '';
 $kKampagne    = 0;
 $kKampagneDef = 0;
 $cStamp       = '';
 $step         = 'kampagne_uebersicht';
+$alertHelper  = Shop::Container()->getAlertService();
 
 // Zeitraum
 // 1 = Monat
@@ -44,7 +47,7 @@ if (!isset($_SESSION['Kampagne']->cSort)) {
 
 $cDatumNow_arr = Date::getDateParts(date('Y-m-d H:i:s'));
 // Tab
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
@@ -92,9 +95,9 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $nReturnValue = speicherKampagne($oKampagne);
 
     if ($nReturnValue === 1) {
-        $cHinweis = __('successCampaignSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignSave'), 'successCampaignSave');
     } else {
-        $cFehler = mappeFehlerCodeSpeichern($nReturnValue);
+        $alertHelper->addAlert(Alert::TYPE_ERROR, mappeFehlerCodeSpeichern($nReturnValue), 'campaignError');
         $smarty->assign('oKampagne', $oKampagne);
         $step = 'kampagne_erstellen';
     }
@@ -104,10 +107,10 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
         $nReturnValue = loescheGewaehlteKampagnen($_POST['kKampagne']);
 
         if ($nReturnValue == 1) {
-            $cHinweis = __('successCampaignDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignDelete'), 'successCampaignDelete');
         }
     } else {
-        $cFehler = __('errorAtLeastOneCampaign');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCampaign'), 'errorAtLeastOneCampaign');
     }
 } elseif (Request::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
     $_SESSION['Kampagne']->nAnsicht = Request::verifyGPCDataInt('nAnsicht');
@@ -175,11 +178,11 @@ if ($step === 'kampagne_uebersicht') {
                ->assign('nRand', time());
     }
 } elseif ($step === 'kampagne_defdetail') { // DefDetailseite
-    if (strlen($cStamp) === 0) {
+    if (mb_strlen($cStamp) === 0) {
         $cStamp = checkGesamtStatZeitParam();
     }
 
-    if ($kKampagne > 0 && $kKampagneDef > 0 && strlen($cStamp) > 0) {
+    if ($kKampagne > 0 && $kKampagneDef > 0 && mb_strlen($cStamp) > 0) {
         $oKampagneDef = holeKampagneDef($kKampagneDef);
         $cMember_arr  = [];
         $cStampText   = '';
@@ -193,7 +196,7 @@ if ($step === 'kampagne_uebersicht') {
                 ' . $cSQLWHERE . '
                     AND kKampagne = ' . (int)$kKampagne . '
                     AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef,
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         $oPagiDefDetail    = (new Pagination('defdetail'))
@@ -253,7 +256,5 @@ switch ((int)$_SESSION['Kampagne']->nAnsicht) {
 $smarty->assign('PFAD_ADMIN', PFAD_ADMIN)
        ->assign('PFAD_TEMPLATES', PFAD_TEMPLATES)
        ->assign('PFAD_GFX', PFAD_GFX)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('kampagne.tpl');

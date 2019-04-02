@@ -2,7 +2,7 @@
 <ul class="list-group">
     <li class="boxRow panel-heading">
         <div class="col-xs-1"><strong>{__('iso')}</strong></div>
-        <div class="col-xs-4"><strong>{__('plz_ort_country')}</strong></div>
+        <div class="col-xs-4"><strong>{__('country')}</strong></div>
         <div class="col-xs-3"><strong>{__('continent')}</strong></div>
         <div class="col-xs-3"><strong>{__('entries')}</strong></div>
         <div class="col-xs-1"><strong>{__('action')}</strong></div>

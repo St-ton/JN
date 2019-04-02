@@ -10,22 +10,7 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
- *
- * This migration will undo the changes from Migration_20161216110237 if it was installed trough an Beta release
- * Migration_20161216110237 has been removed in final release of 4.05.
- * The migration file 20161216110237_change_delivery_workdays_to_days.php can be deleted if exists in /update/migrations!
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20170201161322
  */
 class Migration_20170201161322 extends Migration implements IMigration
 {

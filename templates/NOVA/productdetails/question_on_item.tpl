@@ -17,9 +17,14 @@
         {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede !== 'N'}
             {row}
                 {col md=6}
-                    {formgroup label-for="salutation" label="{lang key='salutation' section='account data'}"}
-                        {select name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix"}
-                            <option value="" disabled selected>{lang key='salutation' section='account data'}</option>
+                    {formgroup
+                        label-for="salutation"
+                        label="{lang key='salutation' section='account data'}{if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                    }
+                        {select name="anrede" id="salutation" placeholder="{lang key='emailadress'}" autocomplete="honorific-prefix" required=($Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y')}
+                            <option value="" {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}disabled{/if} selected>
+                                {if $Einstellungen.artikeldetails.produktfrage_abfragen_anrede === 'Y'}{lang key='salutation' section='account data'}{else}{lang key='noSalutation'}{/if}
+                            </option>
                             <option value="w" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'w'}selected="selected"{/if}>{lang key='salutationW'}</option>
                             <option value="m" {if isset($Anfrage->cAnrede) && $Anfrage->cAnrede === 'm'}selected="selected"{/if}>{lang key='salutationM'}</option>
                         {/select}
@@ -129,9 +134,7 @@
         <legend>{lang key='productQuestion' section='productDetails'}</legend>
 
         {formgroup label-for="question" label="{lang key='question' section='productDetails'}"}
-            {textarea name="nachricht" id="question" rows="8" required=true class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}
-                {if isset($Anfrage)}{$Anfrage->cNachricht}{/if}
-            {/textarea}
+            {textarea name="nachricht" id="question" rows="8" required=true class="{if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}has-error{/if}"}{if isset($Anfrage)}{$Anfrage->cNachricht}{/if}{/textarea}
             {if isset($fehlendeAngaben_fragezumprodukt.nachricht) && $fehlendeAngaben_fragezumprodukt.nachricht > 0}
                 <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> {if $fehlendeAngaben_fragezumprodukt.nachricht > 0}{lang key='fillOut'}{/if}</div>
             {/if}
@@ -163,6 +166,7 @@
 
     {input type="hidden" name="a" value=$Artikel->kArtikel}
     {input type="hidden" name="show" value="1"}
+    {input type="hidden" name="fragezumprodukt" value="1"}
     {button type="submit" value="1" variant="primary" class="w-auto"}
         {lang key='sendQuestion' section='productDetails'}
     {/button}

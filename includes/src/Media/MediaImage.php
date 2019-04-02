@@ -323,7 +323,7 @@ class MediaImage implements IMedia
     public static function getUncachedProductImageCount(): int
     {
         return \count(select(self::getProductImages(), function (MediaImageRequest $e) {
-            return !self::isCached($e) && \file_exists($e->getRaw());
+            return !self::isCached($e) && \file_exists($e->getRaw(true));
         }));
     }
 

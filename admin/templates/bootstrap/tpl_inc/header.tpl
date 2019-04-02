@@ -90,17 +90,17 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                             <i class="fa fa-language"></i>
-                            {$language->cNameEnglisch}
+                            {$languageName}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right">
-                            {foreach $languages as $olang}
-                                {if $olang->kSprache !== (int)$language->kSprache}
+                            {foreach $languages as $tag => $langName}
+                                {if $language !== $tag}
                                     <li>
                                         <a href="{strip}benutzerverwaltung.php
                                                 ?token={$smarty.session.jtl_token}
                                                 &action=quick_change_language
-                                                &kSprache={$olang->kSprache}{/strip}">
-                                            {$olang->cNameEnglisch}
+                                                &language={$tag}{/strip}">
+                                            {$langName}
                                         </a>
                                     </li>
                                 {/if}

@@ -6,9 +6,9 @@
  * @created Wed, 18 Jan 2018 16:20:00 +0100
  */
 
+use JTL\Catalog\Trennzeichen;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Catalog\Trennzeichen;
 
 /**
  * Class Migration_20180124162000

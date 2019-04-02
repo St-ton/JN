@@ -7,6 +7,7 @@
 namespace JTL\Plugin\Data;
 
 use DateTime;
+use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
@@ -71,6 +72,11 @@ class Meta
     private $version;
 
     /**
+     * @var Version
+     */
+    private $semVer;
+
+    /**
      * @var bool
      */
     private $updateAvailable = false;
@@ -94,6 +100,7 @@ class Meta
         $this->dateInstalled  = new DateTime($data->dInstalliert);
         $this->dateLastUpdate = new DateTime($data->dZuletztAktualisiert);
         $this->version        = $data->nVersion;
+        $this->semVer         = Version::parse($this->version);
 
         return $this;
     }
@@ -272,6 +279,22 @@ class Meta
     public function setVersion($version): void
     {
         $this->version = $version;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getSemVer(): Version
+    {
+        return $this->semVer;
+    }
+
+    /**
+     * @param Version $semVer
+     */
+    public function setSemVer(Version $semVer): void
+    {
+        $this->semVer = $semVer;
     }
 
     /**

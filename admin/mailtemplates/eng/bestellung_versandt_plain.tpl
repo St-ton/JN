@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
 Your order dated {$Bestellung->dErstelldatum_de} with order no. {$Bestellung->cBestellNr} has been shipped to you today.
 

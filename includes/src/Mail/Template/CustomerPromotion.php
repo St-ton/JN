@@ -9,7 +9,7 @@ namespace JTL\Mail\Template;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class NewsletterRegistration
+ * Class CustomerPromotion
  * @package JTL\Mail\Template
  */
 class CustomerPromotion extends AbstractTemplate

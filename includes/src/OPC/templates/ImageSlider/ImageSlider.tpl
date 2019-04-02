@@ -19,8 +19,7 @@
                                  sizes="{$slide['img_attr']['srcsizes']}"
                                  src="{$slide['img_attr']['src']}"
                                  data-desc="{$slide['desc']}"
-                                 alt="{$slide['img_attr']['alt']}"
-                                 title="{$slideTitle}">
+                                 alt="{$slide['alt']}">
                         {if !empty($slide['target-url'])}
                             </a>
                         {else}

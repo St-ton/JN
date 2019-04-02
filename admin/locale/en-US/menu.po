@@ -267,6 +267,9 @@ msgstr "Customer data import"
 msgid "Import newsletter recipient"
 msgstr "Import newsletter recipients"
 
+msgid "Zip code import"
+msgstr "Zip code import"
+
 # Mid Menu
 msgid "Export"
 msgstr "Export"

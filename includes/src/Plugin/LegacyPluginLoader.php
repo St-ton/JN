@@ -113,6 +113,8 @@ class LegacyPluginLoader extends AbstractLoader
             ?? Shop::getLanguageCode()
             ?? Sprache::getDefaultLanguage()->cISO;
 
+        Shop::Container()->getGetText();
+
         $this->plugin->setID((int)$obj->kPlugin);
         $this->plugin->setPluginID($obj->cPluginID);
         $this->plugin->setState((int)$obj->nStatus);

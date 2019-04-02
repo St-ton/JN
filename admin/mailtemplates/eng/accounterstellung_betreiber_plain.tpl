@@ -1,12 +1,12 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
 As requested we have created an account for you in our online shop at {$ShopURL}.
 
 Please review your account details:
 
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}{/if}
 {$Kunde->cPLZ} {$Kunde->cOrt}

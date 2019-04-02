@@ -8,21 +8,9 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shop;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20171103125032
  */
 class Migration_20171103125032 extends Migration implements IMigration
 {
@@ -1259,7 +1247,7 @@ SET NAMES latin1;
 SQL;
 
         /*$this->execute($szSql);  see above for explanation*/
-        Shop::Container()->getDB()->executeQuery($szSql, 3);
+        $this->execute($szSql);
     }
 
     public function down()

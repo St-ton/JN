@@ -20,6 +20,9 @@
                            name="{$propname}[{$kSlide}][cTitle]" value=""
                            placeholder="title"/>
                 {/if}
+                <input class="form-control margin2" id="alt{$kSlide}" type="text"
+                       name="{$propname}[{$kSlide}][alt]" value=""
+                       placeholder="Alt-Text"/>
                 <input class="form-control margin2" id="desc{$kSlide}" type="text"
                        name="{$propname}[{$kSlide}][desc]" value=""
                        placeholder="Beschreibung"/>
@@ -116,6 +119,10 @@
                                                    value="{if isset($slide['cTitle'])}{$slide['cTitle']}{/if}"
                                                    placeholder="title"/>
                                         {/if}
+                                        <input class="form-control margin2" id="alt{$slide.nSort}" type="text"
+                                               name="{$propname}[slide{$slide.nSort}][alt]"
+                                               value="{if isset($slide['alt'])}{$slide['alt']}{/if}"
+                                               placeholder="Alt-Text"/>
                                         <input class="form-control margin2" id="desc{$slide.nSort}" type="text"
                                                name="{$propname}[slide{$slide.nSort}][desc]"
                                                value="{if isset($slide['desc'])}{$slide['desc']}{/if}"

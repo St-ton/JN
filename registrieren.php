@@ -20,7 +20,6 @@ if (isset($_SESSION['Kunde']->kKunde)
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 

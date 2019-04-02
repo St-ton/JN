@@ -1139,8 +1139,6 @@ class Product
      */
     public static function sendProductQuestion(): string
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-
         $conf             = Shop::getSettings([\CONF_EMAILS, \CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         $data             = new stdClass();
         $data->tartikel   = $GLOBALS['AktuellerArtikel'];

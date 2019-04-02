@@ -224,7 +224,6 @@ abstract class AbstractSync
         ) {
             return;
         }
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
 
         $options                             = Artikel::getDefaultOptions();

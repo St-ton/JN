@@ -14,7 +14,6 @@ use JTL\Session\Frontend;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $kBestellung = (int)$_REQUEST['kBestellung'];

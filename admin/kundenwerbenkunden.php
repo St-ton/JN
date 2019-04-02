@@ -14,7 +14,6 @@ use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */

@@ -15,8 +15,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-
 $alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['newsletterimport'] === 1

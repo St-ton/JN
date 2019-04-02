@@ -129,6 +129,7 @@ class Slider implements IExtensionPoint
         'bRandomStart'    => 'RandomStart',
         'bDirectionNav'   => 'DirectionNav',
         'bUseKB'          => 'UseKB',
+        'kKundengruppe'   => 'CustomerGroupID'
     ];
 
     /**
@@ -221,7 +222,6 @@ class Slider implements IExtensionPoint
                 }
             }
             $this->set($first);
-
             return $this->getID() > 0 && \count($this->slides) > 0;
         }
 
@@ -247,6 +247,9 @@ class Slider implements IExtensionPoint
         foreach (self::$mapping as $type => $methodName) {
             $method        = 'get' . $methodName;
             $slider->$type = $this->$method();
+            if (\is_bool($slider->$type)) {
+                $slider->$type = (int)$slider->$type;
+            }
         }
         unset($slider->oSlide_arr, $slider->slides, $slider->kSlider);
 
@@ -270,6 +273,9 @@ class Slider implements IExtensionPoint
         foreach (self::$mapping as $type => $methodName) {
             $method        = 'get' . $methodName;
             $slider->$type = $this->$method();
+            if (\is_bool($slider->$type)) {
+                $slider->$type = (int)$slider->$type;
+            }
         }
         unset($slider->oSlide_arr, $slider->slides, $slider->kSlider);
 

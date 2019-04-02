@@ -121,7 +121,7 @@ class Versandzuschlag
                 if (!empty($zip->cPLZ)) {
                     $this->setZIPCode($zip->cPLZ);
                 } elseif (!empty($zip->cPLZAb) && !empty($zip->cPLZBis)) {
-                    $this->setZIPArea((int)$zip->cPLZAb, (int)$zip->cPLZBis);
+                    $this->setZIPArea($zip->cPLZAb, $zip->cPLZBis);
                 }
             }
 
@@ -193,7 +193,28 @@ class Versandzuschlag
         }
 
         foreach ($this->getZIPAreas() ?? [] as $zipArea) {
-            if ($zipArea->isInArea((int)$zip)) {
+            if ($zipArea->isInArea($zip)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param null|string $zipFrom
+     * @param null|string $zipTo
+     * @return bool
+     */
+    public function areaOverlapsWithZIPCode(?string $zipFrom, ?string $zipTo): bool
+    {
+        if ($zipFrom === null || $zipTo === null) {
+            return false;
+        }
+        $area = new VersandzuschlagBereich($zipFrom, $zipTo);
+
+        foreach ($this->getZIPCodes() ?? [] as $zipTMP) {
+            if ($area->isInArea($zipTMP)) {
                 return true;
             }
         }
@@ -346,11 +367,11 @@ class Versandzuschlag
     }
 
     /**
-     * @param int $ZIPFrom
-     * @param int $ZIPTo
+     * @param string $ZIPFrom
+     * @param string $ZIPTo
      * @return Versandzuschlag
      */
-    public function setZIPArea(int $ZIPFrom, int $ZIPTo): self
+    public function setZIPArea(string $ZIPFrom, string $ZIPTo): self
     {
         $this->ZIPAreas[] = new VersandzuschlagBereich($ZIPFrom, $ZIPTo);
 

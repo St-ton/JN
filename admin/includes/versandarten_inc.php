@@ -535,7 +535,9 @@ function createZuschlagsListeZIP(array $data)
     if (!empty($post['cPLZ'])) {
         $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($post['cPLZ']);
     } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
-        if ($post['cPLZAb'] > $post['cPLZBis']) {
+        if ($post['cPLZAb'] === $post['cPLZBis']) {
+            $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($post['cPLZBis']);
+        } elseif ($post['cPLZAb'] > $post['cPLZBis']) {
             $ZuschlagPLZ->cPLZAb  = $oZipValidator->validateZip($post['cPLZBis']);
             $ZuschlagPLZ->cPLZBis = $oZipValidator->validateZip($post['cPLZAb']);
         } else {
@@ -546,9 +548,11 @@ function createZuschlagsListeZIP(array $data)
 
     $zipMatchSurcharge = $shippingMethod->getSurchargesForCountry($surcharge->getISO())
         ->filter(function (Versandzuschlag $surchargeTMP) use ($ZuschlagPLZ) {
-            return ((isset($ZuschlagPLZ->cPLZ) && $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZ))
-                || (isset($ZuschlagPLZ->cPLZAb) && $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZAb))
-                || (isset($ZuschlagPLZ->cPLZBis) && $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZBis)));
+            return ($surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZ)
+                || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZAb)
+                || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZBis)
+                || $surchargeTMP->areaOverlapsWithZIPCode($ZuschlagPLZ->cPLZAb, $ZuschlagPLZ->cPLZBis)
+            );
         })->pop();
 
     if (empty($ZuschlagPLZ->cPLZ) && empty($ZuschlagPLZ->cPLZAb)) {

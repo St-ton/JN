@@ -13,39 +13,39 @@ namespace JTL\Checkout;
 class VersandzuschlagBereich
 {
     /**
-     * @var int
+     * @var string
      */
     public $ZIPFrom;
 
     /**
-     * @var int
+     * @var string
      */
     public $ZIPTo;
 
     /**
      * VersandzuschlagBereich constructor.
-     * @param int $ZIPFrom
-     * @param int $ZIPTo
+     * @param string $ZIPFrom
+     * @param string $ZIPTo
      */
-    public function __construct(int $ZIPFrom, int $ZIPTo)
+    public function __construct(string $ZIPFrom, string $ZIPTo)
     {
         $this->setZIPFrom($ZIPFrom)
              ->setZIPTo($ZIPTo);
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getZIPFrom(): int
+    public function getZIPFrom(): string
     {
         return $this->ZIPFrom;
     }
 
     /**
-     * @param int $ZIPFrom
+     * @param string $ZIPFrom
      * @return VersandzuschlagBereich
      */
-    public function setZIPFrom(int $ZIPFrom): self
+    public function setZIPFrom(string $ZIPFrom): self
     {
         $this->ZIPFrom = $ZIPFrom;
 
@@ -53,18 +53,18 @@ class VersandzuschlagBereich
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getZIPTo(): int
+    public function getZIPTo(): string
     {
         return $this->ZIPTo;
     }
 
     /**
-     * @param int $ZIPTo
+     * @param string $ZIPTo
      * @return VersandzuschlagBereich
      */
-    public function setZIPTo(int $ZIPTo): self
+    public function setZIPTo(string $ZIPTo): self
     {
         $this->ZIPTo = $ZIPTo;
 
@@ -72,10 +72,10 @@ class VersandzuschlagBereich
     }
 
     /**
-     * @param int $zip
+     * @param string $zip
      * @return bool
      */
-    public function isInArea(int $zip): bool
+    public function isInArea(string $zip): bool
     {
         return ($this->getZIPFrom() <= $zip && $this->getZIPTo() >= $zip);
     }

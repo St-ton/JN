@@ -62,7 +62,7 @@
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bControlNav">{__('kenBurnsEffect')}</label>
+                            <label for="bUseKB">{__('kenBurnsEffect')}</label>
                         </div>
                         <div class="for">
                             <select class="form-control" id="bUseKB" name="bUseKB">

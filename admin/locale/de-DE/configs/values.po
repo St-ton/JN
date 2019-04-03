@@ -1043,12 +1043,6 @@ msgstr "Ja"
 msgid "registrieren_captcha_value(N)"
 msgstr "Nein"
 
-msgid "kundenregistrierung_vcardupload_value(Y)"
-msgstr "Ja"
-
-msgid "kundenregistrierung_vcardupload_value(N)"
-msgstr "Nein"
-
 msgid "lieferadresse_abfragen_anrede_value(Y)"
 msgstr "Ja, erforderliche Angabe"
 

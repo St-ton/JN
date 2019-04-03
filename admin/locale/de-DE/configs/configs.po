@@ -1241,12 +1241,6 @@ msgstr "CAPTCHA nach X erfolglosen Anmeldeversuchen anzeigen"
 msgid "kundenlogin_max_loginversuche_desc"
 msgstr "Sie können vorgeben, wie viele Versuche ein Kunde hat, bevor ein CAPTCHA angezeigt wird, wenn er sich anmelden will. Hiermit wird erschwert, dass durch Ausprobieren von einem Bot ein Kundenkonto gehackt werden kann."
 
-msgid "kundenregistrierung_vcardupload_name"
-msgstr "vCard-Upload erlauben"
-
-msgid "kundenregistrierung_vcardupload_desc"
-msgstr "Hier können Sie Ihren Kunden erlauben, eine elektronische Visitenkarte im vcf-Format hochzuladen."
-
 msgid "lieferadresse_abfragen_anrede_name"
 msgstr "Anrede abfragen"
 

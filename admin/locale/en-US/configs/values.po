@@ -1030,12 +1030,6 @@ msgstr "Yes"
 msgid "registrieren_captcha_value(N)"
 msgstr "No"
 
-msgid "kundenregistrierung_vcardupload_value(Y)"
-msgstr "Yes"
-
-msgid "kundenregistrierung_vcardupload_value(N)"
-msgstr "No"
-
 msgid "lieferadresse_abfragen_anrede_value(Y)"
 msgstr "Yes, mandatory"
 

@@ -569,7 +569,6 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
-{elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
 {/if}
 {if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
     {$Zahlungsart->cHinweisText}<br>
@@ -587,7 +586,6 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
     Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
-{elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
 {/if}
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
 <br>

@@ -81,7 +81,6 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
-{elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
 {/if}
 
 You will be notified of the subsequent status of your order separately.

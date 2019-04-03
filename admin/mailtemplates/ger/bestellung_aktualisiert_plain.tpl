@@ -91,7 +91,6 @@ Bank: {$Bestellung->Zahlungsinfo->cBankName}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
 Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende E-Mailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
-{elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
 {/if}
 
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.

@@ -245,7 +245,6 @@ abstract class AbstractSync
             $isOptinValidActive = (new GenericOptin(OPTIN_AVAILAGAIN))
                 ->setEmail($msg->cMail)
                 ->isActive();
-            $oLogger->debug('check optin for: '.$msg->cMail.'  isValid: '.var_export($isOptinValidActive, true)); // --DEBUG--
             if ($isOptinValidActive) {
                 $tplData                                   = new stdClass();
                 $tplData->tverfuegbarkeitsbenachrichtigung = $msg;

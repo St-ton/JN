@@ -2166,29 +2166,8 @@ class Artikel
                 if (is_array($oVariationTMP_arr) && is_array($oVariationVaterTMP_arr)) {
                     $oVariationTMP_arr = array_merge($oVariationTMP_arr, $oVariationVaterTMP_arr);
                 }
-                // VariationKombi gesetzte Eigenschaften und EigenschaftWerte vom Kind
-                $this->oVariationKombi_arr = Shop::DB()->query(
-                    "SELECT teigenschaftkombiwert.*
-                        FROM teigenschaftkombiwert
-                        JOIN tartikel 
-                          ON tartikel.kArtikel = " . (int)$this->kArtikel . "
-                          AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 2
-                );
+                $this->holeVariationKombi();
                 $this->holeVariationDetailPreisKind(); // Baut die Variationspreise für ein Variationskombkind
-                // String für javascript Funktion vorbereiten um Variationen auszufüllen
-                if (is_array($this->oVariationKombi_arr) && count($this->oVariationKombi_arr) > 0) {
-                    $this->cVariationKombi = '';
-                    foreach ($this->oVariationKombi_arr as $j => $oVariationKombi) {
-                        $oVariationKombi->kEigenschaftKombi = (int)$oVariationKombi->kEigenschaftKombi;
-                        $oVariationKombi->kEigenschaftWert  = (int)$oVariationKombi->kEigenschaftWert;
-                        $oVariationKombi->kEigenschaft      = (int)$oVariationKombi->kEigenschaft;
-                        if ($j > 0) {
-                            $this->cVariationKombi .= ';' . $oVariationKombi->kEigenschaft . '_' . $oVariationKombi->kEigenschaftWert;
-                        } else {
-                            $this->cVariationKombi .= $oVariationKombi->kEigenschaft . '_' . $oVariationKombi->kEigenschaftWert;
-                        }
-                    }
-                }
             } else {
                 $oVariationTMP_arr = Shop::DB()->query(
                     "SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
@@ -2808,6 +2787,37 @@ class Artikel
     }
 
     /**
+     * @return $this
+     */
+    public function holeVariationKombi()
+    {
+        // VariationKombi gesetzte Eigenschaften und EigenschaftWerte vom Kind
+        $this->oVariationKombi_arr = Shop::DB()->query(
+            "SELECT teigenschaftkombiwert.*
+                FROM teigenschaftkombiwert
+                JOIN tartikel
+                    ON tartikel.kArtikel = " . (int)$this->kArtikel . "
+                        AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 2
+        );
+        // String für javascript Funktion vorbereiten um Variationen auszufüllen
+        if (is_array($this->oVariationKombi_arr) && count($this->oVariationKombi_arr) > 0) {
+            $this->cVariationKombi = '';
+            foreach ($this->oVariationKombi_arr as $j => $oVariationKombi) {
+                $oVariationKombi->kEigenschaftKombi = (int)$oVariationKombi->kEigenschaftKombi;
+                $oVariationKombi->kEigenschaftWert  = (int)$oVariationKombi->kEigenschaftWert;
+                $oVariationKombi->kEigenschaft      = (int)$oVariationKombi->kEigenschaft;
+                if ($j > 0) {
+                    $this->cVariationKombi .= ';' . $oVariationKombi->kEigenschaft . '_' . $oVariationKombi->kEigenschaftWert;
+                } else {
+                    $this->cVariationKombi .= $oVariationKombi->kEigenschaft . '_' . $oVariationKombi->kEigenschaftWert;
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param int $kKundengruppe
      * @return array
      */
@@ -2960,7 +2970,8 @@ class Artikel
                             $oArtikelOptionen->nArtikelAttribute         = 1;
                             $oArtikelOptionen->nVariationen              = 0;
                             $oArtikel                                    = new self();
-                            $oArtikel->fuelleArtikel($oVariationKombiKinderAssoc, $oArtikelOptionen);
+                            $oArtikel->fuelleArtikel($oVariationKombiKinderAssoc, $oArtikelOptionen)
+                                     ->holeVariationKombi();
 
                             $oTMP_arr[$oVariationKombiKinderAssoc] = $oArtikel;
                             $oVariationKombiKinderAssoc_arr[$i]    = $oArtikel;

@@ -6,6 +6,10 @@
 
 namespace JTL;
 
+use JTL\Mail\Renderer\SmartyRenderer;
+use JTL\Mail\Hydrator\TestHydrator;
+use Exception;
+
 /**
  * Class Emailvorlage
  * @package JTL
@@ -405,5 +409,53 @@ class Emailvorlage
         return ($obj !== null && isset($obj->kEmailvorlage) && (int)$obj->kEmailvorlage > 0)
             ? new self((int)$obj->kEmailvorlage, $isPlugin)
             : null;
+    }
+
+    /**
+     * @param bool $error
+     * @param bool $force
+     * @param int|null $pluginID
+     */
+    public function updateError(bool $error = true, bool $force = false, int $pluginID = null): void
+    {
+        $upd              = new \stdClass();
+        $upd->nFehlerhaft = (int)$error;
+        if (!$force) {
+            $upd->cAktiv = $error ? 'N' : 'Y';
+        }
+        Shop::Container()->getDB()->update(
+            $pluginID ? 'temailvorlage' : 'tpluginemailvorlage',
+            'kEmailvorlage',
+            $this->kEmailvorlage,
+            $upd
+        );
+    }
+
+    /**
+     * @param int|null $pluginID
+     * @return string
+     * @throws \SmartyException
+     */
+    public function checkSyntax(int $pluginID = null): string
+    {
+        $db           = Shop::Container()->getDB();
+        $renderer     = new SmartyRenderer($db);
+        $settings     = Shopsetting::getInstance();
+        $hydrator     = new TestHydrator($renderer->getSmarty(), $db, $settings);
+        $templateType = $pluginID ?: '_temailvorlagesprache';
+        foreach (Sprache::getInstance()->gibVerfuegbareSprachen() as $lang) {
+            try {
+                $hydrator->hydrate(null, $lang);
+                $id = $this->kEmailvorlage . '_' . $lang->kSprache . '_' . $templateType;
+                $renderer->renderHTML($id);
+                $renderer->renderText($id);
+            } catch (Exception $e) {
+                $this->updateError();
+
+                return $e->getMessage();
+            }
+        }
+
+        return '';
     }
 }

@@ -20,6 +20,7 @@ use JTL\Update\Updater;
 use JTL\Checkout\ZahlungsLog;
 use stdClass;
 use JTL\Exportformat;
+use JTL\Emailvorlage;
 use function Functional\some;
 
 /**
@@ -510,4 +511,35 @@ class Status
 
         return $_SESSION['exportSyntaxCount'];
     }
+
+    /**
+     * @return int
+     * @throws \SmartyException
+     */
+    public function getEmailTemplateSyntaxErrorCount(): int
+    {
+        if (isset($_SESSION['emailSyntaxChecked'])) {
+            $errorCount = count(Shop::Container()->getDB()->selectAll('temailvorlage', 'nFehlerhaft', 1));
+        } else {
+            $emailTemplates = Shop::Container()->getDB()->selectAll('temailvorlage', [], []);
+            $errorCount     = 0;
+            foreach ($emailTemplates as $emailTemplate) {
+                if ((new Emailvorlage($emailTemplate->kEmailvorlage))->checkSyntax() !== '') {
+                    $errorCount++;
+                }
+            }
+            $emailPluginTemplates = Shop::Container()->getDB()->selectAll('tpluginemailvorlage', [], []);
+            foreach ($emailPluginTemplates as $emailPluginTemplate) {
+                if ((new Emailvorlage($emailPluginTemplate->kEmailvorlage, true))->checkSyntax(
+                    $emailPluginTemplate->kPlugin
+                ) !== '') {
+                    $errorCount++;
+                }
+            }
+            $_SESSION['emailSyntaxChecked'] = 1;
+        }
+
+        return $errorCount;
+    }
+
 }

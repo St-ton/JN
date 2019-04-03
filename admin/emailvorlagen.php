@@ -49,7 +49,7 @@ if (Request::verifyGPCDataInt('kPlugin') > 0) {
     $settingsTableName  = 'tpluginemailvorlageeinstellungen';
 }
 if (isset($_GET['err'])) {
-    setzeFehler($_GET['kEmailvorlage']);
+    setzeFehler($_GET['kEmailvorlage'], true, false, Request::verifyGPCDataInt('kPlugin'));
     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplate'), 'errorTemplate');
     if (is_array($_SESSION['last_error'])) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, $_SESSION['last_error']['message'], 'last_error');
@@ -394,7 +394,9 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             $hydrator = new TestHydrator($renderer->getSmarty(), $db, $settings);
             try {
                 $hydrator->hydrate(null, $lang);
-                $id = $localized->kEmailvorlage . '_' . $lang->kSprache . '_' . $localizedTableName;
+                $id = $localized->kEmailvorlage . '_' . $lang->kSprache . '_' .
+                    (Request::verifyGPCDataInt('kPlugin') === 0
+                        ? $localizedTableName : Request::verifyGPCDataInt('kPlugin'));
                 $renderer->renderHTML($id);
                 $renderer->renderText($id);
             } catch (Exception $e) {
@@ -427,7 +429,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     if ($nFehler === 1) {
         $step = 'prebearbeiten';
     } elseif ($smartyError->nCode === 0) {
-        setzeFehler((int)$_POST['kEmailvorlage'], false, true);
+        setzeFehler((int)$_POST['kEmailvorlage'], false, true, Request::verifyGPCDataInt('kPlugin'));
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateEdit'), 'successTemplateEdit');
         $step     = 'uebersicht';
         $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
@@ -439,7 +441,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             __('errorTemplate') . '<br />' . $smartyError->cText,
             'errorTemplate'
         );
-        setzeFehler($_POST['kEmailvorlage']);
+        setzeFehler($_POST['kEmailvorlage'], true, false, Request::verifyGPCDataInt('kPlugin'));
     }
 }
 if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $continue === true)
@@ -582,18 +584,24 @@ function baueDateinameArray($fileName)
 }
 
 /**
- * @param int  $kEmailvorlage
+ * @param $kEmailvorlage
  * @param bool $error
  * @param bool $force
+ * @param null $plugin
  */
-function setzeFehler($kEmailvorlage, $error = true, $force = false)
+function setzeFehler($kEmailvorlage, $error = true, $force = false, $plugin = null)
 {
     $upd              = new stdClass();
     $upd->nFehlerhaft = (int)$error;
     if (!$force) {
         $upd->cAktiv = $error ? 'N' : 'Y';
     }
-    Shop::Container()->getDB()->update('temailvorlage', 'kEmailvorlage', (int)$kEmailvorlage, $upd);
+    Shop::Container()->getDB()->update(
+        $plugin ? 'tpluginemailvorlage' : 'temailvorlage',
+        'kEmailvorlage',
+        (int)$kEmailvorlage,
+        $upd
+    );
 }
 
 /**

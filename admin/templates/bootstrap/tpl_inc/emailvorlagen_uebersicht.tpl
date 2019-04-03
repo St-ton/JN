@@ -83,8 +83,8 @@
                             {if $oPluginEmailvorlage->cAktiv === 'Y'}
                                 <span class="success label label-success">{__('active')}</span>
                             {else}
-                                {if $emailvorlage->nFehlerhaft == 1}
-                                    <span class="label label-error error">{__('faulty')}</span>
+                                {if $oPluginEmailvorlage->nFehlerhaft == 1}
+                                    <span class="label label-danger error">{__('faulty')}</span>
                                 {else}
                                     <span class="label label-info">{__('inactive')}</span>
                                 {/if}

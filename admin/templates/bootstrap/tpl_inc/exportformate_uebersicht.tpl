@@ -85,6 +85,7 @@
                     <th class="tcenter">{__('currency')}</th>
                     <th class="tcenter">{__('customerGroup')}</th>
                     <th class="tcenter">{__('lastModified')}</th>
+                    <th class="tcenter">Syntax</th>
                     <th class="tcenter" width="200">{__('actions')}</th>
                 </tr>
                 </thead>
@@ -102,6 +103,13 @@
                             <td class="tcenter">{$exportformat->Waehrung->cName}</td>
                             <td class="tcenter">{$exportformat->Kundengruppe->cName}</td>
                             <td class="tcenter">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
+                            <td class="tcenter">
+                                {if (int)$exportformat->nFehlerhaft === 1}
+                                    <span class="label label-danger">Fehlerhaft</span>
+                                {else}
+                                    <span class="label label-success">OK</span>
+                                {/if}
+                            </td>
                             <td class="tcenter">
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}

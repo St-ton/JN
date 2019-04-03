@@ -19,6 +19,7 @@ use JTL\Template;
 use JTL\Update\Updater;
 use JTL\Checkout\ZahlungsLog;
 use stdClass;
+use JTL\Exportformat;
 use function Functional\some;
 
 /**
@@ -488,5 +489,25 @@ class Status
                 HAVING COUNT(*) > 1',
             ReturnType::ARRAY_OF_OBJECTS
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function getExportFormatErrorCount(): int
+    {
+        if (!isset($_SESSION['exportSyntaxCount'])) {
+            $errorCount    = 0;
+            $exportFormats = Shop::Container()->getDB()->selectAll('texportformat', [], []);
+            foreach ($exportFormats as $exportFormat) {
+                $errorMessage = (new Exportformat($exportFormat->kExportformat))->checkSyntax();
+                if ($errorMessage) {
+                    $errorCount++;
+                }
+            }
+            $_SESSION['exportSyntaxCount'] = $errorCount;
+        }
+
+        return $_SESSION['exportSyntaxCount'];
     }
 }

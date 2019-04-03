@@ -1549,45 +1549,63 @@ class Exportformat
     public function checkSyntax()
     {
         $this->initSession()->initSmarty();
-        $error = false;
-        try {
-            $product     = null;
-            $productData = $this->db->query(
-                "SELECT * 
+        $error       = false;
+        $product     = null;
+        $productData = $this->db->query(
+            "SELECT * 
                     FROM tartikel 
                     WHERE kVaterArtikel = 0 
                     AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-                ReturnType::SINGLE_OBJECT
-            );
-            if (!empty($productData->kArtikel)) {
-                $options                            = new stdClass();
-                $options->nMerkmale                 = 1;
-                $options->nAttribute                = 1;
-                $options->nArtikelAttribute         = 1;
-                $options->nKategorie                = 1;
-                $options->nKeinLagerbestandBeachten = 1;
-                $options->nMedienDatei              = 1;
+            ReturnType::SINGLE_OBJECT
+        );
+        if (!empty($productData->kArtikel)) {
+            $options                            = new stdClass();
+            $options->nMerkmale                 = 1;
+            $options->nAttribute                = 1;
+            $options->nArtikelAttribute         = 1;
+            $options->nKategorie                = 1;
+            $options->nKeinLagerbestandBeachten = 1;
+            $options->nMedienDatei              = 1;
 
-                $product = new Artikel();
-                $product->fuelleArtikel($productData->kArtikel, $options);
-                $product->cDeeplink             = '';
-                $product->Artikelbild           = '';
-                $product->Lieferbar             = '';
-                $product->Lieferbar_01          = '';
-                $product->cBeschreibungHTML     = '';
-                $product->cKurzBeschreibungHTML = '';
-                $product->fUst                  = 0;
-                $product->Kategorie             = new Kategorie();
-                $product->Kategoriepfad         = '';
-                $product->Versandkosten         = -1;
-            }
+            $product = new Artikel();
+            $product->fuelleArtikel($productData->kArtikel, $options);
+            $product->cDeeplink             = '';
+            $product->Artikelbild           = '';
+            $product->Lieferbar             = '';
+            $product->Lieferbar_01          = '';
+            $product->cBeschreibungHTML     = '';
+            $product->cKurzBeschreibungHTML = '';
+            $product->fUst                  = 0;
+            $product->Kategorie             = new Kategorie();
+            $product->Kategoriepfad         = '';
+            $product->Versandkosten         = -1;
+        }
+        try {
             $this->smarty->assign('Artikel', $product)
                          ->fetch('db:' . $this->kExportformat);
         } catch (Exception $e) {
             $error  = '<strong>Smarty-Syntaxfehler:</strong><br />';
             $error .= '<pre>' . $e->getMessage() . '</pre>';
         }
+        $this->updateError($error ? 1 : 0);
 
         return $error;
+    }
+
+    /**
+     * @param int $error
+     */
+    public function updateError(int $error): void
+    {
+        Shop::Container()->getDB()->update(
+            'texportformat',
+            'kExportformat',
+            $this->kExportformat,
+            (object)['nFehlerhaft' => $error]
+        );
+
+        $_SESSION['exportSyntaxCount'] = count(
+            Shop::Container()->getDB()->selectAll('texportformat', 'nFehlerhaft', 1)
+        );
     }
 }

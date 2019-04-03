@@ -263,6 +263,15 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if (($exportSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                'Fehler in Exportvorlage',
+                sprintf('%d Exportvorlage(n) enthalten Syntax-Fehler.', $exportSyntaxErrorCount),
+                'exportformate.php'
+            );
+        }
+
         return $this;
     }
 }

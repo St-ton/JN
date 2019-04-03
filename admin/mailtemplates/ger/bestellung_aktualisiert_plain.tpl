@@ -6,13 +6,13 @@ Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde aktualisiert.
 
 Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Positionen:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
+{foreach $Bestellung->Positionen as $Position}
 
-{if $Position->nPosTyp==1}
-{$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen=="Y" && $Position->cLieferstatus}
+{if $Position->nPosTyp == 1}
+{$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
 
 Lieferzeit: {$Position->cLieferstatus}{/if}
-{foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+{foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
 {if $Position->cSeriennummer|strlen > 0}
@@ -28,10 +28,10 @@ Charge: {$Position->cChargeNr}
 {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{/if}
 {/foreach}
 
-{if $Einstellungen.global.global_steuerpos_anzeigen!="N"}{foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+{if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}{foreach $Bestellung->Steuerpositionen as $Steuerposition}
 {$Steuerposition->cName}: {$Steuerposition->cPreisLocalized}
 {/foreach}{/if}
-{if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen==1}
+{if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen == 1}
 Gutschein: -{$Bestellung->GutscheinLocalized}
 {/if}
 
@@ -79,8 +79,8 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
 
 {/if}
 
-{if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
+{if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
 Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:
 
 Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}
@@ -88,10 +88,10 @@ KontoNr: {$Bestellung->Zahlungsinfo->cKontoNr}
 BLZ: {$Bestellung->Zahlungsinfo->cBLZ}
 Bank: {$Bestellung->Zahlungsinfo->cBankName}
 
-{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
 Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende E-Mailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
 {/if}
 
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.

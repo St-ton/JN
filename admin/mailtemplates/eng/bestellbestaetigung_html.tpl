@@ -7,7 +7,7 @@ Thank you for your order at {$Einstellungen.global.global_shopname}.<br>
 {if $Verfuegbarkeit_arr.cArtikelName_arr|@count > 0}
 {$Verfuegbarkeit_arr.cHinweis}
 <table cellpadding="0" cellspacing="0" border="0">
-    {foreach from=$Verfuegbarkeit_arr.cArtikelName_arr item=cArtikelname}
+    {foreach $Verfuegbarkeit_arr.cArtikelName_arr as $cArtikelname}
     <tr>
         <td width="18">&bull;</td>
         <td align="left" valign="middle">{$cArtikelname}</td>
@@ -17,19 +17,19 @@ Thank you for your order at {$Einstellungen.global.global_shopname}.<br>
 {/if}
 Your order with the order number {$Bestellung->cBestellNr} consists of the following items:<br>
 <br>
-{foreach name=pos from=$Bestellung->Positionen item=Position}
+{foreach $Bestellung->Positionen as $Position}
     <table cellpadding="10" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
         <tr>
-            <td class="column" {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === "Y"}width="50%"{else}width="70%"{/if} align="left" valign="top">
-                {if $Position->nPosTyp==1}
+            <td class="column" {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}width="50%"{else}width="70%"{/if} align="left" valign="top">
+                {if $Position->nPosTyp == 1}
                     {if !empty($Position->kKonfigitem)}? {/if}<strong>{$Position->cName}</strong> {if $Position->cArtNr}({$Position->cArtNr}){/if}
                     {if isset($Position->Artikel->nErscheinendesProdukt) && $Position->Artikel->nErscheinendesProdukt}
                         <br>Available on: <strong>{$Position->Artikel->Erscheinungsdatum_de}</strong>
                     {/if}
-                    {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen=="Y" && $Position->cLieferstatus}
+                    {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
                         <br><small>Shipping time: {$Position->cLieferstatus}</small>
                     {/if}<br>
-                    {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+                    {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                         <br><strong>{$WKPosEigenschaft->cEigenschaftName}</strong>: {$WKPosEigenschaft->cEigenschaftWertName}
                     {/foreach}
                 {else}
@@ -39,7 +39,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
             <td class="column" width="10%" align="left" valign="top">
                 <strong class="mobile-only">Quantity:</strong> {$Position->nAnzahl}
             </td>
-            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen=="Y"}
+            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                 <td class="column" width="20%" align="right" valign="top">
                     {$Position->cEinzelpreisLocalized[$NettoPreise]}
                 </td>
@@ -51,8 +51,8 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
     </table>
 {/foreach}
 <table cellpadding="10" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
-    {if $Einstellungen.global.global_steuerpos_anzeigen !== "N"}
-        {foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+        {foreach $Bestellung->Steuerpositionen as $Steuerposition}
             <tr>
                 <td align="right" valign="top">
                     {$Steuerposition->cName}:
@@ -63,7 +63,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
             </tr>
         {/foreach}
     {/if}
-    {if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen==1}
+    {if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen == 1}
         <tr>
             <td align="right" valign="top">
                 Voucher:
@@ -414,7 +414,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
 {/if}
 You have chosen the following payment option: {$Bestellung->cZahlungsartName}<br>
 <br>
-{if $Bestellung->Zahlungsart->cModulId=="za_ueberweisung_jtl"}
+{if $Bestellung->Zahlungsart->cModulId === 'za_ueberweisung_jtl'}
     <strong>Please make the following banktransfer:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
@@ -563,23 +563,23 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}<br
             </td>
         </tr>
     </table>
-{elseif $Bestellung->Zahlungsart->cModulId=="za_nachnahme_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_kreditkarte_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
 {/if}
 {if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
     {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
-{if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
+{if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_moneybookers_jtl'}
 {/if}
 You will be notified of the subsequent status of your order separately.
 

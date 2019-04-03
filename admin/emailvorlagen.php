@@ -170,8 +170,8 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         );
     } else {
         $availableLanguages = $db->query(
-            'SELECT * 
-                FROM tsprache 
+            'SELECT *
+                FROM tsprache
                 ORDER BY cShopStandard DESC, cNameDeutsch',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -219,8 +219,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
         $localizedTPLs[$translation->kSprache] = $translation;
     }
     $availableLanguages = $db->query(
-        'SELECT * 
-            FROM tsprache 
+        'SELECT *
+            FROM tsprache
             ORDER BY cShopStandard DESC, cNameDeutsch',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -557,7 +557,7 @@ function bauePDFArray($cPDF)
 {
     $pdf = [];
     foreach (explode(';', $cPDF) as $cPDFTMP) {
-        if (mb_strlen($cPDFTMP) > 0) {
+        if ($cPDFTMP !== '') {
             $pdf[] = $cPDFTMP;
         }
     }
@@ -573,7 +573,7 @@ function baueDateinameArray($fileName)
 {
     $fileNames = [];
     foreach (explode(';', $fileName) as $cDateinameTMP) {
-        if (mb_strlen($cDateinameTMP) > 0) {
+        if ($cDateinameTMP !== '') {
             $fileNames[] = $cDateinameTMP;
         }
     }
@@ -604,7 +604,7 @@ function setzeFehler($kEmailvorlage, $error = true, $force = false)
  */
 function saveEmailSetting($settingsTable, $kEmailvorlage, $key, $value)
 {
-    if ((int)$kEmailvorlage > 0 && mb_strlen($settingsTable) > 0 && mb_strlen($key) > 0 && mb_strlen($value) > 0) {
+    if ((int)$kEmailvorlage > 0 && $settingsTable !== '' && $key !== '' && $value !== '') {
         $conf                = new stdClass();
         $conf->kEmailvorlage = (int)$kEmailvorlage;
         $conf->cKey          = $key;

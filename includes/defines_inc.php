@@ -127,6 +127,7 @@ define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber')
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
+define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN', 'core_jtl_verfuegbarkeitsbenachrichtigung_optin');
 // Suche
 define('SEARCH_SORT_NONE', -1);
 define('SEARCH_SORT_STANDARD', 100);
@@ -517,3 +518,5 @@ define('PRIO_HIGH', '0.7');
 define('PRIO_NORMAL', '0.5');
 define('PRIO_LOW', '0.3');
 define('PRIO_VERYLOW', '0.0');
+
+define('OPTIN_AVAILAGAIN', 1);

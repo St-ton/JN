@@ -18,8 +18,8 @@ class EmptyResultSetException extends Exception
      * EmptyResultSetException constructor.
      * @param string $message
      */
-    public function __construct($message)
+    public function __construct(string $message)
     {
-        parent::__construct($this->file . ': ' . $message);
+        parent::__construct(\str_replace(PFAD_ROOT, '', $this->file) . ': ' . $message);
     }
 }

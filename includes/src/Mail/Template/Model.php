@@ -231,6 +231,10 @@ final class Model
      */
     public function setFileNames($fileNames): void
     {
+        if ($fileNames === null) {
+            // if (DB-)NULL, use class-default
+            return;
+        }
         $this->fileNames = \is_string($fileNames)
             ? Text::parseSSK($fileNames)
             : $fileNames;
@@ -441,6 +445,10 @@ final class Model
      */
     public function setAttachments($attachments): void
     {
+        if ($attachments === null) {
+            // if (DB-)NULL, use class-default
+            return;
+        }
         $this->attachments = \is_string($attachments)
             ? Text::parseSSK($attachments)
             : $attachments;

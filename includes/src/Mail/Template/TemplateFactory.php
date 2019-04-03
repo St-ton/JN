@@ -77,6 +77,8 @@ class TemplateFactory
                 return new OrderUpdated($this->db);
             case \MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR:
                 return new ProductAvailable($this->db);
+            case \MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN:
+                return new ProductAvailableOptin($this->db);
             case \MAILTEMPLATE_PRODUKTANFRAGE:
                 return new ProductInquiry($this->db);
             case \MAILTEMPLATE_BEWERTUNG_GUTHABEN:

@@ -20,6 +20,8 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Konfiggruppe;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigurator;
+use JTL\GenericOptin\GenericOptin;
+use JTL\GenericOptin\GenericOptinRefData;
 use JTL\Kampagne;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -1234,6 +1236,7 @@ class Product
      * @return array
      * @former bearbeiteBenachrichtigung()
      * @since 5.0.0
+     * @throws \JTL\Exceptions\InvalidInputException
      */
     public static function checkAvailabilityMessage(array $notices): array
     {
@@ -1251,48 +1254,23 @@ class Product
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
             if (!self::checkAvailibityFormFloodProtection($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
-                $inquiry            = self::getAvailabilityFormDefaults();
-                $inquiry->kSprache  = Shop::getLanguage();
-                $inquiry->kArtikel  = (int)$_POST['a'];
-                $inquiry->cIP       = Request::getRealIP();
-                $inquiry->dErstellt = 'NOW()';
-                $inquiry->nStatus   = 0;
-                $checkBox           = new CheckBox();
-                $customerGroupID    = Frontend::getCustomerGroup()->getID();
-                if (empty($inquiry->cNachname)) {
-                    $inquiry->cNachname = '';
+                $dbHandler = Shop::Container()->getDB();
+                $refData   = (new GenericOptinRefData())
+                    ->setSalutation('')
+                    ->setFirstName('')
+                    ->setLastName('')
+                    ->setOptinType(OPTIN_AVAILAGAIN)
+                    ->setArticleId((int)$_POST['a'])
+                    ->setEmail(Text::filterXSS($dbHandler->escape(strip_tags($_POST['email']))) ?: '')
+                    ->setLanguageID(Shop::getLanguage())
+                    ->setRealIP(Request::getRealIP());
+                try {
+                    (new GenericOptin(OPTIN_AVAILAGAIN))
+                        ->getOptin()
+                        ->createOptin($refData)
+                        ->sendActivationMail();
+                } catch (\Exception $e) {
                 }
-                if (empty($inquiry->cVorname)) {
-                    $inquiry->cVorname = '';
-                }
-                \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $inquiry]);
-                $checkBox->triggerSpecialFunction(
-                    \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
-                    $customerGroupID,
-                    true,
-                    $_POST,
-                    ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
-                )->checkLogging(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true);
-
-                $inquiryID = Shop::Container()->getDB()->queryPrepared(
-                    'INSERT INTO tverfuegbarkeitsbenachrichtigung
-                        (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
-                        VALUES
-                        (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus)
-                        ON DUPLICATE KEY UPDATE
-                            cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
-                            cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
-                    \get_object_vars($inquiry),
-                    ReturnType::LAST_INSERTED_ID
-                );
-                if (isset($_SESSION['Kampagnenbesucher'])) {
-                    Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
-                }
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages'),
-                    'thankYouForNotificationSubscription'
-                );
             } else {
                 $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');
             }

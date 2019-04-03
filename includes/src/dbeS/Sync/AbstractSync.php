@@ -6,12 +6,14 @@
 
 namespace JTL\dbeS\Sync;
 
+use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
+use JTL\GenericOptin\GenericOptin;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Customer\Kundengruppe;
@@ -203,6 +205,8 @@ abstract class AbstractSync
     /**
      * @param object $product
      * @param array  $conf
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     protected function versendeVerfuegbarkeitsbenachrichtigung($product, array $conf): void
     {
@@ -224,8 +228,7 @@ abstract class AbstractSync
         ) {
             return;
         }
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
+        require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
@@ -239,31 +242,39 @@ abstract class AbstractSync
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $obj                                   = new stdClass();
-            $obj->tverfuegbarkeitsbenachrichtigung = $msg;
-            $obj->tartikel                         = $product;
-            $obj->tartikel->cName                  = Text::htmlentitydecode($obj->tartikel->cName);
-            $mail                                  = new stdClass();
-            $mail->toEmail                         = $msg->cMail;
-            $mail->toName                          = ($msg->cVorname || $msg->cNachname)
-                ? ($msg->cVorname . ' ' . $msg->cNachname)
-                : $msg->cMail;
-            $obj->mail                             = $mail;
+            $isOptinValidActive = (new GenericOptin(OPTIN_AVAILAGAIN))
+                ->setEmail($msg->cMail)
+                ->isActive();
+            $oLogger->debug('check optin for: '.$msg->cMail.'  isValid: '.var_export($isOptinValidActive, true)); // --DEBUG--
+            if ($isOptinValidActive) {
+                $tplData                                   = new stdClass();
+                $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
+                $tplData->tartikel                         = $product;
+                $tplData->tartikel->cName                  = Text::htmlentitydecode($tplData->tartikel->cName);
+                $tplMail                                   = new stdClass();
+                $tplMail->toEmail                          = $msg->cMail;
+                $tplMail->toName                           = ($msg->cVorname || $msg->cNachname)
+                    ? ($msg->cVorname . ' ' . $msg->cNachname)
+                    : $msg->cMail;
+                $tplData->mail                             = $tplMail;
 
-            $mailer = Shop::Container()->get(Mailer::class);
-            $mail   = new Mail();
-            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj));
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mail   = new Mail();
+                $mail->setToMail($tplMail->toEmail);
+                $mail->setToName($tplMail->toName);
+                $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
 
-            $upd                    = new stdClass();
-            $upd->nStatus           = 1;
-            $upd->dBenachrichtigtAm = 'NOW()';
-            $upd->cAbgeholt         = 'N';
-            $this->db->update(
-                'tverfuegbarkeitsbenachrichtigung',
-                'kVerfuegbarkeitsbenachrichtigung',
-                $msg->kVerfuegbarkeitsbenachrichtigung,
-                $upd
-            );
+                $upd                    = new stdClass();
+                $upd->nStatus           = 1;
+                $upd->dBenachrichtigtAm = 'NOW()';
+                $upd->cAbgeholt         = 'N';
+                $this->db->update(
+                    'tverfuegbarkeitsbenachrichtigung',
+                    'kVerfuegbarkeitsbenachrichtigung',
+                    $msg->kVerfuegbarkeitsbenachrichtigung,
+                    $upd
+                );
+            }
         }
     }
 
@@ -401,7 +412,7 @@ abstract class AbstractSync
         $this->db->query(
             'DELETE p, d
             FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
+            LEFT JOIN tpreisdetail AS d
                 ON d.kPreis = p.kPreis
             WHERE p.kArtikel = ' . $productID,
             ReturnType::DEFAULT
@@ -471,7 +482,7 @@ abstract class AbstractSync
         $this->db->query(
             'DELETE p, d
             FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
+            LEFT JOIN tpreisdetail AS d
                 ON d.kPreis = p.kPreis
             WHERE p.kArtikel = ' . $productID,
             ReturnType::DEFAULT
@@ -664,9 +675,9 @@ abstract class AbstractSync
                     tpreisdetail.fVKNetto,
                     null dStart, null dEnde
                 FROM tartikel
-                INNER JOIN tpreis 
+                INNER JOIN tpreis
                     ON tpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tpreisdetail 
+                INNER JOIN tpreisdetail
                     ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
             . $uniqueProductIDs . ')
@@ -680,18 +691,18 @@ abstract class AbstractSync
                     null kKunde,
                     IF(tartikelsonderpreis.nIstAnzahl = 0 AND tartikelsonderpreis.nIstDatum = 0, 5, 3) nRangeType,
                     IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
-                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto, 
+                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
                         tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
                     tartikelsonderpreis.dStart dStart,
                     IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
                 FROM tartikel
-                INNER JOIN tpreis 
+                INNER JOIN tpreis
                     ON tpreis.kArtikel = tartikel.kArtikel
-	            INNER JOIN tpreisdetail 
+	            INNER JOIN tpreisdetail
 	                ON tpreisdetail.kPreis = tpreis.kPreis
-                INNER JOIN tartikelsonderpreis 
+                INNER JOIN tartikelsonderpreis
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tsonderpreise 
+                INNER JOIN tsonderpreise
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                 WHERE tartikelsonderpreis.cAktiv = \'Y\'
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
@@ -705,22 +716,22 @@ abstract class AbstractSync
                     SELECT teigenschaft.kArtikel,
                         tkundengruppe.kKundengruppe,
                         teigenschaft.kEigenschaft,
-                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
                             teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
-                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
                             teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
                     FROM teigenschaft
                     INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                     JOIN tkundengruppe
-                    LEFT JOIN teigenschaftwertaufpreis 
+                    LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
                     WHERE teigenschaft.kArtikel IN (' . $uniqueProductIDs . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
-            ) varaufpreis 
-                ON varaufpreis.kArtikel = baseprice.kKindArtikel 
+            ) varaufpreis
+                ON varaufpreis.kArtikel = baseprice.kKindArtikel
                 AND baseprice.nIstVater = 0
             WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
             GROUP BY baseprice.kArtikel,

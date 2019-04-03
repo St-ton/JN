@@ -48,8 +48,7 @@ $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty'
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_product_list', 'get_product_list')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', 'captchaMarkup')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', 'getStates')
-       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', 'seofy')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getFilterParams', 'getFilterParams');
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', 'seofy');
 
 /**
  * @param array                        $params
@@ -775,16 +774,4 @@ function seofy ($optStr = '')
     $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
 
     return $optStr;
-}
-
-/**
- * @return String json representation of product filter params
- */
-function getFilterParams($params = 0)
-{
-    $filter = Shop::getProductFilter()->getParams();
-    $filter['value'] = $params['filter_val'];
-    $filter['filterClass'] = $params['filter_class'];
-
-    return json_encode($filter);
 }

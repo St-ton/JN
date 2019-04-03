@@ -16,7 +16,7 @@
     }
         <hr class="mt-0 mb-4">
         {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 0}
-            {dropdown variant="link" text="{lang key='selectFilter' section='global'} "}
+            {dropdown variant="light" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
                 {include file='snippets/filter/characteristic.tpl' Merkmal=$Merkmal class="dropdown-menu"}
             {/dropdown}
         {else}

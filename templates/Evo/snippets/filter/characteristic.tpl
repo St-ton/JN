@@ -2,9 +2,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{assign var='is_dropdown' value=false}
+{$is_dropdown = false}
+{$limit = $Einstellungen.template.productlist.filter_max_options}
+{$collapseInit = false}
 {if ($Merkmal->cTyp === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
-    {assign var='is_dropdown' value=true}
+    {$is_dropdown = true}
 {/if}
 
 <ul {if $is_dropdown}class="dropdown-menu" role="menu" {elseif isset($class)}class="{$class}" {else}class="nav nav-list"{/if}>
@@ -30,6 +32,10 @@
                 </a>
             </li>
         {else}
+            {if $attributeValue@iteration > $limit && !$collapseInit && !$is_dropdown}
+                <div class="collapse" id="box-collps-{$Merkmal->kMerkmal}" aria-expanded="false"><ul class="nav nav-list">
+                    {$collapseInit = true}
+            {/if}
             <li>
                 <a rel="nofollow" href="{$attributeValue->getURL()}"{if $Merkmal->getData('cTyp') === 'BILD'} title="{$attributeValue->getValue()|escape:'html'}"{/if}>
                     <span class="badge pull-right">{$attributeValue->getCount()}</span>
@@ -46,12 +52,14 @@
             </li>
         {/if}
     {/foreach}
-    {if ($Merkmal->getOptions()|count < $Merkmal->getCount())}
-        <li>
-            <button class="btn-link btn-block filter-show-all" name="attributeValue" value='{getFilterParams filter_val=$Merkmal->getValue() filter_class=$Merkmal->getClassName()}' rel="nofollow">
-                <span class="badge pull-right">99+</span>
-                <span class="value">alle anzeigen</span>
-            </button>
-        </li>
-    {/if}
 </ul>
+{if $Merkmal->getOptions()|count > $limit && !$is_dropdown}
+        </ul></div>
+    <button class="btn btn-link pull-right"
+            role="button"
+            data-toggle="collapse"
+            data-target="#box-collps-{$Merkmal->kMerkmal}"
+    >
+        {lang key='showAll'} <span class="caret"></span>
+    </button>
+{/if}

@@ -22,7 +22,7 @@
             {input type="hidden" name="unreg_form" value="0"}
         {/if}
         {row id="create_account_data" class="collapse collapse-non-validate {if $unregForm === 1}hidden{else}show{/if}" aria-expanded="true"}
-            {col cols=12 md=6}
+            {col cols=12 md=5 offset-md=2}
                 {formgroup
                     class="{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
                     label="{lang key='password' section='account data'}"
@@ -44,7 +44,7 @@
                     {/if}
                 {/formgroup}
             {/col}
-            {col cols=12 md=6}
+            {col cols=12 md=5}
                 {formgroup
                     class="{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
                     label="{lang key='passwordRepeat' section='account data'}"

@@ -2,10 +2,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !isset($checkout)}
-    {include file='register/inc_vcard_upload.tpl' id='registrieren.php'}
-{/if}
-
 {form action="{get_static_route id='registrieren.php'}" class="evo-validate"}
     {include file='register/form/customer_account.tpl'}
     <hr>

@@ -103,13 +103,6 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_invoice_jtl"}
-	Please transfer the total amount to following account:
-	Account Holder: {$Bestellung->Zahlungsinfo->cInhaber}
-	Bank name: {$Bestellung->Zahlungsinfo->cBankName}
-	IBAN: {$Bestellung->Zahlungsinfo->cIBAN}
-	BIC: {$Bestellung->Zahlungsinfo->cBIC}
-	Purpose: {$Bestellung->Zahlungsinfo->cVerwendungszweck}
 {/if}
 
 You will be notified of the subsequent status of your order separately.

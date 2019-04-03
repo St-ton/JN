@@ -1055,16 +1055,6 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
             $paymentMethod->preparePaymentProcess($bestellung);
             Shop::Smarty()->assign('oPlugin', $oPlugin);
         }
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
-        $paymentMethod           = new SofortUeberweisung($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        $paymentMethod           = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_kreditkarte_jtl'
         || $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
     ) {

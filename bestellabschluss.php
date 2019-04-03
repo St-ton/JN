@@ -115,7 +115,7 @@ $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     ? Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
-    $loader = Helper::getLoaderByPluginID($kPlugin);
+    $loader = Helper::getLoaderByPluginID($kPlugin, $db);
     $smarty->assign('oPlugin', $loader->init($kPlugin));
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {

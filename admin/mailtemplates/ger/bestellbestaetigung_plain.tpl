@@ -115,21 +115,6 @@ Bank: {$Bestellung->Zahlungsinfo->cBankName}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
 Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_invoice_jtl" || $Bestellung->Zahlungsart->cModulId=="za_billpay_rate_payment_jtl"}
-Bitte überweisen Sie den Gesamtbetrag auf folgendes Konto:
-
-Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}
-Bankinstitut: {$Bestellung->Zahlungsinfo->cBankName}
-IBAN: {$Bestellung->Zahlungsinfo->cIBAN}
-BIC: {$Bestellung->Zahlungsinfo->cBIC}
-Verwendungszweck: {$Bestellung->Zahlungsinfo->cVerwendungszweck}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_direct_debit_jtl"}
-Vielen Dank, dass Sie sich beim Kauf der Ware für die BillPay Lastschrift entschieden haben.
-Wir buchen den Rechnungsbetrag in den nächsten Tagen von dem bei der Bestellung angegebenen Konto ab.
-{elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_paylater_jtl"}
-Vielen Dank, dass Sie sich für die Zahlung mit PayLater entschieden haben.
-Die fälligen Beträge werden von dem bei der Bestellung angegebenen Konto abgebucht. 
-Zusätzlich zu dieser Rechnung bekommen Sie von BillPay in Kürze einen Teilzahlungsplan mit detaillierten Informationen über Ihre Teilzahlung.
 {/if}
 
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.

@@ -201,15 +201,6 @@ if ($step === 'Bestaetigung') {
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Warenkorb::refreshChecksum($cart);
 }
-// Billpay
-if (isset($_SESSION['Zahlungsart'])
-    && $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl'
-    && $step === 'Bestaetigung'
-) {
-    /** @var Billpay $paymentMethod */
-    $paymentMethod = PaymentMethod::create('za_billpay_jtl');
-    $paymentMethod->handleConfirmation();
-}
 if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
     $oPaymentMethod = PaymentMethod::create('za_null_jtl');

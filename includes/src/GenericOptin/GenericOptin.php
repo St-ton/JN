@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -95,11 +95,7 @@ class GenericOptin extends GenericOptinBase
                 ($this->emailAddress === '' ?: $this->optCode));
         }
         $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['GenericOptinRefData']);
-
-        // decide, which optin we got (by `OptinType`) and do the activation there first, then here
         $this->generateOptin($this->refData->getOptinType());
-
-
         if ($this->actionPrefix === 'cc' || $this->externalAction === 'cc') {
             $this->deactivateOptin();
 

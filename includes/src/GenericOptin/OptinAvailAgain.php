@@ -1,9 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: clemens
- * Date: 13.03.19
- * Time: 10:53
+ * @copyright (c) JTL-Software-GmbH
+ * @license       http://jtl-url.de/jtlshoplicense
  */
 
 namespace JTL\GenericOptin;
@@ -94,8 +92,6 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
     }
 
     /**
-     * --TODO--
-     *
      * @throws \Exception
      */
     public function activateOptin(): void
@@ -139,13 +135,11 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
         if (isset($_SESSION['Kampagnenbesucher'])) {
             Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
         }
-//        Shop::Container()->getAlertService()->addAlert(
-//            Alert::TYPE_SUCCESS,
-//            Shop::Lang()->get('thankYouForNotificationSubscription', 'messages'),
-//            'thankYouForNotificationSubscription'
-//        );
     }
 
+    /**
+     * do opt-in specific de-activations
+     */
     public function deactivateOptin(): void
     {
         $this->dbHandler->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->refData->getEmail());

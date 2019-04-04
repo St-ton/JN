@@ -15,12 +15,6 @@ use JTL\DB\DbInterface;
 abstract class GenericOptinBase extends GenericOptinFactory
 {
     /**
-     * @var \Logger
-     */
-    protected $oLogger; // --DEBUG--
-
-
-    /**
      * @var \DateTime
      */
     protected $nowDataTime;

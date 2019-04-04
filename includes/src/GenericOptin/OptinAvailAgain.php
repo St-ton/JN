@@ -86,7 +86,6 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
         $mail   = new Mail();
         $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN, $templateData));
 
-        // "Freischaltung erfolgt"
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,
             Shop::Lang()->get('availAgainOptinCreated', 'messages'),

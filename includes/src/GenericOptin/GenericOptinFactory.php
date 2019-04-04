@@ -23,9 +23,9 @@ abstract class GenericOptinFactory
             case OPTIN_AVAILAGAIN:
                 return new OptinAvailAgain($inheritData);
                 break;
-
-
-
+//            case OPTIN_NEWSLETTER:
+//                return new OptinNewsletter($inheritData);
+//                break;
             default:
                 return null;
         }

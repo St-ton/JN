@@ -1236,7 +1236,6 @@ class Product
      * @return array
      * @former bearbeiteBenachrichtigung()
      * @since 5.0.0
-     * @throws \JTL\Exceptions\InvalidInputException
      */
     public static function checkAvailabilityMessage(array $notices): array
     {

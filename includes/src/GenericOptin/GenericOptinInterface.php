@@ -6,13 +6,17 @@
 
 namespace JTL\GenericOptin;
 
+/**
+ * Interface GenericOptinInterface
+ * @package JTL\GenericOptin
+ */
 interface GenericOptinInterface
 {
     /**
      * @param GenericOptinRefData $refData
      * @return OptinAvailAgain
      */
-    public function createOptin(GenericOptinRefData $refData): GenericOptinInterface;
+    public function createOptin(GenericOptinRefData $refData);
 
     /**
      * @return mixed

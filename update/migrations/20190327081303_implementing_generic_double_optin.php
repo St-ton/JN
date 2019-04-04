@@ -31,7 +31,6 @@ class Migration_20190327081303 extends Migration implements IMigration
 
     public function up()
     {
-        // create the optin tables (incl history)
         $this->execute("CREATE TABLE IF NOT EXISTS toptin(
             kOptin int(10) NOT NULL AUTO_INCREMENT COMMENT 'internal table key',
             kOptinCode varchar(256) NOT NULL DEFAULT '' COMMENT 'main opt-in code',
@@ -58,7 +57,6 @@ class Migration_20190327081303 extends Migration implements IMigration
         )
         ENGINE = innodb");
 
-        // create messages
         $this->setLocalization('ger', 'errorMessages', 'optinCodeUnknown', 'Der übergebene Bestätigungscode ist nicht bekannt.');
         $this->setLocalization('eng', 'errorMessages', 'optinCodeUnknown', 'The given confirmation code is unknown.');
         $this->setLocalization('ger', 'errorMessages', 'optinActionUnknown', 'Unbekannte Aktion angefordert.');
@@ -79,7 +77,6 @@ class Migration_20190327081303 extends Migration implements IMigration
         $this->setLocalization('ger', 'messages', 'optinRemoved', 'Ihr Freischaltantrag wurde entfernt.');
         $this->setLocalization('eng', 'messages', 'optinRemoved', 'Your activation request has been removed.');
 
-        // create new optin email templates (`temailvorlage`, `temailvorlageoriginal`)
         $this->execute("INSERT INTO temailvorlageoriginal(
                 cName,
                 cBeschreibung,
@@ -126,7 +123,6 @@ class Migration_20190327081303 extends Migration implements IMigration
         );
         $this->kEmailvorlage = $this->fetchOne('SELECT last_insert_id() AS last_insert_id')->last_insert_id;
 
-        // define text and insert them as new email templates
         $optin_cContentHtml_de = <<<'DEHTML'
 {includeMailTemplate template=header type=html}
 
@@ -385,7 +381,6 @@ ENPLAIN;
                 'AND kSprache = 2');
 
 
-        // add table comments
         $this->execute("ALTER TABLE temailvorlage MODIFY cDateiname
             varchar(255) DEFAULT '' NOT NULL COMMENT 'base file name in admin/mailtemplates/[ger|eng]/'");
         $this->execute("ALTER TABLE temailvorlage MODIFY cModulId
@@ -400,7 +395,6 @@ ENPLAIN;
 
     public function down()
     {
-        // remove the optin email templates
         $this->execute("DELETE FROM temailvorlageoriginal WHERE cModulId = 'core_jtl_verfuegbarkeitsbenachrichtigung_optin'");
         $this->execute("DELETE FROM temailvorlage WHERE cModulId = 'core_jtl_verfuegbarkeitsbenachrichtigung_optin'");
         $this->execute("DELETE FROM temailvorlagespracheoriginal WHERE cDateiname = 'produkt_wieder_verfuegbar_optin'");
@@ -415,7 +409,6 @@ ENPLAIN;
         $this->removeLocalization('optinActionUnknown');
         $this->removeLocalization('optinCodeUnknown');
 
-        // remove the optin tables
         $this->execute('DROP TABLE toptin');
         $this->execute('DROP TABLE toptinhistory');
     }

@@ -7,8 +7,8 @@
 namespace JTL\GenericOptin;
 
 /**
- * Class GenericOptinRefData DAO
- * @package JTL
+ * Class GenericOptinRefData
+ * @package JTL\GenericOptin
  */
 class GenericOptinRefData implements \Serializable
 {
@@ -62,7 +62,7 @@ class GenericOptinRefData implements \Serializable
      */
     public function serialize(): string
     {
-        return serialize([
+        return \serialize([
             $this->optinType,
             $this->languageID,
             $this->customerID,
@@ -90,7 +90,7 @@ class GenericOptinRefData implements \Serializable
             $this->email,
             $this->realIP,
             $this->articleId
-        ] = unserialize($serialized, ['GenericOptinRefData']);
+        ] = \unserialize($serialized, ['GenericOptinRefData']);
     }
 
     /**

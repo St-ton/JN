@@ -12,7 +12,7 @@ use JTL\Shop;
 
 /**
  * Class GenericOptin
- * @package JTL
+ * @package JTL\GenericOptin
  */
 class GenericOptin extends GenericOptinBase
 {

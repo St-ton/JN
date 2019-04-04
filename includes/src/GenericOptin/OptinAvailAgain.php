@@ -18,9 +18,16 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
+/**
+ * Class OptinAvailAgain
+ * @package JTL\GenericOptin
+ */
 class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
 {
-    private $article; // --TRY-OUT--
+    /**
+     * @var stdClass
+     */
+    private $article;
 
     /**
      * OptinAvailAgain constructor.
@@ -70,8 +77,9 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
         $recipient->dEingetragen = $this->nowDataTime->format('Y-m-d H:i:s');
 
         $optin                  = new stdClass();
-        $optin->activationURL   = Shop::getURL() . '/' . $this->article->cSeo . '?oc=ac' . $this->optCode;
-        $optin->deactivationURL = Shop::getURL() . '/' . $this->article->cSeo . '?oc=cc' . $this->optCode;
+        $articleSeoURL          = Shop::getURL() . '/' . $this->article->cSeo;
+        $optin->activationURL   = $articleSeoURL . '?oc=' . self::ACTIVATE_CODE . $this->optCode;
+        $optin->deactivationURL = $articleSeoURL . '?oc=' . self::CLEAR_CODE . $this->optCode;
 
         $templateData                                   = new stdClass();
         $templateData->tkunde                           = $_SESSION['Kunde'] ?? null;   // maybe --OBSOLETE--
@@ -82,7 +90,7 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
 
         $mailer = Shop::Container()->get(Mailer::class);
         $mail   = new Mail();
-        $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN, $templateData));
+        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN, $templateData));
 
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,

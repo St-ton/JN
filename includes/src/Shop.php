@@ -1594,7 +1594,6 @@ final class Shop
         }
         self::check404();
 
-        // --DEVELOPMENT-- start
         if (\mb_strlen(self::$optinCode) > 8) {
             try {
                 $successMsg = (new GenericOptin(null))
@@ -1620,7 +1619,6 @@ final class Shop
                 );
             }
         }
-        // --DEVELOPMENT--  end
 
         return self::$fileName;
     }

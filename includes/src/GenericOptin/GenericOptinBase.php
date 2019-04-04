@@ -15,6 +15,16 @@ use JTL\DB\DbInterface;
 abstract class GenericOptinBase extends GenericOptinFactory
 {
     /**
+     * action prefix
+     */
+    protected const ACTIVATE_CODE = 'ac';
+
+    /**
+     * action prefix
+     */
+    protected const CLEAR_CODE = 'cc';
+
+    /**
      * @var \DateTime
      */
     protected $nowDataTime;
@@ -61,12 +71,11 @@ abstract class GenericOptinBase extends GenericOptinFactory
      */
     public function setCode(string $optinCode): self
     {
-        $this->actionPrefix = substr($optinCode, 0, 2);
-        $this->optCode      = substr($optinCode, 2);
+        $this->actionPrefix = \substr($optinCode, 0, 2);
+        $this->optCode      = \substr($optinCode, 2);
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -76,7 +85,7 @@ abstract class GenericOptinBase extends GenericOptinFactory
         $count       = 0;
         $safetyLimit = 50;
         $Id          = function () {
-            return md5($this->refData->getEmail() . time() . random_int(123, 456));
+            return md5($this->refData->getEmail() . \time() . \random_int(123, 456));
         };
         do {
             $newId = $Id();

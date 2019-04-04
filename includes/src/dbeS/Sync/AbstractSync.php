@@ -228,7 +228,7 @@ abstract class AbstractSync
         ) {
             return;
         }
-        require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
+        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
@@ -242,7 +242,7 @@ abstract class AbstractSync
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $isOptinValidActive = (new GenericOptin(OPTIN_AVAILAGAIN))
+            $isOptinValidActive = (new GenericOptin(\OPTIN_AVAILAGAIN))
                 ->setEmail($msg->cMail)
                 ->isActive();
             if ($isOptinValidActive) {

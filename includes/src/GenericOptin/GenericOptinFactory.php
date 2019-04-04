@@ -8,7 +8,7 @@ namespace JTL\GenericOptin;
 
 /**
  * Class GenericOptinFactory
- * @package JTL
+ * @package JTL\GenericOptin
  */
 abstract class GenericOptinFactory
 {
@@ -22,10 +22,8 @@ abstract class GenericOptinFactory
         switch ($optinType) {
             case OPTIN_AVAILAGAIN:
                 return new OptinAvailAgain($inheritData);
-                break;
 //            case OPTIN_NEWSLETTER:
 //                return new OptinNewsletter($inheritData);
-//                break;
             default:
                 return null;
         }

@@ -6,7 +6,6 @@
 
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\Checkout\VCard;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
 use JTL\DB\ReturnType;
@@ -293,26 +292,4 @@ function gibKunde()
 
     $Kunde = $_SESSION['Kunde'];
     $titel = Shop::Lang()->get('editData', 'login');
-}
-
-/**
- * @param string $vCardFile
- */
-function gibKundeFromVCard($vCardFile)
-{
-    if (is_file($vCardFile)) {
-        global $Kunde;
-
-        try {
-            $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
-            $Kunde = $vCard->selectVCard(0)->asKunde();
-            Shop::Smarty()->assign('Kunde', $Kunde);
-        } catch (Exception $e) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('uploadError'),
-                'uploadError'
-            );
-        }
-    }
 }

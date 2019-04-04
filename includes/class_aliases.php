@@ -154,7 +154,6 @@ class_alias(\JTL\Checkout\ZahlungsLog::class, 'ZahlungsLog', true);
 class_alias(\JTL\Checkout\Versandart::class, 'Versandart', true);
 class_alias(\JTL\Checkout\Lieferadresse::class, 'Lieferadresse', true);
 class_alias(\JTL\Checkout\ZahlungsInfo::class, 'ZahlungsInfo', true);
-class_alias(\JTL\Checkout\VCard::class, 'VCard', true);
 class_alias(\JTL\Checkout\Lieferscheinpos::class, 'Lieferscheinpos', true);
 class_alias(\JTL\Checkout\Lieferscheinposinfo::class, 'Lieferscheinposinfo', true);
 class_alias(\JTL\Checkout\Versand::class, 'Versand', true);

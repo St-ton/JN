@@ -1228,12 +1228,6 @@ msgstr "Show CAPTCHA after X unsuccessful login attempts"
 msgid "kundenlogin_max_loginversuche_desc"
 msgstr "You can define how many login attempts a customer has before a CAPTCHA appears when they try to log on. This makes it more difficult for a bot to hack a customer account by trial and error. "
 
-msgid "kundenregistrierung_vcardupload_name"
-msgstr "Allow vCard upload"
-
-msgid "kundenregistrierung_vcardupload_desc"
-msgstr "Enables you to allow your customers to upload an electronic business card in vcf format."
-
 msgid "lieferadresse_abfragen_anrede_name"
 msgstr "Prompt title"
 

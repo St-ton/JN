@@ -69,12 +69,6 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
-if (isset($_FILES['vcard'])
-    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && Form::validateToken()
-) {
-    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
-}
 if (isset($_POST['unreg_form'])
     && (int)$_POST['unreg_form'] === 1
     && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'

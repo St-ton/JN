@@ -38,9 +38,6 @@
             <div class="hr-sect my-5">{lang key='or'}</div>
         {/col}
         {col cols=12 id="customer" md="{if $withSidebar === 0}8{else}12{/if}" class="mt-3"}
-            {block name='checkout-step0-login-or-register-include-inc-vcard-upload'}
-                {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
-            {/block}
             {block name='checkout-step0-login-or-register-form'}
                 {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate" id="form-register"}
                     {block name='checkout-step0-login-or-register-include-customer-account'}

@@ -19,6 +19,7 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Shopsetting;
+use JTL\Emailvorlage;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -42,14 +43,20 @@ $settingsTableName   = 'temailvorlageeinstellungen';
 $pluginSettingsTable = 'tpluginemailvorlageeinstellungen';
 $db                  = Shop::Container()->getDB();
 $alertHelper         = Shop::Container()->getAlertService();
-if (Request::verifyGPCDataInt('kPlugin') > 0) {
+$emailTemplateID     = Request::verifyGPCDataInt('kEmailvorlage');
+$pluginID            = Request::verifyGPCDataInt('kPlugin');
+if ($pluginID > 0) {
     $tableName          = 'tpluginemailvorlage';
     $localizedTableName = 'tpluginemailvorlagesprache';
     $originalTableName  = 'tpluginemailvorlagespracheoriginal';
     $settingsTableName  = 'tpluginemailvorlageeinstellungen';
 }
 if (isset($_GET['err'])) {
-    setzeFehler($_GET['kEmailvorlage'], true, false, Request::verifyGPCDataInt('kPlugin'));
+    (new Emailvorlage($emailTemplateID, $pluginID))->updateError(
+        true,
+        false,
+        $pluginID
+    );
     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplate'), 'errorTemplate');
     if (is_array($_SESSION['last_error'])) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, $_SESSION['last_error']['message'], 'last_error');
@@ -64,19 +71,19 @@ if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
     }
 }
 
-if (isset($_POST['resetEmailvorlage'], $_POST['kEmailvorlage'])
+if (isset($_POST['resetEmailvorlage'], $emailTemplateID)
     && (int)$_POST['resetEmailvorlage'] === 1
-    && (int)$_POST['kEmailvorlage'] > 0
+    && $emailTemplateID > 0
     && Form::validateToken()
 ) {
-    $emailTemplate = $db->select($tableName, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+    $emailTemplate = $db->select($tableName, 'kEmailvorlage', $emailTemplateID);
     if ($emailTemplate->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
         // Resetten
-        if (Request::verifyGPCDataInt('kPlugin') > 0) {
+        if ($pluginID > 0) {
             $db->delete(
                 'tpluginemailvorlagesprache',
                 'kEmailvorlage',
-                (int)$_POST['kEmailvorlage']
+                $emailTemplateID
             );
         } else {
             $db->query(
@@ -84,14 +91,14 @@ if (isset($_POST['resetEmailvorlage'], $_POST['kEmailvorlage'])
                     FROM temailvorlage
                     LEFT JOIN temailvorlagesprache
                         ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE temailvorlage.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
+                    WHERE temailvorlage.kEmailvorlage = ' . $emailTemplateID,
                 ReturnType::DEFAULT
             );
             $db->query(
                 'INSERT INTO temailvorlage
                     SELECT *
                     FROM temailvorlageoriginal
-                    WHERE temailvorlageoriginal.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
+                    WHERE temailvorlageoriginal.kEmailvorlage = ' . $emailTemplateID,
                 ReturnType::DEFAULT
             );
         }
@@ -99,15 +106,15 @@ if (isset($_POST['resetEmailvorlage'], $_POST['kEmailvorlage'])
             'INSERT INTO ' . $localizedTableName . '
                 SELECT *
                 FROM ' . $originalTableName . '
-                WHERE ' . $originalTableName . '.kEmailvorlage = ' . (int)$_POST['kEmailvorlage'],
+                WHERE ' . $originalTableName . '.kEmailvorlage = ' . $emailTemplateID,
             ReturnType::DEFAULT
         );
         $languages = Sprache::getAllLanguages();
-        if (Request::verifyGPCDataInt('kPlugin') === 0) {
+        if ($pluginID === 0) {
             $vorlage = $db->select(
                 'temailvorlageoriginal',
                 'kEmailvorlage',
-                (int)$_POST['kEmailvorlage']
+                $emailTemplateID
             );
             if (isset($vorlage->cDateiname) && mb_strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {
@@ -135,7 +142,7 @@ if (isset($_POST['resetEmailvorlage'], $_POST['kEmailvorlage'])
                     $db->update(
                         $localizedTableName,
                         ['kEmailVorlage', 'kSprache'],
-                        [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache],
+                        [$emailTemplateID, (int)$_lang->kSprache],
                         $upd
                     );
                 }
@@ -151,8 +158,8 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         (int)$_POST['preview']
     );
     $moduleID = $mailTpl->cModulId;
-    if (Request::verifyGPCDataInt('kPlugin') > 0) {
-        $moduleID = 'kPlugin_' . Request::verifyGPCDataInt('kPlugin') . '_' . $moduleID;
+    if ($pluginID > 0) {
+        $moduleID = 'kPlugin_' . $pluginID . '_' . $moduleID;
     }
     $settings  = Shopsetting::getInstance();
     $renderer  = new SmartyRenderer($db);
@@ -201,17 +208,16 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         }
     }
 }
-if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
+if (isset($_POST['Aendern'], $emailTemplateID)
     && (int)$_POST['Aendern'] === 1
-    && (int)$_POST['kEmailvorlage'] > 0 && Form::validateToken()
+    && $emailTemplateID > 0 && Form::validateToken()
 ) {
     $step          = 'uebersicht';
-    $kEmailvorlage = (int)$_POST['kEmailvorlage'];
     $uploadDir     = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     $localizedData = $db->selectAll(
         $localizedTableName,
         'kEmailvorlage',
-        (int)$_POST['kEmailvorlage'],
+        $emailTemplateID,
         'cPDFS, cDateiname, kSprache'
     );
     $localizedTPLs = [];
@@ -227,10 +233,10 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
     if (!isset($localized) || is_array($localized)) {
         $localized = new stdClass();
     }
-    $localized->kEmailvorlage = (int)$_POST['kEmailvorlage'];
+    $localized->kEmailvorlage = $emailTemplateID;
 
     $revision = new Revision($db);
-    $revision->addRevision('mail', (int)$_POST['kEmailvorlage'], true);
+    $revision->addRevision('mail', $emailTemplateID, true);
     foreach ($availableLanguages as $lang) {
         $filenames    = [];
         $pdfFiles     = [];
@@ -288,8 +294,8 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                             && !mb_strrpos($_POST['dateiname_' . $i . '_' . $lang->kSprache], ';')
                         ) {
                             $cPlugin = '';
-                            if (Request::verifyGPCDataInt('kPlugin') > 0) {
-                                $cPlugin = '_' . Request::verifyGPCDataInt('kPlugin');
+                            if ($pluginID > 0) {
+                                $cPlugin = '_' . $pluginID;
                             }
                             $cUploadDatei = $uploadDir . $localized->kEmailvorlage .
                                 '_' . $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
@@ -385,7 +391,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
                 ['kSprache', 'kEmailvorlage'],
                 [
                     (int)$lang->kSprache,
-                    (int)$_POST['kEmailvorlage']
+                    $emailTemplateID
                 ]
             );
             $db->insert($localizedTableName, $localized);
@@ -395,8 +401,7 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             try {
                 $hydrator->hydrate(null, $lang);
                 $id = $localized->kEmailvorlage . '_' . $lang->kSprache . '_' .
-                    (Request::verifyGPCDataInt('kPlugin') === 0
-                        ? $localizedTableName : Request::verifyGPCDataInt('kPlugin'));
+                    ($pluginID === 0 ? $localizedTableName : $pluginID);
                 $renderer->renderHTML($id);
                 $renderer->renderText($id);
             } catch (Exception $e) {
@@ -405,31 +410,44 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             }
         }
     }
-    $kEmailvorlage = (int)$_POST['kEmailvorlage'];
     $upd           = new stdClass();
     $upd->cMailTyp = $_POST['cMailTyp'];
     $upd->cAktiv   = $_POST['cEmailActive'];
-    $upd->nAKZ     = isset($_POST['nAKZ']) ? (int)$_POST['nAKZ'] : 0;
-    $upd->nAGB     = isset($_POST['nAGB']) ? (int)$_POST['nAGB'] : 0;
-    $upd->nWRB     = isset($_POST['nWRB']) ? (int)$_POST['nWRB'] : 0;
-    $upd->nWRBForm = isset($_POST['nWRBForm']) ? (int)$_POST['nWRBForm'] : 0;
-    $upd->nDSE     = isset($_POST['nDSE']) ? (int)$_POST['nDSE'] : 0;
-    $db->update($tableName, 'kEmailvorlage', $kEmailvorlage, $upd);
-    $db->delete($settingsTableName, 'kEmailvorlage', $kEmailvorlage);
-    if (isset($_POST['cEmailOut']) && mb_strlen($_POST['cEmailOut']) > 0) {
-        saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailOut', $_POST['cEmailOut']);
+    $upd->nAKZ     = Request::verifyGPCDataInt('nAKZ');
+    $upd->nAGB     = Request::verifyGPCDataInt('nAGB');
+    $upd->nWRB     = Request::verifyGPCDataInt('nWRB');
+    $upd->nWRBForm = Request::verifyGPCDataInt('nWRBForm');
+    $upd->nDSE     = Request::verifyGPCDataInt('nDSE');
+    $db->update($tableName, 'kEmailvorlage', $emailTemplateID, $upd);
+    $db->delete($settingsTableName, 'kEmailvorlage', $emailTemplateID);
+    if (mb_strlen(Request::verifyGPDataString('cEmailOut')) > 0) {
+        saveEmailSetting($settingsTableName, $emailTemplateID, 'cEmailOut', Request::verifyGPDataString('cEmailOut'));
     }
-    if (isset($_POST['cEmailSenderName']) && mb_strlen($_POST['cEmailSenderName']) > 0) {
-        saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailSenderName', $_POST['cEmailSenderName']);
+    if (mb_strlen(Request::verifyGPDataString('cEmailSenderName')) > 0) {
+        saveEmailSetting(
+            $settingsTableName,
+            $emailTemplateID,
+            'cEmailSenderName',
+            Request::verifyGPDataString('cEmailSenderName')
+        );
     }
-    if (isset($_POST['cEmailCopyTo']) && mb_strlen($_POST['cEmailCopyTo']) > 0) {
-        saveEmailSetting($settingsTableName, $kEmailvorlage, 'cEmailCopyTo', $_POST['cEmailCopyTo']);
+    if (mb_strlen(Request::verifyGPDataString('cEmailCopyTo')) > 0) {
+        saveEmailSetting(
+            $settingsTableName,
+            $emailTemplateID,
+            'cEmailCopyTo',
+            Request::verifyGPDataString('cEmailCopyTo')
+        );
     }
 
     if ($nFehler === 1) {
         $step = 'prebearbeiten';
     } elseif ($smartyError->nCode === 0) {
-        setzeFehler((int)$_POST['kEmailvorlage'], false, true, Request::verifyGPCDataInt('kPlugin'));
+        (new Emailvorlage($emailTemplateID, $pluginID))->updateError(
+            false,
+            true,
+            $pluginID
+        );
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateEdit'), 'successTemplateEdit');
         $step     = 'uebersicht';
         $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
@@ -441,39 +459,38 @@ if (isset($_POST['Aendern'], $_POST['kEmailvorlage'])
             __('errorTemplate') . '<br />' . $smartyError->cText,
             'errorTemplate'
         );
-        setzeFehler($_POST['kEmailvorlage'], true, false, Request::verifyGPCDataInt('kPlugin'));
+        (new Emailvorlage($emailTemplateID, $pluginID))->updateError(
+            true,
+            false,
+            $pluginID
+        );
     }
 }
-if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $continue === true)
+if ((($emailTemplateID > 0 && $continue === true)
         || $step === 'prebearbeiten'
         || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')
     ) && Form::validateToken()
 ) {
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     $localized = [];
-    if (empty($_POST['kEmailvorlage']) || (int)$_POST['kEmailvorlage'] === 0) {
-        $_POST['kEmailvorlage'] = (isset($_GET['a'], $_GET['kEmailvorlage']) && $_GET['a'] === 'pdfloeschen')
-            ? $_GET['kEmailvorlage']
-            : $kEmailvorlage;
-    }
+
     if (isset($_GET['kS'], $_GET['a'], $_GET['token'])
         && $_GET['a'] === 'pdfloeschen'
         && $_GET['token'] === $_SESSION['jtl_token']
     ) {
-        $_POST['kEmailvorlage'] = $_GET['kEmailvorlage'];
-        $_POST['kS']            = $_GET['kS'];
-        $localizedData          = $db->select(
+        $languageID    = Request::verifyGPCDataInt('kS');
+        $localizedData = $db->select(
             $localizedTableName,
             'kEmailvorlage',
-            (int)$_POST['kEmailvorlage'],
+            $emailTemplateID,
             'kSprache',
-            (int)$_POST['kS'],
+            $languageID,
             null,
             null,
             false,
             'cPDFS, cDateiname'
         );
-        $pdfFiles               = bauePDFArray($localizedData->cPDFS);
+        $pdfFiles      = bauePDFArray($localizedData->cPDFS);
         foreach ($pdfFiles as $pdf) {
             if (file_exists($uploadDir . $pdf)) {
                 @unlink($uploadDir . $pdf);
@@ -486,8 +503,8 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
             $localizedTableName,
             ['kEmailvorlage', 'kSprache'],
             [
-                (int)$_POST['kEmailvorlage'],
-                (int)$_POST['kS']
+                $emailTemplateID,
+                $languageID
             ],
             $upd
         );
@@ -498,7 +515,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
     $table = isset($_REQUEST['kPlugin']) ? $pluginSettingsTable : $settingsTableName;
 
     $availableLanguages = Sprache::getAllLanguages();
-    $mailTpl            = $db->select($tableName, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
+    $mailTpl            = $db->select($tableName, 'kEmailvorlage', $emailTemplateID);
     $config             = $db->selectAll($table, 'kEmailvorlage', (int)$mailTpl->kEmailvorlage);
     $configAssoc        = [];
     foreach ($config as $item) {
@@ -508,7 +525,7 @@ if (((isset($_POST['kEmailvorlage']) && (int)$_POST['kEmailvorlage'] > 0 && $con
         $localized[$lang->kSprache] = $db->select(
             $localizedTableName,
             'kEmailvorlage',
-            (int)$_POST['kEmailvorlage'],
+            $emailTemplateID,
             'kSprache',
             (int)$lang->kSprache
         );
@@ -545,7 +562,7 @@ if ($step === 'bearbeiten') {
     $smarty->assign('Emailvorlage', $mailTpl)
            ->assign('Emailvorlagesprache', $localized);
 }
-$smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
+$smarty->assign('kPlugin', $pluginID)
        ->assign('cFehlerAnhang_arr', $attachmentErrors)
        ->assign('step', $step)
        ->assign('Einstellungen', $conf)
@@ -584,37 +601,16 @@ function baueDateinameArray($fileName)
 }
 
 /**
- * @param $kEmailvorlage
- * @param bool $error
- * @param bool $force
- * @param null $plugin
- */
-function setzeFehler($kEmailvorlage, $error = true, $force = false, $plugin = null)
-{
-    $upd              = new stdClass();
-    $upd->nFehlerhaft = (int)$error;
-    if (!$force) {
-        $upd->cAktiv = $error ? 'N' : 'Y';
-    }
-    Shop::Container()->getDB()->update(
-        $plugin ? 'tpluginemailvorlage' : 'temailvorlage',
-        'kEmailvorlage',
-        (int)$kEmailvorlage,
-        $upd
-    );
-}
-
-/**
  * @param string $settingsTable
- * @param int    $kEmailvorlage
+ * @param int    $emailTemplateID
  * @param string $key
  * @param string $value
  */
-function saveEmailSetting($settingsTable, $kEmailvorlage, $key, $value)
+function saveEmailSetting($settingsTable, $emailTemplateID, $key, $value)
 {
-    if ((int)$kEmailvorlage > 0 && mb_strlen($settingsTable) > 0 && mb_strlen($key) > 0 && mb_strlen($value) > 0) {
+    if ((int)$emailTemplateID > 0 && mb_strlen($settingsTable) > 0 && mb_strlen($key) > 0 && mb_strlen($value) > 0) {
         $conf                = new stdClass();
-        $conf->kEmailvorlage = (int)$kEmailvorlage;
+        $conf->kEmailvorlage = (int)$emailTemplateID;
         $conf->cKey          = $key;
         $conf->cValue        = $value;
 

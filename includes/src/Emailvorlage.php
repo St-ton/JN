@@ -414,9 +414,9 @@ class Emailvorlage
     /**
      * @param bool $error
      * @param bool $force
-     * @param int|null $pluginID
+     * @param int $pluginID
      */
-    public function updateError(bool $error = true, bool $force = false, int $pluginID = null): void
+    public function updateError(bool $error = true, bool $force = false, int $pluginID = 0): void
     {
         $upd              = new \stdClass();
         $upd->nFehlerhaft = (int)$error;
@@ -424,7 +424,7 @@ class Emailvorlage
             $upd->cAktiv = $error ? 'N' : 'Y';
         }
         Shop::Container()->getDB()->update(
-            $pluginID ? 'temailvorlage' : 'tpluginemailvorlage',
+            $pluginID > 0 ? 'tpluginemailvorlage' : 'temailvorlage',
             'kEmailvorlage',
             $this->kEmailvorlage,
             $upd

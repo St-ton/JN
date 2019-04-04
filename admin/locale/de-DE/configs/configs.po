@@ -1955,12 +1955,6 @@ msgstr "Maximaler Bestellwert"
 msgid "zahlungsart_rechnung_max_desc"
 msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
 
-msgid "zahlungsart_billpay_mode_name"
-msgstr "Modus"
-
-msgid "zahlungsart_billpay_mode_desc"
-msgstr ""
-
 msgid "zahlungsart_lastschrift_min_bestellungen_name"
 msgstr "Anzahl Bestellungen nötig"
 
@@ -1979,29 +1973,11 @@ msgstr "Maximaler Bestellwert"
 msgid "zahlungsart_lastschrift_max_desc"
 msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
 
-msgid "zahlungsart_billpay_mid_name"
-msgstr "Händler-ID"
-
-msgid "zahlungsart_billpay_mid_desc"
-msgstr " Hier geben Sie Ihre Händler-ID (mid) ein."
-
-msgid "zahlungsart_billpay_pid_name"
-msgstr "Zahlungsportal-ID"
-
-msgid "zahlungsart_billpay_pid_desc"
-msgstr "Hier geben Sie Ihre Zahlungsportal-ID (pid) ein."
-
 msgid "zahlungsart_lastschrift_bic_abfrage_name"
 msgstr "BIC abfragen"
 
 msgid "zahlungsart_lastschrift_bic_abfrage_desc"
 msgstr "Hier legen Sie fest, ob die BIC abgefragt werden soll."
-
-msgid "zahlungsart_billpay_bpsecure_name"
-msgstr "Sicherheitscode"
-
-msgid "zahlungsart_billpay_bpsecure_desc"
-msgstr "Hier geben Sie den Sicherheitscode für das Zahlungsportal (bpsecure) ein."
 
 msgid "zahlungsart_lastschrift_kontoinhaber_abfrage_name"
 msgstr "Kontoinhaber abfragen"
@@ -2031,174 +2007,6 @@ msgid "zahlungsart_barzahlung_max_name"
 msgstr "Maximaler Bestellwert"
 
 msgid "zahlungsart_barzahlung_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_aspaid_name"
-msgstr "Bestellungen automatisch als bezahlt markieren"
-
-msgid "zahlungsart_billpay_aspaid_desc"
-msgstr "Hier legen Sie fest, ob erfasste Bestellungen automatisch nach der Vorautorisierung als bezahlt markiert werden."
-
-msgid "zahlungsart_billpay_delayindays_name"
-msgstr "Verschiebung des Zahlungsziels (In Tagen)"
-
-msgid "zahlungsart_billpay_delayindays_desc"
-msgstr "Hier legen Sie fest, wie viele Tage sich die Aktivierung des Zahlungsziels nach Rechnungserstellung verschieben soll."
-
-msgid "zahlungsart_billpay_publicapicode_name"
-msgstr "Öffentlicher API-Schlüssel"
-
-msgid "zahlungsart_billpay_publicapicode_desc"
-msgstr ""
-
-msgid "zahlungsart_sofortueberweisung_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
-
-msgid "zahlungsart_sofortueberweisung_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_sofortueberweisung_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_sofortueberweisung_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_sofortueberweisung_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_sofortueberweisung_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_sofortueberweisung_id_name"
-msgstr "User-ID"
-
-msgid "zahlungsart_sofortueberweisung_id_desc"
-msgstr "Geben Sie hier Ihre User-ID von Sofortüberweisung ein."
-
-msgid "zahlungsart_sofortueberweisung_project_id_name"
-msgstr "Projekt-ID"
-
-msgid "zahlungsart_sofortueberweisung_project_id_desc"
-msgstr "Geben Sie hier Ihre Projekt-ID von Sofortüberweisung ein."
-
-msgid "zahlungsart_sofortueberweisung_project_password_name"
-msgstr "Projekt-Passwort"
-
-msgid "zahlungsart_sofortueberweisung_project_password_desc"
-msgstr "Geben Sie hier optional ein Projekt-Passwort ein. Bei Benutzung eines Erfolgslinks müssen Sie in den Einstellungen von https://www.sofort.com/payment/users/login unbedingt „http://www.IHRSHOP.de/bestellabschluss.php?i=-USER_VARIABLE_5-“ angeben und „Automatische Weiterleitung“ aktivieren."
-
-msgid "zahlungsart_sofortueberweisung_benachrichtigung_password_name"
-msgstr "Benachrichtigungspasswort"
-
-msgid "zahlungsart_sofortueberweisung_benachrichtigung_password_desc"
-msgstr "Geben Sie hier optional ein Benachrichtigungspasswort ein. Bei Benutzung eines Erfolgslink müssen Sie in den Einstellungen von https://www.sofort.com/payment/users/login unbedingt „http://www.IHRSHOP.de/bestellabschluss.php?i=-USER_VARIABLE_5-“ angeben und „Automatische Weiterleitung“ aktivieren."
-
-msgid "zahlungsart_sofortueberweisung_reason_1_name"
-msgstr "Verwendungszweck 1"
-
-msgid "zahlungsart_sofortueberweisung_reason_1_desc"
-msgstr "Hier legen Sie fest, was in der ersten Zeile im Verwendungszweck einer Überweisung stehen soll."
-
-msgid "zahlungsart_sofortueberweisung_reason_2_name"
-msgstr "Verwendungszweck 2"
-
-msgid "zahlungsart_sofortueberweisung_reason_2_desc"
-msgstr "Hier legen Sie fest, was in der zweiten Zeile im Verwendungszweck einer Überweisung stehen soll."
-
-msgid "zahlungsart_sofortueberweisung_user_variable_2_name"
-msgstr "Kundenvariable 1"
-
-msgid "zahlungsart_sofortueberweisung_user_variable_2_desc"
-msgstr ""
-
-msgid "zahlungsart_sofortueberweisung_user_variable_3_name"
-msgstr "Kundenvariable 2"
-
-msgid "zahlungsart_sofortueberweisung_user_variable_3_desc"
-msgstr ""
-
-msgid "zahlungsart_sofortueberweisung_user_variable_4_name"
-msgstr "Kundenvariable 3"
-
-msgid "zahlungsart_sofortueberweisung_user_variable_4_desc"
-msgstr ""
-
-msgid "zahlungsart_sofortueberweisung_debugmode_name"
-msgstr "Debug-Modus"
-
-msgid "zahlungsart_sofortueberweisung_debugmode_desc"
-msgstr "Hier aktivieren Sie den Debug-Modus. Damit können Sie das Bezahlsystem Sofortüberweisung testen, ohne dass tatsächliche Buchungen vorgenommen werden. Es wird dafür extra auf Testserver umgestellt."
-
-msgid "zahlungsart_billpay_invoice_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
-
-msgid "zahlungsart_billpay_invoice_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_invoice_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_billpay_invoice_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_invoice_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_billpay_invoice_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_direct_debit_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
-
-msgid "zahlungsart_billpay_direct_debit_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_direct_debit_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_billpay_direct_debit_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_direct_debit_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_billpay_direct_debit_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_rate_payment_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
-
-msgid "zahlungsart_billpay_rate_payment_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_rate_payment_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_billpay_rate_payment_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_rate_payment_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_billpay_rate_payment_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_paylater_min_bestellungen_name"
-msgstr "Anzahl Bestellungen nötig"
-
-msgid "zahlungsart_billpay_paylater_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_paylater_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_billpay_paylater_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_billpay_paylater_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_billpay_paylater_max_desc"
 msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
 
 msgid "exportformate_lager_ueber_null_name"

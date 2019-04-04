@@ -4,7 +4,7 @@ Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dürfen:<br>
 <br>
-{if $Kupon->cKuponTyp==$couponTypes.standard}
+{if $Kupon->cKuponTyp == $couponTypes.standard}
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
 	<tr>
 		<td class="column mobile-left" width="25%" align="right" valign="top">
@@ -23,7 +23,7 @@ wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden 
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							{$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}Rabatt auf den gesamten Einkauf{/if}
+							{$Kupon->cLocalizedWert} {if $Kupon->cWertTyp === 'prozent'}Rabatt auf den gesamten Einkauf{/if}
 						</font>
 					</td>
 				</tr>
@@ -80,7 +80,7 @@ wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden 
 	</tr>
 </table><br>
 {/if}
-{if $Kupon->cKuponTyp==$couponTypes.shipping}
+{if $Kupon->cKuponTyp == $couponTypes.shipping}
 	Mit diesem Kupon können Sie versandkostenfrei bei uns einkaufen!<br>
 	Er gilt für folgende Lieferländer: {$Kupon->cLieferlaender|upper}<br>
 	<br>
@@ -103,13 +103,13 @@ Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->c
 
 {if count($Kupon->Kategorien)>0}
 	Der Kupon gilt für folgende Kategorien:<br>
-    {foreach name=art from=$Kupon->Kategorien item=Kategorie}
+    {foreach $Kupon->Kategorien as $Kategorie}
         <a href="{$Kategorie->cURL}">{$Kategorie->cName}</a><br>
     {/foreach}
 {/if}
 <br>
 {if count($Kupon->Artikel)>0}Der Kupon gilt für folgende Artikel:<br>
-    {foreach name=art from=$Kupon->Artikel item=Artikel}
+    {foreach $Kupon->Artikel as $Artikel}
         <a href="{$Artikel->cURLFull}">{$Artikel->cName}</a><br>
     {/foreach}
 {/if}<br>

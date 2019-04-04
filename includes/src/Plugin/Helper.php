@@ -111,7 +111,7 @@ class Helper
      * @param string $pluginID
      * @return null|PluginInterface
      */
-    public static function getPluginById(string $pluginID)
+    public static function getPluginById(string $pluginID): ?PluginInterface
     {
         $db      = Shop::Container()->getDB();
         $cache   = Shop::Container()->getCache();

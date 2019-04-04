@@ -1347,20 +1347,6 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                         $additionalInfoExists = true;
                     }
                     break;
-                case 'za_billpay_jtl':
-                case 'za_billpay_invoice_jtl':
-                case 'za_billpay_direct_debit_jtl':
-                case 'za_billpay_rate_payment_jtl':
-                case 'za_billpay_paylater_jtl':
-                    // workaround, fallback wawi <= v1.072
-                    if ($paymentMethod->cModulId === 'za_billpay_jtl') {
-                        $paymentMethod->cModulId = 'za_billpay_invoice_jtl';
-                    }
-                    $paymentMethod = PaymentMethod::create($paymentMethod->cModulId);
-                    if ($paymentMethod->handleAdditional($_POST)) {
-                        $additionalInfoExists = true;
-                    }
-                    break;
                 default:
                     // Plugin-Zusatzschritt
                     $additionalInfoExists = true;
@@ -1374,10 +1360,6 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                 return 1;
             }
             $paymentMethod->ZahlungsInfo = $info;
-        }
-        if (isset($paymentMethod) && mb_strpos($paymentMethod->cModulId, 'za_billpay') === 0 && $paymentMethod) {
-            /** @var Billpay $paymentMethod */
-            return $paymentMethod->preauthRequest() ? 2 : 1;
         }
 
         return 2;
@@ -1433,7 +1415,7 @@ function getPaymentSurchageDiscount($paymentMethod)
                 false,
                 'cGebuehrname'
             );
-            
+
             $specialPosition->cGebuehrname[$Sprache->cISO] = $name_spr->cGebuehrname ?? '';
             if ($paymentMethod->cAufpreisTyp === 'prozent') {
                 if ($paymentMethod->fAufpreis > 0) {
@@ -2751,8 +2733,7 @@ function getArtikelQry(array $cartPositions): string
 function guthabenMoeglich(): bool
 {
     return (Frontend::getCustomer()->fGuthaben > 0
-            && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen))
-        && mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') !== 0;
+            && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen));
 }
 
 /**

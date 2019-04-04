@@ -438,8 +438,8 @@ class TestHydrator extends DefaultsHydrator
         $order->Waehrung->cTrennzeichenTausend = '.';
 
         $order->Zahlungsart           = new stdClass();
-        $order->Zahlungsart->cName    = 'Billpay';
-        $order->Zahlungsart->cModulId = 'za_billpay_jtl';
+        $order->Zahlungsart->cName    = 'Rechnung';
+        $order->Zahlungsart->cModulId = 'za_rechnung_jtl';
 
         $order->Zahlungsinfo               = new stdClass();
         $order->Zahlungsinfo->cBankName    = 'Bankname';

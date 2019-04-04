@@ -1,11 +1,7 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
-<<<<<<< HEAD:includes/src/dbeS/TableMapper.php
- * @license http://jtl-url.de/jtlshoplicense
-=======
  * @license       http://jtl-url.de/jtlshoplicense
->>>>>>> dbeS-oo:includes/src/dbeS/Mapper.php
  */
 
 namespace JTL\dbeS;

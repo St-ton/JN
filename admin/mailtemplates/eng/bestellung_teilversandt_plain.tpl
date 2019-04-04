@@ -4,11 +4,11 @@ Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
 The tracking status for order no. {$Bestellung->cBestellNr} has changed.
 
-{foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
+{foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}
-        {foreach from=$oLieferschein->oPosition_arr item=Position}
-            {$Position->nAusgeliefert} x {if $Position->nPosTyp==1}{$Position->cName} {if $Position->cArtNr}({$Position->cArtNr}){/if}
-            {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach $oLieferschein->oPosition_arr as $Position}
+            {$Position->nAusgeliefert} x {if $Position->nPosTyp == 1}{$Position->cName} {if $Position->cArtNr}({$Position->cArtNr}){/if}
+            {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
             {/foreach}
             {if $Position->cSeriennummer|strlen > 0}
@@ -25,7 +25,7 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.
         {/if}
         {/foreach}
 
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
+        {foreach $oLieferschein->oVersand_arr as $oVersand}
             {if $oVersand->getIdentCode()|strlen > 0}
                 Tracking-Url: {$oVersand->getLogistikVarUrl()}
             {/if}

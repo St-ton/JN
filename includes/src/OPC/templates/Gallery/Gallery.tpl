@@ -8,8 +8,8 @@
                              sizes="{$image['img_attr']['srcsizes']}"
                              src="{$image['img_attr']['src']}"
                              data-desc="{$image['desc']}"
-                             alt="{$image['img_attr']['alt']}"
-                             title="{$image['img_attr']['title']}"
+                             alt="{$image['alt']|default:''}"
+                             title="{$image['title']|default:''}"
                              data-index="{$image@iteration}">
                     </a>
                 {else}
@@ -17,8 +17,8 @@
                          sizes="{$image['img_attr']['srcsizes']}"
                          src="{$image['img_attr']['src']}"
                          data-desc="{$image['desc']}"
-                         alt="{$image['img_attr']['alt']}"
-                         title="{$image['img_attr']['title']}"
+                         alt="{$image['alt']|default:''}"
+                         title="{$image['title']|default:''}"
                          data-index="{$image@iteration}">
                 {/if}
             </div>
@@ -27,7 +27,7 @@
     <div class="modal fade" id="gllry_popup_{$instance->getProperty('uid')}" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-header text-right">
+                <div class="modal-header text-right d-block">
                     <button type="button" class="btn btn-default btn-sm"
                             data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -40,8 +40,8 @@
                                  data-srcset="{$image['img_attr']['srcset']}"
                                  data-sizes="{$image['img_attr']['srcsizes']}"
                                  data-desc="{$image['desc']}"
-                                 alt="{$image['img_attr']['alt']}"
-                                 title="{$image['img_attr']['title']}">
+                                 alt="{$image['alt']|default:''}"
+                                 title="{$image['title']|default:''}">
                         {/foreach}
                     </div>
                     <div class="clearfix"></div>

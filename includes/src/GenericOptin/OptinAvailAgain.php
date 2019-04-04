@@ -20,7 +20,7 @@ use stdClass;
 
 class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
 {
-    private $article; // --TRY-OUT--
+    private $article;
 
     /**
      * OptinAvailAgain constructor.

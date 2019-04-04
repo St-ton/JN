@@ -148,8 +148,6 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
 
     public function deactivateOptin(): void
     {
-        $this->oLogger->debug('DE-ACTIVATING AVIAL-OPTIN...'); // --DEBUG--
-
         $this->dbHandler->delete('tverfuegbarkeitsbenachrichtigung', 'cMail', $this->refData->getEmail());
     }
 }

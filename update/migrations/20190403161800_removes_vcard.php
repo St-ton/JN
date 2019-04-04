@@ -17,30 +17,13 @@ class Migration_20190403161800 extends Migration implements IMigration
 
     public function up()
     {
-        $this->removeConfig('kundenregistrierung_vcardupload');
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'uploadVCard'");
+        $upMigration = new Migration_20160713110643($this->db);
+        $upMigration->down();
     }
 
     public function down()
     {
-        $this->setConfig(
-            'kundenregistrierung_vcardupload',
-            'Y',
-            \CONF_KUNDEN,
-            'vCard Upload erlauben',
-            'selectbox',
-            240,
-            (object)[
-                'cBeschreibung' => 'Erlaubt dem Kunden bei der Registrierung das Hochladen einer elektronischen ' .
-                    'Visitenkarte (vCard) im vcf-Format.',
-                'inputOptions'  => [
-                    'Y' => 'Ja',
-                    'N' => 'Nein',
-                ]
-            ]
-        );
-
-        $this->setLocalization('ger', 'account data', 'uploadVCard', 'vCard hochladen');
-        $this->setLocalization('eng', 'account data', 'uploadVCard', 'Upload vCard');
+        $upMigration = new Migration_20160713110643($this->db);
+        $upMigration->up();
     }
 }

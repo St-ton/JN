@@ -541,5 +541,4 @@ class Status
 
         return $errorCount;
     }
-
 }

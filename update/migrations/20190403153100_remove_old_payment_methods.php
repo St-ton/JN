@@ -33,6 +33,7 @@ class Migration_20190403153100 extends Migration implements IMigration
             $this->getDB()->delete('tversandartzahlungsart', 'kZahlungsart', $id);
         }
         $this->execute("DELETE FROM tadminrecht WHERE cRecht = 'ORDER_BILLPAY_VIEW'");
+        $this->execute("DELETE FROM tadminrechtegruppe WHERE cRecht = 'ORDER_BILLPAY_VIEW'");
         $this->execute("DELETE FROM tsprachwerte WHERE bSystem = 1 AND cName = 'sofortueberweisungDesc'");
         $this->execute("DELETE FROM tsprachwerte WHERE bSystem = 1 AND cName LIKE 'fundingAdvice%'");
         $this->execute("DELETE FROM tsprachwerte WHERE bSystem = 1 AND cName LIKE 'safetypay%'");

@@ -74,7 +74,7 @@ class Migration_20190327081303 extends Migration implements IMigration
         $this->setLocalization('eng', 'messages', 'optinSucceded', 'Your confirmation was successfull.');
         $this->setLocalization('ger', 'messages', 'optinSuccededAgain', 'Ihre Freischaltung ist bereits erfolgt.');
         $this->setLocalization('eng', 'messages', 'optinSuccededAgain', 'Your confirmation is already active.');
-        $this->setLocalization('ger', 'messages', 'optinCanceled', 'Freischaltung wurde aufgehoben.');
+        $this->setLocalization('ger', 'messages', 'optinCanceled', 'Ihre Freischaltung wurde aufgehoben.');
         $this->setLocalization('eng', 'messages', 'optinCanceled', 'Your confirmation was canceled.');
         $this->setLocalization('ger', 'messages', 'optinRemoved', 'Ihr Freischaltantrag wurde entfernt.');
         $this->setLocalization('eng', 'messages', 'optinRemoved', 'Your activation request has been removed.');

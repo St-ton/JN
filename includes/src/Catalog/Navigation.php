@@ -6,6 +6,7 @@
 
 namespace JTL\Catalog;
 
+use JTL\Helpers\Request;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
 use JTL\Filter\ProductFilter;
@@ -352,6 +353,33 @@ class Navigation
                 $ele->setURL($url);
                 $ele->setURLFull($urlFull);
                 $breadCrumb[] = $ele;
+
+                if (Request::verifyGPCDataInt('accountPage') !== 1) {
+                    $childPages = [
+                        'bestellungen'         => $this->language->get('myOrders'),
+                        'editRechnungsadresse' => $this->language->get('myPersonalData'),
+                        'wllist'               => $this->language->get('myWishlists'),
+                        'del'                  => $this->language->get('deleteAccount', 'login'),
+                        'bestellung'           => $this->language->get('bcOrder', 'breadcrumb'),
+                        'wl'                   => $this->language->get('bcWishlist', 'breadcrumb'),
+                        'pass'                 => $this->language->get('changePassword', 'login'),
+                        'KwK'                  => $this->language->get('kwkName', 'login')
+                    ];
+
+                    foreach ($childPages as $childPage => $childPageLang) {
+                        if (Request::verifyGPCDataInt($childPage) === 0) {
+                            continue;
+                        }
+                        $url     = $this->linkService->getStaticRoute('jtl.php', false) . '?' . $childPage . '=1';
+                        $urlFull = $this->linkService->getStaticRoute('jtl.php') . '?' . $childPage . '=1';
+                        $ele     = new NavigationEntry();
+                        $ele->setName($childPageLang);
+                        $ele->setURL($url);
+                        $ele->setURLFull($urlFull);
+                        $breadCrumb[] = $ele;
+                    }
+                }
+
                 break;
 
             case \PAGE_BESTELLVORGANG:

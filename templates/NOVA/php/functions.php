@@ -10,6 +10,10 @@ $plugins = new \Nova\Plugins();
 $scc     = new \scc\DefaultComponentRegistrator(new \scc\Renderer($smarty));
 $scc->registerComponents();
 
+if (isset($_GET['scc-demo']) && \JTL\Shop::isAdmin()) {
+    $smarty->display('demo.tpl');
+    die();
+}
 
 $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty', [$plugins, 'getLocalizedPrice'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getBoxesByPosition', [$plugins, 'getBoxesByPosition'])

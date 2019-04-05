@@ -107,7 +107,7 @@ class BaseSearchQuery extends AbstractFilter
             : 3;
         if (\mb_strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
             \preg_match(
-                '/[\w\.\-]{' . $minChars . ',}/u',
+                '/[\S]{' . $minChars . ',}/u',
                 \str_replace(' ', '', $name),
                 $hits
             );

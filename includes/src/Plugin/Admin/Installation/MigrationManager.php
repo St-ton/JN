@@ -283,7 +283,7 @@ final class MigrationManager
                             $filePath
                         ));
                     }
-                    $migration = new $class('Plugin migration from ' . $this->pluginID, $date);
+                    $migration = new $class($this->db, 'Plugin migration from ' . $this->pluginID, $date);
                     /** @var IMigration $migration */
                     if (!\is_subclass_of($migration, IMigration::class)) {
                         throw new InvalidArgumentException(\sprintf(
@@ -388,7 +388,7 @@ final class MigrationManager
                 "INSERT INTO tpluginmigration (kMigration, nVersion, pluginID, dExecuted)
                     VALUES ('%s', '%s', '%s', '%s')",
                 $migration->getId(),
-                \sprintf('%d%02d', $this->version->getMajor(), $this->version->getMinor()),
+                (string)$this->version,
                 $this->pluginID,
                 $executed->format('Y-m-d H:i:s')
             );

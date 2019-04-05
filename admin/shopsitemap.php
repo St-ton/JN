@@ -8,17 +8,20 @@ use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
 setzeSprache();
 
 if (isset($_POST['speichern']) && Form::validateToken()) {
-    $cHinweis .= saveAdminSectionSettings(CONF_SITEMAP, $_POST);
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_SITEMAP, $_POST),
+        'saveSettings'
+    );
     if (isset($_POST['nVon'])
         && is_array($_POST['nVon'])
         && is_array($_POST['nBis'])
@@ -40,6 +43,4 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
        ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->display('shopsitemap.tpl');

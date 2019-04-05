@@ -1,85 +1,49 @@
-{if $Suchergebnisse->getProductCount() > 0}
-    {row class="list-pageinfo"}
-    {col cols=4 class="page-total pt-2 pl-0"}
-    {lang key='products'} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
-    {/col}
-    {if $Suchergebnisse->getPages()->getMaxPage() > 1}
-        {col cols=8 class="text-right pr-0"}
-            <span class="mr-2 d-inline-block">{lang key='page' section='productOverview'}:</span>
-        {buttongroup class="pagination pagination-ajax d-inline-block"}
-        {if $filterPagination->getPrev()->getPageNumber() > 0}
-            {link class="prev btn btn-link" href=$filterPagination->getPrev()->getURL()}<i class="fas fa-chevron-left"></i>{/link}
-        {/if}
-
-        {foreach $filterPagination->getPages() as $page}
-            {link disabled=$page->isActive() href=$page->getURL() disabled=$page->isActive()
-            class="page{if $page->isActive()} active{/if} btn btn-link"}
-            {$page->getPageNumber()}
-            {/link}
-        {/foreach}
-
-        {if $filterPagination->getNext()->getPageNumber() > 0}
-            {link class="next btn btn-link" href=$filterPagination->getNext()->getURL()}<i class="fas fa-chevron-right"></i>{/link}
-        {/if}
-        {/buttongroup}
-        {/col}
-        {*{col cols=6 md=4 lg=3 class="text-right"}
-            {form action="{$ShopURL}/" method="get" class="form-inline pagination"}
-                {if $NaviFilter->hasCategory()}
-                    {input type="hidden" name="k" value="{$NaviFilter->getCategory()->getValue()}"}
-                {/if}
-                {if $NaviFilter->hasManufacturer()}
-                    {input type="hidden" name="h" value="{$NaviFilter->getManufacturer()->getValue()}"}
-                {/if}
-                {if $NaviFilter->hasSearchQuery()}
-                    {input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}"}
-                {/if}
-                {if $NaviFilter->hasAttributeValue()}
-                    {input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}"}
-                {/if}
-                {if $NaviFilter->hasTag()}
-                    {input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}"}
-                {/if}
-                {if $NaviFilter->hasCategoryFilter()}
-                    {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
-                    {if is_array($cfv)}
-                        {foreach $cfv as $val}
-                            {input type="hidden" name="hf" value="{$val}"}
-                        {/foreach}
-                    {else}
-                        {input type="hidden" name="kf" value="{$cfv}"}
-                    {/if}
-                {/if}
-                {if $NaviFilter->hasManufacturerFilter()}
-                    {assign var=mfv value=$NaviFilter->getManufacturerFilter()->getValue()}
-                    {if is_array($mfv)}
-                        {foreach $mfv as $val}
-                            {input type="hidden" name="hf" value="{$val}"}
-                        {/foreach}
-                    {else}
-                        {input type="hidden" name="hf" value="{$mfv}"}
-                    {/if}
-                {/if}
-                {if $NaviFilter->hasAttributeFilter()}
-                    {foreach $NaviFilter->getAttributeFilter() as $attributeFilter}
-                        {input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}"}
-                    {/foreach}
-                {/if}
-                {if $NaviFilter->hasTagFilter()}
-                    {foreach $NaviFilter->getTagFilter() as $tagFilter}
-                        {input type="hidden" name="tf{$tagFilter@iteration}" value="{$tagFilter->getValue()}"}
-                    {/foreach}
-                {/if}
-
-                {dropdown text="{lang key='goToPage' section='productOverview'}<span class='caret'></span>" id="pagination-dropdown"}
-                    {foreach $filterPagination->getPages() as $page}
-                        {dropdownitem active=$page->isActive() href="{$page->getURL()}"}
-                            {$page->getPageNumber()}
-                        {/dropdownitem}
-                    {/foreach}
-                {/dropdown}
-            {/form}
-        {/col}*}
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license https://jtl-url.de/jtlshoplicense
+ *}
+{block name='snippets-productlist-page-nav'}
+    {if $Suchergebnisse->getProductCount() > 0}
+        {row class="no-gutters productlist-page-nav"}
+            {block name='snippets-productlist-page-nav-current-page-count'}
+                {col cols=12 md="auto" class="productlist-item-info"}
+                    {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
+                {/col}
+            {/block}
+            {if $Suchergebnisse->getPages()->getMaxPage() > 1}
+                {block name='snippets-productlist-page-nav-page-nav'}
+                    {col cols=12 md="auto" class="productlist-pagination ml-md-auto"}
+                        <nav class="navbar-pagination" aria-label="Productlist Navigation">
+                            <ul class="pagination">
+                                {block name='snippets-productlist-page-nav-first-page'}
+                                    <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == 1} disabled{/if}">
+                                        {link class="page-link" href=$filterPagination->getPrev()->getURL()}<span aria-hidden="true">&#8592;</span>{/link}
+                                    </li>
+                                {/block}
+                                <li class="page-item dropdown">
+                                    <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="pagination-site">Seite</span> {$Suchergebnisse->getPages()->getCurrentPage()}
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        {block name='snippets-productlist-page-nav-pages'}
+                                            {foreach $filterPagination->getPages() as $page}
+                                                <div class="dropdown-item page-item{if $page->isActive()} active{/if}">
+                                                    {link class="page-link" href=$page->getURL()}<span class="pagination-site">Seite</span> {$page->getPageNumber()}{/link}
+                                                </div>
+                                            {/foreach}
+                                        {/block}
+                                    </div>
+                                </li>
+                                {block name='snippets-productlist-page-nav-last-page'}
+                                    <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == $Suchergebnisse->getPages()->getMaxPage()} disabled{/if}">
+                                        {link class="page-link" href=$filterPagination->getNext()->getURL()}<span aria-hidden="true">&#8594;</span>{/link}
+                                    </li>
+                                {/block}
+                            </ul>
+                        </nav>
+                    {/col}
+                {/block}
+            {/if}
+        {/row}
     {/if}
-    {/row}
-{/if}
+{/block}

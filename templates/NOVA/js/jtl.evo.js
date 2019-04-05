@@ -59,15 +59,9 @@
                     }
                 ]
             };
-
-            if ($('#content').hasClass('col-lg-9')) {
-                evoSliderOptions.slidesToShow = 2;
-            } else {
-                evoSliderOptions.slidesToShow = 3;
-            }
-            //initialize "pushed-success"-slider for detailed customization
+            evoSliderOptions.slidesToShow = 2;
+            // initialize "pushed-success"-slider for detailed customization
             $('#pushed-success .evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
-
 
             if ($('#content').hasClass('col-lg-9')) {
                 evoSliderOptions.slidesToShow = 3;
@@ -229,7 +223,7 @@
                 $(e).height($('div', $(e)).outerHeight());
             });
         },
-        
+
         tooltips: function() {
             $('[data-toggle="tooltip"]').tooltip();
         },
@@ -301,24 +295,25 @@
                 document.body.appendChild(s);
             })();
         },
-        
+
         showNotify: function(options) {
             eModal.alert({
                 size: 'lg',
                 buttons: false,
-                title: options.title, 
+                title: options.title,
                 message: options.text,
                 keyboard: true,
-                tabindex: -1,
-                onShown: function() {
+                tabindex: -1})
+                .then(
+                 function() {
                     $.evo.generateSlickSlider();
                 }
-            });
+            );
         },
-        
+
         renderCaptcha: function(parameters) {
             if (typeof parameters !== 'undefined') {
-                this.options.captcha = 
+                this.options.captcha =
                     $.extend({}, this.options.captcha, parameters);
             }
 
@@ -347,28 +342,29 @@
                     message: html,
                     title: title,
                     keyboard: true,
-                    tabindex: -1,
-                    onShown:function () {
-                        //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
-                        var recaptcha = $('.tmp-modal-content .g-recaptcha');
-                        if (recaptcha.length === 1) {
-                            var siteKey = recaptcha.data('sitekey'),
-                                newRecaptcha = $('<div />');
-                            if (typeof  siteKey !== 'undefined') {
-                                //create empty recapcha div, give it a unique id and delete the old one
-                                newRecaptcha.attr('id', 'popup-recaptcha').addClass('g-recaptcha form-group');
-                                recaptcha.replaceWith(newRecaptcha);
-                                grecaptcha.render('popup-recaptcha', {
-                                    'sitekey' : siteKey,
-                                    'callback' : 'captcha_filled'
+                    tabindex: -1})
+                    .then(
+                        function () {
+                            //the modal just copies all the html.. so we got duplicate IDs which confuses recaptcha
+                            var recaptcha = $('.tmp-modal-content .g-recaptcha');
+                            if (recaptcha.length === 1) {
+                                var siteKey = recaptcha.data('sitekey'),
+                                    newRecaptcha = $('<div />');
+                                if (typeof  siteKey !== 'undefined') {
+                                    //create empty recapcha div, give it a unique id and delete the old one
+                                    newRecaptcha.attr('id', 'popup-recaptcha').addClass('g-recaptcha form-group');
+                                    recaptcha.replaceWith(newRecaptcha);
+                                    grecaptcha.render('popup-recaptcha', {
+                                        'sitekey' : siteKey,
+                                        'callback' : 'captcha_filled'
 
-                                });
+                                    });
+                                }
                             }
+                            addValidationListener();
+                            $('.g-recaptcha-response').attr('required', true);
                         }
-                        addValidationListener();
-                        $('.g-recaptcha-response').attr('required', true);
-                    }
-                });
+                    );
                 return false;
             });
         },
@@ -376,7 +372,7 @@
         popover: function() {
             /*
              * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
-             * <div id="popover-content123" class="popover">content here</div> 
+             * <div id="popover-content123" class="popover">content here</div>
              */
             $('[data-toggle="popover"]').popover({
                 trigger: 'hover',
@@ -500,7 +496,7 @@
                             'stroke-dashoffset':0
                         }, 300, function(){
                             setTimeout(function(){
-                                addToCartBtn.removeClass('is-added').find('em').on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
+                                addToCartBtn.removeClass('is-added').find('span.btn-basket-check').on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
                                     //wait for the end of the transition to reset the check icon
                                     addToCartBtn.find('path').eq(0).css('stroke-dashoffset', '19.79');
                                     animating =  false;
@@ -580,7 +576,7 @@
                 that.trigger('loaded.evo.content', { url: url });
             });
         },
-        
+
         spinner: function(target) {
             var opts = {
               lines: 12             // The number of lines to draw
@@ -634,7 +630,7 @@
                 groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
                 buttonsClass: "btn-light form-control",
                 buttonsWidth: "",
-                textAlign: "center",
+                textAlign: "right",
                 autoDelay: 500, // ms holding before auto value change
                 autoInterval: 100, // speed of auto value change
                 boostThreshold: 10, // boost after these steps
@@ -646,6 +642,7 @@
 
             function setup() {
                 $('#cart-form .nmbr-cfg-group input').on('change',resetTimer);
+                $('#cart-form .choose_quantity input').on('change',resetTimer);
                 $('#cart-form .nmbr-cfg-group .btn-decrement, #cart-form .nmbr-cfg-group .btn-increment').on('click',resetTimer);
                 $('#cart-form .nmbr-cfg-group .btn-decrement, #cart-form .nmbr-cfg-group .btn-increment').on('touchstart',resetTimer);
                 $('#cart-form .nmbr-cfg-group .btn-decrement, #cart-form .nmbr-cfg-group .btn-increment').on('keydown',resetTimer);
@@ -695,7 +692,7 @@
             this.popupDep();
             this.popover();
             // this.preventDropdownToggle();
-            this.smoothScroll2();
+            // this.smoothScroll2();
             this.addCartBtnAnimation();
             this.checkout();
             this.addInactivityCheck();

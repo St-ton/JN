@@ -2,99 +2,91 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{block name='header'}
-    {include file='layout/header.tpl'}
-{/block}
+{block name='account-index'}
+    {block name='include-header'}
+        {include file='layout/header.tpl'}
+    {/block}
 
-{block name='content'}
-    {if isset($smarty.get.reg)}
-        {alert variant="success"}{lang key='accountCreated' section='global'}{/alert}
-    {/if}
-
-    {include file='snippets/extension.tpl'}
-
-    {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
-        <script type="text/javascript">
-            $(window).on('load', function() {
-                $(function () {
-                    eModal.confirm({ldelim}
-                            message: '{lang key='basket2PersMerge' section='login'}',
-                            label1: '{lang key='no' section='global'}',
-                            label2: '{lang key='yes' section='global'}'
-                                {rdelim},
-                        '{lang key='basket' section='global'}',
-                        function (res) {
-                            if (res) {
-                                window.location = "{get_static_route id='jtl.php'}?basket2Pers=1"
-                            }
-                        }
-                    );
-                });
-            } );
-        </script>
-    {/if}
-
-    {if !isset($showLoginPanel)}
-        {$showLoginPanel = true}
-    {/if}
-    {if $step === 'login' || (!empty($editRechnungsadresse))}
-        {$showLoginPanel = false}
-    {/if}
-
-    {row id="account"}
-        {if $showLoginPanel}
-            {col cols=12 md=3}
-                {listgroup class="mb-5"}
-                    {listgroupitem href="{get_static_route id='jtl.php'}" active=($step === 'mein Konto')}
-                        {lang key='accountOverview' section='account data'}
-                    {/listgroupitem}
-                    {listgroupitem href="{get_static_route id='jtl.php' params=['bestellungen' => 1]}" active=($step === 'bestellung' || $step === 'bestellungen')}
-                        {lang key='orders' section='account data'}
-                    {/listgroupitem}
-                    {listgroupitem href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" active=($step === 'rechnungsdaten')}
-                        {lang key='address' section='account data'}
-                    {/listgroupitem}
-                    {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-                        {listgroupitem href="{get_static_route id='jtl.php' params=['wllist' => 1]}" active=($step|substr:0:11 === 'wunschliste')}
-                            {lang key='wishlists' section='account data'}
-                        {/listgroupitem}
-                    {/if}
-                    {listgroupitem href="{get_static_route id='jtl.php' params=['bewertungen' => 1]}" active=($step === 'bewertungen')}
-                        {lang key='allRatings'}
-                    {/listgroupitem}
-                {/listgroup}
-            {/col}
+    {block name='account-index-content'}
+        {if isset($smarty.get.reg)}
+            {block name='account-index-alert'}
+                {alert variant="success"}{lang key='accountCreated' section='global'}{/alert}
+            {/block}
         {/if}
-        {col cols=12 md="{if !$showLoginPanel}12{else}9{/if}"}
-            {if $step === 'login'}
-                {include file='account/login.tpl'}
-            {elseif $step === 'mein Konto'}
-                {include file='account/my_account.tpl'}
-            {elseif $step === 'rechnungsdaten'}
-                {include file='account/address_form.tpl'}
-            {elseif $step === 'passwort aendern'}
-                {include file='account/change_password.tpl'}
-            {elseif $step === 'bestellung'}
-                {include file='account/order_details.tpl'}
-            {elseif $step === 'bestellungen'}
-                {include file='account/orders.tpl'}
-            {elseif $step === 'account loeschen'}
-                {include file='account/delete_account.tpl'}
-            {elseif $step === 'wunschliste'}
-                {include file='account/wishlists.tpl'}
-            {elseif $step === 'wunschliste anzeigen'}
-                {include file='account/wishlist.tpl'}
-            {elseif $step === 'wunschliste versenden'}
-                {include file='account/wishlist_email_form.tpl'}
-            {elseif $step === 'kunden_werben_kunden'}
-                {include file='account/customers_recruiting.tpl'}
-            {elseif $step === 'bewertungen'}
-                {include file='account/feedback.tpl'}
-            {/if}
-        {/col}
-    {/row}
-{/block}
+        {block name='account-index-include-extension'}
+            {include file='snippets/extension.tpl'}
+        {/block}
 
-{block name='footer'}
-    {include file='layout/footer.tpl'}
+        {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
+            {block name='account-index-script-basket-merge'}
+                <script type="text/javascript">
+                    $(window).on('load', function() {
+                        $(function() {
+                            var options = {
+                                message: '{lang key='basket2PersMerge' section='login'}',
+                                label1: '{lang key='no' section='global'}',
+                                label2: '{lang key='yes' section='global'}',
+                                title: '{lang key='basket' section='global'}'
+                            };
+                            eModal.confirm(options).then(
+                                function() {
+                                    window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                                }
+                            );
+                        });
+                    });
+                </script>
+            {/block}
+        {/if}
+
+        {row id="account"}
+            {col cols=12}
+                {if $step === 'login'}
+                    {block name='account-index-include-login'}
+                        {include file='account/login.tpl'}
+                    {/block}
+                {elseif $step === 'mein Konto'}
+                    {block name='account-index-include-my-account'}
+                        {include file='account/my_account.tpl'}
+                    {/block}
+                {elseif $step === 'rechnungsdaten'}
+                    {block name='account-index-include-address-form'}
+                        {include file='account/address_form.tpl'}
+                    {/block}
+                {elseif $step === 'passwort aendern'}
+                    {block name='account-index-include-change-password'}
+                        {include file='account/change_password.tpl'}
+                    {/block}
+                {elseif $step === 'bestellung'}
+                    {block name='account-index-include-order-details'}
+                        {include file='account/order_details.tpl'}
+                    {/block}
+                {elseif $step === 'bestellungen'}
+                    {block name='account-index-include-orders'}
+                        {include file='account/orders.tpl'}
+                    {/block}
+                {elseif $step === 'account loeschen'}
+                    {block name='account-index-include-delete-account'}
+                        {include file='account/delete_account.tpl'}
+                    {/block}
+                {elseif $step === 'kunden_werben_kunden'}
+                    {block name='account-index-include-customers-recruiting'}
+                        {include file='account/customers_recruiting.tpl'}
+                    {/block}
+                {elseif $step === 'bewertungen'}
+                    {block name='account-index-include-feedback'}
+                        {include file='account/feedback.tpl'}
+                    {/block}
+                {else}
+                    {block name='account-index-include-my-account-default'}
+                        {include file='account/my_account.tpl'}
+                    {/block}
+                {/if}
+            {/col}
+        {/row}
+    {/block}
+
+    {block name='account-index-include-footer'}
+        {include file='layout/footer.tpl'}
+    {/block}
 {/block}

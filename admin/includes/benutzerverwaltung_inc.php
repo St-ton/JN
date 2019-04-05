@@ -11,6 +11,7 @@ use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Alert\Alert;
 
 /**
  * @param int $kAdminlogin
@@ -103,18 +104,17 @@ function getInfoInUse($row, $value)
 }
 
 /**
- * @param int $langID
+ * @param string $languageTag
  */
-function changeAdminUserLanguage(int $langID)
+function changeAdminUserLanguage(string $languageTag)
 {
-    $_SESSION['AdminAccount']->kSprache = $langID;
-    $_SESSION['AdminAccount']->cISO     = Shop::Lang()->getIsoFromLangID($langID)->cISO;
+    $_SESSION['AdminAccount']->language = $languageTag;
 
     Shop::Container()->getDB()->update(
         'tadminlogin',
         'kAdminlogin',
-        $langID,
-        (object)['kSprache' => $langID]
+        $_SESSION['AdminAccount']->kAdminlogin,
+        (object)['language' => $languageTag]
     );
 }
 
@@ -305,7 +305,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         $oTmpAcc->kAdminlogin = isset($_POST['kAdminlogin']) ? (int)$_POST['kAdminlogin'] : 0;
         $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $oTmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-        $oTmpAcc->kSprache    = (int)$_POST['kSprache'];
+        $oTmpAcc->language    = $_POST['language'];
         $oTmpAcc->cLogin      = trim($_POST['cLogin']);
         $oTmpAcc->cPass       = trim($_POST['cPass']);
         $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
@@ -388,7 +388,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 unset($oTmpAcc->cPass);
             }
 
-            $_SESSION['AdminAccount']->kSprache = $oTmpAcc->kSprache;
+            $_SESSION['AdminAccount']->language = $oTmpAcc->language;
 
             if ($db->update('tadminlogin', 'kAdminlogin', $oTmpAcc->kAdminlogin, $oTmpAcc) >= 0
                 && benutzerverwaltungSaveAttributes($oTmpAcc, $tmpAttribs, $messages, $errors)
@@ -661,8 +661,8 @@ function benutzerverwaltungActionGroupDelete(array &$messages)
  */
 function benutzerverwaltungActionQuickChangeLanguage(JTLSmarty $smarty, array &$messages)
 {
-    $kSprache = Request::verifyGPCDataInt('kSprache');
-    changeAdminUserLanguage($kSprache);
+    $language = Request::verifyGPDataString('language');
+    changeAdminUserLanguage($language);
 
     header('Location: ' . $_SERVER['HTTP_REFERER']);
 }
@@ -715,7 +715,10 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
     switch ($step) {
         case 'account_edit':
             $smarty->assign('oAdminGroup_arr', getAdminGroups())
-                   ->assign('languages', Shop::Lang()->getInstalled());
+                   ->assign(
+                       'languages',
+                       Shop::Container()->getGetText()->getAdminLanguages($_SESSION['AdminAccount']->language)
+                   );
             break;
         case 'account_view':
             $smarty->assign('oAdminList_arr', getAdminList())
@@ -732,9 +735,10 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
             break;
     }
 
-    $smarty->assign('hinweis', $messages['notice'])
-           ->assign('fehler', $messages['error'])
-           ->assign('action', $step)
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'userManagementNote');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'userManagementError');
+
+    $smarty->assign('action', $step)
            ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
            ->display('benutzer.tpl');
 }

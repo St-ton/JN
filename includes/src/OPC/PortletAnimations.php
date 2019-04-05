@@ -20,7 +20,7 @@ trait PortletAnimations
         return [
             'animation-style'    => [
                 'label'      => __('Animation style'),
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     'optgroup1' => [
                         'label'   => 'Attention Seekers',
@@ -123,14 +123,14 @@ trait PortletAnimations
             ],
             'data-wow-offset'    => [
                 'label'       => __('Offset (px)'),
-                'type'        => 'number',
+                'type'        => InputType::NUMBER,
                 'placeholder' => 200,
                 'help'        => __('Distance to start the animation (related to the browser bottom)'),
                 'dspl_width'  => 50,
             ],
             'data-wow-Iteration' => [
                 'label'      => __('Iteration'),
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'help'       => __('Number of times the animation is repeated'),
                 'dspl_width' => 50,
             ]

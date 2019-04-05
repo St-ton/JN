@@ -88,13 +88,13 @@
                 $row.removeClass('has-error');
 
                 if(nVon === '' || nBis === '') {
-                    cFehler += {__('errorFillRequired')} + '<br>';
+                    cFehler += '{__('errorFillRequired')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += {__('thePriceRange')} + fVon + ' {__('to')} ' + fBis + {__('isInvalid')} + '<br>';
+                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('isInvalid')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += {__('thePriceRange')} + fVon + ' {__('to')} ' + fBis + {__('overlapps')} + '<br>';
+                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('overlapps')}' + '<br>';
                     $row.addClass('has-error');
                 }
 

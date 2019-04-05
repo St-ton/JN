@@ -9,13 +9,15 @@ use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Alert\Alert;
 
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
 defined('PLZIMPORT_ISO_REGEX') || define('PLZIMPORT_ISO_REGEX', '/([A-Z]{2})\.tab/');
 defined('PLZIMPORT_REGEX') || define(
     'PLZIMPORT_REGEX',
-    '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td><td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/'
+    '/<td><a href="([A-Z]{2}\.tab)">([A-Z]{2})\.tab<\/a><\/td>' .
+    '<td[^>]*>([0-9]{2}\-[A-Za-z]{3}\-[0-9]{4}[0-9: ]+?) *<\/td><td[^>]*> *([0-9MK\.]+)<\/td>/'
 );
 
 /**
@@ -39,7 +41,10 @@ function plzimportGetPLZOrt(): array
 
     foreach ($plzOrt_arr as $key => $oPLZOrt) {
         $fName = PFAD_UPLOADS . $oPLZOrt->cLandISO . '.tab';
-
+        if (($country = Shop::Container()->getCountryService()->getCountry($oPLZOrt->cLandISO)) !== null) {
+            $oPLZOrt->cDeutsch   = $country->getName();
+            $oPLZOrt->cKontinent = $country->getContinent();
+        }
         if (is_file($fName)) {
             $plzOrt_arr[$key]->cImportFile = $oPLZOrt->cLandISO . '.tab';
         }
@@ -451,6 +456,7 @@ function plzimportActionDelTempImport(): array
  */
 function plzimportActionLoadAvailableDownloads(): array
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
     $oLand_arr = $_SESSION['plzimport.oLand_arr'] ?? Shop::Container()->getCache()->get('plzimport.oLand_arr');
     if ($oLand_arr === false) {
         $ch = curl_init();
@@ -467,20 +473,14 @@ function plzimportActionLoadAvailableDownloads(): array
         if (preg_match_all(PLZIMPORT_REGEX, $cContent, $hits, PREG_PATTERN_ORDER)) {
             $quotedHits = array_map(
                 function ($hit) {
-                    return Shop::Container()->getDB()->getPDO()->quote($hit);
+                    return trim(Shop::Container()->getDB()->getPDO()->quote($hit), "'");
                 },
                 $hits[2]
             );
-            $oLand_arr  = Shop::Container()->getDB()->query(
-                'SELECT cISO, cDeutsch
-                    FROM tland
-                    WHERE cISO IN (' . implode(', ', $quotedHits) . ')
-                    ORDER BY cISO',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+            $oLand_arr  = Shop::Container()->getCountryService()->getFilteredCountryList($quotedHits)->toArray();
 
-            foreach ($oLand_arr as $key => $oLand) {
-                $idx = array_search($oLand->cISO, $hits[2], true);
+            foreach ($oLand_arr as $oLand) {
+                $idx = array_search($oLand->getISO(), $hits[2], true);
                 if ($idx !== false) {
                     $date         = date_create_from_format('d-M-Y H:i', $hits[3][$idx]);
                     $oLand->cURL  = urlencode($hits[1][$idx]);
@@ -573,9 +573,10 @@ function plzimportFinalize(JTLSmarty $smarty, array &$messages): void
         unset($_SESSION['plzimport.error']);
     }
 
-    $smarty->assign('hinweis', $messages['notice'])
-           ->assign('fehler', $messages['error'])
-           ->display('plz_ort_import.tpl');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $messages['notice'], 'noticeZIPCity');
+    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $messages['error'], 'errorZIPCity');
+
+    $smarty->display('plz_ort_import.tpl');
 }
 
 /**

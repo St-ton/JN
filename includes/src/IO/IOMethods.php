@@ -7,7 +7,7 @@
 namespace JTL\IO;
 
 use Exception;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Boxes\Type;
 use JTL\Catalog\Product\Artikel;
@@ -38,6 +38,7 @@ use JTL\Staat;
 use JTL\Catalog\Trennzeichen;
 use SmartyException;
 use stdClass;
+use JTL\Catalog\Wishlist\Wunschliste;
 
 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
 
@@ -75,6 +76,7 @@ class IOMethods
                         ->register('removeFromComparelist', [$this, 'removeFromComparelist'])
                         ->register('pushToWishlist', [$this, 'pushToWishlist'])
                         ->register('removeFromWishlist', [$this, 'removeFromWishlist'])
+                        ->register('updateWishlistDropdown', [$this, 'updateWishlistDropdown'])
                         ->register('checkDependencies', [$this, 'checkDependencies'])
                         ->register('checkVarkombiDependencies', [$this, 'checkVarkombiDependencies'])
                         ->register('generateToken', [$this, 'generateToken'])
@@ -324,7 +326,7 @@ class IOMethods
             ]);
         }
         $alerts  = Shop::Container()->getAlertService();
-        $content = $smarty->assign('alertList', Shop::Container()->getAlertService())
+        $content = $smarty->assign('alertList', $alerts)
                           ->fetch('snippets/alert_list.tpl');
 
         $response->cNotification = $smarty
@@ -336,8 +338,9 @@ class IOMethods
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
-                                      ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
+                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             /** @var BoxInterface[] $boxes */
@@ -383,11 +386,13 @@ class IOMethods
         $_GET['vlplo']           = $kArtikel;
 
         Frontend::getInstance()->setStandardSessionVars();
-        $response->nType     = 2;
-        $response->nCount    = \count($_SESSION['Vergleichsliste']->oArtikel_arr);
-        $response->cTitle    = Shop::Lang()->get('compare');
-        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
-                                       ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->nType       = 2;
+        $response->nCount      = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
+            \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
+        $response->cTitle      = Shop::Lang()->get('compare');
+        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
+                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
             if (!\is_array($boxes)) {
@@ -458,8 +463,7 @@ class IOMethods
         $_POST['n']           = (int)$qty;
 
         Cart::checkAdditions();
-        $error            = $smarty->getTemplateVars('fehler');
-        $notice           = $smarty->getTemplateVars('hinweis');
+
         $response->nType  = 2;
         $response->nCount = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
         $response->cTitle = Shop::Lang()->get('goToWishlist');
@@ -480,8 +484,12 @@ class IOMethods
                 'title' => Shop::Lang()->get('goToWishlist')
             ]);
         }
-        $smarty->assign('type', empty($error) ? 'info' : 'danger')
-               ->assign('body', empty($error) ? $notice : $error)
+        $alerts = Shop::Container()->getAlertService();
+        $body   = $smarty->assign('alertList', $alerts)
+                         ->fetch('snippets/alert_list.tpl');
+
+        $smarty->assign('type', $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info')
+               ->assign('body', $body)
                ->assign('buttons', $buttons)
                ->assign('Einstellungen', $conf);
 
@@ -496,20 +504,24 @@ class IOMethods
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if (\get_class($childBox) === Wishlist::class) {
-                            $renderer = new DefaultRenderer($smarty, $childBox);
-
+                            $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (\get_class($box) === Wishlist::class) {
-                    $renderer = new DefaultRenderer($smarty, $box);
-
+                    $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
         }
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
+            $response->nType     = 1;
+            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php');
+            $objResponse->script('this.response = ' . \json_encode($response) . ';');
+        }
 
         return $objResponse;
     }
@@ -546,18 +558,36 @@ class IOMethods
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
                         if ($childBox->getType() === Wishlist::class) {
-                            $renderer = new DefaultRenderer($smarty, $childBox);
-
+                            $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
                 } elseif (\get_class($box) === Wishlist::class) {
-                    $renderer = new DefaultRenderer($smarty, $box);
-
+                    $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
             }
         }
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
+
+        return $objResponse;
+    }
+
+    /**
+     * @return IOResponse
+     * @throws SmartyException
+     */
+    public function updateWishlistDropdown(): IOResponse
+    {
+        $response    = new stdClass();
+        $objResponse = new IOResponse();
+        $smarty      = Shop::Smarty();
+
+        $smarty->assign('wishlists', Wunschliste::getWishlists());
+
+        $response->content         = $smarty->fetch('snippets/wishlist_dropdown.tpl');
+        $response->currentPosCount = count(Frontend::getWishList()->CWunschlistePos_arr);
+
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 
         return $objResponse;

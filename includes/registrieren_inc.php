@@ -4,19 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Tax;
-use JTL\Helpers\ShippingMethod;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\Kampagne;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
+use JTL\DB\ReturnType;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Kampagne;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Checkout\VCard;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
 
 /**
  * @param array $post
@@ -157,7 +158,10 @@ function kundeSpeichern(array $post)
             $knd->cPasswortKlartext = $cPasswortKlartext;
             $obj                    = new stdClass();
             $obj->tkunde            = $knd;
-            sendeMail(MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj);
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj));
 
             $knd->cLand = $cLand;
             unset($knd->cPasswortKlartext, $knd->Anrede);
@@ -288,26 +292,4 @@ function gibKunde()
 
     $Kunde = $_SESSION['Kunde'];
     $titel = Shop::Lang()->get('editData', 'login');
-}
-
-/**
- * @param string $vCardFile
- */
-function gibKundeFromVCard($vCardFile)
-{
-    if (is_file($vCardFile)) {
-        global $Kunde;
-
-        try {
-            $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
-            $Kunde = $vCard->selectVCard(0)->asKunde();
-            Shop::Smarty()->assign('Kunde', $Kunde);
-        } catch (Exception $e) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('uploadError'),
-                'uploadError'
-            );
-        }
-    }
 }

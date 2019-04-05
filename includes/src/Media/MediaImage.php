@@ -251,12 +251,11 @@ class MediaImage implements IMedia
             if (\in_array($display, ['on', '1', 'true'], true)) {
                 echo $e->getMessage();
             }
-            \http_response_code(500);
+            \http_response_code(404);
         }
         exit;
     }
 
-    
     /**
      * @param MediaImageRequest $req
      * @param bool              $overwrite
@@ -323,8 +322,8 @@ class MediaImage implements IMedia
      */
     public static function getUncachedProductImageCount(): int
     {
-        return \count(select(self::getProductImages(), function ($e) {
-            return !self::isCached($e);
+        return \count(select(self::getProductImages(), function (MediaImageRequest $e) {
+            return !self::isCached($e) && \file_exists($e->getRaw(true));
         }));
     }
 

@@ -9,14 +9,14 @@ use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Media\MediaImage;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'branding_uebersicht';
+$step        = 'branding_uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
 if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
@@ -25,9 +25,9 @@ if (Request::verifyGPCDataInt('branding') === 1) {
         && Form::validateToken()
     ) {
         if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
-            $cHinweis .= __('successConfigSave') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         } else {
-            $cFehler .= __('errorFillRequired');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
     }
     // Hole bestimmtes branding
@@ -41,8 +41,6 @@ if (Request::verifyGPCDataInt('branding') === 1) {
 $smarty->assign('cRnd', time())
        ->assign('oBranding_arr', gibBrandings())
        ->assign('PFAD_BRANDINGBILDER', PFAD_BRANDINGBILDER)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('branding.tpl');
 

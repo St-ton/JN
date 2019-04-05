@@ -8,16 +8,19 @@ use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Sprache;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'emailblacklist';
+$step = 'emailblacklist';
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
-    $cHinweis .= saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST);
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST),
+        'saveSettings'
+    );
 }
 if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && Form::validateToken()) {
     $addresses = explode(';', $_POST['cEmail']);
@@ -48,7 +51,5 @@ $smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('oEmailBlacklist_arr', $blacklist)
        ->assign('oEmailBlacklistBlock_arr', $blocked)
        ->assign('oConfig_arr', getAdminSectionSettings(CONF_EMAILBLACKLIST))
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('emailblacklist.tpl');

@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
@@ -51,12 +51,6 @@ if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] =
 }
 if ($step === 'formular') {
     gibFormularDaten(Request::verifyGPCDataInt('checkout'));
-}
-if (isset($_FILES['vcard'])
-    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && Form::validateToken()
-) {
-    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
 Shop::Smarty()->assign('editRechnungsadresse', $edit)
     ->assign('Ueberschrift', $titel)

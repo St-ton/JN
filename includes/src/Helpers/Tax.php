@@ -7,8 +7,9 @@
 namespace JTL\Helpers;
 
 use function Functional\map;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Cart\Warenkorb;
+use JTL\Catalog\Currency;
 use JTL\DB\ReturnType;
 use JTL\Link\Link;
 use JTL\Catalog\Product\Preise;
@@ -49,10 +50,10 @@ class Tax
     }
 
     /**
-     * @param string $steuerland
+     * @param string $countryCode
      * @since since 5.0.0
      */
-    public static function setTaxRates($steuerland = null): void
+    public static function setTaxRates($countryCode = null): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;
@@ -69,8 +70,8 @@ class Tax
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
         }
         $deliveryCountryCode = $merchantCountryCode;
-        if ($steuerland) {
-            $deliveryCountryCode = $steuerland;
+        if ($countryCode) {
+            $deliveryCountryCode = $countryCode;
         }
         if (!empty(Frontend::getCustomer()->cLand)) {
             $deliveryCountryCode = Frontend::getCustomer()->cLand;
@@ -97,9 +98,14 @@ class Tax
                 || (\strcasecmp($billingCountryCode, 'GR') === 0
                     && \strcasecmp(\mb_substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
         ) {
-            $deliveryCountry = $db->select('tland', 'cISO', $deliveryCountryCode);
-            $shopCountry     = $db->select('tland', 'cISO', $merchantCountryCode);
-            if (!empty($deliveryCountry->nEU) && !empty($shopCountry->nEU)) {
+            $countryHelper   = Shop::Container()->getCountryService();
+            $deliveryCountry = $countryHelper->getCountry($deliveryCountryCode);
+            $shopCountry     = $countryHelper->getCountry($merchantCountryCode);
+            if ($deliveryCountry !== null
+                && $shopCountry !== null
+                && $deliveryCountry->isEU()
+                && $shopCountry->isEU()
+            ) {
                 $UstBefreiungIGL = true;
             }
         }
@@ -150,29 +156,29 @@ class Tax
             \header('Location: ' . $redirURL);
             exit;
         }
-        $steuerklassen = $db->query(
-            'SELECT * FROM tsteuerklasse',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $zones         = map($steuerzonen, function ($e) {
+        $zones = map($steuerzonen, function ($e) {
             return (int)$e->kSteuerzone;
         });
-        $qry           = \count($zones) > 0
+        $qry   = \count($zones) > 0
             ? 'kSteuerzone IN (' . \implode(',', $zones) . ')'
             : '';
 
         if ($qry !== '') {
-            foreach ($steuerklassen as $steuerklasse) {
-                $steuersatz                                           = $db->query(
+            $taxClasses = $db->query(
+                'SELECT * FROM tsteuerklasse',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            foreach ($taxClasses as $taxClass) {
+                $steuersatz                                       = $db->query(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
-                        WHERE kSteuerklasse = ' . (int)$steuerklasse->kSteuerklasse . '
+                        WHERE kSteuerklasse = ' . (int)$taxClass->kSteuerklasse . '
                         AND (' . $qry . ') ORDER BY nPrio DESC',
                     ReturnType::SINGLE_OBJECT
                 );
-                $_SESSION['Steuersatz'][$steuerklasse->kSteuerklasse] = $steuersatz->fSteuersatz ?? 0;
+                $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $steuersatz->fSteuersatz ?? 0;
                 if ($UstBefreiungIGL) {
-                    $_SESSION['Steuersatz'][$steuerklasse->kSteuerklasse] = 0;
+                    $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = 0;
                 }
             }
         }
@@ -182,15 +188,15 @@ class Tax
     }
 
     /**
-     * @param array    $positions
-     * @param int|bool $net
-     * @param true     $html
-     * @param mixed int|object $currency
+     * @param array             $positions
+     * @param int|bool          $net
+     * @param true              $html
+     * @param Currency|stdClass $currency
      * @return array
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0
      */
-    public static function getOldTaxPositions(array $positions, $net = -1, $html = true, $currency = 0): array
+    public static function getOldTaxPositions(array $positions, $net = -1, $html = true, $currency = null): array
     {
         if ($net === -1) {
             $net = Frontend::getCustomerGroup()->isMerchant();

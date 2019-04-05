@@ -16,12 +16,6 @@
             <div id="login_logo">
                 <img src="{$currentTemplateDir}gfx/shop-login.png" alt="JTL-Shop" />
             </div>
-            {if isset($cFehler) && $cFehler !== ''}
-                <div class="alert alert-danger" role="alert"><i class="fa fa-exclamation-triangle"></i> {$cFehler}</div>
-            {/if}
-            {if isset($cHinweis) && $cHinweis !== ''}
-                <div class="alert alert-info" role="alert"><i class="fa fa-info-circle"></i> {$cHinweis}</div>
-            {/if}
             <div id="login_outer" class="panel panel-default">
                 <div class="panel-body">
                     <form method="post" action="pass.php" class="form-horizontal" role="form">

@@ -4,13 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Kunde;
-use JTL\Shop;
+use JTL\Helpers\Form;
 use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -151,20 +153,22 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                 if (($conf['newsletter']['newsletter_doubleopt'] === 'U' && empty($_SESSION['Kunde']->kKunde))
                     || $conf['newsletter']['newsletter_doubleopt'] === 'A'
                 ) {
-                    $recipient->cLoeschURL         = Shop::getURL() . '/newsletter.php?lang=' .
+                    $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .
                         $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
-                    $recipient->cFreischaltURL     = Shop::getURL() . '/newsletter.php?lang=' .
+                    $recipient->cFreischaltURL = Shop::getURL() . '/newsletter.php?lang=' .
                         $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
-                    $oObjekt                       = new stdClass();
-                    $oObjekt->tkunde               = $_SESSION['Kunde'] ?? null;
-                    $oObjekt->NewsletterEmpfaenger = $recipient;
+                    $obj                       = new stdClass();
+                    $obj->tkunde               = $_SESSION['Kunde'] ?? null;
+                    $obj->NewsletterEmpfaenger = $recipient;
 
-                    $mail = sendeMail(MAILTEMPLATE_NEWSLETTERANMELDEN, $oObjekt);
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_NEWSLETTERANMELDEN, $obj));
                     Shop::Container()->getDB()->update(
                         'tnewsletterempfaengerhistory',
                         'kNewsletterEmpfaengerHistory',
                         $historyID,
-                        (object)['cEmailBodyHtml' => $mail->bodyHtml]
+                        (object)['cEmailBodyHtml' => $mail->getBodyHTML()]
                     );
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,

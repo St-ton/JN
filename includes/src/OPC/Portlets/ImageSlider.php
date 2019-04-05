@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -150,7 +151,7 @@ class ImageSlider extends Portlet
         return [
             'slider-theme'                => [
                 'label'      => 'Theme',
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     'default' => 'Standard',
                     'bar'     => 'Balken',
@@ -161,19 +162,19 @@ class ImageSlider extends Portlet
             ],
             'slider-animation-speed'      => [
                 'label'      => 'Slidergeschwindigkeit',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => 1500,
                 'dspl_width' => 50,
             ],
             'slider-animation-pause'      => [
                 'label'      => 'Pause',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => 6000,
                 'dspl_width' => 50,
             ],
             'slider-start'                => [
                 'label'      => 'Autostart?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'options'    => [
                     'true'  => 'ja',
                     'false' => 'nein',
@@ -184,7 +185,7 @@ class ImageSlider extends Portlet
             ],
             'slider-pause'                => [
                 'label'      => 'Pause bei "hover"?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'options'    => [
                     'true'  => 'anhalten',
                     'false' => 'weitermachen',
@@ -194,7 +195,7 @@ class ImageSlider extends Portlet
             ],
             'slider-navigation'           => [
                 'label'      => 'Punktnavigation?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'options'    => [
                     'true'  => 'ja',
                     'false' => 'nein',
@@ -204,7 +205,7 @@ class ImageSlider extends Portlet
             ],
             'slider-direction-navigation' => [
                 'label'      => 'Navipfeile anzeigen?',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'options'    => [
                     'true'  => 'ja',
                     'false' => 'nein',
@@ -214,13 +215,13 @@ class ImageSlider extends Portlet
             ],
             'slider-kenburns'             => [
                 'label'      => 'Ken-Burns-Effekt nutzen?',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 50,
                 'hint'       => 'overrides other settings',
             ],
             'slider-effects-random'       => [
                 'label'   => 'zufällige Effekte?',
-                'type'    => 'radio',
+                'type'    => InputType::RADIO,
                 'options' => [
                     'true'  => 'ja',
                     'false' => 'nein',
@@ -229,7 +230,7 @@ class ImageSlider extends Portlet
             ],
             'effects-sliceDown'           => [
                 'label'                => 'sliceDown',
-                'type'                 => 'checkbox',
+                'type'                 => InputType::CHECKBOX,
                 'collapseControlStart' => true,
                 'showOnProp'           => 'slider-effects-random',
                 'showOnPropValue'      => 'false',
@@ -237,78 +238,78 @@ class ImageSlider extends Portlet
             ],
             'effects-sliceDownLeft'       => [
                 'label'      => 'sliceDownLeft',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-sliceUp'             => [
                 'label'      => 'sliceUp',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-sliceUpLeft'         => [
                 'label'      => 'sliceUpLeft',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-sliceUpDown'         => [
                 'label'      => 'sliceUpDown',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-sliceUpDownLeft'     => [
                 'label'      => 'sliceUpDownLeft',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-fold'                => [
                 'label'      => 'fold',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-fade'                => [
                 'label'      => 'fade',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-slideInRight'        => [
                 'label'      => 'sliceInRight',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-slideInLeft'         => [
                 'label'      => 'slideInRight',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-boxRandom'           => [
                 'label'      => 'boxRandom',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-boxRain'             => [
                 'label'      => 'boxRain',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-boxRainReverse'      => [
                 'label'      => 'boxRainReverse',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-boxRainGrow'         => [
                 'label'      => 'boxRainGrow',
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'effects-boxRainGrowReverse'  => [
                 'label'              => 'boxRainGrowReverse',
-                'type'               => 'checkbox',
+                'type'               => InputType::CHECKBOX,
                 'collapseControlEnd' => true,
                 'dspl_width'         => 25,
             ],
             'slides'                      => [
                 'label'      => 'Bilder',
-                'type'       => 'image-set',
+                'type'       => InputType::IMAGE_SET,
                 'default'    => [],
                 'useColumns' => false,
                 'useLinks'   => true,

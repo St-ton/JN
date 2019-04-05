@@ -15,6 +15,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
@@ -319,10 +320,11 @@ $customerGroups = \Functional\map($db->query(
     return $e;
 });
 
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+
 $smarty->assign('oKundengruppe_arr', $customerGroups)
-       ->assign('hinweis', $controller->getMsg())
        ->assign('sprachen', $languages)
-       ->assign('fehler', $controller->getErrorMsg())
        ->assign('step', $controller->getStep())
        ->assign('nMaxFileSize', $maxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])

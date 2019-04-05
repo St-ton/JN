@@ -1,15 +1,15 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 die Zahlung für Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} vom {$Bestellung->dErstelldatum_de} in Höhe von {$Bestellung->WarensummeLocalized[0]} ist per {$Bestellung->Zahlungsart->cName} bei uns eingegangen.
 
 Nachfolgend erhalten Sie nochmals einen Überblick über Ihre Bestellung:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
-{if $Position->nPosTyp==1}
+{foreach $Bestellung->Positionen as $Position}
+{if $Position->nPosTyp == 1}
 {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}
-{foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+{foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
 {/foreach}
 {else}
@@ -17,7 +17,7 @@ Nachfolgend erhalten Sie nochmals einen Überblick über Ihre Bestellung:
 {/if}
 {/foreach}
 
-{foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+{foreach $Bestellung->Steuerpositionen as $Steuerposition}
 {$Steuerposition->cName}: {$Steuerposition->cPreisLocalized}
 {/foreach}
 

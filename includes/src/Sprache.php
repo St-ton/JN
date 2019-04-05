@@ -498,7 +498,7 @@ class Sprache
             'cName',
             $varName
         );
-        if ($exists === null) {
+        if ($exists === null && $this->currentLanguageID > 0) {
             $ins             = new stdClass();
             $ins->kSprachISO = $this->currentLanguageID;
             $ins->cSektion   = $sectionName;
@@ -1205,9 +1205,9 @@ class Sprache
         if (\mb_strlen($iso) > 2) {
             return $iso;
         }
-        $column = Shop::getLanguageCode() === 'ger' ? 'cDeutsch' : 'cEnglisch';
+        $country = Shop::Container()->getCountryService()->getCountry($iso);
 
-        return $this->db->select('tland', 'cISO', $iso)->$column ?? $iso;
+        return $country !== null ? $country->getName() : $iso;
     }
 
     /**
@@ -1218,15 +1218,8 @@ class Sprache
      */
     private function mappedGetIsoCodeByCountryName(string $country): string
     {
-        $iso = $this->db->select('tland', 'cDeutsch', $country);
-        if (!empty($iso->cISO)) {
-            return $iso->cISO;
-        }
-        $iso = $this->db->select('tland', 'cEnglisch', $country);
-        if (!empty($iso->cISO)) {
-            return $iso->cISO;
-        }
+        $iso = Shop::Container()->getCountryService()->getIsoByCountryName($country);
 
-        return 'noISO';
+        return $iso ?? 'noISO';
     }
 }

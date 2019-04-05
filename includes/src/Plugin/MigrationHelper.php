@@ -91,7 +91,7 @@ final class MigrationHelper
     public function mapFileNameToClassName(DirectoryIterator $file, string $pluginID): string
     {
         return \sprintf(
-            'Plugin\%s\migrations\%s',
+            'Plugin\%s\Migrations\%s',
             $pluginID,
             \str_replace('.' . $file->getExtension(), '', $file->getFilename())
         );

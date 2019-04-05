@@ -12,19 +12,19 @@ use JTL\Helpers\Text;
 use JTL\Cart\WarenkorbPers;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis          = '';
-$cFehler           = '';
 $step              = 'uebersicht';
 $settingsIDs       = [540];
 $searchSQL         = new stdClass();
 $searchSQL->cJOIN  = '';
 $searchSQL->cWHERE = '';
+$alertHelper       = Shop::Container()->getAlertService();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
@@ -43,8 +43,8 @@ if (isset($_POST['einstellungen'])
     && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
     && Form::validateToken()
 ) {
-    $step      = 'uebersicht';
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $step = 'uebersicht';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
     $smarty->assign('tab', 'einstellungen');
 }
 
@@ -53,7 +53,7 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $oWarenkorbPers = new WarenkorbPers($kKunde);
 
     if ($oWarenkorbPers->entferneSelf()) {
-        $cHinweis .= __('successCartPersPosDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
     }
 
     unset($oWarenkorbPers);
@@ -147,7 +147,5 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
 }
 
 $smarty->assign('step', $step)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
        ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->display('warenkorbpers.tpl');

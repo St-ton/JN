@@ -1,0 +1,5 @@
+msgid "Visitors_title"
+msgstr "Besucher (Aktueller Monat)"
+
+msgid "Visitors_desc"
+msgstr "Besucher-Chart für den aktuellen Monat"

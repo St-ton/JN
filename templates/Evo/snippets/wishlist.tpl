@@ -133,7 +133,7 @@
                                     <td></td>
                                     <td class="text-right">
                                         <div class="btn-group-vertical">
-                                            <button href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
+                                            <button type="submit" href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$wlPosition->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}"
                                                class="btn btn-default"
                                                title="{lang key='wishlistremoveItem' section='login'}">
                                                 <span class="fa fa-trash-o"></span>

@@ -5,8 +5,8 @@
  * @author Felix Moche
  */
 
-use JTL\Update\Migration;
 use JTL\Update\IMigration;
+use JTL\Update\Migration;
 
 /**
  * Class Migration_20190207074500

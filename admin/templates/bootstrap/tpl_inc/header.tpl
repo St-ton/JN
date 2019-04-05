@@ -39,8 +39,7 @@
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {getCurrentPage assign='currentPage'}
-    <div class="backend-wrapper container-fluid
-         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+    <div class="backend-wrapper container-fluid{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         {include file='tpl_inc/backend_sidebar.tpl'}
         <div class="backend-main">
             <nav class="backend-navbar">
@@ -91,17 +90,17 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
                             <i class="fa fa-language"></i>
-                            {$language->cNameEnglisch}
+                            {$languageName}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right">
-                            {foreach $languages as $olang}
-                                {if $olang->kSprache !== (int)$language->kSprache}
+                            {foreach $languages as $tag => $langName}
+                                {if $language !== $tag}
                                     <li>
                                         <a href="{strip}benutzerverwaltung.php
                                                 ?token={$smarty.session.jtl_token}
                                                 &action=quick_change_language
-                                                &kSprache={$olang->kSprache}{/strip}">
-                                            {$olang->cNameEnglisch}
+                                                &language={$tag}{/strip}">
+                                            {$langName}
                                         </a>
                                     </li>
                                 {/if}
@@ -127,6 +126,6 @@
                 </ul>
             </nav>
             <div class="backend-content" id="content_wrapper">
-            {assign var='alertList' value=\JTL\Shop::Container()->getAlertService()}
+
             {include file='snippets/alert_list.tpl'}
 {/if}

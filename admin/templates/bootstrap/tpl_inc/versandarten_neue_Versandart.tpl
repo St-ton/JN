@@ -667,8 +667,8 @@
                         <tr>
                             {/if}
                             <td>
-                                <input type="checkbox" name="land[]" id="country_{$versandland->cISO}" value="{$versandland->cISO}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($versandland->cISO,$gewaehlteLaender)} checked="checked"{/if} />
-                                <label for="country_{$versandland->cISO}">{$versandland->cName}</label>
+                                <input type="checkbox" name="land[]" id="country_{$versandland->getISO()}" value="{$versandland->getISO()}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($versandland->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
+                                <label for="country_{$versandland->getISO()}">{$versandland->getName()}</label>
                             </td>
                             {/foreach}
                         </tr>

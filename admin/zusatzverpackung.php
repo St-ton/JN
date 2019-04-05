@@ -10,6 +10,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -17,12 +18,10 @@ $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cHinweis     = '';
-$cFehler      = '';
 $step         = 'zusatzverpackung';
 $oSprache_arr = Sprache::getAllLanguages();
 $action       = '';
-
+$alertHelper  = Shop::Container()->getAlertService();
 if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
@@ -49,13 +48,13 @@ if ($action === 'save') {
     if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO])
         && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)
     ) {
-        $cFehler .= __('errorNameMissing') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNameMissing'), 'errorNameMissing');
     }
     if (!(is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0)) {
-        $cFehler .= __('errorCustomerGroupMissing') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerGroupMissing'), 'errorCustomerGroupMissing');
     }
 
-    if ($cFehler !== '') {
+    if ($alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
         holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, $smarty);
         $action = 'edit';
     } else {
@@ -96,7 +95,11 @@ if ($action === 'save') {
                 );
             Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
         }
-        $cHinweis .= sprintf(__('successPackagingSave'), $_POST['cName_' . $oSprache_arr[0]->cISO]) . '<br />';
+        $alertHelper->addAlert(
+            Alert::TYPE_SUCCESS,
+            sprintf(__('successPackagingSave'), $_POST['cName_' . $oSprache_arr[0]->cISO]),
+            'successPackagingSave'
+        );
     }
 } elseif ($action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
     $kVerpackung = Request::verifyGPCDataInt('kVerpackung');
@@ -128,9 +131,9 @@ if ($action === 'save') {
             // tverpackungsprache loeschen
             Shop::Container()->getDB()->delete('tverpackungsprache', 'kVerpackung', $kVerpackung);
         }
-        $cHinweis .= __('successPackagingDelete') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingDelete'), 'successPackagingDelete');
     } else {
-        $cFehler .= __('errorAtLeastOnePackaging') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOnePackaging'), 'errorAtLeastOnePackaging');
     }
 } elseif ($action === 'refresh') {
     if (isset($_POST['nAktivTMP']) && is_array($_POST['nAktivTMP']) && count($_POST['nAktivTMP']) > 0) {
@@ -139,7 +142,7 @@ if ($action === 'save') {
             $upd->nAktiv = isset($_POST['nAktiv']) && in_array($kVerpackung, $_POST['nAktiv'], true) ? 1 : 0;
             Shop::Container()->getDB()->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);
         }
-        $cHinweis .= __('successPackagingSaveMultiple') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
     }
 }
 
@@ -178,8 +181,6 @@ foreach ($oVerpackung_arr as $i => $oVerpackung) {
 $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
        ->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
        ->assign('oVerpackung_arr', $oVerpackung_arr)
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->assign('oSprache_arr', $oSprache_arr)
        ->assign('oPagination', $oPagination)

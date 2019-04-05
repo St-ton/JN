@@ -43,16 +43,16 @@
                                         {foreach $allPluginItems as $p}
                                             {if $p->getID() === $plugin->getPluginID()}
                                                 {if $p->isShop5Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {elseif $p->isShop5Compatible() === false && $p->isShop4Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatible')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                                 {/if}
                                                 {break}
                                             {/if}
                                         {/foreach}
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{number_format($plugin->getMeta()->getVersion() / 100, 2)}{if $plugin->getMeta()->isUpdateAvailable()} <span class="label label-success update-info">{number_format((float)$plugin->getCurrentVersion() / 100, 2)}</span>{/if}</td>
+                                <td class="tcenter plugin-version">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="label label-success update-info">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                                 <td class="tcenter plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
                                 <td class="tcenter plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
                                 <td class="tcenter plugin-lang-vars">

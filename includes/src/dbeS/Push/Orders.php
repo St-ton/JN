@@ -17,6 +17,8 @@ use JTL\Shop;
  */
 final class Orders extends AbstractPush
 {
+    private const LIMIT_ORDERS = 100;
+
     /**
      * @return array|string
      */
@@ -37,7 +39,7 @@ final class Orders extends AbstractPush
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
             WHERE cAbgeholt = 'N'
             ORDER BY tbestellung.kBestellung
-            LIMIT " . \LIMIT_BESTELLUNGEN,
+            LIMIT " . self::LIMIT_ORDERS,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         if (\count($orders) === 0) {
@@ -49,11 +51,6 @@ final class Orders extends AbstractPush
             ) {
                 $orders[$i]['cModulId'] = 'za_paypal_pui_jtl';
             }
-
-            // workaround; ACHTUNG: NUR BIS AUSSCHLIESSLICH WAWI 1.0.9.2
-            /*if ($oBestellung['cModulId'] === 'za_billpay_invoice_jtl') {
-                $oBestellung_arr[$i]['cModulId'] = 'za_billpay_jtl';
-            }*/
         }
 
         $crypto          = Shop::Container()->getCryptoService();

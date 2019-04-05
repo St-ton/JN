@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -7,6 +7,7 @@
 namespace JTL\OPC\Portlets;
 
 use JTL\Catalog\Product\Artikel;
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 use JTL\Shop;
@@ -50,7 +51,7 @@ class Banner extends Portlet
 
                 if ((int)$area->kArtikel > 0) {
                     $area->oArtikel = new Artikel();
-                    $area->oArtikel->fuelleArtikel($area->kArtikel, $defaultOptions);
+                    $area->oArtikel->fuelleArtikel((int)$area->kArtikel, $defaultOptions);
 
                     if ($area->cTitel === '') {
                         $area->cTitel = $area->oArtikel->cName;
@@ -73,7 +74,7 @@ class Banner extends Portlet
      */
     public function getPlaceholderImgUrl(): string
     {
-        return Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
+        return $this->getTemplateUrl() . 'preview.banner.png';
     }
 
     /**
@@ -84,7 +85,6 @@ class Banner extends Portlet
     public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('kImageMap', \uniqid('', false));
-        $instance->addClass('img-responsive');
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
@@ -96,7 +96,6 @@ class Banner extends Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        $instance->addClass('img-responsive');
         $instance->addClass('banner');
 
         return $this->getFinalHtmlFromTpl($instance);
@@ -110,14 +109,14 @@ class Banner extends Portlet
         return [
             'src'   => [
                 'label'      => __('Image'),
-                'type'       => 'image',
+                'type'       => InputType::IMAGE,
                 'default'    => '',
                 'dspl_width' => 50,
                 'required'   => true,
             ],
             'zones' => [
                 'label'   => __('Zones'),
-                'type'    => 'banner-zones',
+                'type'    => InputType::BANNER_ZONES,
                 'default' => '[]',
             ],
             'class' => [
@@ -125,9 +124,6 @@ class Banner extends Portlet
             ],
             'alt'   => [
                 'label' => __('Altenativ text'),
-            ],
-            'title' => [
-                'label' => __('Title')
             ],
         ];
     }

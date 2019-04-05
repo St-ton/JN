@@ -115,7 +115,7 @@ class_alias(\JTL\Catalog\Wishlist\WunschlistePos::class, 'WunschlistePos', true)
 class_alias(\JTL\Catalog\Wishlist\WunschlistePosEigenschaft::class, 'WunschlistePosEigenschaft', true);
 class_alias(\JTL\Catalog\Wishlist\Wunschliste::class, 'Wunschliste', true);
 class_alias(\JTL\TrustedShops::class, 'TrustedShops', true);
-class_alias(\JTL\Alert::class, 'Alert', true);
+class_alias(\JTL\Alert\Alert::class, 'Alert', true);
 class_alias(\JTL\Network\Communication::class, 'Communication', true);
 class_alias(\JTL\Network\MultiRequest::class, 'MultiRequest', true);
 class_alias(\JTL\Network\JTLApi::class, 'JTLApi', true);
@@ -154,7 +154,6 @@ class_alias(\JTL\Checkout\ZahlungsLog::class, 'ZahlungsLog', true);
 class_alias(\JTL\Checkout\Versandart::class, 'Versandart', true);
 class_alias(\JTL\Checkout\Lieferadresse::class, 'Lieferadresse', true);
 class_alias(\JTL\Checkout\ZahlungsInfo::class, 'ZahlungsInfo', true);
-class_alias(\JTL\Checkout\VCard::class, 'VCard', true);
 class_alias(\JTL\Checkout\Lieferscheinpos::class, 'Lieferscheinpos', true);
 class_alias(\JTL\Checkout\Lieferscheinposinfo::class, 'Lieferscheinposinfo', true);
 class_alias(\JTL\Checkout\Versand::class, 'Versand', true);

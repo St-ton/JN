@@ -124,7 +124,7 @@ class FileHandler
                 }, $filenames));
             }
         } else {
-            $this->logger->notice('Achtung: Klasse ZipArchive wurde nicht gefunden - ' .
+            $this->logger->warning('Achtung: Klasse ZipArchive wurde nicht gefunden - ' .
                 ' bitte PHP-Konfiguration überprüfen.');
             $archive = new \PclZip($zipFile);
             if (($list = $archive->listContent()) !== 0 && $archive->extract(\PCLZIP_OPT_PATH, $targetPath)) {

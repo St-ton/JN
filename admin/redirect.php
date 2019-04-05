@@ -13,6 +13,7 @@ use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
 use JTL\Pagination\Operation;
 use JTL\Pagination\DataType;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
@@ -25,9 +26,8 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 handleCsvImportAction('redirects', 'tredirect');
 
-$cHinweis  = '';
-$cFehler   = '';
-$redirects = $_POST['redirects'] ?? [];
+$redirects   = $_POST['redirects'] ?? [];
+$alertHelper = Shop::Container()->getAlertService();
 
 if (Form::validateToken()) {
     switch (Request::verifyGPDataString('action')) {
@@ -40,7 +40,11 @@ if (Form::validateToken()) {
                         $oRedirect->cAvailable = 'y';
                         Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
                     } else {
-                        $cFehler .= sprintf(__('errorURLNotReachable'), $redirect['cToUrl']) . '<br>';
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            sprintf(__('errorURLNotReachable'), $redirect['cToUrl']),
+                            'errorURLNotReachable'
+                        );
                     }
                 }
             }
@@ -61,9 +65,9 @@ if (Form::validateToken()) {
                 Request::verifyGPDataString('cFromUrl'),
                 Request::verifyGPDataString('cToUrl')
             )) {
-                $cHinweis = __('successRedirectSave');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRedirectSave'), 'successRedirectSave');
             } else {
-                $cFehler = __('errorCheckInput');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
                 $smarty
                     ->assign('cTab', 'new_redirect')
                     ->assign('cFromUrl', Request::verifyGPDataString('cFromUrl'))
@@ -77,10 +81,14 @@ if (Form::validateToken()) {
                 if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
                     $cError_arr = $oRedirect->doImport($cFile);
                     if (count($cError_arr) === 0) {
-                        $cHinweis = __('successImport');
+                        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
                     } else {
                         @unlink($cFile);
-                        $cFehler = __('errorImport') . '<br><br>' . implode('<br>', $cError_arr);
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            __('errorImport') . '<br><br>' . implode('<br>', $cError_arr),
+                            'errorImport'
+                        );
                     }
                 }
             }
@@ -143,9 +151,7 @@ handleCsvExportAction(
     }
 );
 
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('oFilter', $filter)
+$smarty->assign('oFilter', $filter)
        ->assign('oPagination', $pagination)
        ->assign('oRedirect_arr', $oRedirect_arr)
        ->assign('nTotalRedirectCount', Redirect::getRedirectCount())

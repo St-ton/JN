@@ -40,7 +40,7 @@ build_create()
     build_composer_execute;
 
     echo "Create delete files csv";
-    build_create_deleted_files_csv ${APPLICATION_VERSION_STR};
+    build_create_deleted_files_csv;
 
     echo "Move class files";
     build_move_class_files;
@@ -86,12 +86,12 @@ build_create()
 
 build_composer_execute()
 {
-    composer install --no-dev -a -o -q -d ${REPOSITORY_DIR}/includes;
+    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/includes;
 }
 
 build_create_deleted_files_csv()
 {
-    local VERSION="${1//[\/\.]/-}";
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
     local VERSION="${VERSION//[v]/}";
     local CUR_PWD=$(pwd);
     local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
@@ -185,7 +185,7 @@ build_migrate()
     php -r "
     require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
       \$time    = date('YmdHis'); \
-      \$manager = new MigrationManager(); \
+      \$manager = new MigrationManager(Shop::Container()->getDB()); \
       try { \
           \$migrations = \$manager->migrate(\$time); \
       } catch (Exception \$e) { \
@@ -195,6 +195,9 @@ build_migrate()
           return 1; \
       } \
     ";
+    if [[ $? -ne 0 ]]; then
+        exit 1;
+    fi
 
     echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
     echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION_STR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
@@ -202,10 +205,12 @@ build_migrate()
 
 build_create_db_struct()
 {
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
     local i=0;
     local DB_STRUCTURE='{';
     local TABLE_COUNT=$(($(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | wc -l)-1));
-    local SCHEMAJSON_PATH=${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json;
+    local SCHEMAJSON_PATH="${REPOSITORY_DIR}/admin/includes/shopmd5files/dbstruct_${VERSION}.json";
 
     while ((i++)); read -r table;
     do
@@ -233,6 +238,8 @@ build_create_db_struct()
     done< <(mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} -e "show tables;" | sed 1d);
 
     echo "${DB_STRUCTURE}" > ${SCHEMAJSON_PATH};
+
+    echo "  Dbstruct file admin/includes/shopmd5files/dbstruct_${VERSION}.json";
 }
 
 build_create_initial_schema()

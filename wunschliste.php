@@ -8,7 +8,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Cart;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Kampagne;
 use JTL\Shop;
 use JTL\Helpers\Text;
@@ -170,7 +170,7 @@ if ($action !== null && Form::validateToken()) {
                 }
                 $wl = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
                 if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $wl->cName) {
-                    $wl->cName = $_POST['wishlistName'];
+                    $wl->cName = Text::htmlentities(Text::filterXSS($_POST['wishlistName']));
                     Shop::Container()->getDB()->update(
                         'twunschliste',
                         'kWunschliste',
@@ -352,6 +352,7 @@ if ($customerID > 0) {
 }
 Shop::Smarty()->assign('CWunschliste', $wishlist)
     ->assign('oWunschliste_arr', $wishlists)
+    ->assign('newWL', Request::verifyGPCDataInt('newWL'))
     ->assign('wlsearch', $searchQuery)
     ->assign('Link', $link)
     ->assign('hasItems', !empty($wishlist->CWunschlistePos_arr))

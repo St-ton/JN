@@ -1,12 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='filecheck'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('filecheck') cBeschreibung=__('filecheckDesc') cDokuURL=__('filecheckURL')}
-{$modifiedFilesCheck = !empty($modifiedFilesError) || isset($modifiedFiles) && $modifiedFiles|@count > 0}
-{$orphanedFilesCheck = !empty($orphanedFilesError) || isset($orphanedFiles) && $orphanedFiles|@count > 0}
-
-{if !$modifiedFilesCheck && !$orphanedFilesCheck}
-    <div class="alert alert-info">{__('fileCheckNoneModifiedOrphanedFiles')}</div>
-{/if}
 {if $modifiedFilesCheck}
     <div class="panel panel-collapse">
         <div class="panel-heading">
@@ -16,9 +10,8 @@
         <div class="panel-body">
             <div id="content" class="container-fluid">
                 <div id="pageCheckModifiedFiles">
-                    {if !empty($modifiedFilesError)}
-                        <div class="alert alert-danger"><i class="fa fa-warning"></i> {$modifiedFilesError}</div>
-                    {else}
+                    {$alertList->displayAlertByKey('modifiedFilesError')}
+                    {if !$modifiedFilesError}
                         {if isset($modifiedFiles) && $modifiedFiles|@count > 0}
                             <div id="contentModifiedFilesCheck">
                                 <div class="alert alert-info">
@@ -54,9 +47,8 @@
         <div class="panel-body">
             <div id="content" class="container-fluid">
                 <div id="pageCheckOrphanedFiles">
-                    {if !empty($orphanedFilesError)}
-                        <div class="alert alert-danger"><i class="fa fa-warning"></i> {$orphanedFilesError}</div>
-                    {else}
+                    {$alertList->displayAlertByKey('orphanedFilesError')}
+                    {if !$orphanedFilesError}
                         {if isset($orphanedFiles) && $orphanedFiles|@count > 0}
                             <div id="contentOrphanedFilesCheck">
                                 <div class="alert alert-info">

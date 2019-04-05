@@ -2,15 +2,19 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{card class="box box-poll mb-7" id="sidebox{$oBox->getID()}" title="{lang key='BoxPoll'}"}
-    <hr class="mt-0 mb-4">
-    {nav class="tree" vertical=true}
-        {foreach $oBox->getItems() as $oUmfrageItem}
-            {navitem}
-                {link href=$oUmfrageItem->cURLFull}
-                    {$oUmfrageItem->cName}
-                {/link}
-            {/navitem}
-        {/foreach}
-    {/nav}
-{/card}
+{block name='boxes-box-poll'}
+    {card class="box box-poll mb-7" id="sidebox{$oBox->getID()}" title="{lang key='BoxPoll'}"}
+        <hr class="mt-0 mb-4">
+        {block name='boxes-box-poll-content'}
+            {nav class="tree" vertical=true}
+                {foreach $oBox->getItems() as $oUmfrageItem}
+                    {block name='boxes-box-poll-item'}
+                        {navitem href=$oUmfrageItem->cURLFull}
+                            {$oUmfrageItem->cName}
+                        {/navitem}
+                    {/block}
+                {/foreach}
+            {/nav}
+        {/block}
+    {/card}
+{/block}

@@ -4,32 +4,34 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Checkout\Bestellung;
-use JTL\Helpers\Date;
-use JTL\Helpers\Product;
-use JTL\Helpers\Request;
-use JTL\Helpers\Tax;
+use JTL\Cart\WarenkorbPos;
 use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\EigenschaftWert;
+use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\CheckBox;
-use JTL\Kampagne;
-use JTL\Customer\Kunde;
+use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\KuponBestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\Checkout\ZahlungsInfo;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
 use JTL\Extensions\Upload;
+use JTL\Helpers\Date;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Kampagne;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Plugin\Helper;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\Helpers\Text;
 use JTL\TrustedShops;
-use JTL\Cart\WarenkorbPos;
-use JTL\Catalog\Wishlist\Wunschliste;
-use JTL\Checkout\ZahlungsInfo;
-use JTL\Catalog\Product\EigenschaftWert;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
 
 /**
  * @return int
@@ -138,7 +140,9 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
 
             executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_NEUKUNDENREGISTRIERUNG);
 
-            sendeMail(MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj);
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj));
         }
     } else {
         $cart->kKunde = $customer->kKunde;
@@ -256,6 +260,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $oRechnungsadresse->cVorname      = $customer->cVorname;
     $oRechnungsadresse->cNachname     = $customer->cNachname;
     $oRechnungsadresse->cFirma        = $customer->cFirma;
+    $oRechnungsadresse->cZusatz       = $customer->cZusatz;
     $oRechnungsadresse->cStrasse      = $customer->cStrasse;
     $oRechnungsadresse->cHausnummer   = $customer->cHausnummer;
     $oRechnungsadresse->cAdressZusatz = $customer->cAdressZusatz;
@@ -1050,16 +1055,6 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
             $paymentMethod->preparePaymentProcess($bestellung);
             Shop::Smarty()->assign('oPlugin', $oPlugin);
         }
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
-        $paymentMethod           = new SofortUeberweisung($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        $paymentMethod           = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_kreditkarte_jtl'
         || $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
     ) {
@@ -1248,7 +1243,9 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
     $oKunde = new Kunde();
     $oKunde->kopiereSession();
     if ($sendMail === true) {
-        sendeMail(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj);
+        $mailer = Shop::Container()->get(Mailer::class);
+        $mail   = new Mail();
+        $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj));
     }
     $_SESSION['Kunde'] = $oKunde;
     $kKundengruppe     = Frontend::getCustomerGroup()->getID();

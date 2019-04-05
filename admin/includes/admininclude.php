@@ -4,17 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Notification;
 use JTL\Backend\Revision;
 use JTL\Helpers\Form;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Session\Backend;
-use JTLShop\SemVer\Version;
-use JTL\DB\NiceDB;
-use JTL\Backend\AdminLoginStatus;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
+use JTL\Session\Backend;
+use JTL\Shop;
+use JTL\Sprache;
+use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
     define('DEFINES_PFAD', __DIR__ . '/../../includes/');
@@ -56,7 +55,7 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-$db       = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$db       = Shop::Container()->getDB();
 $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );

@@ -1,18 +1,18 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
 Your order at {$Einstellungen.global.global_shopname} has been updated.
 
 Your order with the order number {$Bestellung->cBestellNr} consists of the following items:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
+{foreach $Bestellung->Positionen as $Position}
 
-    {if $Position->nPosTyp==1}
-        {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen=="Y" && $Position->cLieferstatus}
+    {if $Position->nPosTyp == 1}
+        {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
 
         Shipping time: {$Position->cLieferstatus}{/if}
-        {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
         {if $Position->cSeriennummer|strlen > 0}
@@ -28,10 +28,10 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
         {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{/if}
 {/foreach}
 
-{if $Einstellungen.global.global_steuerpos_anzeigen!="N"}{foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+{if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}{foreach $Bestellung->Steuerpositionen as $Steuerposition}
     {$Steuerposition->cName}: {$Steuerposition->cPreisLocalized}
 {/foreach}{/if}
-{if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen==1}
+{if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen == 1}
     Voucher: -{$Bestellung->GutscheinLocalized}
 {/if}
 
@@ -40,7 +40,7 @@ Total: {$Bestellung->WarensummeLocalized[0]}
 
 Your billing address:
 
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
@@ -57,7 +57,7 @@ Email: {$Kunde->cMail}
 {if $Bestellung->Lieferadresse->kLieferadresse>0}
     Your shipping address:
 
-    {$Bestellung->Lieferadresse->cAnrede} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
+    {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
     {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}
     {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}
     {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}
@@ -77,11 +77,10 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}
 
 {/if}
 
-{if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
+{if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
 {/if}
 
 You will be notified of the subsequent status of your order separately.

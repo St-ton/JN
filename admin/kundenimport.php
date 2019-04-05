@@ -4,12 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
+use JTL\Alert\Alert;
 use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -59,22 +62,23 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
         $row      = 0;
         $fmt      = [];
         $formatId = -1;
-        $hinweis  = '';
+        $notice   = '';
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $hinweis .= __('checkHead');
-                $fmt      = checkformat($data, $format);
+                $notice .= __('checkHead');
+                $fmt     = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $hinweis .= __('errorFormatNotFound');
+                    $notice .= __('errorFormatNotFound');
                     break;
                 }
-                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
+                $notice .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
+                $notice .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
 
             $row++;
         }
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
         fclose($file);
     }
 }
@@ -85,7 +89,6 @@ $smarty->assign('sprachen', Sprache::getAllLanguages())
            ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('step', $step ?? null)
-       ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
 
 
@@ -221,7 +224,9 @@ function processImport($fmt, $data)
             $kunde->cHausnummer       = $tmp->cHausnummer;
             $obj                      = new stdClass();
             $obj->tkunde              = $kunde;
-            sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
+            $mailer                   = Shop::Container()->get(Mailer::class);
+            $mail                     = new Mail();
+            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
         }
 
         return __('importRecord') . $kunde->cVorname . ' ' . $kunde->cNachname;

@@ -5,12 +5,13 @@
  */
 
 use JTL\Checkout\Bestellung;
-use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 require_once __DIR__ . '/../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -22,7 +23,7 @@ define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 $logger              = Shop::Container()->getLogService();
 $moduleId            = null;
 $Sprache             = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-$conf                = \JTL\Shopsetting::getInstance()->getAll();
+$conf                = Shopsetting::getInstance()->getAll();
 $cEditZahlungHinweis = '';
 //Session Hash
 $cPh = Request::verifyGPDataString('ph');
@@ -125,10 +126,7 @@ if (strlen($cSh) > 0) {
             } else {
                 $logger->debug('finalizeOrder failed -> zurueck zur Zahlungsauswahl.');
                 $linkHelper = Shop::Container()->getLinkService();
-                // UOS Work Around
-                if ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl'
-                    || $paymentMethod->redirectOnCancel()
-                ) {
+                if ($paymentMethod->redirectOnCancel()) {
                     // Go to 'Edit PaymentMethod' Page
                     $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
                         '?editZahlungsart=1';

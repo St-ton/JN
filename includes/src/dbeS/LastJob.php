@@ -11,9 +11,11 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Shop;
-use JTL\Sitemap\Export;
 use JTL\Sitemap\Config\DefaultConfig;
+use JTL\Sitemap\Export;
 use JTL\Sitemap\ItemRenderers\DefaultRenderer;
 use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
 use JTL\Sprache;
@@ -55,15 +57,17 @@ final class LastJob
         }
         $this->finishStdJobs();
         $GLOBALS['nIntervall'] = \defined('LASTJOBS_INTERVALL') ? \LASTJOBS_INTERVALL : 12;
-        \executeHook(\HOOK_LASTJOBS_HOLEJOBS);
-        $jobs = $this->getRepeatedJobs($GLOBALS['nIntervall']);
+        $jobs                  = $this->getRepeatedJobs($GLOBALS['nIntervall']);
+        \executeHook(\HOOK_LASTJOBS_HOLEJOBS, ['jobs' => &$jobs]);
         $conf = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP]);
         foreach ($jobs as $job) {
             switch ((int)$job->nJob) {
                 case \LASTJOBS_BEWERTUNGSERINNNERUNG:
                     $recipients = (new ReviewReminder())->getRecipients();
+                    $mailer     = Shop::Container()->get(Mailer::class);
+                    $mail       = new Mail();
                     foreach ($recipients as $recipient) {
-                        \sendeMail(\MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient);
+                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BEWERTUNGERINNERUNG, $recipient));
                     }
                     $this->restartJob(\LASTJOBS_BEWERTUNGSERINNNERUNG);
                     break;

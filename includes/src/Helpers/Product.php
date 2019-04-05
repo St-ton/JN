@@ -6,28 +6,30 @@
 
 namespace JTL\Helpers;
 
-use function Functional\group;
-use JTL\Alert;
-use JTL\Catalog\Product\Artikel;
+use Illuminate\Support\Collection;
+use JTL\Alert\Alert;
 use JTL\Cart\WarenkorbPos;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Tag;
+use JTL\Catalog\TagArticle;
+use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
+use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Konfiggruppe;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigurator;
 use JTL\Kampagne;
-use JTL\Customer\Kundengruppe;
-use JTL\Catalog\Product\Preise;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use JTL\Sprache;
-use JTL\Catalog\Tag;
-use JTL\Catalog\TagArticle;
-use JTL\Catalog\UnitsOfMeasure;
 use stdClass;
-use Illuminate\Support\Collection;
+use function Functional\group;
 
 /**
  * Class Product
@@ -923,19 +925,19 @@ class Product
                     $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
                 }
                 $xsell = Shop::Container()->getDB()->query(
-                    "SELECT " . $productID . " AS kArtikel, " . $selectorXSellArtikel . " AS kXSellArtikel,
+                    'SELECT ' . $productID . ' AS kArtikel, ' . $selectorXSellArtikel . ' AS kXSellArtikel,
                         SUM(txsellkauf.nAnzahl) nAnzahl
                         FROM txsellkauf
                         JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
                         WHERE (txsellkauf.kArtikel IN (
                                 SELECT tartikel.kArtikel
                                 FROM tartikel
-                                WHERE tartikel.kVaterArtikel = " . $productID . "
-                            ) OR txsellkauf.kArtikel = " . $productID . ")
-                            AND " . $filterXSellParentArtikel . " != " . $productID . "
+                                WHERE tartikel.kVaterArtikel = ' . $productID . '
+                            ) OR txsellkauf.kArtikel = ' . $productID . ')
+                            AND ' . $filterXSellParentArtikel . ' != ' . $productID . '
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT " . $anzahl,
+                        LIMIT ' . $anzahl,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
@@ -1143,18 +1145,18 @@ class Product
         $data             = new stdClass();
         $data->tartikel   = $GLOBALS['AktuellerArtikel'];
         $data->tnachricht = self::getProductQuestionFormDefaults();
-        $empfaengerName   = '';
+        $replyToName      = '';
         if ($data->tnachricht->cVorname) {
-            $empfaengerName = $data->tnachricht->cVorname . ' ';
+            $replyToName = $data->tnachricht->cVorname . ' ';
         }
         if ($data->tnachricht->cNachname) {
-            $empfaengerName .= $data->tnachricht->cNachname;
+            $replyToName .= $data->tnachricht->cNachname;
         }
         if ($data->tnachricht->cFirma) {
             if ($data->tnachricht->cNachname || $data->tnachricht->cVorname) {
-                $empfaengerName .= ' - ';
+                $replyToName .= ' - ';
             }
-            $empfaengerName .= $data->tnachricht->cFirma;
+            $replyToName .= $data->tnachricht->cFirma;
         }
         $mail = new stdClass();
         if (isset($conf['artikeldetails']['artikeldetails_fragezumprodukt_email'])) {
@@ -1165,19 +1167,17 @@ class Product
         }
         $mail->toName       = $conf['global']['global_shopname'];
         $mail->replyToEmail = $data->tnachricht->cMail;
-        $mail->replyToName  = $empfaengerName;
+        $mail->replyToName  = $replyToName;
         $data->mail         = $mail;
 
-        \sendeMail(\MAILTEMPLATE_PRODUKTANFRAGE, $data);
-
+        $mailer = Shop::Container()->get(Mailer::class);
+        $mail   = new Mail();
+        $mail   = $mail->createFromTemplateID(\MAILTEMPLATE_PRODUKTANFRAGE, $data);
         if ($conf['artikeldetails']['produktfrage_kopiekunde'] === 'Y') {
-            $mail->toEmail      = $data->tnachricht->cMail;
-            $mail->toName       = $empfaengerName;
-            $mail->replyToEmail = $data->tnachricht->cMail;
-            $mail->replyToName  = $empfaengerName;
-            $data->mail         = $mail;
-            \sendeMail(\MAILTEMPLATE_PRODUKTANFRAGE, $data);
+            $mail->addCopyRecipient($data->tnachricht->cMail);
         }
+        $mailer->send($mail);
+
         $history             = new stdClass();
         $history->kSprache   = Shop::getLanguage();
         $history->kArtikel   = Shop::$kArtikel;

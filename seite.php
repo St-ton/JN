@@ -7,7 +7,7 @@
 use JTL\Session\Frontend;
 use JTL\Helpers\URL;
 use JTL\Helpers\ShippingMethod;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Helpers\CMS;
 use JTL\Catalog\Hersteller;
 use JTL\Shop;
@@ -24,10 +24,11 @@ $smarty      = Shop::Smarty();
 $conf        = Shopsetting::getInstance()->getAll();
 $linkHelper  = Shop::Container()->getLinkService();
 $alertHelper = Shop::Container()->getAlertService();
+$link        = null;
 if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
+    $link  = $linkHelper->getLinkByID($kLink);
 }
-$link = $linkHelper->getLinkByID(Shop::$kLink);
 if ($link === null || !$link->isVisible()) {
     $link = $linkHelper->getSpecialPage(LINKTYP_STARTSEITE);
     $link->setRedirectCode(301);

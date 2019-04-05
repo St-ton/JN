@@ -290,7 +290,6 @@ function holeMaxExportArtikelAnzahl(&$export)
     if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
         return $count;
     }
-
     $count = Shop::Container()->getDB()->query(
         "SELECT COUNT(*) AS nAnzahl
             FROM tartikel

@@ -96,7 +96,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nTransparenz">{__('transparancy')}</label>
+                                <label for="nTransparenz">{__('transparency')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select name="nTransparenz" class="form-control combo" id="nTransparenz">

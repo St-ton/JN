@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
@@ -77,7 +77,9 @@ $similarArticles = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel);
+    $options               = Artikel::getDefaultOptions();
+    $options->nVariationen = 1;
+    $oVariKindArtikel      = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,
@@ -204,11 +206,10 @@ if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
 }
 
-$uploads = Upload::gibArtikelUploads($AktuellerArtikel->kArtikel);
 $maxSize = Upload::uploadMax();
 $smarty->assign('nMaxUploadSize', $maxSize)
        ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
-       ->assign('oUploadSchema_arr', $uploads)
+       ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
        ->assign('oAehnlicheArtikel_arr', $similarArticles)

@@ -10,6 +10,7 @@ use Generator;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\dbeS\Push\AbstractPush;
+use JTL\dbeS\Push\ImageAPI;
 use JTL\dbeS\Push\Invoice;
 use JTL\dbeS\Push\MediaFiles;
 use JTL\dbeS\Push\Payments;
@@ -32,6 +33,7 @@ use JTL\dbeS\Sync\Customer;
 use JTL\dbeS\Sync\DeliverySlips;
 use JTL\dbeS\Sync\QuickSync;
 use JTL\Helpers\Text;
+use JTL\Shop;
 use JTL\XML;
 use Psr\Log\LoggerInterface;
 use JTL\dbeS\Push\Orders as PushOrders;
@@ -50,6 +52,10 @@ class Starter
 
     public const OK = 0;
 
+    private const DIRECTION_PUSH = 'push';
+
+    private const DIRECTION_PULL = 'pull';
+
     /**
      * @var array
      */
@@ -58,7 +64,7 @@ class Starter
         'Bestellungen_xml' => Orders::class,
         'Bilder_xml'       => Images::class,
         'Brocken_xml'      => Brocken::class,
-        'Date_xml'         => Data::class,
+        'Data_xml'         => Data::class,
         'Download_xml'     => Downloads::class,
         'Globals_xml'      => Globals::class,
         'Hersteller_xml'   => Manufacturers::class,
@@ -83,7 +89,8 @@ class Starter
         'GetKunden_xml'        => Customers::class,
         'GetMediendateien_xml' => MediaFiles::class,
         'GetZahlungen_xml'     => Payments::class,
-        'Invoice_xml'          => Invoice::class
+        'Invoice_xml'          => Invoice::class,
+        'bild'                 => ImageAPI::class
     ];
 
     /**
@@ -160,6 +167,18 @@ class Starter
         $this->logger      = $log;
         $this->db          = $db;
         $this->cache       = $cache;
+        $this->checkPermissions();
+    }
+
+    private function checkPermissions(): void
+    {
+        $tmpDir = \PFAD_ROOT . \PFAD_DBES . \PFAD_SYNC_TMP;
+        if (!\is_writable($tmpDir)) {
+            \syncException(
+                'Fehler beim Abgleich: Das Verzeichnis ' . $tmpDir . ' ist nicht beschreibbar!',
+                \FREIDEFINIERBARER_FEHLER
+            );
+        }
     }
 
     /**
@@ -244,18 +263,18 @@ class Starter
             return;
         }
         require_once \PFAD_ROOT . \PFAD_DBES . 'NetSync_inc.php';
-        NetSyncHandler::create($mapping);
+        NetSyncHandler::create($mapping, $this->db, $this->logger);
         exit();
     }
 
     /**
+     * handling of files that do not fit the general push/pull scheme
+     *
      * @param string $handledFile
      * @param array  $post
-     * @param array  $files
-     * @return int
      * @throws \Exception
      */
-    public function start(string $handledFile, array $post, array $files): int
+    private function handleSpecialCases(string $handledFile, array $post): void
     {
         if ($handledFile === 'lastjobs') {
             $this->init($post, [], false);
@@ -270,13 +289,38 @@ class Starter
             echo $test->execute();
             exit();
         }
+        if ($handledFile === 'bild') {
+            $conf = Shop::getSettings([\CONF_BILDER]);
+            if ($conf['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
+                exit(); // api disabled
+            }
+            if ($conf['bilder']['bilder_externe_bildschnittstelle'] === 'W' && !$this->checkAuth($post)) {
+                exit(); // api is wawi only
+            }
+            $this->init($post, [], false);
+            $api = new ImageAPI($this->db, $this->cache, $this->logger);
+            $api->getData();
+            exit();
+        }
+    }
+
+    /**
+     * @param string $handledFile
+     * @param array  $post
+     * @param array  $files
+     * @return int
+     * @throws \Exception
+     */
+    public function start(string $handledFile, array $post, array $files): int
+    {
+        $this->handleSpecialCases($handledFile, $post);
         $this->executeNetSync($handledFile);
-        $direction = 'pull';
+        $direction = self::DIRECTION_PULL;
         $handler   = self::$pullMapping[$handledFile] ?? null;
         if ($handler === null) {
             $handler = self::$pushMapping[$handledFile] ?? null;
             if ($handler !== null) {
-                $direction = 'push';
+                $direction = self::DIRECTION_PUSH;
             }
         }
         if ($handler === null) {
@@ -285,7 +329,7 @@ class Starter
         $this->setPostData($post);
         $this->setData($files['data']['tmp_name'] ?? null);
 
-        if ($direction === 'pull') {
+        if ($direction === self::DIRECTION_PULL) {
             $res        = '';
             $unzip      = $handler !== Brocken::class;
             $fromHandle = $handler === Customer::class;
@@ -313,22 +357,6 @@ class Starter
             }
 
             echo self::OK;
-        }
-        exit();
-    }
-
-    /**
-     * @param string $handledFile
-     */
-    private function bypass(string $handledFile): void
-    {
-        $file = \PFAD_ROOT . \PFAD_DBES . \basename($handledFile) . '.php';
-        $real = \realpath($file);
-        if ($real === false || \strpos($real, \PFAD_ROOT . \PFAD_DBES) !== 0) {
-            exit();
-        }
-        if (\file_exists($real)) {
-            include $real;
         }
         exit();
     }

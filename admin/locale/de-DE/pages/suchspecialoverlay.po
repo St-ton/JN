@@ -1,0 +1,57 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "suchspecialoverlay"
+msgstr "Bild-Overlays für besondere Artikel"
+
+msgid "suchspecialoverlayDesc"
+msgstr "Besondere Artikel können in JTL-Shop mit einer Overlay-Grafik auf ihrem Artikelbild optisch hervorgehoben werden. Hier stellen Sie die einzelnen Grafiken für die verschiedenen Arten an besonderen Artikeln ein."
+
+msgid "suchspecialoverlayUrl"
+msgstr "https://jtl-url.de/538df"
+
+msgid "suchspecial"
+msgstr "Suchspecial"
+
+msgid "suchspecialoverlayActive"
+msgstr "Overlay-Funktion aktiv"
+
+msgid "suchspecialoverlayActiveDesc"
+msgstr "Hier legen Sie fest, ob die für den unter \"Suchspecial\" ausgewählten Artikeltyp die Overlay-Grafik angezeigt werden soll."
+
+msgid "suchspecialoverlayFileName"
+msgstr "Overlay-Grafik"
+
+msgid "suchspecialoverlayFileNameDesc"
+msgstr "Hier wählen Sie eine Overlay-Grafik aus."
+
+msgid "suchspecialoverlayPrio"
+msgstr "Priorität (1 = sehr unwichtig)"
+
+msgid "suchspecialoverlayMargin"
+msgstr "Randabstand vom Artikelbild"
+
+msgid "suchspecialoverlayMarginDesc"
+msgstr "Hier legen Sie fest, wie viele Pixel Abstand zwischen der Overlay-Grafik und dem Artikelbild sein sollen."
+
+msgid "suchspecialoverlayClarityDesc"
+msgstr "Hier legen Sie fest, mit wie viel Prozent Transparenz das Overlay ausgestattet sein soll. Diese Option gilt nur für das JTL-Shop3-Template Tiny. Falls Sie das von JTL-Shop Version 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+
+msgid "suchspecialoverlaySize"
+msgstr "Größe des Overlays in Pixel (px)"
+
+msgid "suchspecialoverlaySizeDesc"
+msgstr "Hier legen Sie fest, wie viel Platz das Overlay im Vergleich zum Artikelbild einnehmen soll. Diese Option gilt nur für das JTL-Shop3-Template Tiny. Falls Sie das von JTL-Shop Version 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+
+msgid "suchspecialoverlayPositionDesc"
+msgstr "Hier legen Sie fest, wo sich das Bild-Overlay im Artikelbild befinden soll. Diese Option gilt nur für das JTL-Shop3-Template Tiny. Falls Sie das von JTL-Shop Version 4 mitgelieferte EVO-Template oder das von JTL-Shop 5 mitgelieferte NOVA-Template verwenden, wird diese Einstellung über eine Template-Anpassung realisiert."
+
+msgid "suchspecialoverlayPrioDesc"
+msgstr "Falls auf einen Artikel mehrere Specials zutreffen, können Sie hier die Reihenfolge festlegen. Das Special mit der höchsten Priorität wird angezeigt."
+
+msgid "errorOverlayWritePermissions"
+msgstr "Overlay konnte nicht gespeichert werden - bitte Schreibrechte des Ordners \"%s\" prüfen."
+
+msgid "invalidOverlay"
+msgstr "Unbekanntes Overlay"

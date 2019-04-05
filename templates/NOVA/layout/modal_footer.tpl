@@ -2,6 +2,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-    </div>
-</body>
-</html>
+{block name='layout-modal-footer'}
+            </div>
+        </body>
+    </html>
+{/block}

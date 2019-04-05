@@ -10,18 +10,7 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180416103817
  */
 class Migration_20180416103817 extends Migration implements IMigration
 {
@@ -34,8 +23,16 @@ class Migration_20180416103817 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setConfig('articleoverview_pricerange_width', '150', CONF_ARTIKELUEBERSICHT, 'Max. Abweichung (%) für Preis-Range Anzeige', 'number', 372, (object)[
-            'cBeschreibung' => 'Überschreitet der Max. Preis den Min. Preis um die angegebenen Prozent, dann wird stattdessen nur ein "ab" angezeigt.',
+        $this->setConfig(
+            'articleoverview_pricerange_width',
+            '150',
+            \CONF_ARTIKELUEBERSICHT,
+            'Max. Abweichung (%) für Preis-Range Anzeige',
+            'number',
+            372,
+            (object)[
+            'cBeschreibung' => 'Überschreitet der Max. Preis den Min. Preis um die angegebenen Prozent, ' .
+                'dann wird stattdessen nur ein "ab" angezeigt.',
         ]);
     }
 

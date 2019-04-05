@@ -6,7 +6,7 @@
 
 namespace JTL\Checkout;
 
-use JTL\Alert;
+use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Product;
@@ -817,10 +817,7 @@ class Kupon
         $categories  = [];
         $catQry      = '';
         $customerQry = '';
-        if ((isset($_SESSION['Zahlungsart']->cModulId)
-                && \mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0)
-            || (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'])
-        ) {
+        if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
             return 0;
         }
         foreach ($cart->PositionenArr as $Pos) {

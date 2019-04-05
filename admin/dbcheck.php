@@ -10,6 +10,7 @@ use JTL\Helpers\Form;
 use JTL\Update\DBMigrationHelper;
 use JTL\Shop;
 use JTL\Helpers\Text;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -17,8 +18,7 @@ $oAccount->permission('DBCHECK_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
-$cHinweis          = '';
-$cFehler           = '';
+$errorMsg          = '';
 $dbErrors          = [];
 $dbFileStruct      = getDBFileStruct();
 $maintenanceResult = null;
@@ -41,7 +41,7 @@ if (isset($_POST['update']) && Text::filterXSS($_POST['update']) === 'script' &&
 $dbStruct = getDBStruct(true, true);
 $conf     = Shop::getSettings([
     CONF_GLOBAL,
-    CONF_ARTIKELUEBERSICHT,
+    CONF_ARTIKELUEBERSICHT
 ]);
 
 if (!empty($_POST['action']) && !empty($_POST['check'])) {
@@ -49,10 +49,10 @@ if (!empty($_POST['action']) && !empty($_POST['check'])) {
 }
 
 if (empty($dbFileStruct)) {
-    $cFehler = __('errorReadStructureFile');
+    $errorMsg = __('errorReadStructureFile');
 }
 
-if (mb_strlen($cFehler) === 0) {
+if ($errorMsg === '') {
     $dbErrors = compareDBStruct($dbFileStruct, $dbStruct);
 }
 
@@ -68,12 +68,13 @@ if (count($dbErrors) > 0) {
     }
 }
 
-$smarty->assign('cFehler', $cFehler)
-       ->assign('cDBFileStruct_arr', $dbFileStruct)
+Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorDBCheck');
+
+$smarty->assign('cDBFileStruct_arr', $dbFileStruct)
        ->assign('cDBStruct_arr', $dbStruct)
        ->assign('cDBError_arr', $dbErrors)
        ->assign('maintenanceResult', $maintenanceResult)
-       ->assign('scriptGenerationAvailable', defined('ADMIN_MIGRATION') && ADMIN_MIGRATION)
+       ->assign('scriptGenerationAvailable', ADMIN_MIGRATION)
        ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
        ->assign('Einstellungen', $conf)
        ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())

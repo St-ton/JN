@@ -7,13 +7,13 @@
 use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('WAWI_SYNC_VIEW', true, true);
 
-$cFehler  = '';
-$cHinweis = '';
+$alertHelper = Shop::Container()->getAlertService();
 
 if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
     $passwordService = Shop::Container()->getPasswordService();
@@ -34,11 +34,10 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
         ReturnType::AFFECTED_ROWS
     );
 
-    $cHinweis = __('successConfigSave');
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
 }
 
 $user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
 $smarty->assign('wawiuser', $user->cName)
-       ->assign('cHinweis', $cHinweis)
        ->assign('wawipass', $user->cPass)
        ->display('wawisync.tpl');

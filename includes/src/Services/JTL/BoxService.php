@@ -9,6 +9,7 @@ namespace JTL\Services\JTL;
 use function Functional\first;
 use function Functional\group;
 use function Functional\map;
+use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Factory;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
@@ -343,6 +344,8 @@ class BoxService implements BoxServiceInterface
      */
     public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array
     {
+        $boxAdmin          = new BoxAdmin(Shop::Container()->getDB());
+        $validPages        = implode(',', $boxAdmin->getValidPageTypes());
         $cacheID           = 'bx_' . $pageType .
             '_' . (int)$active .
             '_' . (int)$visible .
@@ -392,7 +395,7 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 ' . $activeSQL . $plgnSQL . ' 
+                    WHERE tboxen.kContainer > -1 AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0 ' . $activeSQL . $plgnSQL . ' 
                     GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
                     ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS

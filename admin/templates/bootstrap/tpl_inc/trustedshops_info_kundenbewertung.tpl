@@ -5,20 +5,6 @@
             <br />
             <strong>{__('tsWhatIsRating')}</strong>
         </div>
-        
-        {if $hinweis}
-            <br />
-            <div class="userNotice">
-                {$hinweis}
-            </div>
-        {/if}
-        {if $fehler}
-            <br />
-            <div class="userError">
-                {$fehler}
-            </div>
-        {/if}
-        
         <div id="example" class="post" style="line-height: normal">
             <table  class="table">
                 <tr>

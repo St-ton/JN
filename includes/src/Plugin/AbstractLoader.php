@@ -108,15 +108,14 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
         $data         = $this->db->queryPrepared(
-            'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
-            COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
-            COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue
+            'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
+                COALESCE(c.cName, o.cName) AS customValue
             FROM tpluginsprachvariable AS l
+            JOIN tpluginsprachvariablesprache AS o
+                ON o.kPluginSprachvariable = l.kPluginSprachvariable
             LEFT JOIN tpluginsprachvariablecustomsprache AS c
                 ON c.kPluginSprachvariable = l.kPluginSprachvariable
-            LEFT JOIN tpluginsprachvariablesprache
-                ON tpluginsprachvariablesprache.kPluginSprachvariable = l.kPluginSprachvariable
-                AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
+                AND o.cISO = c.cISO
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
             ['pid' => $id],
@@ -188,7 +187,8 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
         $paths->setLicencePath($basePath . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
-        $paths->setPortletsPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setPortletsPath($basePath . \PFAD_PLUGIN_PORTLETS);
+        $paths->setPortletsUrl($baseURL . \PFAD_PLUGIN_PORTLETS);
         $paths->setExportPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
 
         return $paths;
@@ -246,7 +246,7 @@ abstract class AbstractLoader implements LoaderInterface
 
             return $menu;
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $extension->getID(), '*', 'nSort'));
-        $menus = collect($menus);
+        $menus = \collect($menus);
         $this->addMarkdownToAdminMenu($extension, $menus);
 
         $adminMenu = new AdminMenu();

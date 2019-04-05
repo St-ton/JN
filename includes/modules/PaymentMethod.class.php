@@ -4,14 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Checkout\Bestellung;
-use JTL\Helpers\Request;
-use JTL\Customer\Kunde;
-use JTL\Shop;
 use JTL\Cart\Warenkorb;
+use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
+use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class PaymentMethod
@@ -651,72 +654,74 @@ class PaymentMethod
     }
 
     /**
-     * @param int  $kBestellung
-     * @param int  $nType
-     * @param null $oAdditional
+     * @param int    $orderID
+     * @param string $type
+     * @param mixed  $additional
      * @return $this
      */
-    public function sendMail($kBestellung, $nType, $oAdditional = null)
+    public function sendMail($orderID, $type, $additional = null)
     {
-        $oOrder = new Bestellung($kBestellung);
-        $oOrder->fuelleBestellung(false);
-        $oCustomer = new Kunde($oOrder->kKunde);
-        $oMail     = new stdClass();
+        $order = new Bestellung($orderID);
+        $order->fuelleBestellung(false);
+        $customer = new Kunde($order->kKunde);
+        $data     = new stdClass();
+        $mailer = Shop::Container()->get(Mailer::class);
+        $mail   = new Mail();
 
-        switch ($nType) {
+        switch ($type) {
             case MAILTEMPLATE_BESTELLBESTAETIGUNG:
-                $oMail->tkunde      = $oCustomer;
-                $oMail->tbestellung = $oOrder;
-                if (strlen($oCustomer->cMail) > 0) {
-                    sendeMail($nType, $oMail, $oAdditional);
+                $data->tkunde      = $customer;
+                $data->tbestellung = $order;
+                if (strlen($customer->cMail) > 0) {
+                    $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
             case MAILTEMPLATE_BESTELLUNG_AKTUALISIERT:
-                $oMail->tkunde      = $oCustomer;
-                $oMail->tbestellung = $oOrder;
-                if (strlen($oCustomer->cMail) > 0) {
-                    sendeMail($nType, $oMail, $oAdditional);
+                $data->tkunde      = $customer;
+                $data->tbestellung = $order;
+                if (strlen($customer->cMail) > 0) {
+                    $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
             case MAILTEMPLATE_BESTELLUNG_VERSANDT:
-                $oMail->tkunde      = $oCustomer;
-                $oMail->tbestellung = $oOrder;
-                if (strlen($oCustomer->cMail) > 0) {
-                    sendeMail($nType, $oMail, $oAdditional);
+                $data->tkunde      = $customer;
+                $data->tbestellung = $order;
+                if (strlen($customer->cMail) > 0) {
+                    $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
             case MAILTEMPLATE_BESTELLUNG_TEILVERSANDT:
-                $oMail->tkunde      = $oCustomer;
-                $oMail->tbestellung = $oOrder;
-                if (strlen($oCustomer->cMail) > 0) {
-                    sendeMail($nType, $oMail, $oAdditional);
+                $data->tkunde      = $customer;
+                $data->tbestellung = $order;
+                if (strlen($customer->cMail) > 0) {
+                    $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
             case MAILTEMPLATE_BESTELLUNG_BEZAHLT:
-                $oMail->tkunde      = $oCustomer;
-                $oMail->tbestellung = $oOrder;
-                if (($oOrder->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG) && strlen($oCustomer->cMail) > 0) {
-                    sendeMail($nType, $oMail, $oAdditional);
+                $data->tkunde      = $customer;
+                $data->tbestellung = $order;
+                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG) && strlen($customer->cMail) > 0) {
+                    $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
             case MAILTEMPLATE_BESTELLUNG_STORNO:
-                $oMail->tkunde      = $oCustomer;
-                $oMail->tbestellung = $oOrder;
-                if (($oOrder->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_STORNO) && strlen($oCustomer->cMail) > 0) {
-                    sendeMail($nType, $oMail, $oAdditional);
+                $data->tkunde      = $customer;
+                $data->tbestellung = $order;
+                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_STORNO) && strlen($customer->cMail) > 0) {
+                    $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
             case MAILTEMPLATE_BESTELLUNG_RESTORNO:
-                $oMail->tkunde      = $oCustomer;
-                $oMail->tbestellung = $oOrder;
-                if (($oOrder->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_RESTORNO) && strlen($oCustomer->cMail) > 0) {
-                    sendeMail($nType, $oMail, $oAdditional);
+                $data->tkunde      = $customer;
+                $data->tbestellung = $order;
+                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_RESTORNO) && strlen($customer->cMail) > 0) {
+                    $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
 
@@ -736,9 +741,9 @@ class PaymentMethod
         global $oPlugin;
         $oTmpPlugin    = $oPlugin;
         $paymentMethod = null;
-        $pluginID      = \JTL\Plugin\Helper::getIDByModuleID($moduleId);
+        $pluginID      = PluginHelper::getIDByModuleID($moduleId);
         if ($pluginID > 0) {
-            $loader = \JTL\Plugin\Helper::getLoaderByPluginID($pluginID);
+            $loader = PluginHelper::getLoaderByPluginID($pluginID);
             try {
                 $oPlugin = $loader->init($pluginID);
             } catch (InvalidArgumentException $e) {
@@ -759,29 +764,6 @@ class PaymentMethod
         } elseif ($moduleId === 'za_null_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
             $paymentMethod = new FallBackPayment('za_null_jtl');
-        } elseif ($moduleId === 'za_sofortueberweisung_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
-            $paymentMethod = new SofortUeberweisung($moduleId);
-        } elseif ($moduleId === 'za_billpay_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/Billpay.class.php';
-            $paymentMethod           = new Billpay($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_invoice_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayInvoice.class.php';
-            $paymentMethod           = new BillpayInvoice($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_direct_debit_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayDirectDebit.class.php';
-            $paymentMethod           = new BillpayDirectDebit($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_rate_payment_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayRatePayment.class.php';
-            $paymentMethod           = new BillpayRatePayment($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_paylater_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayPaylater.class.php';
-            $paymentMethod           = new BillpayPaylater($moduleId);
-            $paymentMethod->cModulId = $moduleId;
         }
         $oPlugin = $oTmpPlugin;
 

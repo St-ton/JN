@@ -11,6 +11,7 @@ use JTL\Shop;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Pagination\Operation;
+use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
@@ -19,13 +20,12 @@ use JTL\Pagination\Operation;
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
 
-$cHinweis    = '';
-$cFehler     = '';
+$alertHelper = Shop::Container()->getAlertService();
 $minLogLevel = Shop::getConfigValue(CONF_GLOBAL, 'systemlog_flag');
 if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
-        $cHinweis = __('successSystemLogReset');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSystemLogReset'), 'successSystemLogReset');
     } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         Shop::Container()->getDB()->update(
@@ -35,11 +35,15 @@ if (Form::validateToken()) {
             (object)['cWert' => $minLogLevel]
         );
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
-        $cHinweis = __('successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         $smarty->assign('cTab', 'config');
     } elseif (Request::verifyGPDataString('action') === 'delselected') {
         if (isset($_REQUEST['selected'])) {
-            $cHinweis = Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete');
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                Jtllog::deleteIDs($_REQUEST['selected']) . __('successEntriesDelete'),
+                'successEntriesDelete'
+            );
         }
     }
 }
@@ -82,9 +86,7 @@ foreach ($logData as $log) {
         );
     }
 }
-$smarty->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('oFilter', $filter)
+$smarty->assign('oFilter', $filter)
        ->assign('oPagination', $pagination)
        ->assign('oLog_arr', $logData)
        ->assign('minLogLevel', $minLogLevel)

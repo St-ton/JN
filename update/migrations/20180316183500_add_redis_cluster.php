@@ -10,18 +10,7 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180316183500
  */
 class Migration_20180316183500 extends Migration implements IMigration
 {
@@ -37,7 +26,7 @@ class Migration_20180316183500 extends Migration implements IMigration
         $this->setConfig(
             'caching_rediscluster_hosts',
             '',
-            CONF_CACHING,
+            \CONF_CACHING,
             'Cluster-Hosts',
             'text',
             110,
@@ -49,7 +38,7 @@ class Migration_20180316183500 extends Migration implements IMigration
         $this->setConfig(
             'caching_rediscluster_strategy',
             'N',
-            CONF_CACHING,
+            \CONF_CACHING,
             'Strategie',
             'selectbox',
             111,

@@ -36,8 +36,8 @@
             <meta itemprop="image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
             <meta property="og:image" content="{$imageBaseURL}{$oNewsArchiv->getPreviewImage()}" />
         {else}
-            <meta itemprop="image" content="{$imageBaseURL}{$ShopLogoURL}" />
-            <meta property="og:image" content="{$imageBaseURL}{$ShopLogoURL}" />
+            <meta itemprop="image" content="{$ShopLogoURL}" />
+            <meta property="og:image" content="{$ShopLogoURL}" />
         {/if}
     {/block}
 
@@ -145,7 +145,7 @@
                                 {block name='logo'}
                                 <span itemprop="name" class="hidden">{$meta_publisher}</span>
                                 <meta itemprop="url" content="{$ShopURL}">
-                                <meta itemprop="logo" content="{$imageBaseURL}{$ShopLogoURL}">
+                                <meta itemprop="logo" content="{$ShopLogoURL}">
                                 <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                                     {if isset($ShopLogoURL)}
                                         {imageTag src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
@@ -172,14 +172,14 @@
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 <div class="container">
             {/if}
-            
+
             {block name='header-category-nav'}
             <div class="category-nav navbar-wrapper">
                 {include file='layout/header_category_nav.tpl'}
             </div>{* /category-nav *}
             {/block}
-            
-            
+
+
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 </div>{* /container-block *}
             {/if}
@@ -205,7 +205,7 @@
     {block name='content-container-starttag'}
     <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}{/if}">
     {/block}
-    
+
     {block name='content-container-block-starttag'}
     <div class="container-block{if !$isFluidContent} beveled{/if}">
     {/block}
@@ -220,15 +220,15 @@
         </div>
     {/if}
     {/block}
-    
+
     {block name='content-row-starttag'}
     <div class="row">
     {/block}
-    
+
     {block name='content-starttag'}
     <div id="content" class="col-xs-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
     {/block}
-    
+
     {block name='header-breadcrumb'}
         {include file='layout/breadcrumb.tpl'}
     {/block}

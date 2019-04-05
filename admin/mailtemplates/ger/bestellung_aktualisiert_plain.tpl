@@ -1,18 +1,18 @@
 {includeMailTemplate template=header type=plain}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde aktualisiert.
 
 Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Positionen:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
+{foreach $Bestellung->Positionen as $Position}
 
-{if $Position->nPosTyp==1}
-{$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen=="Y" && $Position->cLieferstatus}
+{if $Position->nPosTyp == 1}
+{$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
 
 Lieferzeit: {$Position->cLieferstatus}{/if}
-{foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+{foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
 {if $Position->cSeriennummer|strlen > 0}
@@ -28,10 +28,10 @@ Charge: {$Position->cChargeNr}
 {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{/if}
 {/foreach}
 
-{if $Einstellungen.global.global_steuerpos_anzeigen!="N"}{foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+{if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}{foreach $Bestellung->Steuerpositionen as $Steuerposition}
 {$Steuerposition->cName}: {$Steuerposition->cPreisLocalized}
 {/foreach}{/if}
-{if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen==1}
+{if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen == 1}
 Gutschein: -{$Bestellung->GutscheinLocalized}
 {/if}
 
@@ -40,7 +40,7 @@ Gesamtsumme: {$Bestellung->WarensummeLocalized[0]}
 
 Ihre Rechnungsadresse:
 
-{$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
+{$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
 {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
@@ -57,7 +57,7 @@ Email: {$Kunde->cMail}
 {if $Bestellung->Lieferadresse->kLieferadresse>0}
 Ihre Lieferadresse:
 
-{$Bestellung->Lieferadresse->cAnredeLocalized} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
+{$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
 {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}
 {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}
 {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}
@@ -79,8 +79,8 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
 
 {/if}
 
-{if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
+{if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
 Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:
 
 Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}
@@ -88,10 +88,9 @@ KontoNr: {$Bestellung->Zahlungsinfo->cKontoNr}
 BLZ: {$Bestellung->Zahlungsinfo->cBLZ}
 Bank: {$Bestellung->Zahlungsinfo->cBankName}
 
-{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
 Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende E-Mailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.

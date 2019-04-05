@@ -16,8 +16,10 @@ use JTL\Shop;
  */
 final class Customers extends AbstractPush
 {
+    private const LIMIT_CUSTOMERS = 100;
+
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {
@@ -30,7 +32,7 @@ final class Customers extends AbstractPush
             date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert, cZusatz
             FROM tkunde
                 WHERE cAbgeholt = 'N'
-                ORDER BY kKunde LIMIT " . \LIMIT_KUNDEN,
+                ORDER BY kKunde LIMIT " . self::LIMIT_CUSTOMERS,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         $customerCount = \count($customers);

@@ -11,6 +11,7 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 use JTL\Shop;
@@ -34,7 +35,7 @@ class ProductStream extends Portlet
         $style         = $instance->getProperty('listStyle');
 
         return '<div ' . $attributes . ' ' . $dataAttribute . '>'
-            . '<img alt="" src="' . \PFAD_TEMPLATES . 'Evo/portlets/ProductStream/preview.' . $style . '.png" '
+            . '<img alt="" src="' . $this->getTemplateUrl() . 'preview.' . $style . '.png" '
             . 'style="width:98%;filter:grayscale(50%) opacity(60%)">'
             . '<div style="color:#5cbcf6;font-size:40px;font-weight:bold;margin: -1em 0 0 0;line-height:1em;">
                 Produktliste</div>'
@@ -66,7 +67,7 @@ class ProductStream extends Portlet
     {
         return [
             'listStyle'    => [
-                'type'    => 'select',
+                'type'    => InputType::SELECT,
                 'label'   => 'Darstellung',
                 'options' => [
                     'gallery'    => 'Galerie',
@@ -85,13 +86,13 @@ class ProductStream extends Portlet
             ],
             'productCount' => [
                 'label'              => 'Anzahl sichtbare Artikel',
-                'type'               => 'number',
+                'type'               => InputType::NUMBER,
                 'collapseControlEnd' => true,
                 'dspl_width'         => 50,
                 'default'            => 3,
             ],
             'filters'      => [
-                'type'    => 'filter',
+                'type'    => InputType::FILTER,
                 'label'   => 'Artikelfilter',
                 'default' => [],
             ],

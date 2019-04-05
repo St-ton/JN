@@ -29,7 +29,11 @@ class PortletGroup
      */
     public function __construct($name)
     {
-        $this->name = $name;
+        if ($name === '') {
+            $this->name = 'No Group';
+        } else {
+            $this->name = $name;
+        }
     }
 
     /**

@@ -497,7 +497,7 @@ class Status
      */
     public function getExportFormatErrorCount(): int
     {
-        if (!isset($_SESSION['exportSyntaxCount'])) {
+        if (!isset($_SESSION['exportSyntaxErrorCount'])) {
             $errorCount    = 0;
             $exportFormats = Shop::Container()->getDB()->selectAll('texportformat', [], []);
             foreach ($exportFormats as $exportFormat) {
@@ -506,10 +506,10 @@ class Status
                     $errorCount++;
                 }
             }
-            $_SESSION['exportSyntaxCount'] = $errorCount;
+            $_SESSION['exportSyntaxErrorCount'] = $errorCount;
         }
 
-        return $_SESSION['exportSyntaxCount'];
+        return $_SESSION['exportSyntaxErrorCount'];
     }
 
     /**
@@ -518,9 +518,7 @@ class Status
      */
     public function getEmailTemplateSyntaxErrorCount(): int
     {
-        if (isset($_SESSION['emailSyntaxChecked'])) {
-            $errorCount = count(Shop::Container()->getDB()->selectAll('temailvorlage', 'nFehlerhaft', 1));
-        } else {
+        if (!isset($_SESSION['emailSyntaxErrorCount'])) {
             $emailTemplates = Shop::Container()->getDB()->selectAll('temailvorlage', [], []);
             $errorCount     = 0;
             foreach ($emailTemplates as $emailTemplate) {
@@ -536,9 +534,9 @@ class Status
                     $errorCount++;
                 }
             }
-            $_SESSION['emailSyntaxChecked'] = 1;
+            $_SESSION['emailSyntaxErrorCount'] = $errorCount;
         }
 
-        return $errorCount;
+        return $_SESSION['emailSyntaxErrorCount'];
     }
 }

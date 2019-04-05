@@ -1604,7 +1604,7 @@ class Exportformat
             (object)['nFehlerhaft' => $error]
         );
 
-        $_SESSION['exportSyntaxCount'] = count(
+        $_SESSION['exportSyntaxErrorCount'] = count(
             Shop::Container()->getDB()->selectAll('texportformat', 'nFehlerhaft', 1)
         );
     }

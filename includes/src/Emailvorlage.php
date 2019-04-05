@@ -429,6 +429,12 @@ class Emailvorlage
             $this->kEmailvorlage,
             $upd
         );
+
+        $_SESSION['emailSyntaxErrorCount'] = count(
+            Shop::Container()->getDB()->selectAll('temailvorlage', 'nFehlerhaft', 1)
+        ) + count(
+            Shop::Container()->getDB()->selectAll('tpluginemailvorlage', 'nFehlerhaft', 1)
+        );
     }
 
     /**
@@ -436,7 +442,7 @@ class Emailvorlage
      * @return string
      * @throws \SmartyException
      */
-    public function checkSyntax(int $pluginID = null): string
+    public function checkSyntax(int $pluginID = 0): string
     {
         $db           = Shop::Container()->getDB();
         $renderer     = new SmartyRenderer($db);
@@ -450,7 +456,7 @@ class Emailvorlage
                 $renderer->renderHTML($id);
                 $renderer->renderText($id);
             } catch (Exception $e) {
-                $this->updateError();
+                $this->updateError(true, false, $pluginID);
 
                 return $e->getMessage();
             }

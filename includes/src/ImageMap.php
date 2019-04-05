@@ -7,6 +7,7 @@
 namespace JTL;
 
 use JTL\Catalog\Product\Artikel;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use stdClass;
 
@@ -27,10 +28,17 @@ class ImageMap implements IExtensionPoint
     public $kKundengruppe;
 
     /**
-     * ImageMap constructor.
+     * @var DbInterface
      */
-    public function __construct()
+    private $db;
+
+    /**
+     * ImageMap constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
     {
+        $this->db            = $db;
         $this->kSprache      = Shop::getLanguage();
         $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
             ? Session\Frontend::getCustomerGroup()->getID()
@@ -42,12 +50,12 @@ class ImageMap implements IExtensionPoint
 
     /**
      * @param int  $kInitial
-     * @param bool $fetch_all
+     * @param bool $fetchAll
      * @return $this
      */
-    public function init($kInitial, $fetch_all = false): self
+    public function init($kInitial, $fetchAll = false): self
     {
-        $imageMap = $this->fetch($kInitial, $fetch_all);
+        $imageMap = $this->fetch($kInitial, $fetchAll);
         if (\is_object($imageMap)) {
             Shop::Smarty()->assign('oImageMap', $imageMap);
         }
@@ -60,8 +68,12 @@ class ImageMap implements IExtensionPoint
      */
     public function fetchAll(): array
     {
-        return Shop::Container()->getDB()->query(
-            'SELECT *, IF((CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0), 1, 0) AS active 
+        return $this->db->query(
+            'SELECT *, IF(
+                (CURDATE() >= DATE(vDatum)) AND (
+                    bDatum IS NULL 
+                    OR CURDATE() <= DATE(bDatum)
+                    OR bDatum = 0), 1, 0) AS active 
                 FROM timagemap
                 ORDER BY bDatum DESC',
             ReturnType::ARRAY_OF_OBJECTS
@@ -76,18 +88,17 @@ class ImageMap implements IExtensionPoint
      */
     public function fetch(int $kImageMap, bool $fetchAll = false, bool $fill = true)
     {
-        $db   = Shop::Container()->getDB();
         $cSQL = 'SELECT *
                     FROM timagemap
                     WHERE kImageMap = ' . $kImageMap;
         if (!$fetchAll) {
-            $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)';
+            $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (bDatum IS NULL OR CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
-        $imageMap = $db->query($cSQL, ReturnType::SINGLE_OBJECT);
+        $imageMap = $this->db->query($cSQL, ReturnType::SINGLE_OBJECT);
         if (!\is_object($imageMap)) {
             return false;
         }
-        $imageMap->oArea_arr = $db->selectAll(
+        $imageMap->oArea_arr = $this->db->selectAll(
             'timagemaparea',
             'kImageMap',
             (int)$imageMap->kImageMap
@@ -120,7 +131,7 @@ class ImageMap implements IExtensionPoint
                     );
                 } else {
                     $area->oArtikel->kArtikel = $area->kArtikel;
-                    $area->oArtikel->cName    = $db->select(
+                    $area->oArtikel->cName    = $this->db->select(
                         'tartikel',
                         'kArtikel',
                         $area->kArtikel,
@@ -157,37 +168,37 @@ class ImageMap implements IExtensionPoint
     public function save($cTitel, $cBildPfad, $vDatum, $bDatum): int
     {
         $ins            = new stdClass();
-        $ins->cTitel    = Shop::Container()->getDB()->escape($cTitel);
-        $ins->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
-        $ins->vDatum    = $vDatum;
-        $ins->bDatum    = $bDatum;
+        $ins->cTitel    = $cTitel;
+        $ins->cBildPfad = $cBildPfad;
+        $ins->vDatum    = $vDatum ?? 'NOW()';
+        $ins->bDatum    = $bDatum ?? '_DBNULL_';
 
-        return Shop::Container()->getDB()->insert('timagemap', $ins);
+        return $this->db->insert('timagemap', $ins);
     }
 
     /**
      * @param int    $kImageMap
-     * @param string $cTitel
-     * @param string $cBildPfad
-     * @param string $vDatum
-     * @param string $bDatum
+     * @param string $title
+     * @param string $imagePath
+     * @param string $dateFrom
+     * @param string $dateUntil
      * @return bool
      */
-    public function update(int $kImageMap, $cTitel, $cBildPfad, $vDatum, $bDatum): bool
+    public function update(int $kImageMap, $title, $imagePath, $dateFrom, $dateUntil): bool
     {
-        if (empty($vDatum)) {
-            $vDatum = '_DBNULL_';
+        if (empty($dateFrom)) {
+            $dateFrom = 'NOW()';
         }
-        if (empty($bDatum)) {
-            $bDatum = '_DBNULL_';
+        if (empty($dateUntil)) {
+            $dateUntil = '_DBNULL_';
         }
         $upd            = new stdClass();
-        $upd->cTitel    = $cTitel;
-        $upd->cBildPfad = $cBildPfad;
-        $upd->vDatum    = $vDatum;
-        $upd->bDatum    = $bDatum;
+        $upd->cTitel    = $title;
+        $upd->cBildPfad = $imagePath;
+        $upd->vDatum    = $dateFrom;
+        $upd->bDatum    = $dateUntil;
 
-        return Shop::Container()->getDB()->update('timagemap', 'kImageMap', $kImageMap, $upd) >= 0;
+        return $this->db->update('timagemap', 'kImageMap', $kImageMap, $upd) >= 0;
     }
 
     /**
@@ -196,17 +207,16 @@ class ImageMap implements IExtensionPoint
      */
     public function delete(int $kImageMap): bool
     {
-        return Shop::Container()->getDB()->delete('timagemap', 'kImageMap', $kImageMap) >= 0;
+        return $this->db->delete('timagemap', 'kImageMap', $kImageMap) >= 0;
     }
 
     /**
-     * @param stdClass $oData
+     * @param stdClass $data
      */
-    public function saveAreas($oData): void
+    public function saveAreas($data): void
     {
-        $db = Shop::Container()->getDB();
-        $db->delete('timagemaparea', 'kImageMap', (int)$oData->kImageMap);
-        foreach ($oData->oArea_arr as $area) {
+        $this->db->delete('timagemaparea', 'kImageMap', (int)$data->kImageMap);
+        foreach ($data->oArea_arr as $area) {
             $ins                = new stdClass();
             $ins->kImageMap     = $area->kImageMap;
             $ins->kArtikel      = $area->kArtikel;
@@ -219,7 +229,7 @@ class ImageMap implements IExtensionPoint
                 $area->oCoords->w . ',' .
                 $area->oCoords->h;
 
-            $db->insert('timagemaparea', $ins);
+            $this->db->insert('timagemaparea', $ins);
         }
     }
 }

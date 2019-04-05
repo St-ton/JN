@@ -175,8 +175,5 @@ $smarty->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('AUSWAHLASSISTENT_ORT_STARTSEITE', AUSWAHLASSISTENT_ORT_STARTSEITE)
        ->assign('AUSWAHLASSISTENT_ORT_KATEGORIE', AUSWAHLASSISTENT_ORT_KATEGORIE)
        ->assign('AUSWAHLASSISTENT_ORT_LINK', AUSWAHLASSISTENT_ORT_LINK)
-       ->assign('oConfig_arr', getAdminSectionSettings(CONF_AUSWAHLASSISTENT));
-
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
-$smarty->display('auswahlassistent.tpl');
+       ->assign('oConfig_arr', getAdminSectionSettings(CONF_AUSWAHLASSISTENT))
+       ->display('auswahlassistent.tpl');

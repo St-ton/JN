@@ -16,12 +16,12 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cAction     = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
 $alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
 if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && Form::validateToken()) {
     $cPlausi_arr = [];
-    $oBanner     = new ImageMap();
+    $oBanner     = new ImageMap($db);
     $kImageMap   = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
     $cName       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     if (mb_strlen($cName) === 0) {
@@ -95,7 +95,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cValue    = $_POST[$cKeyValue] ?? null;
         }
 
-        Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
+        $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
         $oExtension                = new stdClass();
         $oExtension->kSprache      = $kSprache;
         $oExtension->kKundengruppe = $kKundengruppe;
@@ -105,7 +105,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $oExtension->cClass        = 'ImageMap';
         $oExtension->kInitial      = $kImageMap;
 
-        $ins = Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
+        $ins = $db->insert('textensionpoint', $oExtension);
         if ($kImageMap && $ins > 0) {
             $cAction = 'view';
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'successSave');
@@ -193,6 +193,6 @@ switch ($cAction) {
 }
 
 $smarty->assign('cAction', $cAction)
-       ->assign('validPageTypes', (new BoxAdmin(Shop::Container()->getDB()))->getMappedValidPageTypes())
+       ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
        ->assign('oBanner_arr', holeAlleBanner())
        ->display('banner.tpl');

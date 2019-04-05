@@ -465,7 +465,6 @@ function checkeBewertungGuthabenBonus(int $ratingID, array $conf)
             Shop::Container()->getDB()->insert('tbewertungguthabenbonus', $ratingBonus);
         }
     }
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     $obj                          = new stdClass();
     $obj->tkunde                  = new Kunde($ratingBonus->kKunde);
     $obj->oBewertungGuthabenBonus = $ratingBonus;

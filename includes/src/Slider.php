@@ -7,6 +7,7 @@
 namespace JTL;
 
 use function Functional\first;
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use stdClass;
 
@@ -104,6 +105,11 @@ class Slider implements IExtensionPoint
     private $useKB = true;
 
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
      * @var array
      */
     private static $mapping = [
@@ -123,6 +129,7 @@ class Slider implements IExtensionPoint
         'bRandomStart'    => 'RandomStart',
         'bDirectionNav'   => 'DirectionNav',
         'bUseKB'          => 'UseKB',
+        'kKundengruppe'   => 'CustomerGroupID'
     ];
 
     /**
@@ -130,6 +137,15 @@ class Slider implements IExtensionPoint
      */
     private function __clone()
     {
+    }
+
+    /**
+     * Slider constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
     }
 
     /**
@@ -185,7 +201,7 @@ class Slider implements IExtensionPoint
         if ($kSlider === 0) {
             $kSlider = $this->id;
         }
-        $data  = Shop::Container()->getDB()->queryPrepared(
+        $data  = $this->db->queryPrepared(
             'SELECT *, tslider.kSlider AS id FROM tslider
                 LEFT JOIN tslide
                     ON tslider.kSlider = tslide.kSlider
@@ -206,7 +222,6 @@ class Slider implements IExtensionPoint
                 }
             }
             $this->set($first);
-
             return $this->getID() > 0 && \count($this->slides) > 0;
         }
 
@@ -232,10 +247,13 @@ class Slider implements IExtensionPoint
         foreach (self::$mapping as $type => $methodName) {
             $method        = 'get' . $methodName;
             $slider->$type = $this->$method();
+            if (\is_bool($slider->$type)) {
+                $slider->$type = (int)$slider->$type;
+            }
         }
         unset($slider->oSlide_arr, $slider->slides, $slider->kSlider);
 
-        $kSlider = Shop::Container()->getDB()->insert('tslider', $slider);
+        $kSlider = $this->db->insert('tslider', $slider);
 
         if ($kSlider > 0) {
             $this->id = $kSlider;
@@ -255,10 +273,13 @@ class Slider implements IExtensionPoint
         foreach (self::$mapping as $type => $methodName) {
             $method        = 'get' . $methodName;
             $slider->$type = $this->$method();
+            if (\is_bool($slider->$type)) {
+                $slider->$type = (int)$slider->$type;
+            }
         }
         unset($slider->oSlide_arr, $slider->slides, $slider->kSlider);
 
-        return Shop::Container()->getDB()->update('tslider', 'kSlider', $this->getID(), $slider) >= 0;
+        return $this->db->update('tslider', 'kSlider', $this->getID(), $slider) >= 0;
     }
 
     /**
@@ -268,8 +289,8 @@ class Slider implements IExtensionPoint
     {
         $id = $this->getID();
         if ($id !== 0) {
-            $affected = Shop::Container()->getDB()->delete('tslider', 'kSlider', $id);
-            Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $id]);
+            $affected = $this->db->delete('tslider', 'kSlider', $id);
+            $this->db->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $id]);
             if ($affected > 0) {
                 foreach ($this->slides as $slide) {
                     $slide->delete();

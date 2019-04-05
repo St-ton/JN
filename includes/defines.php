@@ -107,7 +107,6 @@ ifndef('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
 ifndef('PFAD_ADMIN', 'admin/');
 ifndef('PFAD_EMAILVORLAGEN', PFAD_ADMIN . 'mailtemplates/');
 ifndef('PFAD_MEDIAFILES', 'mediafiles/');
-ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
 ifndef('IMAGE_SIZE_XS', 'xs');
 ifndef('IMAGE_SIZE_SM', 'sm');
 ifndef('IMAGE_SIZE_MD', 'md');

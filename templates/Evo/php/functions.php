@@ -22,9 +22,10 @@ use JTL\Media\MediaImage;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
-use JTL\TrustedShops;
+use scc\DefaultComponentRegistrator;
+use sccbs3\Bs3sccRenderer;
 
-$scc = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
+$scc = new DefaultComponentRegistrator(new Bs3sccRenderer($smarty));
 $scc->registerComponents();
 
 $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
@@ -524,14 +525,11 @@ function build_navigation_subs($linkGroup, $kVaterLink = 0)
 /**
  * @param array                        $params
  * @param Smarty_Internal_TemplateBase $smarty
+ * @deprecated since 5.0.0
  */
 function get_trustedshops_data($params, $smarty)
 {
-    $oTrustedShops = new TrustedShops(-1, Text::convertISO2ISO639(Shop::getLanguageCode()));
-    $smarty->assign($params['assign'], [
-        'tsId'   => $oTrustedShops->tsId,
-        'nAktiv' => $oTrustedShops->nAktiv
-    ]);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**

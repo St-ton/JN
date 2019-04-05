@@ -235,9 +235,6 @@ msgstr "Einstellungen für Umfragesystem"
 msgid "configgroup_593"
 msgstr "Einstellungen für Kunden werben Kunden"
 
-msgid "configgroup_1291"
-msgstr "Einstellungen für Trusted Shops Käuferschutz"
-
 msgid "configgroup_1392"
 msgstr "Standardsortierung für Besondere Artikel"
 

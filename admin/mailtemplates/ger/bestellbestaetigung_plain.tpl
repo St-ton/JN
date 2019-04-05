@@ -117,10 +117,6 @@ Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie fol
 
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
-{if !empty($oTrustedShopsBewertenButton->cURL)}
-Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.
-{$oTrustedShopsBewertenButton->cURL}
-{/if}
 
 Mit freundlichem Gruß,
 Ihr Team von {$Firma->cName}

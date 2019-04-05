@@ -238,9 +238,6 @@ msgstr "Settings for survey system"
 msgid "configgroup_593"
 msgstr "Settings for customer referral programme"
 
-msgid "configgroup_1291"
-msgstr "Settings for Trusted Shops buyer protection"
-
 msgid "configgroup_1392"
 msgstr "Default sorting for special items"
 

@@ -35,7 +35,7 @@
                                 <span class="label label-success success">{__('active')}</span>
                             {else}
                                 {if $emailvorlage->nFehlerhaft == 1}
-                                    <span class="label label-danger error">{__('faulty')}</span>
+                                    <span class="label label-danger">{__('faulty')}</span>
                                 {else}
                                     <span class="label label-info error">{__('inactive')}</span>
                                 {/if}
@@ -84,7 +84,7 @@
                                 <span class="success label label-success">{__('active')}</span>
                             {else}
                                 {if $oPluginEmailvorlage->nFehlerhaft == 1}
-                                    <span class="label label-danger error">{__('faulty')}</span>
+                                    <span class="label label-danger">{__('faulty')}</span>
                                 {else}
                                     <span class="label label-info">{__('inactive')}</span>
                                 {/if}

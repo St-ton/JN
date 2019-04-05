@@ -137,7 +137,7 @@ if (isset($_GET['fc']) && mb_strlen($_GET['fc']) > 0) {
         );
     }
 }
-if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
+if (Request::verifyGPCDataInt('abonnieren') > 0) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
     $customer            = new stdClass();
     $customer->cAnrede   = isset($_POST['cAnrede'])
@@ -166,12 +166,6 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         );
     }
     $smarty->assign('cPost_arr', Text::filterXSS($_POST));
-} elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
-    $oPlausi                      = new stdClass();
-    $oPlausi->cPost_arr['cEmail'] = isset($_POST['cEmail'])
-        ? Text::filterXSS($db->escape(strip_tags($_POST['cEmail'])))
-        : null;
-    $smarty->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) {
     if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
         $recicpient = $db->select(

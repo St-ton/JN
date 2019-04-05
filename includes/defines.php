@@ -92,7 +92,6 @@ ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
 ifndef('PFAD_GFX_AMPEL', PFAD_GFX . 'ampel/');
-ifndef('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX . 'bewertung_sterne/');
 ifndef('PFAD_DBES', 'dbeS/');
 ifndef('PFAD_DBES_TMP', PFAD_DBES . 'tmp/');
 ifndef('PFAD_BILDER', 'bilder/');
@@ -152,7 +151,6 @@ ifndef('PFAD_DOWNLOADS_REL', 'downloads/');
 ifndef('PFAD_DOWNLOADS_PREVIEW_REL', PFAD_DOWNLOADS_REL . 'vorschau/');
 ifndef('PFAD_DOWNLOADS', PFAD_ROOT . PFAD_DOWNLOADS_REL);
 ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
-ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');

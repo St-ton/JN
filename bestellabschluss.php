@@ -4,22 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\Warenkorb;
 use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Cart;
+use JTL\Plugin\Helper;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
-use JTL\Helpers\Text;
-use JTL\Cart\Warenkorb;
-use JTL\Session\Frontend;
-use JTL\Plugin\Helper;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $conf       = Shopsetting::getInstance()->getAll();

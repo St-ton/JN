@@ -435,7 +435,12 @@
                                 </h4>
                             </td>
                             <td>
-                                {$oBanner->vDatum|date_format:'%d.%m.%Y'} - {$oBanner->bDatum|date_format:'%d.%m.%Y'}
+                                {if $oBanner->vDatum !== null}
+                                    {$oBanner->vDatum|date_format:'%d.%m.%Y'}
+                                {/if} -
+                                {if $oBanner->bDatum !== null}
+                                    {$oBanner->bDatum|date_format:'%d.%m.%Y'}
+                                {/if}
                             </td>
                             <td class="tcenter">
                                 <form action="banner.php" method="post">

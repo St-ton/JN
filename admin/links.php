@@ -341,11 +341,15 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
+    $errorDuplicateSpecialLink = '';
     foreach ($linkAdmin->getDuplicateSpecialLinks() as $specialLink) {
-        $fehler .= sprintf(
+        $errorDuplicateSpecialLink .= sprintf(
             __('hasDuplicateSpecialLink') . '<br />',
             ' "' . $specialLink->getName() .'"'
         );
+    }
+    if ($errorDuplicateSpecialLink !== '') {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorDuplicateSpecialLink, 'hasDuplicateSpecialLink');
     }
     $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
            ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())

@@ -1627,3 +1627,6 @@ msgstr "Antarctica"
 
 msgid "date"
 msgstr "Date"
+
+msgid "syntax"
+msgstr "Syntax"

@@ -667,8 +667,8 @@ function gibStepLieferadresse()
 function gibStepZahlung()
 {
     global $step;
-    $cart   = Frontend::getCart();
-    $smarty = Shop::Smarty();
+    $cart       = Frontend::getCart();
+    $smarty     = Shop::Smarty();
     $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$lieferland) {
         $lieferland = Frontend::getCustomer()->cLand;

@@ -185,7 +185,7 @@ build_migrate()
     php -r "
     require_once '${REPOSITORY_DIR}/includes/globalinclude.php'; \
       \$time    = date('YmdHis'); \
-      \$manager = new MigrationManager(); \
+      \$manager = new MigrationManager(Shop::Container()->getDB()); \
       try { \
           \$migrations = \$manager->migrate(\$time); \
       } catch (Exception \$e) { \
@@ -195,6 +195,9 @@ build_migrate()
           return 1; \
       } \
     ";
+    if [[ $? -ne 0 ]]; then
+        exit 1;
+    fi
 
     echo 'TRUNCATE tversion' | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};
     echo "INSERT INTO tversion (nVersion, nZeileVon, nZeileBis, nInArbeit, nFehler, nTyp, cFehlerSQL, dAktualisiert) VALUES ('${APPLICATION_VERSION_STR}', 1, 0, 0, 0, 0, '', NOW())" | mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} -D ${DB_NAME};

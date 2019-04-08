@@ -51,11 +51,6 @@ final class Orders extends AbstractPush
             ) {
                 $orders[$i]['cModulId'] = 'za_paypal_pui_jtl';
             }
-
-            // workaround; ACHTUNG: NUR BIS AUSSCHLIESSLICH WAWI 1.0.9.2
-            /*if ($oBestellung['cModulId'] === 'za_billpay_invoice_jtl') {
-                $oBestellung_arr[$i]['cModulId'] = 'za_billpay_jtl';
-            }*/
         }
 
         $crypto          = Shop::Container()->getCryptoService();

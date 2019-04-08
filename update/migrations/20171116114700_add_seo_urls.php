@@ -11,8 +11,6 @@ use JTL\Sprache;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-
 /**
  * Class Migration_20171116114700
  */

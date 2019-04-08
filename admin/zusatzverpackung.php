@@ -16,7 +16,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step         = 'zusatzverpackung';
 $oSprache_arr = Sprache::getAllLanguages();

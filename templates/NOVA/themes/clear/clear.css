@@ -13911,12 +13911,6 @@ blockquote p {
   display: inline;
 }
 
-#vcard-upload {
-  position: absolute;
-  top: 25px;
-  right: 20px;
-}
-
 .parallax-window > * {
   z-index: 2;
   position: relative;

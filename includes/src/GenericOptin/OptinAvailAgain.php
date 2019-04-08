@@ -27,7 +27,7 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
     /**
      * @var stdClass
      */
-    private $article;
+    private $product;
 
     /**
      * OptinAvailAgain constructor.
@@ -52,7 +52,7 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
     public function createOptin(GenericOptinRefData $refData): self
     {
         $this->refData = $refData;
-        $this->article = $this->dbHandler->select('tartikel', 'kArtikel', $this->refData->getArticleId());
+        $this->product = $this->dbHandler->select('tartikel', 'kArtikel', $this->refData->getProductId());
         $this->saveOptin($this->generateUniqOptinCode());
 
         return $this;
@@ -63,13 +63,12 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
      */
     public function sendActivationMail(): void
     {
+        $customerId = !empty(Frontend::getCustomer()->getID()) ? Frontend::getCustomer()->getID() : 0;
+
         $recipient               = new stdClass();
         $recipient->kSprache     = Shop::getLanguage();
-        $recipient->kKunde       = isset($_SESSION['Kunde']->kKunde)
-            ? (int)$_SESSION['Kunde']->kKunde
-            : 0;
-        $recipient->nAktiv       = isset($_SESSION['Kunde']->kKunde)
-            && $_SESSION['Kunde']->kKunde > 0;
+        $recipient->kKunde       = $customerId;
+        $recipient->nAktiv       = $customerId > 0;
         $recipient->cAnrede      = $this->refData->getSalutation();
         $recipient->cVorname     = $this->refData->getFirstName();
         $recipient->cNachname    = $this->refData->getLastName();
@@ -77,13 +76,13 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
         $recipient->dEingetragen = $this->nowDataTime->format('Y-m-d H:i:s');
 
         $optin                  = new stdClass();
-        $articleSeoURL          = Shop::getURL() . '/' . $this->article->cSeo;
+        $articleSeoURL          = Shop::getURL() . '/' . $this->product->cSeo;
         $optin->activationURL   = $articleSeoURL . '?oc=' . self::ACTIVATE_CODE . $this->optCode;
         $optin->deactivationURL = $articleSeoURL . '?oc=' . self::CLEAR_CODE . $this->optCode;
 
         $templateData                                   = new stdClass();
-        $templateData->tkunde                           = $_SESSION['Kunde'] ?? null;   // maybe --OBSOLETE--
-        $templateData->tartikel                         = $this->article;
+        $templateData->tkunde                           = $_SESSION['Kunde'] ?? null;
+        $templateData->tartikel                         = $this->product;
         $templateData->tverfuegbarkeitsbenachrichtigung = [];
         $templateData->optin                            = $optin;
         $templateData->mailReceiver                     = $recipient;
@@ -107,9 +106,9 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
         $inquiry            = Product::getAvailabilityFormDefaults();
         $inquiry->kSprache  = Shop::getLanguage();
         $inquiry->cIP       = Request::getRealIP();
-        $inquiry->dErstellt = 'NOW()';                  // --TO-CHECK--
+        $inquiry->dErstellt = 'NOW()';
         $inquiry->nStatus   = 0;
-        $inquiry->kArtikel  = $this->refData->getArticleId();
+        $inquiry->kArtikel  = $this->refData->getProductId();
         $inquiry->cMail     = $this->refData->getEmail();
         $inquiry->cVorname  = $this->refData->getFirstName();
         $inquiry->cNachname = $this->refData->getLastName();

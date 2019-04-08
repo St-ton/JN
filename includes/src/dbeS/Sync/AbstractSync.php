@@ -245,35 +245,36 @@ abstract class AbstractSync
             $isOptinValidActive = (new GenericOptin(\OPTIN_AVAILAGAIN))
                 ->setEmail($msg->cMail)
                 ->isActive();
-            if ($isOptinValidActive) {
-                $tplData                                   = new stdClass();
-                $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
-                $tplData->tartikel                         = $product;
-                $tplData->tartikel->cName                  = Text::htmlentitydecode($tplData->tartikel->cName);
-                $tplMail                                   = new stdClass();
-                $tplMail->toEmail                          = $msg->cMail;
-                $tplMail->toName                           = ($msg->cVorname || $msg->cNachname)
-                    ? ($msg->cVorname . ' ' . $msg->cNachname)
-                    : $msg->cMail;
-                $tplData->mail                             = $tplMail;
-
-                $mailer = Shop::Container()->get(Mailer::class);
-                $mail   = new Mail();
-                $mail->setToMail($tplMail->toEmail);
-                $mail->setToName($tplMail->toName);
-                $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
-
-                $upd                    = new stdClass();
-                $upd->nStatus           = 1;
-                $upd->dBenachrichtigtAm = 'NOW()';
-                $upd->cAbgeholt         = 'N';
-                $this->db->update(
-                    'tverfuegbarkeitsbenachrichtigung',
-                    'kVerfuegbarkeitsbenachrichtigung',
-                    $msg->kVerfuegbarkeitsbenachrichtigung,
-                    $upd
-                );
+            if (!$isOptinValidActive) {
+                continue;
             }
+            $tplData                                   = new stdClass();
+            $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
+            $tplData->tartikel                         = $product;
+            $tplData->tartikel->cName                  = Text::htmlentitydecode($tplData->tartikel->cName);
+            $tplMail                                   = new stdClass();
+            $tplMail->toEmail                          = $msg->cMail;
+            $tplMail->toName                           = ($msg->cVorname || $msg->cNachname)
+                ? ($msg->cVorname . ' ' . $msg->cNachname)
+                : $msg->cMail;
+            $tplData->mail                             = $tplMail;
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mail->setToMail($tplMail->toEmail);
+            $mail->setToName($tplMail->toName);
+            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
+
+            $upd                    = new stdClass();
+            $upd->nStatus           = 1;
+            $upd->dBenachrichtigtAm = 'NOW()';
+            $upd->cAbgeholt         = 'N';
+            $this->db->update(
+                'tverfuegbarkeitsbenachrichtigung',
+                'kVerfuegbarkeitsbenachrichtigung',
+                $msg->kVerfuegbarkeitsbenachrichtigung,
+                $upd
+            );
         }
     }
 

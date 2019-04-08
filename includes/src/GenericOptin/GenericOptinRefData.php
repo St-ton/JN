@@ -55,7 +55,7 @@ class GenericOptinRefData implements \Serializable
     /**
      * @var int
      */
-    private $articleId;
+    private $productID;
 
     /**
      * @return string
@@ -71,7 +71,7 @@ class GenericOptinRefData implements \Serializable
             $this->lastName,
             $this->email,
             $this->realIP,
-            $this->articleId
+            $this->productID
         ]);
     }
 
@@ -89,15 +89,15 @@ class GenericOptinRefData implements \Serializable
             $this->lastName,
             $this->email,
             $this->realIP,
-            $this->articleId
+            $this->productID
         ] = \unserialize($serialized, ['GenericOptinRefData']);
     }
 
     /**
-     * @param string $optinType
+     * @param int $optinType
      * @return GenericOptinRefData
      */
-    public function setOptinType(string $optinType): self
+    public function setOptinType(int $optinType): self
     {
         $this->optinType = $optinType;
 
@@ -182,20 +182,20 @@ class GenericOptinRefData implements \Serializable
     }
 
     /**
-     * @param int $articleId
+     * @param int $productId
      * @return GenericOptinRefData
      */
-    public function setArticleId(int $articleId): self
+    public function setProductId(int $productId): self
     {
-        $this->articleId = $articleId;
+        $this->productID = $productId;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getOptinType(): string
+    public function getOptinType(): int
     {
         return $this->optinType;
     }
@@ -259,9 +259,20 @@ class GenericOptinRefData implements \Serializable
     /**
      * @return int
      */
-    public function getArticleId(): int
+    public function getProductId(): int
     {
-        return $this->articleId;
+        return $this->productID;
+    }
+
+    /**
+     * @return $this
+     */
+    public function anonymized(): self
+    {
+        $this->setEmail('anonym');
+        $this->setRealIP('-');
+
+        return $this;
     }
 
     /**

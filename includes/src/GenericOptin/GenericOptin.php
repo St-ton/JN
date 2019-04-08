@@ -27,7 +27,7 @@ class GenericOptin extends GenericOptinBase
     protected $currentOptin;
 
     /**
-     * @var string 'ac'|'cc'
+     * @var string actionPrefix
      */
     protected $externalAction;
 
@@ -36,7 +36,7 @@ class GenericOptin extends GenericOptinBase
      * @param int $optinType
      * @throws \Exception
      */
-    public function __construct(?int $optinType)
+    public function __construct(int $optinType = null)
     {
         $this->dbHandler   = Shop::Container()->getDB();
         $this->nowDataTime = new \DateTime();
@@ -55,7 +55,7 @@ class GenericOptin extends GenericOptinBase
     }
 
     /**
-     * @param $action
+     * @param string $action
      * @return GenericOptin
      */
     public function setAction(string $action): GenericOptin
@@ -66,10 +66,6 @@ class GenericOptin extends GenericOptinBase
     }
 
     /**
-     * activate or deactivate an existing optin
-     * code "actionPrefixes" are:
-     *   'cc' = "clear code"
-     *   'ac' = "activate code"
      * return message meanings:
      * 'optinCanceled'      = cancel (a previously active) subscription
      * 'optinRemoved'       = cancel optin without the existence  of a subscription
@@ -96,12 +92,12 @@ class GenericOptin extends GenericOptinBase
         }
         $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['GenericOptinRefData']);
         $this->generateOptin($this->refData->getOptinType());
-        if ($this->actionPrefix === 'cc' || $this->externalAction === 'cc') {
+        if ($this->actionPrefix === self::CLEAR_CODE || $this->externalAction === self::CLEAR_CODE) {
             $this->deactivateOptin();
 
             return !empty($this->foundOptinTupel->dActivated) ? 'optinCanceled' : 'optinRemoved';
         }
-        if ($this->actionPrefix === 'ac' || $this->externalAction === 'ac') {
+        if ($this->actionPrefix === self::ACTIVATE_CODE || $this->externalAction === self::ACTIVATE_CODE) {
             $this->activateOptin();
 
             return empty($this->foundOptinTupel->dActivated) ? 'optinSucceded' : 'optinSuccededAgain';
@@ -135,8 +131,8 @@ class GenericOptin extends GenericOptinBase
         $newRow               = new \stdClass();
         $newRow->kOptinId     = $this->optCode;
         $newRow->kOptinType   = $this->refData->getOptinType();
-        $newRow->cMail        = $this->refData->getEmail();
-        $newRow->cRefData     = \serialize($this->refData);
+        $newRow->cMail        = 'anonym'; // anonymized for history
+        $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
         $newRow->dCreated     = $this->foundOptinTupel->dCreated;
         $newRow->dActivated   = $this->foundOptinTupel->dActivated;
         $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');
@@ -159,9 +155,9 @@ class GenericOptin extends GenericOptinBase
     }
 
     /**
-     * @param $optinType
+     * @param int $optinType
      */
-    private function generateOptin($optinType): void
+    private function generateOptin(int $optinType): void
     {
         $this->currentOptin = GenericOptinFactory::instantiate(
             $optinType,

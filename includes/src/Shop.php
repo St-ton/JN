@@ -1596,7 +1596,7 @@ final class Shop
 
         if (\mb_strlen(self::$optinCode) > 8) {
             try {
-                $successMsg = (new GenericOptin(null))
+                $successMsg = (new GenericOptin())
                     ->setCode(self::$optinCode)
                     ->handleOptin();
                 self::Container()->getAlertService()->addAlert(

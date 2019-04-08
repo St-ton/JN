@@ -1257,7 +1257,7 @@ class Product
                     ->setFirstName('')
                     ->setLastName('')
                     ->setOptinType(OPTIN_AVAILAGAIN)
-                    ->setArticleId((int)$_POST['a'])
+                    ->setProductId((int)$_POST['a'])
                     ->setEmail(Text::filterXSS($dbHandler->escape(strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguage())
                     ->setRealIP(Request::getRealIP());

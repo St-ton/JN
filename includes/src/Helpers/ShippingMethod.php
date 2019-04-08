@@ -1009,7 +1009,7 @@ class ShippingMethod
         $additionalProduct,
         $product = null,
         $excludeShippingCostAttributes = false
-    ){
+    ) {
         $db = Shop::Container()->getDB();
         if (!isset($additionalProduct->fAnzahl)) {
             if ($additionalProduct === null) {

@@ -4,17 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
 
 
 use Eloquent\Pathogen\Path;
-use PHPUnit\Framework\TestCase;
+use JTL\Services\JTL\Validation\Rules\InPath;
+use Tests\BaseTestCase;
 
 /**
  * Class InPathTest
  * @package Services\JTL\Validation\Rules
  */
-class InPathTest extends TestCase
+class InPathTest extends BaseTestCase
 {
     public function test()
     {

@@ -4,7 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Cart;
+use JTL\Helpers\Cart;
+use JTL\Shop;
 
 require __DIR__ . '/includes/globalinclude.php';
 
@@ -12,6 +13,7 @@ $NaviFilter = Shop::run();
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 Cart::checkAdditions();
 $file = Shop::getEntryPoint();
+
 if ($file !== null && !Shop::$is404) {
     require PFAD_ROOT . basename($file);
 }

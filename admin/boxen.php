@@ -4,21 +4,29 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Backend\Revision;
+use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Template;
+use JTL\DB\ReturnType;
+use JTL\Link\LinkGroupInterface;
+use JTL\Boxes\Type;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
-$cHinweis   = '';
-$cFehler    = '';
-$pageID     = Request::verifyGPCDataInt('page');
-$boxService = Shop::Container()->getBoxService();
-$boxAdmin   = new \Boxes\Admin\BoxAdmin(Shop::Container()->getDB());
-$bOk        = false;
-$linkID     = Request::verifyGPCDataInt('linkID');
-$boxID      = Request::verifyGPCDataInt('item');
+$pageID      = Request::verifyGPCDataInt('page');
+$boxService  = Shop::Container()->getBoxService();
+$boxAdmin    = new BoxAdmin(Shop::Container()->getDB());
+$bOk         = false;
+$linkID      = Request::verifyGPCDataInt('linkID');
+$boxID       = Request::verifyGPCDataInt('item');
+$alertHelper = Shop::Container()->getAlertService();
+
 if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
@@ -30,7 +38,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                         ++$cnt;
                     }
                 }
-                $cHinweis = $cnt . __('successBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, $cnt . __('successBoxDelete'), 'successBoxDelete');
             }
             break;
 
@@ -41,16 +49,16 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 // Neuer Container
                 $bOk = $boxAdmin->create(0, $pageID, $ePosition);
                 if ($bOk) {
-                    $cHinweis = __('successContainerCreate');
+                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContainerCreate'), 'successContainerCreate');
                 } else {
-                    $cFehler = __('errorContainerCreate');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorContainerCreate'), 'errorContainerCreate');
                 }
             } else {
                 $bOk = $boxAdmin->create($boxID, $pageID, $ePosition, $kContainer);
                 if ($bOk) {
-                    $cHinweis = __('successBoxCreate');
+                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxCreate'), 'successBoxCreate');
                 } else {
-                    $cFehler = __('errorBoxCreate');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxCreate'), 'errorBoxCreate');
                 }
             }
             break;
@@ -58,9 +66,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
         case 'del':
             $bOk = $boxAdmin->delete($boxID);
             if ($bOk) {
-                $cHinweis = __('successBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxDelete'), 'successBoxDelete');
             } else {
-                $cFehler = __('errorBoxDelete');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxDelete'), 'errorBoxDelete');
             }
             break;
 
@@ -71,16 +79,14 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             foreach ($oBox->oSprache_arr as $lang) {
                 $revisionData[$lang->cISO] = $lang;
             }
+            $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
+                function (LinkGroupInterface $e) {
+                    return $e->isSpecial() === false;
+                }
+            );
             $smarty->assign('oEditBox', $oBox)
                    ->assign('revisionData', $revisionData)
-                   ->assign(
-                       'oLink_arr',
-                       Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
-                            function (\Link\LinkGroupInterface $e) {
-                                return $e->isSpecial() === false;
-                            }
-                       )
-                   );
+                   ->assign('oLink_arr', $links);
             break;
 
         case 'edit':
@@ -89,7 +95,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if ($eTyp === 'text') {
                 $oldBox = $boxAdmin->getByID($boxID);
                 if ($oldBox->supportsRevisions === true) {
-                    $revision = new Revision();
+                    $revision = new Revision(Shop::Container()->getDB());
                     $revision->addRevision('box', $boxID, true);
                 }
                 $bOk = $boxAdmin->update($boxID, $cTitel);
@@ -102,7 +108,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                         }
                     }
                 }
-            } elseif (($eTyp === \Boxes\Type::LINK && $linkID > 0) || $eTyp === \Boxes\Type::CATBOX) {
+            } elseif (($eTyp === Type::LINK && $linkID > 0) || $eTyp === Type::CATBOX) {
                 $bOk = $boxAdmin->update($boxID, $cTitel, $linkID);
                 if ($bOk) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
@@ -115,45 +121,45 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             }
 
             if ($bOk) {
-                $cHinweis = __('successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
-                $cFehler = __('errorBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
         case 'resort':
-            $ePosition = $_REQUEST['position'];
-            $boxes     = $_REQUEST['box'] ?? [];
-            $sort_arr  = $_REQUEST['sort'] ?? [];
-            $aktiv_arr = $_REQUEST['aktiv'] ?? [];
-            $boxCount  = count($boxes);
-            $bValue    = $_REQUEST['box_show'] ?? false;
-            $bOk       = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
-            if ($bOk) {
-                $cHinweis = __('successBoxEdit');
-            } else {
-                $cFehler = __('errorBoxEdit');
-            }
+            $ePosition  = $_REQUEST['position'];
+            $boxes      = $_REQUEST['box'] ?? [];
+            $sort_arr   = $_REQUEST['sort'] ?? [];
+            $aktiv_arr  = $_REQUEST['aktiv'] ?? [];
+            $ignore_arr = $_REQUEST['ignore'] ?? [];
+            $boxCount   = count($boxes);
+            $bValue     = $_REQUEST['box_show'] ?? false;
+            $bOk        = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
 
             foreach ($boxes as $i => $box) {
                 $idx = 'box-filter-' . $box;
-                $boxAdmin->sort($box, $pageID, $sort_arr[$i], in_array($box, $aktiv_arr));
+                $boxAdmin->sort($box, $pageID, $sort_arr[$i], in_array($box, $aktiv_arr), in_array($box, $ignore_arr));
                 $boxAdmin->filterBoxVisibility((int)$box, $pageID, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
             if ($ePosition !== 'left' || $pageID > 0) {
                 $boxAdmin->setVisibility($pageID, $ePosition, isset($_REQUEST['box_show']));
             }
-            $cHinweis = __('successBoxRefresh');
+            if ($bOk) {
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxRefresh'), 'successBoxRefresh');
+            } else {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxesVisibilityEdit'), 'errorBoxesVisibilityEdit');
+            }
             break;
 
         case 'activate':
             $bActive = (bool)$_REQUEST['value'];
             $bOk     = $boxAdmin->activate($boxID, 0, $bActive);
             if ($bOk) {
-                $cHinweis = __('successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
-                $cFehler = __('errorBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
@@ -162,9 +168,9 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             $bValue    = (bool)$_GET['value'];
             $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
             if ($bOk) {
-                $cHinweis = __('successBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
-                $cFehler = __('errorBoxEdit');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
@@ -172,7 +178,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             break;
     }
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
-    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', \DB\ReturnType::DEFAULT);
+    Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
 $oBoxen_arr      = $boxService->buildList($pageID, false, true);
 $oVorlagen_arr   = $boxAdmin->getTemplates($pageID);
@@ -181,22 +187,22 @@ $filterMapping   = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kKategorie AS id, cName AS name FROM tkategorie',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 } elseif ($pageID === PAGE_ARTIKEL) { //map article name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kArtikel AS id, cName AS name FROM tartikel',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 } elseif ($pageID === PAGE_HERSTELLER) { //map manufacturer name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kHersteller AS id, cName AS name FROM thersteller',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 } elseif ($pageID === PAGE_EIGENE) { //map page name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kLink AS id, cName AS name FROM tlink',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
@@ -206,10 +212,8 @@ $filterMapping = \Functional\reindex($filterMapping, function ($e) {
 $filterMapping = \Functional\map($filterMapping, function ($e) {
     return $e->name;
 });
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('filterMapping', $filterMapping)
-       ->assign('validPageTypes', $boxAdmin->getValidPageTypes())
+$smarty->assign('filterMapping', $filterMapping)
+       ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
        ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))
        ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])
        ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? [])

@@ -4,14 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Product\PreisverlaufGraph;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
+
 if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET['kSteuerklasse'] > 0) {
     require_once __DIR__ . '/globalinclude.php';
-    $session               = \Session\Frontend::getInstance();
+    $session               = Frontend::getInstance();
     $productID             = (int)$_GET['kArtikel'];
     $cgID                  = (int)$_GET['kKundengruppe'];
     $priceConfig           = new stdClass();
-    $priceConfig->Waehrung = \Session\Frontend::getCurrency()->getName();
-    $priceConfig->Netto    = \Session\Frontend::getCustomerGroup()->isMerchant()
+    $priceConfig->Waehrung = Frontend::getCurrency()->getName();
+    $priceConfig->Netto    = Frontend::getCustomerGroup()->isMerchant()
         ? 0
         : $_SESSION['Steuersatz'][(int)$_GET['kSteuerklasse']];
     $history               = Shop::Container()->getDB()->queryPrepared(
@@ -26,7 +31,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
             'cgid' => $cgID,
             'mth'  => Shop::getSettingValue(CONF_PREISVERLAUF, 'preisverlauf_anzahl_monate')
         ],
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
 
     if (isset($history->kPreisverlauf) && $history->kPreisverlauf > 0) {

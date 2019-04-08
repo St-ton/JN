@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Flipcard
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Flipcard extends Portlet
 {
@@ -64,7 +65,7 @@ class Flipcard extends Portlet
             ],
             'flip-style' => [
                 'label'      => 'Richtung',
-                'type'       => 'radio',
+                'type'       => InputType::RADIO,
                 'inline'     => true,
                 'options'    => [
                     'flip_v' => 'vertical',

@@ -4,13 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\GeneralObject;
-use Helpers\Request;
+use JTL\Backend\AdminTemplate;
+use JTL\Backend\Notification;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\ContextType;
+use JTL\Plugin\State;
 
 require_once __DIR__ . '/admin_menu.php';
 
-$smarty             = \Smarty\JTLSmarty::getInstance(false, \Smarty\ContextType::BACKEND);
+$smarty             = JTLSmarty::getInstance(false, ContextType::BACKEND);
 $templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
@@ -19,7 +25,6 @@ $db                 = Shop::Container()->getDB();
 $currentTemplateDir = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
     && $config['template']['general']['use_minify'] === 'Y');
-
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;
@@ -36,7 +41,7 @@ $oPluginSearch = $db->query(
     "SELECT kPlugin, cName
         FROM tplugin
         WHERE cPluginID = 'jtl_search'",
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 
 $curScriptFileName  = basename($_SERVER['PHP_SELF']);
@@ -70,8 +75,8 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                         ON p.kPlugin = pam.kPlugin
                     WHERE p.nStatus = :state
                     ORDER BY p.nPrio, p.cName',
-                ['state' => \Plugin\State::ACTIVATED],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ['state' => State::ACTIVATED],
+                ReturnType::ARRAY_OF_OBJECTS
             );
 
             foreach ($pluginLinks as $pluginLink) {
@@ -117,7 +122,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                 if (empty($urlParts['query'])) {
                     $urlParts['query'] = [];
                 } else {
-                    parse_str($urlParts['query'], $urlParts['query']);
+                    mb_parse_str($urlParts['query'], $urlParts['query']);
                 }
 
                 if ($link->cURL === $curScriptFileName
@@ -147,12 +152,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
     $rootKey++;
 }
 
-if (isset($_SESSION['AdminAccount']->kSprache)) {
-    $smarty->assign(
-        'language',
-        $db->select('tsprache', 'kSprache', $_SESSION['AdminAccount']->kSprache)
-    );
-}
+
 
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
@@ -162,6 +162,9 @@ if (empty($template->version)) {
 } else {
     $adminTplVersion = $template->version;
 }
+
+$langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getDefaultLanguage();
+
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', Form::getTokenInput())
        ->assign('shopURL', $shopURL)
@@ -181,6 +184,9 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('oLinkOberGruppe_arr', $mainGroups)
        ->assign('currentMenuPath', [$currentToplevel, $currentSecondLevel, $currentThirdLevel])
        ->assign('notifications', Notification::getInstance())
+       ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('favorites', $oAccount->favorites())
-       ->assign('languages', Shop::Lang()->getInstalled())
+       ->assign('language', $langTag)
+       ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
+       ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages($langTag))
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

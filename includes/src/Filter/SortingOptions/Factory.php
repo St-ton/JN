@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter\SortingOptions;
+namespace JTL\Filter\SortingOptions;
 
-use Filter\ProductFilter;
-use Mapper\SortingType;
-use Tightenco\Collect\Support\Collection;
+use JTL\Filter\ProductFilter;
+use JTL\Mapper\SortingType;
+use Illuminate\Support\Collection;
 
 /**
  * Class Factory
- * @package Filter\SortingOptions
+ * @package JTL\Filter\SortingOptions
  */
 class Factory
 {

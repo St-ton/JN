@@ -4,9 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -14,41 +19,42 @@ $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
-$conf      = Shop::getSettings([CONF_BEWERTUNG]);
-$cHinweis  = '';
-$cFehler   = '';
-$step      = 'bewertung_uebersicht';
-$cTab      = 'freischalten';
-$cacheTags = [];
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$conf        = Shop::getSettings([CONF_BEWERTUNG]);
+$step        = 'bewertung_uebersicht';
+$cTab        = 'freischalten';
+$cacheTags   = [];
+$alertHelper = Shop::Container()->getAlertService();
 
 setzeSprache();
 
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $cTab = Request::verifyGPDataString('tab');
 }
 if (Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
         if (editiereBewertung($_POST)) {
-            $cHinweis .= __('successRatingEdit');
-
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingEdit'), 'successRatingEdit');
             if (Request::verifyGPCDataInt('nFZ') === 1) {
                 header('Location: freischalten.php');
                 exit();
             }
         } else {
-            $step     = 'bewertung_editieren';
-            $cFehler .= __('errorFillRequired');
+            $step = 'bewertung_editieren';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
     } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (Request::verifyGPDataString('bewertung_guthaben_nutzen') === 'Y'
             && Request::verifyGPDataString('bewertung_freischalten') !== 'Y'
         ) {
-            $cFehler = __('errorCreditUnlock');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCreditUnlock'), 'errorCreditUnlock');
         } else {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
-            $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                saveAdminSectionSettings(CONF_BEWERTUNG, $_POST),
+                'saveConf'
+            );
         }
     } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
         if (isset($_POST['aktivieren'])) {
@@ -69,14 +75,22 @@ if (Form::validateToken()) {
                     }
                 );
                 Shop::Container()->getCache()->flushTags($cacheTags);
-                $cHinweis .= count($_POST['kBewertung']) . __('successRatingUnlock');
+                $alertHelper->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    count($_POST['kBewertung']) . __('successRatingUnlock'),
+                    'successRatingUnlock'
+                );
             }
         } elseif (isset($_POST['loeschen'])) { // Bewertungen loeschen
             if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
                 foreach ($_POST['kBewertung'] as $kBewertung) {
                     Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
                 }
-                $cHinweis .= count($_POST['kBewertung']) . __('successRatingDelete');
+                $alertHelper->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    count($_POST['kBewertung']) . __('successRatingDelete'),
+                    'successRatingDelete'
+                );
             }
         }
     } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
@@ -95,9 +109,9 @@ if (Form::validateToken()) {
                     'lang'   => (int)$_SESSION['kSprache'],
                     'cartnr' => '%' . $_POST['cArtNr'] . '%'
                 ],
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            $smarty->assign('cArtNr', StringHandler::filterXSS($_POST['cArtNr']));
+            $smarty->assign('cArtNr', Text::filterXSS($_POST['cArtNr']));
         }
         // Bewertungen loeschen
         if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
@@ -115,7 +129,11 @@ if (Form::validateToken()) {
                 }
             );
             Shop::Container()->getCache()->flushTags($cacheTags);
-            $cHinweis .= count($_POST['kBewertung']) . __('successRatingDelete');
+            $alertHelper->addAlert(
+                Alert::TYPE_SUCCESS,
+                count($_POST['kBewertung']) . __('successRatingDelete'),
+                'successRatingDelete'
+            );
         }
     }
 }
@@ -129,21 +147,21 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 } elseif ($step === 'bewertung_uebersicht') {
     if (isset($_GET['a']) && $_GET['a'] === 'delreply' && Form::validateToken()) {
         removeReply(Request::verifyGPCDataInt('kBewertung'));
-        $cHinweis = __('successRatingCommentDelete');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingCommentDelete'), 'successRatingCommentDelete');
     }
     $nBewertungen      = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 0',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
     $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 1',
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 
     $oPagiInaktiv = (new Pagination('inactive'))
@@ -162,7 +180,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
             LIMIT ' . $oPagiInaktiv->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $last50ratings = Shop::Container()->getDB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
@@ -173,7 +191,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC
             LIMIT ' . $oPageAktiv->getLimitSQL(),
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)
@@ -185,8 +203,6 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
            ->assign('Sprachen', Sprache::getAllLanguages());
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->assign('cTab', $cTab)
        ->display('bewertung.tpl');

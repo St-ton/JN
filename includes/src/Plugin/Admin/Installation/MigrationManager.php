@@ -4,20 +4,27 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use DateTime;
+use DirectoryIterator;
+use Exception;
+use InvalidArgumentException;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Update\IMigration;
+use JTL\Plugin\MigrationHelper;
 use JTLShop\SemVer\Version;
-use Plugin\MigrationHelper;
+use PDOException;
 
 /**
- * Class Migration
+ * Class MigrationManager
+ * @package JTL\Plugin\Admin\Installation
  */
 final class MigrationManager
 {
     /**
-     * @var \IMigration[]
+     * @var IMigration[]
      */
     private $migrations;
 
@@ -104,7 +111,7 @@ final class MigrationManager
      *
      * @param int $identifier
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function migrate($identifier = null): array
     {
@@ -123,10 +130,10 @@ final class MigrationManager
         if ($identifier === null) {
             $identifier = \max(\array_merge($executedMigrations, \array_keys($migrations)));
         }
-        $direction = $identifier > $currentId ? \IMigration::UP : \IMigration::DOWN;
+        $direction = $identifier > $currentId ? IMigration::UP : IMigration::DOWN;
         $executed  = [];
         try {
-            if ($direction === \IMigration::DOWN) {
+            if ($direction === IMigration::DOWN) {
                 \krsort($migrations);
                 foreach ($migrations as $migration) {
                     $id = $migration->getId();
@@ -135,7 +142,7 @@ final class MigrationManager
                     }
                     if (\in_array($id, $executedMigrations, true)) {
                         $executed[] = $migration;
-                        $this->executeMigration($migration, \IMigration::DOWN);
+                        $this->executeMigration($migration, IMigration::DOWN);
                     }
                 }
             }
@@ -150,11 +157,11 @@ final class MigrationManager
                     $this->executeMigration($migration);
                 }
             }
-        } catch (\PDOException $e) {
-            @list($code, $state, $message) = $e->errorInfo;
+        } catch (PDOException $e) {
+            [$code, , $message] = $e->errorInfo;
             $this->log($migration, $direction, $code, $message);
             throw $e;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->log($migration, $direction, 'JTL01', $e->getMessage());
             throw $e;
         }
@@ -166,14 +173,14 @@ final class MigrationManager
      * Get a migration by Id.
      *
      * @param int $id MigrationId
-     * @return \IMigration
-     * @throws \InvalidArgumentException
+     * @return IMigration
+     * @throws InvalidArgumentException
      */
-    public function getMigrationById($id): \IMigration
+    public function getMigrationById($id): IMigration
     {
         $migrations = $this->getMigrations();
         if (!\array_key_exists($id, $migrations)) {
-            throw new \InvalidArgumentException(\sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Migration "%s" not found',
                 $id
             ));
@@ -185,9 +192,9 @@ final class MigrationManager
     /**
      * @param int    $id
      * @param string $direction
-     * @throws \Exception
+     * @throws Exception
      */
-    public function executeMigrationById($id, $direction = \IMigration::UP): void
+    public function executeMigrationById($id, $direction = IMigration::UP): void
     {
         $this->executeMigration($this->getMigrationById($id), $direction);
     }
@@ -195,23 +202,23 @@ final class MigrationManager
     /**
      * Execute a migration.
      *
-     * @param \IMigration $migration Migration
-     * @param string      $direction Direction
-     * @throws \Exception
+     * @param IMigration $migration Migration
+     * @param string          $direction Direction
+     * @throws Exception
      */
-    public function executeMigration(\IMigration $migration, string $direction = \IMigration::UP): void
+    public function executeMigration(IMigration $migration, string $direction = IMigration::UP): void
     {
         // reset cached executed migrations
         $this->executedMigrations = null;
-        $start                    = new \DateTime('now');
+        $start                    = new DateTime('now');
         try {
             $this->db->beginTransaction();
             $migration->$direction();
             $this->db->commit();
             $this->migrated($migration, $direction, $start);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollback();
-            throw new \Exception(
+            throw new Exception(
                 $migration->getName() . ' ' . $migration->getDescription() . ' | ' . $e->getMessage(),
                 $e->getCode()
             );
@@ -245,8 +252,8 @@ final class MigrationManager
     /**
      * Gets an array of the database migrations.
      *
-     * @throws \InvalidArgumentException
-     * @return \IMigration[]
+     * @throws InvalidArgumentException
+     * @return IMigration[]
      */
     public function getMigrations(): array
     {
@@ -257,7 +264,7 @@ final class MigrationManager
             if (!\is_dir($path)) {
                 return [];
             }
-            foreach (new \DirectoryIterator($path) as $fileinfo) {
+            foreach (new DirectoryIterator($path) as $fileinfo) {
                 if ($fileinfo->isDot() || $fileinfo->getExtension() !== 'php') {
                     continue;
                 }
@@ -270,16 +277,16 @@ final class MigrationManager
                     require_once $filePath;
 
                     if (!\class_exists($class)) {
-                        throw new \InvalidArgumentException(\sprintf(
+                        throw new InvalidArgumentException(\sprintf(
                             'Could not find class "%s" in file "%s"',
                             $class,
                             $filePath
                         ));
                     }
-                    $migration = new $class('Plugin migration from ' . $this->pluginID, $date);
-                    /** @var \IMigration $migration */
-                    if (!\is_subclass_of($migration, \IMigration::class)) {
-                        throw new \InvalidArgumentException(\sprintf(
+                    $migration = new $class($this->db, 'Plugin migration from ' . $this->pluginID, $date);
+                    /** @var IMigration $migration */
+                    if (!\is_subclass_of($migration, IMigration::class)) {
+                        throw new InvalidArgumentException(\sprintf(
                             'The class "%s" in file "%s" must implement IMigration interface',
                             $class,
                             $filePath
@@ -327,7 +334,7 @@ final class MigrationManager
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($migrations as $m) {
-                $this->executedMigrations[$m->kMigration] = new \DateTime($m->dExecuted);
+                $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);
             }
         }
 
@@ -348,13 +355,13 @@ final class MigrationManager
     }
 
     /**
-     * @param \IMigration $migration
-     * @param string      $direction
-     * @param string      $state
-     * @param string      $message
+     * @param IMigration $migration
+     * @param string          $direction
+     * @param string          $state
+     * @param string          $message
      * @return int
      */
-    private function log(\IMigration $migration, $direction, $state, $message): int
+    private function log(IMigration $migration, $direction, $state, $message): int
     {
         $sql = \sprintf(
             "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) VALUES ('%s', %s, %s, %s, '%s');",
@@ -362,26 +369,26 @@ final class MigrationManager
             $this->db->pdoEscape($direction),
             $this->db->pdoEscape($state),
             $this->db->pdoEscape($message),
-            (new \DateTime('now'))->format('Y-m-d H:i:s')
+            (new DateTime('now'))->format('Y-m-d H:i:s')
         );
 
         return $this->db->executeQuery($sql, ReturnType::AFFECTED_ROWS);
     }
 
     /**
-     * @param \IMigration $migration
-     * @param string      $direction
-     * @param \DateTime   $executed
+     * @param IMigration $migration
+     * @param string          $direction
+     * @param DateTime       $executed
      * @return $this
      */
-    public function migrated(\IMigration $migration, $direction, $executed): self
+    public function migrated(IMigration $migration, $direction, $executed): self
     {
-        if (\strcasecmp($direction, \IMigration::UP) === 0) {
+        if (\strcasecmp($direction, IMigration::UP) === 0) {
             $sql = \sprintf(
                 "INSERT INTO tpluginmigration (kMigration, nVersion, pluginID, dExecuted)
                     VALUES ('%s', '%s', '%s', '%s')",
                 $migration->getId(),
-                \sprintf('%d%02d', $this->version->getMajor(), $this->version->getMinor()),
+                (string)$this->version,
                 $this->pluginID,
                 $executed->format('Y-m-d H:i:s')
             );

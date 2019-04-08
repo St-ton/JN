@@ -6,19 +6,12 @@
  * @created Fri, 28 Oct 2016 11:14:05 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+use JTL\Update\MigrationHelper;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20161028111405
  */
 class Migration_20161028111405 extends Migration implements IMigration
 {
@@ -29,11 +22,11 @@ class Migration_20161028111405 extends Migration implements IMigration
      */
     protected function reorderMenu($kAdminmenueGruppe)
     {
-        $this->execute("SET @SortStart = 0");
+        $this->execute('SET @SortStart = 0');
         $this->execute(
-            "UPDATE tadminmenu SET nSort = @SortStart:=@SortStart + 10
-                WHERE kAdminmenueGruppe = " . (int)$kAdminmenueGruppe . " 
-                ORDER BY nSort;"
+            'UPDATE tadminmenu SET nSort = @SortStart:=@SortStart + 10
+                WHERE kAdminmenueGruppe = ' . (int)$kAdminmenueGruppe . ' 
+                ORDER BY nSort;'
         );
     }
 
@@ -56,14 +49,14 @@ class Migration_20161028111405 extends Migration implements IMigration
 
         MigrationHelper::createIndex('tplz', ['cLandISO', 'cPLZ', 'cOrt'], 'PLZ_ORT_UNIQUE');
         $this->execute(
-            "CREATE TABLE tplz_backup LIKE tplz"
+            'CREATE TABLE tplz_backup LIKE tplz'
         );
     }
 
     public function down()
     {
         $this->execute(
-            "DROP TABLE IF EXISTS tplz_backup"
+            'DROP TABLE IF EXISTS tplz_backup'
         );
 
         MigrationHelper::createIndex('tplz', ['cPLZ', 'cOrt'], 'PLZ_ORT_UNIQUE');

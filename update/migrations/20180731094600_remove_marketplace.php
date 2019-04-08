@@ -1,4 +1,8 @@
 <?php
+
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Remove marketplace admin menu entry and widget
  *

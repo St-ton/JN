@@ -4,103 +4,103 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\DB\ReturnType;
+use JTL\Template;
+use JTL\Alert\Alert;
+
 /**
  * @return array
  */
 function gibAlleSuchspecialOverlays()
 {
-    return Shop::Container()->getDB()->query(
-        'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, 
-            tsuchspecialoverlaysprache.cBildPfad, tsuchspecialoverlaysprache.nAktiv,
-            tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin,
-            tsuchspecialoverlaysprache.nTransparenz,
-            tsuchspecialoverlaysprache.nGroesse, tsuchspecialoverlaysprache.nPosition
-            FROM tsuchspecialoverlay
-            LEFT JOIN tsuchspecialoverlaysprache 
-                ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                AND tsuchspecialoverlaysprache.kSprache = ' . (int)$_SESSION['kSprache'] . '
-            ORDER BY tsuchspecialoverlay.cSuchspecial',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+    $overlays                  = [];
+    $searchspecialOverlayTypes = Shop::Container()->getDB()->query(
+        'SELECT kSuchspecialOverlay
+            FROM tsuchspecialoverlay',
+        ReturnType::ARRAY_OF_OBJECTS
     );
+    foreach ($searchspecialOverlayTypes as $searchspecialOverlayType) {
+        $overlays[] = JTL\Media\Image\Overlay::getInstance(
+            $searchspecialOverlayType->kSuchspecialOverlay,
+            (int)$_SESSION['kSprache']
+        );
+    }
+
+    return $overlays;
 }
 
 /**
  * @param int $overlayID
- * @return stdClass|bool
+ * @return JTL\Media\Image\Overlay
  */
 function gibSuchspecialOverlay(int $overlayID)
 {
-    return Shop::Container()->getDB()->query(
-        'SELECT tsuchspecialoverlay.*, tsuchspecialoverlaysprache.kSprache, tsuchspecialoverlaysprache.cBildPfad, 
-            tsuchspecialoverlaysprache.nAktiv, tsuchspecialoverlaysprache.nPrio, tsuchspecialoverlaysprache.nMargin, 
-            tsuchspecialoverlaysprache.nTransparenz, tsuchspecialoverlaysprache.nGroesse, 
-            tsuchspecialoverlaysprache.nPosition
-            FROM tsuchspecialoverlay
-            LEFT JOIN tsuchspecialoverlaysprache 
-                ON tsuchspecialoverlaysprache.kSuchspecialOverlay = tsuchspecialoverlay.kSuchspecialOverlay
-                AND tsuchspecialoverlaysprache.kSprache = ' . (int)$_SESSION['kSprache'] . '
-            WHERE tsuchspecialoverlay.kSuchspecialOverlay = ' . $overlayID,
-        \DB\ReturnType::SINGLE_OBJECT
-    );
+    return JTL\Media\Image\Overlay::getInstance($overlayID, (int)$_SESSION['kSprache']);
 }
 
 /**
- * @param int   $overlayID
+ * @param int $overlayID
  * @param array $post
  * @param array $files
+ * @param int|null $lang
+ * @param string|null $template
  * @return bool
  */
-function speicherEinstellung(int $overlayID, $post, $files)
-{
-    $overlay                      = new stdClass();
-    $overlay->kSuchspecialOverlay = $overlayID;
-    $overlay->kSprache            = $_SESSION['kSprache'];
-    $overlay->nAktiv              = (int)$post['nAktiv'];
-    $overlay->nTransparenz        = (int)$post['nTransparenz'];
-    $overlay->nGroesse            = (int)$post['nGroesse'];
-    $overlay->nPosition           = isset($post['nPosition'])
-        ? (int)$post['nPosition']
-        : 0;
+function speicherEinstellung(
+    int $overlayID,
+    array $post,
+    array $files,
+    int $lang = null,
+    string $template = null
+): bool {
+    $overlay = JTL\Media\Image\Overlay::getInstance($overlayID, $lang ?? (int)$_SESSION['kSprache'], $template, false);
 
-    if (!isset($post['nPrio']) || (int)$post['nPrio'] === -1) {
+    if ($overlay->getType() <= 0) {
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('invalidOverlay'), 'invalidOverlay');
+        return false;
+    }
+    $overlay->setActive((int)$post['nAktiv'])
+            ->setTransparence((int)$post['nTransparenz'])
+            ->setSize((int)$post['nGroesse'])
+            ->setPosition((int)($post['nPosition'] ?? 0))
+            ->setPriority((int)$post['nPrio']);
+
+    if (mb_strlen($files['name']) > 0) {
+        $template    = $template ?: Template::getInstance()->getName();
+        $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
+        if (!is_writable($overlayPath)) {
+            Shop::Container()->getAlertService()->addAlert(
+                Alert::TYPE_ERROR,
+                sprintf(__('errorOverlayWritePermissions'), PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE),
+                'errorOverlayWritePermissions',
+                ['saveInSession' => true]
+            );
+
+            return false;
+        }
+
+        loescheBild($overlay);
+        $overlay->setImageName(
+            JTL\Media\Image\Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
+            mappeFileTyp($files['type'])
+        );
+        $imageCreated = speicherBild($files, $overlay);
+    }
+    if (!isset($imageCreated) || $imageCreated) {
+        $overlay->save();
+    } else {
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_ERROR,
+            __('errorFileUploadGeneral'),
+            'errorFileUploadGeneral',
+            ['saveInSession' => true]
+        );
+
         return false;
     }
 
-    $overlay->nPrio     = (int)$post['nPrio'];
-    $overlay->cBildPfad = '';
-
-    if (strlen($files['cSuchspecialOverlayBild']['name']) > 0) {
-        $overlay->cBildPfad = 'kSuchspecialOverlay_' . $_SESSION['kSprache'] . '_' .
-            $overlayID . mappeFileTyp($files['cSuchspecialOverlayBild']['type']);
-    } else {
-        $oSuchspecialoverlaySpracheTMP = Shop::Container()->getDB()->select(
-            'tsuchspecialoverlaysprache',
-            'kSuchspecialOverlay',
-            $overlayID,
-            'kSprache',
-            (int)$_SESSION['kSprache']
-        );
-        if (isset($oSuchspecialoverlaySpracheTMP->cBildPfad) && strlen($oSuchspecialoverlaySpracheTMP->cBildPfad)) {
-            $overlay->cBildPfad = $oSuchspecialoverlaySpracheTMP->cBildPfad;
-        }
-    }
-
-    if ($overlay->kSuchspecialOverlay > 0) {
-        if (strlen($files['cSuchspecialOverlayBild']['name']) > 0) {
-            loescheBild($overlay);
-            speicherBild($files, $overlay);
-        }
-        Shop::Container()->getDB()->delete(
-            'tsuchspecialoverlaysprache',
-            ['kSuchspecialOverlay', 'kSprache'],
-            [$overlayID, (int)$_SESSION['kSprache']]
-        );
-        Shop::Container()->getDB()->insert('tsuchspecialoverlaysprache', $overlay);
-
-        return true;
-    }
-
-    return false;
+    return true;
 }
 
 /**
@@ -129,19 +129,19 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
 
     $minalpha = 0;
 
-    //loop through image pixels and modify alpha for each
+    // loop through image pixels and modify alpha for each
     for ($x = 0; $x < $w; $x++) {
         for ($y = 0; $y < $h; $y++) {
-            //get current alpha value (represents the TANSPARENCY!)
+            // get current alpha value (represents the TANSPARENCY!)
             $colorxy = imagecolorat($src_im, $x, $y);
             $alpha   = ($colorxy >> 24) & 0xFF;
-            //calculate new alpha
+            // calculate new alpha
             if ($minalpha !== 127) {
                 $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
             } else {
                 $alpha += 127 * $pct;
             }
-            //get the color index with new alpha
+            // get the color index with new alpha
             $alphacolorxy = imagecolorallocatealpha(
                 $src_im,
                 ($colorxy >> 16) & 0xFF,
@@ -149,7 +149,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
                 $colorxy & 0xFF,
                 $alpha
             );
-            //set pixel with the new color + opacity
+            // set pixel with the new color + opacity
             if (!imagesetpixel($src_im, $x, $y, $alphacolorxy)) {
                 return false;
             }
@@ -237,40 +237,20 @@ function speicherOverlay($im, $extension, $path, $quality = 80)
     }
     switch ($extension) {
         case '.jpg':
-            if (!function_exists('imagejpeg')) {
-                return false;
-            }
-
-            return imagejpeg($im, $path, $quality);
-            break;
+            return function_exists('imagejpeg') ? imagejpeg($im, $path, $quality) : false;
         case '.png':
-            if (!function_exists('imagepng')) {
-                return false;
-            }
-
-            return imagepng($im, $path);
-            break;
+            return function_exists('imagepng') ? imagepng($im, $path) : false;
         case '.gif':
-            if (!function_exists('imagegif')) {
-                return false;
-            }
-
-            return imagegif($im, $path);
-            break;
+            return function_exists('imagegif') ? imagegif($im, $path) : false;
         case '.bmp':
-            if (!function_exists('imagewbmp')) {
-                return false;
-            }
-
-            return imagewbmp($im, $path);
-            break;
+            return function_exists('imagewbmp') ? imagewbmp($im, $path) : false;
+        default:
+            return false;
     }
-
-    return false;
 }
 
 /**
- * @deprecated since 4.07
+ * @deprecated since 5.0.0
  * @param string $image
  * @param string $width
  * @param string $height
@@ -315,67 +295,60 @@ function erstelleOverlay($image, $width, $height, $size, $transparency, $extensi
  * @param int    $transparency
  * @param string $extension
  * @param string $path
+ * @return bool
  */
-function erstelleFixedOverlay($image, $size, $transparency, $extension, $path)
+function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): bool
 {
 //    $conf = Shop::getSettings([CONF_BILDER]);
 //    $bSkalieren    = !($conf['bilder']['bilder_skalieren'] === 'N'); //@todo noch beachten
-
     [$width, $height] = getimagesize($image);
     $factor           = $size / $width;
 
-    $im = ladeOverlay($image, $size, $height*$factor, $transparency);
-    speicherOverlay($im, $extension, $path);
+    return speicherOverlay(ladeOverlay($image, $size, $height * $factor, $transparency), $extension, $path);
 }
 
 
 /**
- * @param array  $files
- * @param object $overlay
+ * @param array $files
+ * @param JTL\Media\Image\Overlay $overlay
  * @return bool
  */
-function speicherBild($files, $overlay)
+function speicherBild(array $files, JTL\Media\Image\Overlay $overlay): bool
 {
-    if ($files['cSuchspecialOverlayBild']['type'] === 'image/jpeg'
-        || $files['cSuchspecialOverlayBild']['type'] === 'image/pjpeg'
-        || $files['cSuchspecialOverlayBild']['type'] === 'image/jpg'
-        || $files['cSuchspecialOverlayBild']['type'] === 'image/gif'
-        || $files['cSuchspecialOverlayBild']['type'] === 'image/png'
-        || $files['cSuchspecialOverlayBild']['type'] === 'image/bmp'
-        || $files['cSuchspecialOverlayBild']['type'] === 'image/x-png'
+    if ($files['type'] === 'image/jpeg'
+        || $files['type'] === 'image/pjpeg'
+        || $files['type'] === 'image/jpg'
+        || $files['type'] === 'image/gif'
+        || $files['type'] === 'image/png'
+        || $files['type'] === 'image/bmp'
+        || $files['type'] === 'image/x-png'
     ) {
-        if (empty($files['cSuchspecialOverlayBild']['error'])) {
-            $ext      = mappeFileTyp($files['cSuchspecialOverlayBild']['type']);
-            $name     = 'kSuchspecialOverlay_' . $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . $ext;
-            $original = $files['cSuchspecialOverlayBild']['tmp_name'];
-            erstelleFixedOverlay(
-                $original,
-                $overlay->nGroesse * 4,
-                $overlay->nTransparenz,
-                $ext,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_RETINA . $name
-            );
-            erstelleFixedOverlay(
-                $original,
-                $overlay->nGroesse * 3,
-                $overlay->nTransparenz,
-                $ext,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_GROSS . $name
-            );
-            erstelleFixedOverlay(
-                $original,
-                $overlay->nGroesse * 2,
-                $overlay->nTransparenz,
-                $ext,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_NORMAL . $name
-            );
-            erstelleFixedOverlay(
-                $original,
-                $overlay->nGroesse,
-                $overlay->nTransparenz,
-                $ext,
-                PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY_KLEIN . $name
-            );
+        if (empty($files['error'])) {
+            $ext      = mappeFileTyp($files['type']);
+            $original = $files['tmp_name'];
+
+            $sizesToCreate = [
+                ['size' => IMAGE_SIZE_XS,  'factor' => 1],
+                ['size' => IMAGE_SIZE_SM, 'factor' => 2],
+                ['size' => IMAGE_SIZE_MD,  'factor' => 3],
+                ['size' => IMAGE_SIZE_LG, 'factor' => 4]
+            ];
+
+            foreach ($sizesToCreate as $sizeToCreate) {
+                if (!is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
+                    mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
+                }
+                $imageCreated = erstelleFixedOverlay(
+                    $original,
+                    $overlay->getSize() * $sizeToCreate['factor'],
+                    $overlay->getTransparance(),
+                    $ext,
+                    PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
+                );
+                if (!$imageCreated) {
+                    return false;
+                }
+            }
 
             return true;
         }
@@ -385,26 +358,15 @@ function speicherBild($files, $overlay)
 }
 
 /**
- * @param object $overlay
+ * @param JTL\Media\Image\Overlay $overlay
  */
-function loescheBild($overlay)
+function loescheBild(JTL\Media\Image\Overlay $overlay): void
 {
-    if (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.jpg')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.jpg');
-    } elseif (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.png')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.png');
-    } elseif (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.gif')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.gif');
-    } elseif (file_exists(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-        $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.bmp')) {
-        @unlink(PFAD_ROOT . PFAD_SUCHSPECIALOVERLAY . 'kSuchspecialOverlay_' .
-            $overlay->kSprache . '_' . $overlay->kSuchspecialOverlay . '.bmp');
+    foreach ($overlay->getPathSizes() as $path) {
+        $path = PFAD_ROOT . $path . $overlay->getImageName();
+        if (file_exists($path)) {
+            @unlink($path);
+        }
     }
 }
 

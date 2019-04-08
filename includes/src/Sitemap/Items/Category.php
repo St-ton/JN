@@ -4,11 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
+
+use JTL\Helpers\URL;
 
 /**
  * Class Category
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 final class Category extends AbstractItem
 {
@@ -30,7 +32,7 @@ final class Category extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\Helpers\URL::buildURL($this->data, \URLART_KATEGORIE, true));
+        $this->setLocation(URL::buildURL($this->data, \URLART_KATEGORIE, true));
     }
 
     /**

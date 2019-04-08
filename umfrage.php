@@ -4,7 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
+use JTL\Helpers\Request;
+use JTL\Alert\Alert;
+use JTL\Nice;
+use JTL\Shop;
+use JTL\Link\Link;
+use JTL\Survey\Controller;
+use JTL\Survey\Survey;
+use JTL\Survey\SurveyQuestionFactory;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
@@ -13,26 +21,26 @@ Shop::run();
 Shop::setPageType(PAGE_UMFRAGE);
 $smarty         = Shop::Smarty();
 $params         = Shop::getParameters();
-$cHinweis       = '';
+$alertHelper    = Shop::Container()->getAlertService();
 $cCanonicalURL  = '';
 $step           = 'umfrage_uebersicht';
 $nAktuelleSeite = max(1, Request::verifyGPCDataInt('s'));
 $sourveys       = [];
 $linkHelper     = Shop::Container()->getLinkService();
 $kLink          = $linkHelper->getSpecialPageLinkKey(LINKTYP_UMFRAGE);
-$link           = (new \Link\Link(Shop::Container()->getDB()))->load($kLink);
+$link           = (new Link(Shop::Container()->getDB()))->load($kLink);
 $db             = Shop::Container()->getDB();
-$controller     = new \Survey\Controller($db, $smarty);
+$controller     = new Controller($db, $smarty);
 $surveyID       = $params['kUmfrage'];
 if ($surveyID > 0) {
-    $customerID = Session\Frontend::getCustomer()->getID();
+    $customerID = Frontend::getCustomer()->getID();
     $step       = 'umfrage_uebersicht';
     if ($customerID === 0 && Shop::getConfigValue(CONF_UMFRAGE, 'umfrage_einloggen') === 'Y') {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
             '?u=' . $surveyID . '&r=' . R_LOGIN_UMFRAGE);
         exit();
     }
-    $survey = new \Survey\Survey($db, Nice::getInstance(), new \Survey\SurveyQuestionFactory($db));
+    $survey = new Survey($db, Nice::getInstance(), new SurveyQuestionFactory($db));
     $survey->load($surveyID);
     $controller->setSurvey($survey);
     if ($survey->getID() > 0 && $controller->checkAlreadyVoted($customerID, $_SESSION['oBesucher']->cID ?? null)) {
@@ -46,7 +54,7 @@ if ($surveyID > 0) {
             } elseif ($_SESSION['Umfrage']->nEnde === 0) {
                 $step = 'umfrage_ergebnis';
                 executeHook(HOOK_UMFRAGE_PAGE_UMFRAGEERGEBNIS);
-                $cHinweis = $controller->bearbeiteUmfrageAuswertung();
+                $alertHelper->addAlert(Alert::TYPE_NOTE, $controller->bearbeiteUmfrageAuswertung(), 'pollNote');
             } else {
                 $step = 'umfrage_uebersicht';
             }
@@ -72,9 +80,11 @@ if ($step === 'umfrage_uebersicht') {
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('Link', $link)
-       ->assign('fehler', $controller->getErrorMsg())
+if ($controller->getErrorMsg() !== '') {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'pollError');
+}
+
+$smarty->assign('Link', $link)
        ->assign('step', $step)
        ->assign('oUmfrage_arr', $sourveys)
        ->assign('nAktuelleSeite', $nAktuelleSeite);

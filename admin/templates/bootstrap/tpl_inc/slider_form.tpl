@@ -5,13 +5,13 @@
         <input type="hidden" name="kSlider" value="{$oSlider->getID()}" />
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Allgemein</h3>
+                <h3 class="panel-title">{__('general')}</h3>
             </div>
             <div class="panel-body">
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="cName">Interner Name</label>
+                            <label for="cName">{__('internalName')}</label>
                         </div>
                         <div class="for">
                             <input type="text" name="cName" id="cName" class="form-control" value="{$oSlider->getName()}" />
@@ -19,34 +19,34 @@
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bAktiv">Status</label>
+                            <label for="bAktiv">{__('status')}</label>
                         </div>
                         <div class="for">
                             <select id="bAktiv" name="bAktiv" class="form-control">
-                                <option value="0"{if $oSlider->getIsActive() === false} selected="selected"{/if}>Deaktiviert</option>
-                                <option value="1"{if $oSlider->getIsActive() === true} selected="selected"{/if}>Aktiviert</option>
+                                <option value="0"{if $oSlider->getIsActive() === false} selected="selected"{/if}>{__('deactivated')}</option>
+                                <option value="1"{if $oSlider->getIsActive() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
                         </div>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bRandomStart">zufälliger Start</label>
+                            <label for="bRandomStart">{__('randomStart')}</label>
                         </div>
                         <div class="for">
                             <select id="bRandomStart" name="bRandomStart" class="form-control">
-                                <option value="0"{if $oSlider->getRandomStart() === false} selected="selected"{/if}>Nein</option>
-                                <option value="1"{if $oSlider->getRandomStart() === true} selected="selected"{/if}>Ja</option>
+                                <option value="0"{if $oSlider->getRandomStart() === false} selected="selected"{/if}>{__('no')}</option>
+                                <option value="1"{if $oSlider->getRandomStart() === true} selected="selected"{/if}>{__('yes')}</option>
                             </select>
                         </div>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bPauseOnHover">Pause bei Hover</label>
+                            <label for="bPauseOnHover">{__('pauseOnHover')}</label>
                         </div>
                         <div class="for">
                             <select id="bPauseOnHover" name="bPauseOnHover" class="form-control">
-                                <option value="0"{if $oSlider->getPauseOnHover() === false} selected="selected"{/if}>Nein</option>
-                                <option value="1"{if $oSlider->getPauseOnHover() === true} selected="selected"{/if}>Ja</option>
+                                <option value="0"{if $oSlider->getPauseOnHover() === false} selected="selected"{/if}>{__('no')}</option>
+                                <option value="1"{if $oSlider->getPauseOnHover() === true} selected="selected"{/if}>{__('yes')}</option>
                             </select>
                         </div>
                     </li>
@@ -56,128 +56,127 @@
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Darstellung</h3>
+                <h3 class="panel-title">{__('presentation')}</h3>
             </div>
             <div class="panel-body">
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bControlNav">Ken-Burns-Effekt</label>
+                            <label for="bUseKB">{__('kenBurnsEffect')}</label>
                         </div>
                         <div class="for">
                             <select class="form-control" id="bUseKB" name="bUseKB">
-                                <option value="0"{if $oSlider->getUseKB() === false} selected="selected"{/if}>Deaktiviert</option>
-                                <option value="1"{if $oSlider->getUseKB() === true} selected="selected"{/if}>Aktiviert</option>
+                                <option value="0"{if $oSlider->getUseKB() === false} selected="selected"{/if}>{__('deactivated')}</option>
+                                <option value="1"{if $oSlider->getUseKB() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
                         </div>
-                        <p><i class="fa fa-warning"></i> Wenn diese Option aktiviert ist, überschreibt sie andere <a
+                        <p><i class="fa fa-warning"></i> {__('overridesOther')} <a
                                     href="#" data-toggle="tooltip"
-                                    title="Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail Navigation, Navigation (Richtung), Effekte.">Einstellungen</a>.
+                                    title="{__('willOverride')}">{__('settings')}</a>.
                         </p>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bControlNav">Navigation</label>
+                            <label for="bControlNav">{__('navigation')}</label>
                         </div>
                         <div class="for">
                             <select class="form-control" id="bControlNav" name="bControlNav">
-                                <option value="0"{if $oSlider->getControlNav() === false} selected="selected"{/if}>Ausblenden
+                                <option value="0"{if $oSlider->getControlNav() === false} selected="selected"{/if}>{__('hide')}
                                 </option>
-                                <option value="1"{if $oSlider->getControlNav() === true} selected="selected"{/if}>Anzeigen</option>
+                                <option value="1"{if $oSlider->getControlNav() === true} selected="selected"{/if}>{__('show')}</option>
                             </select>
                         </div>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bThumbnail">Thumbnail Navigation</label>
+                            <label for="bThumbnail">{__('thumbnail')} {__('navigation')}</label>
                         </div>
                         <div class="for">
                             <select class="form-control" id="bThumbnail" name="bThumbnail">
-                                <option value="0"{if $oSlider->getThumbnail() === false} selected="selected"{/if}>Deaktiviert
+                                <option value="0"{if $oSlider->getThumbnail() === false} selected="selected"{/if}>{__('deactivated')}
                                 </option>
-                                <option value="1"{if $oSlider->getThumbnail() === true} selected="selected"{/if}>Aktiviert</option>
+                                <option value="1"{if $oSlider->getThumbnail() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
                         </div>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bDirectionNav">Navigation (Richtung)</label>
+                            <label for="bDirectionNav">{__('navigation')} ({__('direction')})</label>
                         </div>
                         <div class="for">
                             <select class="form-control" id="bDirectionNav" name="bDirectionNav">
-                                <option value="0"{if $oSlider->getDirectionNav() === false} selected="selected"{/if}>Ausblenden</option>
-                                <option value="1"{if $oSlider->getDirectionNav() === true} selected="selected"{/if}>Anzeigen</option>
+                                <option value="0"{if $oSlider->getDirectionNav() === false} selected="selected"{/if}>{__('hide')}</option>
+                                <option value="1"{if $oSlider->getDirectionNav() === true} selected="selected"{/if}>{__('show')}</option>
                             </select>
                         </div>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <strong>Effekte</strong>
+                            <strong>{__('effects')}</strong>
                         </div>
                         <div class="for">
                             <input id="cRandomEffects" type="checkbox" value="random" class="random_effects" {if isset($checked)}{$checked} {/if}name="cEffects" />
-                            <label for="cRandomEffects">zufällige Effekte</label>
+                            <label for="cRandomEffects">{__('randomEffects')}</label>
                             <div class="select_container row">
                                 <div class="col-xs-12 col-md-6 select_box">
-                                    <label for="cSelectedEffects">ausgewählte Effekte</label>
+                                    <label for="cSelectedEffects">{__('selectedEffects')}</label>
                                     <select class="form-control" id="cSelectedEffects" name="cSelectedEffects" size="10" multiple {$disabled}>
                                         {if isset($cEffects)}{$cEffects}{/if}
                                     </select>
                                     <input type="hidden" name="cEffects" value="{if isset($oSlider)}{$oSlider->getEffects()}{/if}" {$disabled}/>
-                                    <button type="button" class="select_remove button remove btn btn-danger" value="entfernen" {$disabled}>entfernen</button>
+                                    <button type="button" class="select_remove button remove btn btn-danger" value="entfernen" {$disabled}>{__('remove')}</button>
                                 </div>
                                 <div class="col-xs-12 col-md-6 select_box">
-                                    <label for="cAvaibleEffects">Verfügbare Effekte</label>
+                                    <label for="cAvaibleEffects">{__('availableEffects')}</label>
                                     <select class="form-control" id="cAvaibleEffects" name="cAvaibleEffects" size="10" multiple {$disabled}>
-                                        <option value="sliceDown">sliceDown</option>
-                                        <option value="sliceDownLeft">sliceDownLeft</option>
-                                        <option value="sliceUp">sliceUp</option>
-                                        <option value="sliceUpLeft">sliceUpLeft</option>
-                                        <option value="sliceUpDown">sliceUpDown</option>
-                                        <option value="sliceUpDownLeft">sliceUpDownLeft</option>
-                                        <option value="fold">fold</option>
-                                        <option value="fade">fade</option>
-                                        <option value="slideInRight">slideInRight</option>
-                                        <option value="slideInLeft">slideInLeft</option>
-                                        <option value="boxRandom">boxRandom</option>
-                                        <option value="boxRain">boxRain</option>
-                                        <option value="boxRainReverse">boxRainReverse</option>
-                                        <option value="boxRainGrow">boxRainGrow</option>
-                                        <option value="boxRainGrowReverse">boxRainGrowReverse</option>
+                                        <option value="sliceDown">{__('sliceDown')}</option>
+                                        <option value="sliceDownLeft">{__('sliceDownLeft')}</option>
+                                        <option value="sliceUp">{__('sliceUp')}</option>
+                                        <option value="sliceUpLeft">{__('sliceUpLeft')}</option>
+                                        <option value="sliceUpDown">{__('sliceUpDown')}</option>
+                                        <option value="sliceUpDownLeft">{__('sliceUpDownLeft')}</option>
+                                        <option value="fold">{__('fold')}</option>
+                                        <option value="fade">{__('fade')}</option>
+                                        <option value="slideInRight">{__('slideInRight')}</option>
+                                        <option value="slideInLeft">{__('slideInLeft')}</option>
+                                        <option value="boxRandom">{__('boxRandom')}</option>
+                                        <option value="boxRain">{__('boxRain')}</option>
+                                        <option value="boxRainReverse">{__('boxRainReverse')}</option>
+                                        <option value="boxRainGrow">{__('boxRainGrow')}</option>
+                                        <option value="boxRainGrowReverse">{__('boxRainGrowReverse')}</option>
                                     </select>
-                                    <button type="button" class="select_add button add btn btn-default" value="hinzufügen" {$disabled}>hinzufügen</button>
+                                    <button type="button" class="select_add button add btn btn-default" value="hinzufügen" {$disabled}>{__('add')}</button>
                                 </div>
                             </div>
                         </div>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="cTheme">Theme</label>
+                            <label for="cTheme">{__('theme')}</label>
                         </div>
                         <div class="for">
                             <select id="cTheme" name="cTheme" class="form-control">
-                                <option value="default"{if $oSlider->getTheme() === 'default'} selected="selected"{/if}>default</option>
-                                <option value="bar"{if $oSlider->getTheme() === 'bar'} selected="selected"{/if}>bar</option>
-                                <option value="light"{if $oSlider->getTheme() === 'light'} selected="selected"{/if}>light</option>
-                                <option value="dark"{if $oSlider->getTheme() === 'dark'} selected="selected"{/if}>dark</option>
+                                <option value="default"{if $oSlider->getTheme() === 'default'} selected="selected"{/if}>{__('default')}</option>
+                                <option value="bar"{if $oSlider->getTheme() === 'bar'} selected="selected"{/if}>{__('bar')}</option>
+                                <option value="light"{if $oSlider->getTheme() === 'light'} selected="selected"{/if}>{__('light')}</option>
+                                <option value="dark"{if $oSlider->getTheme() === 'dark'} selected="selected"{/if}>{__('dark')}</option>
                             </select>
                         </div>
                     </li>
 
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="nAnimationSpeed">Animation Geschwindigkeit (in ms)</label>
+                            <label for="nAnimationSpeed">{__('animationSpeed')}</label>
                         </div>
                         <div class="for">
                             <input type="text" name="nAnimationSpeed" id="nAnimationSpeed" value="{$oSlider->getAnimationSpeed()}" class="form-control" />
-                            <p id="nAnimationSpeedWarning" class="nAnimationSpeedWarningColor">Der Wert von "Animations
-                                Geschwindigkeit" darf den Wert von "Pause Zeit" nicht überschreiten!</p>
+                            <p id="nAnimationSpeedWarning" class="nAnimationSpeedWarningColor">{__('warningAnimationTimeLower')}</p>
                         </div>
                     </li>
 
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="nPauseTime">Pause Zeit (in ms)</label>
+                            <label for="nPauseTime">{__('pauseTime')}</label>
                         </div>
                         <div class="for">
                             <input type="text" name="nPauseTime" id="nPauseTime" value="{$oSlider->getPauseTime()}" class="form-control" />
@@ -189,17 +188,17 @@
 
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Anzeigeoptionen</h3>
+                <h3 class="panel-title">{__('displayOptions')}</h3>
             </div>
             <div class="panel-body">
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="kSprache">Sprache</label>
+                            <label for="kSprache">{__('language')}</label>
                         </div>
                         <div class="for">
                             <select id="kSprache" name="kSprache" class="form-control">
-                                <option value="0">Alle</option>
+                                <option value="0">{__('all')}</option>
                                 {foreach $oSprachen_arr as $oSprache}
                                     <option value="{$oSprache->kSprache}" {if isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
                                 {/foreach}
@@ -208,11 +207,11 @@
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="kKundengruppe">Kundengruppe</label>
+                            <label for="kKundengruppe">{__('customerGroup')}</label>
                         </div>
                         <div class="for">
                             <select id="kKundengruppe" name="kKundengruppe" class="form-control">
-                                <option value="0">Alle</option>
+                                <option value="0">{__('all')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->getID()}" {if isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $oKundengruppe->getID()}selected="selected"{/if}>{$oKundengruppe->getName()}</option>
                                 {/foreach}
@@ -221,7 +220,7 @@
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="nSeitenTyp">Seitentyp</label>
+                            <label for="nSeitenTyp">{__('pageType')}</label>
                         </div>
                         <div class="for">
                             {if isset($oExtension->nSeite)}
@@ -233,27 +232,27 @@
                         <div id="type2" class="custom">
                             <div class="item">
                                 <div class="name">
-                                    <label for="cKey">Filter</label>
+                                    <label for="cKey">{__('filter')}</label>
                                 </div>
                                 <div class="for">
                                     <select class="form-control" name="cKey" id="cKey">
                                         <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''} selected="selected"{/if}>
-                                            Kein Filter
+                                            {__('noFilter')}
                                         </option>
                                         <option value="kTag" {if isset($oExtension->cKey) && $oExtension->cKey === 'kTag'} selected="selected"{/if}>
-                                            Tag
+                                            {__('tag')}
                                         </option>
                                         <option value="kMerkmalWert" {if isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'} selected="selected"{/if}>
-                                            Merkmal
+                                            {__('attribute')}
                                         </option>
                                         <option value="kKategorie" {if isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie'} selected="selected"{/if}>
-                                            Kategorie
+                                            {__('category')}
                                         </option>
                                         <option value="kHersteller" {if isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller'} selected="selected"{/if}>
-                                            Hersteller
+                                            {__('manufacturer')}
                                         </option>
                                         <option value="cSuche" {if isset($oExtension->cKey) && $oExtension->cKey === 'cSuche'} selected="selected"{/if}>
-                                            Suchbegriff
+                                            {__('searchTerm')}
                                         </option>
                                     </select>
                                 </div>
@@ -262,7 +261,7 @@
                     </li>
                     <li class="nl list-group-item item">
                         <div id="keykArtikel" class="key">
-                            <div class="name"><label for="article_name">Artikel</label></div>
+                            <div class="name"><label for="article_name">{__('product')}</label></div>
                             <input type="hidden" name="article_key" id="article_key"
                                    value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
                             <input class="form-control" type="text" name="article_name" id="article_name">
@@ -279,7 +278,7 @@
                             </script>
                         </div>
                         <div id="keykLink" class="key">
-                            <div class="name"><label for="link_name">Eigene Seite</label></div>
+                            <div class="name"><label for="link_name">{__('pageSelf')}</label></div>
                             <input type="hidden" name="link_key" id="link_key"
                                    value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
                             <input class="form-control" type="text" name="link_name" id="link_name">
@@ -313,7 +312,7 @@
                             </script>
                         </div>
                         <div id="keykMerkmalWert" class="input-group key">
-                            <div class="name"><label for="attribute_name">Merkmal</label></div>
+                            <div class="name"><label for="attribute_name">{__('attribute')}</label></div>
                             <input type="hidden" name="attribute_key" id="attribute_key"
                                    value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
                             <input class="form-control" type="text" name="attribute_name" id="attribute_name">
@@ -330,7 +329,7 @@
                             </script>
                         </div>
                         <div id="keykKategorie" class="input-group key">
-                            <div class="name"><label for="categories_name">Kategorie</label></div>
+                            <div class="name"><label for="categories_name">{__('category')}</label></div>
                             <input type="hidden" name="categories_key" id="categories_key"
                                    value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
                             <input class="form-control" type="text" name="categories_name" id="categories_name">
@@ -347,7 +346,7 @@
                             </script>
                         </div>
                         <div id="keykHersteller" class="input-group key">
-                            <div class="name"><label for="manufacturer_name">Hersteller</label></div>
+                            <div class="name"><label for="manufacturer_name">{__('manufacturer')}</label></div>
                             <input type="hidden" name="manufacturer_key" id="manufacturer_key"
                                    value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
                             <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
@@ -364,7 +363,7 @@
                             </script>
                         </div>
                         <div id="keycSuche" class="key input-group">
-                            <div class="name"><label for="ikeycSuche">Suchbegriff</label></div>
+                            <div class="name"><label for="ikeycSuche">{__('searchTerm')}</label></div>
                             <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
                                    value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}">
                         </div>
@@ -375,7 +374,7 @@
 
         <div class="save_wrapper btn-group">
             <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
-            <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück"><i class="fa fa-angle-double-left"></i> zurück</button>
+            <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
         </div>
     </form>
 </div>

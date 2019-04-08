@@ -4,27 +4,34 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Seo;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-
 $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'suchspecials';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$step        = 'suchspecials';
+$db          = Shop::Container()->getDB();
+$alertHelper = Shop::Container()->getAlertService();
 
 setzeSprache();
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
+    $alertHelper->addAlert(
+        Alert::TYPE_SUCCESS,
+        saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST),
+        'saveSettings'
+    );
 } elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && Form::validateToken()) {
-    // Suchspecials aus der DB holen und in smarty assignen
-    $searchSpecials   = Shop::Container()->getDB()->selectAll(
+    $searchSpecials   = $db->selectAll(
         'tseo',
         ['cKey', 'kSprache'],
         ['suchspecial',
@@ -34,150 +41,174 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     );
     $ssTmp            = [];
     $ssToDelete       = [];
-    $bestSellerSeo    = strip_tags(Shop::Container()->getDB()->escape($_POST['bestseller']));
-    $specialOffersSeo = Shop::Container()->getDB()->escape($_POST['sonderangebote']);
-    $newProductsSeo   = strip_tags(Shop::Container()->getDB()->escape($_POST['neu_im_sortiment']));
-    $topOffersSeo     = strip_tags(Shop::Container()->getDB()->escape($_POST['top_angebote']));
-    $releaseSeo       = strip_tags(Shop::Container()->getDB()->escape($_POST['in_kuerze_verfuegbar']));
-    $topRatedSeo      = strip_tags(Shop::Container()->getDB()->escape($_POST['top_bewertet']));
-    if (strlen($bestSellerSeo) > 0 && !pruefeSuchspecialSeo(
+    $bestSellerSeo    = strip_tags($db->escape($_POST['bestseller']));
+    $specialOffersSeo = $db->escape($_POST['sonderangebote']);
+    $newProductsSeo   = strip_tags($db->escape($_POST['neu_im_sortiment']));
+    $topOffersSeo     = strip_tags($db->escape($_POST['top_angebote']));
+    $releaseSeo       = strip_tags($db->escape($_POST['in_kuerze_verfuegbar']));
+    $topRatedSeo      = strip_tags($db->escape($_POST['top_bewertet']));
+    if (mb_strlen($bestSellerSeo) > 0 && !pruefeSuchspecialSeo(
         $searchSpecials,
         $bestSellerSeo,
         SEARCHSPECIALS_BESTSELLER
     )) {
-        $bestSellerSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($bestSellerSeo));
+        $bestSellerSeo = Seo::checkSeo(Seo::getSeo($bestSellerSeo));
 
         if ($bestSellerSeo !== $_POST['bestseller']) {
-            $cHinweis .= sprintf(
-                __('errorExistRename'),
-                StringHandler::filterXSS($_POST['bestseller']),
-                $bestSellerSeo
-            ) . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(
+                    __('errorBestsellerExistRename'),
+                    Text::filterXSS($_POST['bestseller']),
+                    $bestSellerSeo
+                ),
+                'errorBestsellerExistRename'
+            );
         }
         $oBestSeller       = new stdClass();
         $oBestSeller->kKey = SEARCHSPECIALS_BESTSELLER;
         $oBestSeller->cSeo = $bestSellerSeo;
 
         $ssTmp[] = $oBestSeller;
-    } elseif (strlen($bestSellerSeo) === 0) {
+    } elseif (mb_strlen($bestSellerSeo) === 0) {
         $ssToDelete[] = SEARCHSPECIALS_BESTSELLER;
     }
     // Pruefe Sonderangebote
-    if (strlen($specialOffersSeo) > 0 && !pruefeSuchspecialSeo(
+    if (mb_strlen($specialOffersSeo) > 0 && !pruefeSuchspecialSeo(
         $searchSpecials,
         $specialOffersSeo,
         SEARCHSPECIALS_SPECIALOFFERS
     )) {
-        $specialOffersSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($specialOffersSeo));
+        $specialOffersSeo = Seo::checkSeo(Seo::getSeo($specialOffersSeo));
 
         if ($specialOffersSeo !== $_POST['sonderangebote']) {
-            $cHinweis .= sprintf(
-                __('errorSpecialExistRename'),
-                StringHandler::filterXSS($_POST['sonderangebote']),
-                $specialOffersSeo
-            ) . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(
+                    __('errorSpecialExistRename'),
+                    Text::filterXSS($_POST['sonderangebote']),
+                    $specialOffersSeo
+                ),
+                'errorSpecialExistRename'
+            );
         }
         $specialOffer       = new stdClass();
         $specialOffer->kKey = SEARCHSPECIALS_SPECIALOFFERS;
         $specialOffer->cSeo = $specialOffersSeo;
 
         $ssTmp[] = $specialOffer;
-    } elseif (strlen($specialOffersSeo) === 0) {
+    } elseif (mb_strlen($specialOffersSeo) === 0) {
         // cSeo loeschen
         $ssToDelete[] = SEARCHSPECIALS_SPECIALOFFERS;
     }
     // Pruefe Neu im Sortiment
-    if (strlen($newProductsSeo) > 0 && !pruefeSuchspecialSeo(
+    if (mb_strlen($newProductsSeo) > 0 && !pruefeSuchspecialSeo(
         $searchSpecials,
         $newProductsSeo,
         SEARCHSPECIALS_NEWPRODUCTS
     )) {
-        $newProductsSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($newProductsSeo));
+        $newProductsSeo = Seo::checkSeo(Seo::getSeo($newProductsSeo));
 
         if ($newProductsSeo !== $_POST['neu_im_sortiment']) {
-            $cHinweis .= sprintf(
-                __('errorNewExistRename'),
-                StringHandler::filterXSS($_POST['neu_im_sortiment']),
-                $newProductsSeo
-            ) . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(
+                    __('errorNewExistRename'),
+                    Text::filterXSS($_POST['neu_im_sortiment']),
+                    $newProductsSeo
+                ),
+                'errorNewExistRename'
+            );
         }
         $newProducts       = new stdClass();
         $newProducts->kKey = SEARCHSPECIALS_NEWPRODUCTS;
         $newProducts->cSeo = $newProductsSeo;
 
         $ssTmp[] = $newProducts;
-    } elseif (strlen($newProductsSeo) === 0) {
+    } elseif (mb_strlen($newProductsSeo) === 0) {
         // cSeo leoschen
         $ssToDelete[] = SEARCHSPECIALS_NEWPRODUCTS;
     }
     // Pruefe Top Angebote
-    if (strlen($topOffersSeo) > 0 && !pruefeSuchspecialSeo(
+    if (mb_strlen($topOffersSeo) > 0 && !pruefeSuchspecialSeo(
         $searchSpecials,
         $topOffersSeo,
         SEARCHSPECIALS_TOPOFFERS
     )) {
-        $topOffersSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($topOffersSeo));
+        $topOffersSeo = Seo::checkSeo(Seo::getSeo($topOffersSeo));
 
         if ($topOffersSeo !== $_POST['top_angebote']) {
-            $cHinweis .= sprintf(
-                __('errorTopProductsExistRename'),
-                StringHandler::filterXSS($_POST['top_angebote']),
-                $topOffersSeo
-            ) . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(
+                    __('errorTopProductsExistRename'),
+                    Text::filterXSS($_POST['top_angebote']),
+                    $topOffersSeo
+                ),
+                'errorTopProductsExistRename'
+            );
         }
         $topOffers       = new stdClass();
         $topOffers->kKey = SEARCHSPECIALS_TOPOFFERS;
         $topOffers->cSeo = $topOffersSeo;
 
         $ssTmp[] = $topOffers;
-    } elseif (strlen($topOffersSeo) === 0) {
+    } elseif (mb_strlen($topOffersSeo) === 0) {
         // cSeo loeschen
         $ssToDelete[] = SEARCHSPECIALS_TOPOFFERS;
     }
     // Pruefe In kuerze Verfuegbar
-    if (strlen($releaseSeo) > 0 && !pruefeSuchspecialSeo(
+    if (mb_strlen($releaseSeo) > 0 && !pruefeSuchspecialSeo(
         $searchSpecials,
         $releaseSeo,
         SEARCHSPECIALS_UPCOMINGPRODUCTS
     )) {
-        $releaseSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($releaseSeo));
+        $releaseSeo = Seo::checkSeo(Seo::getSeo($releaseSeo));
         if ($releaseSeo !== $_POST['in_kuerze_verfuegbar']) {
-            $cHinweis .= sprintf(
-                __('errorSoonExistRename'),
-                StringHandler::filterXSS($_POST['in_kuerze_verfuegbar']),
-                $releaseSeo
-            ) . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(
+                    __('errorSoonExistRename'),
+                    Text::filterXSS($_POST['in_kuerze_verfuegbar']),
+                    $releaseSeo
+                ),
+                'errorSoonExistRename'
+            );
         }
         $release       = new stdClass();
         $release->kKey = SEARCHSPECIALS_UPCOMINGPRODUCTS;
         $release->cSeo = $releaseSeo;
 
         $ssTmp[] = $release;
-    } elseif (strlen($releaseSeo) === 0) {
+    } elseif (mb_strlen($releaseSeo) === 0) {
         // cSeo loeschen
         $ssToDelete[] = SEARCHSPECIALS_UPCOMINGPRODUCTS;
     }
     // Pruefe Top bewertet
-    if (strlen($topRatedSeo) > 0 && !pruefeSuchspecialSeo(
+    if (mb_strlen($topRatedSeo) > 0 && !pruefeSuchspecialSeo(
         $searchSpecials,
         $topRatedSeo,
         SEARCHSPECIALS_TOPREVIEWS
     )) {
-        $topRatedSeo = \JTL\SeoHelper::checkSeo(\JTL\SeoHelper::getSeo($topRatedSeo));
+        $topRatedSeo = Seo::checkSeo(Seo::getSeo($topRatedSeo));
 
         if ($topRatedSeo !== $_POST['top_bewertet']) {
-            $cHinweis .= sprintf(
-                __('errorTopRatingExistRename'),
-                StringHandler::filterXSS($_POST['top_bewertet']),
-                $topRatedSeo
-            ) . '<br />';
+            $alertHelper->addAlert(
+                Alert::TYPE_NOTE,
+                sprintf(
+                    __('errorTopRatingExistRename'),
+                    Text::filterXSS($_POST['top_bewertet']),
+                    $topRatedSeo
+                ),
+                'errorTopRatingExistRename'
+            );
         }
         $topRated       = new stdClass();
         $topRated->kKey = SEARCHSPECIALS_TOPREVIEWS;
         $topRated->cSeo = $topRatedSeo;
 
         $ssTmp[] = $topRated;
-    } elseif (strlen($topRatedSeo) === 0) {
+    } elseif (mb_strlen($topRatedSeo) === 0) {
         // cSeo loeschen
         $ssToDelete[] = SEARCHSPECIALS_TOPREVIEWS;
     }
@@ -187,12 +218,12 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         foreach ($ssTmp as $i => $item) {
             $ids[] = (int)$item->kKey;
         }
-        Shop::Container()->getDB()->query(
+        $db->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . '
                     AND kKey IN (' . implode(',', $ids) . ')',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
         foreach ($ssTmp as $item) {
             $oSeo           = new stdClass();
@@ -201,23 +232,22 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             $oSeo->kKey     = $item->kKey;
             $oSeo->kSprache = $_SESSION['kSprache'];
 
-            Shop::Container()->getDB()->insert('tseo', $oSeo);
+            $db->insert('tseo', $oSeo);
         }
     }
     if (count($ssToDelete) > 0) {
-        Shop::Container()->getDB()->query(
+        $db->query(
             "DELETE FROM tseo
                 WHERE cKey = 'suchspecial'
                     AND kSprache = " . (int)$_SESSION['kSprache'] . '
                     AND kKey IN (' . implode(',', $ssToDelete) . ')',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
     }
-
-    $cHinweis .= __('successSeoSave') . '<br />';
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSeoSave'), 'successSeoSave');
 }
 
-$ssSeoData      = Shop::Container()->getDB()->selectAll(
+$ssSeoData      = $db->selectAll(
     'tseo',
     ['cKey', 'kSprache'],
     ['suchspecial', (int)$_SESSION['kSprache']],
@@ -232,8 +262,6 @@ foreach ($ssSeoData as $oSuchSpecials) {
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
        ->assign('oSuchSpecials_arr', $searchSpecials)
        ->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('suchspecials.tpl');
 
@@ -247,7 +275,7 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
  */
 function pruefeSuchspecialSeo($oSuchSpecials_arr, $cSeo, $kKey)
 {
-    if ($kKey > 0 && is_array($oSuchSpecials_arr) && count($oSuchSpecials_arr) > 0 && strlen($cSeo)) {
+    if ($kKey > 0 && is_array($oSuchSpecials_arr) && count($oSuchSpecials_arr) > 0 && mb_strlen($cSeo)) {
         foreach ($oSuchSpecials_arr as $oSuchSpecials) {
             if ($oSuchSpecials->kKey == $kKey && $oSuchSpecials->cSeo === $cSeo) {
                 return true;

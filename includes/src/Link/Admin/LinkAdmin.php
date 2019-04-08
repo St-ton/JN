@@ -4,20 +4,24 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link\Admin;
+namespace JTL\Link\Admin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
-use Link\Link;
-use Link\LinkGroupCollection;
-use Link\LinkGroupInterface;
-use Link\LinkGroupList;
-use Link\LinkInterface;
+use JTL\Backend\Revision;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Seo;
+use JTL\Link\Link;
+use JTL\Link\LinkGroupCollection;
+use JTL\Link\LinkGroupInterface;
+use JTL\Link\LinkGroupList;
+use JTL\Link\LinkInterface;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class LinkAdmin
- * @package Link\Admin
+ * @package JTL\Link\Admin
  */
 final class LinkAdmin
 {
@@ -70,11 +74,11 @@ final class LinkAdmin
     /**
      * @param int   $id
      * @param array $post
-     * @return \stdClass
+     * @return stdClass
      */
-    public function createOrUpdateLinkGroup(int $id, $post): \stdClass
+    public function createOrUpdateLinkGroup(int $id, $post): stdClass
     {
-        $linkGroup                = new \stdClass();
+        $linkGroup                = new stdClass();
         $linkGroup->kLinkgruppe   = (int)$post['kLinkgruppe'];
         $linkGroup->cName         = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
         $linkGroup->cTemplatename = \htmlspecialchars($post['cTemplatename'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
@@ -85,8 +89,8 @@ final class LinkAdmin
             $kLinkgruppe = (int)$post['kLinkgruppe'];
             $this->db->update('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe, $linkGroup);
         }
-        $sprachen                       = \Sprache::getAllLanguages();
-        $linkgruppeSprache              = new \stdClass();
+        $sprachen                       = Sprache::getAllLanguages();
+        $linkgruppeSprache              = new stdClass();
         $linkgruppeSprache->kLinkgruppe = $kLinkgruppe;
         foreach ($sprachen as $sprache) {
             $linkgruppeSprache->cISOSprache = $sprache->cISO;
@@ -154,7 +158,7 @@ final class LinkAdmin
     /**
      * @param int $linkID
      * @param int $parentLinkID
-     * @return bool|\stdClass
+     * @return bool|stdClass
      */
     public function updateParentID(int $linkID, int $parentLinkID)
     {
@@ -165,7 +169,7 @@ final class LinkAdmin
             && $oLink->kLink > 0
             && ((isset($oVaterLink->kLink) && $oVaterLink->kLink > 0) || $parentLinkID === 0)
         ) {
-            $upd             = new \stdClass();
+            $upd             = new stdClass();
             $upd->kVaterLink = $parentLinkID;
             $this->db->update('tlink', 'kLink', $linkID, $upd);
 
@@ -295,7 +299,7 @@ final class LinkAdmin
         if (!empty($exists)) {
             return self::ERROR_LINK_ALREADY_EXISTS;
         }
-        $ins              = new \stdClass();
+        $ins              = new stdClass();
         $ins->linkID      = $link->getID();
         $ins->linkGroupID = $targetLinkGroupID;
         $this->db->insert('tlinkgroupassociations', $ins);
@@ -329,7 +333,7 @@ final class LinkAdmin
         if (!empty($exists)) {
             return self::ERROR_LINK_ALREADY_EXISTS;
         }
-        $upd              = new \stdClass();
+        $upd              = new stdClass();
         $upd->linkGroupID = $newLinkGroupID;
         $rows             = $this->db->update(
             'tlinkgroupassociations',
@@ -339,7 +343,7 @@ final class LinkAdmin
         );
         if ($rows === 0) {
             // previously unassigned link
-            $upd              = new \stdClass();
+            $upd              = new stdClass();
             $upd->linkGroupID = $newLinkGroupID;
             $upd->linkID      = $link->getID();
             $this->db->insert('tlinkgroupassociations', $upd);
@@ -373,12 +377,12 @@ final class LinkAdmin
      */
     private function updateChildLinkGroups(LinkInterface $link, int $old, int $new): void
     {
-        $upd              = new \stdClass();
+        $upd              = new stdClass();
         $upd->linkGroupID = $new;
         foreach ($link->getChildLinks() as $childLink) {
             if ($old < 0) {
                 // previously unassigned
-                $ins              = new \stdClass();
+                $ins              = new stdClass();
                 $ins->linkGroupID = $new;
                 $ins->linkID      = $childLink->getID();
                 $this->db->insert(
@@ -404,7 +408,7 @@ final class LinkAdmin
     public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID): void
     {
         $link->buildChildLinks();
-        $ins              = new \stdClass();
+        $ins              = new stdClass();
         $ins->linkGroupID = $linkGroupID;
         foreach ($link->getChildLinks() as $childLink) {
             $ins->linkID = $childLink->getID();
@@ -418,11 +422,11 @@ final class LinkAdmin
 
     /**
      * @param array $post
-     * @return \stdClass
+     * @return stdClass
      */
-    private function createLinkData(array $post): \stdClass
+    private function createLinkData(array $post): stdClass
     {
-        $link                     = new \stdClass();
+        $link                     = new stdClass();
         $link->kLink              = (int)$post['kLink'];
         $link->kPlugin            = (int)$post['kPlugin'];
         $link->cName              = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
@@ -465,18 +469,18 @@ final class LinkAdmin
         $link = $this->createLinkData($post);
         if ((int)$post['kLink'] === 0) {
             $kLink              = $this->db->insert('tlink', $link);
-            $assoc              = new \stdClass();
+            $assoc              = new stdClass();
             $assoc->linkID      = $kLink;
             $assoc->linkGroupID = (int)$post['kLinkgruppe'];
             $this->db->insert('tlinkgroupassociations', $assoc);
         } else {
             $kLink    = (int)$post['kLink'];
-            $revision = new \Revision();
+            $revision = new Revision($this->db);
             $revision->addRevision('link', (int)$post['kLink'], true);
             $this->db->update('tlink', 'kLink', $kLink, $link);
         }
-        $sprachen           = \Sprache::getAllLanguages();
-        $linkSprache        = new \stdClass();
+        $sprachen           = Sprache::getAllLanguages();
+        $linkSprache        = new stdClass();
         $linkSprache->kLink = $kLink;
         foreach ($sprachen as $sprache) {
             $linkSprache->cISOSprache = $sprache->cISO;
@@ -526,7 +530,7 @@ final class LinkAdmin
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
             $linkSprache->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $linkSprache->cSeo
-                : \JTL\SeoHelper::getSeo($linkSprache->cSeo);
+                : Seo::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);
             $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
@@ -535,8 +539,8 @@ final class LinkAdmin
                     ['cKey', 'kKey', 'kSprache'],
                     ['kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache]
                 );
-                $oSeo           = new \stdClass();
-                $oSeo->cSeo     = \JTL\SeoHelper::checkSeo($linkSprache->cSeo);
+                $oSeo           = new stdClass();
+                $oSeo->cSeo     = Seo::checkSeo($linkSprache->cSeo);
                 $oSeo->kKey     = $linkSprache->kLink;
                 $oSeo->cKey     = 'kLink';
                 $oSeo->kSprache = $oSpracheTMP->kSprache;

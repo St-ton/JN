@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class DateCreated
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class DateCreated extends AbstractItem
 {
@@ -29,7 +29,7 @@ class DateCreated extends AbstractItem
             $hits
         );
 
-        return !isset($hits[0]) || \strlen($hits[0]) !== \strlen($baseNode['CreateDate'])
+        return !isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($baseNode['CreateDate'])
             ? InstallCode::INVALID_DATE
             : InstallCode::OK;
     }

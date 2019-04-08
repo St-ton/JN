@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Filter;
+namespace JTL\Filter;
 
-use Boxes\Items\AbstractBox;
-use Filter\Pagination\Info;
-use Tightenco\Collect\Support\Collection;
+use JTL\Boxes\Items\AbstractBox;
+use JTL\Filter\Pagination\Info;
+use JTL\Helpers\Text;
+use JTL\MagicCompatibilityTrait;
+use Illuminate\Support\Collection;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;
@@ -16,14 +18,14 @@ use function Functional\map;
 
 /**
  * Class SearchResults
- * @package Filter
+ * @package JTL\Filter
  */
 class SearchResults implements SearchResultsInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
-     * @var \Tightenco\Collect\Support\Collection()
+     * @var \Illuminate\Support\Collection()
      * @former Artikel
      */
     private $products;
@@ -766,7 +768,7 @@ class SearchResults implements SearchResultsInterface
         $json                = AbstractBox::getJSONString(
             \array_map(
                 function ($e) {
-                    $e->cURL = \StringHandler::htmlentitydecode($e->cURL);
+                    $e->cURL = Text::htmlentitydecode($e->cURL);
 
                     return $e;
                 },
@@ -791,7 +793,7 @@ class SearchResults implements SearchResultsInterface
             $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(
                 function ($e) {
                     /** @var Option $e */
-                    return $e->setURL(\StringHandler::htmlentitydecode($e->getURL()));
+                    return $e->setURL(Text::htmlentitydecode($e->getURL()));
                 },
                 $tagOptions
             )));

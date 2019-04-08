@@ -121,7 +121,7 @@
                                 <strong>{__('boxTemplate')}</strong>
                             </th>
                             <th>
-                                <strong>{__('boxPosition')}</strong>
+                                <strong>{__('position')}</strong>
                             </th>
                         </tr>
                         {foreach $invisibleBoxes as $invisibleBox}
@@ -258,6 +258,9 @@
             </div>
         {else}
             <div class="">
+                {if $nPage === 0}
+                    <div class="alert alert-info">{__('warningChangesForAllPages')}</div>
+                {/if}
                 <form name="boxen" method="post" action="boxen.php">
                     {$jtl_token}
                     <div class="input-group p25 left">

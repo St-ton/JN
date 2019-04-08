@@ -4,7 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Alert\Alert;
+use JTL\CheckBox;
+use JTL\Customer\Kunde;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -42,15 +50,14 @@ function unique_NewsletterCode($dbfeld, $code): bool
  */
 function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 {
-    global $cFehler, $cHinweis;
-
+    $alertHelper         = Shop::Container()->getAlertService();
     $conf                = Shop::getSettings([CONF_NEWSLETTER]);
     $plausi              = new stdClass();
     $plausi->nPlausi_arr = [];
     $nlCustomer          = null;
-    if (!$validate || StringHandler::filterEmailAddress($customer->cEmail) !== false) {
+    if (!$validate || Text::filterEmailAddress($customer->cEmail) !== false) {
         $plausi->nPlausi_arr = newsletterAnmeldungPlausi();
-        $kKundengruppe       = \Session\Frontend::getCustomerGroup()->getID();
+        $kKundengruppe       = Frontend::getCustomerGroup()->getID();
         $checkBox            = new CheckBox();
         $plausi->nPlausi_arr = array_merge(
             $plausi->nPlausi_arr,
@@ -62,7 +69,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
         $plausi->cPost_arr['cNachname'] = $customer->cNachname;
         $plausi->cPost_arr['cEmail']    = $customer->cEmail;
         $plausi->cPost_arr['captcha']   = isset($_POST['captcha'])
-            ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha']))
+            ? Text::htmlentities(Text::filterXSS($_POST['captcha']))
             : null;
         if (!$validate || count($plausi->nPlausi_arr) === 0) {
             $recipient = Shop::Container()->getDB()->select(
@@ -81,10 +88,14 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($recipient->cEmail) && strlen($recipient->cEmail) > 0)
+            if ((isset($recipient->cEmail) && mb_strlen($recipient->cEmail) > 0)
                 || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
             ) {
-                $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    Shop::Lang()->get('newsletterExists', 'errorMessages'),
+                    'newsletterExists'
+                );
             } else {
                 $checkBox->triggerSpecialFunction(
                     CHECKBOX_ORT_NEWSLETTERANMELDUNG,
@@ -142,30 +153,44 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                 if (($conf['newsletter']['newsletter_doubleopt'] === 'U' && empty($_SESSION['Kunde']->kKunde))
                     || $conf['newsletter']['newsletter_doubleopt'] === 'A'
                 ) {
-                    $recipient->cLoeschURL         = Shop::getURL() . '/newsletter.php?lang=' .
+                    $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .
                         $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
-                    $recipient->cFreischaltURL     = Shop::getURL() . '/newsletter.php?lang=' .
+                    $recipient->cFreischaltURL = Shop::getURL() . '/newsletter.php?lang=' .
                         $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
-                    $oObjekt                       = new stdClass();
-                    $oObjekt->tkunde               = $_SESSION['Kunde'] ?? null;
-                    $oObjekt->NewsletterEmpfaenger = $recipient;
+                    $obj                       = new stdClass();
+                    $obj->tkunde               = $_SESSION['Kunde'] ?? null;
+                    $obj->NewsletterEmpfaenger = $recipient;
 
-                    $mail = sendeMail(MAILTEMPLATE_NEWSLETTERANMELDEN, $oObjekt);
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_NEWSLETTERANMELDEN, $obj));
                     Shop::Container()->getDB()->update(
                         'tnewsletterempfaengerhistory',
                         'kNewsletterEmpfaengerHistory',
                         $historyID,
-                        (object)['cEmailBodyHtml' => $mail->bodyHtml]
+                        (object)['cEmailBodyHtml' => $mail->getBodyHTML()]
                     );
-                    $cHinweis = Shop::Lang()->get('newsletterAdd', 'messages');
-                    $plausi   = new stdClass();
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('newsletterAdd', 'messages'),
+                        'newsletterAdd'
+                    );
+                    $plausi = new stdClass();
                 } else {
-                    $cHinweis = Shop::Lang()->get('newsletterNomailAdd', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('newsletterNomailAdd', 'messages'),
+                        'newsletterNomailAdd'
+                    );
                 }
             }
         }
     } else {
-        $cFehler = Shop::Lang()->get('newsletterWrongemail', 'errorMessages');
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
+            'newsletterWrongemail'
+        );
     }
 
     return $plausi;
@@ -205,10 +230,10 @@ function pruefeObBereitsAbonnent(int $kKunde): bool
  */
 function pruefeNLHistoryKundengruppe(int $groupID, $groupKeys): bool
 {
-    if (strlen($groupKeys) > 0) {
+    if (mb_strlen($groupKeys) > 0) {
         $groupIDs = [];
         foreach (explode(';', $groupKeys) as $id) {
-            if ((int)$id > 0 || (strlen($id) > 0 && (int)$id === 0)) {
+            if ((int)$id > 0 || (mb_strlen($id) > 0 && (int)$id === 0)) {
                 $groupIDs[] = (int)$id;
             }
         }

@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Trait PortletStyles
- * @package OPC
+ * @package JTL\OPC
  */
 trait PortletStyles
 {
@@ -21,35 +21,35 @@ trait PortletStyles
             'hidden-xs'        => [
                 'label'      => '<i class="fa fa-mobile"></i> ' . __('Visibility') . ' XS',
                 'option'     => __('hide'),
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'hidden-sm'        => [
                 'label'      => '<i class="fa fa-tablet"></i> ' . __('Visibility') . ' S',
                 'option'     => __('hide'),
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'hidden-md'        => [
                 'label'      => '<i class="fa fa-laptop"></i> ' . __('Visibility') . ' M',
                 'option'     => __('hide'),
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'hidden-lg'        => [
                 'label'      => '<i class="fa fa-desktop"></i> ' . __('Visibility') . ' L',
                 'option'     => __('hide'),
-                'type'       => 'checkbox',
+                'type'       => InputType::CHECKBOX,
                 'dspl_width' => 25,
             ],
             'color'            => [
                 'label'   => __('Font color'),
-                'type'    => 'color',
+                'type'    => InputType::COLOR,
                 'default' => '',
             ],
             'background-color' => [
                 'label'   => __('Background color'),
-                'type'    => 'color',
+                'type'    => InputType::COLOR,
                 'default' => '',
             ],
             'font-size'        => [
@@ -58,70 +58,70 @@ trait PortletStyles
             ],
             'margin-top'       => [
                 'label'      => 'margin-top',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'margin-right'     => [
                 'label'      => 'margin-right',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'margin-bottom'    => [
                 'label'      => 'margin-bottom',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'margin-left'      => [
                 'label'      => 'margin-left',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'padding-top'      => [
                 'label'      => 'padding-top',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'padding-right'    => [
                 'label'      => 'padding-right',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'padding-bottom'   => [
                 'label'      => 'padding-bottom',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'padding-left'     => [
                 'label'      => 'padding-left',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 25
             ],
             'border-width'     => [
                 'label'      => 'border-width',
-                'type'       => 'number',
+                'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
                 'dspl_width' => 50
             ],
             'border-style'     => [
                 'label'      => 'border-style',
-                'type'       => 'select',
+                'type'       => InputType::SELECT,
                 'options'    => [
                     '',
                     'hidden'  => 'hidden',
@@ -140,7 +140,7 @@ trait PortletStyles
             ],
             'border-color'     => [
                 'label'      => 'border-color',
-                'type'       => 'color',
+                'type'       => InputType::COLOR,
                 'dspl_width' => 100
             ]
         ];

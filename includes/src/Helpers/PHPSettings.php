@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use SingletonTrait;
+use JTL\SingletonTrait;
 
 /**
  * Class PHPSettings
- * @package Helpers
+ * @package JTL\Helpers
  */
 class PHPSettings
 {
@@ -22,7 +22,7 @@ class PHPSettings
      */
     private function shortHandToInt($shorthand): int
     {
-        switch (\substr($shorthand, -1)) {
+        switch (\mb_substr($shorthand, -1)) {
             case 'M':
             case 'm':
                 return (int)$shorthand * 1048576;
@@ -148,14 +148,14 @@ class PHPSettings
     }
 
     /**
-     * @param string $cURL
+     * @param string $url
      * @return bool
      * @former pruefeSOAP()
      * @since 5.0.0
      */
-    public static function checkSOAP(string $cURL = ''): bool
+    public static function checkSOAP(string $url = ''): bool
     {
-        return !(\strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \class_exists('SoapClient');
+        return !(\mb_strlen($url) > 0 && !self::phpLinkCheck($url)) && \class_exists('SoapClient');
     }
 
     /**
@@ -166,7 +166,7 @@ class PHPSettings
      */
     public static function checkCURL(string $cURL = ''): bool
     {
-        return !(\strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \function_exists('curl_init');
+        return !(\mb_strlen($cURL) > 0 && !self::phpLinkCheck($cURL)) && \function_exists('curl_init');
     }
 
     /**
@@ -187,7 +187,7 @@ class PHPSettings
      */
     public static function checkSockets(string $cSOCKETS = ''): bool
     {
-        return !(\strlen($cSOCKETS) > 0 && !self::phpLinkCheck($cSOCKETS)) && \function_exists('fsockopen');
+        return !(\mb_strlen($cSOCKETS) > 0 && !self::phpLinkCheck($cSOCKETS)) && \function_exists('fsockopen');
     }
 
     /**
@@ -201,7 +201,7 @@ class PHPSettings
         $errno  = null;
         $errstr = null;
         $url    = \parse_url(\trim($url));
-        $scheme = \strtolower($url['scheme']);
+        $scheme = \mb_convert_case($url['scheme'], \MB_CASE_LOWER);
         if ($scheme !== 'http' && $scheme !== 'https') {
             return false;
         }

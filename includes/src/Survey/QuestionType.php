@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Survey;
+namespace JTL\Survey;
 
 use MyCLabs\Enum\Enum;
 
 /**
- * Class ComponentPropertyType
+ * Class QuestionType
  *
- * @package Survey
+ * @package JTL\Survey
  * @method static QuestionType MULTI()
  * @method static QuestionType MULTI_SINGLE()
  * @method static QuestionType SELECT_SINGLE()

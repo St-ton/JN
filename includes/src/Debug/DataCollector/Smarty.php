@@ -1,18 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Debug\DataCollector;
+namespace JTL\Debug\DataCollector;
 
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
-use Smarty\JTLSmarty;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class Smarty
- * @package Debug\DataCollector
+ * @package JTL\Debug\DataCollector
  */
 class Smarty extends DataCollector implements Renderable
 {

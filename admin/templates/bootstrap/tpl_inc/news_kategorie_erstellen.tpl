@@ -3,20 +3,20 @@
     {literal}
 
     $(document).ready(function () {
-        $('#lang').change(function () {
+        $('#lang').on('change', function () {
             var iso = $('#lang option:selected').val();
             $('.iso_wrapper').slideUp();
             $('#iso_' + iso).slideDown();
             return false;
         });
-        $('form input[type=file]').change(function(e){
+        $('form input[type=file]').on('change', function(e){
             $('form div.alert').slideUp();
             var filesize= this.files[0].size;
             {/literal}
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist größer als das Uploadlimit des Servers.</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> {/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -35,7 +35,7 @@
     {/literal}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('newsCat')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('category')}
 <div id="content">
     <form name="news" method="post" action="news.php" enctype="multipart/form-data">
         {$jtl_token}
@@ -52,7 +52,7 @@
         <div class="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatNew')} (ID {$oNewsKategorie->getID()}){else}{__('newsCatAdd')}{/if}</h3>
+                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatNew')} ({__('id')} {$oNewsKategorie->getID()}){else}{__('newsCatAdd')}{/if}</h3>
                 </div>
                 <div class="table-responsive">
                     <div class="panel-body" id="formtable">
@@ -61,7 +61,7 @@
                                 <label for="kParent">{__('newsCatParent')}</label>
                             </span>
                             <select class="form-control" id="kParent" name="kParent">
-                                <option value="0"> - Hauptkategorie - </option>
+                                <option value="0"> - {__('mainCategory')} - </option>
                                 {if $oNewsKategorie->getParentID()}
                                     {assign var=selectedCat value=$oNewsKategorie->getParentID()}
                                 {else}
@@ -78,7 +78,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="nAktiv">{__('newsActive')}</label>
+                                <label for="nAktiv">{__('active')}</label>
                             </span>
                             <select class="form-control" id="nAktiv" name="nAktiv">
                                 <option value="1"{if $oNewsKategorie->getIsActive() === true} selected{/if}>
@@ -91,7 +91,7 @@
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="previewImage">{__('newsPreview')}</label>
+                                <label for="previewImage">{__('preview')}</label>
                             </span>
                             <div class="input-group-wrap">
                                 {if !empty($oNewsKategorie->getPreviewImage())}
@@ -110,7 +110,7 @@
                                     {foreach $oDatei_arr as $oDatei}
                                         <div class="well col-xs-3">
                                             <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
-                                            <label>Link: </label>
+                                            <label>{__('link')}: </label>
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
                                                 <div class="input-group-addon">
@@ -124,12 +124,12 @@
                         {/if}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="lang">Sprache</label>
+                                <label for="lang">{__('language')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="cISO" id="lang">
                                     {foreach $sprachen as $sprache}
-                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
                             </span>
@@ -144,13 +144,13 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
                         </div>
                         <div class="table-responsive">
                             <div class="panel-body" id="formtable">
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('newsCatName')}</label>
+                                        <label for="cName_{$cISO}">{__('name')}</label>
                                     </span>
                                     <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {__('newsAlreadyExists')}{/if}
                                 </div>
@@ -174,7 +174,7 @@
                                 </div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cBeschreibung_{$cISO}">{__('newsCatDesc')}</label>
+                                        <label for="cBeschreibung_{$cISO}">{__('description')}</label>
                                     </span>
                                     <textarea id="cBeschreibung_{$cISO}" class="ckeditor" name="cBeschreibung_{$cISO}" rows="15" cols="60">{$oNewsKategorie->getDescription($langID)}</textarea>
                                 </div>
@@ -182,7 +182,7 @@
                         </div>
                         <div class="panel-footer">
                             <span class="btn-group">
-                                <button name="speichern" type="button" value="{__('newsSave')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
+                                <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                                 <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
                             </span>
                         </div>

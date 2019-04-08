@@ -48,10 +48,10 @@
                         </span>
                         <span class="input-group-wrap">
                             <select id="nAnsicht" name="nAnsicht" class="form-control combo" onChange="changeSelect(this);">
-                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__('kampagneStatYear')}</option>
-                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__('kampagneStatMonth')}</option>
-                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{__('kampagneStatWeek')}</option>
-                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{__('kampagneStatDay')}</option>
+                                <option value="1"{if $smarty.session.Kampagne->nDetailAnsicht == 1} selected{/if}>{__('annual')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->nDetailAnsicht == 2} selected{/if}>{__('monthly')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->nDetailAnsicht == 3} selected{/if}>{__('weekly')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->nDetailAnsicht == 4} selected{/if}>{__('daily')}</option>
                             </select>
                         </span>
                     </div>
@@ -75,7 +75,7 @@
                 <div class="col-sm-5">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="SelectFromDay">{__('kampagneDateFrom')}</label>
+                            <label for="SelectFromDay">{__('from')}</label>
                         </span>
 
                         <select name="cFromDay" class="form-control combo" id="SelectFromDay">
@@ -89,18 +89,18 @@
 
                         <span class="input-group-wrap">
                             <select name="cFromMonth" class="form-control combo">
-                                <option value="1"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 1} selected{/if}>Januar</option>
-                                <option value="2"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 2} selected{/if}>Februar</option>
-                                <option value="3"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 3} selected{/if}>März</option>
-                                <option value="4"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 4} selected{/if}>April</option>
-                                <option value="5"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 5} selected{/if}>Mai</option>
-                                <option value="6"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 6} selected{/if}>Juni</option>
-                                <option value="7"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 7} selected{/if}>Juli</option>
-                                <option value="8"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 8} selected{/if}>August</option>
-                                <option value="9"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 9} selected{/if}>September</option>
-                                <option value="10"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 10} selected{/if}>Oktober</option>
-                                <option value="11"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 11} selected{/if}>November</option>
-                                <option value="12"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 12} selected{/if}>Dezember</option>
+                                <option value="1"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 1} selected{/if}>{__('january')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 2} selected{/if}>{__('february')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 3} selected{/if}>{__('march')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 4} selected{/if}>{__('april')}</option>
+                                <option value="5"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 5} selected{/if}>{__('may')}</option>
+                                <option value="6"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 6} selected{/if}>{__('june')}</option>
+                                <option value="7"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 7} selected{/if}>{__('july')}</option>
+                                <option value="8"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 8} selected{/if}>{__('august')}</option>
+                                <option value="9"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 9} selected{/if}>{__('september')}</option>
+                                <option value="10"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 10} selected{/if}>{__('october')}</option>
+                                <option value="11"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 11} selected{/if}>{__('november')}</option>
+                                <option value="12"{if $smarty.session.Kampagne->cFromDate_arr.nMonat == 12} selected{/if}>{__('december')}</option>
                             </select>
                         </span>
                         <span class="input-group-wrap">
@@ -131,18 +131,18 @@
                         </select>
                         <span class="input-group-wrap">
                             <select name="cToMonth" class="form-control combo">
-                                <option value="1"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 1} selected{/if}>Januar</option>
-                                <option value="2"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 2} selected{/if}>Februar</option>
-                                <option value="3"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 3} selected{/if}>März</option>
-                                <option value="4"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 4} selected{/if}>April</option>
-                                <option value="5"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 5} selected{/if}>Mai</option>
-                                <option value="6"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 6} selected{/if}>Juni</option>
-                                <option value="7"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 7} selected{/if}>Juli</option>
-                                <option value="8"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 8} selected{/if}>August</option>
-                                <option value="9"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 9} selected{/if}>September</option>
-                                <option value="10"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 10} selected{/if}>Oktober</option>
-                                <option value="11"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 11} selected{/if}>November</option>
-                                <option value="12"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 12} selected{/if}>Dezember</option>
+                                <option value="1"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 1} selected{/if}>{__('january')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 2} selected{/if}>{__('february')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 3} selected{/if}>{__('march')}</option>
+                                <option value="4"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 4} selected{/if}>{__('april')}</option>
+                                <option value="5"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 5} selected{/if}>{__('may')}</option>
+                                <option value="6"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 6} selected{/if}>{__('june')}</option>
+                                <option value="7"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 7} selected{/if}>{__('july')}</option>
+                                <option value="8"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 8} selected{/if}>{__('august')}</option>
+                                <option value="9"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 9} selected{/if}>{__('september')}</option>
+                                <option value="10"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 10} selected{/if}>{__('october')}</option>
+                                <option value="11"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 11} selected{/if}>{__('november')}</option>
+                                <option value="12"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 12} selected{/if}>{__('december')}</option>
                             </select>
                         </span>
                         {assign var=cJahr value=$smarty.now|date_format:'%Y'}
@@ -243,7 +243,7 @@
         
     </div>
     <div class="panel-footer">
-        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('kampagneBackBTN')}</a>
+        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
 </div>
 

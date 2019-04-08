@@ -4,6 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Events\Dispatcher;
+use JTL\Plugin\Helper;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\State;
+use JTL\Profiler;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * @param int   $hookID
  * @param array $args_arr
@@ -13,24 +21,24 @@ function executeHook(int $hookID, $args_arr = [])
     global $smarty;
     $timer = Shop::Container()->getDebugBar()->getTimer();
     $timer->startMeasure('shop.hook.' . $hookID);
-    \Events\Dispatcher::getInstance()->fire('shop.hook.' . $hookID, array_merge((array)$hookID, $args_arr));
+    Dispatcher::getInstance()->fire('shop.hook.' . $hookID, array_merge((array)$hookID, $args_arr));
 
-    $hookList = \Plugin\Helper::getHookList();
+    $hookList = Helper::getHookList();
     if (empty($hookList[$hookID]) || !is_array($hookList[$hookID])) {
         $timer->stopMeasure('shop.hook.' . $hookID);
         return;
     }
-    $db    = \Shop::Container()->getDB();
-    $cache = \Shop::Container()->getCache();
+    $db    = JTL\Shop::Container()->getDB();
+    $cache = JTL\Shop::Container()->getCache();
     foreach ($hookList[$hookID] as $item) {
         $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {
-            $loader  = new \Plugin\PluginLoader($db, $cache);
+            $loader  = new LegacyPluginLoader($db, $cache);
             $oPlugin = $loader->init((int)$item->kPlugin);
             if ($oPlugin === null) {
                 continue;
             }
-            if (!\Plugin\Helper::licenseCheck($oPlugin)) {
+            if (!Helper::licenseCheck($oPlugin)) {
                 continue;
             }
             Shop::set('oplugin_' . $item->kPlugin, $oPlugin);
@@ -68,26 +76,26 @@ function executeHook(int $hookID, $args_arr = [])
 }
 
 /**
- * @param \Plugin\Plugin $oPlugin
- * @param array          $params
+ * @param \JTL\Plugin\LegacyPlugin $oPlugin
+ * @param array                    $params
  * @return bool
  * @deprecated since 5.0.0
  */
 function pluginLizenzpruefung($oPlugin, array $params = []): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::licenseCheck($oPlugin, $params);
+    return Helper::licenseCheck($oPlugin, $params);
 }
 
 /**
- * @param \Plugin\Plugin $oPlugin
- * @param int            $nStatus
+ * @param \JTL\Plugin\LegacyPlugin $oPlugin
+ * @param int                      $nStatus
  * @deprecated since 5.0.0
  */
 function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    \Plugin\Helper::updatePaymentMethodState($oPlugin, $nStatus);
+    Helper::updatePaymentMethodState($oPlugin, $nStatus);
 }
 
 /**
@@ -98,7 +106,7 @@ function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
 function gibPluginEinstellungen(int $kPlugin)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::getConfigByID($kPlugin);
+    return Helper::getConfigByID($kPlugin);
 }
 
 /**
@@ -110,7 +118,7 @@ function gibPluginEinstellungen(int $kPlugin)
 function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::getLanguageVariablesByID($kPlugin, $cISO);
+    return Helper::getLanguageVariablesByID($kPlugin, $cISO);
 }
 
 /**
@@ -122,7 +130,7 @@ function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
 function aenderPluginStatus(int $nStatus, int $kPlugin): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::updateStatusByID($nStatus, $kPlugin);
+    return Helper::updateStatusByID($nStatus, $kPlugin);
 }
 
 /**
@@ -134,7 +142,7 @@ function aenderPluginStatus(int $nStatus, int $kPlugin): bool
 function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::getModuleIDByPluginID($kPlugin, $cNameZahlungsmethode);
+    return Helper::getModuleIDByPluginID($kPlugin, $cNameZahlungsmethode);
 }
 
 /**
@@ -145,7 +153,7 @@ function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
 function gibkPluginAuscModulId(string $cModulId): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::getIDByModuleID($cModulId);
+    return Helper::getIDByModuleID($cModulId);
 }
 
 /**
@@ -156,7 +164,7 @@ function gibkPluginAuscModulId(string $cModulId): int
 function gibkPluginAuscPluginID(string $cPluginID): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Plugin\Helper::getIDByPluginID($cPluginID);
+    return Helper::getIDByPluginID($cPluginID);
 }
 
 /**
@@ -174,8 +182,8 @@ function gibPluginExtendedTemplates(): array
                 ON tplugintemplate.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = :state 
             ORDER BY tplugin.nPrio DESC',
-        ['state' => \Plugin\State::ACTIVATED],
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ['state' => State::ACTIVATED],
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($data as $tpl) {
         $path = PFAD_ROOT . PFAD_PLUGIN . $tpl->cVerzeichnis . '/' .

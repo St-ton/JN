@@ -4,16 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session;
+namespace JTL\Session;
 
-use Session\Handler\Bot;
-use Session\Handler\DB;
-use Session\Handler\JTLDefault;
-use Session\Handler\JTLHandlerInterface;
+use JTL\Session\Handler\Bot;
+use JTL\Session\Handler\DB;
+use JTL\Session\Handler\JTLDefault;
+use JTL\Session\Handler\JTLHandlerInterface;
+use JTL\Shop;
 
 /**
  * Class Storage
- * @package Session
+ * @package JTL\Session
  */
 class Storage
 {
@@ -35,7 +36,6 @@ class Storage
         if ($res !== true) {
             throw new \RuntimeException('Failed to set session handler');
         }
-        $this->handler->setSessionData($_SESSION);
     }
 
     /**
@@ -73,7 +73,7 @@ class Storage
     private function initDefaultHandler(): JTLHandlerInterface
     {
         return \ES_SESSIONS === 1
-            ? new DB(\Shop::Container()->getDB())
+            ? new DB(Shop::Container()->getDB())
             : new JTLDefault();
     }
 
@@ -87,8 +87,8 @@ class Storage
         }
         if (\SAVE_BOT_SESSION === Behaviour::CACHE || \SAVE_BOT_SESSION === Behaviour::NO_SAVE) {
             $save = \SAVE_BOT_SESSION === Behaviour::CACHE
-                && \Shop::Container()->getCache()->isAvailable()
-                && \Shop::Container()->getCache()->isActive();
+                && Shop::Container()->getCache()->isAvailable()
+                && Shop::Container()->getCache()->isActive();
 
             return new Bot($save);
         }

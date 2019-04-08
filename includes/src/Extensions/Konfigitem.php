@@ -4,18 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use DB\ReturnType;
-use Helpers\Tax;
-use Session\Frontend;
+use JsonSerializable;
+use JTL\Catalog\Product\Artikel;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Helpers\Tax;
+use JTL\Nice;
+use JTL\Catalog\Product\Preise;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class Konfigitem
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
-class Konfigitem implements \JsonSerializable
+class Konfigitem implements JsonSerializable
 {
     /**
      * @var int
@@ -98,7 +105,7 @@ class Konfigitem implements \JsonSerializable
     protected $oPreis;
 
     /**
-     * @var \Artikel
+     * @var Artikel
      */
     protected $oArtikel;
 
@@ -151,7 +158,7 @@ class Konfigitem implements \JsonSerializable
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_KONFIGURATOR);
     }
 
     /**
@@ -183,13 +190,13 @@ class Konfigitem implements \JsonSerializable
                 (float)$this->getPreis(true)
             ],
             'fPreisLocalized' => [
-                \Preise::getLocalizedPriceString($this->getPreis()),
-                \Preise::getLocalizedPriceString($this->getPreis(true))
+                Preise::getLocalizedPriceString($this->getPreis()),
+                Preise::getLocalizedPriceString($this->getPreis(true))
             ]
         ];
         $result            = \array_merge($override, $virtual);
 
-        return \StringHandler::utf8_convert_recursive($result);
+        return Text::utf8_convert_recursive($result);
     }
 
     /**
@@ -205,14 +212,14 @@ class Konfigitem implements \JsonSerializable
         if (!self::checkLicense()) {
             return $this;
         }
-        $item = \Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', $id);
+        $item = Shop::Container()->getDB()->select('tkonfigitem', 'kKonfigitem', $id);
         if (isset($item->kKonfigitem) && $item->kKonfigitem > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
             }
 
             if (!$languageID) {
-                $languageID = \Shop::getLanguageID() ?? \Sprache::getDefaultLanguage()->kSprache;
+                $languageID = Shop::getLanguageID() ?? Sprache::getDefaultLanguage()->kSprache;
             }
             if (!$customerGroupID) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
@@ -235,7 +242,7 @@ class Konfigitem implements \JsonSerializable
             $this->oPreis            = new Konfigitempreis($this->kKonfigitem, $customerGroupID);
             $this->oArtikel          = null;
             if ($this->kArtikel > 0) {
-                $options                             = new \stdClass();
+                $options                             = new stdClass();
                 $options->nAttribute                 = 1;
                 $options->nArtikelAttribute          = 1;
                 $options->nVariationKombi            = 1;
@@ -243,7 +250,7 @@ class Konfigitem implements \JsonSerializable
                 $options->nKeineSichtbarkeitBeachten = 1;
                 $options->nVariationen               = 0;
 
-                $this->oArtikel = new \Artikel();
+                $this->oArtikel = new Artikel();
                 $this->oArtikel->fuelleArtikel($this->kArtikel, $options, $customerGroupID, $languageID);
             }
         }
@@ -265,7 +272,7 @@ class Konfigitem implements \JsonSerializable
      */
     public function save(bool $bPrim = true)
     {
-        $ins                    = new \stdClass();
+        $ins                    = new stdClass();
         $ins->kKonfiggruppe     = $this->kKonfiggruppe;
         $ins->kArtikel          = $this->kArtikel;
         $ins->nPosTyp           = $this->nPosTyp;
@@ -281,7 +288,7 @@ class Konfigitem implements \JsonSerializable
         $ins->fInitial          = $this->fInitial;
         $ins->nSort             = $this->nSort;
 
-        $kPrim = \Shop::Container()->getDB()->insert('tkonfigitem', $ins);
+        $kPrim = Shop::Container()->getDB()->insert('tkonfigitem', $ins);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -294,7 +301,7 @@ class Konfigitem implements \JsonSerializable
      */
     public function update(): int
     {
-        $upd                    = new \stdClass();
+        $upd                    = new stdClass();
         $upd->kKonfiggruppe     = $this->kKonfiggruppe;
         $upd->kArtikel          = $this->kArtikel;
         $upd->nPosTyp           = $this->nPosTyp;
@@ -310,7 +317,7 @@ class Konfigitem implements \JsonSerializable
         $upd->fInitial          = $this->fInitial;
         $upd->nSort             = $this->nSort;
 
-        return \Shop::Container()->getDB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $upd);
+        return Shop::Container()->getDB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $upd);
     }
 
     /**
@@ -318,7 +325,7 @@ class Konfigitem implements \JsonSerializable
      */
     public function delete(): int
     {
-        return \Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem);
+        return Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem);
     }
 
     /**
@@ -328,7 +335,7 @@ class Konfigitem implements \JsonSerializable
     public static function fetchAll(int $kKonfiggruppe): array
     {
         $items = [];
-        $data  = \Shop::Container()->getDB()->queryPrepared(
+        $data  = Shop::Container()->getDB()->queryPrepared(
             'SELECT kKonfigitem 
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :groupID 
@@ -338,7 +345,7 @@ class Konfigitem implements \JsonSerializable
         );
         foreach ($data as &$item) {
             $kKonfigitem = (int)$item->kKonfigitem;
-            $item       = new self($kKonfigitem);
+            $item        = new self($kKonfigitem);
             if ($item->isValid()) {
                 $items[] = $item;
             }
@@ -370,10 +377,10 @@ class Konfigitem implements \JsonSerializable
     }
 
     /**
-     * @param \Artikel $oArtikel
+     * @param Artikel $oArtikel
      * @return $this
      */
-    public function setArtikel(\Artikel $oArtikel): self
+    public function setArtikel(Artikel $oArtikel): self
     {
         $this->oArtikel = $oArtikel;
 
@@ -416,9 +423,9 @@ class Konfigitem implements \JsonSerializable
     }
 
     /**
-     * @return \Artikel|null
+     * @return Artikel|null
      */
-    public function getArtikel(): ?\Artikel
+    public function getArtikel(): ?Artikel
     {
         return $this->oArtikel;
     }
@@ -503,7 +510,7 @@ class Konfigitem implements \JsonSerializable
     public function getBildPfad(): ?string
     {
         return $this->oArtikel && $this->oArtikel->Bilder[0]->cPfadKlein !== \BILD_KEIN_ARTIKELBILD_VORHANDEN
-            ? $this->oArtikel->Bilder[0]
+            ? $this->oArtikel->Bilder[0]->cPfadKlein
             : null;
     }
 
@@ -516,45 +523,11 @@ class Konfigitem implements \JsonSerializable
     }
 
     /**
-     * @param bool $bForceNetto
-     * @param bool $bConvertCurrency
-     * @return float|int
-     */
-    public function getPreis($bForceNetto = false, $bConvertCurrency = false)
-    {
-        $fVKPreis    = 0.0;
-        $isConverted = false;
-        if ($this->oArtikel && $this->bPreis) {
-            $fVKPreis = $this->oArtikel->Preise->fVKNetto ?? 0;
-            $fSpecial = $this->oPreis->getPreis($bConvertCurrency);
-            if ($fSpecial != 0) {
-                if ($this->oPreis->getTyp() === Konfigitempreis::PRICE_TYPE_SUM) {
-                    $fVKPreis += $fSpecial;
-                } elseif ($this->oPreis->getTyp() === Konfigitempreis::PRICE_TYPE_PERCENTAGE) {
-                    $fVKPreis *= (100 + $fSpecial) / 100;
-                }
-            }
-        } elseif ($this->oPreis) {
-            $fVKPreis    = $this->oPreis->getPreis($bConvertCurrency);
-            $isConverted = true;
-        }
-        if ($bConvertCurrency && !$isConverted) {
-            $fVKPreis *= Frontend::getCurrency()->getConversionFactor();
-        }
-        if (!$bForceNetto && !Frontend::getCustomerGroup()->isMerchant()) {
-            $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
-        }
-
-        return $fVKPreis;
-    }
-
-    /**
      * @param bool $forceNet
      * @param bool $convertCurrency
-     * @param int $totalAmount
      * @return float|int
      */
-    public function getFullPrice(bool $forceNet = false, bool $convertCurrency = false, $totalAmount = 1)
+    public function getPreis(bool $forceNet = false, bool $convertCurrency = false)
     {
         $fVKPreis    = 0.0;
         $isConverted = false;
@@ -573,14 +546,24 @@ class Konfigitem implements \JsonSerializable
             $isConverted = true;
         }
         if ($convertCurrency && !$isConverted) {
-            $waehrung  = $_SESSION['Waehrung'] ?? \Shop::Container()->getDB()->select('twaehrung', 'cStandard', 'Y');
-            $fVKPreis *= (float)$waehrung->fFaktor;
+            $fVKPreis *= Frontend::getCurrency()->getConversionFactor();
         }
-        if (!$forceNet && !Frontend::getCustomerGroup()->getIsMerchant()) {
+        if (!$forceNet && !Frontend::getCustomerGroup()->isMerchant()) {
             $fVKPreis = Tax::getGross($fVKPreis, Tax::getSalesTax($this->getSteuerklasse()), 4);
         }
 
-        return $fVKPreis * $this->fAnzahl * $totalAmount;
+        return $fVKPreis;
+    }
+
+    /**
+     * @param bool $forceNet
+     * @param bool $convertCurrency
+     * @param int $totalAmount
+     * @return float|int
+     */
+    public function getFullPrice(bool $forceNet = false, bool $convertCurrency = false, $totalAmount = 1)
+    {
+        return $this->getPreis($forceNet, $convertCurrency) * $this->fAnzahl * $totalAmount;
     }
 
     /**
@@ -652,7 +635,7 @@ class Konfigitem implements \JsonSerializable
     public function getRabattLocalized(bool $bHTML = true): string
     {
         return $this->oPreis->getTyp() === 0
-            ? \Preise::getLocalizedPriceString($this->getRabatt(), null, $bHTML)
+            ? Preise::getLocalizedPriceString($this->getRabatt(), null, $bHTML)
             : $this->getRabatt() . '%';
     }
 
@@ -663,7 +646,7 @@ class Konfigitem implements \JsonSerializable
     public function getZuschlagLocalized(bool $bHTML = true): string
     {
         return $this->oPreis->getTyp() === 0
-            ? \Preise::getLocalizedPriceString($this->getZuschlag(), null, $bHTML)
+            ? Preise::getLocalizedPriceString($this->getZuschlag(), null, $bHTML)
             : $this->getZuschlag() . '%';
     }
 
@@ -690,7 +673,7 @@ class Konfigitem implements \JsonSerializable
      */
     public function getPreisLocalized(bool $bHTML = true, bool $bSigned = true, bool $bForceNetto = false): string
     {
-        $cLocalized = \Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $bHTML);
+        $cLocalized = Preise::getLocalizedPriceString($this->getPreis($bForceNetto), false, $bHTML);
         if ($bSigned && $this->getPreis() > 0) {
             $cLocalized = '+' . $cLocalized;
         }
@@ -706,7 +689,7 @@ class Konfigitem implements \JsonSerializable
      */
     public function getFullPriceLocalized(bool $bHTML = true, bool $bForceNetto = false, $totalAmount = 1): string
     {
-        return \Preise::getLocalizedPriceString($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
+        return Preise::getLocalizedPriceString($this->getFullPrice($bForceNetto, false, $totalAmount), 0, $bHTML);
     }
 
     /**

@@ -6,24 +6,16 @@
  * @created Fri, 15 Jun 2018 08:49:57 +0200
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20180615084957
  */
 class Migration_20180615084957 extends Migration implements IMigration
 {
-    protected $author       = 'Clemens Rudolph';
-    protected $description  = 'remove unused settings completely';
+    protected $author      = 'Clemens Rudolph';
+    protected $description = 'remove unused settings completely';
 
     private $vSettingNameID = [
               'bilder_variationen_gross_skalieren'  // 1427
@@ -140,5 +132,4 @@ class Migration_20180615084957 extends Migration implements IMigration
         $this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1426","Ja","Y","1")');
         $this->execute('INSERT INTO teinstellungenconfwerte(kEinstellungenConf,cName,cWert,nSort) VALUES("1426","Nein","N","2")');
     }
-
 }

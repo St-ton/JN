@@ -4,13 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * Class AnonymizeIps
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  *
  * anonymize IPs in various tables.
  *
@@ -118,8 +119,8 @@ class AnonymizeIps extends Method implements MethodInterface
         $anonymizer = new IpAnonymizer('', true); // anonymize "beautified"
         $ipMaskV4   = $anonymizer->getMaskV4();
         $ipMaskV6   = $anonymizer->getMaskV6();
-        $ipMaskV4   = \substr($ipMaskV4, \strpos($ipMaskV4, '.0'), \strlen($ipMaskV4) - 1);
-        $ipMaskV6   = \substr($ipMaskV6, \strpos($ipMaskV6, ':0000'), \strlen($ipMaskV6) - 1);
+        $ipMaskV4   = \mb_substr($ipMaskV4, \mb_strpos($ipMaskV4, '.0'), \mb_strlen($ipMaskV4) - 1);
+        $ipMaskV6   = \mb_substr($ipMaskV6, \mb_strpos($ipMaskV6, ':0000'), \mb_strlen($ipMaskV6) - 1);
         $dtNow      = $this->now->format('Y-m-d H:i:s');
         foreach ($this->tablesToUpdate as $tableName => $colData) {
             $sql = "SELECT
@@ -143,7 +144,7 @@ class AnonymizeIps extends Method implements MethodInterface
             $sql .= " ORDER BY {$colData['ColCreated']} ASC
                 LIMIT {$this->workLimit}";
 
-            $res = \Shop::Container()->getDB()->query(
+            $res = Shop::Container()->getDB()->query(
                 $sql,
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -154,7 +155,7 @@ class AnonymizeIps extends Method implements MethodInterface
                     ($this->logger === null) ?: $this->logger->log(\JTLLOG_LEVEL_WARNING, $e->getMessage());
                 }
                 $szKeyColName = $colData['ColKey'];
-                \Shop::Container()->getDB()->update(
+                Shop::Container()->getDB()->update(
                     $tableName,
                     $colData['ColKey'],
                     (int)$row->$szKeyColName,

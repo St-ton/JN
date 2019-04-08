@@ -3,17 +3,23 @@
  * Create news lang table
  */
 
+use JTL\DB\ReturnType;
+use JTL\Shop;
+use JTL\Update\DBMigrationHelper;
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20180801165500
  */
 class Migration_20180801165500 extends Migration implements IMigration
 {
-    protected $author = 'fm';
+    protected $author      = 'fm';
     protected $description = 'Create news language table';
 
     public function up()
     {
-        $db = Shop::Container()->getDB();
+        $db = $this->getDB();
         DBMigrationHelper::migrateToInnoDButf8('tnews');
         DBMigrationHelper::migrateToInnoDButf8('tnewskategorie');
 
@@ -55,12 +61,12 @@ class Migration_20180801165500 extends Migration implements IMigration
                   ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
         );
-        $allNewsEntries = $db->query('SELECT * FROM tnews', \DB\ReturnType::ARRAY_OF_OBJECTS);
+        $allNewsEntries = $db->query('SELECT * FROM tnews', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($allNewsEntries as $newsEntry) {
             $new                  = new stdClass();
             $new->kNews           = (int)$newsEntry->kNews;
             $new->languageID      = (int)$newsEntry->kSprache;
-            $new->languageCode    = Shop::Lang()->_getIsoFromLangID($new->languageID)->cISO ?? 'ger';
+            $new->languageCode    = Shop::Lang()->getIsoFromLangID($new->languageID)->cISO ?? 'ger';
             $new->title           = $newsEntry->cBetreff;
             $new->content         = $newsEntry->cText;
             $new->preview         = $newsEntry->cVorschauText;
@@ -69,12 +75,12 @@ class Migration_20180801165500 extends Migration implements IMigration
             $new->metaDescription = $newsEntry->cMetaDescription;
             $db->insert('tnewssprache', $new);
         }
-        $allNewsCategories = $db->query('SELECT * FROM tnewskategorie', \DB\ReturnType::ARRAY_OF_OBJECTS);
+        $allNewsCategories = $db->query('SELECT * FROM tnewskategorie', ReturnType::ARRAY_OF_OBJECTS);
         foreach ($allNewsCategories as $newsCategory) {
             $new                  = new stdClass();
             $new->kNewsKategorie  = (int)$newsCategory->kNewsKategorie;
             $new->languageID      = (int)$newsCategory->kSprache;
-            $new->languageCode    = Shop::Lang()->_getIsoFromLangID($new->languageID)->cISO ?? 'ger';
+            $new->languageCode    = Shop::Lang()->getIsoFromLangID($new->languageID)->cISO ?? 'ger';
             $new->name            = $newsCategory->cName;
             $new->description     = $newsCategory->cBeschreibung;
             $new->metaTitle       = $newsCategory->cMetaTitle;
@@ -145,10 +151,10 @@ class Migration_20180801165500 extends Migration implements IMigration
     /**
      * update lft/rght values for categories in the nested set model
      *
-     * @param \DB\DbInterface $db
-     * @param int $parent_id
-     * @param int $left
-     * @param int $level
+     * @param \JTL\DB\DbInterface $db
+     * @param int                 $parent_id
+     * @param int                 $left
+     * @param int                 $level
      * @return int
      */
     private function rebuildCategoryTree($db, int $parent_id, int $left, int $level = 0): int

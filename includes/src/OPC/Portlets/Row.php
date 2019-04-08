@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
 
 /**
  * Class Row
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Row extends Portlet
 {
@@ -55,21 +56,21 @@ class Row extends Portlet
         return [
             'layout-xs' => [
                 'label'          => '<i class="fa fa-mobile"></i> Layout XS',
-                'type'           => 'text',
+                'type'           => InputType::TEXT,
                 'default'        => '6+6',
                 'dspl_width'     => 50,
                 'layoutCollapse' => [
                     'layout-sm' => [
                         'label' => '<i class="fa fa-tablet"></i> Layout S',
-                        'type'  => 'text',
+                        'type'  => InputType::TEXT,
                     ],
                     'layout-md' => [
                         'label' => '<i class="fa fa-laptop"></i> Layout M',
-                        'type'  => 'text',
+                        'type'  => InputType::TEXT,
                     ],
                     'layout-lg' => [
                         'label' => '<i class="fa fa-desktop"></i> Layout L',
-                        'type'  => 'text',
+                        'type'  => InputType::TEXT,
                     ],
                 ]
             ],

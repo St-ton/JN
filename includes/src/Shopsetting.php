@@ -1,11 +1,17 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use ArrayAccess;
+use JTL\DB\ReturnType;
 
 /**
  * Class Shopsetting
+ * @package JTL
  */
 final class Shopsetting implements ArrayAccess
 {
@@ -28,40 +34,42 @@ final class Shopsetting implements ArrayAccess
      * @var array
      */
     private static $mapping = [
-        CONF_GLOBAL              => 'global',
-        CONF_STARTSEITE          => 'startseite',
-        CONF_EMAILS              => 'emails',
-        CONF_ARTIKELUEBERSICHT   => 'artikeluebersicht',
-        CONF_ARTIKELDETAILS      => 'artikeldetails',
-        CONF_KUNDEN              => 'kunden',
-        CONF_LOGO                => 'logo',
-        CONF_KAUFABWICKLUNG      => 'kaufabwicklung',
-        CONF_BOXEN               => 'boxen',
-        CONF_BILDER              => 'bilder',
-        CONF_SONSTIGES           => 'sonstiges',
-        CONF_ZAHLUNGSARTEN       => 'zahlungsarten',
-        CONF_PLUGINZAHLUNGSARTEN => 'pluginzahlungsarten',
-        CONF_KONTAKTFORMULAR     => 'kontakt',
-        CONF_SHOPINFO            => 'shopinfo',
-        CONF_RSS                 => 'rss',
-        CONF_VERGLEICHSLISTE     => 'vergleichsliste',
-        CONF_PREISVERLAUF        => 'preisverlauf',
-        CONF_BEWERTUNG           => 'bewertung',
-        CONF_NEWSLETTER          => 'newsletter',
-        CONF_KUNDENFELD          => 'kundenfeld',
-        CONF_NAVIGATIONSFILTER   => 'navigationsfilter',
-        CONF_EMAILBLACKLIST      => 'emailblacklist',
-        CONF_METAANGABEN         => 'metaangaben',
-        CONF_NEWS                => 'news',
-        CONF_SITEMAP             => 'sitemap',
-        CONF_UMFRAGE             => 'umfrage',
-        CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
-        CONF_TRUSTEDSHOPS        => 'trustedshops',
-        CONF_SUCHSPECIAL         => 'suchspecials',
-        CONF_TEMPLATE            => 'template',
-        CONF_CHECKBOX            => 'checkbox',
-        CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
-        CONF_CACHING             => 'caching'
+        \CONF_GLOBAL              => 'global',
+        \CONF_STARTSEITE          => 'startseite',
+        \CONF_EMAILS              => 'emails',
+        \CONF_ARTIKELUEBERSICHT   => 'artikeluebersicht',
+        \CONF_ARTIKELDETAILS      => 'artikeldetails',
+        \CONF_KUNDEN              => 'kunden',
+        \CONF_LOGO                => 'logo',
+        \CONF_KAUFABWICKLUNG      => 'kaufabwicklung',
+        \CONF_BOXEN               => 'boxen',
+        \CONF_BILDER              => 'bilder',
+        \CONF_SONSTIGES           => 'sonstiges',
+        \CONF_ZAHLUNGSARTEN       => 'zahlungsarten',
+        \CONF_PLUGINZAHLUNGSARTEN => 'pluginzahlungsarten',
+        \CONF_KONTAKTFORMULAR     => 'kontakt',
+        \CONF_SHOPINFO            => 'shopinfo',
+        \CONF_RSS                 => 'rss',
+        \CONF_VERGLEICHSLISTE     => 'vergleichsliste',
+        \CONF_PREISVERLAUF        => 'preisverlauf',
+        \CONF_BEWERTUNG           => 'bewertung',
+        \CONF_NEWSLETTER          => 'newsletter',
+        \CONF_KUNDENFELD          => 'kundenfeld',
+        \CONF_NAVIGATIONSFILTER   => 'navigationsfilter',
+        \CONF_EMAILBLACKLIST      => 'emailblacklist',
+        \CONF_METAANGABEN         => 'metaangaben',
+        \CONF_NEWS                => 'news',
+        \CONF_SITEMAP             => 'sitemap',
+        \CONF_UMFRAGE             => 'umfrage',
+        \CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
+        \CONF_TRUSTEDSHOPS        => 'trustedshops',
+        \CONF_SUCHSPECIAL         => 'suchspecials',
+        \CONF_TEMPLATE            => 'template',
+        \CONF_CHECKBOX            => 'checkbox',
+        \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
+        \CONF_CRON                => 'cron',
+        \CONF_FTP                 => 'ftp',
+        \CONF_CACHING             => 'caching'
     ];
 
     /**
@@ -102,7 +110,7 @@ final class Shopsetting implements ArrayAccess
 
     /**
      * @param string $offset
-     * @param mixed $value
+     * @param mixed  $value
      * @return $this
      */
     public function offsetSet($offset, $value)
@@ -150,17 +158,17 @@ final class Shopsetting implements ArrayAccess
         if ($section === false || $section === null) {
             return null;
         }
-        if ($section === CONF_TEMPLATE) {
+        if ($section === \CONF_TEMPLATE) {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
                 function ($cache, $id, &$content, &$tags) {
                     $content = Template::getInstance()->getConfig();
-                    $tags    = [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION];
+                    $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 
                     return true;
                 }
             );
-            if (is_array($settings)) {
+            if (\is_array($settings)) {
                 foreach ($settings as $templateSection => $templateSetting) {
                     $this->container[$offset][$templateSection] = $templateSetting;
                 }
@@ -170,12 +178,12 @@ final class Shopsetting implements ArrayAccess
                 $cacheID,
                 function ($cache, $id, &$content, &$tags) use ($section) {
                     $content = $this->getSectionData($section);
-                    $tags    = [CACHING_GROUP_OPTION];
+                    $tags    = [\CACHING_GROUP_OPTION];
 
                     return true;
                 }
             );
-            if (count($settings) > 0) {
+            if (\count($settings) > 0) {
                 $this->addContainerData($offset, $settings);
             }
         }
@@ -210,13 +218,13 @@ final class Shopsetting implements ArrayAccess
      */
     private function getSectionData($section): array
     {
-        if ($section === CONF_PLUGINZAHLUNGSARTEN) {
+        if ($section === \CONF_PLUGINZAHLUNGSARTEN) {
             return Shop::Container()->getDB()->query(
                 "SELECT cName, cWert, '' AS type
                      FROM tplugineinstellungen
                      WHERE cName LIKE '%_min%' 
                         OR cName LIKE '%_max'",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -228,7 +236,7 @@ final class Shopsetting implements ArrayAccess
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
                 WHERE teinstellungen.kEinstellungenSektion = :section',
             ['section' => $section],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
     }
 
@@ -239,7 +247,7 @@ final class Shopsetting implements ArrayAccess
     public function getSettings($sections): array
     {
         $ret = [];
-        if (!is_array($sections)) {
+        if (!\is_array($sections)) {
             $sections = (array)$sections;
         }
         foreach ($sections as $section) {
@@ -278,7 +286,7 @@ final class Shopsetting implements ArrayAccess
         if ($section !== null && isset(self::$mapping[$section])) {
             return self::$mapping[$section];
         }
-        if ($name !== null && ($key = array_search($name, self::$mapping, true)) !== false) {
+        if ($name !== null && ($key = \array_search($name, self::$mapping, true)) !== false) {
             return $key;
         }
 
@@ -302,7 +310,7 @@ final class Shopsetting implements ArrayAccess
                     ON teinstellungenconf.cWertName = teinstellungen.cName
                     AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
                 ORDER BY kEinstellungenSektion',
-            \DB\ReturnType::ARRAY_OF_ASSOC_ARRAYS
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         foreach (self::$mapping as $mappingID => $sectionName) {
             foreach ($settings as $setting) {
@@ -339,12 +347,12 @@ final class Shopsetting implements ArrayAccess
      */
     public function preLoad(): array
     {
-        $cacheID = 'settings_all_preload';
-        $result  = Shop::Container()->getCache()->get(
+        $cacheID           = 'settings_all_preload';
+        $result            = Shop::Container()->getCache()->get(
             $cacheID,
             function ($cache, $id, &$content, &$tags) {
                 $content = $this->getAll();
-                $tags    = [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE];
+                $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION, \CACHING_GROUP_CORE];
 
                 return true;
             }

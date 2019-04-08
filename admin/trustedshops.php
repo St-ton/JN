@@ -4,23 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\PHPSettings;
+use JTL\Helpers\Form;
+use JTL\Helpers\PHPSettings;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Helpers\Text;
+use JTL\TrustedShops;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
-\Shop::Container()->getGetText()->loadConfigLocales(true, true);
+Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 define('PARTNER_PACKAGE', 'JTL');
 define('SHOP_SOFTWARE', 'JTL');
 
 $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 
-/** @global Smarty\JTLSmarty $smarty */
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'uebersicht';
-$conf     = Shop::getSettings([CONF_TRUSTEDSHOPS]);
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$step        = 'uebersicht';
+$conf        = Shop::getSettings([CONF_TRUSTEDSHOPS]);
+$alertHelper = Shop::Container()->getAlertService();
 
 setzeSpracheTrustedShops();
 
@@ -32,13 +37,13 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
         $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
         if ($ts->oZertifikat->kTrustedShopsZertifikat > 0) {
             if ($ts->loescheTrustedShopsZertifikat($ts->oZertifikat->kTrustedShopsZertifikat)) {
-                $cHinweis = __('successDelete');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDelete'), 'successDelete');
 
                 Shop::Container()->getDB()->query(
                     'DELETE FROM teinstellungen
                         WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                             AND cName = 'trustedshops_nutzen'",
-                    \DB\ReturnType::DEFAULT
+                    ReturnType::DEFAULT
                 );
                 $aktWert                        = new stdClass();
                 $aktWert->cWert                 = 'N';
@@ -47,10 +52,10 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
                 Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
             } else {
-                $cFehler .= __('errorCertificateNotFound');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCertificateNotFound'), 'errorCertificateNotFound');
             }
         } else {
-            $cFehler .= __('errorCertificateNotFound');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCertificateNotFound'), 'errorCertificateNotFound');
         }
     } else {
         $cPreStatus  = $conf['trustedshops']['trustedshops_nutzen'];
@@ -61,7 +66,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                     AND cConf = 'Y'
                     AND cWertName != 'trustedshops_kundenbewertung_anzeigen'
                 ORDER BY nSort",
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         $configCount = count($confData);
         for ($i = 0; $i < $configCount; $i++) {
@@ -78,7 +83,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                     $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
-                    $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                    $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                     break;
                 case 'listbox':
                     bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);
@@ -97,32 +102,32 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             $settings->reset();
         }
 
-        if (strlen($_POST['tsId']) > 0
-            && (strlen($_POST['wsUser']) > 0
-                && strlen($_POST['wsPassword']) > 0
+        if (mb_strlen($_POST['tsId']) > 0
+            && (mb_strlen($_POST['wsUser']) > 0
+                && mb_strlen($_POST['wsPassword']) > 0
                 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)
         ) {
             $cert              = new stdClass();
-            $cert->cTSID       = StringHandler::htmlentities(StringHandler::filterXSS(trim($_POST['tsId'])));
-            $cert->cWSUser     = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsUser']));
-            $cert->cWSPasswort = StringHandler::htmlentities(StringHandler::filterXSS($_POST['wsPassword']));
+            $cert->cTSID       = Text::htmlentities(Text::filterXSS(trim($_POST['tsId'])));
+            $cert->cWSUser     = Text::htmlentities(Text::filterXSS($_POST['wsUser']));
+            $cert->cWSPasswort = Text::htmlentities(Text::filterXSS($_POST['wsPassword']));
             $cert->cISOSprache = $_SESSION['TrustedShops']->oSprache->cISOSprache;
             $cert->nAktiv      = 0;
-            $cert->eType       = StringHandler::htmlentities(StringHandler::filterXSS($_POST['eType']));
+            $cert->eType       = Text::htmlentities(Text::filterXSS($_POST['eType']));
             $cert->dErstellt   = 'NOW()';
 
             $ts = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
 
-            $nReturnValue = (strlen($ts->kTrustedShopsZertifikat) > 0)
+            $nReturnValue = (mb_strlen($ts->kTrustedShopsZertifikat) > 0)
                 ? $ts->speicherTrustedShopsZertifikat($cert, $ts->kTrustedShopsZertifikat)
                 : $ts->speicherTrustedShopsZertifikat($cert);
 
-            mappeTSFehlerCode($cHinweis, $cFehler, $nReturnValue);
+            mappeTSFehlerCode($nReturnValue);
         } elseif ($cPreStatus === 'Y') {
-            $cFehler .= __('errorFillRequired');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
         }
 
-        $cHinweis .= __('successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         unset($confData);
     }
@@ -136,9 +141,9 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
 
     if ($ts->oZertifikat->kTrustedShopsZertifikat > 0 && $ts->oZertifikat->nAktiv == 1) {
         $ts->holeKaeuferschutzProdukte($ts->oZertifikat->kTrustedShopsZertifikat);
-        $cHinweis .= __('successBuyerProtectSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBuyerProtectSave'), 'successBuyerProtectSave');
     } else {
-        $cFehler .= __('errorBuyerProtectSave');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBuyerProtectSave'), 'errorBuyerProtectSave');
     }
 } elseif (isset($_POST['kundenbewertungeinstellungen'])
     && (int)$_POST['kundenbewertungeinstellungen'] === 1
@@ -170,7 +175,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
                 $aktWert->cWert = (int)$aktWert->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = substr($aktWert->cWert, 0, 255);
+                $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
                 break;
             case 'listbox':
                 bearbeiteListBox($aktWert->cWert, $confData[$i]->cWertName, CONF_TRUSTEDSHOPS);
@@ -194,14 +199,14 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
         $ts->aenderKundenbewertungsstatus(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     }
 
-    if (strlen($_POST['kb-tsId']) > 0) {
+    if (mb_strlen($_POST['kb-tsId']) > 0) {
         $ts->aenderKundenbewertungtsIDDB(
             trim($_POST['kb-tsId']),
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
-        $cHinweis = __('successConfigSave');
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     } else {
-        $cFehler .= __('errorTSIDMissing') . '<br>';
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTSIDMissing'), 'errorTSIDMissing');
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 } elseif (isset($_POST['kundenbewertungupdate']) && (int)$_POST['kundenbewertungupdate'] === 1) {
@@ -215,7 +220,7 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             $_SESSION['TrustedShops']->oSprache->cISOSprache
         );
 
-        if (strlen($tscRating->cTSID) > 0) {
+        if (mb_strlen($tscRating->cTSID) > 0) {
             $nReturnValue = $ts->aenderKundenbewertungsstatus(
                 $tscRating->cTSID,
                 $nStatus,
@@ -224,28 +229,28 @@ if (isset($_POST['kaeuferschutzeinstellungen'])
             if ($nReturnValue === 1) {
                 $filename = $tscRating->cTSID . '.gif';
                 $ts::ladeKundenbewertungsWidgetNeu($filename);
-                $cHinweis = __('successStatusSave');
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successStatusSave'), 'successStatusSave');
             } elseif ($nReturnValue === 2) {
-                $cFehler = __('errorStatusSave');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorStatusSave'), 'errorStatusSave');
             } elseif ($nReturnValue === 3) {
                 // Wurde die TS-ID vielleicht schon in einer anderen Sprache benutzt?
                 if ($ts->pruefeKundenbewertungsstatusAndereSprache(
                     $tscRating->cTSID,
                     $_SESSION['TrustedShops']->oSprache->cISOSprache
                 )) {
-                    $cFehler = __('errorTSIDOtherLang');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTSIDOtherLang'), 'errorTSIDOtherLang');
                 } else {
-                    $cFehler = __('errorTSIDInvalid');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTSIDInvalid'), 'errorTSIDInvalid');
                 }
             } elseif ($nReturnValue === 4) {
-                $cFehler = __('errorNotRegistered');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNotRegistered'), 'errorNotRegistered');
             } elseif ($nReturnValue === 5) {
-                $cFehler = __('errorWrongPasswordUser');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWrongPasswordUser'), 'errorWrongPasswordUser');
             } elseif ($nReturnValue === 6) {
-                $cFehler = __('errorTSActivateFirst');
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTSActivateFirst'), 'errorTSActivateFirst');
             }
         } else {
-            $cFehler = __('errorCustomerRatingNotFound');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCustomerRatingNotFound'), 'errorCustomerRatingNotFound');
         }
     }
 } elseif (isset($_GET['whatis']) && (int)$_GET['whatis'] === 1) { // Infoseite anzeigen
@@ -259,11 +264,11 @@ if ($step === 'uebersicht') {
             FROM teinstellungenconf
             WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . '
             ORDER BY nSort',
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     $configCount = count($confData);
     for ($i = 0; $i < $configCount; $i++) {
-        \Shop::Container()->getGetText()->localizeConfig($confData[$i]);
+        Shop::Container()->getGetText()->localizeConfig($confData[$i]);
 
         if ($confData[$i]->cInputTyp === 'selectbox') {
             $confData[$i]->ConfWerte = Shop::Container()->getDB()->query(
@@ -271,15 +276,15 @@ if ($step === 'uebersicht') {
                     FROM teinstellungenconfwerte
                     WHERE kEinstellungenConf = ' . (int)$confData[$i]->kEinstellungenConf . '
                     ORDER BY nSort',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
-            \Shop::Container()->getGetText()->localizeConfigValues($confData[$i], $confData[$i]->ConfWerte);
+            Shop::Container()->getGetText()->localizeConfigValues($confData[$i], $confData[$i]->ConfWerte);
         } elseif ($confData[$i]->cInputTyp === 'listbox') {
             $confData[$i]->ConfWerte = Shop::Container()->getDB()->query(
                 'SELECT kKundengruppe, cName
                     FROM tkundengruppe
                     ORDER BY cStandard DESC',
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
         }
 
@@ -289,7 +294,7 @@ if ($step === 'uebersicht') {
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $confData[$i]->cWertName . "'",
-                \DB\ReturnType::ARRAY_OF_OBJECTS
+                ReturnType::ARRAY_OF_OBJECTS
             );
             $confData[$i]->gesetzterWert = $oSetValue;
         } else {
@@ -298,7 +303,7 @@ if ($step === 'uebersicht') {
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = ' . CONF_TRUSTEDSHOPS . "
                         AND cName = '" . $confData[$i]->cWertName . "'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
             $confData[$i]->gesetzterWert = $oSetValue->cWert ?? null;
         }
@@ -363,7 +368,7 @@ if ($step === 'uebersicht') {
     ];
 
     $customerRatingURLs = [];
-    if (isset($tscRating->cTSID) && strlen($tscRating->cTSID) > 0) {
+    if (isset($tscRating->cTSID) && mb_strlen($tscRating->cTSID) > 0) {
         $customerRatingURLs = [
             'de' => 'https://www.trustedshops.com/bewertung/info_' . $tscRating->cTSID . '.html',
             'en' => 'https://www.trustedshops.com/buyerrating/info_' . $tscRating->cTSID . '.html',
@@ -405,52 +410,51 @@ $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->assign('bAllowfopen', PHPSettings::checkAllowFopen())
        ->assign('bSOAP', PHPSettings::checkSOAP())
        ->assign('bCURL', PHPSettings::checkCURL())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->display('trustedshops.tpl');
 
 /**
- * @param string $cHinweis
- * @param string $cFehler
- * @param int    $nReturnValue
+ * @param int $nReturnValue
  */
-function mappeTSFehlerCode(&$cHinweis, &$cFehler, $nReturnValue)
+function mappeTSFehlerCode(int $nReturnValue)
 {
+    $alertHelper = Shop::Container()->getAlertService();
+    $errorMsg    = '';
     if ($nReturnValue === -1) {
-        $cHinweis .= __('successSaveAddTSBox') . '<br />';
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSaveAddTSBox'), 'successSaveAddTSBox');
     } elseif ($nReturnValue === 1) {
         // Fehlende Sprache + TSID
-        $cFehler .= __('errorFillRequired');
+        $errorMsg = __('errorFillRequired');
     } elseif ($nReturnValue === 2) {
         // Das Zertifikat existiert nicht
-        $cFehler .= __('errorCertificateInvalid');
+        $errorMsg = __('errorCertificateInvalid');
     } elseif ($nReturnValue === 3) {
         // Das Zertifikat ist abgelaufen
-        $cFehler .= __('errorCertificateExpired');
+        $errorMsg = __('errorCertificateExpired');
     } elseif ($nReturnValue === 4) {
         // Das Zertifikat ist gesperrt
-        $cFehler .= __('errorCertificateBlocked');
+        $errorMsg = __('errorCertificateBlocked');
     } elseif ($nReturnValue === 5) {
         // Shop befindet sich in der Zertifizierung
-        $cFehler .= __('errorCertificatePending');
+        $errorMsg = __('errorCertificatePending');
     } elseif ($nReturnValue === 6) {
         // Keine Excellence-Variante mit Kaeuferschutz im Checkout-Prozess
-        $cFehler .= __('errorCertificateNoExcellence');
+        $errorMsg = __('errorCertificateNoExcellence');
     } elseif ($nReturnValue === 7) {
         // Ungueltige Sprache fuer gewaehlte TS-ID
-        $cFehler .= __('errorLangMismatch');
+        $errorMsg = __('errorLangMismatch');
     } elseif ($nReturnValue === 8) {
         // Benutzername & Passwort ungueltig
-        $cFehler .= __('errorWebServiceLoginInvalid');
+        $errorMsg = __('errorWebServiceLoginInvalid');
     } elseif ($nReturnValue === 9) {
         // Zertifikat konnte nicht gespeichert werden
-        $cFehler .= __('errorCertificateSave');
+        $errorMsg = __('errorCertificateSave');
     } elseif ($nReturnValue === 10) {
         // Falsche Kaeuferschutzvariante
-        $cFehler .= __('errorTSIDBuyerProtectionMismatch');
+        $errorMsg = __('errorTSIDBuyerProtectionMismatch');
     } elseif ($nReturnValue === 11) {
         // SOAP Fehler
-        $cFehler .= '';
+        $errorMsg = '';
     }
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorCodeTS');
 }

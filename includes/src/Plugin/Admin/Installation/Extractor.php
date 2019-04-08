@@ -4,11 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation;
+namespace JTL\Plugin\Admin\Installation;
+
+use stdClass;
 
 /**
  * Class Extractor
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin\Installation
  */
 class Extractor
 {
@@ -39,11 +41,11 @@ class Extractor
 
     /**
      * @param string $zipFile
-     * @return \stdClass
+     * @return stdClass
      */
-    public function extractPlugin($zipFile): \stdClass
+    public function extractPlugin($zipFile): stdClass
     {
-        $response                 = new \stdClass();
+        $response                 = new stdClass();
         $response->status         = 'OK';
         $response->error          = null;
         $response->files_unpacked = [];
@@ -57,10 +59,10 @@ class Extractor
 
     /**
      * @param string    $zipFile
-     * @param \stdClass $response
-     * @return \stdClass
+     * @param stdClass $response
+     * @return stdClass
      */
-    private function unzip(string $zipFile, \stdClass $response): \stdClass
+    private function unzip(string $zipFile, stdClass $response): stdClass
     {
         $zip = new \ZipArchive();
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
@@ -68,7 +70,7 @@ class Extractor
             $response->messages[] = 'Cannot open archive';
         } else {
             for ($i = 0; $i < $zip->numFiles; $i++) {
-                if ($i === 0 && \strpos($zip->getNameIndex($i), '.') !== false) {
+                if ($i === 0 && \mb_strpos($zip->getNameIndex($i), '.') !== false) {
                     $response->status     = 'FAILED';
                     $response->messages[] = 'Invalid archive';
 
@@ -94,14 +96,14 @@ class Extractor
 
     /**
      * @param string    $zipFile
-     * @param \stdClass $response
-     * @return \stdClass
+     * @param stdClass $response
+     * @return stdClass
      */
-    private function unPclZip(string $zipFile, \stdClass $response): \stdClass
+    private function unPclZip(string $zipFile, stdClass $response): stdClass
     {
         $zip     = new \PclZip($zipFile);
         $content = $zip->listContent();
-        if (!isset($content[0]['filename']) || \strpos($content[0]['filename'], '.') !== false) {
+        if (!isset($content[0]['filename']) || \mb_strpos($content[0]['filename'], '.') !== false) {
             $response->status     = 'FAILED';
             $response->messages[] = 'Invalid archive';
         } else {

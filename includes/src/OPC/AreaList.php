@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
 /**
  * Class AreaList
- * @package OPC
+ * @package JTL\OPC
  */
 class AreaList implements \JsonSerializable
 {
@@ -92,8 +92,9 @@ class AreaList implements \JsonSerializable
 
     /**
      * @param array $data
+     * @throws \Exception
      */
-    public function deserialize($data): void
+    public function deserialize(array $data): void
     {
         $this->clear();
 

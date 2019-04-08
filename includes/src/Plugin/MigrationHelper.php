@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use DirectoryIterator;
 
 /**
  * Class MigrationHelper
- * @package Plugin
+ * @package JTL\Plugin
  */
 final class MigrationHelper
 {
@@ -83,14 +84,14 @@ final class MigrationHelper
     /**
      * Returns names like 'Migration12345678901234'.
      *
-     * @param \DirectoryIterator $file
+     * @param DirectoryIterator $file
      * @param string             $pluginID
      * @return string
      */
-    public function mapFileNameToClassName(\DirectoryIterator $file, string $pluginID): string
+    public function mapFileNameToClassName(DirectoryIterator $file, string $pluginID): string
     {
         return \sprintf(
-            '%s\migrations\%s',
+            'Plugin\%s\Migrations\%s',
             $pluginID,
             \str_replace('.' . $file->getExtension(), '', $file->getFilename())
         );

@@ -4,20 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Request;
-use Pagination\Pagination;
+use JTL\Helpers\Request;
+use JTL\Customer\Kunde;
+use JTL\Shop;
+use JTL\Pagination\Pagination;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
-$cHinweis    = '';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$alertHelper = Shop::Container()->getAlertService();
 $settingsIDs = [442, 443, 440, 439, 445, 446, 1460];
-if (strlen(Request::verifyGPDataString('tab')) > 0) {
+if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
-    $cHinweis .= saveAdminSettings($settingsIDs, $_POST);
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
 }
 $oWunschlistePos     = Shop::Container()->getDB()->query(
     'SELECT COUNT(tWunsch.kWunschliste) AS nAnzahl
@@ -29,19 +33,19 @@ $oWunschlistePos     = Shop::Container()->getDB()->query(
                 ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
             GROUP BY twunschliste.kWunschliste
         ) AS tWunsch',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteArtikel = Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM twunschlistepos',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oWunschlisteFreunde = Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
-    \DB\ReturnType::SINGLE_OBJECT
+    ReturnType::SINGLE_OBJECT
 );
 $oPagiPos            = (new Pagination('pos'))
     ->setItemCount($oWunschlistePos->nAnzahl)
@@ -63,7 +67,7 @@ $sentWishLists       = Shop::Container()->getDB()->query(
             ON twunschliste.kKunde = tkunde.kKunde
         ORDER BY twunschlisteversand.dZeit DESC
         LIMIT " . $oPagiFreunde->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 foreach ($sentWishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -83,7 +87,7 @@ $wishLists = Shop::Container()->getDB()->query(
         GROUP BY twunschliste.kWunschliste
         ORDER BY twunschliste.dErstellt DESC
         LIMIT " . $oPagiPos->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 foreach ($wishLists as $wishList) {
     if ($wishList->kKunde !== null) {
@@ -98,7 +102,7 @@ $wishListPositions = Shop::Container()->getDB()->query(
         GROUP BY kArtikel
         ORDER BY Anzahl DESC
         LIMIT " . $oPagiArtikel->getLimitSQL(),
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
@@ -108,5 +112,4 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
        ->assign('CWunschlisteVersand_arr', $sentWishLists)
        ->assign('CWunschliste_arr', $wishLists)
        ->assign('CWunschlistePos_arr', $wishListPositions)
-       ->assign('hinweis', $cHinweis)
        ->display('wunschliste.tpl');

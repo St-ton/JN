@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "branding"
+msgstr "Wasserzeichen (Bild-Branding)"
+
+msgid "brandingDesc"
+msgstr "Hier können Sie Wasserzeichen für Bilder in verschiedenen Kategorien einstellen. Artikelbilder werden direkt nach dem Speichern aktualisiert. Bilder aller anderen Kategorien müssen per Komplettabgleich aus JTL-Wawi neu übertragen werden, damit die Wasserzeichen angezeigt werden."
+
+msgid "brandingUrl"
+msgstr "https://jtl-url.de/s5u8z"
+
+msgid "brandingPictureKat"
+msgstr "Bildkategorie"
+
+msgid "brandingActive"
+msgstr "Wasserzeichenfunktion aktivieren"
+
+msgid "brandingActiveDesc"
+msgstr "Hier legen Sie fest, ob bei Bildern der ausgewählten Bildkategorie ein Wasserzeichen angezeigt werden soll. Bei allen Kategorien außer „Artikel“ muss anschließend ein Komplettabgleich mit JTL-Wawi durchgeführt werden."
+
+msgid "brandingPositionDesc"
+msgstr "Hier legen Sie fest, an welcher Stelle im Bild das Wasserzeichen angezeigt werden soll."
+
+msgid "brandingTransparencyDesc"
+msgstr "Hier legen Sie die Transparenz des Wasserzeichens fest. Wir empfehlen einen Wert von 50."
+
+msgid "brandingSizeDesc"
+msgstr "Hier geben Sie die Größe des Wasserzeichens in Prozent im Verhältnis zum Gesamtbild ein. Wir empfehlen einen Wert von 30. 0 skaliert das Wasserzeichen gar nicht und fügt es in der Original-Bildgröße ein."
+
+msgid "brandingTransparencyColor"
+msgstr "Transparenzfarbe des Wasserzeichen"
+
+msgid "brandingTransparencyColorDesc"
+msgstr "Diese Farbe wird beim Wasserzeichen nicht berücksichtigt, dadurch werden transparente Bereiche ermöglicht. Wenn diese Einstellung genutzt wird, so wird das Wasserzeichen nicht skaliert und immer in der Originalgröße genutzt."
+
+msgid "brandingEdgeDistance"
+msgstr "Randabstand"
+
+msgid "brandingEdgeDistanceDesc"
+msgstr "Hier geben Sie den Abstand des Wasserzeichen in Prozent vom Rand ein. Wir empfehlen einen Wert von 1-10."
+
+msgid "brandingFileName"
+msgstr "Datei für Wasserzeichen"
+
+msgid "brandingFileNameDesc"
+msgstr "Hier können Sie eine Bilddatei für das Wasserzeichen angeben. Wir empfehlen eine PNG-Datei mit transparentem Hintergrund."

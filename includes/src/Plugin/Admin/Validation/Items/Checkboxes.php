@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Checkboxes
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Checkboxes extends AbstractItem
 {
@@ -29,11 +29,11 @@ class Checkboxes extends AbstractItem
         foreach ($node['CheckBoxFunction'][0]['Function'] as $i => $cb) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) === \strlen($i)) {
-                if (\strlen($cb['Name']) === 0) {
+            if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
+                if (\mb_strlen($cb['Name']) === 0) {
                     return InstallCode::INVALID_CHECKBOX_FUNCTION_NAME;
                 }
-                if (\strlen($cb['ID']) === 0) {
+                if (\mb_strlen($cb['ID']) === 0) {
                     return InstallCode::INVALID_CHECKBOX_FUNCTION_ID;
                 }
             }

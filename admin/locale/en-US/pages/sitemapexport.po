@@ -1,0 +1,81 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "sitemapExport"
+msgstr "Sitemap Export"
+
+msgid "sitemapExportURL"
+msgstr "https://jtl-url.de/z84ny"
+
+msgid "sitemapDownload"
+msgstr "Sitemap Downloads"
+
+msgid "sitemapExportDesc"
+msgstr "Hier können Sie die zum Shop gehörende Sitemap im Sitemap Protocol 0.9 herunterladen.<br />Diese können Sie in Suchmaschinen hochladen, die diesen Standard unterstützen. Lesen Sie mehr zu zum Thema sitemap.xml bei <a class=\"externURL\" href=\"http://www.sitemaps.org\" rel=\"external\">sitemaps.org</a>.<br />Durch einen Abgleich mit JTL-Wawi oder durch das manuelle Herunterladen der Sitemap werden die Datei <strong>export/sitemap_index.xml</strong> und weitere Inhaltsdateien Ihres Shops neu generiert, so dass auch externe Dienste darauf zugreifen können."
+
+msgid "searchEngines"
+msgstr "Unter anderem unterstützen auch <a class=\"externURL\" href=\"http://www.google.de\" rel=\"external\">Google</a>, <a class=\"externURL\" href=\"http://www.yahoo.de\" rel=\"external\">Yahoo!</a> & <a class=\"externURL\" href=\"http://www.msn.de\" rel=\"external\">Microsoft</a> diesen Standard."
+
+msgid "sitemapExportSubmit"
+msgstr "Sitemap jetzt neu erstellen"
+
+msgid "download"
+msgstr "Download-Link:"
+
+msgid "xml"
+msgstr "sitemap_index.xml"
+
+msgid "sitemapName"
+msgstr "Datei"
+
+msgid "sitemapSize"
+msgstr "Größe"
+
+msgid "sitemapBot"
+msgstr "Bot"
+
+msgid "sitemapIP"
+msgstr "IP"
+
+msgid "sitemapUserAgent"
+msgstr "User Agent"
+
+msgid "sitemapDate"
+msgstr "Erstellt"
+
+msgid "sitemapSelectAll"
+msgstr "Alle auswählen"
+
+msgid "sitemapReport"
+msgstr "Sitemap Reports"
+
+msgid "sitemapProcessTime"
+msgstr "Verarbeitungszeit"
+
+msgid "sitemapTotalURL"
+msgstr "Gesamtanzahl URLs"
+
+msgid "sitemapCountURL"
+msgstr "Anzahl URLs"
+
+msgid "errorSitemapCreatePermission"
+msgstr " kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine Sitemap erstellt werden."
+
+msgid "successSave"
+msgstr " wurde erfolgreich aktualisiert."
+
+msgid "successSitemapDLDelete"
+msgstr "Ihre markierten Sitemap Downloads wurden erfolgreich gelöscht."
+
+msgid "successSitemapReportDelete"
+msgstr "Ihre markierten Sitemap Reports wurden erfolgreich gelöscht."
+
+msgid "successSitemapDLDeleteByYear"
+msgstr "Ihre markierten Sitemap Downloads für %s wurden erfolgreich gelöscht."
+
+msgid "successSitemapReportDeleteByYear"
+msgstr "Ihre Sitemap Reports für %s wurden erfolgreich gelöscht."
+
+msgid "sureDeleteEntries"
+msgstr "Wollen Sie wirklich alle Einträge für das ausgewählte Jahr löschen?"

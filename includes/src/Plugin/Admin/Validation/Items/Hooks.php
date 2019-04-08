@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Hooks
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Hooks extends AbstractItem
 {
@@ -29,12 +29,12 @@ class Hooks extends AbstractItem
                 $i = (string)$i;
                 \preg_match('/[0-9]+\sattr/', $i, $hits1);
                 \preg_match('/[0-9]+/', $i, $hits2);
-                if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($i)) {
-                    if (\strlen($hook['id']) === 0) {
+                if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
+                    if (\mb_strlen($hook['id']) === 0) {
                         return InstallCode::INVALID_HOOK;
                     }
-                } elseif (isset($hits2[0]) && \strlen($hits2[0]) === \strlen($i)) {
-                    if (\strlen($hook) === 0) {
+                } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($i)) {
+                    if (\mb_strlen($hook) === 0) {
                         return InstallCode::INVALID_HOOK;
                     }
                     if (!\file_exists($dir . \PFAD_PLUGIN_FRONTEND . $hook)) {
@@ -44,7 +44,7 @@ class Hooks extends AbstractItem
             }
         } elseif (\count($node['Hooks'][0]) > 1) {
             $hook = $node['Hooks'][0];
-            if ((int)$hook['Hook attr']['id'] === 0 || \strlen($hook['Hook']) === 0) {
+            if ((int)$hook['Hook attr']['id'] === 0 || \mb_strlen($hook['Hook']) === 0) {
                 return InstallCode::INVALID_HOOK;
             }
             if (!\file_exists($dir . \PFAD_PLUGIN_FRONTEND . $hook['Hook'])) {

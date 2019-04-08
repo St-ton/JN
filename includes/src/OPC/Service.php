@@ -4,19 +4,24 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use Filter\AbstractFilter;
-use Filter\Config;
-use Filter\Items\Attribute;
-use Filter\Items\PriceRange;
-use Filter\Option;
-use Filter\ProductFilter;
-use Filter\Type;
+use JTL\Backend\AdminIO;
+use JTL\Filter\AbstractFilter;
+use JTL\Filter\Config;
+use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\PriceRange;
+use JTL\Filter\Option;
+use JTL\Filter\ProductFilter;
+use JTL\Filter\Type;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\OPC\Portlets\MissingPortlet;
+use JTL\Shop;
 
 /**
  * Class Service
- * @package OPC
+ * @package JTL\OPC
  */
 class Service
 {
@@ -66,10 +71,10 @@ class Service
     }
 
     /**
-     * @param \AdminIO $io
+     * @param AdminIO $io
      * @throws \Exception
      */
-    public function registerAdminIOFunctions(\AdminIO $io): void
+    public function registerAdminIOFunctions(AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
 
@@ -91,7 +96,7 @@ class Service
      */
     public function getAdminSessionToken(): ?string
     {
-        return \Shop::getAdminSessionToken();
+        return Shop::getAdminSessionToken();
     }
 
     /**
@@ -179,7 +184,13 @@ class Service
      */
     public function createPortletInstance($class): PortletInstance
     {
-        return new PortletInstance($this->db->getPortlet($class));
+        $portlet = $this->db->getPortlet($class);
+
+        if ($portlet instanceof MissingPortlet) {
+            return new MissingPortletInstance($portlet, $portlet->getMissingClass());
+        }
+
+        return new PortletInstance($portlet);
     }
 
     /**
@@ -189,6 +200,11 @@ class Service
      */
     public function getPortletInstance($data): PortletInstance
     {
+        if ($data['class'] === 'MissingPortlet') {
+            return $this->createPortletInstance($data['missingClass'])
+                ->deserialize($data);
+        }
+
         return $this->createPortletInstance($data['class'])
             ->deserialize($data);
     }
@@ -205,13 +221,18 @@ class Service
 
     /**
      * @param string $portletClass
+     * @param string $missingClass
      * @param array $props
      * @return string
      * @throws \Exception
      */
-    public function getConfigPanelHtml($portletClass, $props): string
+    public function getConfigPanelHtml($portletClass, $missingClass, $props): string
     {
-        return $this->getPortletInstance(['class' => $portletClass, 'properties' => $props])->getConfigPanelHtml();
+        return $this->getPortletInstance([
+            'class'        => $portletClass,
+            'missingClass' => $missingClass,
+            'properties'   => $props,
+        ])->getConfigPanelHtml();
     }
 
     /**
@@ -219,7 +240,7 @@ class Service
      */
     public function isEditMode(): bool
     {
-        return \Helpers\Request::verifyGPDataString('opcEditMode') === 'yes';
+        return Request::verifyGPDataString('opcEditMode') === 'yes';
     }
 
     /**
@@ -235,7 +256,7 @@ class Service
      */
     public function getEditedPageKey(): int
     {
-        return \Helpers\Request::verifyGPCDataInt('opcEditedPageKey');
+        return Request::verifyGPCDataInt('opcEditedPageKey');
     }
 
     /**
@@ -244,12 +265,12 @@ class Service
      */
     public function getFilterOptions(array $enabledFilters = []): array
     {
-        \Helpers\Tax::setTaxRates();
+        Tax::setTaxRates();
 
         $productFilter    = new ProductFilter(
             Config::getDefault(),
-            \Shop::Container()->getDB(),
-            \Shop::Container()->getCache()
+            Shop::Container()->getDB(),
+            Shop::Container()->getCache()
         );
         $availableFilters = $productFilter->getAvailableFilters();
         $results          = [];

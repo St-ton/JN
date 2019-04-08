@@ -4,10 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Product;
-use Helpers\Form;
-use Helpers\Request;
-use Helpers\Cart;
+use JTL\Helpers\Product;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Cart;
+use JTL\Alert\Alert;
+use JTL\Kampagne;
+use JTL\Shop;
+use JTL\Helpers\Text;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
@@ -15,14 +21,12 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 Shop::run();
 $conf             = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $params           = Shop::getParameters();
-$cURLID           = StringHandler::filterXSS(Request::verifyGPDataString('wlid'));
+$cURLID           = Text::filterXSS(Request::verifyGPDataString('wlid'));
 $kWunschliste     = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0)
     ? Request::verifyGPCDataInt('wl') //one of multiple customer wishlists
     : ($params['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
 $wishlistTargetID = Request::verifyGPCDataInt('kWunschlisteTarget');
-$cHinweis         = '';
-$cFehler          = '';
 $searchQuery      = null;
 $step             = null;
 $wishlist         = null;
@@ -30,7 +34,8 @@ $action           = null;
 $kWunschlistePos  = null;
 $wishlists        = [];
 $linkHelper       = Shop::Container()->getLinkService();
-$customerID       = Session\Frontend::getCustomer()->getID();
+$customerID       = Frontend::getCustomer()->getID();
+$alertHelper      = Shop::Container()->getAlertService();
 
 if ($kWunschliste === 0 && $customerID > 0 && empty($_SESSION['Wunschliste']->kWunschliste)) {
     $_SESSION['Wunschliste'] = new Wunschliste();
@@ -55,6 +60,7 @@ if ($action !== null && Form::validateToken()) {
         $userOK       = $customerID === (int)$wl->kKunde;
         switch ($action) {
             case 'addToCart':
+                Wunschliste::update($kWunschliste);
                 $wishlistPosition = Wunschliste::getWishListPositionDataByID($kWunschlistePos);
                 if (isset($wishlistPosition->kArtikel) && $wishlistPosition->kArtikel > 0) {
                     $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
@@ -67,7 +73,11 @@ if ($action !== null && Form::validateToken()) {
                             $attributeValues
                         );
                     }
-                    $cHinweis = Shop::Lang()->get('basketAdded', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('basketAdded', 'messages'),
+                        'basketAdded'
+                    );
                 }
                 break;
 
@@ -77,13 +87,16 @@ if ($action !== null && Form::validateToken()) {
                     ['kWunschliste', 'kKunde'],
                     [$kWunschliste, $customerID]
                 );
-                if (!empty($wlData->kWunschliste) && strlen($wlData->cURLID) > 0) {
+                if (!empty($wlData->kWunschliste) && mb_strlen($wlData->cURLID) > 0) {
                     $step = 'wunschliste anzeigen';
-                    require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
                     if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
-                            $mails     = explode(' ', StringHandler::filterXSS($_POST['email']));
-                            $cHinweis .= Wunschliste::send($mails, $kWunschliste);
+                            $mails = explode(' ', Text::filterXSS($_POST['email']));
+                            $alertHelper->addAlert(
+                                Alert::TYPE_NOTE,
+                                Wunschliste::send($mails, $kWunschliste),
+                                'sendWL'
+                            );
                             $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
                         }
                     } else {
@@ -112,7 +125,11 @@ if ($action !== null && Form::validateToken()) {
                             );
                         }
                     }
-                    $cHinweis .= Shop::Lang()->get('basketAllAdded', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('basketAllAdded', 'messages'),
+                        'basketAllAdded'
+                    );
                 }
                 break;
 
@@ -120,7 +137,11 @@ if ($action !== null && Form::validateToken()) {
                 if ($userOK === true && $kWunschlistePos > 0) {
                     $wl = new Wunschliste($kWunschliste);
                     $wl->entfernePos($kWunschlistePos);
-                    $cHinweis .= Shop::Lang()->get('wishlistUpdate', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('wishlistUpdate', 'messages'),
+                        'wishlistUpdate'
+                    );
                 }
                 break;
 
@@ -134,7 +155,11 @@ if ($action !== null && Form::validateToken()) {
                     if ((int)$_SESSION['Wunschliste']->kWunschliste === $wl->kWunschliste) {
                         $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
                     }
-                    $cHinweis .= Shop::Lang()->get('wishlistDelAll', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('wishlistDelAll', 'messages'),
+                        'wishlistDelAll'
+                    );
                 }
                 break;
 
@@ -144,7 +169,7 @@ if ($action !== null && Form::validateToken()) {
                 }
                 $wl = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
                 if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $wl->cName) {
-                    $wl->cName = $_POST['wishlistName'];
+                    $wl->cName = Text::htmlentities(Text::filterXSS($_POST['wishlistName']));
                     Shop::Container()->getDB()->update(
                         'twunschliste',
                         'kWunschliste',
@@ -153,7 +178,11 @@ if ($action !== null && Form::validateToken()) {
                     );
                 }
                 if (!empty($wl->kKunde) && $customerID > 0 && (int)$wl->kKunde === $customerID) {
-                    $cHinweis               .= Wunschliste::update($kWunschliste);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Wunschliste::update($kWunschliste),
+                        'updateWL'
+                    );
                     $wishlist                = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
                     $_SESSION['Wunschliste'] = $wishlist;
                 }
@@ -162,25 +191,41 @@ if ($action !== null && Form::validateToken()) {
             case 'setPublic':
                 if ($userOK === true && $wishlistTargetID !== 0) {
                     Wunschliste::setPublic($wishlistTargetID);
-                    $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('wishlistSetPublic', 'messages'),
+                        'wishlistSetPublic'
+                    );
                 }
                 break;
 
             case 'setPrivate':
                 if ($userOK === true && $wishlistTargetID !== 0) {
                     Wunschliste::setPrivate($wishlistTargetID);
-                    $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Shop::Lang()->get('wishlistSetPrivate', 'messages'),
+                        'wishlistSetPrivate'
+                    );
                 }
                 break;
 
             case 'createNew':
-                $CWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
-                $cHinweis        .= Wunschliste::save($CWunschlisteName);
+                $CWunschlisteName = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    Wunschliste::save($CWunschlisteName),
+                    'saveWL'
+                );
                 break;
 
             case 'delete':
                 if ($userOK === true && $wishlistTargetID !== 0) {
-                    $cHinweis .= Wunschliste::delete($wishlistTargetID);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Wunschliste::delete($wishlistTargetID),
+                        'deleteWL'
+                    );
                     if ($wishlistTargetID === $kWunschliste) {
                         // the currently active one was deleted, search for a new one
                         $newWishlist = Shop::Container()->getDB()->select(
@@ -209,14 +254,18 @@ if ($action !== null && Form::validateToken()) {
 
             case 'setAsDefault':
                 if ($userOK === true && $wishlistTargetID !== 0) {
-                    $cHinweis    .= Wunschliste::setDefault($wishlistTargetID);
+                    $alertHelper->addAlert(
+                        Alert::TYPE_NOTE,
+                        Wunschliste::setDefault($wishlistTargetID),
+                        'setDefaultWL'
+                    );
                     $kWunschliste = $wishlistTargetID;
                 }
                 break;
 
             case 'search':
-                $searchQuery = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-                if ($userOK === true && strlen($searchQuery) > 0) {
+                $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+                if ($userOK === true && mb_strlen($searchQuery) > 0) {
                     $wishlist                      = new Wunschliste($kWunschliste);
                     $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
                 }
@@ -226,8 +275,8 @@ if ($action !== null && Form::validateToken()) {
                 break;
         }
     } elseif ($action === 'search' && $kWunschliste > 0) {
-        $searchQuery = StringHandler::filterXSS(Request::verifyGPDataString('cSuche'));
-        if (strlen($searchQuery) > 0) {
+        $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+        if (mb_strlen($searchQuery) > 0) {
             $wishlist                      = new Wunschliste($kWunschliste);
             $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
         }
@@ -235,16 +284,28 @@ if ($action !== null && Form::validateToken()) {
 }
 
 if (Request::verifyGPCDataInt('wlidmsg') > 0) {
-    $cHinweis .= Wunschliste::mapMessage(Request::verifyGPCDataInt('wlidmsg'));
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        Wunschliste::mapMessage(Request::verifyGPCDataInt('wlidmsg')),
+        'wlidmsg'
+    );
 }
 if (Request::verifyGPCDataInt('error') === 1) {
-    if (strlen($cURLID) > 0) {
+    if (mb_strlen($cURLID) > 0) {
         $wl = Shop::Container()->getDB()->select('twunschliste', 'cURLID', $cURLID);
         if (!isset($wl->kWunschliste, $wl->nOeffentlich) || $wl->kWunschliste >= 0 || $wl->nOeffentlich <= 0) {
-            $cFehler = sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID);
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID),
+                'nowlidWishlist'
+            );
         }
     } else {
-        $cFehler = sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID);
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID),
+            'nowlidWishlist'
+        );
     }
 } elseif (!$kWunschliste) {
     if ($customerID > 0) {
@@ -290,21 +351,21 @@ if ($customerID > 0) {
 }
 Shop::Smarty()->assign('CWunschliste', $wishlist)
     ->assign('oWunschliste_arr', $wishlists)
+    ->assign('newWL', Request::verifyGPCDataInt('newWL'))
     ->assign('wlsearch', $searchQuery)
     ->assign('Link', $link)
     ->assign('hasItems', !empty($wishlist->CWunschlistePos_arr))
     ->assign('isCurrenctCustomer', isset($wishlist->kKunde) && (int)$wishlist->kKunde === $customerID)
     ->assign('cURLID', $cURLID)
-    ->assign('step', $step)
-    ->assign('cFehler', $cFehler)
-    ->assign('cHinweis', $cHinweis);
+    ->assign('step', $step);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
     $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
     if (isset($campaign->kKampagne, $campaign->cWert)
-        && strtolower($campaign->cWert) === strtolower(Request::verifyGPDataString($campaign->cParameter))
+        && mb_convert_case($campaign->cWert, MB_CASE_LOWER) ===
+        strtolower(Request::verifyGPDataString($campaign->cParameter))
     ) {
         $event               = new stdClass();
         $event->kKampagne    = $campaign->kKampagne;

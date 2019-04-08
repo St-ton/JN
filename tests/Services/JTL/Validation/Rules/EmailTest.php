@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
 
-use PHPUnit\Framework\TestCase;
+use JTL\Services\JTL\Validation\Rules\Email;
+use Tests\BaseTestCase;
 
 /**
  * Class EmailTest
  * @package Services\JTL\Validation\Rules
  */
-class EmailTest extends TestCase
+class EmailTest extends BaseTestCase
 {
     public function test()
     {

@@ -1,17 +1,17 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized}  {$Kunde->cNachname},
+Dear {$Kunde->cVorname}  {$Kunde->cNachname},
 
 We would love it if you could write a rating and share your experience with your recently products.
 
 Please click on the product to rate it:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
-    {if $Position->nPosTyp==1}
+{foreach $Bestellung->Positionen as $Position}
+    {if $Position->nPosTyp == 1}
         {$Position->cName} ({$Position->cArtNr})
         {$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1#tab-votes
 
-        {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
         {/foreach}

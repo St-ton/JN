@@ -1,12 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Debug;
+namespace JTL\Debug;
 
-use Debug\DataCollector\DummyTimeDataCollector;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\DataCollector\ExceptionsCollector;
 use DebugBar\DataCollector\MemoryCollector;
@@ -18,10 +17,12 @@ use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\DebugBar;
 use DebugBar\JavascriptRenderer;
+use JTL\Debug\DataCollector\DummyTimeDataCollector;
+use JTL\Debug\DataCollector\Errors;
 
 /**
  * Class JTLDebugBar
- * @package Debug
+ * @package JTL\Debug
  */
 class JTLDebugBar extends DebugBar
 {
@@ -72,6 +73,7 @@ class JTLDebugBar extends DebugBar
         $this->addCollector(new RequestDataCollector());
         $this->addCollector(new MemoryCollector());
         $this->addCollector(new ExceptionsCollector());
+        $this->addCollector(new Errors());
     }
 
     /**

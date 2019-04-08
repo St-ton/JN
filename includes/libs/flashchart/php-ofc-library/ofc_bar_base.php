@@ -19,7 +19,7 @@ class bar_base
     public function set_key($text, $size)
     {
         $this->text = $text;
-        $tmp = 'font-size';
+        $tmp        = 'font-size';
         $this->$tmp = $size;
     }
 
@@ -34,8 +34,8 @@ class bar_base
 
     /**
      * @param array $v - a mix of:
-     * 	- a bar_value class. You can use this to customise the paramters of each bar.
-     * 	- integer. This is the Y position of the top of the bar.
+     *  - a bar_value class. You can use this to customise the paramters of each bar.
+     *  - integer. This is the Y position of the top of the bar.
      */
     public function set_values($v)
     {
@@ -97,7 +97,7 @@ class bar_base
      */
     public function set_on_click($text)
     {
-        $tmp = 'on-click';
+        $tmp        = 'on-click';
         $this->$tmp = $text;
     }
 

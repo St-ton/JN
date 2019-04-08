@@ -1,7 +1,7 @@
 {literal}
 <script type="text/javascript">
     $(document).ready(function () {
-        $('.edit').click(function () {
+        $('.edit').on('click', function () {
             var kWarenlager = $(this).attr('id').replace('btn_', ''),
                 row = $('.row_' + kWarenlager);
             if (row.css('display') === 'none') {
@@ -29,8 +29,8 @@
                         <tr>
                             <th class="checkext">{__('watenlagerActive')}</th>
                             <th>{__('warenlagerIntern')}</th>
-                            <th>{__('warenlagerDescInt')}</th>
-                            <th>{__('warenlagerOption')}</th>
+                            <th>{__('description')}</th>
+                            <th>{__('options')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -63,7 +63,7 @@
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="update" type="submit" title="{__('warenlagerUpdate')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('warenlagerUpdate')}</button>
+                    <button name="update" type="submit" title="{__('refresh')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('refresh')}</button>
                 </div>
             </div>
         </form>

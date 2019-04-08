@@ -12,15 +12,15 @@ $baseInstallDir = 'OCF';
 $channel        = 'pear.php.net';
 
 $description = 'Open Flash Charts interface library';
-$dirRoles = array(
+$dirRoles    = array(
     // dirname=> role
-    'simpletest'=> 'test',
-    'examples'=> 'data',
+    'simpletest' => 'test',
+    'examples' => 'data',
 );
 
 $exceptions = array(
     // filename=> role
-    'build_package.php'=> 'data',
+    'build_package.php' => 'data',
 );
 
 $ignore = array(
@@ -30,20 +30,20 @@ $ignore = array(
 
 $roles = array(
     // fileext=> role
-    'php'=> 'php',
+    'php' => 'php',
 );
 
-$category    = 'Libraries';
+$category = 'Libraries';
 
 $license = 'PHP';
-$notes  =  'Helper library for working with Open Flash Charts';
+$notes   = 'Helper library for working with Open Flash Charts';
 
-$version     = '2.0.0';
-$apiVersion  = '2.0.0';
+$version    = '2.0.0';
+$apiVersion = '2.0.0';
 
 $simpleoutput = true;
-$state = 'beta';
-$summary = 'Open Flash Charts interface library';
+$state        = 'beta';
+$summary      = 'Open Flash Charts interface library';
 
 
 /**

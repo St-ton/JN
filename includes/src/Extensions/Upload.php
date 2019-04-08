@@ -4,14 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use Helpers\PHPSettings;
+use JTL\Cart\Warenkorb;
+use JTL\Helpers\PHPSettings;
+use JTL\Nice;
+use JTL\Services\JTL\LinkService;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class Upload
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 final class Upload
 {
@@ -20,24 +24,25 @@ final class Upload
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
     }
 
     /**
-     * @param int        $kArtikel
-     * @param bool|array $eigenschaftenArr
+     * @param int        $productID
+     * @param bool|array $attributes
      * @return array
      */
-    public static function gibArtikelUploads(int $kArtikel, $eigenschaftenArr = false): array
+    public static function gibArtikelUploads(int $productID, $attributes = false): array
     {
         $scheme  = new UploadSchema();
-        $uploads = $scheme->fetchAll($kArtikel, \UPLOAD_TYP_WARENKORBPOS);
+        $uploads = $scheme->fetchAll($productID, \UPLOAD_TYP_WARENKORBPOS);
         foreach ($uploads as $upload) {
-            $upload->nEigenschaften_arr = $eigenschaftenArr;
+            $upload->nEigenschaften_arr = $attributes;
             $upload->cUnique            = self::uniqueDateiname($upload);
             $upload->cDateiTyp_arr      = self::formatTypen($upload->cDateiTyp);
             $upload->cDateiListe        = \implode(';', $upload->cDateiTyp_arr);
             $upload->bVorhanden         = \is_file(\PFAD_UPLOADS . $upload->cUnique);
+            $upload->prodID             = $productID;
             $file                       = $_SESSION['Uploader'][$upload->cUnique] ?? null;
             if ($file !== null && \is_object($file)) {
                 $upload->cDateiname    = $file->cName;
@@ -49,17 +54,13 @@ final class Upload
     }
 
     /**
-     * Deletes all uploaded files for an article with ID (kArtikel)
-     *
-     * @param  int $kArtikel
+     * @param  int $productID
      * @return int
      */
-    public static function deleteArtikelUploads(int $kArtikel): int
+    public static function deleteArtikelUploads(int $productID): int
     {
-        $count   = 0;
-        $uploads = self::gibArtikelUploads($kArtikel);
-
-        foreach ($uploads as $upload) {
+        $count = 0;
+        foreach (self::gibArtikelUploads($productID) as $upload) {
             unset($_SESSION['Uploader'][$upload->cUnique]);
             if ($upload->bVorhanden && \unlink(\PFAD_UPLOADS . $upload->cUnique)) {
                 ++$count;
@@ -70,30 +71,31 @@ final class Upload
     }
 
     /**
-     * @param \Warenkorb $cart
-     * @return \stdClass[]
+     * @param Warenkorb $cart
+     * @return stdClass[]
      */
-    public static function gibWarenkorbUploads(\Warenkorb $cart): array
+    public static function gibWarenkorbUploads(Warenkorb $cart): array
     {
         $uploads = [];
         foreach ($cart->PositionenArr as $position) {
             if ($position->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || empty($position->Artikel->kArtikel)) {
                 continue;
             }
-            $eigenschaftArr = [];
+            $attributes = [];
             if (!empty($position->WarenkorbPosEigenschaftArr)) {
-                foreach ($position->WarenkorbPosEigenschaftArr as $eigenschaft) {
-                    $eigenschaftArr[$eigenschaft->kEigenschaft] = \is_string($eigenschaft->cEigenschaftWertName)
-                        ? $eigenschaft->cEigenschaftWertName
-                        : \reset($eigenschaft->cEigenschaftWertName);
+                foreach ($position->WarenkorbPosEigenschaftArr as $attribute) {
+                    $attributes[$attribute->kEigenschaft] = \is_string($attribute->cEigenschaftWertName)
+                        ? $attribute->cEigenschaftWertName
+                        : \reset($attribute->cEigenschaftWertName);
                 }
             }
-            $upload        = new \stdClass();
-            $upload->cName = $position->Artikel->cName;
+            $upload         = new stdClass();
+            $upload->cName  = $position->Artikel->cName;
+            $upload->prodID = $position->Artikel->kArtikel;
             if (!empty($position->WarenkorbPosEigenschaftArr)) {
                 $upload->WarenkorbPosEigenschaftArr = $position->WarenkorbPosEigenschaftArr;
             }
-            $upload->oUpload_arr = self::gibArtikelUploads($position->Artikel->kArtikel, $eigenschaftArr);
+            $upload->oUpload_arr = self::gibArtikelUploads($position->Artikel->kArtikel, $attributes);
             if (\count($upload->oUpload_arr) > 0) {
                 $uploads[] = $upload;
             }
@@ -103,23 +105,23 @@ final class Upload
     }
 
     /**
-     * @param int $kBestellung
+     * @param int $orderID
      * @return array
      */
-    public static function gibBestellungUploads(int $kBestellung): array
+    public static function gibBestellungUploads(int $orderID): array
     {
-        return UploadDatei::fetchAll($kBestellung, \UPLOAD_TYP_BESTELLUNG);
+        return UploadDatei::fetchAll($orderID, \UPLOAD_TYP_BESTELLUNG);
     }
 
     /**
-     * @param \Warenkorb $cart
+     * @param Warenkorb $cart
      * @return bool
      */
-    public static function pruefeWarenkorbUploads(\Warenkorb $cart): bool
+    public static function pruefeWarenkorbUploads(Warenkorb $cart): bool
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
-            foreach ($scheme->oUpload_arr as $oUpload) {
-                if ($oUpload->nPflicht && !$oUpload->bVorhanden) {
+            foreach ($scheme->oUpload_arr as $upload) {
+                if ($upload->nPflicht && !$upload->bVorhanden) {
                     return false;
                 }
             }
@@ -134,15 +136,15 @@ final class Upload
     public static function redirectWarenkorb(int $nErrorCode): void
     {
         \header('Location: ' .
-            \LinkHelper::getInstance()->getStaticRoute('warenkorb.php') .
+            LinkService::getInstance()->getStaticRoute('warenkorb.php') .
             '?fillOut=' . $nErrorCode, true, 303);
     }
 
     /**
-     * @param \Warenkorb $cart
+     * @param Warenkorb $cart
      * @param int       $kBestellung
      */
-    public static function speicherUploadDateien(\Warenkorb $cart, int $kBestellung): void
+    public static function speicherUploadDateien(Warenkorb $cart, int $kBestellung): void
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {
@@ -166,35 +168,35 @@ final class Upload
 
     /**
      * @param int    $kCustomID
-     * @param int    $nTyp
-     * @param string $cName
-     * @param string $cPfad
-     * @param int    $nBytes
+     * @param int    $type
+     * @param string $name
+     * @param string $path
+     * @param int    $bytes
      */
-    public static function setzeUploadDatei(int $kCustomID, int $nTyp, $cName, $cPfad, int $nBytes): void
+    public static function setzeUploadDatei(int $kCustomID, int $type, $name, $path, int $bytes): void
     {
-        $file            = new \stdClass();
+        $file            = new stdClass();
         $file->kCustomID = $kCustomID;
-        $file->nTyp      = $nTyp;
-        $file->cName     = $cName;
-        $file->cPfad     = $cPfad;
-        $file->nBytes    = $nBytes;
+        $file->nTyp      = $type;
+        $file->cName     = $name;
+        $file->cPfad     = $path;
+        $file->nBytes    = $bytes;
         $file->dErstellt = 'NOW()';
 
-        \Shop::Container()->getDB()->insert('tuploaddatei', $file);
+        Shop::Container()->getDB()->insert('tuploaddatei', $file);
     }
 
     /**
-     * @param int $kBestellung
-     * @param int $kCustomID
+     * @param int $orderID
+     * @param int $productID
      */
-    public static function setzeUploadQueue(int $kBestellung, int $kCustomID): void
+    public static function setzeUploadQueue(int $orderID, int $productID): void
     {
-        $queue              = new \stdClass();
-        $queue->kBestellung = $kBestellung;
-        $queue->kArtikel    = $kCustomID;
+        $queue              = new stdClass();
+        $queue->kBestellung = $orderID;
+        $queue->kArtikel    = $productID;
 
-        \Shop::Container()->getDB()->insert('tuploadqueue', $queue);
+        Shop::Container()->getDB()->insert('tuploadqueue', $queue);
     }
 
     /**
@@ -240,11 +242,9 @@ final class Upload
     {
         $unique = $upload->kUploadSchema . $upload->kCustomID . $upload->nTyp . self::getSessionKey();
         if (!empty($upload->nEigenschaften_arr)) {
-            $eigenschaften = '';
             foreach ($upload->nEigenschaften_arr as $k => $v) {
-                $eigenschaften .= $k . $v;
+                $unique .= $k . $v;
             }
-            $unique .= $eigenschaften;
         }
 
         return \md5($unique);
@@ -269,8 +269,8 @@ final class Upload
     public static function formatTypen(string $type): array
     {
         $fileTypes = \explode(',', $type);
-        foreach ($fileTypes as &$cTyp) {
-            $cTyp = '*' . $cTyp;
+        foreach ($fileTypes as &$type) {
+            $type = '*' . $type;
         }
 
         return $fileTypes;

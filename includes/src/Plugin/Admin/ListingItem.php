@@ -4,14 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace JTL\Plugin\Admin;
 
-use Mapper\PluginValidation;
-use Plugin\InstallCode;
+use JTL\Mapper\PluginValidation;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class ListingItem
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin
  */
 class ListingItem
 {

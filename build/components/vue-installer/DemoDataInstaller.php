@@ -8,6 +8,7 @@ use Andyftw\Faker\ImageProvider;
 use Cocur\Slugify\Slugify;
 use Faker\Factory as Fake;
 use ShopCli\Faker\de_DE\Commerce;
+use JTL\DB\ReturnType;
 
 /**
  * Class DemoDataInstaller
@@ -160,35 +161,35 @@ class DemoDataInstaller
                 SET `cWert`='Y' 
                 WHERE `kEinstellungenSektion`='107' 
                 AND cName = 'bewertung_anzeigen';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `teinstellungen` 
                 SET `cWert`='10' 
                 WHERE `kEinstellungenSektion`='2' 
                 AND cName = 'startseite_bestseller_anzahl';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `teinstellungen` 
                 SET `cWert`='10' 
                 WHERE `kEinstellungenSektion`='2' 
                 AND cName = 'startseite_neuimsortiment_anzahl';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `teinstellungen` 
                 SET `cWert`='10' 
                 WHERE `kEinstellungenSektion`='2' 
                 AND cName = 'startseite_sonderangebote_anzahl';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `teinstellungen` 
                 SET `cWert`='10' 
                 WHERE `kEinstellungenSektion`='2' 
                 AND cName = 'startseite_topangebote_anzahl';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -196,7 +197,7 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='megamenu' 
                 AND `cName`='show_pages';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -204,7 +205,7 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='megamenu' 
                 AND `cName`='show_manufacturers';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -212,7 +213,7 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='footer' 
                 AND `cName`='newsletter_footer';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -220,7 +221,7 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='footer' 
                 AND `cName`='socialmedia_footer';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -228,7 +229,7 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='footer' 
                 AND `cName`='facebook';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -236,7 +237,7 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='footer' 
                 AND `cName`='twitter';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -244,7 +245,7 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='footer' 
                 AND `cName`='youtube';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `ttemplateeinstellungen` 
@@ -252,138 +253,138 @@ class DemoDataInstaller
                 WHERE `cTemplate`='Evo' 
                 AND `cSektion`='footer' 
                 AND `cName`='xing';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `tlinksprache` 
                 SET `cTitle`='Startseite!', `cContent`='" . $this->faker->text(500) . "'
                 WHERE `kLink`='3' 
                 AND `cISOSprache`='ger';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "UPDATE `tlinksprache` 
                 SET `cTitle`='Home!', `cContent`='" . $this->faker->text(500) . "' 
                 WHERE `kLink`=3 
                 AND `cISOSprache`='eng';",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `teinheit` (`kEinheit`, `kSprache`, `cName`) 
                 VALUES (1,1,'kg'),(1,2,'kg'),(2,1,'ml'),(2,2,'ml'),(3,1,'Stk'),(3,2,'Piece');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,`cKundengruppen`,
             `cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (100,0,0,'NurEndkunden',1,'N','1;','N','N',0,0,0,'');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
           `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (101,0,0,'NurHaendler',1,'N','2;','N','N',0,0,0,'');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
             `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (102,0,9,0,'Beispiel',1,'N',NULL,'N','N',0,0,0,'');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
             `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (103,102,0,'Kindseite1',1,'N',NULL,'N','N',0,0,0,'');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlink` (`kLink`,`kVaterLink`,`kPlugin`,`cName`,`nLinkart`,`cNoFollow`,
             `cKundengruppen`,`cSichtbarNachLogin`,`cDruckButton`,`nSort`,`bSSL`,`bIsFluid`,`cIdentifier`) 
                 VALUES (104,102,0,'Kindseite2',1,'N',NULL,'N','N',0,0,0,'');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             'INSERT INTO `tlinkgroupassociations` (`linkID`,`linkGroupID`) 
                 VALUES (100, 9), (101, 9), (102, 9), (103, 9), (104, 9);',
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
                 VALUES (100,'customers-only','eng','Customers only','Customers only','" .
             $this->faker->text(500) . "','','','');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
                 VALUES (100,'nur-kunden','ger','Nur Endkunden','Nur Endkunden','" .
             $this->faker->text(500) . "','','','');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
                 `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
                 VALUES (101,'retailers-only','eng','Retailers only','Retailers only','" .
             $this->faker->text(500) . "','','','');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
                 VALUES (101,'nur-haendler','ger','Nur Haendler','Nur Haendler','" .
             $this->faker->text(500) . "','','','');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
                 VALUES (102,'beispiel-seite','ger','Beispielseite','Beispielseite','" .
             $this->faker->text(500) . "','','','');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
                 VALUES (103,'kindseite-eins','ger','Kindseite1','Kindseite1','" .
             $this->faker->text(500) . "','','','');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tlinksprache` (`kLink`,`cSeo`,`cISOSprache`,`cName`,`cTitle`,`cContent`,
             `cMetaTitle`,`cMetaKeywords`,`cMetaDescription`) 
                 VALUES (104,'kindseite-zwei','ger','Kindseite2','Kindseite2','" .
             $this->faker->text(500) . "','','','');",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('nur-endkunden', 'kLink', 100, 3);",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('customers-only', 'kLink', 100, 2);",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('nur-haendler', 'kLink', 101, 3);",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('retailers-only', 'kLink', 101, 2);",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('beispiel-seite', 'kLink', 102, 3);",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('kindseite-eins', 'kLink', 103, 3);",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
         $this->pdo->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('kindseite-zwei', 'kLink', 104, 3);",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
 
         return $this;
@@ -399,14 +400,14 @@ class DemoDataInstaller
             'TRUNCATE TABLE tkategorieartikel; TRUNCATE TABLE tbewertung; TRUNCATE TABLE tartikelext; ' .
             'TRUNCATE TABLE tkategoriepict; TRUNCATE TABLE thersteller; TRUNCATE TABLE tpreise; ' .
             'TRUNCATE TABLE tpreis; TRUNCATE TABLE tpreisdetail; TRUNCATE TABLE teinheit; TRUNCATE TABLE tkunde;',
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
-        $this->pdo->query('DELETE FROM tlink WHERE kLink > 99;', \DB\ReturnType::DEFAULT);
-        $this->pdo->query('DELETE FROM tlinksprache WHERE kLink > 99;', \DB\ReturnType::DEFAULT);
-        $this->pdo->query("DELETE FROM tseo WHERE cKey = 'kLink' AND kKey > 99;", \DB\ReturnType::DEFAULT);
+        $this->pdo->query('DELETE FROM tlink WHERE kLink > 99;', ReturnType::DEFAULT);
+        $this->pdo->query('DELETE FROM tlinksprache WHERE kLink > 99;', ReturnType::DEFAULT);
+        $this->pdo->query("DELETE FROM tseo WHERE cKey = 'kLink' AND kKey > 99;", ReturnType::DEFAULT);
         $this->pdo->query(
             "DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kHersteller'",
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
 
         return $this;
@@ -445,7 +446,7 @@ class DemoDataInstaller
      */
     public function updateGlobals(): int
     {
-        return $this->pdo->query('UPDATE tglobals SET dLetzteAenderung = now()', \DB\ReturnType::AFFECTED_ROWS);
+        return $this->pdo->query('UPDATE tglobals SET dLetzteAenderung = now()', ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -453,11 +454,11 @@ class DemoDataInstaller
      */
     public function updateRatingsAvg(): self
     {
-        $this->pdo->query('TRUNCATE TABLE tartikelext', \DB\ReturnType::DEFAULT);
+        $this->pdo->query('TRUNCATE TABLE tartikelext', ReturnType::DEFAULT);
         $this->pdo->query(
             'INSERT INTO tartikelext(kArtikel, fDurchschnittsBewertung) 
                 SELECT kArtikel, AVG(nSterne) FROM tbewertung GROUP BY kArtikel',
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
 
         return $this;
@@ -471,7 +472,7 @@ class DemoDataInstaller
     {
         $maxPk      = (int)$this->pdo->query(
             'SELECT max(kHersteller) AS maxPk FROM thersteller',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->maxPk;
         $limit      = $this->config['manufacturers'];
         $name_index = 0;
@@ -481,7 +482,7 @@ class DemoDataInstaller
                 $_name = $this->faker->unique()->company;
                 $res   = $this->pdo->query(
                     'SELECT kHersteller FROM thersteller WHERE cName = "' . $_name . '"',
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
@@ -534,7 +535,7 @@ class DemoDataInstaller
     {
         $maxPk      = (int)$this->pdo->query(
             'SELECT max(kKategorie) AS maxPk FROM tkategorie',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->maxPk;
         $limit      = $this->config['categories'];
         $name_index = 0;
@@ -543,7 +544,7 @@ class DemoDataInstaller
                 $_name = $this->faker->unique()->department;
                 $res   = $this->pdo->query(
                     'SELECT kKategorie FROM tkategorie WHERE cName = "' . $_name . '"',
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
@@ -579,7 +580,7 @@ class DemoDataInstaller
                 $_seoEntry->kSprache = 1;
                 $this->pdo->insert('tseo', $_seoEntry);
 
-                $_seoEntry->cSeo     = $_seoEntry->cSeo . '-en';
+                $_seoEntry->cSeo    .= '-en';
                 $_seoEntry->kSprache = 2;
                 $this->pdo->insert('tseo', $_seoEntry);
 
@@ -601,15 +602,15 @@ class DemoDataInstaller
     {
         $maxPk             = (int)$this->pdo->query(
             'SELECT max(kArtikel) AS maxPk FROM tartikel',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->maxPk;
         $manufacturesCount = (int)$this->pdo->query(
             'SELECT count(kHersteller) AS mCount FROM thersteller',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->mCount;
         $categoryCount     = (int)$this->pdo->query(
             'SELECT count(kKategorie) AS mCount FROM tkategorie',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->mCount;
 
         if ($categoryCount === 0) {
@@ -623,7 +624,7 @@ class DemoDataInstaller
                     FROM teinheit
                     GROUP BY kSprache
                 ) x',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->unitCount;
 
         $limit      = $this->config['articles'];
@@ -635,7 +636,7 @@ class DemoDataInstaller
                 $_name = $this->faker->unique()->productName;
                 $res   = $this->pdo->query(
                     'SELECT kArtikel FROM tartikel WHERE cName = "' . $_name . '"',
-                    \DB\ReturnType::ARRAY_OF_OBJECTS
+                    ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (is_array($res) && count($res) > 0) {
                     throw new \OverflowException();
@@ -899,7 +900,7 @@ class DemoDataInstaller
     {
         $maxPk = (int)$this->pdo->query(
             'SELECT max(kArtikelPict) AS maxPk FROM tartikelpict',
-            \DB\ReturnType::SINGLE_OBJECT
+            ReturnType::SINGLE_OBJECT
         )->maxPk;
 
         if ($articleID > 0) {
@@ -979,7 +980,7 @@ class DemoDataInstaller
         // get all children of this node
         $result = $this->pdo->query(
             'SELECT kKategorie FROM tkategorie WHERE kOberKategorie = ' . $parentId . ' ORDER BY nSort, cName',
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($result as $_res) {
             $right = $this->rebuildCategoryTree($_res->kKategorie, $right, $level + 1);
@@ -988,7 +989,7 @@ class DemoDataInstaller
         $this->pdo->query(
             'UPDATE tkategorie SET lft = ' . $left . ', rght = ' . $right . ', nLevel = ' . $level . ' 
                 WHERE kKategorie = ' . $parentId,
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
 
         // return the right value of this node + 1

@@ -4,10 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
-use Helpers\ShippingMethod;
-use Helpers\Cart;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Cart;
+use JTL\Alert\Alert;
+use JTL\Checkout\Kupon;
+use JTL\Shop;
+use JTL\Shopsetting;
+use JTL\Cart\Warenkorb;
+use JTL\Cart\WarenkorbPers;
+use JTL\Session\Frontend;
+use JTL\Extensions\Upload;
+use JTL\Extensions\Download;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -18,10 +27,10 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$conf     = Shopsetting::getInstance()->getAll();
-$step     = 'accountwahl';
-$cHinweis = '';
-$cart     = \Session\Frontend::getCart();
+$conf        = Shopsetting::getInstance()->getAll();
+$step        = 'accountwahl';
+$cart        = Frontend::getCart();
+$alertHelper = Shop::Container()->getAlertService();
 unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
     fuehreLoginAus($_POST['email'], $_POST['passwort']);
@@ -36,10 +45,10 @@ if (Request::verifyGPCDataInt('basket2Pers') === 1) {
 if ($cart->istBestellungMoeglich() !== 10) {
     pruefeBestellungMoeglich();
 }
-if (!\Extensions\Upload::pruefeWarenkorbUploads($cart)) {
-    \Extensions\Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
+if (!Upload::pruefeWarenkorbUploads($cart)) {
+    Upload::redirectWarenkorb(UPLOAD_ERROR_NEED_UPLOAD);
 }
-if (\Extensions\Download::hasDownloads($cart)) {
+if (Download::hasDownloads($cart)) {
     // Nur registrierte Benutzer
     $conf['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
 }
@@ -47,10 +56,7 @@ if (\Extensions\Download::hasDownloads($cart)) {
 if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
-    $kKunde = 0;
-    if (isset($_SESSION['Kunde']->kKunde)) {
-        $kKunde = $_SESSION['Kunde']->kKunde;
-    }
+    $kKunde         = $_SESSION['Kunde']->kKunde ?? 0;
     $oWarenkorbPers = new WarenkorbPers($kKunde);
     if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
         && $conf['global']['warenkorbpers_nutzen'] === 'Y'
@@ -62,12 +68,6 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 }
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
-}
-if (isset($_FILES['vcard'])
-    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && Form::validateToken()
-) {
-    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
 if (isset($_POST['unreg_form'])
     && (int)$_POST['unreg_form'] === 1
@@ -114,15 +114,15 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
         $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = \Session\Frontend::getCustomerGroup()->getID();
+        $kKundengruppe = Frontend::getCustomerGroup()->getID();
 
-        $oVersandart_arr  = ShippingMethod::getPossibleShippingMethods(
+        $shippingMethods  = ShippingMethod::getPossibleShippingMethods(
             $land,
             $plz,
             ShippingMethod::getShippingClasses($cart),
             $kKundengruppe
         );
-        $activeVersandart = gibAktiveVersandart($oVersandart_arr);
+        $activeVersandart = gibAktiveVersandart($shippingMethods);
 
         pruefeVersandartWahl(
             $activeVersandart,
@@ -130,27 +130,21 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
     }
 }
-if (\Extensions\Download::hasDownloads($cart)) {
-    if ($step !== 'accountwahl' && empty($_SESSION['Kunde']->cPasswort)) {
-        // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        $step     = 'accountwahl';
-        $cHinweis = Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
-        $postData = StringHandler::filterXSS($_POST);
+if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {
+    // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
+    $step = 'accountwahl';
 
-        Shop::Smarty()->assign('cKundenattribut_arr', getKundenattribute($postData))
-            ->assign('kLieferadresse', $postData['kLieferadresse'])
-            ->assign('cPost_var', $postData);
+    $alertHelper->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
+        'digitalProductsRegisterInfo'
+    );
 
-        if ((int)$postData['shipping_address'] === 1) {
-            Shop::Smarty()->assign(
-                'Lieferadresse',
-                mappeLieferadresseKontaktdaten($postData['register']['shipping_address'])
-            );
-        }
-
-        unset($_SESSION['Kunde']);
-    } elseif ($step === 'accountwahl') {
-        $cHinweis .= Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout');
+    unset($_SESSION['Kunde']);
+    // unset not needed values to ensure the correct $step
+    $_POST = [];
+    if (isset($_GET['editRechnungsadresse'])) {
+        unset($_GET['editRechnungsadresse']);
     }
 }
 // autom. step ermitteln
@@ -192,7 +186,7 @@ if ($step === 'ZahlungZusatzschritt') {
 if ($step === 'Bestaetigung') {
     validateCouponInCheckout();
     plausiGuthaben($_POST);
-    Shop::Smarty()->assign('cKuponfehler_arr', plausiKupon($_POST));
+    plausiKupon($_POST);
     //evtl genutztes guthaben anpassen
     pruefeGuthabenNutzen();
     // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
@@ -201,29 +195,18 @@ if ($step === 'Bestaetigung') {
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Warenkorb::refreshChecksum($cart);
 }
-// Billpay
-if (isset($_SESSION['Zahlungsart'])
-    && $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl'
-    && $step === 'Bestaetigung'
-) {
-    /** @var Billpay $paymentMethod */
-    $paymentMethod = PaymentMethod::create('za_billpay_jtl');
-    $paymentMethod->handleConfirmation();
-}
-if ($step === 'Bestaetigung'
-    && $cart->gibGesamtsummeWaren(true) === 0.0
-) {
+if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
     $oPaymentMethod = PaymentMethod::create('za_null_jtl');
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
 
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
-        || (isset($postData['guthabenVerrechnen']) && (int)$postData['guthabenVerrechnen'] === 1)
+        || (isset($_POST['guthabenVerrechnen']) && (int)$_POST['guthabenVerrechnen'] === 1)
     ) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(
             $_SESSION['Kunde']->fGuthaben,
-            \Session\Frontend::getCart()->gibGesamtsummeWaren(true, false)
+            Frontend::getCart()->gibGesamtsummeWaren(true, false)
         );
     }
     Warenkorb::refreshChecksum($cart);
@@ -237,13 +220,13 @@ Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguageID(),
-        \Session\Frontend::getCustomerGroup()->getID()
+        Frontend::getCustomerGroup()->getID()
     )
 )
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('Link', $link)
-    ->assign('hinweis', $cHinweis)
+    ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign('editRechnungsadresse', Request::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())

@@ -5,6 +5,9 @@
  * @author Danny Raufeisen
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
  * Class Migration_20181130110200
  */
@@ -15,12 +18,12 @@ class Migration_20181130110200 extends Migration implements IMigration
 
     public function up()
     {
-        $stdLang = (int)Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y')->kSprache;
+        $stdLang = (int)$this->getDB()->select('tsprache', 'cShopStandard', 'Y')->kSprache;
         $this->execute("ALTER TABLE tadminlogin ADD COLUMN kSprache TINYINT(3) UNSIGNED DEFAULT $stdLang");
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE tadminlogin DROP COLUMN kSprache");
+        $this->execute('ALTER TABLE tadminlogin DROP COLUMN kSprache');
     }
 }

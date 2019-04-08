@@ -4,6 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Checkout\Bestellung;
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * @param string $cLimitSQL
  * @param string $cSuchFilter
@@ -13,7 +17,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
 {
     $oBestellung_arr = [];
     $cSuchFilterSQL  = '';
-    if (strlen($cSuchFilter)) {
+    if (mb_strlen($cSuchFilter)) {
         $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'";
     }
     $oBestellungToday_arr = Shop::Container()->getDB()->query(
@@ -21,7 +25,7 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
             FROM tbestellung
             ' . $cSuchFilterSQL . '
             ORDER BY dErstellt DESC' . $cLimitSQL,
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($oBestellungToday_arr as $oBestellungToday) {
         if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
@@ -40,13 +44,13 @@ function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
  */
 function gibAnzahlBestellungen($cSuchFilter): int
 {
-    $cSuchFilterSQL = (strlen($cSuchFilter) > 0)
+    $cSuchFilterSQL = (mb_strlen($cSuchFilter) > 0)
         ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'"
         : '';
     $order          = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbestellung' . $cSuchFilterSQL,
-        \DB\ReturnType::SINGLE_OBJECT
+        ReturnType::SINGLE_OBJECT
     );
     if (isset($order->nAnzahl) && $order->nAnzahl > 0) {
         return (int)$order->nAnzahl;
@@ -76,7 +80,7 @@ function setzeAbgeholtZurueck(array $orderIDs): int
             FROM tbestellung
             WHERE kBestellung IN(' . implode(',', $orderIDs) . ")
                 AND cAbgeholt = 'Y'",
-        \DB\ReturnType::ARRAY_OF_OBJECTS
+        ReturnType::ARRAY_OF_OBJECTS
     );
     if (is_array($customers) && count($customers) > 0) {
         $kKunde_arr = [];
@@ -90,7 +94,7 @@ function setzeAbgeholtZurueck(array $orderIDs): int
             "UPDATE tkunde
                 SET cAbgeholt = 'N'
                 WHERE kKunde IN(" . implode(',', $kKunde_arr) . ')',
-            \DB\ReturnType::AFFECTED_ROWS
+            ReturnType::AFFECTED_ROWS
         );
     }
     Shop::Container()->getDB()->query(
@@ -98,14 +102,14 @@ function setzeAbgeholtZurueck(array $orderIDs): int
             SET cAbgeholt = 'N'
             WHERE kBestellung IN(" . implode(',', $orderIDs) . ")
                 AND cAbgeholt = 'Y'",
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
     Shop::Container()->getDB()->query(
         "UPDATE tzahlungsinfo
             SET cAbgeholt = 'N'
             WHERE kBestellung IN(" . implode(',', $orderIDs) . ")
                 AND cAbgeholt = 'Y'",
-        \DB\ReturnType::AFFECTED_ROWS
+        ReturnType::AFFECTED_ROWS
     );
 
     return -1;

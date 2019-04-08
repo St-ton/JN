@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Uninstaller
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Uninstaller extends AbstractItem
 {
@@ -22,7 +22,7 @@ class Uninstaller extends AbstractItem
         $node = $this->getBaseNode();
         $dir  = $this->getDir();
         if (isset($node['Uninstall'])
-            && \strlen($node['Uninstall']) > 0
+            && \mb_strlen($node['Uninstall']) > 0
             && !\file_exists($dir . \PFAD_PLUGIN_UNINSTALL . $node['Uninstall'])
         ) {
             return InstallCode::MISSING_UNINSTALL_FILE;

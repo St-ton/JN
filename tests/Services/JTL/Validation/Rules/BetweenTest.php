@@ -4,15 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Services\JTL\Validation\Rules;
+namespace Tests\Services\JTL\Validation\Rules;
 
-use PHPUnit\Framework\TestCase;
+use JTL\Services\JTL\Validation\Rules\Between;
+use Tests\BaseTestCase;
 
 /**
  * Class BetweenTest
  * @package Services\JTL\Validation\Rules
  */
-class BetweenTest extends TestCase
+class BetweenTest extends BaseTestCase
 {
     public function test()
     {

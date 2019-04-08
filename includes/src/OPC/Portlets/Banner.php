@@ -1,17 +1,20 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC\Portlets;
+namespace JTL\OPC\Portlets;
 
-use OPC\Portlet;
-use OPC\PortletInstance;
+use JTL\Catalog\Product\Artikel;
+use JTL\OPC\InputType;
+use JTL\OPC\Portlet;
+use JTL\OPC\PortletInstance;
+use JTL\Shop;
 
 /**
  * Class Banner
- * @package OPC\Portlets
+ * @package JTL\OPC\Portlets
  */
 class Banner extends Portlet
 {
@@ -35,20 +38,20 @@ class Banner extends Portlet
 
         $imgPath             = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . \basename($instance->getProperty('src'));
         $parsed              = \parse_url($imageMap->cBildPfad);
-        $imageMap->cBildPfad = \Shop::getURL() . $imageMap->cBildPfad;
-        $imageMap->cBild     = \substr($parsed['path'], \strrpos($parsed['path'], '/') + 1);
+        $imageMap->cBildPfad = Shop::getURL() . $imageMap->cBildPfad;
+        $imageMap->cBild     = \mb_substr($parsed['path'], \mb_strrpos($parsed['path'], '/') + 1);
         [$width, $height]    = \getimagesize($imgPath);
         $imageMap->fWidth    = $width;
         $imageMap->fHeight   = $height;
-        $defaultOptions      = \Artikel::getDefaultOptions();
+        $defaultOptions      = Artikel::getDefaultOptions();
 
         if (!empty($imageMap->oArea_arr)) {
             foreach ($imageMap->oArea_arr as &$area) {
                 $area->oArtikel = null;
 
                 if ((int)$area->kArtikel > 0) {
-                    $area->oArtikel = new \Artikel();
-                    $area->oArtikel->fuelleArtikel($area->kArtikel, $defaultOptions);
+                    $area->oArtikel = new Artikel();
+                    $area->oArtikel->fuelleArtikel((int)$area->kArtikel, $defaultOptions);
 
                     if ($area->cTitel === '') {
                         $area->cTitel = $area->oArtikel->cName;
@@ -71,7 +74,7 @@ class Banner extends Portlet
      */
     public function getPlaceholderImgUrl(): string
     {
-        return \Shop::getURL() . '/' . \PFAD_TEMPLATES . 'Evo/portlets/Banner/preview.banner.png';
+        return $this->getTemplateUrl() . 'preview.banner.png';
     }
 
     /**
@@ -82,7 +85,6 @@ class Banner extends Portlet
     public function getPreviewHtml(PortletInstance $instance): string
     {
         $instance->setProperty('kImageMap', \uniqid('', false));
-        $instance->addClass('img-responsive');
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
@@ -94,7 +96,6 @@ class Banner extends Portlet
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
-        $instance->addClass('img-responsive');
         $instance->addClass('banner');
 
         return $this->getFinalHtmlFromTpl($instance);
@@ -108,14 +109,14 @@ class Banner extends Portlet
         return [
             'src'   => [
                 'label'      => __('Image'),
-                'type'       => 'image',
+                'type'       => InputType::IMAGE,
                 'default'    => '',
                 'dspl_width' => 50,
                 'required'   => true,
             ],
             'zones' => [
                 'label'   => __('Zones'),
-                'type'    => 'banner-zones',
+                'type'    => InputType::BANNER_ZONES,
                 'default' => '[]',
             ],
             'class' => [
@@ -123,9 +124,6 @@ class Banner extends Portlet
             ],
             'alt'   => [
                 'label' => __('Altenativ text'),
-            ],
-            'title' => [
-                'label' => __('Title')
             ],
         ];
     }

@@ -177,13 +177,13 @@
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
                         $(img).lazy(padding, function() {
-                            $(this).load(function() {
+                            $(this).on('load', function() {
                                 img.css('max-height', square);
                                 box.css('line-height', square)
                                     .css('max-height', square)
                                     .removeClass('loading')
                                     .addClass('loaded');
-                            }).error(function() {
+                            }).on('error', function() {
                                 box.removeClass('loading')
                                     .addClass('error');
                             });
@@ -423,6 +423,9 @@
 
             if (typeof target === 'undefined') {
                 target = document.getElementsByClassName('product-offer')[0];
+            }
+            if (target.id === 'result-wrapper' || $(target).hasClass('product-offer')) {
+                opts.position = 'fixed';
             }
 
             return new Spinner(opts).spin(target);

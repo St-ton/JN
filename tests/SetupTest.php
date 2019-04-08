@@ -4,10 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+namespace Tests;
+
 /**
  * Class SetupTest
  */
-class SetupTest extends \PHPUnit\Framework\TestCase
+class SetupTest extends BaseTestCase
 {
     public function testSetup()
     {

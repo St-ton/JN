@@ -4,50 +4,49 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes;
+namespace JTL\Boxes;
 
-use Boxes\Items\BestsellingProducts;
-use Boxes\Items\BoxDefault;
-use Boxes\Items\BoxInterface;
-use Boxes\Items\Cart;
-use Boxes\Items\CompareList;
-use Boxes\Items\Container;
-use Boxes\Items\DirectPurchase;
-use Boxes\Items\Extension;
-use Boxes\Items\FilterAttribute;
-use Boxes\Items\FilterCategory;
-use Boxes\Items\FilterItem;
-use Boxes\Items\FilterManufacturer;
-use Boxes\Items\FilterPricerange;
-use Boxes\Items\FilterRating;
-use Boxes\Items\FilterSearch;
-use Boxes\Items\FilterTag;
-use Boxes\Items\GlobalAttributes;
-use Boxes\Items\LinkGroup;
-use Boxes\Items\Login;
-use Boxes\Items\Manufacturer;
-use Boxes\Items\NewProducts;
-use Boxes\Items\NewsCategories;
-use Boxes\Items\NewsCurrentMonth;
-use Boxes\Items\Plain;
-use Boxes\Items\Plugin;
-use Boxes\Items\Poll;
-use Boxes\Items\ProductCategories;
-use Boxes\Items\RecentlyViewedProducts;
-use Boxes\Items\SearchCloud;
-use Boxes\Items\SpecialOffers;
-use Boxes\Items\TagCloud;
-use Boxes\Items\TopOffers;
-use Boxes\Items\TopRatedProducts;
-use Boxes\Items\TrustedShopsReviews;
-use Boxes\Items\TrustedShopsSeal;
-use Boxes\Items\UpcomingProducts;
-use Boxes\Items\Wishlist;
+use JTL\Boxes\Items\BestsellingProducts;
+use JTL\Boxes\Items\BoxDefault;
+use JTL\Boxes\Items\BoxInterface;
+use JTL\Boxes\Items\Cart;
+use JTL\Boxes\Items\CompareList;
+use JTL\Boxes\Items\Container;
+use JTL\Boxes\Items\DirectPurchase;
+use JTL\Boxes\Items\Extension;
+use JTL\Boxes\Items\FilterAttribute;
+use JTL\Boxes\Items\FilterCategory;
+use JTL\Boxes\Items\FilterItem;
+use JTL\Boxes\Items\FilterManufacturer;
+use JTL\Boxes\Items\FilterPricerange;
+use JTL\Boxes\Items\FilterRating;
+use JTL\Boxes\Items\FilterSearch;
+use JTL\Boxes\Items\FilterTag;
+use JTL\Boxes\Items\GlobalAttributes;
+use JTL\Boxes\Items\LinkGroup;
+use JTL\Boxes\Items\Login;
+use JTL\Boxes\Items\Manufacturer;
+use JTL\Boxes\Items\NewProducts;
+use JTL\Boxes\Items\NewsCategories;
+use JTL\Boxes\Items\NewsCurrentMonth;
+use JTL\Boxes\Items\Plain;
+use JTL\Boxes\Items\Plugin;
+use JTL\Boxes\Items\Poll;
+use JTL\Boxes\Items\ProductCategories;
+use JTL\Boxes\Items\RecentlyViewedProducts;
+use JTL\Boxes\Items\SearchCloud;
+use JTL\Boxes\Items\SpecialOffers;
+use JTL\Boxes\Items\TagCloud;
+use JTL\Boxes\Items\TopOffers;
+use JTL\Boxes\Items\TopRatedProducts;
+use JTL\Boxes\Items\TrustedShopsReviews;
+use JTL\Boxes\Items\TrustedShopsSeal;
+use JTL\Boxes\Items\UpcomingProducts;
+use JTL\Boxes\Items\Wishlist;
 
 /**
  * Class Factory
- *
- * @package Boxes
+ * @package JTL\Boxes
  */
 class Factory implements FactoryInterface
 {

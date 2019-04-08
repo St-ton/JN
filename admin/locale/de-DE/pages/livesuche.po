@@ -1,0 +1,108 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "livesearch"
+msgstr "Live-Suche"
+
+msgid "livesucheURL"
+msgstr "https://jtl-url.de/uxd87"
+
+msgid "livesucheDesc"
+msgstr "Hier finden Sie die zuletzt getätigten Suchanfragen über die Suchfunktion von JTL-Shop, sowie Suchanfragen, die besonders häufig ausgeführt wurden und als sprechende URL zur Verfügung gestellt werden, wenn diese aktiv geschaltet werden. Weiterhin können Sie hier Suchanfragen mit anderen Suchanfragen verknüpfen, z. B. Mobiltelefon auf Smartphone. Dadurch wird Ihren Kunden bei einer Suche nach Mobiltelefon das Suchergebnis für Smartphone angezeigt."
+
+msgid "search"
+msgstr "Suche"
+
+msgid "searchnew"
+msgstr "Neue Suche"
+
+msgid "searchcount"
+msgstr "Suchanzahl"
+
+msgid "mappingDelete"
+msgstr "Markierte Verknüpfungen lösen"
+
+msgid "lastsearch"
+msgstr "Zuletzt gesucht"
+
+msgid "blacklistDescription"
+msgstr "Mehrere Begriffe mit Semikolon getrennt"
+
+msgid "searchrequest"
+msgstr "Suchanfragen"
+
+msgid "searchmiss"
+msgstr "Erfolglose Suchanfragen (Suchanfragen mit 0 Treffern)"
+
+msgid "livesuchenSearch"
+msgstr "Suche"
+
+msgid "livesucheSearchItem"
+msgstr "Suchbegriff"
+
+msgid "livesucheSearchType"
+msgstr "Suchkategorie"
+
+msgid "livesucheMappingOn"
+msgstr "Markierte verknüpfen mit"
+
+msgid "livesucheMappingOnBTN"
+msgstr "Verknüpfen"
+
+msgid "livesucheEdit"
+msgstr "Suche bearbeiten"
+
+msgid "livesucheSelectAll"
+msgstr "Alle auswählen"
+
+msgid "errorSearchTermMissing"
+msgstr "Fehler: Bitte geben Sie einen Suchbegriff ein."
+
+msgid "successSearchMap"
+msgstr "Die Suchanfrage %s wurde erfolgreich mit %s verknüpft."
+
+msgid "errorSearchMapSelf"
+msgstr "Die Suchanfrage %s kann nicht mit dem gleichen Suchbegriff verknüpft werden."
+
+msgid "successSearchRefresh"
+msgstr "Die Suchanfragen wurden erfolgreich aktualisiert."
+
+msgid "successSearchMapMultiple"
+msgstr "Ihre markierten Suchanfragen wurden erfolgreich mit %s verknüpft."
+
+msgid "errorSearchMapToNotExist"
+msgstr "Fehler: Sie haben versucht, mit einer nicht existierenden Suchanfrage zu verknüpfen."
+
+msgid "errorSearchMapNotExist"
+msgstr "Fehler: Sie haben versucht, eine nicht existierende Suchanfrage zu verknüpfen."
+
+msgid "errorAtLeastOneSearch"
+msgstr "Fehler: Bitte markieren Sie mindestens eine Suchanfrage."
+
+msgid "errorMapNameMissing"
+msgstr "Fehler: Bitte geben Sie einen Namen für die Verknüpfung an."
+
+msgid "successSearchDelete"
+msgstr "Die Suchanfrage %s wurde erfolgreich gelöscht."
+
+msgid "successSearchBlacklist"
+msgstr "Die Suchanfrage %s wurde der Blacklist hinzugefügt."
+
+msgid "errorSearchMapLoop"
+msgstr "Die Verknüpfung von %s mit %s würde eine Schleife verursachen."
+
+msgid "successSearchDeleteMultiple"
+msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
+
+msgid "successBlacklistRefresh"
+msgstr "Die Blacklist wurde erfolgreich aktualisiert."
+
+msgid "successSearchMapDelete"
+msgstr "Die Verknüpfung %s wurde erfolgreich gelöscht."
+
+msgid "errorSearchMapNotFound"
+msgstr "Es wurde keine Verknüpfung mit der ID %s gefunden."
+
+msgid "errorAtLeastOneSearchMap"
+msgstr "Bitte wählen Sie mindestens eine Verknüpfung aus."

@@ -1,11 +1,17 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
  */
+
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class ExtensionPoint
+ * @package JTL
  */
 class ExtensionPoint
 {
@@ -48,8 +54,9 @@ class ExtensionPoint
      */
     public function load(): self
     {
+        $db         = Shop::Container()->getDB();
         $key        = $this->getPageKey();
-        $extensions = Shop::Container()->getDB()->queryPrepared(
+        $extensions = $db->queryPrepared(
             "SELECT cClass, kInitial FROM textensionpoint
                 WHERE (kSprache = :lid OR kSprache = 0)
                     AND (kKundengruppe = :cgid OR kKundengruppe = 0)
@@ -62,14 +69,14 @@ class ExtensionPoint
                 'cky'   => $key->cKey,
                 'cval'  => $key->cValue
             ],
-            \DB\ReturnType::ARRAY_OF_OBJECTS
+            ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($extensions as $extension) {
             $instance = null;
-            $class    = ucfirst($extension->cClass);
-            if (class_exists($class)) {
+            $class    = \ucfirst($extension->cClass);
+            if (\class_exists($class)) {
                 /** @var IExtensionPoint $instance */
-                $instance = new $class();
+                $instance = new $class($db);
                 $instance->init((int)$extension->kInitial);
             } else {
                 Shop::Container()->getLogService()->error('Extension "' . $class . '" not found');
@@ -90,12 +97,12 @@ class ExtensionPoint
         $key->nPage  = $this->nSeitenTyp;
 
         switch ($key->nPage) {
-            case PAGE_ARTIKEL:
+            case \PAGE_ARTIKEL:
                 $key->cKey   = 'kArtikel';
                 $key->cValue = isset($this->cParam_arr['kArtikel']) ? (int)$this->cParam_arr['kArtikel'] : null;
                 break;
 
-            case PAGE_NEWS:
+            case \PAGE_NEWS:
                 if (isset($this->cParam_arr['kNewsKategorie']) && (int)$this->cParam_arr['kNewsKategorie'] > 0) {
                     $key->cKey   = 'kNewsKategorie';
                     $key->cValue = (int)$this->cParam_arr['kNewsKategorie'];
@@ -105,22 +112,22 @@ class ExtensionPoint
                 }
                 break;
 
-            case PAGE_BEWERTUNG:
+            case \PAGE_BEWERTUNG:
                 $key->cKey   = 'kArtikel';
                 $key->cValue = (int)$this->cParam_arr['kArtikel'];
                 break;
 
-            case PAGE_EIGENE:
+            case \PAGE_EIGENE:
                 $key->cKey   = 'kLink';
                 $key->cValue = (int)$this->cParam_arr['kLink'];
                 break;
 
-            case PAGE_UMFRAGE:
+            case \PAGE_UMFRAGE:
                 $key->cKey   = 'kUmfrage';
                 $key->cValue = (int)$this->cParam_arr['kUmfrage'];
                 break;
 
-            case PAGE_ARTIKELLISTE:
+            case \PAGE_ARTIKELLISTE:
                 $productFilter = Shop::getProductFilter();
                 // MerkmalWert
                 if ($productFilter->hasAttributeValue()) {
@@ -150,31 +157,6 @@ class ExtensionPoint
 
                 break;
 
-            case PAGE_NEWSLETTERARCHIV:
-            case PAGE_PLUGIN:
-            case PAGE_STARTSEITE:
-            case PAGE_VERSAND:
-            case PAGE_AGB:
-            case PAGE_DATENSCHUTZ:
-            case PAGE_TAGGING:
-            case PAGE_LIVESUCHE:
-            case PAGE_HERSTELLER:
-            case PAGE_SITEMAP:
-            case PAGE_GRATISGESCHENK:
-            case PAGE_WRB:
-            case PAGE_AUSWAHLASSISTENT:
-            case PAGE_BESTELLABSCHLUSS:
-            case PAGE_WARENKORB:
-            case PAGE_MEINKONTO:
-            case PAGE_KONTAKT:
-            case PAGE_NEWSLETTER:
-            case PAGE_LOGIN:
-            case PAGE_REGISTRIERUNG:
-            case PAGE_BESTELLVORGANG:
-            case PAGE_PASSWORTVERGESSEN:
-            case PAGE_WARTUNG:
-            case PAGE_WUNSCHLISTE:
-            case PAGE_VERGLEICHSLISTE:
             default:
                 break;
         }

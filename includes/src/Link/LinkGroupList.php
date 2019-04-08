@@ -4,18 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Link;
+namespace JTL\Link;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
-use Session\Frontend;
-use Tightenco\Collect\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Session\Frontend;
+use Illuminate\Support\Collection;
 use function Functional\group;
 
 /**
  * Class LinkGroupList
- * @package Link
+ * @package JTL\Link
  */
 final class LinkGroupList implements LinkGroupListInterface
 {

@@ -1,15 +1,20 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
- * @package jtl-shop
- * @since 5.0
+ * @license       http://jtl-url.de/jtlshoplicense
+ * @package       jtl-shop
+ * @since         5.0
  */
 
-use Helpers\GeneralObject;
+namespace JTL;
+
+use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
+use stdClass;
 
 /**
  * Class CustomerFields
+ * @package JTL
  */
 class CustomerFields
 {
@@ -30,6 +35,7 @@ class CustomerFields
 
     /**
      * CustomerFields constructor.
+     *
      * @param int $langID
      */
     public function __construct(int $langID)
@@ -154,7 +160,7 @@ class CustomerFields
     }
 
     /**
-     * @param int $kCustomerField
+     * @param int   $kCustomerField
      * @param array $customerFieldValues
      */
     protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues): void
@@ -185,7 +191,7 @@ class CustomerFields
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
             ['kKundenfeld' => $kCustomerField],
-            \DB\ReturnType::DEFAULT
+            ReturnType::DEFAULT
         );
     }
 
@@ -229,7 +235,7 @@ class CustomerFields
 	                            cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
                             ['kKundenfeld' => $key],
-                            \DB\ReturnType::AFFECTED_ROWS
+                            ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'datum':
@@ -239,7 +245,7 @@ class CustomerFields
 	                            cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
                             ['kKundenfeld' => $key],
-                            \DB\ReturnType::AFFECTED_ROWS
+                            ReturnType::AFFECTED_ROWS
                         );
                         break;
                     case 'text':
@@ -260,7 +266,7 @@ class CustomerFields
         }
 
         if ($ret) {
-            if ($customerField->cTyp === 'auswahl' && is_array($customerFieldValues)) {
+            if ($customerField->cTyp === 'auswahl' && \is_array($customerFieldValues)) {
                 $this->updateCustomerFieldValues($key, $customerFieldValues);
             }
         } else {

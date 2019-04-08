@@ -4,13 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Installation\Items;
+namespace JTL\Plugin\Admin\Installation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
+use JTL\Sprache;
+use stdClass;
 
 /**
  * Class MailTemplates
- * @package Plugin\Admin\Installation\Items
+ * @package JTL\Plugin\Admin\Installation\Items
  */
 class MailTemplates extends AbstractItem
 {
@@ -34,10 +36,10 @@ class MailTemplates extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-            if (\strlen($hits2[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $mailTpl                = new \stdClass();
+            $mailTpl                = new stdClass();
             $mailTpl->kPlugin       = $this->plugin->kPlugin;
             $mailTpl->cName         = $template['Name'];
             $mailTpl->cBeschreibung = \is_array($template['Description'])
@@ -56,24 +58,24 @@ class MailTemplates extends AbstractItem
             if ($mailTplID <= 0) {
                 return InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE;
             }
-            $localizedTpl                = new \stdClass();
+            $localizedTpl                = new stdClass();
             $iso                         = '';
             $localizedTpl->kEmailvorlage = $mailTplID;
             // Hole alle Sprachen des Shops
             // Assoc cISO
-            $allLanguages = \Sprache::getAllLanguages(2);
+            $allLanguages = Sprache::getAllLanguages(2);
             // Ist das erste Standard Template gesetzt worden? => wird etwas weiter unten gebraucht
             // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
             // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
             $isDefault       = false;
-            $defaultLanguage = new \stdClass();
+            $defaultLanguage = new stdClass();
             foreach ($template['TemplateLanguage'] as $l => $localized) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
-                if (isset($hits1[0]) && \strlen($hits1[0]) === \strlen($l)) {
-                    $iso = \strtolower($localized['iso']);
-                } elseif (isset($hits2[0]) && \strlen($hits2[0]) === \strlen($l)) {
+                if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
+                    $iso = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
+                } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($l)) {
                     $localizedTpl->kEmailvorlage = $mailTplID;
                     $localizedTpl->kSprache      = $allLanguages[$iso]->kSprache;
                     $localizedTpl->cBetreff      = $localized['Subject'];

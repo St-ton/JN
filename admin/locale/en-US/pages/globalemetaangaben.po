@@ -1,0 +1,33 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "globalemetaangaben"
+msgstr "Globale Meta-Angaben"
+
+msgid "globalemetaangabenDesc"
+msgstr "Hier können Sie globale Meta-Angaben (Title, Meta Description, Meta Keywords) pro Sprache definieren."
+
+msgid "globalemetaangabenMetaDesc"
+msgstr "Meta Description"
+
+msgid "globalemetaangabenKeywords"
+msgstr "Meta Keywords"
+
+msgid "globalemetaangabenMetaDescPraefix"
+msgstr "Meta Description Präfix"
+
+msgid "globalemetaangabenUrl"
+msgstr "https://jtl-url.de/v6sdm"
+
+msgid "keywordingDesc"
+msgstr "Ihre Meta Keywords von Produktdetailseiten werden automatisch aus den jeweiligen Produktdaten generiert, sofern das Produkt keine explizite Meta Keywords über Funktionsattribute zugewiesen hat. Hier können Sie nun irrelevante Wörter ausschliessen, die nicht als Keywords genutzt werden sollen."
+
+msgid "keywordingURL"
+msgstr "https://jtl-url.de/54hk7"
+
+msgid "excludeKeywords"
+msgstr "Auszuschliessende Wörter"
+
+msgid "spaceSeparated"
+msgstr "getrennt durch Leerzeichen"

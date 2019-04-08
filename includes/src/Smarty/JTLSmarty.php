@@ -4,23 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Smarty;
+namespace JTL\Smarty;
 
-use Events\Dispatcher;
-use Plugin\Helper;
+use JTL\Backend\AdminTemplate;
+use JTL\Events\Dispatcher;
+use JTL\Plugin\Helper;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Template;
 
 /**
  * Class JTLSmarty
- * @package Smarty
+ * @package \JTL\Smarty
  * @method JTLSmarty assign(string $variable, mixed $value)
  */
 class JTLSmarty extends \SmartyBC
 {
-    /**
-     * @var \Cache\JTLCacheInterface
-     */
-    public $jtlCache;
-
     /**
      * @var array
      */
@@ -32,7 +31,7 @@ class JTLSmarty extends \SmartyBC
     public $_cache_include_info;
 
     /**
-     * @var \Template
+     * @var Template
      */
     public $template;
 
@@ -71,7 +70,7 @@ class JTLSmarty extends \SmartyBC
              ->setDebugging(\SMARTY_DEBUG_CONSOLE)
              ->setUseSubDirs(\SMARTY_USE_SUB_DIRS);
         $this->context = $context;
-        $this->config  = \Shop::getSettings([\CONF_TEMPLATE, \CONF_CACHING, \CONF_GLOBAL]);
+        $this->config  = Shop::getSettings([\CONF_TEMPLATE, \CONF_CACHING, \CONF_GLOBAL]);
 
         $parent = $this->initTemplate();
         if ($fast === false) {
@@ -92,8 +91,8 @@ class JTLSmarty extends \SmartyBC
     {
         $parent         = null;
         $this->template = $this->context === ContextType::BACKEND
-            ? \AdminTemplate::getInstance()
-            : \Template::getInstance();
+            ? AdminTemplate::getInstance()
+            : Template::getInstance();
         $tplDir         = $this->template->getDir();
         if ($this->context !== ContextType::BACKEND) {
             $parent     = $this->template->getParent();
@@ -140,7 +139,7 @@ class JTLSmarty extends \SmartyBC
      */
     private function init($parent = null): void
     {
-        $pluginCollection = new PluginCollection($this->config, \Sprache::getInstance());
+        $pluginCollection = new PluginCollection($this->config, Sprache::getInstance());
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
              ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
              ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])
@@ -176,7 +175,7 @@ class JTLSmarty extends \SmartyBC
      */
     public function setCachingParams(array $config = null): self
     {
-        $config = $config ?? \Shop::getSettings([\CONF_CACHING]);
+        $config = $config ?? Shop::getSettings([\CONF_CACHING]);
 
         return $this->setCaching(self::CACHING_OFF)
                     ->setCompileCheck(!(isset($config['caching']['compile_check'])
@@ -311,7 +310,7 @@ class JTLSmarty extends \SmartyBC
         }
         $file   = \basename($filename, '.tpl');
         $dir    = \dirname($filename);
-        $custom = \strpos($dir, \PFAD_ROOT) === false
+        $custom = \mb_strpos($dir, \PFAD_ROOT) === false
             ? $this->getTemplateDir($this->context) . (($dir === '.')
                 ? ''
                 : ($dir . '/')) . $file . '_custom.tpl'
@@ -394,10 +393,10 @@ class JTLSmarty extends \SmartyBC
     public function getResourceName(string $resourceName): string
     {
         $transform = false;
-        if (\strpos($resourceName, 'string:') === 0) {
+        if (\mb_strpos($resourceName, 'string:') === 0) {
             return $resourceName;
         }
-        if (\strpos($resourceName, 'file:') === 0) {
+        if (\mb_strpos($resourceName, 'file:') === 0) {
             $resourceName = \str_replace('file:', '', $resourceName);
             $transform    = true;
         }

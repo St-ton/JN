@@ -4,21 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Mapper;
+namespace JTL\Mapper;
 
-use Cron\JobInterface;
-use Cron\Jobs\Export;
-use Cron\Jobs\ImageCache;
-use Cron\Jobs\Newsletter;
-use Cron\Jobs\Statusmail;
-use Cron\Jobs\GeneralDataProtect;
-use Cron\Type;
-use Events\Dispatcher;
-use Events\Event;
+use JTL\Cron\JobInterface;
+use JTL\Cron\Job\Export;
+use JTL\Cron\Job\GeneralDataProtect;
+use JTL\Cron\Job\ImageCache;
+use JTL\Cron\Job\Newsletter;
+use JTL\Cron\Job\Statusmail;
+use JTL\Cron\Job\Store;
+use JTL\Cron\Type;
+use JTL\Events\Dispatcher;
+use JTL\Events\Event;
+use InvalidArgumentException;
 
 /**
  * Class JobTypeToJob
- * @package Mapper
+ * @package JTL\Mapper
  */
 class JobTypeToJob
 {
@@ -39,11 +41,13 @@ class JobTypeToJob
                 return Newsletter::class;
             case Type::DATAPROTECTION:
                 return GeneralDataProtect::class;
+            case Type::STORE:
+                return Store::class;
             default:
                 $mapping = null;
                 Dispatcher::getInstance()->fire(Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);
                 if ($mapping === null) {
-                    throw new \InvalidArgumentException('Invalid job type: ' . $type);
+                    throw new InvalidArgumentException('Invalid job type: ' . $type);
                 }
 
                 return $mapping;

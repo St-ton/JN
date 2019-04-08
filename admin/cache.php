@@ -4,11 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Backend\DirManager;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Template;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
@@ -19,20 +24,22 @@ $tab          = 'uebersicht';
 $action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
+$db           = Shop::Container()->getDB();
+$getText      = Shop::Container()->getGetText();
+$alertHelper  = Shop::Container()->getAlertService();
+$getText->loadConfigLocales();
 
-\Shop::Container()->getGetText()->loadConfigLocales();
-
-if (0 < strlen(Request::verifyGPDataString('tab'))) {
+if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
 }
 try {
     $cache = Shop::Container()->getCache();
-    $cache->setJtlCacheConfig();
+    $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 } catch (Exception $exc) {
-    $error = 'Ausnahme: ' . $exc->getMessage();
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('exception') . ': ' . $exc->getMessage(), 'errorException');
 }
-//get disabled cache types
-$deactivated       = Shop::Container()->getDB()->select(
+// get disabled cache types
+$deactivated       = $db->select(
     'teinstellungen',
     ['kEinstellungenSektion', 'cName'],
     [CONF_CACHING, 'caching_types_disabled']
@@ -58,16 +65,24 @@ switch ($action) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
                         $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
-                            $error .= '<br />' . sprintf(__('errorCacheTypeDelete'), $cacheType);
+                            $alertHelper->addAlert(
+                                Alert::TYPE_ERROR,
+                                sprintf(__('errorCacheTypeDelete'), $cacheType),
+                                'errorCacheTypeDelete'
+                            );
                         } else {
                             $okCount++;
                         }
                     }
                     if ($okCount > 0) {
-                        $notice .= $okCount . __('successCacheEmptied');
+                        $alertHelper->addAlert(
+                            Alert::TYPE_SUCCESS,
+                            $okCount . __('successCacheEmptied'),
+                            'successCacheEmptied'
+                        );
                     }
                 } else {
-                    $error .= __('errorNoCacheType');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             case 'activate':
@@ -80,17 +95,21 @@ switch ($action) {
                     }
                     $upd        = new stdClass();
                     $upd->cWert = serialize($currentlyDisabled);
-                    $res        = Shop::Container()->getDB()->update(
+                    $res        = $db->update(
                         'teinstellungen',
                         ['kEinstellungenSektion', 'cName'],
                         [CONF_CACHING, 'caching_types_disabled'],
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= __('successCacheTypeActivate');
+                        $alertHelper->addAlert(
+                            Alert::TYPE_SUCCESS,
+                            __('successCacheTypeActivate'),
+                            'successCacheTypeActivate'
+                        );
                     }
                 } else {
-                    $error .= __('errorNoCacheType');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             case 'deactivate':
@@ -102,17 +121,21 @@ switch ($action) {
                     $currentlyDisabled = array_unique($currentlyDisabled);
                     $upd               = new stdClass();
                     $upd->cWert        = serialize($currentlyDisabled);
-                    $res               = Shop::Container()->getDB()->update(
+                    $res               = $db->update(
                         'teinstellungen',
                         ['kEinstellungenSektion', 'cName'],
                         [CONF_CACHING, 'caching_types_disabled'],
                         $upd
                     );
                     if ($res > 0) {
-                        $notice .= __('successCacheTypeDeactivate');
+                        $alertHelper->addAlert(
+                            Alert::TYPE_SUCCESS,
+                            __('successCacheTypeDeactivate'),
+                            'successCacheTypeDeactivate'
+                        );
                     }
                 } else {
-                    $error .= __('errorNoCacheType');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             default:
@@ -122,16 +145,13 @@ switch ($action) {
     case 'flush_object_cache':
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
-            $notice = __('successCacheDelete');
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCacheDelete'), 'successCacheDelete');
         } else {
-            if (0 < strlen($error)) {
-                $error .= '<br />';
-            }
-            $error .= __('errorCacheDelete');
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCacheDelete'), 'errorCacheDelete');
         }
         break;
     case 'settings':
-        $settings      = Shop::Container()->getDB()->selectAll(
+        $settings      = $db->selectAll(
             'teinstellungenconf',
             ['kEinstellungenSektion', 'cConf'],
             [CONF_CACHING, 'Y'],
@@ -156,7 +176,7 @@ switch ($action) {
                         $value->cWert = (int)$value->cWert;
                         break;
                     case 'text':
-                        $value->cWert = (strlen($value->cWert) > 0) ? substr($value->cWert, 0, 255) : $value->cWert;
+                        $value->cWert = mb_strlen($value->cWert) > 0 ? mb_substr($value->cWert, 0, 255) : $value->cWert;
                         break;
                     case 'listbox':
                         bearbeiteListBox($value->cWert, $settings[$i]->cWertName, CONF_CACHING);
@@ -194,24 +214,32 @@ switch ($action) {
                         $value->cWert = 'null';
                     }
                     if ($value->cWert !== 'null') {
-                        $notice .= '<strong>' . $value->cWert . '</strong>' . __('successCacheMethodSave') . '<br />';
+                        $alertHelper->addAlert(
+                            Alert::TYPE_SUCCESS,
+                            '<strong>' . $value->cWert . '</strong>' . __('successCacheMethodSave'),
+                            'successCacheDelete'
+                        );
                     } else {
-                        $notice .= __('errorCacheMethodSelect');
+                        $alertHelper->addAlert(
+                            Alert::TYPE_ERROR,
+                            __('errorCacheMethodSelect'),
+                            'errorCacheMethodSelect'
+                        );
                     }
                 }
-                Shop::Container()->getDB()->delete(
+                $db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
                     [CONF_CACHING, $settings[$i]->cWertName]
                 );
-                Shop::Container()->getDB()->insert('teinstellungen', $value);
+                $db->insert('teinstellungen', $value);
             }
             ++$i;
         }
         $cache->flushAll();
-        $cache->setJtlCacheConfig();
-        $notice .= __('successConfigSave') . '<br />';
-        $tab     = 'settings';
+        $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+        $tab = 'settings';
         break;
     case 'benchmark':
         //do benchmarks
@@ -280,9 +308,15 @@ switch ($action) {
         $dirMan       = new DirManager();
         $dirMan->getData(PFAD_ROOT . PFAD_COMPILEDIR . $template->getDir(), $callback, $cbParameters);
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
-        $notice .= sprintf(
-            __('successTemplateCacheDelete'),
-            '<strong>' . number_format($cbParameters['count']) . '</strong> '
+        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorCache');
+        $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'noticeCache');
+        $alertHelper->addAlert(
+            Alert::TYPE_SUCCESS,
+            sprintf(
+                __('successTemplateCacheDelete'),
+                '<strong>' . number_format($cbParameters['count']) . '</strong>'
+            ),
+            'successTemplateCacheDelete'
         );
         break;
     default:
@@ -294,7 +328,7 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings = Shop::Container()->getDB()->selectAll(
+$settings = $db->selectAll(
     'teinstellungenconf',
     ['nStandardAnzeigen', 'kEinstellungenSektion'],
     [1, CONF_CACHING],
@@ -302,54 +336,51 @@ $settings = Shop::Container()->getDB()->selectAll(
     'nSort'
 );
 
-\Shop::Container()->getGetText()->localizeConfigs($settings);
+$getText->localizeConfigs($settings);
 foreach ($settings as $i => $setting) {
     if ($setting->cName === 'caching_types_disabled') {
         unset($settings[$i]);
         continue;
     }
     if ($setting->cInputTyp === 'selectbox') {
-        $setting->ConfWerte = Shop::Container()->getDB()->selectAll(
+        $setting->ConfWerte = $db->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$setting->kEinstellungenConf,
             '*',
             'nSort'
         );
-        \Shop::Container()->getGetText()->localizeConfigValues($setting, $setting->ConfWerte);
+        $getText->localizeConfigValues($setting, $setting->ConfWerte);
     }
-    $oSetValue              = Shop::Container()->getDB()->select(
+    $oSetValue              = $db->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $setting->cWertName]
     );
     $setting->gesetzterWert = $oSetValue->cWert ?? null;
 }
-$advancedSettings = Shop::Container()->getDB()->query(
+$advancedSettings = $db->query(
     'SELECT * 
         FROM teinstellungenconf 
         WHERE (nStandardAnzeigen = 0 OR nStandardAnzeigen = 2)
             AND kEinstellungenSektion = ' . CONF_CACHING . '
         ORDER BY nSort',
-    \DB\ReturnType::ARRAY_OF_OBJECTS
+    ReturnType::ARRAY_OF_OBJECTS
 );
-
-\Shop::Container()->getGetText()->localizeConfigs($advancedSettings);
-
+$getText->localizeConfigs($advancedSettings);
 $settingsCount = count($advancedSettings);
-
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
-        $advancedSettings[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
+        $advancedSettings[$i]->ConfWerte = $db->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
             (int)$advancedSettings[$i]->kEinstellungenConf,
             '*',
             'nSort'
         );
-        \Shop::Container()->getGetText()->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
+        $getText->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
     }
-    $oSetValue                           = Shop::Container()->getDB()->select(
+    $oSetValue                           = $db->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]
@@ -424,7 +455,7 @@ if ($cache !== null) {
     unset($cachingGroup);
 }
 if (!empty($cache->getError())) {
-    $error .= $cache->getError();
+    $alertHelper->addAlert(Alert::TYPE_ERROR, $cache->getError(), 'errorCache');
 }
 $smarty->assign('settings', $settings)
        ->assign('caching_groups', $cachingGroups)
@@ -438,8 +469,6 @@ $smarty->assign('settings', $settings)
        ->assign('non_available_methods', json_encode($nonAvailableMethods))
        ->assign('advanced_settings', $advancedSettings)
        ->assign('disabled_caches', $currentlyDisabled)
-       ->assign('cHinweis', $notice)
-       ->assign('cFehler', $error)
        ->assign('step', $step)
        ->assign('tab', $tab)
        ->display('cache.tpl');

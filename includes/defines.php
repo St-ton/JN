@@ -9,6 +9,7 @@ ifndef('JTL_CHARSET', 'utf-8');
 ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
+mb_internal_encoding(strtoupper(JTL_CHARSET));
 date_default_timezone_set('Europe/Berlin');
 ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
@@ -38,6 +39,8 @@ ifndef('DB_DEFAULT_SQL_MODE', false);
  */
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
+
+ifndef('ADMIN_MIGRATION', false);
 
 ifndef('IO_LOG_CONSOLE', false);
 ifndef('DEFAULT_CURL_OPT_VERIFYPEER', true);
@@ -105,6 +108,10 @@ ifndef('PFAD_ADMIN', 'admin/');
 ifndef('PFAD_EMAILVORLAGEN', PFAD_ADMIN . 'mailtemplates/');
 ifndef('PFAD_MEDIAFILES', 'mediafiles/');
 ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
+ifndef('IMAGE_SIZE_XS', 'xs');
+ifndef('IMAGE_SIZE_SM', 'sm');
+ifndef('IMAGE_SIZE_MD', 'md');
+ifndef('IMAGE_SIZE_LG', 'lg');
 ifndef('PFAD_PRODUKTBILDER', PFAD_BILDER . 'produkte/');
 ifndef('PFAD_PRODUKTBILDER_MINI', PFAD_PRODUKTBILDER . 'mini/');
 ifndef('PFAD_PRODUKTBILDER_KLEIN', PFAD_PRODUKTBILDER . 'klein/');
@@ -130,6 +137,7 @@ ifndef('PFAD_SUCHSPECIALOVERLAY_KLEIN', PFAD_SUCHSPECIALOVERLAY . 'klein/');
 ifndef('PFAD_SUCHSPECIALOVERLAY_NORMAL', PFAD_SUCHSPECIALOVERLAY . 'normal/');
 ifndef('PFAD_SUCHSPECIALOVERLAY_GROSS', PFAD_SUCHSPECIALOVERLAY . 'gross/');
 ifndef('PFAD_SUCHSPECIALOVERLAY_RETINA', PFAD_SUCHSPECIALOVERLAY . 'retina/');
+ifndef('PFAD_OVERLAY_TEMPLATE', '/images/overlay/');
 ifndef('PFAD_KONFIGURATOR_KLEIN', PFAD_BILDER . 'konfigurator/klein/');
 ifndef('PFAD_LOGFILES', PFAD_ROOT . 'jtllogs/');
 ifndef('PFAD_EXPORT', 'export/');
@@ -168,7 +176,9 @@ ifndef('BILD_KEIN_MERKMALBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
 ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
 //MediaImage Regex
-ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/');
+ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product|category|variation|manufacturer)' .
+    '\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)' .
+    '(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
@@ -208,12 +218,13 @@ ifndef('MAX_REVISIONS', 5);
 ifndef('SHOW_DEBUG_BAR', false);
 
 // security
+ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);
 ifndef('MAILTEMPLATE_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_USE_SECURITY', true);
 ifndef('EXPORTFORMAT_ALLOWED_FORMATS', 'txt,csv,xml,html,htm,json,yaml,yml');
 ifndef('PASSWORD_DEFAULT_LENGTH', 12);
-ifndef('SECURE_PHP_FUNCTIONS', "
+ifndef('SECURE_PHP_FUNCTIONS', '
     addcslashes, addslashes, bin2hex, chop, chr, chunk_split, count_chars, crypt, explode, html_entity_decode,
     htmlentities, htmlspecialchars_decode, htmlspecialchars, implode, join, lcfirst, levenshtein, ltrim, md5, metaphone,
     money_format, nl2br, number_format, ord, rtrim, sha1, similar_text, soundex, sprintf, str_ireplace, str_pad,
@@ -243,7 +254,7 @@ ifndef('SECURE_PHP_FUNCTIONS', "
     json_decode, json_encode, json_last_error_msg, json_last_error,
     
     yaml_emit, yaml_parse,
-");
+');
 
 // 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
 ifndef('SHOW_TEMPLATE_HINTS', 0);
@@ -267,8 +278,8 @@ function shop_writeable_paths()
     global $shop_writeable_paths;
 
     return array_map(function ($v) {
-        if (strpos($v, PFAD_ROOT) === 0) {
-            $v = substr($v, strlen(PFAD_ROOT));
+        if (mb_strpos($v, PFAD_ROOT) === 0) {
+            $v = mb_substr($v, mb_strlen(PFAD_ROOT));
         }
 
         return trim($v, '/\\');

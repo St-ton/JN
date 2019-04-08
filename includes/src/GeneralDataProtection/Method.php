@@ -4,11 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace GeneralDataProtection;
+namespace JTL\GeneralDataProtection;
+
+use JTL\Shop;
 
 /**
  * Class Method
- * @package GeneralDataProtection
+ * @package JTL\GeneralDataProtection
  */
 class Method
 {
@@ -58,7 +60,7 @@ class Method
     public function __construct(\DateTime $oObjNow, int $interval)
     {
         try {
-            $this->logger = \Shop::Container()->getLogService();
+            $this->logger = Shop::Container()->getLogService();
         } catch (\Exception $e) {
             $this->logger = null;
         }

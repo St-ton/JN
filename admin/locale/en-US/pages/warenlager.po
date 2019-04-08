@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "warenlager"
+msgstr "Warenlager"
+
+msgid "warenlagerURL"
+msgstr "https://jtl-url.de/2onym"
+
+msgid "warenlagerDesc"
+msgstr "Über die Warenlagerverwaltung pflegen Sie die Anzeige der Läger im Shop"
+
+msgid "warenlagerIntern"
+msgstr "interne Bezeichnung"
+
+msgid "watenlagerActive"
+msgstr "Im Shop aktiv"
+
+msgid "warenlagerDesignation"
+msgstr "Bezeichnung ändern"
+
+msgid "successStoreRefresh"
+msgstr "Ihre Warenlager wurden erfolgreich aktualisiert"

@@ -20,7 +20,7 @@
             makeCurrencyTooltip('fWert');
         {/if}
         makeCurrencyTooltip('fMindestbestellwert');
-        $('#bOpenEnd').change(onEternalCheckboxChange);
+        $('#bOpenEnd').on('change', onEternalCheckboxChange);
         onEternalCheckboxChange();
     });
 
@@ -144,7 +144,7 @@
                         <span class="input-group-wrap">
                             <select name="cWertTyp" id="cWertTyp" class="form-control combo">
                                 <option value="festpreis"{if $oKupon->cWertTyp === 'festpreis'} selected{/if}>
-                                    Betrag
+                                    {__('amount')}
                                 </option>
                                 <option value="prozent"{if $oKupon->cWertTyp === 'prozent'} selected{/if}>
                                     %
@@ -162,10 +162,10 @@
                         <span class="input-group-wrap">
                             <select name="nGanzenWKRabattieren" id="nGanzenWKRabattieren" class="form-control combo">
                                 <option value="1"{if $oKupon->nGanzenWKRabattieren == 1} selected{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                                 <option value="0"{if $oKupon->nGanzenWKRabattieren == 0} selected{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                             </select>
                         </span>
@@ -299,8 +299,8 @@
             <div class="panel-body">
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle='Artikel auswählen'
-                    searchInputLabel='Suche nach Artikelnamen'
+                    modalTitle="{__('chooseProduct')}"
+                    searchInputLabel="{__('searchProductName')}"
                 }
                 <script>
                     $(function () {
@@ -319,10 +319,10 @@
                     function onApplySelectedArticles(selectedArticles)
                     {
                         if (selectedArticles.length > 0) {
-                            $('#articleSelectionInfo').val(selectedArticles.length + ' Artikel');
+                            $('#articleSelectionInfo').val(selectedArticles.length + {__('product')});
                             $('#cArtikel').val(selectedArticles.join(';') + ';');
                         } else {
-                            $('#articleSelectionInfo').val('Alle Artikel');
+                            $('#articleSelectionInfo').val('{__('all')}' + ' {__('products')}');
                             $('#cArtikel').val('');
                         }
                     }
@@ -367,7 +367,7 @@
                     <span class="input-group-wrap">
                         <select name="kKundengruppe" id="kKundengruppe" class="form-control combo">
                             <option value="-1"{if $oKupon->kKundengruppe == -1} selected{/if}>
-                                Alle Kundengruppen
+                                {__('allCustomerGroups')}
                             </option>
                             {foreach $oKundengruppe_arr as $oKundengruppe}
                                 <option value="{$oKundengruppe->kKundengruppe}"{if $oKupon->kKundengruppe == $oKundengruppe->kKundengruppe} selected{/if}>
@@ -406,8 +406,8 @@
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='customerPicker'
-                        modalTitle='Kunden auswählen'
-                        searchInputLabel='Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl'
+                        modalTitle="{__('chooseCustomer')}"
+                        searchInputLabel="{__('searchNameZipEmail')}"
                     }
                     <script>
                         $(function () {
@@ -431,10 +431,10 @@
                         function onApplySelectedCustomers(selectedCustomers)
                         {
                             if (selectedCustomers.length > 0) {
-                                $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
+                                $('#customerSelectionInfo').val(selectedCustomers.length + {__('customers')});
                                 $('#cKunden').val(selectedCustomers.join(';'));
                             } else {
-                                $('#customerSelectionInfo').val('Alle Kunden');
+                                $('#customerSelectionInfo').val('{__('all')}' + ' {__('customer')}');
                                 $('#cKunden').val('-1');
                             }
                         }

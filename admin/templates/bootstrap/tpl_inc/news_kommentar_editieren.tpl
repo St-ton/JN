@@ -22,7 +22,7 @@
             <div class="table-responsive">
                 <table class="list table" id="formtable">
                     <tr>
-                        <td><label for="cName">{__('newsUser')}</label></td>
+                        <td><label for="cName">{__('visitors')}</label></td>
                         <td>
                             <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
                             {if $oNewsKommentar->getCustomerID() === 0}
@@ -31,7 +31,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><label for="cKommentar">{__('newsText')}</label></td>
+                        <td><label for="cKommentar">{__('text')}</label></td>
                         <td>
                             <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->getText()}</textarea>
                         </td>
@@ -40,7 +40,7 @@
             </div>
             <div class="panel-footer">
                 <span class="btn-group">
-                    <button name="newskommentarsavesubmit" type="submit" value="{__('newsSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newsSave')}</button>
+                    <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
                 </span>
             </div>

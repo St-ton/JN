@@ -4,15 +4,18 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Cron;
+namespace JTL\Cron;
 
-use DB\DbInterface;
-use DB\ReturnType;
+use DateTime;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Shop;
 use Psr\Log\LoggerInterface;
+use stdClass;
 
 /**
  * Class Queue
- * @package Cron
+ * @package JTL\Cron
  */
 class Queue
 {
@@ -75,10 +78,10 @@ class Queue
     public function enqueueCronJobs(array $jobs): void
     {
         foreach ($jobs as $job) {
-            $queueEntry                = new \stdClass();
+            $queueEntry                = new stdClass();
             $queueEntry->cronID        = $job->cronID;
-            $queueEntry->foreignKeyID  = $job->foreignKeyID;
-            $queueEntry->foreignKey    = $job->foreignKey;
+            $queueEntry->foreignKeyID  = $job->foreignKeyID ?? '_DBNULL_';
+            $queueEntry->foreignKey    = $job->foreignKey ?? '_DBNULL_';
             $queueEntry->tableName     = $job->tableName;
             $queueEntry->jobType       = $job->jobType;
             $queueEntry->startTime     = 'NOW()';
@@ -90,8 +93,19 @@ class Queue
         }
     }
 
-    public function run(): void
+    /**
+     * @param Checker $checker
+     * @throws \Exception
+     */
+    public function run(Checker $checker): void
     {
+        if ($checker->isLocked()) {
+            $this->logger->debug('Cron currently locked');
+            exit;
+        }
+        $checker->lock();
+        $this->enqueueCronJobs($checker->check());
+        $this->loadQueueFromDB();
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
                 $this->logger->debug('Job limit reached after ' . \JOBQUEUE_LIMIT_JOBS . ' jobs.');
@@ -104,7 +118,7 @@ class Queue
             $this->logger->notice('Got job (ID = ' . $job->getCronID() . ', type = ' . $job->getType() . ')');
             $job->start($queueEntry);
             $queueEntry->isRunning = 0;
-            $queueEntry->lastStart = new \DateTime();
+            $queueEntry->lastStart = new DateTime();
             $this->db->update(
                 'tcron',
                 'cronID',
@@ -121,5 +135,6 @@ class Queue
                 'job'       => $job
             ]);
         }
+        $checker->unlock();
     }
 }

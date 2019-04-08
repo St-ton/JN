@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Licence
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Licence extends AbstractItem
 {
@@ -29,11 +29,11 @@ class Licence extends AbstractItem
             $content = \file_get_contents($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile']);
             // ioncube encoded files usually have a header that checks loaded extions itself
             // but it can also be in short form, where there are no opening php tags
-            $requiresMissingIoncube = ((\strpos($content, 'ionCube') !== false
-                    && \strpos($content, 'extension_loaded') !== false)
-                || \strpos($content, '<?php') === false);
+            $requiresMissingIoncube = ((\mb_strpos($content, 'ionCube') !== false
+                    && \mb_strpos($content, 'extension_loaded') !== false)
+                || \mb_strpos($content, '<?php') === false);
         }
-        if (isset($node['LicenceClassFile']) && \strlen($node['LicenceClassFile']) > 0) {
+        if (isset($node['LicenceClassFile']) && \mb_strlen($node['LicenceClassFile']) > 0) {
             if (!\file_exists($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])) {
                 return InstallCode::MISSING_LICENCE_FILE;
             }

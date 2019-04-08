@@ -4,17 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
-use Helpers\Request;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
-/** @global \Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_AGB_WRB_VIEW', true, true);
-$cHinweis = '';
-$cFehler  = '';
-$step     = 'agbwrb_uebersicht';
+$step        = 'agbwrb_uebersicht';
+$alertHelper = Shop::Container()->getAlertService();
 
 setzeSprache();
 
@@ -33,7 +34,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $smarty->assign('kKundengruppe', Request::verifyGPCDataInt('kKundengruppe'))
                    ->assign('oAGBWRB', $oAGBWRB);
         } else {
-            $cFehler .= __('errorInvalidCustomerGroup') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorInvalidCustomerGroup'), 'errorInvalidCustomerGroup');
         }
     } elseif (Request::verifyGPCDataInt('agbwrb_editieren_speichern') === 1) {
         if (speicherAGBWRB(
@@ -42,9 +43,9 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             $_POST,
             Request::verifyGPCDataInt('kText')
         )) {
-            $cHinweis .= __('successSave') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'agbWrbSuccessSave');
         } else {
-            $cFehler .= __('errorSave') . '<br />';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'agbWrbErrorSave');
         }
     }
 }
@@ -69,9 +70,7 @@ if ($step === 'agbwrb_uebersicht') {
            ->assign('oAGBWRB_arr', $oAGBWRB_arr);
 }
 
-$smarty->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
        ->display('agbwrb.tpl');

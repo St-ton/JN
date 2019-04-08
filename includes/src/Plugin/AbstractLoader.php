@@ -4,27 +4,29 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin;
+namespace JTL\Plugin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use DB\ReturnType;
-use Plugin\ExtensionData\AdminMenu;
-use Plugin\ExtensionData\Cache;
-use Plugin\ExtensionData\Config;
-use Plugin\ExtensionData\License;
-use Plugin\ExtensionData\Links;
-use Plugin\ExtensionData\Localization;
-use Plugin\ExtensionData\MailTemplates;
-use Plugin\ExtensionData\Meta;
-use Plugin\ExtensionData\Paths;
-use Plugin\ExtensionData\PaymentMethods;
-use Plugin\ExtensionData\Widget;
-use Tightenco\Collect\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
+use JTL\Plugin\Data\AdminMenu;
+use JTL\Plugin\Data\Cache;
+use JTL\Plugin\Data\Config;
+use JTL\Plugin\Data\License;
+use JTL\Plugin\Data\Links;
+use JTL\Plugin\Data\Localization;
+use JTL\Plugin\Data\MailTemplates;
+use JTL\Plugin\Data\Meta;
+use JTL\Plugin\Data\Paths;
+use JTL\Plugin\Data\PaymentMethods;
+use JTL\Plugin\Data\Widget;
+use JTL\Shop;
+use stdClass;
+use Illuminate\Support\Collection;
 
 /**
  * Class AbstractLoader
- * @package Plugin
+ * @package JTL\Plugin
  */
 abstract class AbstractLoader implements LoaderInterface
 {
@@ -106,15 +108,14 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadLocalization(int $id, string $currentLanguageCode): Localization
     {
         $data         = $this->db->queryPrepared(
-            'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
-            COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
-            COALESCE(c.cName, tpluginsprachvariablesprache.cName) AS customValue
+            'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung, o.cISO,
+                COALESCE(c.cName, o.cName) AS customValue
             FROM tpluginsprachvariable AS l
+            JOIN tpluginsprachvariablesprache AS o
+                ON o.kPluginSprachvariable = l.kPluginSprachvariable
             LEFT JOIN tpluginsprachvariablecustomsprache AS c
                 ON c.kPluginSprachvariable = l.kPluginSprachvariable
-            LEFT JOIN tpluginsprachvariablesprache
-                ON tpluginsprachvariablesprache.kPluginSprachvariable = l.kPluginSprachvariable
-                AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
+                AND o.cISO = c.cISO
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
             ['pid' => $id],
@@ -126,10 +127,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param \stdClass $obj
+     * @param stdClass $obj
      * @return Meta
      */
-    protected function loadMetaData(\stdClass $obj): Meta
+    protected function loadMetaData(stdClass $obj): Meta
     {
         $metaData = new Meta();
 
@@ -171,9 +172,9 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadPaths(string $pluginDir): Paths
     {
-        $shopURL  = \Shop::getURL(true) . '/';
-        $basePath = \PFAD_ROOT . \PFAD_EXTENSIONS . $pluginDir . \DIRECTORY_SEPARATOR;
-        $baseURL  = $shopURL . \PFAD_EXTENSIONS . $pluginDir . '/';
+        $shopURL  = Shop::getURL(true) . '/';
+        $basePath = \PFAD_ROOT . \PLUGIN_DIR . $pluginDir . \DIRECTORY_SEPARATOR;
+        $baseURL  = $shopURL . \PLUGIN_DIR . $pluginDir . '/';
 
         $paths = new Paths();
         $paths->setShopURL($shopURL);
@@ -186,14 +187,15 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
         $paths->setLicencePath($basePath . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
-        $paths->setPortletsPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_PORTLETS);
+        $paths->setPortletsPath($basePath . \PFAD_PLUGIN_PORTLETS);
+        $paths->setPortletsUrl($baseURL . \PFAD_PLUGIN_PORTLETS);
         $paths->setExportPath($basePath . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT);
 
         return $paths;
     }
 
     /**
-     * @param \stdClass $data
+     * @param stdClass $data
      * @return License
      */
     protected function loadLicense($data): License
@@ -207,10 +209,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return Cache
      */
-    protected function loadCacheData(AbstractExtension $extension): Cache
+    protected function loadCacheData(PluginInterface $extension): Cache
     {
         $cache = new Cache();
         $cache->setGroup(\CACHING_GROUP_PLUGIN . '_' . $extension->getID());
@@ -220,13 +222,14 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return AdminMenu
      */
-    protected function loadAdminMenu(AbstractExtension $extension): AdminMenu
+    protected function loadAdminMenu(PluginInterface $extension): AdminMenu
     {
         $i     = -1;
         $menus = \array_map(function ($menu) use (&$i) {
+            $menu->cName            = __($menu->cName);
             $menu->name             = $menu->cName;
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
             $menu->id               = (int)$menu->kPluginAdminMenu;
@@ -243,7 +246,7 @@ abstract class AbstractLoader implements LoaderInterface
 
             return $menu;
         }, $this->db->selectAll('tpluginadminmenu', 'kPlugin', $extension->getID(), '*', 'nSort'));
-        $menus = collect($menus);
+        $menus = \collect($menus);
         $this->addMarkdownToAdminMenu($extension, $menus);
 
         $adminMenu = new AdminMenu();
@@ -254,18 +257,18 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
-     * @param Collection        $items
+     * @param PluginInterface $extension
+     * @param Collection      $items
      * @return Collection
      */
-    protected function addMarkdownToAdminMenu(AbstractExtension $extension, Collection $items): Collection
+    protected function addMarkdownToAdminMenu(PluginInterface $extension, Collection $items): Collection
     {
         $meta     = $extension->getMeta();
         $lastItem = $items->last();
         $lastIdx  = $lastItem->idx ?? -1;
         if (!empty($meta->getReadmeMD())) {
             ++$lastIdx;
-            $menu                   = new \stdClass();
+            $menu                   = new stdClass();
             $menu->kPluginAdminMenu = -1;
             $menu->id               = 'md-' . $lastIdx;
             $menu->kPlugin          = $extension->getID();
@@ -286,7 +289,7 @@ abstract class AbstractLoader implements LoaderInterface
         }
         if (!empty($meta->getLicenseMD())) {
             ++$lastIdx;
-            $menu                   = new \stdClass();
+            $menu                   = new stdClass();
             $menu->kPluginAdminMenu = -1;
             $menu->id               = 'md-' . $lastIdx;
             $menu->kPlugin          = $extension->getID();
@@ -307,7 +310,7 @@ abstract class AbstractLoader implements LoaderInterface
         }
         if (!empty($meta->getChangelogMD())) {
             ++$lastIdx;
-            $menu                   = new \stdClass();
+            $menu                   = new stdClass();
             $menu->kPluginAdminMenu = -1;
             $menu->id               = 'md-' . $lastIdx;
             $menu->kPlugin          = $extension->getID();
@@ -371,10 +374,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return Widget
      */
-    protected function loadWidgets(AbstractExtension $extension): Widget
+    protected function loadWidgets(PluginInterface $extension): Widget
     {
         $data = $this->db->selectAll(
             'tadminwidgets',
@@ -391,10 +394,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return MailTemplates
      */
-    protected function loadMailTemplates(AbstractExtension $extension): MailTemplates
+    protected function loadMailTemplates(PluginInterface $extension): MailTemplates
     {
         $data          = $this->db->queryPrepared(
             'SELECT * FROM tpluginemailvorlage
@@ -410,10 +413,10 @@ abstract class AbstractLoader implements LoaderInterface
     }
 
     /**
-     * @param AbstractExtension $extension
+     * @param PluginInterface $extension
      * @return PaymentMethods
      */
-    protected function loadPaymentMethods(AbstractExtension $extension): PaymentMethods
+    protected function loadPaymentMethods(PluginInterface $extension): PaymentMethods
     {
         $methods = $this->db->query(
             "SELECT *

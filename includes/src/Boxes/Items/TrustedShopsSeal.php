@@ -4,11 +4,16 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
+
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\TrustedShops;
 
 /**
  * Class TrustedShopsSeal
- * @package Boxes\Items
+ *
+ * @package JTL\Boxes\Items
  */
 final class TrustedShopsSeal extends AbstractBox
 {
@@ -45,10 +50,10 @@ final class TrustedShopsSeal extends AbstractBox
         $this->addMapping('cBGBild', 'BackGroundImageURL');
         $this->setShow(false);
         if ($config['trustedshops']['trustedshops_nutzen'] === 'Y') {
-            $langISO = \StringHandler::convertISO2ISO639(\Shop::getLanguageCode());
-            $shopURL = \Shop::getURL(true) . '/';
-            $ts      = new \TrustedShops(-1, $langISO);
-            if ((int)$ts->nAktiv === 1 && !empty($ts->cLogoURL) && \strlen($ts->tsId) > 0) {
+            $langISO = Text::convertISO2ISO639(Shop::getLanguageCode());
+            $shopURL = Shop::getURL(true) . '/';
+            $ts      = new TrustedShops(-1, $langISO);
+            if ((int)$ts->nAktiv === 1 && !empty($ts->cLogoURL) && \mb_strlen($ts->tsId) > 0) {
                 $this->setShow(true);
                 $this->setLogoURL($ts->cLogoURL);
                 $this->setLogoSealURL($ts->cLogoSiegelBoxURL[$langISO]);

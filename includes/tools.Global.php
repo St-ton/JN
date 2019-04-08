@@ -4,20 +4,41 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Cart;
-use Helpers\Category;
-use Helpers\Date;
-use Helpers\FileSystem;
-use Helpers\Form;
-use Helpers\GeneralObject;
-use Helpers\PaymentMethod;
-use Helpers\PHPSettings;
-use Helpers\Product;
-use Helpers\Request;
-use Helpers\SearchSpecial;
-use Helpers\ShippingMethod;
-use Helpers\Tax;
-use Helpers\URL;
+use JTL\Helpers\Cart;
+use JTL\Helpers\Category;
+use JTL\Helpers\Date;
+use JTL\Helpers\FileSystem;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\PaymentMethod;
+use JTL\Helpers\PHPSettings;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Helpers\SearchSpecial;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\Tax;
+use JTL\Helpers\URL;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Currency;
+use JTL\Jtllog;
+use JTL\Kampagne;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Customer\Kunde;
+use JTL\Checkout\Kupon;
+use JTL\Catalog\Product\Preise;
+use JTL\Redirect;
+use JTL\Shop;
+use JTL\SimpleMail;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\TrustedShops;
+use JTL\Checkout\Versandart;
+use JTL\Visitor;
+use JTL\Cart\WarenkorbPers;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Checkout\Zahlungsart;
+use JTL\Session\Frontend;
 
 /**
  * @param float  $fPreisNetto
@@ -41,7 +62,7 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', bool $
 function checkeTel($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::checkPhoneNumber instead', E_USER_DEPRECATED);
-    return StringHandler::checkPhoneNumber($data);
+    return Text::checkPhoneNumber($data);
 }
 
 /**
@@ -52,12 +73,12 @@ function checkeTel($data)
 function checkeDatum($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::checkDate instead', E_USER_DEPRECATED);
-    return StringHandler::checkDate($data);
+    return Text::checkDate($data);
 }
 
 /**
  * @param string      $cPasswort
- * @param null{string $cHashPasswort
+ * @param null|string $cHashPasswort
  * @return bool|string
  * @deprecated since 5.0.0
  */
@@ -66,15 +87,15 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 
     $cSalt   = sha1(uniqid(mt_rand(), true));
-    $nLaenge = strlen($cSalt);
-    $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - strlen($cPasswort));
+    $nLaenge = mb_strlen($cSalt);
+    $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - mb_strlen($cPasswort));
     $cSalt   = $cHashPasswort
-        ? substr($cHashPasswort, min(strlen($cPasswort), strlen($cHashPasswort) - $nLaenge), $nLaenge)
-        : strrev(substr($cSalt, 0, $nLaenge));
+        ? mb_substr($cHashPasswort, min(mb_strlen($cPasswort), mb_strlen($cHashPasswort) - $nLaenge), $nLaenge)
+        : strrev(mb_substr($cSalt, 0, $nLaenge));
     $cHash   = sha1($cPasswort);
-    $cHash   = sha1(substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort)));
-    $cHash   = substr($cHash, $nLaenge);
-    $cHash   = substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort));
+    $cHash   = sha1(mb_substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . mb_substr($cHash, mb_strlen($cPasswort)));
+    $cHash   = mb_substr($cHash, $nLaenge);
+    $cHash   = mb_substr($cHash, 0, mb_strlen($cPasswort)) . $cSalt . mb_substr($cHash, mb_strlen($cPasswort));
 
     return $cHashPasswort && $cHashPasswort !== $cHash ? false : $cHash;
 }
@@ -93,12 +114,12 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
     $cSaltBuchstaben = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
     // Gen SALT
     for ($j = 0; $j < 30; $j++) {
-        $cSalt .= substr($cSaltBuchstaben, mt_rand(0, strlen($cSaltBuchstaben) - 1), 1);
+        $cSalt .= mb_substr($cSaltBuchstaben, mt_rand(0, mb_strlen($cSaltBuchstaben) - 1), 1);
     }
     $cSalt = md5($cSalt);
     mt_srand();
     // Wurde ein String übergeben?
-    if (strlen($cString) > 0) {
+    if (mb_strlen($cString) > 0) {
         // Hat der String Elemente?
         [$strings] = explode(';', $cString);
         if (is_array($strings) && count($strings) > 0) {
@@ -108,13 +129,13 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
 
             $cUID = md5($cUID . $cSalt);
         } else {
-            $sl = strlen($cString);
+            $sl = mb_strlen($cString);
             for ($i = 0; $i < $sl; $i++) {
-                $nPos = mt_rand(0, strlen($cString) - 1);
-                if (((int)date('w') % 2) <= strlen($cString)) {
+                $nPos = mt_rand(0, mb_strlen($cString) - 1);
+                if (((int)date('w') % 2) <= mb_strlen($cString)) {
                     $nPos = (int)date('w') % 2;
                 }
-                $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
+                $cUID .= md5(mb_substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
         $cUID = cryptPasswort($cUID . $cSalt);
@@ -122,7 +143,7 @@ function gibUID(int $nAnzahlStellen = 40, string $cString = '')
         $cUID = cryptPasswort(md5(M_PI . $cSalt . md5(time() - mt_rand())));
     }
     // Anzahl Stellen beachten
-    return $nAnzahlStellen > 0 ? substr($cUID, 0, $nAnzahlStellen) : $cUID;
+    return $nAnzahlStellen > 0 ? mb_substr($cUID, 0, $nAnzahlStellen) : $cUID;
 }
 
 /**
@@ -155,7 +176,7 @@ function gibSeitenTyp()
 function filterXSS($cString, $nSuche = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return StringHandler::filterXSS($cString, $nSuche);
+    return Text::filterXSS($cString, $nSuche);
 }
 
 /**
@@ -183,9 +204,10 @@ function writeLog($logfile, $entry, $level)
         if (!$logfile) {
             return false;
         }
-        fwrite($logfile,
+        fwrite(
+            $logfile,
             "\n[" . date('m.d.y H:i:s') . '] ' .
-            '[' . (new \GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
+            '[' . (new \JTL\GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
             $entry
         );
         fclose($logfile);
@@ -280,7 +302,9 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($kArtikel > 0) {
-        $oArtikel = (new Artikel())->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+        $options               = Artikel::getDefaultOptions();
+        $options->nVariationen = 1;
+        $oArtikel              = (new Artikel())->fuelleArtikel($kArtikel, $options);
     }
 
     $soldOut = [];
@@ -297,7 +321,7 @@ function pruefeVariationAusverkauft(int $kArtikel = 0, $oArtikel = null): array
             foreach ($oVariation->Werte as $oVariationWert) {
                 // Ist Variation ausverkauft?
                 if ($oVariationWert->fLagerbestand <= 0) {
-                    $oVariationWert->cNameEigenschaft                      = $oVariation->cName;
+                    $oVariationWert->cNameEigenschaft   = $oVariation->cName;
                     $soldOut[$oVariation->kEigenschaft] = $oVariationWert;
                 }
             }
@@ -352,7 +376,7 @@ function sortiereFilter($filters, $key)
 function holeGlobaleMetaAngaben()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\Metadata::getGlobalMetaData();
+    return JTL\Filter\Metadata::getGlobalMetaData();
 }
 
 /**
@@ -362,7 +386,7 @@ function holeGlobaleMetaAngaben()
 function holeExcludedKeywords()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\Metadata::getExcludes();
+    return JTL\Filter\Metadata::getExcludes();
 }
 
 /**
@@ -406,9 +430,9 @@ function formatCurrency($fSumme)
         if ($fCents < 10) {
             $fCents = '0' . $fCents;
         }
-        for ($i = 0; $i < floor((strlen($fSumme) - (1 + $i)) / 3); $i++) {
-            $fSumme = substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3)) . '.' .
-                substr($fSumme, 0, strlen($fSumme) - (4 * $i + 3));
+        for ($i = 0; $i < floor((mb_strlen($fSumme) - (1 + $i)) / 3); $i++) {
+            $fSumme = mb_substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3)) . '.' .
+                mb_substr($fSumme, 0, mb_strlen($fSumme) - (4 * $i + 3));
         }
     }
 
@@ -466,7 +490,7 @@ function mappeSeitentyp(int $pageType)
             return 'Artikeldetails';
 
         case PAGE_ARTIKELLISTE:
-            return 'Artikelliste';
+            return 'ArtikelListe';
 
         case PAGE_WARENKORB:
             return 'Warenkorb';
@@ -630,7 +654,7 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr = [])
  */
 function gibArtikelBildPfad($cPfad)
 {
-    return strlen(trim($cPfad)) > 0
+    return mb_strlen(trim($cPfad)) > 0
         ? $cPfad
         : BILD_KEIN_ARTIKELBILD_VORHANDEN;
 }
@@ -705,15 +729,12 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
  * @param Artikel $oArtikel
  * @param float   $fAnzahl
  * @return int|null
- * @deprecated since 5.0.0
+ * @deprecated since 4.06.10 - should not be used anymore; is replaced by SHOP-1861
  */
 function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
 {
-    trigger_error(
-        __FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkCartPartComponent() instead.',
-        E_USER_DEPRECATED
-    );
-    return Cart::checkCartPartComponent($oArtikel, $fAnzahl);
+    trigger_error(__FUNCTION__ . ' is deprecated. This function should not be used anymore..', E_USER_DEPRECATED);
+    return null;
 }
 
 /**
@@ -809,7 +830,7 @@ function gibTrustedShopsBewertenButton(string $cMail, string $cBestellNr)
 function parseNewsText($cText)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::parseNewsText() instead.', E_USER_DEPRECATED);
-    return StringHandler::parseNewsText($cText);
+    return Text::parseNewsText($cText);
 }
 
 /**
@@ -942,14 +963,14 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 /**
  * @param string $metaProposal the proposed meta text value.
  * @param string $metaSuffix append suffix to meta value that wont be shortened
- * @param int $maxLength $metaProposal will be truncated to $maxlength - strlen($metaSuffix) characters
+ * @param int $maxLength $metaProposal will be truncated to $maxlength - mb_strlen($metaSuffix) characters
  * @return string truncated meta value with optional suffix (always appended if set),
  * @deprecated since 5.0.0
  */
 function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::prepareMeta() instead.', E_USER_DEPRECATED);
-    return \Filter\Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
+    return JTL\Filter\Metadata::prepareMeta($metaProposal, $metaSuffix, $maxLength);
 }
 
 /**
@@ -962,7 +983,7 @@ function prepareMeta($metaProposal, $metaSuffix = null, $maxLength = null)
 function truncateMetaDescription($cDesc)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Metadata::truncateMetaDescription() instead.', E_USER_DEPRECATED);
-    return \Filter\Metadata::truncateMetaDescription($cDesc);
+    return JTL\Filter\Metadata::truncateMetaDescription($cDesc);
 }
 
 /**
@@ -1168,8 +1189,8 @@ function gibStandardWaehrung($bISO = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Session directly instead.', E_USER_DEPRECATED);
     return $bISO === true
-        ? \Session\Frontend::getCurrency()->getCode()
-        : \Session\Frontend::getCurrency()->getID();
+        ? Frontend::getCurrency()->getCode()
+        : Frontend::getCurrency()->getID();
 }
 
 /**
@@ -1244,7 +1265,7 @@ function generiereCaptchaCode($sec)
 function encodeCode($klartext)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SimpleCaptchaService::encodeCode() instead.', E_USER_DEPRECATED);
-    return \Services\JTL\SimpleCaptchaService::encodeCode($klartext);
+    return \JTL\Services\JTL\SimpleCaptchaService::encodeCode($klartext);
 }
 
 /**
@@ -1300,7 +1321,7 @@ function gibPreisStringLocalized($price, $currency = 0, $html = 1, $decimals = 2
 function valid_email($email)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::filterEmailAddress() instead.', E_USER_DEPRECATED);
-    return StringHandler::filterEmailAddress($email) !== false;
+    return Text::filterEmailAddress($email) !== false;
 }
 
 /**
@@ -1670,7 +1691,7 @@ function gibMoeglicheVerpackungen($kKundengruppe)
 function formatSize($size, $format = '%.2f')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::formatSize() instead.', E_USER_DEPRECATED);
-    return StringHandler::formatSize($size, $format);
+    return Text::formatSize($size, $format);
 }
 
 /**
@@ -1761,7 +1782,7 @@ function gibKeyStringFuerKeyArray($cKey_arr, $cSeperator)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $cKeys = '';
-    if (is_array($cKey_arr) && count($cKey_arr) > 0 && strlen($cSeperator) > 0) {
+    if (is_array($cKey_arr) && count($cKey_arr) > 0 && mb_strlen($cSeperator) > 0) {
         $cKeys .= ';';
         foreach ($cKey_arr as $i => $cKey) {
             if ($i > 0) {
@@ -1790,7 +1811,7 @@ function gibKeyArrayFuerKeyString($cKeys, $seperator)
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $keys = [];
     foreach (explode($seperator, $cKeys) as $cTMP) {
-        if (strlen($cTMP) > 0) {
+        if (mb_strlen($cTMP) > 0) {
             $keys[] = (int)$cTMP;
         }
     }
@@ -1809,7 +1830,7 @@ function setzeMerkmalFilter($filter = [])
         __FUNCTION__ . ' is deprecated. Use ProductFilter::initAttributeFilter() instead.',
         E_USER_DEPRECATED
     );
-    return \Filter\ProductFilter::initAttributeFilter($filter);
+    return JTL\Filter\ProductFilter::initAttributeFilter($filter);
 }
 
 /**
@@ -1820,7 +1841,7 @@ function setzeMerkmalFilter($filter = [])
 function setzeSuchFilter($filter = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initSearchFilter() instead.', E_USER_DEPRECATED);
-    return \Filter\ProductFilter::initSearchFilter($filter);
+    return JTL\Filter\ProductFilter::initSearchFilter($filter);
 }
 
 /**
@@ -1831,7 +1852,7 @@ function setzeSuchFilter($filter = [])
 function setzeTagFilter($filter = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initTagFilter() instead.', E_USER_DEPRECATED);
-    return \Filter\ProductFilter::initTagFilter($filter);
+    return JTL\Filter\ProductFilter::initTagFilter($filter);
 }
 
 /**
@@ -1975,7 +1996,7 @@ function gibTokenName(bool $bAlten = false)
         }
     }
 
-    return substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
+    return mb_substr(sha1(md5(microtime(true)) . (rand(0, 1000000000) * 1000)), 0, 4);
 }
 
 /**
@@ -1999,7 +2020,7 @@ function setzeSpracheUndWaehrungLink()
         __FUNCTION__ . ' is deprecated. Use Sprache::generateLanguageAndCurrencyLinks() instead.',
         E_USER_DEPRECATED
     );
-    Sprache::generateLanguageAndCurrencyLinks();
+    Shop::Lang()->generateLanguageAndCurrencyLinks();
 }
 
 /**
@@ -2015,7 +2036,7 @@ function utf8_convert_recursive($data, $encode = true, $copy = false)
         __FUNCTION__ . ' is deprecated. Use StringHandler::utf8_convert_recursive() instead.',
         E_USER_DEPRECATED
     );
-    return StringHandler::utf8_convert_recursive($data, $encode, $copy);
+    return Text::utf8_convert_recursive($data, $encode, $copy);
 }
 
 /**
@@ -2029,7 +2050,7 @@ function utf8_convert_recursive($data, $encode = true, $copy = false)
 function json_safe_encode($data)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use StringHandler::json_safe_encode() instead.', E_USER_DEPRECATED);
-    return StringHandler::json_safe_encode($data);
+    return Text::json_safe_encode($data);
 }
 
 /**
@@ -2039,7 +2060,7 @@ function json_safe_encode($data)
 function checkeSpracheWaehrung($langISO = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use \Session\Frontend::checkReset() instead.', E_USER_DEPRECATED);
-    Session\Frontend::checkReset($langISO);
+    Frontend::checkReset($langISO);
 }
 /**
  * @param string $cISO
@@ -2067,7 +2088,7 @@ function landISO($cLand)
 }
 
 /**
- * @return \Link\LinkGroupCollection
+ * @return \JTL\Link\LinkGroupCollection
  * @deprecated since 5.0.0
  */
 function setzeLinks()
@@ -2076,7 +2097,7 @@ function setzeLinks()
         __FUNCTION__ . ' is deprecated. Use \Session\Frontend::setSpecialLinks() instead.',
         E_USER_DEPRECATED
     );
-    return Session\Frontend::setSpecialLinks();
+    return Frontend::setSpecialLinks();
 }
 /**
  * @param string $url

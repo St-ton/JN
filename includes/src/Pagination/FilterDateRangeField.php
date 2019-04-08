@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Pagination;
+namespace JTL\Pagination;
 
 /**
  * Class FilterDateRangeField
- * @package Pagination
+ * @package JTL\Pagination
  */
 class FilterDateRangeField extends FilterField
 {

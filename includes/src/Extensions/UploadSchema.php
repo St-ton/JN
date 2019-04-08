@@ -4,14 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace Extensions;
+namespace JTL\Extensions;
 
-use DB\ReturnType;
+use JTL\DB\ReturnType;
+use JTL\Nice;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class UploadSchema
- *
- * @package Extensions
+ * @package JTL\Extensions
  */
 final class UploadSchema
 {
@@ -56,13 +58,13 @@ final class UploadSchema
     private $licenseOK;
 
     /**
-     * @param int $kUploadSchema
+     * @param int $id
      */
-    public function __construct(int $kUploadSchema = 0)
+    public function __construct(int $id = 0)
     {
         $this->licenseOK = self::checkLicense();
-        if ($kUploadSchema > 0 && $this->licenseOK === true) {
-            $this->loadFromDB($kUploadSchema);
+        if ($id > 0 && $this->licenseOK === true) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -71,15 +73,15 @@ final class UploadSchema
      */
     public static function checkLicense(): bool
     {
-        return \Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
+        return Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
     }
 
     /**
-     * @param int $kUploadSchema
+     * @param int $id
      */
-    private function loadFromDB(int $kUploadSchema): void
+    private function loadFromDB(int $id): void
     {
-        $upload = \Shop::Container()->getDB()->queryPrepared(
+        $upload = Shop::Container()->getDB()->queryPrepared(
             'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                 tuploadschema.cDateiTyp, tuploadschema.nPflicht, tuploadschemasprache.cName, 
                 tuploadschemasprache.cBeschreibung
@@ -89,8 +91,8 @@ final class UploadSchema
                     AND tuploadschemasprache.kSprache = :lid
                 WHERE kUploadSchema =  :uid',
             [
-                'lid' => \Shop::getLanguageID(),
-                'uid' => $kUploadSchema
+                'lid' => Shop::getLanguageID(),
+                'uid' => $id
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -105,7 +107,7 @@ final class UploadSchema
      */
     public function save(): int
     {
-        return \Shop::Container()->getDB()->insert('tuploadschema', self::copyMembers($this));
+        return Shop::Container()->getDB()->insert('tuploadschema', self::copyMembers($this));
     }
 
     /**
@@ -113,7 +115,7 @@ final class UploadSchema
      */
     public function update(): int
     {
-        return \Shop::Container()->getDB()->update(
+        return Shop::Container()->getDB()->update(
             'tuploadschema',
             'kUploadSchema',
             (int)$this->kUploadSchema,
@@ -126,13 +128,13 @@ final class UploadSchema
      */
     public function delete(): int
     {
-        return \Shop::Container()->getDB()->delete('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema);
+        return Shop::Container()->getDB()->delete('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema);
     }
 
     /**
      * @param int $kCustomID
      * @param int $type
-     * @return \stdClass[]
+     * @return stdClass[]
      */
     public function fetchAll(int $kCustomID, int $type): array
     {
@@ -143,7 +145,7 @@ final class UploadSchema
             ? ' AND kCustomID = ' . $kCustomID
             : '';
 
-        return \Shop::Container()->getDB()->queryPrepared(
+        return Shop::Container()->getDB()->queryPrepared(
             'SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
                 tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
                 IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
@@ -153,7 +155,7 @@ final class UploadSchema
                     ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                     AND tuploadschemasprache.kSprache = :lid
                 WHERE nTyp = :tpe' . $cSql,
-            ['tpe' => $type, 'lid' => \Shop::getLanguage()],
+            ['tpe' => $type, 'lid' => Shop::getLanguage()],
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -166,7 +168,7 @@ final class UploadSchema
     private static function copyMembers($objFrom, &$objTo = null)
     {
         if (!\is_object($objTo)) {
-            $objTo = new \stdClass();
+            $objTo = new stdClass();
         }
         foreach (\array_keys(\get_object_vars($objFrom)) as $member) {
             $objTo->$member = $objFrom->$member;

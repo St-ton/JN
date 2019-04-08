@@ -1,10 +1,10 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
 we are happy to inform you that you may use the following coupon ({$Kupon->AngezeigterName}) in our online shop:
 
-{if $Kupon->cKuponTyp==$couponTypes.standard}Value of coupon: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp=="prozent"}discount{/if}{/if}{if $Kupon->cKuponTyp==$couponTypes.shipping}>You will get free shipping with this coupon!
+{if $Kupon->cKuponTyp == $couponTypes.standard}Value of coupon: {$Kupon->cLocalizedWert} {if $Kupon->cWertTyp === 'prozent'}discount{/if}{/if}{if $Kupon->cKuponTyp == $couponTypes.shipping}>You will get free shipping with this coupon!
     This coupon is valid for the following shipping countries: {$Kupon->cLieferlaender|upper}{/if}
 
 Coupon code: {$Kupon->cCode}
@@ -24,7 +24,7 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
 {/if}{if count($Kupon->Kategorien)>0}This coupon can be used for products from the following categories:
 
 
-    {foreach name=art from=$Kupon->Kategorien item=Kategorie}
+    {foreach $Kupon->Kategorien as $Kategorie}
         {$Kategorie->cName} >
         {$Kategorie->cURL}
     {/foreach}{/if}
@@ -32,7 +32,7 @@ Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->
 {if count($Kupon->Artikel)>0}This coupon can be used for the following products:
 
 
-    {foreach name=art from=$Kupon->Artikel item=Artikel}
+    {foreach $Kupon->Artikel as $Artikel}
         {$Artikel->cName} >
         {$Artikel->cURLFull}
     {/foreach}{/if}

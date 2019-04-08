@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Helpers;
+namespace JTL\Helpers;
 
-use Session\Frontend;
-use Shop;
-use Zahlungsart;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Checkout\Zahlungsart;
 
 /**
  * Class PaymentMethod
- * @package Helpers
+ * @package JTL\Helpers
  */
 class PaymentMethod
 {
@@ -107,16 +107,6 @@ class PaymentMethod
                 }
                 break;
             case 'za_null_jtl':
-                break;
-            case 'za_billpay_jtl':
-            case 'za_billpay_invoice_jtl':
-            case 'za_billpay_direct_debit_jtl':
-            case 'za_billpay_rate_payment_jtl':
-            case 'za_billpay_paylater_jtl':
-                require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = \PaymentMethod::create($paymentMethod->cModulId);
-
-                return $paymentMethod->isValid($_SESSION['Kunde'] ?? null, Frontend::getCart());
                 break;
             default:
                 require_once \PFAD_ROOT . \PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';

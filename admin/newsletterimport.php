@@ -4,43 +4,45 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Shop;
+use JTL\Sprache;
+use JTL\Helpers\Text;
+use JTL\DB\ReturnType;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_NEWSLETTER_RECEIVER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-
-$hinweis = '';
-$fehler  = '';
-
+/** @global \JTL\Smarty\JTLSmarty $smarty */
+$alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['newsletterimport'] === 1
     && Form::validateToken()
-    && strlen($_FILES['csv']['tmp_name']) > 0
+    && mb_strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $file = fopen($_FILES['csv']['tmp_name'], 'r');
     if ($file !== false) {
-        $format   = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
-        $row      = 0;
-        $formatId = -1;
-        $fmt      = [];
+        $format    = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
+        $row       = 0;
+        $formatId  = -1;
+        $fmt       = [];
+        $importMsg = '';
         while ($data = fgetcsv($file, 2000, ';', '"')) {
             if ($row === 0) {
-                $hinweis .= __('checkHead');
-                $fmt      = checkformat($data, $format);
+                $importMsg .= __('checkHead');
+                $fmt        = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $fehler = __('errorFormatUnknown');
+                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFormatUnknown'), 'errorFormatUnknown');
                     break;
                 }
-                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
+                $importMsg .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
+                $importMsg .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
             $row++;
         }
+        $alertHelper->addAlert(Alert::TYPE_NOTE, $importMsg, 'importMessage');
         fclose($file);
     }
 }
@@ -48,28 +50,9 @@ if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
 $smarty->assign('sprachen', Sprache::getAllLanguages())
        ->assign('kundengruppen', Shop::Container()->getDB()->query(
            'SELECT * FROM tkundengruppe ORDER BY cName',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
        ->display('newsletterimport.tpl');
-
-/**
- * Class NewsletterEmpfaenger
- */
-class NewsletterEmpfaenger
-{
-    public $cAnrede;
-    public $cEmail;
-    public $cVorname;
-    public $cNachname;
-    public $kKunde = 0;
-    public $kSprache;
-    public $cOptCode;
-    public $cLoeschCode;
-    public $dEingetragen;
-    public $nAktiv = 1;
-}
 
 /**
  * @param int $length
@@ -87,7 +70,7 @@ function generatePW($length = 8, $myseed = 1)
         $dummy[0]     = $tmp;
     }
 
-    return substr(implode('', $dummy), 0, $length);
+    return mb_substr(implode('', $dummy), 0, $length);
 }
 
 /**
@@ -99,7 +82,7 @@ function pruefeNLEBlacklist($cMail)
     $oNEB = Shop::Container()->getDB()->select(
         'tnewsletterempfaengerblacklist',
         'cMail',
-        StringHandler::filterXSS(strip_tags($cMail))
+        Text::filterXSS(strip_tags($cMail))
     );
 
     return !empty($oNEB->cMail);
@@ -163,7 +146,18 @@ function unique_NewsletterCode($dbfeld, $code)
  */
 function processImport($fmt, $data)
 {
-    $recipient = new NewsletterEmpfaenger();
+    $recipient = new class {
+        public $cAnrede;
+        public $cEmail;
+        public $cVorname;
+        public $cNachname;
+        public $kKunde = 0;
+        public $kSprache;
+        public $cOptCode;
+        public $cLoeschCode;
+        public $dEingetragen;
+        public $nAktiv = 1;
+    };
     $cnt       = count($fmt); // only columns that have no empty header jtl-shop/issues#296
     for ($i = 0; $i < $cnt; $i++) {
         if (!empty($fmt[$i])) {
@@ -171,7 +165,7 @@ function processImport($fmt, $data)
         }
     }
 
-    if (StringHandler::filterEmailAddress($recipient->cEmail) === false) {
+    if (Text::filterEmailAddress($recipient->cEmail) === false) {
         return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
     if (pruefeNLEBlacklist($recipient->cEmail)) {
@@ -198,10 +192,10 @@ function processImport($fmt, $data)
     $recipient->kSprache     = $_POST['kSprache'];
     $recipient->kKunde       = 0;
 
-    $KundenDaten = Shop::Container()->getDB()->select('tkunde', 'cMail', $recipient->cEmail);
-    if ($KundenDaten->kKunde > 0) {
-        $recipient->kKunde   = $KundenDaten->kKunde;
-        $recipient->kSprache = $KundenDaten->kSprache;
+    $customerData = Shop::Container()->getDB()->select('tkunde', 'cMail', $recipient->cEmail);
+    if ($customerData !== null && $customerData->kKunde > 0) {
+        $recipient->kKunde   = (int)$customerData->kKunde;
+        $recipient->kSprache = (int)$customerData->kSprache;
     }
     $ins               = new stdClass();
     $ins->cAnrede      = $recipient->cAnrede;

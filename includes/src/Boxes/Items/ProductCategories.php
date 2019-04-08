@@ -4,13 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Boxes\Items;
+namespace JTL\Boxes\Items;
 
-use Session\Frontend;
+use JTL\Helpers\Category;
+use JTL\Session\Frontend;
 
 /**
  * Class ProductCategories
- * @package Boxes\Items
+ * @package JTL\Boxes\Items
  */
 final class ProductCategories extends AbstractBox
 {
@@ -36,7 +37,7 @@ final class ProductCategories extends AbstractBox
      */
     private function getCategories(): array
     {
-        $categories = \Helpers\Category::getInstance();
+        $categories = Category::getInstance();
         $list       = $categories->combinedGetAll();
         $boxID      = $this->getCustomID();
         if ($boxID > 0) {

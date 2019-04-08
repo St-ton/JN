@@ -45,6 +45,8 @@ define('CONF_AUSWAHLASSISTENT', 121);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
 define('CONF_PLUGINZAHLUNGSARTEN', 126);
+define('CONF_FTP', 127);
+define('CONF_CRON', 128);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', 1);
 define('C_WARENKORBPOS_TYP_VERSANDPOS', 2);
@@ -86,7 +88,7 @@ define('URLART_NEWSMONAT', 9);
 define('URLART_NEWSKATEGORIE', 10);
 define('URLART_UMFRAGE', 11);
 define('URLART_SEARCHSPECIALS', 12);
-// bestellstati
+// bestellstatus
 define('BESTELLUNG_STATUS_STORNO', -1);
 define('BESTELLUNG_STATUS_OFFEN', 1);
 define('BESTELLUNG_STATUS_IN_BEARBEITUNG', 2);
@@ -261,18 +263,22 @@ define('PFAD_PLUGIN_PAYMENTMETHOD', 'paymentmethod/');
 define('PFAD_PLUGIN_TEMPLATE', 'template/');
 define('PFAD_PLUGIN_BOXEN', 'boxen/');
 define('PFAD_PLUGIN_WIDGET', 'widget/');
-define('PFAD_PLUGIN_PORTLETS', 'portlets/');
+define('PFAD_PLUGIN_PORTLETS', 'Portlets/');
 define('PFAD_PLUGIN_BLUEPRINTS', 'blueprints/');
 define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
 define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
-define('PFAD_PLUGIN_MIGRATIONS', 'migrations/');
-define('PFAD_EXTENSIONS', 'extensions/');
+define('PFAD_PLUGIN_MIGRATIONS', 'Migrations/');
+define('PLUGIN_DIR', 'plugins/');
 define('PLUGIN_INFO_FILE', 'info.xml');
 define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');
 define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
-define('PLUGIN_BOOTSTRAPPER', 'bootstrap.php');
+define('PLUGIN_BOOTSTRAPPER', 'Bootstrap.php');
+define('OLD_BOOTSTRAPPER', 'bootstrap.php');
+
+define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
+
 // Red. Param
 define('R_MINDESTMENGE', 1);
 define('R_LAGER', 2);

@@ -1,0 +1,72 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "shoptemplates"
+msgstr "Shop-Templates"
+
+msgid "shoptemplateURL"
+msgstr "https://jtl-url.de/dq1g2"
+
+msgid "shoptemplatesDesc"
+msgstr "Das Shop-Template bestimmt das Design und Layout Ihres Shops. Auf dieser Seite werden alle Shop-Templates gelistet, die sich im Ordner /templates/ ausgehend vom Shop-Wurzelverzeichnis befinden. Falls Sie ein neues Template haben und es nutzen möchten, so übertragen Sie es bitte vorerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis."
+
+msgid "admintemplatesDesc"
+msgstr "Die Möglichkeit, Admin-Templates umzustellen, wird in der finalen Version 4.00 entfernt! Sie dient nur internen Testzwecken."
+
+msgid "templateName"
+msgstr "Templatename"
+
+msgid "shoplogouploader"
+msgstr "Laden Sie hier Ihr Shoplogo hoch"
+
+msgid "warning_responsive_mobile"
+msgstr "Responsive Templates sind für alle Auflösungen geeignet und sollten nicht explizit als Template für mobile Endgeräte ausgewiesen werden!"
+
+msgid "successTemplateSave"
+msgstr "Template und Einstellungen wurden erfolgreich geändert."
+
+msgid "errorTemplateSave"
+msgstr "Template bzw. Einstellungen konnten nicht geändert werden."
+
+msgid "errorFileUpload"
+msgstr "Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte des Ordners \"%s\" überprüfen."
+
+msgid "successLayoutReset"
+msgstr "Layout wurde erfolgreich zurückgesetzt."
+
+msgid "errorLayoutReset"
+msgstr "Layout konnte nicht zurückgesetzt werden."
+
+msgid "errorStyleFilePermission"
+msgstr "Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateirechte von "
+
+msgid "successLayoutSave"
+msgstr "Layout wurde erfolgreich angepasst."
+
+msgid "standardTemplateMobil"
+msgstr "Standard-Template für mobile Endgeräte?"
+
+msgid "optimizeBrowser"
+msgstr "Nein (optimiert für Standard-Browser)"
+
+msgid "optimizeMobile"
+msgstr "Ja (optimiert für mobile Endgeräte)"
+
+msgid "activateTemplate"
+msgstr "Template aktivieren"
+
+msgid "inheritsFrom"
+msgstr "Erbt von"
+
+msgid "originalExists"
+msgstr "Originalversion vorhanden"
+
+msgid "mobileDevices"
+msgstr "Mobile Endgeräte"
+
+msgid "parentTemplateMissing"
+msgstr "Parent-Template fehlt"
+
+msgid "errorOverlayWritePermissions"
+msgstr "Overlays could not be created - please check write permissions of folder \"%s\" and activate the template again."

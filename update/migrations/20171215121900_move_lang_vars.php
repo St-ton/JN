@@ -3,19 +3,11 @@
  * Move language variables "invalidHash" und "invalidCustomer" to account data
  */
 
+use JTL\Update\IMigration;
+use JTL\Update\Migration;
+
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20171215121900
  */
 class Migration_20171215121900 extends Migration implements IMigration
 {
@@ -24,13 +16,13 @@ class Migration_20171215121900 extends Migration implements IMigration
 
     public function up()
     {
-        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidHash', (object)["kSprachsektion" => 6]);
-        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)["kSprachsektion" => 6]);
+        $this->getDB()->update('tsprachwerte', 'cName', 'invalidHash', (object)['kSprachsektion' => 6]);
+        $this->getDB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)['kSprachsektion' => 6]);
     }
 
     public function down()
     {
-        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidHash', (object)["kSprachsektion" => 4]);
-        Shop::Container()->getDB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)["kSprachsektion" => 4]);
+        $this->getDB()->update('tsprachwerte', 'cName', 'invalidHash', (object)['kSprachsektion' => 4]);
+        $this->getDB()->update('tsprachwerte', 'cName', 'invalidCustomer', (object)['kSprachsektion' => 4]);
     }
 }

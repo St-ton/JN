@@ -4,15 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace News;
+namespace JTL\News;
+
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class AbstractItem
- * @package News
+ * @package JTL\News
  */
 abstract class AbstractItem implements ItemInterface
 {
-    use \JTL\MagicCompatibilityTrait;
+    use MagicCompatibilityTrait;
 
     /**
      * @var array
@@ -49,7 +51,7 @@ abstract class AbstractItem implements ItemInterface
      */
     protected static function parseSSKAdvanced($ssk): array
     {
-        return \is_string($ssk) && \strtolower($ssk) !== 'null'
+        return \is_string($ssk) && \mb_convert_case($ssk, \MB_CASE_LOWER) !== 'null'
             ? \array_map('\intval', \array_map('\trim', \array_filter(\explode(';', $ssk))))
             : [];
     }

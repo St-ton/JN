@@ -4,21 +4,26 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Alert\Alert;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
+use JTL\Shop;
+use JTL\Sprache;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
     && $_FILES['csv']
     && Form::validateToken()
-    && strlen($_FILES['csv']['tmp_name']) > 0
+    && mb_strlen($_FILES['csv']['tmp_name']) > 0
 ) {
     $delimiter = getCsvDelimiter($_FILES['csv']['tmp_name']);
     $file      = fopen($_FILES['csv']['tmp_name'], 'r');
@@ -54,22 +59,23 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
         $row      = 0;
         $fmt      = [];
         $formatId = -1;
-        $hinweis  = '';
+        $notice   = '';
         while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
             if ($row === 0) {
-                $hinweis .= __('checkHead');
-                $fmt      = checkformat($data, $format);
+                $notice .= __('checkHead');
+                $fmt     = checkformat($data, $format);
                 if ($fmt === -1) {
-                    $hinweis .= __('errorFormatNotFound');
+                    $notice .= __('errorFormatNotFound');
                     break;
                 }
-                $hinweis .= '<br /><br />' . __('importPending') . '<br />';
+                $notice .= '<br /><br />' . __('importPending') . '<br />';
             } else {
-                $hinweis .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
+                $notice .= '<br />' . __('row') . $row . ': ' . processImport($fmt, $data);
             }
 
             $row++;
         }
+        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
         fclose($file);
     }
 }
@@ -77,10 +83,9 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
 $smarty->assign('sprachen', Sprache::getAllLanguages())
        ->assign('kundengruppen', Shop::Container()->getDB()->query(
            'SELECT * FROM tkundengruppe ORDER BY cName',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
        ->assign('step', $step ?? null)
-       ->assign('hinweis', $hinweis ?? null)
        ->display('kundenimport.tpl');
 
 
@@ -92,7 +97,7 @@ $smarty->assign('sprachen', Sprache::getAllLanguages())
 function generatePW($length = 8, $myseed = 1)
 {
     $dummy = array_merge(range('0', '9'), range('a', 'z'), range('A', 'Z'));
-    mt_srand((double) microtime() * 1000000 * $myseed);
+    mt_srand((double)microtime() * 1000000 * $myseed);
     for ($i = 1; $i <= (count($dummy) * 2); $i++) {
         $swap         = mt_rand(0, count($dummy) - 1);
         $tmp          = $dummy[$swap];
@@ -100,7 +105,7 @@ function generatePW($length = 8, $myseed = 1)
         $dummy[0]     = $tmp;
     }
 
-    return substr(implode('', $dummy), 0, $length);
+    return mb_substr(implode('', $dummy), 0, $length);
 }
 
 /**
@@ -152,7 +157,7 @@ function processImport($fmt, $data)
             $kunde->{$fmt[$i]} = $data[$i];
         }
     }
-    if (StringHandler::filterEmailAddress($kunde->cMail) === false) {
+    if (Text::filterEmailAddress($kunde->cMail) === false) {
         return __('errorInvalidEmail');
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
@@ -168,10 +173,10 @@ function processImport($fmt, $data)
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
         return sprintf(__('errorEmailDuplicate'), $kunde->cMail);
     }
-    if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
+    if ($kunde->cAnrede === 'f' || mb_convert_case($kunde->cAnrede, MB_CASE_LOWER) === 'frau') {
         $kunde->cAnrede = 'w';
     }
-    if ($kunde->cAnrede === 'h' || strtolower($kunde->cAnrede) === 'herr') {
+    if ($kunde->cAnrede === 'h' || mb_convert_case($kunde->cAnrede, MB_CASE_LOWER) === 'herr') {
         $kunde->cAnrede = 'm';
     }
     if ($kunde->cNewsletter == 0 || $kunde->cNewsletter == 'NULL') {
@@ -182,16 +187,16 @@ function processImport($fmt, $data)
     }
 
     if (empty($kunde->cLand)) {
-        if (isset($_SESSION['kundenimport']['cLand']) && strlen($_SESSION['kundenimport']['cLand']) > 0) {
+        if (isset($_SESSION['kundenimport']['cLand']) && mb_strlen($_SESSION['kundenimport']['cLand']) > 0) {
             $kunde->cLand = $_SESSION['kundenimport']['cLand'];
         } else {
             $oRes = Shop::Container()->getDB()->query(
                 "SELECT cWert AS cLand 
                     FROM teinstellungen 
                     WHERE cName = 'kundenregistrierung_standardland'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
-            if (is_object($oRes) && isset($oRes->cLand) && strlen($oRes->cLand) > 0) {
+            if (is_object($oRes) && isset($oRes->cLand) && mb_strlen($oRes->cLand) > 0) {
                 $_SESSION['kundenimport']['cLand'] = $oRes->cLand;
                 $kunde->cLand                      = $oRes->cLand;
             }
@@ -216,7 +221,9 @@ function processImport($fmt, $data)
             $kunde->cHausnummer       = $tmp->cHausnummer;
             $obj                      = new stdClass();
             $obj->tkunde              = $kunde;
-            sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
+            $mailer                   = Shop::Container()->get(Mailer::class);
+            $mail                     = new Mail();
+            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
         }
 
         return __('importRecord') . $kunde->cVorname . ' ' . $kunde->cNachname;

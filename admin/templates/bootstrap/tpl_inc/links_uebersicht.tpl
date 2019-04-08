@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function confirmDelete() {ldelim}
-        return confirm('Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links und alle Kopien gelöscht werden!');
+        return confirm('{__('sureDeleteLink')}');
     {rdelim}
 </script>
 
@@ -23,12 +23,12 @@
                 <div class="panel-heading accordion-heading">
                     <h3 class="panel-title" id="heading-{$lgName}">
                         <span class="pull-left">
-                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="Fehlende Übersetzungen: {$missingTranslations|count}"{/if}>
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="{__('missingTranslations')}: {$missingTranslations|count}"{/if}>
                                 <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span>
                                 {if $linkgruppe->getID() > 0}
                                     {$linkgruppe->getName()} ({__('linkGroupTemplatename')}: {$linkgruppe->getTemplate()})
                                 {else}
-                                    Links ohne Linkgruppe
+                                    {__('linksWithoutLinkGroup')}
                                 {/if}
                                 {if $missingTranslations|count > 0}<i class="fa fa-warning"></i>{/if}
                             </a>

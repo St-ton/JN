@@ -3,12 +3,26 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *
- * @global Smarty\JTLSmarty $smarty
+ * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
-use Helpers\Manufacturer;
-use Helpers\Category;
-use Helpers\Tax;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\CheckBox;
+use JTL\Filter\Config;
+use JTL\Filter\ProductFilter;
+use JTL\Helpers\Category;
+use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Media\Image;
+use JTL\Media\MediaImage;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Staat;
+use JTL\TrustedShops;
 
 $scc = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
 $scc->registerComponents();
@@ -33,7 +47,8 @@ $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty'
        ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'trans', 'get_translation')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_product_list', 'get_product_list')
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', 'captchaMarkup')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', 'getStates');
+       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', 'getStates')
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', 'seofy');
 
 /**
  * @param array                        $params
@@ -44,17 +59,17 @@ function get_product_list($params, $smarty)
 {
     $limit            = (int)($params['nLimit'] ?? 10);
     $sort             = (int)($params['nSortierung'] ?? 0);
-    $cAssign          = (isset($params['cAssign']) && strlen($params['cAssign']) > 0)
+    $cAssign          = (isset($params['cAssign']) && mb_strlen($params['cAssign']) > 0)
         ? $params['cAssign']
         : 'oCustomArtikel_arr';
     $attributeFilters = isset($params['cMerkmalFilter'])
-        ? \Filter\ProductFilter::initAttributeFilter(explode(';', $params['cMerkmalFilter']))
+        ? ProductFilter::initAttributeFilter(explode(';', $params['cMerkmalFilter']))
         : [];
     $searchFilters    = isset($params['cSuchFilter'])
-        ? \Filter\ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
+        ? ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
         : [];
     $tagFilters       = isset($params['cTagFilter'])
-        ? \Filter\ProductFilter::initTagFilter(explode(';', $params['cTagFilter']))
+        ? ProductFilter::initTagFilter(explode(';', $params['cTagFilter']))
         : [];
     $params           = [
         'kKategorie'             => $params['kKategorie'] ?? null,
@@ -89,8 +104,8 @@ function get_product_list($params, $smarty)
             $products[] = $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         }
     } else {
-        $products = (new \Filter\ProductFilter(
-            \Filter\Config::getDefault(),
+        $products = (new ProductFilter(
+            Config::getDefault(),
             Shop::Container()->getDB(),
             Shop::Container()->getCache()
         ))
@@ -247,7 +262,7 @@ function get_img_tag($params, $smarty)
     $imageALT   = isset($params['alt']) ? ' alt="' . truncate($params['alt'], 75) . '"' : '';
     $imageTITLE = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
     $imageCLASS = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
-    if (strpos($imageURL, 'http') !== 0) {
+    if (mb_strpos($imageURL, 'http') !== 0) {
         $imageURL = Shop::getImageBaseURL() . ltrim($imageURL, '/');
     }
     if ($oImgSize !== null && $oImgSize->size->width > 0 && $oImgSize->size->height > 0) {
@@ -275,9 +290,9 @@ function has_boxes($params, $smarty)
  */
 function truncate($text, $numb)
 {
-    if (strlen($text) > $numb) {
-        $text = substr($text, 0, $numb);
-        $text = substr($text, 0, strrpos($text, ' '));
+    if (mb_strlen($text) > $numb) {
+        $text = mb_substr($text, 0, $numb);
+        $text = mb_substr($text, 0, mb_strrpos($text, ' '));
         $text .= '...';
     }
 
@@ -317,13 +332,13 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         $fAufpreisNetto / $fVPEWert,
-                        \Session\Frontend::getCurrency()->getCode(),
+                        Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                        \Session\Frontend::getCurrency()->getCode(),
+                        Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -347,7 +362,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        \Session\Frontend::getCurrency()->getCode(),
+                        Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -356,7 +371,7 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
-                        \Session\Frontend::getCurrency()->getCode(),
+                        Frontend::getCurrency()->getCode(),
                         true,
                         $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
@@ -435,15 +450,15 @@ function aaURLEncode($params, $smarty)
     $params      = ['&aaParams', '?aaParams', '&aaReset', '?aaReset'];
     $aaEnthalten = false;
     foreach ($params as $cParameter) {
-        $aaEnthalten = strpos($cURL, $cParameter);
+        $aaEnthalten = mb_strpos($cURL, $cParameter);
         if ($aaEnthalten !== false) {
-            $cURL = substr($cURL, 0, $aaEnthalten);
+            $cURL = mb_substr($cURL, 0, $aaEnthalten);
             break;
         }
         $aaEnthalten = false;
     }
     if ($aaEnthalten !== false) {
-        $cURL = substr($cURL, 0, $aaEnthalten);
+        $cURL = mb_substr($cURL, 0, $aaEnthalten);
     }
     if (isset($params['bUrlOnly']) && (int)$params['bUrlOnly'] === 1) {
         return $cURL;
@@ -456,7 +471,7 @@ function aaURLEncode($params, $smarty)
         }
     }
 
-    $sep = (strpos($cURL, '?') === false) ? '?' : '&';
+    $sep = (mb_strpos($cURL, '?') === false) ? '?' : '&';
 
     return $cURL . $sep . ($bReset ? 'aaReset=' : 'aaParams=') . base64_encode($cParams);
 }
@@ -469,7 +484,7 @@ function get_navigation($params, $smarty)
 {
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
     $oLinkGruppe         = null;
-    if (strlen($linkgroupIdentifier) > 0) {
+    if (mb_strlen($linkgroupIdentifier) > 0) {
         $linkGroups  = Shop::Container()->getLinkService()->getVisibleLinkGroups();
         $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
     }
@@ -482,19 +497,19 @@ function get_navigation($params, $smarty)
 }
 
 /**
- * @param \Link\LinkGroupInterface $linkGroup
- * @param int                      $kVaterLink
- * @return \Tightenco\Collect\Support\Collection
+ * @param \JTL\Link\LinkGroupInterface $linkGroup
+ * @param int                          $kVaterLink
+ * @return \Illuminate\Support\Collection
  */
 function build_navigation_subs($linkGroup, $kVaterLink = 0)
 {
     $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Tightenco\Collect\Support\Collection();
+    $oNew_arr   = new \Illuminate\Support\Collection();
     if ($linkGroup->getTemplate() === 'hidden' || $linkGroup->getName() === 'hidden') {
         return $oNew_arr;
     }
     foreach ($linkGroup->getLinks() as $link) {
-        /** @var \Link\Link $link */
+        /** @var \JTL\Link\Link $link */
         if ($link->getParent() !== $kVaterLink) {
             continue;
         }
@@ -512,7 +527,7 @@ function build_navigation_subs($linkGroup, $kVaterLink = 0)
  */
 function get_trustedshops_data($params, $smarty)
 {
-    $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
+    $oTrustedShops = new TrustedShops(-1, Text::convertISO2ISO639(Shop::getLanguageCode()));
     $smarty->assign($params['assign'], [
         'tsId'   => $oTrustedShops->tsId,
         'nAktiv' => $oTrustedShops->nAktiv
@@ -545,7 +560,7 @@ function prepare_image_details($params, $smarty)
     }
     $imageBaseURL = Shop::getImageBaseURL();
     foreach ($result as $size => $data) {
-        if (isset($data->src) && strpos($data->src, 'http') !== 0) {
+        if (isset($data->src) && mb_strpos($data->src, 'http') !== 0) {
             $data->src = $imageBaseURL . $data->src;
         }
     }
@@ -562,7 +577,7 @@ function prepare_image_details($params, $smarty)
  */
 function get_image_size($image)
 {
-    $path = strpos($image, PFAD_BILDER) === 0
+    $path = mb_strpos($image, PFAD_BILDER) === 0
         ? PFAD_ROOT . $image
         : $image;
     if (!file_exists($path)) {
@@ -743,4 +758,20 @@ function getStates($params, $smarty)
     }
 
     return $oStates;
+}
+
+/**
+ * prepares a string optimized for SEO
+ * @param String $optStr
+ * @return String SEO optimized String
+ */
+function seofy ($optStr = '')
+{
+    $optStr = preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
+    $optStr = trim($optStr, '-');
+    $optStr = transliterator_transliterate('Latin-ASCII;', $optStr);
+    $optStr = strtolower($optStr);
+    $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
+
+    return $optStr;
 }

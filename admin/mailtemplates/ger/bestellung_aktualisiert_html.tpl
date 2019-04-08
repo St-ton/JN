@@ -1,24 +1,24 @@
 {includeMailTemplate template=header type=html}
 
-Sehr {if $Kunde->cAnrede == "w"}geehrte{elseif $Kunde->cAnrede == "m"}geehrter{else}geehrte(r){/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br>
+Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde aktualisiert.<br>
 <br>
 Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Positionen:<br>
 <br>
-{foreach name=pos from=$Bestellung->Positionen item=Position}
+{foreach $Bestellung->Positionen as $Position}
     <table cellpadding="10" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
         <tr>
-            <td class="column" {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen=="Y"}width="50%"{else}width="70%"{/if} align="left" valign="top">
-                {if $Position->nPosTyp==1}
+            <td class="column" {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}width="50%"{else}width="70%"{/if} align="left" valign="top">
+                {if $Position->nPosTyp == 1}
                     <strong>{$Position->cName} ({$Position->cArtNr})</strong>
-                    {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen=="Y" && $Position->cLieferstatus}
+                    {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
                         <br><small>Lieferzeit: {$Position->cLieferstatus}</small>
                     {/if}<br>
-                    {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+                    {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                         <br><strong>{$WKPosEigenschaft->cEigenschaftName}</strong>: {$WKPosEigenschaft->cEigenschaftWertName}
                     {/foreach}
-                    
+
                     {* Seriennummer *}
                     {if $Position->cSeriennummer|strlen > 0}
                         <br>Seriennummer: {$Position->cSeriennummer}
@@ -40,7 +40,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
             <td class="column" width="10%" align="left" valign="top">
                 <strong class="mobile-only">Anzahl:</strong> {$Position->nAnzahl}
             </td>
-            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen=="Y"}
+            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                 <td class="column" width="20%" align="right" valign="top">
                     <span class="standard">{$Position->cEinzelpreisLocalized[$NettoPreise]}</span>
                 </td>
@@ -52,8 +52,8 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
     </table>
 {/foreach}
 <table cellpadding="10" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
-    {if $Einstellungen.global.global_steuerpos_anzeigen!="N"}
-        {foreach name=steuerpositionen from=$Bestellung->Steuerpositionen item=Steuerposition}
+    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+        {foreach $Bestellung->Steuerpositionen as $Steuerposition}
             <tr>
                 <td align="right" valign="top">
                     {$Steuerposition->cName}:
@@ -64,7 +64,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
             </tr>
         {/foreach}
     {/if}
-    {if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen==1}
+    {if isset($Bestellung->GuthabenNutzen) && $Bestellung->GuthabenNutzen == 1}
         <tr>
             <td align="right" valign="top">
                 Gutschein:
@@ -103,7 +103,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            {$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}<br>
+                            {$Kunde->cVorname} {$Kunde->cNachname}<br>
                             {$Kunde->cStrasse} {$Kunde->cHausnummer}<br>
                             {if $Kunde->cAdressZusatz}{$Kunde->cAdressZusatz}<br>{/if}
                             {$Kunde->cPLZ} {$Kunde->cOrt}<br>
@@ -274,7 +274,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                {$Bestellung->Lieferadresse->cAnredeLocalized} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}<br>
+                                {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}<br>
                                 {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}<br>
                                 {if $Bestellung->Lieferadresse->cAdressZusatz}{$Bestellung->Lieferadresse->cAdressZusatz}<br>{/if}
                                 {$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}<br>
@@ -406,8 +406,8 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
 {/if}
 Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 <br>
-{if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
+{if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
     <strong>Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
@@ -508,11 +508,10 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
             </td>
         </tr>
     </table>
-{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
-{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
+{elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
     Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}<br>
     <br>
-{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
 {if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}

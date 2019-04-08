@@ -56,16 +56,16 @@
                         <span class="input-group-wrap">
                             <select class="form-control" id="nZeitFilter" name="nZeitFilter" onchange="document.postzeitfilter.submit();">
                                 <option value="1"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 1} selected{/if}>
-                                    letzte 24 Stunden
+                                    {__('last')} 24 {__('hours')}
                                 </option>
                                 <option value="7"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 7} selected{/if}>
-                                    letzte 7 Tage
+                                    {__('last')} 7 {__('days')}
                                 </option>
                                 <option value="30"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 30} selected{/if}>
-                                    letzte 30 Tage
+                                    {__('last')} 30 {__('days')}
                                 </option>
                                 <option value="365"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 365} selected{/if}>
-                                    letztes Jahr
+                                    {__('lastYear')}
                                 </option>
                             </select>
                         </span>
@@ -77,17 +77,20 @@
                         </span>
                         <span class="input-group-wrap">
                             <select class="form-control" id="nAnzahl" name="nAnzahl" onchange="document.postzeitfilter.submit();">
-                                <option value="10"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 10} selected{/if}>10
+                                <option value="10"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 10} selected{/if}>
+                                    10
                                 </option>
-                                <option value="20"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 20} selected{/if}>20
+                                <option value="20"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 20} selected{/if}>
+                                    20
                                 </option>
-                                <option value="50"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 50} selected{/if}>50
+                                <option value="50"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 50} selected{/if}>
+                                    50
                                 </option>
                                 <option value="100"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 100} selected{/if}>
                                     100
                                 </option>
                                 <option value="-1"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == -1} selected{/if}>
-                                    Alle
+                                    {__('all')}
                                 </option>
                             </select>
                         </span>

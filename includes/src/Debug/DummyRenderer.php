@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Debug;
+namespace JTL\Debug;
 
 use DebugBar\JavascriptRenderer;
 
 /**
  * Class DummyRenderer
- * @package Debug
+ * @package JTL\Debug
  */
 class DummyRenderer extends JavascriptRenderer
 {

@@ -4,6 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Linechart;
+use JTL\Piechart;
+use JTL\Shop;
+use JTL\Statistik;
+use JTL\DB\ReturnType;
+
 /**
  * @param int    $type
  * @param string $from
@@ -155,16 +161,16 @@ function berechneStatZeitraum($nZeitraum)
 }
 
 /**
- * @param array $oStat_arr
+ * @param array $stats
  * @param int   $nAnzeigeIntervall
  * @param int   $nTyp
  * @return string|bool
  */
-function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
+function getJSON($stats, $nAnzeigeIntervall, $nTyp)
 {
     require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
     $data = [];
-    if (!is_array($oStat_arr) || count($oStat_arr) === 0) {
+    if (!is_array($stats) || count($stats) === 0) {
         return false;
     }
     if ((int)$nAnzeigeIntervall === 0) {
@@ -173,7 +179,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
     if (!$nTyp) {
         return false;
     }
-    foreach ($oStat_arr as $oStat) {
+    foreach ($stats as $oStat) {
         $data[] = (int)$oStat->nCount;
     }
     // min und max berechnen
@@ -196,8 +202,8 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             $cSpalteX = 'dZeit';
             // x achse daten
             $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            foreach ($stats as $oStat) {
+                $x_labels_arr[] = (string)$oStat->$cSpalteX;
             }
 
             return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, 'Besucher');
@@ -208,8 +214,8 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             $cSpalteX = 'cReferer';
             // x achse daten
             $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            foreach ($stats as $oStat) {
+                $x_labels_arr[] = (string)$oStat->$cSpalteX;
             }
 
             return setPie($data, $x_labels_arr);
@@ -220,12 +226,12 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             $cSpalteX = 'cUserAgent';
             // x achse daten
             $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                if (strlen($oStat->$cSpalteX) > 0) {
-                    $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            foreach ($stats as $oStat) {
+                if (mb_strlen($oStat->$cSpalteX) > 0) {
+                    $x_labels_arr[] = (string)$oStat->$cSpalteX;
                 } else {
                     $cSpalteX       = 'cName';
-                    $x_labels_arr[] = (string) $oStat->$cSpalteX;
+                    $x_labels_arr[] = (string)$oStat->$cSpalteX;
                 }
             }
 
@@ -237,15 +243,15 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             $cSpalteX = 'dZeit';
             // x achse daten
             $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            foreach ($stats as $oStat) {
+                $x_labels_arr[] = (string)$oStat->$cSpalteX;
             }
 
             $oWaehrung = Shop::Container()->getDB()->query(
                 "SELECT *
                     FROM twaehrung
                     WHERE cStandard = 'Y'",
-                \DB\ReturnType::SINGLE_OBJECT
+                ReturnType::SINGLE_OBJECT
             );
 
             return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, $oWaehrung->cName);
@@ -256,8 +262,8 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
             $cSpalteX = 'cEinstiegsseite';
             // x achse daten
             $x_labels_arr = [];
-            foreach ($oStat_arr as $oStat) {
-                $x_labels_arr[] = (string) $oStat->$cSpalteX;
+            foreach ($stats as $oStat) {
+                $x_labels_arr[] = (string)$oStat->$cSpalteX;
             }
 
             return setPie($data, $x_labels_arr);
@@ -269,15 +275,15 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
 
 /**
  * @param mixed  $data
- * @param array  $x_labels_arr
- * @param array  $y_labels_arr
+ * @param array  $xLabels
+ * @param array  $yLabels
  * @param float  $fMin
  * @param float  $fMax
  * @param float  $fStep
  * @param string $cToolTip
  * @return string
  */
-function setDot($data, $x_labels_arr, $y_labels_arr, $fMin, $fMax, $fStep, $cToolTip = '')
+function setDot($data, $xLabels, $yLabels, $fMin, $fMax, $fStep, $cToolTip = '')
 {
     $d = new solid_dot();
     $d->size(3);
@@ -297,7 +303,7 @@ function setDot($data, $x_labels_arr, $y_labels_arr, $fMin, $fMax, $fStep, $cToo
     $x_labels->set_steps(1);
     $x_labels->set_vertical();
     $x_labels->set_colour('#000');
-    $x_labels->set_labels($x_labels_arr);
+    $x_labels->set_labels($xLabels);
     // x achse
     $x = new x_axis();
     $x->set_colour('#bfbfbf');
@@ -321,40 +327,40 @@ function setDot($data, $x_labels_arr, $y_labels_arr, $fMin, $fMax, $fStep, $cToo
 }
 
 /**
- * @param array $data_arr
- * @param array $x_labels_arr
+ * @param array $inputData
+ * @param array $xLabels
  * @return string
  */
-function setPie($data_arr, $x_labels_arr)
+function setPie($inputData, $xLabels)
 {
     $merge_arr = [];
     // Nur max. 10 Werte anzeigen, danach als Sonstiges
-    foreach ($data_arr as $i => $data) {
+    foreach ($inputData as $i => $data) {
         if ($i > 5) {
-            $data_arr[5] += $data;
+            $inputData[5] += $data;
         }
         if ($i > 5) {
-            unset($data_arr[$i]);
+            unset($inputData[$i]);
         }
     }
-    $nValueSonstiges = $data_arr[5] ?? null;
+    $nValueSonstiges = $inputData[5] ?? null;
     $nPosSonstiges   = 0;
-    usort($data_arr, 'cmpStat');
+    usort($inputData, 'cmpStat');
 
-    foreach ($data_arr as $i => $data) {
+    foreach ($inputData as $i => $data) {
         if ($data == $nValueSonstiges) {
             $nPosSonstiges = $i;
             break;
         }
     }
-    foreach ($x_labels_arr as $j => $x_labels) {
+    foreach ($xLabels as $j => $x_labels) {
         if ($j > 5) {
-            unset($x_labels_arr[$j]);
+            unset($xLabels[$j]);
         }
     }
-    $x_labels_arr[$nPosSonstiges] = 'Sonstige';
-    foreach ($data_arr as $i => $data) {
-        $cLabel      = $x_labels_arr[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
+    $xLabels[$nPosSonstiges] = 'Sonstige';
+    foreach ($inputData as $i => $data) {
+        $cLabel      = $xLabels[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
         $merge_arr[] = new pie_value($data, $cLabel);
     }
 
@@ -389,12 +395,12 @@ function cmpStat($a, $b)
 }
 
 /**
- * @param int $nTyp
+ * @param int $type
  * @return mixed
  */
-function gibMappingDaten($nTyp)
+function gibMappingDaten($type)
 {
-    if (!$nTyp) {
+    if (!$type) {
         return [];
     }
 
@@ -423,7 +429,7 @@ function gibMappingDaten($nTyp)
         'cEinstiegsseite' => 'Einstiegsseite'
     ];
 
-    return $cMapping_arr[$nTyp];
+    return $cMapping_arr[$type];
 }
 
 /**
@@ -440,11 +446,7 @@ function GetTypeNameStats($type)
         5 => 'Einstiegsseite'
     ];
 
-    if (isset($names[$type])) {
-        return $names[$type];
-    }
-
-    return '';
+    return $names[$type] ?? '';
 }
 
 /**
@@ -503,7 +505,7 @@ function mappeDatenMember($cMemberRow_arr, $cMapping_arr)
  * @param int    $mod
  * @return Linechart
  */
-function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
+function prepareLineChartStats($stats, $name, $axis, $mod = 1)
 {
     $chart = new Linechart(['active' => false]);
 
@@ -539,7 +541,7 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
  * @param int    $maxEntries
  * @return Piechart
  */
-function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
+function preparePieChartStats($stats, $name, $axis, $maxEntries = 6)
 {
     $chart = new Piechart(['active' => false]);
     if (is_array($stats) && count($stats) > 0) {
@@ -568,7 +570,7 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
         }
 
         foreach ($stats as $stat) {
-            $value  = (float) $stat->$y;
+            $value  = (float)$stat->$y;
             $data[] = [$stat->$x, $value];
         }
 
@@ -598,7 +600,7 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
                 $x    = $axis->x;
                 foreach ($Serie as $j => $stat) {
                     $obj    = new stdClass();
-                    $obj->y = (float) $stat->$y;
+                    $obj->y = (float)$stat->$y;
 
                     if ($j % $mod === 0) {
                         $chart->addAxis($stat->$x);
@@ -609,8 +611,8 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
                     $data[] = $obj;
                 }
 
-                $Colors = GetLineChartColors($i);
-                $chart->addSerie($Name, $data, $Colors[0], $Colors[1]);
+                $colors = GetLineChartColors($i);
+                $chart->addSerie($Name, $data, $colors[0], $colors[1]);
                 $chart->memberToJSON();
             }
 
@@ -622,19 +624,15 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
 }
 
 /**
- * @param int $Number
+ * @param int $number
  * @return mixed
  */
-function GetLineChartColors($Number)
+function GetLineChartColors($number)
 {
-    $Colors = [
+    $colors = [
         ['#EDEDED', '#EDEDED'],
         ['#989898', '#F78D23']
     ];
 
-    if (isset($Colors[$Number])) {
-        return $Colors[$Number];
-    }
-
-    return $Colors[0];
+    return $colors[$number] ?? $colors[0];
 }

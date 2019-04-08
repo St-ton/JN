@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace OPC;
+namespace JTL\OPC;
 
-use Plugin\AbstractExtension;
-use Plugin\Extension;
-use Plugin\ExtensionLoader;
+use JTL\Plugin\PluginInterface;
+use JTL\Plugin\PluginLoader;
+use JTL\Shop;
 
 /**
  * Class Portlet
- * @package OPC
+ * @package JTL\OPC
  */
-abstract class Portlet implements \JsonSerializable
+class Portlet implements \JsonSerializable
 {
     use PortletHtml;
     use PortletStyles;
@@ -26,7 +26,7 @@ abstract class Portlet implements \JsonSerializable
     protected $id = 0;
 
     /**
-     * @var Extension
+     * @var PluginInterface
      */
     protected $plugin;
 
@@ -61,14 +61,14 @@ abstract class Portlet implements \JsonSerializable
         $this->class = $class;
         $this->id    = $id;
         if ($pluginId > 0) {
-            $loader       = new ExtensionLoader(\Shop::Container()->getDB(), \Shop::Container()->getCache());
+            $loader       = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
             $this->plugin = $loader->init($pluginId);
         }
 
         if ($this->plugin === null) {
-            \Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
+            Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
         } else {
-            \Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
+            Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
         }
     }
 
@@ -152,7 +152,7 @@ abstract class Portlet implements \JsonSerializable
 
     /**
      * @param string $title
-     * @return Portlet
+     * @return self
      */
     public function setTitle(string $title): self
     {
@@ -163,7 +163,7 @@ abstract class Portlet implements \JsonSerializable
 
     /**
      * @param string $group
-     * @return Portlet
+     * @return self
      */
     public function setGroup(string $group): self
     {
@@ -173,9 +173,9 @@ abstract class Portlet implements \JsonSerializable
     }
 
     /**
-     * @return AbstractExtension|null
+     * @return PluginInterface|null
      */
-    public function getPlugin(): ?AbstractExtension
+    public function getPlugin(): ?PluginInterface
     {
         return $this->plugin;
     }

@@ -18,10 +18,7 @@
         {/if}
     
         {include file='snippets/extension.tpl'}
-        {if !empty($hinweis)}
-            <div class="alert alert-info">{$hinweis}</div>
-        {/if}
-        {if !empty($fehlendeAngaben) && !$hinweis}
+        {if !empty($fehlendeAngaben)}
             <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
         {/if}
         {if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}

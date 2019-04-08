@@ -20,7 +20,7 @@
 
 require_once('OFC/OFC_Chart.php');
 
-$title = new OFC_Elements_Title("Our New House Schedule");
+$title = new OFC_Elements_Title('Our New House Schedule');
 
 $hbar = new OFC_Charts_Bar_Horizontal();
 $hbar->append_value(new OFC_Charts_Bar_Horizontal_Value(0, 4));
@@ -39,7 +39,7 @@ $chart->set_x_axis($x);
 
 $y = new OFC_Elements_Axis_Y();
 $y->set_offset(true);
-$y->set_labels(array( "Make garden look sexy", "Paint house", "Move into house" ));
+$y->set_labels(array( 'Make garden look sexy', 'Paint house', 'Move into house' ));
 $chart->add_y_axis($y);
 
 echo $chart->toPrettyString();

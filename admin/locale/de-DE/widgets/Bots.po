@@ -1,0 +1,5 @@
+msgid "Bots_title"
+msgstr "Webcrawler (Top10 / Monat)"
+
+msgid "Bots_desc"
+msgstr "Die Top 10 Crawler des aktuellen Monat"

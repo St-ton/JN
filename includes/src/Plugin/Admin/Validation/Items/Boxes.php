@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin\Validation\Items;
+namespace JTL\Plugin\Admin\Validation\Items;
 
-use Plugin\InstallCode;
+use JTL\Plugin\InstallCode;
 
 /**
  * Class Boxes
- * @package Plugin\Admin\Validation\Items
+ * @package JTL\Plugin\Admin\Validation\Items
  */
 class Boxes extends AbstractItem
 {
@@ -34,7 +34,7 @@ class Boxes extends AbstractItem
         foreach ($node['Boxes'][0]['Box'] as $i => $box) {
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits3);
-            if (\strlen($hits3[0]) !== \strlen($i)) {
+            if (\mb_strlen($hits3[0]) !== \mb_strlen($i)) {
                 continue;
             }
             if (empty($box['Name'])) {

@@ -4,25 +4,25 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Plugin\Admin;
+namespace JTL\Plugin\Admin;
 
-use Cache\JTLCacheInterface;
-use DB\DbInterface;
-use Plugin\Admin\Installation\Installer;
-use Plugin\Admin\Installation\Uninstaller;
-use Plugin\Admin\Validation\ExtensionValidator;
-use Plugin\Admin\Validation\PluginValidator;
-use Plugin\Admin\Validation\ValidatorInterface;
-use Plugin\ExtensionLoader;
-use Plugin\Helper;
-use Plugin\InstallCode;
-use Plugin\Plugin;
-use Plugin\PluginLoader;
-use Plugin\State;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\Plugin\Admin\Installation\Installer;
+use JTL\Plugin\Admin\Installation\Uninstaller;
+use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
+use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Plugin\Admin\Validation\ValidatorInterface;
+use JTL\Plugin\Helper;
+use JTL\Plugin\InstallCode;
+use JTL\Plugin\LegacyPlugin;
+use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\PluginLoader;
+use JTL\Plugin\State;
 
 /**
  * Class StateChanger
- * @package Plugin\Admin
+ * @package JTL\Plugin\Admin
  */
 class StateChanger
 {
@@ -37,12 +37,12 @@ class StateChanger
     private $cache;
 
     /**
-     * @var ValidatorInterface|PluginValidator
+     * @var ValidatorInterface|LegacyPluginValidator
      */
     private $pluginValidator;
 
     /**
-     * @var ValidatorInterface|ExtensionValidator
+     * @var ValidatorInterface|PluginValidator
      */
     protected $extensionValidator;
 
@@ -82,7 +82,7 @@ class StateChanger
             return InstallCode::NO_PLUGIN_FOUND;
         }
         if ((int)$pluginData->bExtension === 1) {
-            $path       = \PFAD_ROOT . \PFAD_EXTENSIONS;
+            $path       = \PFAD_ROOT . \PLUGIN_DIR;
             $validation = $this->extensionValidator->validateByPath($path . $pluginData->cVerzeichnis);
         } else {
             $path       = \PFAD_ROOT . \PFAD_PLUGIN;
@@ -103,9 +103,9 @@ class StateChanger
             $this->db->update('topcportlet', 'kPlugin', $pluginID, (object)['bActive' => 1]);
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, (object)['bActive' => 1]);
             if ((int)$pluginData->bExtension === 1) {
-                $loader = new ExtensionLoader($this->db, $this->cache);
-            } else {
                 $loader = new PluginLoader($this->db, $this->cache);
+            } else {
+                $loader = new LegacyPluginLoader($this->db, $this->cache);
             }
 
             if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
@@ -134,9 +134,9 @@ class StateChanger
         }
         $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if ((int)$pluginData->bExtension === 1) {
-            $loader = new ExtensionLoader($this->db, $this->cache);
-        } else {
             $loader = new PluginLoader($this->db, $this->cache);
+        } else {
+            $loader = new LegacyPluginLoader($this->db, $this->cache);
         }
         if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
             $p->disabled();
@@ -156,8 +156,8 @@ class StateChanger
     /**
      * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
      *
-     * @param Plugin $plugin
-     * @param bool   $forceReload
+     * @param LegacyPlugin $plugin
+     * @param bool         $forceReload
      * @throws \Exception
      * @return int
      * 200 = kein Reload nötig, da info file älter als dZuletztAktualisiert

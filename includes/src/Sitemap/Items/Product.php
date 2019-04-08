@@ -4,11 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Items;
+namespace JTL\Sitemap\Items;
+
+use JTL\Helpers\URL;
+use JTL\Media\Image;
+use JTL\Media\MediaImage;
 
 /**
  * Class Product
- * @package Sitemap\Items
+ * @package JTL\Sitemap\Items
  */
 final class Product extends AbstractItem
 {
@@ -20,15 +24,15 @@ final class Product extends AbstractItem
         if ($this->config['sitemap']['sitemap_googleimage_anzeigen'] !== 'Y') {
             return;
         }
-        if (($number = \MediaImage::getPrimaryNumber(\Image::TYPE_PRODUCT, $this->data->kArtikel)) !== null) {
-            $cGoogleImage = \MediaImage::getThumb(
-                \Image::TYPE_PRODUCT,
+        if (($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $this->data->kArtikel)) !== null) {
+            $cGoogleImage = MediaImage::getThumb(
+                Image::TYPE_PRODUCT,
                 $this->data->kArtikel,
                 $this->data,
-                \Image::SIZE_LG,
+                Image::SIZE_LG,
                 $number
             );
-            if (\strlen($cGoogleImage) > 0) {
+            if (\mb_strlen($cGoogleImage) > 0) {
                 $cGoogleImage = $this->baseImageURL . $cGoogleImage;
                 $this->setImage($cGoogleImage);
             }
@@ -40,7 +44,7 @@ final class Product extends AbstractItem
      */
     public function generateLocation(): void
     {
-        $this->setLocation(\Helpers\URL::buildURL($this->data, \URLART_ARTIKEL, true));
+        $this->setLocation(URL::buildURL($this->data, \URLART_ARTIKEL, true));
     }
 
     /**

@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Sitemap\Config;
+namespace JTL\Sitemap\Config;
 
-use Sitemap\Factories\FactoryInterface;
+use JTL\Sitemap\Factories\FactoryInterface;
 
 /**
  * Interface ConfigInterface
- * @package Sitemap\Config
+ * @package JTL\Sitemap\Config
  */
 interface ConfigInterface
 {

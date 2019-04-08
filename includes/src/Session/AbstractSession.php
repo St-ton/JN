@@ -4,13 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace Session;
+namespace JTL\Session;
 
-use Session\Handler\JTLHandlerInterface;
+use JTL\Session\Handler\JTLHandlerInterface;
+use JTL\Shop;
+use JTL\Sprache;
 
 /**
  * Class AbstractSession
- * @package Session
+ * @package JTL\Session
  */
 abstract class AbstractSession
 {
@@ -19,21 +21,23 @@ abstract class AbstractSession
      */
     protected static $handler;
 
-    protected const DEFAULT_SESSION = 'JTLSHOP';
-
-    protected static $sessionName = self::DEFAULT_SESSION;
+    /**
+     * @var string
+     */
+    protected static $sessionName;
 
     /**
      * AbstractSession constructor.
      * @param bool   $start
      * @param string $sessionName
      */
-    public function __construct(bool $start = true, string $sessionName = self::DEFAULT_SESSION)
+    public function __construct(bool $start, string $sessionName)
     {
         self::$sessionName = $sessionName;
         \session_name(self::$sessionName);
-        $this->initCookie(\Shop::getSettings([\CONF_GLOBAL])['global'], $start);
         self::$handler = (new Storage())->getHandler();
+        $this->initCookie(Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+        self::$handler->setSessionData($_SESSION);
     }
 
     /**
@@ -68,8 +72,7 @@ abstract class AbstractSession
         if (!empty($conf['global_cookie_path'])) {
             $path = $conf['global_cookie_path'];
         }
-        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \strpos(URL_SHOP, 'https://') === 0);
-
+        $secure = $secure && ($conf['kaufabwicklung_ssl_nutzen'] === 'P' || \mb_strpos(\URL_SHOP, 'https://') === 0);
         if ($start) {
             \session_start([
                 'use_cookies'     => '1',
@@ -102,15 +105,15 @@ abstract class AbstractSession
         if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
             return $domain;
         }
-        foreach (\Sprache::getAllLanguages() as $Sprache) {
-            if (!\defined('URL_SHOP_' . \strtoupper($Sprache->cISO))) {
+        foreach (Sprache::getAllLanguages() as $Sprache) {
+            if (!\defined('URL_SHOP_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER))) {
                 continue;
             }
-            $shopLangURL = \constant('URL_SHOP_' . \strtoupper($Sprache->cISO));
-            if (\strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
-                && \defined('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO))
+            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER));
+            if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
+                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER))
             ) {
-                return \constant('COOKIE_DOMAIN_' . \strtoupper($Sprache->cISO));
+                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER));
             }
         }
 

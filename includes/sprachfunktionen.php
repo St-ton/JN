@@ -4,6 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\Warenkorb;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Extensions\Konfigitem;
+use JTL\Session\Frontend;
+use JTL\Shop;
+
 /**
  * @param Warenkorb $warenkorb
  * @return string
@@ -49,7 +56,7 @@ function lang_warenkorb_warenkorbLabel(Warenkorb $warenkorb)
         Preise::getLocalizedPriceString(
             $warenkorb->gibGesamtsummeWarenExt(
                 [C_WARENKORBPOS_TYP_ARTIKEL],
-                !\Session\Frontend::getCustomerGroup()->isMerchant()
+                !Frontend::getCustomerGroup()->isMerchant()
             )
         ) . ')';
 }

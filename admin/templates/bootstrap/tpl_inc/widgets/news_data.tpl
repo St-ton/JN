@@ -13,5 +13,5 @@
         {/strip}
     </ul>
 {else}
-    <div class="widget-container"><div class="alert alert-error">Keine Daten verfügbar</div></div>
+    <div class="widget-container"><div class="alert alert-error">{__('noDataAvailable')}</div></div>
 {/if}

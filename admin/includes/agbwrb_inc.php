@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\DB\ReturnType;
+
 /**
  * @param int   $kKundengruppe
  * @param int   $kSprache
@@ -25,7 +28,7 @@ function speicherAGBWRB($kKundengruppe, $kSprache, $cPost_arr, $kText = 0)
         // Soll Standard sein?
         if (isset($cPost_arr['nStandard']) && (int)$cPost_arr['nStandard'] > 0) {
             // Standard umsetzen
-            Shop::Container()->getDB()->query('UPDATE ttext SET nStandard = 0', \DB\ReturnType::AFFECTED_ROWS);
+            Shop::Container()->getDB()->query('UPDATE ttext SET nStandard = 0', ReturnType::AFFECTED_ROWS);
         }
         $oAGBWRB->kSprache            = $kSprache;
         $oAGBWRB->kKundengruppe       = $kKundengruppe;

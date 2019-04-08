@@ -4,6 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Shop;
+use JTL\Sprache;
+
 /**
  * @return array
  * @deprecated since 5.0.0
@@ -11,7 +14,7 @@
 function gibSuchSpalten()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\States\BaseSearchQuery::getSearchRows(Shop::getSettings([CONF_ARTIKELUEBERSICHT]));
+    return JTL\Filter\States\BaseSearchQuery::getSearchRows(Shop::getSettings([CONF_ARTIKELUEBERSICHT]));
 }
 
 /**
@@ -23,7 +26,7 @@ function gibSuchSpalten()
 function gibMaxPrioSpalte($exclude, $conf = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return \Filter\States\BaseSearchQuery::getPrioritizedRows($exclude, $conf);
+    return JTL\Filter\States\BaseSearchQuery::getPrioritizedRows($exclude, $conf);
 }
 
 /**
@@ -75,7 +78,7 @@ function mappingBeachten($query, int $kSpracheExt = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $kSprache = ($kSpracheExt > 0) ? $kSpracheExt : Sprache::getDefaultLanguage(true)->kSprache;
-    if (strlen($query) > 0) {
+    if (mb_strlen($query) > 0) {
         $db      = Shop::Container()->getDB();
         $tmp     = $db->select(
             'tsuchanfragemapping',
@@ -89,7 +92,7 @@ function mappingBeachten($query, int $kSpracheExt = 0)
             'cSucheNeu'
         );
         $mapping = $tmp;
-        while ($tmp !== null && isset($tmp->cSucheNeu) && strlen($tmp->cSucheNeu) > 0) {
+        while ($tmp !== null && isset($tmp->cSucheNeu) && mb_strlen($tmp->cSucheNeu) > 0) {
             $tmp = $db->select(
                 'tsuchanfragemapping',
                 'kSprache',
@@ -101,15 +104,15 @@ function mappingBeachten($query, int $kSpracheExt = 0)
                 false,
                 'cSucheNeu'
             );
-            if (isset($tmp->cSucheNeu) && strlen($tmp->cSucheNeu) > 0) {
+            if (isset($tmp->cSucheNeu) && mb_strlen($tmp->cSucheNeu) > 0) {
                 $mapping = $tmp;
             }
         }
-        if (isset($mapping->cSucheNeu) && strlen($mapping->cSucheNeu) > 0) {
+        if (isset($mapping->cSucheNeu) && mb_strlen($mapping->cSucheNeu) > 0) {
             $query = $mapping->cSucheNeu;
         }
     }
-    if (isset($mapping->cSucheNeu) && strlen($mapping->cSucheNeu) > 0) {
+    if (isset($mapping->cSucheNeu) && mb_strlen($mapping->cSucheNeu) > 0) {
         $query = $mapping->cSucheNeu;
     }
 

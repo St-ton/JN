@@ -5,15 +5,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use Helpers\Form;
+use JTL\Helpers\Form;
+use JTL\Customer\Kundengruppe;
+use JTL\Shop;
+use JTL\Slide;
+use JTL\Slider;
+use JTL\Sprache;
+use JTL\DB\ReturnType;
+use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
-/** @global Smarty\JTLSmarty $smarty */
+/** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
-$cFehler     = '';
-$cHinweis    = '';
+$alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
 $_kSlider    = 0;
 $redirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
 $action      = isset($_REQUEST['action']) && Form::validateToken()
@@ -29,7 +37,7 @@ switch ($action) {
         for ($i = 0; $i < $count; $i++) {
             $slide  = new Slide();
             $aSlide = $_REQUEST['aSlide'][$aSlideKey[$i]];
-            if (strpos($aSlideKey[$i], 'neu') === false) {
+            if (mb_strpos($aSlideKey[$i], 'neu') === false) {
                 $slide->setID((int)$aSlideKey[$i]);
             }
 
@@ -49,7 +57,7 @@ switch ($action) {
     default:
         $smarty->assign('disabled', '');
         if (!empty($_POST) && Form::validateToken()) {
-            $slider   = new Slider();
+            $slider   = new Slider($db);
             $_kSlider = (int)$_POST['kSlider'];
             $slider->load($kSlider, false);
             $slider->set((object)$_REQUEST);
@@ -88,37 +96,39 @@ switch ($action) {
                 Shop::Container()->getDB()->delete(
                     'textensionpoint',
                     ['cClass', 'kInitial'],
-                    ['Slider', $slider->getID()]
+                    ['slider', $slider->getID()]
                 );
-                $oExtension                = new stdClass();
-                $oExtension->kSprache      = $kSprache;
-                $oExtension->kKundengruppe = $kKundengruppe;
-                $oExtension->nSeite        = $nSeite;
-                $oExtension->cKey          = $cKey;
-                $oExtension->cValue        = $cValue;
-                $oExtension->cClass        = 'Slider';
-                $oExtension->kInitial      = $slider->getID();
-                Shop::Container()->getDB()->insert('textensionpoint', $oExtension);
+                $extension                = new stdClass();
+                $extension->kSprache      = $kSprache;
+                $extension->kKundengruppe = $kKundengruppe;
+                $extension->nSeite        = $nSeite;
+                $extension->cKey          = $cKey;
+                $extension->cValue        = $cValue;
+                $extension->cClass        = 'slider';
+                $extension->kInitial      = $slider->getID();
+                Shop::Container()->getDB()->insert('textensionpoint', $extension);
 
+                $alertHelper->addAlert(
+                    Alert::TYPE_SUCCESS,
+                    __('successSliderSave'),
+                    'successSliderSave',
+                    ['saveInSession' => true]
+                );
                 header('Location: ' . $redirectUrl);
                 exit;
             }
-            $cFehler .= __('errorSliderSave');
-
-            if (empty($cFehler)) {
-                $cHinweis = __('successSliderSave');
-            }
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderSave'), 'errorSliderSave');
         }
         break;
 }
 switch ($action) {
     case 'slides':
-        $slider = new Slider();
+        $slider = new Slider($db);
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);
         if (!is_object($slider)) {
-            $cFehler = __('errorSliderNotFound');
-            $action  = 'view';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $action = 'view';
         }
         break;
 
@@ -126,9 +136,9 @@ switch ($action) {
         if ($kSlider === 0 && $_kSlider > 0) {
             $kSlider = $_kSlider;
         }
-        $slider = new Slider();
+        $slider = new Slider($db);
         $slider->load($kSlider, false);
-        $smarty->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+        $smarty->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oExtension', holeExtension($kSlider));
 
@@ -146,39 +156,38 @@ switch ($action) {
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
-            $cFehler = __('errorSliderNotFound');
-            $action  = 'view';
+            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $action = 'view';
             break;
         }
         break;
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('oSprachen_arr', Sprache::getInstance(false)->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
-               ->assign('oSlider', new Slider());
+               ->assign('oSlider', new Slider($db));
         break;
 
     case 'delete':
-        $slider = new Slider();
+        $slider = new Slider($db);
         $slider->load($kSlider, false);
         if ($slider->delete() === true) {
             header('Location: ' . $redirectUrl);
             exit;
         }
-        $cFehler = __('errorSliderRemove');
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderRemove'), 'errorSliderRemove');
         break;
 
     default:
         break;
 }
 
-$smarty->assign('cFehler', $cFehler)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cAction', $action)
+$smarty->assign('cAction', $action)
        ->assign('kSlider', $kSlider)
-       ->assign('oSlider_arr', Shop::Container()->getDB()->query(
+       ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
+       ->assign('oSlider_arr', $db->query(
            'SELECT * FROM tslider',
-           \DB\ReturnType::ARRAY_OF_OBJECTS
+           ReturnType::ARRAY_OF_OBJECTS
        ))
        ->display('slider.tpl');

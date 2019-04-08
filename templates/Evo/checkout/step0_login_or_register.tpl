@@ -2,13 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if !empty($cFehler)}
-    <div class="alert alert-danger">{$cFehler}</div>
-{/if}
-{if !empty($hinweis)}
-    <div class="alert alert-info">{$hinweis}</div>
-{/if}
-{if !empty($fehlendeAngaben) && !$hinweis}
+{if !empty($fehlendeAngaben) && !$alertNote}
     <div class="alert alert-danger">{lang key='mandatoryFieldNotification' section='errorMessages'}</div>
 {/if}
 {if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}
@@ -40,7 +34,6 @@
     </div>
     <div id="customer" class="col-xs-12 {if $withSidebar === 0}col-md-8{else}col-md-12 top30{/if}">
         <div>
-            {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate" id="form-register">
                 {block name='checkout-register'}
                     <div class="panel-wrap">

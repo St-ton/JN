@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace DB;
+namespace JTL\DB;
 
 /**
  * Class ReturnType
- * @package DB
+ * @package JTL\DB
  */
 abstract class ReturnType
 {
@@ -56,4 +56,9 @@ abstract class ReturnType
      * Equivalent to PDO's $stmt->fetchAll(PDO::FETCH_BOTH);
      */
     public const ARRAY_OF_BOTH_ARRAYS = 11;
+
+    /**
+     * return a collection object
+     */
+    public const COLLECTION = 12;
 }

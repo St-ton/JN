@@ -2138,18 +2138,6 @@ msgstr "Ja"
 msgid "kwk_nutzen_value(N)"
 msgstr "Nein"
 
-msgid "trustedshops_nutzen_value(Y)"
-msgstr "Ja"
-
-msgid "trustedshops_nutzen_value(N)"
-msgstr "Nein"
-
-msgid "trustedshops_kundenbewertung_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "trustedshops_kundenbewertung_anzeigen_value(N)"
-msgstr "Nein"
-
 msgid "suchspecials_sortierung_bestseller_value(-1)"
 msgstr "Keine spezielle Sortierung nutzen"
 

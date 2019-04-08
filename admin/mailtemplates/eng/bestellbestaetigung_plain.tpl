@@ -105,11 +105,6 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 
 You will be notified of the subsequent status of your order separately.
 
-{if !empty($oTrustedShopsBewertenButton->cURL)}
-    Were you satisfied with your order? If so, we hope you'll take a minute to write a recommendation.
-    {$oTrustedShopsBewertenButton->cURL}
-{/if}
-
 
 Yours sincerely,
 {$Firma->cName}

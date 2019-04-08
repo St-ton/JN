@@ -73,7 +73,6 @@ class TestHydrator extends DefaultsHydrator
             ->assign('VonKunde', $customer)
             ->assign('Benachrichtigung', $this->getAvailabilityMessage())
             ->assign('NewsletterEmpfaenger', $this->getNewsletterRecipient($langID))
-            ->assign('oTrustedShopsBewertenButton', null)
             ->assign('oBewertungGuthabenBonus', $customerBonus);
     }
 

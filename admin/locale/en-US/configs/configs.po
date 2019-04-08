@@ -2884,18 +2884,6 @@ msgstr "Default customer group"
 msgid "kwk_kundengruppen_desc"
 msgstr "Specify into which customer group new customers are sorted who have been newly referred."
 
-msgid "trustedshops_nutzen_name"
-msgstr "Use Trusted Shops buyer protection"
-
-msgid "trustedshops_nutzen_desc"
-msgstr "Here you can activate the Trusted Shops buyer protection for your JTL-Shop. Afterwards, you will need to have a look at a couple of other options."
-
-msgid "trustedshops_kundenbewertung_anzeigen_name"
-msgstr "Show Trusted Shops customer review"
-
-msgid "trustedshops_kundenbewertung_anzeigen_desc"
-msgstr "Specify whether to display the Trusted Shops customer review in a box."
-
 msgid "suchspecials_sortierung_bestseller_name"
 msgstr "Sorting of bestsellers"
 

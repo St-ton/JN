@@ -21,7 +21,6 @@ use JTL\SimpleMail;
 use JTL\Sprache;
 use JTL\Staat;
 use JTL\Helpers\Text;
-use JTL\TrustedShops;
 use JTL\Checkout\Zahlungsart;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
@@ -401,7 +400,7 @@ function pruefeLieferadresseStep($get): void
         $Lieferadresse = $_SESSION['Lieferadresse'];
         if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1) {
             Kupon::resetNewCustomerCoupon();
-            unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
+            unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
             $step = 'Lieferadresse';
         }
     }
@@ -453,7 +452,7 @@ function pruefeVersandartStep($get): void
                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                              ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
-        unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops'], $_SESSION['Versandart']);
+        unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
 
         $step = 'Versand';
         pruefeZahlungsartStep(['editZahlungsart' => 1]);
@@ -498,37 +497,7 @@ function pruefeZahlungsartwahlStep($post)
         return null;
     }
     $zahlungsangaben = zahlungsartKorrekt($post['Zahlungsart']);
-    $conf            = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
-    if ($zahlungsangaben > 0
-        && $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
-        && isset($post['bTS'])
-        && (int)$post['bTS'] === 1
-        && $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-    ) {
-        $_SESSION['TrustedShops']->cKaeuferschutzProdukt =
-            Text::htmlentities(Text::filterXSS($post['cKaeuferschutzProdukt']));
-
-        $net           = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[Text::htmlentities(
-            Text::filterXSS($post['cKaeuferschutzProdukt'])
-        )];
-        $cLandISO      = $_SESSION['Lieferadresse']->cLand ?? '';
-        $kSteuerklasse = Frontend::getCart()->gibVersandkostenSteuerklasse($cLandISO);
-        $fPreis        = Frontend::getCustomerGroup()->isMerchant()
-            ? $net
-            : ($net * ((100 + (float)$_SESSION['Steuersatz'][$kSteuerklasse]) / 100));
-        $cName['ger']  = Shop::Lang()->get('trustedshopsName');
-        $cName['eng']  = Shop::Lang()->get('trustedshopsName');
-        Frontend::getCart()->erstelleSpezialPos(
-            $cName,
-            1,
-            $fPreis,
-            $kSteuerklasse,
-            C_WARENKORBPOS_TYP_TRUSTEDSHOPS,
-            true,
-            !Frontend::getCustomerGroup()->isMerchant()
-        );
-    }
 
     switch ($zahlungsangaben) {
         case 0:
@@ -698,28 +667,8 @@ function gibStepLieferadresse()
 function gibStepZahlung()
 {
     global $step;
-    $cart   = Frontend::getCart();
-    $conf   = Shop::getSettings([CONF_TRUSTEDSHOPS]);
-    $ts     = new stdClass();
-    $smarty = Shop::Smarty();
-    if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-        && (!isset($_SESSION['ajaxcheckout']) || $_SESSION['ajaxcheckout']->nEnabled < 5)
-    ) {
-        unset($_SESSION['TrustedShops']);
-        $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-        $ts = TrustedShops::getTrustedShops();
-        if (isset($ts->nAktiv) && (int)$ts->nAktiv === 1 && $ts->eType === TS_BUYERPROT_EXCELLENCE) {
-            if (!isset($_SESSION['TrustedShops'])) {
-                $_SESSION['TrustedShops'] = new stdClass();
-            }
-            $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr =
-                TrustedShops::gibKaeuferschutzProdukteAssocID($ts->oKaeuferschutzProdukte->item);
-            $smarty->assign('oTrustedShops', $ts)
-                   ->assign('PFAD_GFX_TRUSTEDSHOPS', PFAD_GFX_TRUSTEDSHOPS);
-        }
-        $smarty->assign('URL_SHOP', Shop::getURL());
-    }
-
+    $cart       = Frontend::getCart();
+    $smarty     = Shop::Smarty();
     $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$lieferland) {
         $lieferland = Frontend::getCustomer()->cLand;
@@ -754,25 +703,7 @@ function gibStepZahlung()
     if (is_array($shippingMethods) && count($shippingMethods) > 0) {
         $shippingMethod = gibAktiveVersandart($shippingMethods);
         $paymentMethods = gibZahlungsarten($shippingMethod, $kKundengruppe);
-        if (is_array($paymentMethods)
-            && !isset($_GET['editZahlungsart'])
-            && empty($_SESSION['TrustedShopsZahlung'])
-            && isset($_POST['zahlungsartwahl'])
-            && (int)$_POST['zahlungsartwahl'] === 1
-            && count($paymentMethods) === 1
-        ) {
-            // Prüfe Zahlungsart
-            if (zahlungsartKorrekt($paymentMethods[0]->kZahlungsart) === 2) {
-                // Prüfen ab es ein Trusted Shops Zertifikat gibt
-                if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
-                    $ts = new TrustedShops(-1, Text::convertISO2ISO639($_SESSION['cISOSprache']));
-                }
-                if (isset($ts->tsId) && $ts->eType === TS_BUYERPROT_EXCELLENCE && mb_strlen($ts->tsId) > 0) {
-                    $_SESSION['TrustedShopsZahlung'] = true;
-                    gibStepZahlung();
-                }
-            }
-        } elseif (!is_array($paymentMethods) || count($paymentMethods) === 0) {
+        if (!is_array($paymentMethods) || count($paymentMethods) === 0) {
             Shop::Container()->getLogService()->error(
                 'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
                 $_SESSION['Versandart']->kVersandart .
@@ -789,7 +720,6 @@ function gibStepZahlung()
             ];
         }
         $smarty->assign('Zahlungsarten', $paymentMethods)
-               ->assign('Einstellungen', $conf)
                ->assign('Versandarten', $shippingMethods)
                ->assign('Verpackungsarten', $packagings)
                ->assign('AktiveVersandart', $shippingMethod)
@@ -906,7 +836,6 @@ function gibStepBestaetigung($get)
 function gibStepVersand(): void
 {
     global $step;
-    unset($_SESSION['TrustedShopsZahlung']);
     pruefeVersandkostenfreiKuponVorgemerkt();
     $cart       = Frontend::getCart();
     $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
@@ -1392,8 +1321,7 @@ function getPaymentSurchageDiscount($paymentMethod)
                 C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
                 C_WARENKORBPOS_TYP_NEUKUNDENKUPON,
                 C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
-                C_WARENKORBPOS_TYP_VERPACKUNG,
-                C_WARENKORBPOS_TYP_TRUSTEDSHOPS
+                C_WARENKORBPOS_TYP_VERPACKUNG
             ],
             true
         ) - $fGuthaben) * $paymentMethod->fAufpreis) / 100.0;
@@ -3014,11 +2942,6 @@ function pruefeAjaxEinKlick(): int
                 return 5;
             }
             if (zahlungsartKorrekt($lastOrder->kZahlungsart) === 2) {
-                // Prüfen ab es ein Trusted Shops Zertifikat gibt
-                $oTrustedShops = new TrustedShops(-1, Text::convertISO2ISO639($_SESSION['cISOSprache']));
-                if (mb_strlen($oTrustedShops->tsId) > 0) {
-                    return 4;
-                }
                 gibStepZahlung();
 
                 return 5;
@@ -3485,37 +3408,11 @@ function setzeFehlerSmartyVersandart(): void
  * @param Zahlungsart $paymentMethod
  * @param array       $post
  * @return array
+ * @deprecated since 5.0.0
  */
 function plausiZahlungsartZusatz($paymentMethod, array $post)
 {
-    $conf = Shop::getSettings([CONF_TRUSTEDSHOPS]);
-    if ((int)$post['bTS'] === 1
-        && zahlungsartKorrekt((int)$paymentMethod->kZahlungsart) > 0
-        && $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
-        && $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-    ) {
-        $fNetto   = $_SESSION['TrustedShops']->oKaeuferschutzProduktIDAssoc_arr[Text::htmlentities(
-            Text::filterXSS($post['cKaeuferschutzProdukt'])
-        )];
-        $taxClass = Frontend::getCart()->gibVersandkostenSteuerklasse();
-        $fPreis   = $fNetto;
-        if (!Frontend::getCustomerGroup()->isMerchant()) {
-            $fPreis = $fNetto * ((100 + (float)$_SESSION['Steuersatz'][$taxClass]) / 100);
-        }
-        $cName['ger']                                    = Shop::Lang()->get('trustedshopsName');
-        $cName['eng']                                    = Shop::Lang()->get('trustedshopsName');
-        $_SESSION['TrustedShops']->cKaeuferschutzProdukt = Text::htmlentities(
-            Text::filterXSS($post['cKaeuferschutzProdukt'])
-        );
-        Frontend::getCart()->erstelleSpezialPos(
-            $cName,
-            1,
-            $fPreis,
-            $taxClass,
-            C_WARENKORBPOS_TYP_TRUSTEDSHOPS
-        );
-    }
-
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return checkAdditionalPayment($paymentMethod);
 }
 
@@ -3628,8 +3525,7 @@ function loescheSession(int $step)
                 $_SESSION['Lieferadresse'],
                 $_SESSION['Versandart'],
                 $_SESSION['oVersandfreiKupon'],
-                $_SESSION['Zahlungsart'],
-                $_SESSION['TrustedShops']
+                $_SESSION['Zahlungsart']
             );
             Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -3637,8 +3533,7 @@ function loescheSession(int $step)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
             break;
 
         case 1:
@@ -3646,8 +3541,7 @@ function loescheSession(int $step)
                 $_SESSION['Lieferadresse'],
                 $_SESSION['Versandart'],
                 $_SESSION['oVersandfreiKupon'],
-                $_SESSION['Zahlungsart'],
-                $_SESSION['TrustedShops']
+                $_SESSION['Zahlungsart']
             );
             Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -3655,8 +3549,7 @@ function loescheSession(int $step)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
             break;
 
         case 2:
@@ -3667,17 +3560,15 @@ function loescheSession(int $step)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-            unset($_SESSION['TrustedShops'], $_SESSION['Zahlungsart']);
+                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+            unset($_SESSION['Zahlungsart']);
             break;
 
         case 3:
             unset(
                 $_SESSION['Versandart'],
                 $_SESSION['oVersandfreiKupon'],
-                $_SESSION['Zahlungsart'],
-                $_SESSION['TrustedShops']
+                $_SESSION['Zahlungsart']
             );
             Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -3685,17 +3576,15 @@ function loescheSession(int $step)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
             break;
 
         case 4:
-            unset($_SESSION['Zahlungsart'], $_SESSION['TrustedShops']);
+            unset($_SESSION['Zahlungsart']);
             Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
             break;
 
         default:

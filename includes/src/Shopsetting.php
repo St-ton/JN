@@ -62,7 +62,6 @@ final class Shopsetting implements ArrayAccess
         \CONF_SITEMAP             => 'sitemap',
         \CONF_UMFRAGE             => 'umfrage',
         \CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
-        \CONF_TRUSTEDSHOPS        => 'trustedshops',
         \CONF_SUCHSPECIAL         => 'suchspecials',
         \CONF_TEMPLATE            => 'template',
         \CONF_CHECKBOX            => 'checkbox',

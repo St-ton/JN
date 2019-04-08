@@ -2903,18 +2903,6 @@ msgstr "Standard-Kundengruppe"
 msgid "kwk_kundengruppen_desc"
 msgstr "Hier legen Sie fest, welche Kundengruppe Neukunden bekommen, die neu geworben wurden."
 
-msgid "trustedshops_nutzen_name"
-msgstr "Trusted Shops Käuferschutz nutzen"
-
-msgid "trustedshops_nutzen_desc"
-msgstr "Hier aktivieren Sie den Trusted Shops Käuferschutz für Ihren JTL-Shop. Dazu müssen Sie anschließend die übrigen Optionen ausfüllen."
-
-msgid "trustedshops_kundenbewertung_anzeigen_name"
-msgstr "Trusted Shops Kundenbewertung anzeigen"
-
-msgid "trustedshops_kundenbewertung_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob die Trusted Shops Kundenbewertung in einer Box angezeigt werden soll."
-
 msgid "suchspecials_sortierung_bestseller_name"
 msgstr "Sortierung für Bestseller"
 

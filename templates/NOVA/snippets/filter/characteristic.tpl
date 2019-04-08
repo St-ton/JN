@@ -32,7 +32,7 @@
             {/block}
         {else}
             {block name='snippets-filter-characteristics-nav'}
-                {if $attributeValue@iteration > $limit && !$collapseInit}
+                {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
                     <div class="collapse" id="box-collps-{$Merkmal->kMerkmal}" aria-expanded="false">
                         {$collapseInit = true}
                 {/if}
@@ -68,7 +68,7 @@
             {/block}
         {/if}
     {/foreach}
-    {if $Merkmal->getOptions()|count > $limit && !$is_dropdown}
+    {if $limit != -1 && $Merkmal->getOptions()|count > $limit && !$is_dropdown}
             </div>
         {button
             variant="link"

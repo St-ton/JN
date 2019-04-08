@@ -11,7 +11,7 @@
         {block name='boxes-box-filter-tag-content'}
             {nav vertical=true}
                 {foreach $oBox->getItems() as $oTag}
-                    {if $oTag@iteration > $limit && !$collapseInit}
+                    {if $limit != -1 && $oTag@iteration > $limit && !$collapseInit}
                         <div class="collapse" id="box-collps-tagfilter" aria-expanded="false">
                             {$collapseInit = true}
                     {/if}
@@ -40,7 +40,7 @@
                         {/block}
                     {/if}
                 {/foreach}
-                {if $oBox->getItems()|count > $limit}
+                {if $limit != -1 && $oBox->getItems()|count > $limit}
                         </div>
                     {button
                         variant="link"

@@ -14,7 +14,7 @@
 <ul class="{if !empty($class)}{$class}{else}nav nav-list{/if}">
     {foreach $filter->getOptions() as $filterOption}
         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
-        {if $filterOption@iteration > $limit && !$collapseInit && $class!='dropdown-menu'}
+        {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit && $class!='dropdown-menu'}
             <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false"><ul class="nav nav-list">
             {$collapseInit = true}
         {/if}
@@ -37,7 +37,7 @@
             </a>
         </li>
     {/foreach}
-    {if $filter->getOptions()|count > $limit && $class!='dropdown-menu'}
+    {if $limit != -1 && $filter->getOptions()|count > $limit && $class!='dropdown-menu'}
     </ul></div>
         <button class="btn btn-link pull-right"
                 role="button"

@@ -12,7 +12,7 @@
     <div class="box-body">
         <ul class="nav nav-list">
             {foreach $oBox->getItems() as $oTag}
-                {if $oTag@iteration > $limit && !$collapseInit}
+                {if $limit != -1 && $oTag@iteration > $limit && !$collapseInit}
                     <div class="collapse" id="box-collps-tagfilter" aria-expanded="false"><ul class="nav nav-list">
                     {$collapseInit = true}
                 {/if}
@@ -39,7 +39,7 @@
                 {/if}
             {/foreach}
         </ul>
-        {if $oBox->getItems()|count > $limit}
+        {if $limit != -1 && $oBox->getItems()|count > $limit}
                 </ul></div>
             <button class="btn btn-link pull-right"
                     role="button"

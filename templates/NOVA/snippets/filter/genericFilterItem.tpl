@@ -38,7 +38,7 @@
             {$collapseInit = false}
             {nav vertical=true}
                 {foreach $filter->getOptions() as $filterOption}
-                    {if $filterOption@iteration > $limit && !$collapseInit}
+                    {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
                         <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
                             {$collapseInit = true}
                     {/if}
@@ -64,7 +64,7 @@
                         <span class="badge badge-light float-right">{$filterOption->getCount()}</span>
                     {/navitem}
                 {/foreach}
-                {if $filter->getOptions()|count > $limit}
+                {if $limit != -1 && $filter->getOptions()|count > $limit}
                     </div>
                     {button
                         variant="link"

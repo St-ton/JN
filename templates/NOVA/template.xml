@@ -134,7 +134,7 @@
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
-                <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
+                <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
         </Section>
         <Section Name="Footer-Einstellungen" Key="footer">

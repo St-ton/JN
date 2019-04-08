@@ -6565,11 +6565,12 @@ class Artikel
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt
-            && (\is_array($this->Variationen)
-                && ($this->nVariationOhneFreifeldAnzahl === 2
-                    || $this->nVariationOhneFreifeldAnzahl === 1
-                    || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
-                        && $this->nVariationOhneFreifeldAnzahl > 1)))
+            && $this->nVariationOhneFreifeldAnzahl === count($this->Variationen)
+            && (count($this->Variationen) <= 2
+                || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
+                    && $this->nIstVater === 1
+                )
+            )
             && ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y'
                 || (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX])
                     && $this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX] === '1'))

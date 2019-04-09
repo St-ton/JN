@@ -164,7 +164,7 @@
                                                            />
                                                    <span class="label-variation">
                                                         {if !empty($Variationswert->cBildPfadMiniFull)}
-                                                            {image src=$Variationswert->cBildPfadMiniFull alt=$Variationswert->cName
+                                                            {image src=$Variationswert->cBildPfadMiniFull alt=$Variationswert->cName|escape:'quotes'
                                                                  data=['list' => "{prepare_image_details item=$Variationswert json=true}"]
                                                                  title=$Variationswert->cName}
                                                         {else}

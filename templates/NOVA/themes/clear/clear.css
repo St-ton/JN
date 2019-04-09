@@ -11112,7 +11112,6 @@ select.selectpicker {
 }
 .slick-list.dragging {
   cursor: pointer;
-  cursor: hand;
 }
 
 .slick-slider .slick-track,
@@ -11857,7 +11856,8 @@ input[type=file].file-loading, .file-loading input[type=file] {
   opacity: 1;
 }
 
-#add-to-cart .btn .btn-basket-check {
+#add-to-cart .btn .btn-basket-check,
+.form-basket button[type=submit] .btn-basket-check {
   /* this is the button text message */
   top: 0;
   left: 0;
@@ -11865,7 +11865,8 @@ input[type=file].file-loading, .file-loading input[type=file] {
   height: 100%;
   white-space: nowrap;
 }
-#add-to-cart .btn svg {
+#add-to-cart .btn svg,
+.form-basket button[type=submit] svg {
   /* this is the check icon */
   position: absolute;
   left: 0;
@@ -11873,13 +11874,15 @@ input[type=file].file-loading, .file-loading input[type=file] {
   width: 100%;
   /* move the icon on the right - outside the button */
 }
-#add-to-cart .btn.is-added .btn-basket-check {
+#add-to-cart .btn.is-added .btn-basket-check,
+.form-basket button[type=submit].is-added .btn-basket-check {
   /* product added to the cart - hide text message on the left with no transition*/
   color: transparent;
   top: 50%;
   transform: translateY(-50%);
 }
-#add-to-cart .btn.is-added svg {
+#add-to-cart .btn.is-added svg,
+.form-basket button[type=submit].is-added svg {
   /* product added to the cart - move the svg back inside the button */
   top: 50%;
   transform: translateY(-50%);
@@ -12902,6 +12905,9 @@ ul.partlist-items {
     box-shadow: 0 -10px 0 white, 0 2px 16px 0 rgba(0, 0, 0, 0.06);
     transition: opacity 0.2s;
   }
+  .gallery .product-cell.hover-enabled .expandable dt {
+    text-align: left;
+  }
   .gallery .product-cell.hover-enabled::before {
     content: "";
     display: block;
@@ -13558,6 +13564,7 @@ aside .badge-light {
   flex: 1 1 auto;
   width: 1%;
   margin-bottom: 0;
+  border-right: 0;
 }
 .choose_quantity .nmbr-cfg-group .unit,
 .quantity-wrapper .nmbr-cfg-group .unit,

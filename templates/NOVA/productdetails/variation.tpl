@@ -23,13 +23,11 @@
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
                     {strip}
-                        {if !isset($smallView) || !$smallView}
                         <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
-                        {/if}
-                        <dd class="form-group">
+                        <dd class="form-group text-left">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
-                                {select title="{if isset($smallView) && $smallView}{$Variation->cName} - {/if}{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
+                                {select title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
                                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                         {assign var=bSelected value=false}
                                         {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
@@ -47,20 +45,20 @@
                                                     {include file='productdetails/variation_value.tpl' assign='cVariationsWert'}
                                                 {/block}
                                                 <option value="{$Variationswert->kEigenschaftWert}" class="variation"
-                                                        data-type="option"
-                                                        data-original="{$Variationswert->cName}"
-                                                        data-key="{$Variationswert->kEigenschaft}"
-                                                        data-value="{$Variationswert->kEigenschaftWert}"
-                                                        data-content="{$cVariationsWert|escape:'html'}{if $Variationswert->notExists}<span class='badge badge-danger badge-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='badge badge-default badge-not-available'>{lang key='ampelRot'}</span>{/if}"
+                                                         data-type="option"
+                                                         data-original="{$Variationswert->cName|escape:'quotes'}"
+                                                         data-key="{$Variationswert->kEigenschaft}"
+                                                         data-value="{$Variationswert->kEigenschaftWert}"
+                                                         data-content="{$cVariationsWert|escape:'html'}{if $Variationswert->notExists}<span class='badge badge-danger badge-not-available'> {lang key='notAvailableInSelection'}</span>{elseif !$Variationswert->inStock}<span class='badge badge-default badge-not-available'>{lang key='ampelRot'}</span>{/if}"
                                                         {if !empty($Variationswert->cBildPfadMini)}
-                                                            data-list='{prepare_image_details item=$Variationswert json=true}'
-                                                            data-title='{$Variationswert->cName}'
+                                                             data-list='{prepare_image_details item=$Variationswert json=true}'
+                                                             data-title='{$Variationswert->cName|escape:'quotes'}'
                                                         {/if}
                                                         {if isset($Variationswert->oVariationsKombi)}
-                                                            data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
+                                                             data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                                         {/if}
                                                         {if $bSelected} selected="selected"{/if}>
-                                                    {$cVariationsWert|trim}
+                                                    {$cVariationsWert|trim|escape:'quotes'}
                                                 </option>
                                             {/block}
                                         {/if}
@@ -93,12 +91,12 @@
                                                     >
                                                     <label class="variation custom-control-label" for="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                                            data-type="radio"
-                                                           data-original="{$Variationswert->cName}"
+                                                           data-original="{$Variationswert->cName|escape:'quotes'}"
                                                            data-key="{$Variationswert->kEigenschaft}"
                                                            data-value="{$Variationswert->kEigenschaftWert}"
                                                            {if !empty($Variationswert->cBildPfadMini)}
                                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
-                                                                data-title='{$Variationswert->cName}{if $Variationswert->notExists} - {lang key='notAvailableInSelection'}{elseif !$Variationswert->inStock} - {lang key='ampelRot'}{/if}'
+                                                                data-title='{$Variationswert->cName|escape:'quotes'}{if $Variationswert->notExists} - {lang key='notAvailableInSelection'}{elseif !$Variationswert->inStock} - {lang key='ampelRot'}{/if}'
                                                            {/if}
                                                            {if !$Variationswert->inStock}
                                                                 data-stock="out-of-stock"
@@ -134,7 +132,7 @@
                                                 {block name='productdetails-variation-swatch-inner'}
                                                 <label class="variation block{if $bSelected} active{/if}{if $Variationswert->notExists} not-available{/if}"
                                                         data-type="swatch"
-                                                        data-original="{$Variationswert->cName}"
+                                                        data-original="{$Variationswert->cName|escape:'quotes'}"
                                                         data-key="{$Variationswert->kEigenschaft}"
                                                         data-value="{$Variationswert->kEigenschaftWert}"
                                                         for="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
@@ -143,13 +141,13 @@
                                                         {/if}
                                                         {if $Variationswert->notExists}
                                                             title="{lang key='notAvailableInSelection'}"
-                                                            data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
+                                                            data-title="{$Variationswert->cName|escape:'quotes'} - {lang key='notAvailableInSelection'}"
                                                             data-toggle="tooltip"
                                                         {elseif $Variationswert->inStock}
-                                                            data-title="{$Variationswert->cName}"
+                                                            data-title="{$Variationswert->cName|escape:'quotes'}"
                                                         {else}
                                                             title="{lang key='ampelRot'}"
-                                                            data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
+                                                            data-title="{$Variationswert->cName|escape:'quotes'} - {lang key='ampelRot'}"
                                                             data-toggle="tooltip"
                                                             data-stock="out-of-stock"
                                                         {/if}
@@ -168,9 +166,9 @@
                                                         {if !empty($Variationswert->cBildPfadMiniFull)}
                                                             {image src=$Variationswert->cBildPfadMiniFull alt=$Variationswert->cName|escape:'quotes'
                                                                  data=['list' => "{prepare_image_details item=$Variationswert json=true}"]
-                                                                 title=$Variationswert->cName}
+                                                                 title=$Variationswert->cName|escape:'quotes'}
                                                         {else}
-                                                            {$Variationswert->cName}
+                                                            {$Variationswert->cName|escape:'quotes'}
                                                         {/if}
                                                     </span>
                                                     {block name='productdetails-variation-swatch-include-variation-value'}

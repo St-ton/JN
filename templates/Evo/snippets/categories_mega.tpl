@@ -60,7 +60,8 @@
                                                 {if $Einstellungen.template.megamenu.show_category_images !== 'N'
                                                     && $category->cBildURL !== 'gfx/keinBild.gif'}
                                                     <a href="{$category->cURLFull}">
-                                                        <img class="img-responsive lazy loading" data-src="{$category->cBildURLFull}"
+                                                        <img class="img-responsive lazy loading"
+                                                             data-src="{$category->cBildURLFull}"
                                                              src="{$imageBaseURL}gfx/trans.png"
                                                              alt="{$category->cKurzbezeichnung|escape:'html'}">
                                                     </a>

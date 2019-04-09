@@ -776,12 +776,14 @@ class IOMethods
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
-        foreach ($valueIDs as $valueID) {
+        foreach ($valueIDs as $ID => $valueID) {
             $currentValue = new EigenschaftWert((int)$valueID);
-            $weightDiff  += $currentValue->fGewichtDiff;
-            $newProductNr = (!empty($currentValue->cArtNr) && $product->cArtNr !== $currentValue->cArtNr)
-                ? $currentValue->cArtNr
-                : $product->cArtNr;
+            if ($currentValue->kEigenschaft === $ID) {
+                $weightDiff  += $currentValue->fGewichtDiff;
+                $newProductNr = (!empty($currentValue->cArtNr) && $product->cArtNr !== $currentValue->cArtNr)
+                    ? $currentValue->cArtNr
+                    : $product->cArtNr;
+            }
         }
         $weightTotal        = Trennzeichen::getUnit(
             \JTL_SEPARATOR_WEIGHT,

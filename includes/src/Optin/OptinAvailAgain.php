@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\GenericOptin;
+namespace JTL\Optin;
 
 use JTL\Alert\Alert;
 use JTL\CheckBox;
@@ -20,9 +20,9 @@ use stdClass;
 
 /**
  * Class OptinAvailAgain
- * @package JTL\GenericOptin
+ * @package JTL\Optin
  */
-class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
+class OptinAvailAgain extends OptinBase implements OptinInterface
 {
     /**
      * @var stdClass
@@ -46,10 +46,10 @@ class OptinAvailAgain extends GenericOptinBase implements GenericOptinInterface
     }
 
     /**
-     * @param GenericOptinRefData $refData
+     * @param OptinRefData $refData
      * @return OptinAvailAgain
      */
-    public function createOptin(GenericOptinRefData $refData): self
+    public function createOptin(OptinRefData $refData): self
     {
         $this->refData = $refData;
         $this->product = $this->dbHandler->select('tartikel', 'kArtikel', $this->refData->getProductId());

@@ -30,7 +30,7 @@ use JTL\Events\Event;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
-use JTL\GenericOptin\GenericOptin;
+use JTL\Optin\Optin;
 use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -1596,7 +1596,7 @@ final class Shop
 
         if (\mb_strlen(self::$optinCode) > 8) {
             try {
-                $successMsg = (new GenericOptin())
+                $successMsg = (new Optin())
                     ->setCode(self::$optinCode)
                     ->handleOptin();
                 self::Container()->getAlertService()->addAlert(

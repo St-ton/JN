@@ -20,8 +20,8 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Konfiggruppe;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigurator;
-use JTL\GenericOptin\GenericOptin;
-use JTL\GenericOptin\GenericOptinRefData;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinRefData;
 use JTL\Kampagne;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -1252,7 +1252,7 @@ class Product
         if ($resultCode) {
             if (!self::checkAvailibityFormFloodProtection($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
                 $dbHandler = Shop::Container()->getDB();
-                $refData   = (new GenericOptinRefData())
+                $refData   = (new OptinRefData())
                     ->setSalutation('')
                     ->setFirstName('')
                     ->setLastName('')
@@ -1262,7 +1262,7 @@ class Product
                     ->setLanguageID(Shop::getLanguage())
                     ->setRealIP(Request::getRealIP());
                 try {
-                    (new GenericOptin(OPTIN_AVAILAGAIN))
+                    (new Optin(OPTIN_AVAILAGAIN))
                         ->getOptin()
                         ->createOptin($refData)
                         ->sendActivationMail();

@@ -4,17 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\GenericOptin;
+namespace JTL\Optin;
 
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\InvalidInputException;
 use JTL\Shop;
 
 /**
- * Class GenericOptin
- * @package JTL\GenericOptin
+ * Class Optin
+ * @package JTL\Optin
  */
-class GenericOptin extends GenericOptinBase
+class Optin extends OptinBase
 {
     /**
      * @var object stdClass
@@ -32,8 +32,8 @@ class GenericOptin extends GenericOptinBase
     protected $externalAction;
 
     /**
-     * GenericOptin constructor.
-     * @param int $optinType
+     * Optin constructor.
+     * @param int|null $optinType
      * @throws \Exception
      */
     public function __construct(int $optinType = null)
@@ -49,16 +49,16 @@ class GenericOptin extends GenericOptinBase
     /**
      * @return OptinAvailAgain
      */
-    public function getOptin(): GenericOptinInterface
+    public function getOptin(): OptinInterface
     {
         return $this->currentOptin;
     }
 
     /**
      * @param string $action
-     * @return GenericOptin
+     * @return Optin
      */
-    public function setAction(string $action): GenericOptin
+    public function setAction(string $action): Optin
     {
         $this->externalAction = $action;
 
@@ -90,7 +90,7 @@ class GenericOptin extends GenericOptinBase
             throw new EmptyResultSetException('Double-Opt-in not found: ' .
                 ($this->emailAddress === '' ?: $this->optCode));
         }
-        $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['GenericOptinRefData']);
+        $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['OptinRefData']);
         $this->generateOptin($this->refData->getOptinType());
         if ($this->actionPrefix === self::CLEAR_CODE || $this->externalAction === self::CLEAR_CODE) {
             $this->deactivateOptin();
@@ -159,7 +159,7 @@ class GenericOptin extends GenericOptinBase
      */
     private function generateOptin(int $optinType): void
     {
-        $this->currentOptin = GenericOptinFactory::instantiate(
+        $this->currentOptin = OptinFactory::instantiate(
             $optinType,
             $this->dbHandler,
             $this->nowDataTime,

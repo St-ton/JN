@@ -4,19 +4,19 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\GenericOptin;
+namespace JTL\Optin;
 
 /**
- * Interface GenericOptinInterface
- * @package JTL\GenericOptin
+ * Interface OptinInterface
+ * @package JTL\Optin
  */
-interface GenericOptinInterface
+interface OptinInterface
 {
     /**
-     * @param GenericOptinRefData $refData
+     * @param OptinRefData $refData
      * @return OptinAvailAgain
      */
-    public function createOptin(GenericOptinRefData $refData);
+    public function createOptin(OptinRefData $refData);
 
     /**
      * @return mixed

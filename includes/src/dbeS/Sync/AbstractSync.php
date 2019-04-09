@@ -13,7 +13,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
-use JTL\GenericOptin\GenericOptin;
+use JTL\Optin\Optin;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Customer\Kundengruppe;
@@ -242,7 +242,7 @@ abstract class AbstractSync
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $isOptinValidActive = (new GenericOptin(\OPTIN_AVAILAGAIN))
+            $isOptinValidActive = (new Optin(\OPTIN_AVAILAGAIN))
                 ->setEmail($msg->cMail)
                 ->isActive();
             if (!$isOptinValidActive) {

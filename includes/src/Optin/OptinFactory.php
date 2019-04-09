@@ -4,20 +4,20 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\GenericOptin;
+namespace JTL\Optin;
 
 /**
- * Class GenericOptinFactory
- * @package JTL\GenericOptin
+ * Class OptinFactory
+ * @package JTL\Optin
  */
-abstract class GenericOptinFactory
+abstract class OptinFactory
 {
     /**
      * @param int   $optinType
      * @param array $inheritData
      * @return OptinAvailAgain
      */
-    public static function instantiate(int $optinType, ...$inheritData): GenericOptinInterface
+    public static function instantiate(int $optinType, ...$inheritData): OptinInterface
     {
         switch ($optinType) {
             case OPTIN_AVAILAGAIN:

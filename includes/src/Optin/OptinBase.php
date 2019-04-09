@@ -4,15 +4,15 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\GenericOptin;
+namespace JTL\Optin;
 
 use JTL\DB\DbInterface;
 
 /**
  * Class OptinBase
- * @package JTL\GenericOptin
+ * @package JTL\Optin
  */
-abstract class GenericOptinBase extends GenericOptinFactory
+abstract class OptinBase extends OptinFactory
 {
     /**
      * action prefix
@@ -50,13 +50,13 @@ abstract class GenericOptinBase extends GenericOptinFactory
     protected $actionPrefix = '';
 
     /**
-     * @var GenericOptinRefData
+     * @var OptinRefData
      */
     protected $refData;
 
     /**
      * @param string $mailaddress
-     * @return GenericOptin
+     * @return Optin
      */
     public function setEmail(string $mailaddress): self
     {
@@ -67,7 +67,7 @@ abstract class GenericOptinBase extends GenericOptinFactory
 
     /**
      * @param $optinCode
-     * @return GenericOptin
+     * @return Optin
      */
     public function setCode(string $optinCode): self
     {

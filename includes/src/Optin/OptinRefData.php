@@ -4,13 +4,13 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\GenericOptin;
+namespace JTL\Optin;
 
 /**
- * Class GenericOptinRefData
- * @package JTL\GenericOptin
+ * Class OptinRefData
+ * @package JTL\Optin
  */
-class GenericOptinRefData implements \Serializable
+class OptinRefData implements \Serializable
 {
     /**
      * @var int
@@ -90,12 +90,12 @@ class GenericOptinRefData implements \Serializable
             $this->email,
             $this->realIP,
             $this->productID
-        ] = \unserialize($serialized, ['GenericOptinRefData']);
+        ] = \unserialize($serialized, ['OptinRefData']);
     }
 
     /**
      * @param int $optinType
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setOptinType(int $optinType): self
     {
@@ -106,7 +106,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param int $languageID
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setLanguageID(int $languageID): self
     {
@@ -117,7 +117,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param int $customerID
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setCustomerID(int $customerID): self
     {
@@ -128,7 +128,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param string $salutation
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setSalutation(string $salutation): self
     {
@@ -139,7 +139,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param string $firstName
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setFirstName(string $firstName): self
     {
@@ -150,7 +150,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param string $lastName
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setLastName(string $lastName): self
     {
@@ -161,7 +161,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param string $email
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setEmail(string $email): self
     {
@@ -172,7 +172,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param string $realIP
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setRealIP(string $realIP): self
     {
@@ -183,7 +183,7 @@ class GenericOptinRefData implements \Serializable
 
     /**
      * @param int $productId
-     * @return GenericOptinRefData
+     * @return OptinRefData
      */
     public function setProductId(int $productId): self
     {

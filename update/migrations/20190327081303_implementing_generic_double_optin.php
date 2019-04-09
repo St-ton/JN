@@ -45,7 +45,7 @@ class Migration_20190327081303 extends Migration implements IMigration
         ENGINE = innodb");
         $this->execute("CREATE TABLE IF NOT EXISTS toptinhistory(
             kOptinHistory int(10) NOT NULL auto_increment COMMENT 'internal table key',
-            kOptin varchar(256) DEFAULT NULL COMMENT 'main OptInCode, derived from table toptin',
+            kOptinCode varchar(256) DEFAULT NULL COMMENT 'main OptInCode, derived from table toptin',
             kOptinType int(10) NOT NULL DEFAULT 0 COMMENT 'the constant for that optin, from defines_inc.php',
             cMail varchar(256) NOT NULL DEFAULT '' COMMENT 'customer mail address',
             cRefData varchar(1024) DEFAULT NULL COMMENT 'additional reference data (e.g. text output in emails)',

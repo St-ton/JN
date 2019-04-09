@@ -129,7 +129,7 @@ class GenericOptin extends GenericOptinBase
             $this->currentOptin->deactivateOptin();
         }
         $newRow               = new \stdClass();
-        $newRow->kOptin       = $this->optCode;
+        $newRow->kOptinCode   = $this->optCode;
         $newRow->kOptinType   = $this->refData->getOptinType();
         $newRow->cMail        = 'anonym'; // anonymized for history
         $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history

@@ -30,7 +30,7 @@ msgid "clearVotes"
 msgstr "Alle Bewertungen zurücksetzen"
 
 msgid "removeReply"
-msgstr "Antwort entfernen"
+msgstr "Antwort löschen"
 
 msgid "clearVotesComent"
 msgstr "Wählen Sie diese Option nur dann, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen möchten. Das Bewertungssystem wird komplett zurückgesetzt, inklusive aller Kommentare."
@@ -75,7 +75,7 @@ msgid "successRatingEdit"
 msgstr "Ihre Bewertung wurde erfolgreich bearbeitet."
 
 msgid "errorCreditUnlock"
-msgstr "Guthabenbonus kann nur mit \"Bewertung freischalten\" verwendet werden."
+msgstr "Um den Guthabenbonus gewähren zu können, muss die Option „Bewertung freischalten“ aktiviert sein."
 
 msgid "successRatingUnlock"
 msgstr " Bewertung(en) wurde(n) erfolgreich aktiviert."
@@ -84,4 +84,4 @@ msgid "successRatingDelete"
 msgstr " Bewertung(en) wurde(n) erfolgreich gelöscht."
 
 msgid "successRatingCommentDelete"
-msgstr "Antwort zu einer Bewertung wurde entfernt."
+msgstr "Die Antwort wurde erfolgreich gelöscht."

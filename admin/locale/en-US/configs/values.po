@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "artikel_artikelanzeigefilter_value(1)"
 msgstr "Show all items"
 

@@ -3,778 +3,778 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Image"
-msgstr "Bild"
+msgstr "Image"
 
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr "Cancel"
 
 msgid "Save"
-msgstr "Speichern"
+msgstr "Save"
 
 msgid "Wrong XSRF token."
-msgstr "Falsches XSRF token."
+msgstr "Wrong XSRF token."
 
 msgid "dashboard"
 msgstr "Dashboard"
 
 msgid "settingspath"
-msgstr "Pfad"
+msgstr "Path"
 
 msgid "add"
-msgstr "Hinzufügen"
+msgstr "Add"
 
 msgid "add_force"
-msgstr "Hinzufügen erzwingen"
+msgstr "Force Add"
 
 msgid "modify"
-msgstr "Bearbeiten"
+msgstr "Edit"
 
 msgid "edit"
-msgstr "Bearbeiten"
+msgstr "Edit"
 
 msgid "delete"
-msgstr "Löschen"
+msgstr "Delete"
 
 msgid "deleteSelected"
-msgstr "Markierte löschen"
+msgstr "Delete selected"
 
 msgid "refresh"
-msgstr "Aktualisieren"
+msgstr "Refresh"
 
 msgid "deleteAll"
-msgstr "Alles löschen"
+msgstr "Delete all"
 
 msgid "showedName"
-msgstr "Angezeigter Name"
+msgstr "Displayed name"
 
 msgid "multipleChoice"
-msgstr "Mehrfachauswahl möglich mit gedrückter STRG/SHIFT-Taste"
+msgstr "By holding the Ctrl key, you can select multiple options."
 
 msgid "save"
-msgstr "Speichern"
+msgstr "Save"
 
 msgid "saveAndContinue"
-msgstr "Speichern und weiter bearbeiten"
+msgstr "Save and keep editing"
 
 msgid "settings"
-msgstr "Einstellungen"
+msgstr "Settings"
 
 msgid "logout"
-msgstr "Abmelden"
+msgstr "Log out"
 
 msgid "docu"
-msgstr "Dokumentation"
+msgstr "Documentation"
 
 msgid "sortNo"
-msgstr "Sortiernummer"
+msgstr "Sort number"
 
 msgid "allCustomerGroups"
-msgstr "Alle Kundengruppen"
+msgstr "All customer groups"
 
 msgid "goShop"
-msgstr "Zum Shop"
+msgstr "Go to online shop"
 
 msgid "help"
-msgstr "Hilfe"
+msgstr "Help"
 
 msgid "startPage"
-msgstr "Startseite"
+msgstr "Start page"
 
 msgid "sitemap"
 msgstr "Sitemap"
 
 msgid "yes"
-msgstr "Ja"
+msgstr "Yes"
 
 msgid "no"
-msgstr "Nein"
+msgstr "No"
 
 msgid "update"
-msgstr "Aktualisieren"
+msgstr "Refresh"
 
 msgid "from"
-msgstr "von"
+msgstr "from"
 
 msgid "next"
-msgstr "Nächste"
+msgstr "Next"
 
 msgid "previous"
-msgstr "Vorherige"
+msgstr "Previous"
 
 msgid "changeLanguage"
-msgstr "Sprache"
+msgstr "Language"
 
 msgid "goBack"
-msgstr "« Zurück"
+msgstr "« Back"
 
 msgid "enterResult"
 msgstr "Lösung eingeben"
 
 msgid "invalidCode"
-msgstr "Ungültiger Code"
+msgstr "Invalid code"
 
 msgid "invalidResult"
 msgstr "Falsche Lösung"
 
 msgid "enterCode"
-msgstr "Code eingeben"
+msgstr "Enter code"
 
 msgid "code"
 msgstr "Code"
 
 msgid "globalSelectAll"
-msgstr "Alle auswählen"
+msgstr "Select all"
 
 msgid "noDataAvailable"
-msgstr "Zurzeit liegen keine Daten vor."
+msgstr "No data currently available."
 
 msgid "noFilterResults"
-msgstr "Die Filterung ergab keine Treffer."
+msgstr "Filtering without results."
 
 msgid "noPluginDataAvailable"
-msgstr "Dieses Plugin hat keine Einstellungsmöglichkeiten."
+msgstr "There are no adjustable settings for this plug-in."
 
 msgid "confSearch"
-msgstr "Suchen"
+msgstr "Find"
 
 msgid "confSearchWord"
-msgstr "Einstellungssuche"
+msgstr "Settings search"
 
 msgid "searchHeadline"
-msgstr "Einstellung"
+msgstr "Setting"
 
 msgid "noSearchResult"
-msgstr "Leider wurde zu Ihrem Suchbegriff keine Einstellung gefunden."
+msgstr "No results found for your search term."
 
 msgid "NotAvailable"
-msgstr "n.v."
+msgstr "not available"
 
 msgid "page"
-msgstr "Seite"
+msgstr "Page"
 
 msgid "FillOut"
-msgstr "Bitte ausfüllen"
+msgstr "Please complete"
 
 msgid "nofopenError"
-msgstr "Leider steht die PHP Stream Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv. Bitte wenden Sie sich an den Serveradministrator und setzen Sie diese auf 1."
+msgstr "The PHP stream configuration option \"<b>allow_url_fopen</b>\" is not enabled. Please contact your server administrator to set the option to 1."
 
 msgid "noCURLError"
-msgstr "Leider steht das Programm \"<b>CURL (curl_init)</b>\" nicht zur Verfügung. Bitte wenden Sie sich an den Serveradministrator und installieren dieses."
+msgstr "The program \"<b>CURL (curl_init)</b>\" is not available. Please contact your server administrator to install the program."
 
 msgid "noCURLAndFopenError"
-msgstr "Leider steht weder die PHP Stream Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv noch existiert das Programm \"<b>CURL (curl_init)</b>\". Bitte wenden Sie sich an den Serveradministrator und aktivieren mindestens eins der Beiden."
+msgstr "The PHP stream configuration option \"<b>allow_url_fopen</b>\" is not enabled, and the program \"<b>CURL (curl_init)</b>\" is not available. Please contact the server administrator to enabled at least one of them."
 
 msgid "noSOAPError"
-msgstr "Leider steht das Netzwerkprotokoll \"<b>SOAP</b>\" nicht auf zur Verfügung. Bitte wenden Sie sich an den Serveradministrator, damit dieses nachgerüstet wird."
+msgstr "The network protocol \"<b>SOAP</b>\" is not available. Please ask the server administrator to provide it."
 
 msgid "noModuleAvailable"
-msgstr "Es wurde keine gültige Lizenz für dieses Modul gefunden. Eine passende Lizenz können Sie unter <a href=\"https://www.jtl-software.de/JTL-Shop-Onlineshop-und-Erweiterungen\">jtl-software.de erwerben</a>."
+msgstr "You do not have a valid licence for this module. It can be purchased at <a href=\"https://www.jtl-software.de/JTL-Shop-Onlineshop-und-Erweiterungen\">jtl-software.de</a>."
 
 msgid "pageBack"
-msgstr "zurück"
+msgstr "Back"
 
 msgid "submit"
-msgstr "absenden"
+msgstr "Send"
 
 msgid "cancel"
-msgstr "Abbrechen"
+msgstr "Cancel"
 
 msgid "apply"
-msgstr "Übernehmen"
+msgstr "Apply"
 
 msgid "exportCsv"
-msgstr "Exportiere Einträge"
+msgstr "Exported entries"
 
 msgid "importCsv"
-msgstr "Importiere Einträge"
+msgstr "Imported entries"
 
 msgid "importCsvChooseType"
-msgstr "Wie soll importiert werden?"
+msgstr "How should the import be executed?"
 
 msgid "importCsvType0"
-msgstr "Vorhandene Einträge löschen, dann importieren"
+msgstr "Delete existing entries, import new ones afterwards"
 
 msgid "importCsvType1"
-msgstr "Vorhandene Einträge überschreiben und neue importieren"
+msgstr "Overwrite existing entries and import new ones"
 
 msgid "importCsvType2"
-msgstr "Vorhandene Einträge beibehalten und neue importieren"
+msgstr "Keep existing entries and import new ones"
 
 msgid "selectAllShown"
-msgstr "Alle auswählen"
+msgstr "Select all"
 
 msgid "unselectAllShown"
-msgstr "Alle abwählen"
+msgstr "Deselect all"
 
 msgid "file"
-msgstr "Datei"
+msgstr "File"
 
 msgid "import"
-msgstr "Importieren"
+msgstr "Import"
 
 msgid "noAccount"
-msgstr "- Kein Kundenkonto -"
+msgstr "- No customer account -"
 
 msgid "confirm"
-msgstr "Bestätigen"
+msgstr "Confirm"
 
 msgid "wantToConfirm"
-msgstr "Möchten Sie fortfahren?"
+msgstr "Would you like to continue?"
 
 msgid "reloadCaptcha"
-msgstr "Captcha neu laden"
+msgstr "Reload Captcha"
 
 msgid "invalidToken"
-msgstr "Ungültiger Sicherheitscode übermittelt"
+msgstr "An invalid security code was transmitted."
 
 msgid "allPages"
 msgstr "All pages"
 
 msgid "errorFillRequired"
-msgstr "Fehler: Bitte füllen Sie alle Pflichtfelder korrekt aus."
+msgstr "Error: Please complete all mandatory fields."
 
 msgid "successConfigSave"
-msgstr "Ihre Einstellung(en) wurde erfolgreich gespeichert."
+msgstr "Settings saved successfully."
 
 msgid "errorConfigSave"
-msgstr "Fehler beim Speichern Ihrer Einstellungen."
+msgstr "Error saving the settings."
 
 msgid "errorIsNoDir"
-msgstr " ist kein Verzeichnis"
+msgstr " is not a directory."
 
 msgid "contactSupport"
-msgstr "Support kontaktieren"
+msgstr "Please contact Support"
 
 msgid "errorUnknown"
-msgstr "Unbekannter Fehler"
+msgstr "Unknown error"
 
 msgid "errorUnknownLong"
-msgstr "Fehler: Es ist ein unbekannter Fehler aufgetreten"
+msgstr "Error: An unknown error occurred."
 
 msgid "year"
-msgstr " Jahr"
+msgstr " Year"
 
 msgid "years"
-msgstr " Jahre"
+msgstr " Years"
 
 msgid "month"
-msgstr " Monat"
+msgstr " Month"
 
 msgid "months"
-msgstr " Monate"
+msgstr " Months"
 
 msgid "day"
-msgstr " Tag"
+msgstr " Day"
 
 msgid "days"
-msgstr " Tage"
+msgstr " Days"
 
 msgid "hour"
-msgstr " Stunde"
+msgstr " Hour"
 
 msgid "hours"
-msgstr " Stunden"
+msgstr " Hours"
 
 msgid "errorEnterValidDate"
-msgstr "Fehler: Bitte geben Sie ein gültiges Datum ein."
+msgstr "Error: Please enter a valid date."
 
 msgid "smartySyntaxError"
-msgstr "Smarty-Syntax Fehler."
+msgstr "Smarty syntax error"
 
 msgid "errorCheckInput"
-msgstr "Fehler: Bitte überprüfen Sie Ihre Eingaben."
+msgstr "Error: Please check your entries."
 
 msgid "lockForMinutes"
-msgstr "Gesperrt für %s Minuten."
+msgstr "Blocked for %s minutes"
 
 msgid "errorWrongPasswordUser"
-msgstr "Benutzername oder Passwort falsch."
+msgstr "Invalid user name or password"
 
 msgid "errorTwoFactorExpired"
-msgstr "2-Faktor-Authentifizierungs-Code abgelaufen."
+msgstr "Code for two-factor authentication expired"
 
 msgid "errorNoPermission"
-msgstr "Keine Berechtigungen vorhanden."
+msgstr "No permissions available"
 
 msgid "errorCSRF"
-msgstr "Cross site request forgery! Sind Cookies aktiviert?"
+msgstr "Cross-site request forgery! Are cookies enabled?"
 
 msgid "errorSessionExpired"
-msgstr "Ihre Sitzung wurde zurückgesetzt! Bitte melden Sie sich neu an."
+msgstr "Your session has been reset. Please log on again."
 
 msgid "row"
-msgstr "Zeile"
+msgstr "Row"
 
 msgid "errorLangVarNotFound"
-msgstr "Fehler: Ihre ausgewählte Sprachvariable wurde nicht gefunden."
+msgstr "Error: Could not find the selected language variable."
 
 msgid "successChangesSave"
-msgstr "Ihre Änderungen wurden erfolgreich übernommen."
+msgstr "Changes applied successfully."
 
 msgid "errorChooseOption"
-msgstr "Bitte wählen Sie mindestens eine Option aus."
+msgstr "Please select at least one option."
 
 msgid "all"
-msgstr "alle"
+msgstr "All"
 
 msgid "both"
-msgstr "beide"
+msgstr "Both"
 
 msgid "successEmailSend"
-msgstr "Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse gesendet, sofern vorhanden."
+msgstr "An email with further instructions has been sent to the indicated email address (if applicable)."
 
 msgid "successPasswordChange"
-msgstr "Passwort wurde erfolgreich geändert."
+msgstr "Password changed successfully."
 
 msgid "errorPasswordChange"
-msgstr "Passwort konnte nicht geändert werden."
+msgstr "Could not change password."
 
 msgid "errorHashInvalid"
-msgstr "Ungültiger Hash übergeben."
+msgstr "Invalid hash passed."
 
 msgid "errorPasswordMismatch"
-msgstr "Passwörter stimmen nicht überein."
+msgstr "Passwords do not match."
 
 msgid "action"
-msgstr "Aktion"
+msgstr "Action"
 
-msgid "existing"
-msgstr "existing"
+msgid "available"
+msgstr "Available"
 
 msgid "html"
-msgstr "Html"
+msgstr "HTML"
 
 msgid "text"
 msgstr "Text"
 
 msgid "forCustomerGroup"
-msgstr "für Kundengruppe"
+msgstr "for customer group"
 
 msgid "customerGroup"
-msgstr "Kundengruppe"
+msgstr "Customer group"
 
 msgid "chooseCategory"
-msgstr "Kategorien auswählen"
+msgstr "Select category"
 
 msgid "searchCategory"
-msgstr "suche Kategorien"
+msgstr "Search for categories"
 
 msgid "category"
-msgstr "Kategorie"
+msgstr "Category"
 
 msgid "showQuestions"
-msgstr "Fragen anzeigen"
+msgstr "Show questions"
 
 msgid "errorImageSizeTooLarge"
-msgstr "Die Bilddatei ist zu groß."
+msgstr "The image is too large."
 
 msgid "errorUploadSizeLimit"
-msgstr "Die Datei ist größer als das Uploadlimit des Servers."
+msgstr "The image size exceeds the server upload limit."
 
 msgid "general"
-msgstr "Allgemein"
+msgstr "General"
 
 msgid "chooseAvailableFile"
-msgstr "vorhandene Datei wählen"
+msgstr "Select existing file"
 
 msgid "pageType"
-msgstr "Seitentyp"
+msgstr "Page type"
 
 msgid "tag"
 msgstr "Tag"
 
 msgid "attribute"
-msgstr "Merkmal"
+msgstr "Characteristic"
 
 msgid "attributes"
-msgstr "Merkmale"
+msgstr "Characteristics"
 
 msgid "attributeValues"
-msgstr "Merkmalwerte"
+msgstr "Characteristic values"
 
 msgid "searchTerm"
-msgstr "Suchbegriff"
+msgstr "Search term"
 
 msgid "runTime"
-msgstr "Laufzeit"
+msgstr "Duration"
 
 msgid "status"
 msgstr "Status"
 
 msgid "manufacturer"
-msgstr "Hersteller"
+msgstr "Manufacturer"
 
 msgid "pageSelf"
-msgstr "Eigene Seite"
+msgstr "Custom page"
 
 msgid "product"
-msgstr "Artikel"
+msgstr "Item"
 
 msgid "chooseProduct"
-msgstr "Artikel wählen"
+msgstr "Select items"
 
 msgid "deleteProduct"
-msgstr "Artikel löschen"
+msgstr "Delete items"
 
 msgid "filter"
-msgstr "Filter"
+msgstr "Filters"
 
 msgid "noFilter"
-msgstr "Kein Filter"
+msgstr "No filter"
 
 msgid "to"
-msgstr "bis"
+msgstr "to"
 
 msgid "zones"
-msgstr "Zonen"
+msgstr "Zones"
 
 msgid "zone"
 msgstr "Zone"
 
 msgid "title"
-msgstr "Titel"
+msgstr "Name"
 
 msgid "description"
-msgstr "Beschreibung"
+msgstr "Description"
 
 msgid "url"
-msgstr "Url"
+msgstr "URL"
 
 msgid "cssClass"
-msgstr "Css-Klasse"
+msgstr "CSS class"
 
 msgid "new"
-msgstr "neu"
+msgstr "new"
 
 msgid "active"
-msgstr "Aktiv"
+msgstr "Active"
 
 msgid "inactive"
-msgstr "Inaktiv"
+msgstr "Inactive"
 
 msgid "emailAddress"
-msgstr "E-Mail Adresse"
+msgstr "Email address"
 
 msgid "preSurName"
-msgstr "Vor- und Nachname"
+msgstr "First and last name"
 
 msgid "language"
-msgstr "Sprache"
+msgstr "Language"
 
 msgid "username"
-msgstr "Benutzername"
+msgstr "User name"
 
 msgid "logindata"
-msgstr "Anmeldedaten"
+msgstr "Login data"
 
 msgid "password"
-msgstr "Passwort"
+msgstr "Password"
 
 msgid "twoFactorAuth"
-msgstr "2-Faktor-Authentifizierung"
+msgstr "Two-factor authentication"
 
 msgid "activate"
-msgstr "aktivieren"
+msgstr "enable"
 
 msgid "permissions"
-msgstr "Berechtigungen"
+msgstr "Permissions"
 
 msgid "permissionDenied"
-msgstr "Zugriff verweigert"
+msgstr "Access denied"
 
 msgid "userGroup"
-msgstr "Benutzergruppe"
+msgstr "User group"
 
 msgid "noPermissionForPage"
-msgstr "Sie haben keine Berechtigung, diese Seite zu betreten."
+msgstr "No permission to view page."
 
 msgid "contactAdminForPermission"
-msgstr "Falls Sie Zugang zu diesem Bereich benötigen, kontaktieren Sie den Administrator, damit er Ihnen die entsprechenden Rechte zuweist."
+msgstr "If you need to access this area, please ask your administrator to assign the required rights to you."
 
 msgid "imageSizes"
-msgstr "Bildgrößen"
+msgstr "Image sizes"
 
 msgid "variations"
-msgstr "Variationen"
+msgstr "Variations"
 
 msgid "configGroup"
-msgstr "Konfig-Gruppe"
+msgstr "Configuration group"
 
 msgid "type"
-msgstr "Typ"
+msgstr "Type"
 
 msgid "xs"
 msgstr "Mini"
 
 msgid "sm"
-msgstr "Klein"
+msgstr "Small"
 
 msgid "md"
 msgstr "Normal"
 
 msgid "lg"
-msgstr "Gross"
+msgstr "Large"
 
 msgid "widthXHeight"
-msgstr "(Breite x Höhe)"
+msgstr "(width x height)"
 
 msgid "notice"
-msgstr "Meldung"
+msgstr "Notification"
 
 msgid "name"
 msgstr "Name"
 
 msgid "street"
-msgstr "Straße"
+msgstr "Street name"
 
 msgid "city"
-msgstr "Ort"
+msgstr "City"
 
 msgid "email"
-msgstr "E-Mail"
+msgstr "Email"
 
 msgid "customerNumberShort"
-msgstr "Knr."
+msgstr "Customer ID"
 
 msgid "minOrderValue"
-msgstr "Mindestbestellwert"
+msgstr "Minimum order value"
 
 msgid "maxOrderValue"
-msgstr "Maximaler Bestellwert"
+msgstr "Maximum order value"
 
 msgid "directDebit"
-msgstr "Lastschriftverfahren"
+msgstr "Direct debit"
 
 msgid "top"
-msgstr "oben"
+msgstr "at the top"
 
 msgid "topRight"
-msgstr "oben-rechts"
+msgstr "top right corner"
 
 msgid "topLeft"
-msgstr "oben-links"
+msgstr "top left corner"
 
 msgid "bottom"
-msgstr "unten-rechts"
+msgstr "at the bottom"
 
 msgid "bottomRight"
-msgstr "unten-rechts"
+msgstr "bottom right corner"
 
 msgid "bottomLeft"
-msgstr "unten-links"
+msgstr "bottom left corner"
 
 msgid "left"
-msgstr "links"
+msgstr "left"
 
 msgid "right"
-msgstr "rechts"
+msgstr "right"
 
 msgid "centered"
-msgstr "zentriert"
+msgstr "centred"
 
 msgid "activated"
-msgstr "Aktiviert"
+msgstr "Active"
 
 msgid "files"
-msgstr "Dateien"
+msgstr "Files"
 
 msgid "frontend"
-msgstr "Frontend"
+msgstr "Front end"
 
 msgid "backend"
-msgstr "Backend"
+msgstr "Back end"
 
 msgid "methods"
-msgstr "Methoden"
+msgstr "Methods"
 
 msgid "entries"
-msgstr "Einträge"
+msgstr "Entries"
 
 msgid "extended"
-msgstr "Erweitert"
+msgstr "Extended"
 
 msgid "requiredEntry"
-msgstr "Pflichtangabe"
+msgstr "Mandatory"
 
 msgid "noMoreInfo"
-msgstr "Es stehen keine weiteren Informationen zur Verfügung."
+msgstr "No further information available."
 
 msgid "structure"
-msgstr "Struktur"
+msgstr "Structure"
 
 msgid "show"
-msgstr "Anzeigen"
+msgstr "Show"
 
 msgid "table"
-msgstr "Tabelle"
+msgstr "Table"
 
 msgid "any"
-msgstr "beliebig"
+msgstr "any"
 
 msgid "overview"
-msgstr "Übersicht"
+msgstr "Overview"
 
 msgid "consistency"
-msgstr "Konsistenz"
+msgstr "Consistency"
 
 msgid "execute"
-msgstr "Ausführen"
+msgstr "Run"
 
 msgid "collation"
-msgstr "Kollation"
+msgstr "Collation"
 
 msgid "dataEntries"
-msgstr "Datensätze"
+msgstr "Data sets"
 
 msgid "autoIncrement"
-msgstr "Autoinkrement"
+msgstr "Auto increment"
 
 msgid "column"
-msgstr "Spalte"
+msgstr "Column"
 
 msgid "indices"
-msgstr "Indizes"
+msgstr "Indices"
 
 msgid "count"
-msgstr "Anzahl"
+msgstr "Number"
 
 msgid "showData"
-msgstr "Daten anzeigen"
+msgstr "View data"
 
 msgid "noData"
-msgstr "Keine Daten vorhanden"
+msgstr "No data available"
 
 msgid "database"
-msgstr "Datenbank"
+msgstr "Database"
 
 msgid "saveCopy"
-msgstr "Sicherungskopie"
+msgstr "Backup copy"
 
 msgid "migration"
 msgstr "Migration"
 
 msgid "executed"
-msgstr "Ausgeführt"
+msgstr "Executed"
 
 msgid "download"
-msgstr "Herunterladen"
+msgstr "Download"
 
 msgid "updateNow"
-msgstr "Jetzt aktualisieren"
+msgstr "Update now"
 
 msgid "danger"
-msgstr "Achtung"
+msgstr "Caution"
 
 msgid "ok"
-msgstr "Ok"
+msgstr "OK"
 
 msgid "placeholder"
-msgstr "Platzhalter"
+msgstr "Placeholder"
 
 msgid "example"
-msgstr "Beispiel"
+msgstr "Example"
 
 msgid "mister"
-msgstr "Herr"
+msgstr "Mr"
 
 msgid "maleShort"
 msgstr "m"
 
 msgid "madame"
-msgstr "Frau"
+msgstr "Ms"
 
 msgid "femaleShort"
-msgstr "w"
+msgstr "f"
 
 msgid "content"
-msgstr "Inhalt"
+msgstr "Contents"
 
 msgid "firstNameStub"
-msgstr "Max"
+msgstr "John"
 
 msgid "lastNameStub"
-msgstr "Mustermann"
+msgstr "Smith"
 
 msgid "companyStub"
-msgstr "Muster Gmbh"
+msgstr "Company Ltd."
 
 msgid "faulty"
-msgstr "fehlerhaft"
+msgstr "faulty"
 
 msgid "week"
-msgstr "Woche"
+msgstr "Week"
 
 msgid "weeks"
-msgstr "Wochen"
+msgstr "Weeks"
 
 msgid "own"
-msgstr "eigene"
+msgstr "Custom"
 
 msgid "questionUseCache"
-msgstr "Cache nutzen?"
+msgstr "Use cache?"
 
 msgid "link"
 msgstr "Link"
 
 msgid "startsWith"
-msgstr "beginnt mit"
+msgstr "Begins with"
 
 msgid "endsWith"
-msgstr "endet mit"
+msgstr "Ends with"
 
 msgid "isEqual"
-msgstr "ist gleich"
+msgstr "Equals"
 
 msgid "isNotEqual"
-msgstr "ist ungleich"
+msgstr "Does not equal"
 
 msgid "contains"
-msgstr "enthält"
+msgstr "Contains"
 
 msgid "firstSteps"
-msgstr "Erste Schritte"
+msgstr "First steps"
 
 msgid "jtlGuide"
-msgstr "JTL Guide"
+msgstr "JTL-Guide"
 
 msgid "jtlForum"
-msgstr "JTL Forum"
+msgstr "JTL-Forum"
 
 msgid "training"
 msgstr "Training"
 
 msgid "servicePartners"
-msgstr "Servicepartner"
+msgstr "Service partners"
 
 msgid "actions"
-msgstr "Aktionen"
+msgstr "Interactions"
 
 msgid "linkVerb"
-msgstr "Verknüpfen"
+msgstr "Link"
 
 msgid "old"
-msgstr "alt"
+msgstr "old"
 
 msgid "january"
-msgstr "Januar"
+msgstr "January"
 
 msgid "february"
-msgstr "Februar"
+msgstr "February"
 
 msgid "march"
-msgstr "März"
+msgstr "March"
 
 msgid "april"
 msgstr "April"
 
 msgid "may"
-msgstr "Mai"
+msgstr "May"
 
 msgid "june"
-msgstr "Juni"
+msgstr "June"
 
 msgid "july"
-msgstr "Juli"
+msgstr "July"
 
 msgid "august"
 msgstr "August"
@@ -783,220 +783,220 @@ msgid "september"
 msgstr "September"
 
 msgid "october"
-msgstr "Oktober"
+msgstr "October"
 
 msgid "november"
 msgstr "November"
 
 msgid "december"
-msgstr "Dezember"
+msgstr "December"
 
 msgid "dynamic"
-msgstr "dynamisch"
+msgstr "dynamic"
 
 msgid "fixedValue"
-msgstr "Fester Wert"
+msgstr "Fixed value"
 
 msgid "earlier"
-msgstr "Früher"
+msgstr "Previous"
 
 msgid "later"
-msgstr "später"
+msgstr "Next"
 
 msgid "value"
-msgstr "Wert"
+msgstr "Value"
 
 msgid "values"
-msgstr "Werte"
+msgstr "Values"
 
 msgid "number"
-msgstr "Zahl"
+msgstr "Number"
 
 msgid "selection"
-msgstr "Auswahl"
+msgstr "Selection"
 
 msgid "addValue"
-msgstr "Wert hinzufügen."
+msgstr "Add value"
 
 msgid "sortShort"
-msgstr "Sort"
+msgstr "Sort."
 
 msgid "remove"
-msgstr "Entfernen"
+msgstr "Remove"
 
 msgid "amount"
-msgstr "Betrag"
+msgstr "Amount"
 
 msgid "chooseCustomer"
-msgstr "Kunden auswählen"
+msgstr "Select customers"
 
 msgid "customers"
-msgstr "Kunden"
+msgstr "Customers"
 
 msgid "products"
-msgstr "Artikel"
+msgstr "Items"
 
 msgid "only"
-msgstr "nur"
+msgstr "only"
 
 msgid "deactivated"
-msgstr "Deaktiviert"
+msgstr "Disabled"
 
 msgid "standard"
-msgstr "Standard"
+msgstr "Default"
 
 msgid "forced"
-msgstr "erwzungen"
+msgstr "Forced"
 
 msgid "images"
-msgstr "Bilder"
+msgstr "Images"
 
 msgid "plugin"
-msgstr "Plugin"
+msgstr "Plug-in"
 
 msgid "missingTranslations"
-msgstr "Fehlende Übersetzungen"
+msgstr "Missing translations"
 
 msgid "login"
-msgstr "Anmelden"
+msgstr "Log in"
 
 msgid "forgotPassword"
-msgstr "Passwort vergessen?"
+msgstr "Forgot your password?"
 
 msgid "metaSeo"
-msgstr "Meta/Seo"
+msgstr "Meta/SEO"
 
 msgid "id"
 msgstr "ID"
 
 msgid "marked"
-msgstr "markiert"
+msgstr "selected"
 
 msgid "textHtml"
 msgstr "text/html"
 
 msgid "searchProductName"
-msgstr "Suche nach Artikelnamen"
+msgstr "Search for item names"
 
 msgid "searchManufacturerName"
-msgstr "Suche nach Herstellernamen"
+msgstr "Search for manufacturer names"
 
 msgid "chooseManufacturer"
-msgstr "Hersteller wählen"
+msgstr "Select manufacturer"
 
 msgid "searchCatgeoryName"
-msgstr "Suche nach Kategorienamen"
+msgstr "Search for category names"
 
 msgid "chooseCatgeory"
-msgstr "Kategorie wählen"
+msgstr "Select category"
 
 msgid "entriesPerPage"
-msgstr "Einträge/Seite"
+msgstr "Entries per page"
 
 msgid "sorting"
-msgstr "Sortierung"
+msgstr "Sorting"
 
 msgid "ascending"
-msgstr "aufsteigend"
+msgstr "in ascending order"
 
 msgid "descending"
-msgstr "absteigend"
+msgstr "in descending order"
 
 msgid "allEntries"
-msgstr "Einträge gesamt"
+msgstr "Total entries"
 
 msgid "templates"
-msgstr "Vorlagen"
+msgstr "Templates"
 
 msgid "draft"
-msgstr "Entwurf"
+msgstr "Draft"
 
 msgid "publicFrom"
-msgstr "Veröffentlichen ab"
+msgstr "Public from:"
 
 msgid "publicTill"
-msgstr "Veröffentlichen bis"
+msgstr "Public until:"
 
 msgid "replaced"
-msgstr "Ersetzt"
+msgstr "Replaced"
 
 msgid "group"
-msgstr "Gruppe"
+msgstr "Group"
 
 msgid "portlet"
 msgstr "Portlet"
 
 msgid "preview"
-msgstr "Vorschau"
+msgstr "Preview"
 
 msgid "pageID"
-msgstr "Seiten-ID"
+msgstr "Page ID"
 
 msgid "entry"
-msgstr "Eintrag"
+msgstr "Entry"
 
 msgid "resetPassword"
-msgstr "Passwort zurücksetzen"
+msgstr "Reset password"
 
 msgid "newPassword"
-msgstr "Neues Passwort"
+msgstr "New password"
 
 msgid "confirmNewPassword"
-msgstr "Neues Passwort bestätigen"
+msgstr "Confirm new password"
 
 msgid "showAll"
-msgstr "Alle anzeigen"
+msgstr "View all"
 
 msgid "problems"
-msgstr "Probleme"
+msgstr "Issues"
 
 msgid "upload"
 msgstr "Upload"
 
 msgid "selected"
-msgstr "Gewählte"
+msgstr "Selected"
 
 msgid "found"
-msgstr "Gefundene"
+msgstr "Found"
 
 msgid "categories"
-msgstr "Kategorien"
+msgstr "Categories"
 
 msgid "revisions"
-msgstr "Revisionen"
+msgstr "Revisions"
 
 msgid "noRevisions"
-msgstr "Keine Revision vorhanden."
+msgstr "No revisions found"
 
 msgid "revisionDelete"
-msgstr "Revision löschen."
+msgstr "Delete revision"
 
 msgid "revisionRestore"
-msgstr "Revision wiederherstellen."
+msgstr "Restore revision"
 
 msgid "hook"
 msgstr "Hook"
 
 msgid "calls"
-msgstr "Aufrufe"
+msgstr "Calls"
 
 msgid "plugins"
-msgstr "Plugin"
+msgstr "Plug-in"
 
 msgid "sql"
 msgstr "SQL"
 
 msgid "deleteEntry"
-msgstr "Eintrag löschen"
+msgstr "Delete entry"
 
 msgid "tables"
-msgstr "Tabellen"
+msgstr "Tables"
 
 msgid "totalQueries"
-msgstr "Total Queries"
+msgstr "Total queries"
 
 msgid "errorMessage"
-msgstr "Fehlermeldung"
+msgstr "Error message"
 
 msgid "backtrace"
 msgstr "Backtrace"
@@ -1005,67 +1005,67 @@ msgid "statement"
 msgstr "Statement"
 
 msgid "internalName"
-msgstr "Interner Name "
+msgstr "Internal name "
 
 msgid "randomStart"
-msgstr "zufälliger Start"
+msgstr "Random start"
 
 msgid "searchThrough"
-msgstr "Durchsuchen"
+msgstr "Browse"
 
 msgid "options"
-msgstr "Optionen"
+msgstr "Options"
 
 msgid "presentation"
-msgstr "Darstellung"
+msgstr "View"
 
 msgid "navigation"
 msgstr "Navigation"
 
 msgid "hide"
-msgstr "Ausblenden"
+msgstr "Hide"
 
 msgid "thumbnail"
 msgstr "Thumbnail"
 
 msgid "direction"
-msgstr "Richtung"
+msgstr "Direction"
 
 msgid "effects"
-msgstr "Effekte"
+msgstr "Effects"
 
 msgid "theme"
 msgstr "Theme"
 
 msgid "displayOptions"
-msgstr "Anzeigeoptionen"
+msgstr "Display options"
 
 msgid "mobile"
-msgstr "Mobil"
+msgstr "Mobile device"
 
 msgid "version"
 msgstr "Version"
 
 msgid "create"
-msgstr "erstellen"
+msgstr "Create"
 
 msgid "visitors"
-msgstr "Besucher"
+msgstr "Visitors"
 
 msgid "visitor"
-msgstr "Besucher"
+msgstr "Visitor"
 
 msgid "customerHeritage"
-msgstr "Kundenherkunft"
+msgstr "Origins of shop visitors"
 
 msgid "searchEngines"
-msgstr "Suchmaschinen"
+msgstr "Search engines"
 
 msgid "sales"
-msgstr "Umsatz"
+msgstr "Sales revenues"
 
 msgid "entryPages"
-msgstr "Einstiegsseiten"
+msgstr "Start pages"
 
 msgid "details"
 msgstr "Details"
@@ -1077,316 +1077,316 @@ msgid "subscription"
 msgstr "Subscription"
 
 msgid "valid"
-msgstr "gültig"
+msgstr "valid"
 
 msgid "expired"
-msgstr "abgelaufen"
+msgstr "expired"
 
 msgid "domain"
 msgstr "Domain"
 
 msgid "paymentTypes"
-msgstr "Zahlungsarten"
+msgstr "Payment methods"
 
 msgid "paymentType"
-msgstr "Zahlungsart"
+msgstr "Payment method"
 
 msgid "cache"
 msgstr "Cache"
 
 msgid "settingNumberShort"
-msgstr "Einstellungsnr."
+msgstr "Setting number"
 
 msgid "shippingTypesOverview"
-msgstr "Versandartenübersicht."
+msgstr "Shipping methods overview"
 
 msgid "paymentTypesOverview"
-msgstr "Zahlungsartenübersicht."
+msgstr "Payment methods overview"
 
 msgid "yourSystem"
-msgstr "Ihr System"
+msgstr "Your system"
 
 msgid "installedSoftware"
-msgstr "Installierte Software"
+msgstr "Installed software"
 
 msgid "software"
 msgstr "Software"
 
 msgid "requirements"
-msgstr "Voraussetzung"
+msgstr "Requirement"
 
 msgid "designation"
-msgstr "Bezeichnung"
+msgstr "Name"
 
 msgid "setting"
-msgstr "Einstellung"
+msgstr "Setting"
 
 msgid "divider"
-msgstr "Trennzeichen"
+msgstr "Separator"
 
 msgid "unit"
-msgstr "Einheit"
+msgstr "Unit"
 
 msgid "quantity"
-msgstr "Menge"
+msgstr "Quantity"
 
 msgid "weight"
-msgstr "Gewicht"
+msgstr "Weight"
 
 msgid "option"
 msgstr "Option"
 
 msgid "last"
-msgstr "letzte"
+msgstr "last"
 
 msgid "lastYear"
-msgstr "letztes Jahr"
+msgstr "previous year"
 
 msgid "duplicate"
-msgstr "Duplizieren"
+msgstr "Duplicate"
 
 msgid "user"
-msgstr "Benutzer"
+msgstr "User"
 
 msgid "change"
-msgstr "ändern"
+msgstr "change"
 
 msgid "noMoreWidgets"
-msgstr "Keine weiteren Widgets vorhanden."
+msgstr "No other widgets available."
 
 msgid "note"
-msgstr "hinweis"
+msgstr "Note"
 
 msgid "level"
 msgstr "Level"
 
 msgid "orderNumberShort"
-msgstr "Bestell-Nr."
+msgstr "Purchase order ID"
 
 msgid "currency"
-msgstr "Währung"
+msgstr "Currency"
 
 msgid "paymentDue"
-msgstr "Zahlungsgebühr"
+msgstr "Payment fee"
 
 msgid "rows"
-msgstr "Zeilen"
+msgstr "Rows"
 
 msgid "engine"
 msgstr "Engine"
 
 msgid "databaseStructure"
-msgstr "Datenbankstruktur"
+msgstr "Database structure"
 
 msgid "showModified"
-msgstr "Modifizierte anzeigen"
+msgstr "Show modified"
 
 msgid "markAll"
-msgstr "Alle markieren"
+msgstr "Select all"
 
 msgid "optimize"
-msgstr "optimieren"
+msgstr "optimise"
 
 msgid "repair"
-msgstr "reparieren"
+msgstr "repair"
 
 msgid "check"
-msgstr "prüfen"
+msgstr "review"
 
 msgid "analyse"
-msgstr "analysieren"
+msgstr "analyse"
 
 msgid "send"
-msgstr "senden"
+msgstr "send"
 
 msgid "step"
-msgstr "Schritt"
+msgstr "Step"
 
 msgid "automatic"
-msgstr "Automatisch"
+msgstr "Automatically"
 
 msgid "approximately"
-msgstr "ca."
+msgstr "approx."
 
 msgid "minute"
-msgstr "Minute"
+msgstr "minute"
 
 msgid "minutes"
-msgstr "Minuten"
+msgstr "minutes"
 
 msgid "continueQuestion"
-msgstr "Fortfahren?"
+msgstr "Continue?"
 
 msgid "reset"
-msgstr "Zurücksetzen"
+msgstr "Reset"
 
 msgid "question"
-msgstr "Frage"
+msgstr "Question"
 
 msgid "orderNumber"
-msgstr "Bestellnummer"
+msgstr "Purchase order ID"
 
 msgid "customer"
-msgstr "Kunde"
+msgstr "Customer"
 
 msgid "search"
-msgstr "Suchen"
+msgstr "Find"
 
 msgid "more"
-msgstr "Mehr"
+msgstr "More"
 
 msgid "insert"
-msgstr "einfügen"
+msgstr "insert"
 
 msgid "pages"
-msgstr "Seiten"
+msgstr "Pages"
 
 msgid "manufacturers"
-msgstr "Hersteller"
+msgstr "Manufacturer"
 
 msgid "transparency"
-msgstr "Transparenz"
+msgstr "Transparency"
 
 msgid "size"
-msgstr "Grösse"
+msgstr "Size"
 
 msgid "position"
 msgstr "Position"
 
 msgid "deactivate"
-msgstr "deaktivieren"
+msgstr "disable"
 
 msgid "newsletter"
 msgstr "Newsletter"
 
 msgid "exportformat"
-msgstr "Exportformat"
+msgstr "Export format"
 
 msgid "exportformats"
-msgstr "Exportformate"
+msgstr "Export formats"
 
 msgid "progress"
-msgstr "Fortschritt"
+msgstr "Progress"
 
 msgid "configure"
-msgstr "einstellen"
+msgstr "configure"
 
 msgid "subject"
-msgstr "Betreff"
+msgstr "Subject"
 
 msgid "subjects"
-msgstr "Betreffs"
+msgstr "Subjects"
 
 msgid "filename"
-msgstr "Dateiname"
+msgstr "File name"
 
 msgid "module"
-msgstr "Modul"
+msgstr "Module"
 
 msgid "template"
-msgstr "Vorlage"
+msgstr "Template"
 
 msgid "repetition"
-msgstr "Wiederholung"
+msgstr "Repetition"
 
 msgid "header"
-msgstr "Kopfzeile"
+msgstr "Header"
 
 msgid "footer"
-msgstr "Fusszeile"
+msgstr "Footer"
 
 msgid "firstName"
-msgstr "Vorname"
+msgstr "First name"
 
 msgid "lastName"
-msgstr "Nachname"
+msgstr "Last name"
 
 msgid "reviews"
-msgstr "Bewertungen"
+msgstr "Customer reviews"
 
 msgid "stars"
-msgstr "Sterne"
+msgstr "Stars"
 
 msgid "productName"
-msgstr "Artikelname"
+msgstr "Item name"
 
 msgid "back"
-msgstr "zurück"
+msgstr "Back"
 
 msgid "annual"
-msgstr "Jährlich"
+msgstr "Yearly"
 
 msgid "monthly"
-msgstr "Monatlich"
+msgstr "Monthly"
 
 msgid "weekly"
-msgstr "Wöchentlich"
+msgstr "Weekly"
 
 msgid "daily"
-msgstr "Täglich"
+msgstr "Daily"
 
 msgid "contents"
-msgstr "inhalte"
+msgstr "Contents"
 
 msgid "format"
 msgstr "Format"
 
 msgid "credit"
-msgstr "Guthaben"
+msgstr "Credit"
 
 msgid "newCustomer"
-msgstr "Neukunde"
+msgstr "New customer"
 
 msgid "registered"
-msgstr "Registriert"
+msgstr "Registered"
 
 msgid "names"
-msgstr "Namen"
+msgstr "Names"
 
 msgid "optional"
 msgstr "optional"
 
 msgid "coupon"
-msgstr "Kupon"
+msgstr "Coupon"
 
 msgid "coupons"
-msgstr "Kupons"
+msgstr "Coupons"
 
 msgid "orderValue"
-msgstr "Bestellwert"
+msgstr "Order value"
 
 msgid "order"
-msgstr "Bestellung"
+msgstr "Order"
 
 msgid "orders"
-msgstr "Bestellungen"
+msgstr "Orders"
 
 msgid "unitPrice"
-msgstr "Stückpreis"
+msgstr "Unit price"
 
 msgid "totalPrice"
-msgstr "Gesamtpreis"
+msgstr "Total price"
 
 msgid "totalAmount"
-msgstr "Gesamtsumme"
+msgstr "Total sum"
 
 msgid "linkGroup"
-msgstr "Linkgruppe"
+msgstr "Link group"
 
 msgid "register"
-msgstr "Registrieren"
+msgstr "Register"
 
 msgid "basket"
-msgstr "Warenkorb"
+msgstr "Basket"
 
 msgid "contact"
-msgstr "Kontakt"
+msgstr "Contact"
 
 msgid "news"
 msgstr "News"
 
 msgid "poll"
-msgstr "Umfrage"
+msgstr "Survey"
 
 msgid "mapping"
 msgstr "Mapping"
@@ -1395,61 +1395,61 @@ msgid "blacklist"
 msgstr "Blacklist"
 
 msgid "headline"
-msgstr "Überschrift"
+msgstr "Headline"
 
 msgid "campaign"
-msgstr "Kampagne"
+msgstr "Campaign"
 
 msgid "error"
-msgstr "Fehler"
+msgstr "Error"
 
 msgid "selectAll"
-msgstr "Alle auswählen"
+msgstr "Select all"
 
 msgid "continent"
-msgstr "Kontinent"
+msgstr "Continent"
 
 msgid "country"
-msgstr "Land"
+msgstr "Country"
 
 msgid "iso"
 msgstr "ISO"
 
 msgid "areas"
-msgstr "Bereiche"
+msgstr "Areas"
 
 msgid "current"
-msgstr "aktuell"
+msgstr "Current"
 
 msgid "bestseller"
-msgstr "Bestseller"
+msgstr "Bestsellers"
 
 msgid "seo"
 msgstr "SEO"
 
 msgid "read"
-msgstr "lesen"
+msgstr "read"
 
 msgid "net"
-msgstr "Netto"
+msgstr "Net"
 
 msgid "gross"
-msgstr "Brutto"
+msgstr "Gross"
 
 msgid "price"
-msgstr "Preis"
+msgstr "Price"
 
 msgid "favorites"
-msgstr "Favoriten"
+msgstr "Favourites"
 
 msgid "manageFavorites"
-msgstr "Verwalten Sie Ihre Favoriten"
+msgstr "Manage your favourites."
 
 msgid "account"
-msgstr "Konto"
+msgstr "Account"
 
 msgid "shop"
-msgstr "Shop"
+msgstr "Online shop"
 
 msgid "pageHome"
 msgstr "Home"

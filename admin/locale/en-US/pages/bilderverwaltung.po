@@ -3,67 +3,67 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "bilderverwaltung"
-msgstr "Bilderverwaltung"
+msgstr "Image administration"
 
 msgid "bilderverwaltungURL"
-msgstr "https://jtl-url.de/sbk4m"
+msgstr "https://jtl-url.de/v4jwa"
 
 msgid "bilderverwaltungDesc"
-msgstr "Hier sehen Sie eine Übersicht zu den aktuell bereits generierten Artikelbildern und ggf. aufgetretenen Fehlern. Artikelbilder werden in den verschiedenen verfügbaren Größen in JTL-Shop erst dann generiert, wenn diese zum ersten Mal im Frontend aufgerufen werden. Dies kann vereinzelt zu längeren Ladezeiten führen. Über „Generieren“ können Sie alle noch nicht erzeugten Bilder automatisch erstellen lassen. Über „Cache leeren“ können Sie alle erzeugten Bilder entfernen."
+msgstr "This is an overview of all existing item images and, if applicable, errors. The different sizes of the item images in JTL-Shop are only generated when the images are opened in the front end for the first time. This may lead to longer loading times in some cases. By selecting \"Generate\", you create all images that have not yet been generated. By selecting \"Empty cache\", you delete all existing images."
 
 msgid "headlineTyp"
-msgstr "Typ"
+msgstr "Type"
 
 msgid "headlineTotal"
-msgstr "Insgesamt"
+msgstr "Total number"
 
 msgid "headlineCache"
-msgstr "Im Cache (Fallback *)"
+msgstr "In cache (fallback *)"
 
 msgid "headlineSize"
-msgstr "Größe"
+msgstr "Size"
 
 msgid "deleteCachedPics"
-msgstr " Cache leeren"
+msgstr " Empty cache"
 
 msgid "generatePics"
-msgstr " Generieren"
+msgstr " Generate"
 
 msgid "currentCorruptedPics"
-msgstr "Aktuell fehlerhafte Bilder:"
+msgstr "Currently faulty images:"
 
 msgid "articlenr"
-msgstr "Artikelnummer"
+msgstr "SKU"
 
 msgid "articlePic"
-msgstr "Artikelbild"
+msgstr "Item image"
 
 msgid "corruptedPicsNote"
-msgstr "Fehlerhafte Bilder sind Bilder, die zwar einen Eintrag in der Datenbank haben, allerdings nicht als Datei auf dem Server vorhanden sind. Es werden maximal 50 Ergebnisse angezeigt."
+msgstr "Faulty images are images with an entry in the database for which no file exists on the server. A maximum of 50 results is shown."
 
 msgid "fallbackNote"
-msgstr "*Fallback: Bilder, die sich im Ordner „bilder/“ und nicht im Ordner „media/“ befinden."
+msgstr "*Fallback: images that are in the folder \"images/\" instead of the folder \"media\"."
 
 msgid "successCacheReset"
-msgstr "Cache wurde erfolgreich zurückgesetzt"
+msgstr "Cache deleted successfully."
 
 msgid "successImageCleanup"
-msgstr "Bilder erfolgreich aufgeräumt"
+msgstr "Images cleared successfully."
 
 msgid "pendingImageCleanup"
-msgstr "Bilder werden aufgeräumt"
+msgstr "Clearing images…"
 
 msgid "successImageDelete"
-msgstr "Bilder gelöscht"
+msgstr "Images deleted successfully."
 
 msgid "successImageGenerate"
-msgstr "Bilder erfolgreich generiert."
+msgstr "Images generated successfully."
 
 msgid "pendingImageDelete"
-msgstr "Lösche Bilder..."
+msgstr "Deleting images…"
 
 msgid "pendingStatisticCalc"
-msgstr "Statistiken werden berechnet..."
+msgstr "Calculating reports…"
 
 msgid "pendingImageGenerate"
-msgstr "Bilder werden generiert."
+msgstr "Generating images…"

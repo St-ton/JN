@@ -3,31 +3,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "agbwrb"
-msgstr "AGB/Widerrufsbelehrung"
+msgstr "Terms/Withdrawal"
 
 msgid "agbwrbURL"
-msgstr "https://jtl-url.de/15ge9"
+msgstr "https://jtl-url.de/09qo2"
 
 msgid "agb"
-msgstr "Allgemeine Geschäftsbedingungen"
+msgstr "Terms and conditions"
 
 msgid "wrb"
-msgstr "Widerrufsbelehrung"
+msgstr "Withdrawal"
 
 msgid "dse"
-msgstr "Datenschutzerklärung"
+msgstr "Privacy statement"
 
 msgid "wrbform"
-msgstr "Muster-Widerrufsformular"
+msgstr "Model instructions on withdrawal"
 
 msgid "trustedShopInfo"
-msgstr "Kostenlose Mustertexte zur Formulierung Ihrer AGB und WRB<br />finden Sie auf <i class=\"fa fa-external-link\"></i> <a href=\"http://www.trustedshops.de/shop-info/musterformulierungen\" target=\"_blank\">http://www.trustedshops.de/shop-info/musterformulierungen</a> Passwort: mustertexte<br /><br />Oder nutzen Sie alternativ das <b>Plugin janolaw AGB-Hosting</b> und erstellen Sie direkt online mithilfe eines Assistenten <b>individuell angepasste</b> und <b>dauerhaft abmahnsichere</b> AGB für Ihren Shop. Das Plugin bietet zusätzlich <b>alle weiteren wichtigen Shop-Dokumente - inklusive automatischer Updates bei neuer Rechtslage und Abmahnkostenhaftung</b>. Besser und günstiger kann man seinen Shop nicht vor Abmahnungen schützen. <br /><br /><i class=\"fa fa-external-link\"></i> <a href=\"http://www.janolaw.de/partner/jtl/agb-hosting-service/index.html?partnerid=8732#menu\" target=\"_blank\">Hier</a> können Sie den Service unseres Partners janolaw buchen."
+msgstr "Here you can store custom texts for your terms and conditions, any information concerning the exercise of the right of withdrawal and an exemplary withdrawal form. Our partners are happy to help you produce legally incontestable texts. Please find the list of all partners offering help with legal texts here: <i class=\"fa fa-external-link\"><a href=\"http://jtl-url.de/rechtstexte\" target=\"_blank\">https://jtl-url.de/legaltexts</a>."
 
 msgid "errorInvalidCustomerGroup"
-msgstr "Fehler: Bitte geben Sie eine gültige Kundengruppe an."
+msgstr "Error: Please enter a valid customer group."
 
 msgid "successSave"
-msgstr "Ihre AGB bzw. WRB wurde erfolgreich gespeichert."
+msgstr "Information on terms/withdrawal saved successfully."
 
 msgid "errorSave"
-msgstr "Fehler: Ihre AGB/WRB konnte nicht gespeichert werden."
+msgstr "Error: Could not save the information on terms/withdrawal."

@@ -6,7 +6,7 @@ msgid "benutzer"
 msgstr "Benutzerverwaltung"
 
 msgid "benutzerDesc"
-msgstr "Hier verwalten Sie Benutzer- und Gruppenberechtigungen für das Backend von JTL-Shop. Sie können neue Benutzer hinzufügen und diese einer Gruppe zuordnen. In der Registerkarte „Benutzergruppen“ setzen Sie Berechtigungen für bestimmte Bereiche des Backends. "
+msgstr "Hier verwalten Sie Benutzer- und Gruppenberechtigungen für das Backend von JTL-Shop. Sie können neue Benutzer anlegen und diese einer Gruppe zuordnen. In der Registerkarte „Benutzergruppen“ setzen Sie Berechtigungen für bestimmte Bereiche des Backends."
 
 msgid "benutzerURL"
 msgstr "https://jtl-url.de/2t78f"
@@ -96,7 +96,7 @@ msgid "errorUserSave"
 msgstr "Benutzer konnte nicht gespeichert werden."
 
 msgid "successUserAdd"
-msgstr "Benutzer wurde erfolgreich hinzugefügt."
+msgstr "Benutzer wurde erfolgreich angelegt."
 
 msgid "errorUserAdd"
 msgstr "Benutzer konnte nicht angelegt werden."
@@ -123,16 +123,16 @@ msgid "successGroupDelete"
 msgstr "Benutzergruppe wurde erfolgreich gelöscht."
 
 msgid "errorGroupDelete"
-msgstr "Benutzergruppe kann nicht entfernt werden."
+msgstr "Benutzergruppe kann nicht gelöscht werden."
 
 msgid "errorGroupDeleteCustomer"
-msgstr "Die Benutzergruppe kann nicht entfernt werden, da sie noch mindestens ein Mitglied hat."
+msgstr "Die Benutzergruppe kann nicht gelöscht werden, da sie noch mindestens ein Mitglied hat."
 
 msgid "errorKeyChange"
 msgstr " konnte nicht geändert werden!"
 
 msgid "sureDeleteGroup"
-msgstr "Sind Sie sicher, dass die Gruppe entfernt werden soll?"
+msgstr "Sind Sie sicher, dass die Gruppe gelöscht werden soll?"
 
 msgid "usernameNotAvailable"
 msgstr "Benutzername <strong>%s</strong> bereits vergeben."
@@ -159,7 +159,7 @@ msgid "emergencyCode"
 msgstr "Notfall-Codes"
 
 msgid "codeCreateAgain"
-msgstr "Codes neu erzeugen"
+msgstr "Neue Codes erzeugen"
 
 msgid "clickHereToCreateQR"
 msgstr "Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:"
@@ -168,7 +168,7 @@ msgid "codeCreate"
 msgstr "Neuen Code erzeugen"
 
 msgid "emergencyCodeCreate"
-msgstr "Notfall-Codes neu erzeugen"
+msgstr "Neue Notfall-Codes erzeugen"
 
 msgid "shopEmergencyCodes"
 msgstr "Notfall-Codes für das JTL-Shop-Backend"

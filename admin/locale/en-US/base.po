@@ -90,7 +90,7 @@ msgid "no"
 msgstr "No"
 
 msgid "update"
-msgstr "Refresh"
+msgstr "Update"
 
 msgid "from"
 msgstr "from"
@@ -410,11 +410,14 @@ msgstr "Custom page"
 msgid "product"
 msgstr "Item"
 
-msgid "chooseProduct"
+msgid "chooseProducts"
 msgstr "Select items"
 
+msgid "chooseProduct"
+msgstr "Select item"
+
 msgid "deleteProduct"
-msgstr "Delete items"
+msgstr "Delete item"
 
 msgid "filter"
 msgstr "Filters"
@@ -883,9 +886,6 @@ msgstr "Search for manufacturer names"
 
 msgid "chooseManufacturer"
 msgstr "Select manufacturer"
-
-msgid "searchCatgeoryName"
-msgstr "Search for category names"
 
 msgid "chooseCatgeory"
 msgstr "Select category"
@@ -1583,9 +1583,6 @@ msgstr "Warning"
 msgid "moreInfo"
 msgstr "More information"
 
-msgid "available"
-msgstr "available"
-
 msgid "info"
 msgstr "Info"
 
@@ -1627,3 +1624,18 @@ msgstr "Antarctica"
 
 msgid "date"
 msgstr "Date"
+
+msgid "statisticNoData"
+msgstr "No statistics at the moment."
+
+msgid "of"
+msgstr "of"
+
+msgid "activeFrom"
+msgstr "Active from"
+
+msgid "activeTo"
+msgstr "Active to"
+
+msgid "validUntil"
+msgstr "Valid until"

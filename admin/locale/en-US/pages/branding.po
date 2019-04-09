@@ -29,18 +29,6 @@ msgstr "Here you can adjust the transparency of the watermark. We recommend a va
 msgid "brandingSizeDesc"
 msgstr "Enter the size of the watermark in proportion to the image size (in %). We recommend setting a value of 30. If you enter 0, the watermark will not be scaled at all and will be inserted in the original image size."
 
-msgid "brandingTransparencyColor"
-msgstr "Transparenzfarbe des Wasserzeichen"
-
-msgid "brandingTransparencyColorDesc"
-msgstr "Diese Farbe wird beim Wasserzeichen nicht berücksichtigt, dadurch werden transparente Bereiche ermöglicht. Wenn diese Einstellung genutzt wird, so wird das Wasserzeichen nicht skaliert und immer in der Originalgröße genutzt."
-
-msgid "brandingEdgeDistance"
-msgstr "Randabstand"
-
-msgid "brandingEdgeDistanceDesc"
-msgstr "Hier geben Sie den Abstand des Wasserzeichen in Prozent vom Rand ein. Wir empfehlen einen Wert von 1-10."
-
 msgid "brandingFileName"
 msgstr "Watermark file"
 

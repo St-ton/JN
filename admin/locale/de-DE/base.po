@@ -410,6 +410,9 @@ msgstr "Eigene Seite"
 msgid "product"
 msgstr "Artikel"
 
+msgid "chooseProducts"
+msgstr "Artikel wählen"
+
 msgid "chooseProduct"
 msgstr "Artikel wählen"
 
@@ -883,9 +886,6 @@ msgstr "Suche nach Herstellernamen"
 
 msgid "chooseManufacturer"
 msgstr "Hersteller wählen"
-
-msgid "searchCatgeoryName"
-msgstr "Suche nach Kategorienamen"
 
 msgid "chooseCatgeory"
 msgstr "Kategorie wählen"
@@ -1583,9 +1583,6 @@ msgstr "Warnung"
 msgid "moreInfo"
 msgstr "Mehr Informationen"
 
-msgid "available"
-msgstr "verfügbar"
-
 msgid "info"
 msgstr "Info"
 
@@ -1627,3 +1624,18 @@ msgstr "Antarktis"
 
 msgid "date"
 msgstr "Datum"
+
+msgid "statisticNoData"
+msgstr "Es liegen noch keine Statistiken vor."
+
+msgid "of"
+msgstr "von"
+
+msgid "activeFrom"
+msgstr "Aktiv von"
+
+msgid "activeTo"
+msgstr "Aktiv bis"
+
+msgid "validUntil"
+msgstr "Gültig bis"

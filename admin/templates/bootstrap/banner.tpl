@@ -110,11 +110,11 @@
                         </span>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon"><label for="vDatum">{__('active')} {__('from')}</label></span>
+                        <span class="input-group-addon"><label for="vDatum">{__('activeFrom')}</label></span>
                         <input class="form-control" type="text" name="vDatum" id="vDatum" value="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}" />
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon"><label for="bDatum">{__('active')} {__('to')}</label></span>
+                        <span class="input-group-addon"><label for="bDatum">{__('activeTo')}</label></span>
                         <input class="form-control" type="text" name="bDatum" id="bDatum" value="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}" />
                     </div>
                 </div><!-- /.panel-body -->

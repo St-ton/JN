@@ -2183,16 +2183,16 @@ msgid "vergleichsliste_artikelnummer_desc"
 msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_verfuegbarkeit_name"
-msgstr "Anzeigepriorität Verfügbarkeit"
+msgstr "Displaying priority of availability"
 
 msgid "vergleichsliste_verfuegbarkeit_desc"
-msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_lieferzeit_name"
-msgstr "Anzeigepriorität Lieferzeit"
+msgstr "Displaying priority of shipping time"
 
 msgid "vergleichsliste_lieferzeit_desc"
-msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_hersteller_name"
 msgstr "Displaying priority of manufacturer"

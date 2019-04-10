@@ -13,19 +13,16 @@ namespace JTL\Optin;
 abstract class OptinFactory
 {
     /**
-     * @param int   $optinType
-     * @param array $inheritData
-     * @return OptinAvailAgain
+     * @param string $optinClass
+     * @param array  $inheritData
+     * @return OptinInterface|null
      */
-    public static function instantiate(int $optinType, ...$inheritData): OptinInterface
+    public static function getInstance(string $optinClass, ...$inheritData): ?OptinInterface
     {
-        switch ($optinType) {
-            case OPTIN_AVAILAGAIN:
-                return new OptinAvailAgain($inheritData);
-//            case OPTIN_NEWSLETTER:
-//                return new OptinNewsletter($inheritData);
-            default:
-                return null;
+        if (class_exists($optinClass)) {
+            return new $optinClass($inheritData);
         }
+
+        return null;
     }
 }

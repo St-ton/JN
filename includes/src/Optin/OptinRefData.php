@@ -13,9 +13,9 @@ namespace JTL\Optin;
 class OptinRefData implements \Serializable
 {
     /**
-     * @var int
+     * @var string
      */
-    private $optinType;
+    private $optinClass;
 
     /**
      * @var int
@@ -63,7 +63,7 @@ class OptinRefData implements \Serializable
     public function serialize(): string
     {
         return \serialize([
-            $this->optinType,
+            $this->optinClass,
             $this->languageID,
             $this->customerID,
             $this->salutation,
@@ -81,7 +81,7 @@ class OptinRefData implements \Serializable
     public function unserialize($serialized): void
     {
         [
-            $this->optinType,
+            $this->optinClass,
             $this->languageID,
             $this->customerID,
             $this->salutation,
@@ -94,12 +94,12 @@ class OptinRefData implements \Serializable
     }
 
     /**
-     * @param int $optinType
+     * @param string $optinClass
      * @return OptinRefData
      */
-    public function setOptinType(int $optinType): self
+    public function setOptinClass(string $optinClass): self
     {
-        $this->optinType = $optinType;
+        $this->optinClass = $optinClass;
 
         return $this;
     }
@@ -193,11 +193,11 @@ class OptinRefData implements \Serializable
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getOptinType(): int
+    public function getOptinClass(): string
     {
-        return $this->optinType;
+        return $this->optinClass;
     }
 
     /**

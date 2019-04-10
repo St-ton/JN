@@ -100,13 +100,14 @@ abstract class OptinBase extends OptinFactory
      */
     protected function saveOptin(string $optCode): void
     {
-        $this->optCode      = $optCode;
-        $newRow             = new \stdClass();
-        $newRow->kOptinCode = $this->optCode;
-        $newRow->kOptinType = $this->refData->getOptinType();
-        $newRow->cMail      = $this->refData->getEmail();
-        $newRow->cRefData   = \serialize($this->refData);
-        $newRow->dCreated   = $this->nowDataTime->format('Y-m-d H:i:s');
+        $this->refData->setOptinClass(static::class); // save the caller
+        $this->optCode       = $optCode;
+        $newRow              = new \stdClass();
+        $newRow->kOptinCode  = $this->optCode;
+        $newRow->kOptinClass = static::class;
+        $newRow->cMail       = $this->refData->getEmail();
+        $newRow->cRefData    = \serialize($this->refData);
+        $newRow->dCreated    = $this->nowDataTime->format('Y-m-d H:i:s');
         $this->dbHandler->insert('toptin', $newRow);
     }
 }

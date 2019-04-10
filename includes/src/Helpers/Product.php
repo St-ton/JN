@@ -32,6 +32,7 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Sprache;
 use stdClass;
 use function Functional\group;
+use JTL\Optin\OptinAvailAgain;
 
 /**
  * Class Product
@@ -1256,13 +1257,12 @@ class Product
                     ->setSalutation('')
                     ->setFirstName('')
                     ->setLastName('')
-                    ->setOptinType(OPTIN_AVAILAGAIN)
                     ->setProductId((int)$_POST['a'])
                     ->setEmail(Text::filterXSS($dbHandler->escape(strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguage())
                     ->setRealIP(Request::getRealIP());
                 try {
-                    (new Optin(OPTIN_AVAILAGAIN))
+                    (new Optin(OptinAvailAgain::class))
                         ->getOptin()
                         ->createOptin($refData)
                         ->sendActivationMail();

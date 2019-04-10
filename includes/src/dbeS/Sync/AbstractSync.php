@@ -19,6 +19,7 @@ use JTL\Kampagne;
 use JTL\Customer\Kundengruppe;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Optin\OptinAvailAgain;
 use JTL\Redirect;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
@@ -242,7 +243,7 @@ abstract class AbstractSync
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $isOptinValidActive = (new Optin(\OPTIN_AVAILAGAIN))
+            $isOptinValidActive = (new Optin(OptinAvailAgain::class))
                 ->setEmail($msg->cMail)
                 ->isActive();
             if (!$isOptinValidActive) {

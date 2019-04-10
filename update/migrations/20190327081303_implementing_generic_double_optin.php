@@ -34,7 +34,7 @@ class Migration_20190327081303 extends Migration implements IMigration
         $this->execute("CREATE TABLE IF NOT EXISTS toptin(
             kOptin int(10) NOT NULL AUTO_INCREMENT COMMENT 'internal table key',
             kOptinCode varchar(256) NOT NULL DEFAULT '' COMMENT 'main opt-in code',
-            kOptinType int(10) NOT NULL DEFAULT 0 COMMENT 'the constant for that optin, from defines_inc.php',
+            kOptinClass varchar(1024) DEFAULT '' COMMENT 'the class name of this optin',
             cMail varchar(256) NOT NULL DEFAULT '' COMMENT 'customer mail address',
             cRefData varchar(1024) DEFAULT NULL COMMENT 'additional reference data (e.g. text output in emails)',
             dCreated datetime DEFAULT NULL COMMENT 'opt-in created',
@@ -46,7 +46,7 @@ class Migration_20190327081303 extends Migration implements IMigration
         $this->execute("CREATE TABLE IF NOT EXISTS toptinhistory(
             kOptinHistory int(10) NOT NULL auto_increment COMMENT 'internal table key',
             kOptinCode varchar(256) DEFAULT NULL COMMENT 'main OptInCode, derived from table toptin',
-            kOptinType int(10) NOT NULL DEFAULT 0 COMMENT 'the constant for that optin, from defines_inc.php',
+            kOptinClass varchar(1024) DEFAULT '' COMMENT 'the class name of this optin',
             cMail varchar(256) NOT NULL DEFAULT '' COMMENT 'customer mail address',
             cRefData varchar(1024) DEFAULT NULL COMMENT 'additional reference data (e.g. text output in emails)',
             dCreated datetime DEFAULT NULL COMMENT 'time of opt-in creation',

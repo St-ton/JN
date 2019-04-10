@@ -1,54 +1,70 @@
-<div id="{$instance->getProperty('uid')}" {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if} >
-    {if $isPreview}<i class="fa fa-exchange"></i>{/if}
-    <div class="card">
-        <div class="{if $isPreview}opc-area {/if}face front" {if $isPreview}data-area-id="flp-front"{/if}>
+{$uid = $instance->getUid()}
+
+<div id="{$uid}" {if $isPreview}{$instance->getDataAttributeString()}{/if}
+     class="flipcard {$instance->getProperty('flip-dir')}"
+     style="{$instance->getStyleString()}">
+    {if $isPreview}
+        <button type="button" class="btn btn-default">
+            <i class="fa fa-exchange"></i>
+            <i class="fa fa-exchange-alt"></i>
+        </button>
+    {/if}
+    <div class="flipcard-inner">
+        <div class="flipcard-face flipcard-front {if $isPreview}opc-area{/if}"
+             {if $isPreview}data-area-id="front"{/if}>
             {if $isPreview}
-                {$instance->getSubareaPreviewHtml("flp-front")}
+                {$instance->getSubareaPreviewHtml("front")}
             {else}
-                {$instance->getSubareaFinalHtml("flp-front")}
+                {$instance->getSubareaFinalHtml("front")}
             {/if}
         </div>
-        <div class="{if $isPreview}opc-area {/if}face back" {if $isPreview}data-area-id="flp-back"{/if}>
+        <div class="flipcard-face flipcard-back {if $isPreview}opc-area{/if}"
+             {if $isPreview}data-area-id="back"{/if}>
             {if $isPreview}
-                {$instance->getSubareaPreviewHtml("flp-back")}
+                {$instance->getSubareaPreviewHtml("back")}
             {else}
-                {$instance->getSubareaFinalHtml("flp-back")}
+                {$instance->getSubareaFinalHtml("back")}
             {/if}
         </div>
     </div>
     <script>
-        function setCardHeight(id) {
-            var max_h = 0;
-            $('#'+id+' .face > div').each(function (e) {
-                max_h = Math.max($(this).prop("scrollHeight"), max_h);
-            });
-            $('#'+id+' .card').css('min-height',max_h+'px');
-        }
+        $(function() {
+            var flipcard      = $('#{$uid}');
+            var flipcardInner = flipcard.find('.flipcard-inner');
 
-        {if $isPreview}
-            $('#{$instance->getProperty("uid")} i.fa-exchange').click(function () {
-                var card = $('#{$instance->getProperty("uid")}');
-                if (card.hasClass('flipped')) {
-                    card.removeClass('flipped');
-                } else {
-                    card.addClass('flipped');
-                }
-                setCardHeight('{$instance->getProperty("uid")}');
-            });
-        {else}
-            $('#{$instance->getProperty("uid")}').click(function () {
-                var card = $(this);
-                if (card.hasClass('flipped')) {
-                    card.removeClass('flipped');
-                } else {
-                    card.addClass('flipped');
-                }
-                setCardHeight('{$instance->getProperty("uid")}');
-            });
-        {/if}
+            {if $isPreview}
+                flipcard.find('.btn').click(flipCard);
+            {else}
+                flipcard.click(flipCard);
+            {/if}
 
-        $(document).ready(function () {
-            setCardHeight('{$instance->getProperty("uid")}');
+            updateHeight_{$uid}();
+
+            function flipCard()
+            {
+                flipcardInner.toggleClass('flipped');
+                updateHeight_{$uid}();
+            }
         });
+
+        $('#{$uid}')[0].updateFlipcardHeight = updateHeight_{$uid};
+
+        function updateHeight_{$uid}()
+        {
+            var flipcard      = $('#{$uid}');
+            var flipcardInner = flipcard.find('.flipcard-inner');
+            var flipcardFaces = flipcardInner.find('.flipcard-face');
+            var height        = 0;
+
+            flipcardInner.css('height', 'auto');
+            flipcardFaces.css('height', 'auto');
+
+            flipcardInner.find('.flipcard-face').each(function(i, elm) {
+                height = Math.max(height, $(elm).height());
+            });
+
+            flipcardInner.height(height);
+            flipcardFaces.height(height);
+        }
     </script>
 </div>

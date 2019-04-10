@@ -299,7 +299,7 @@
             <div class="panel-body">
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle="{__('chooseProduct')}"
+                    modalTitle="{__('chooseProducts')}"
                     searchInputLabel="{__('searchProductName')}"
                 }
                 <script>

@@ -58,6 +58,14 @@ stages:
   }
 
 .cleanUpTesting: &cleanUpTesting |
+  function failedCodeQuality() {
+    export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
+    export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
+
+    if [[ ! -z "$running" ]]; then
+      docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
+    fi
+  }
   function failedTesting() {
     export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
     export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
@@ -166,7 +174,7 @@ stages:
       php -r "
       require_once '$DEPLOY_PATH/includes/globalinclude.php'; \
       \$time    = date('YmdHis'); \
-      \$manager = new MigrationManager(); \
+      \$manager = new MigrationManager(Shop::Container()->getDB()); \
       try { \
           \$migrations = \$manager->migrate(\$time); \
           foreach (\$migrations as \$migration) { \
@@ -221,6 +229,22 @@ test_PHP_7.3:
     - branches
   except:
     - master
+  tags:
+    - build
+
+removeContainerCodeQuality:
+  stage: cleanUpTest
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *cleanUpTesting
+    - failedCodeQuality
+  only:
+    - branches
+  except:
+    - master
+    - /^release\/.*$/
+  when: on_failure
   tags:
     - build
 

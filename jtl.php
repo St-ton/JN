@@ -26,7 +26,6 @@ use JTL\Shopsetting;
 use JTL\SimpleMail;
 use JTL\Sprache;
 use JTL\Helpers\Text;
-use JTL\TrustedShops;
 use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\Pagination\Pagination;
 use JTL\Extensions\Download;
@@ -38,7 +37,6 @@ use JTL\GeneralDataProtection\Journal;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kundenwerbenkeunden_inc.php';
 
@@ -597,12 +595,6 @@ if ($customerID > 0) {
             $smarty->assign('Bestellung', $bestellung)
                    ->assign('billingAddress', $bestellung->oRechnungsadresse)
                    ->assign('Lieferadresse', $bestellung->Lieferadresse ?? null);
-            if ($conf['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
-                    $bestellung->oRechnungsadresse->cMail,
-                    $bestellung->cBestellNr
-                ));
-            }
             if (isset($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax)) {
                 $smarty->assign(
                     'cEstimatedDeliveryEx',

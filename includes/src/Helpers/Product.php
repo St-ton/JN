@@ -1139,8 +1139,6 @@ class Product
      */
     public static function sendProductQuestion(): string
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-
         $conf             = Shop::getSettings([\CONF_EMAILS, \CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         $data             = new stdClass();
         $data->tartikel   = $GLOBALS['AktuellerArtikel'];
@@ -1408,7 +1406,7 @@ class Product
         ) {
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
             if (!($collection instanceof Collection)) {
-                collect($collection);
+                \collect($collection);
             }
             // Such die Position des aktuellen Artikels im Array der Artikelübersicht
             $kArtikelVorheriger = 0;
@@ -1665,34 +1663,32 @@ class Product
                     }
                     $tag = new Tag();
                     $tag->getByName($tagString);
-                    $tagID = isset($tag->kTag) ? (int)$tag->kTag : null;
-                    if (!empty($tagID)) {
+                    $tagID = isset($tag->kTag) ? (int)$tag->kTag : 0;
+                    if ($tagID !== 0) {
                         // Tag existiert bereits, TagArtikel updaten/anlegen
                         $tagArticle = new TagArticle($tagID, (int)$product->kArtikel);
-                        if (!empty($tagArticle->kTag)) {
-                            $tagArticle->nAnzahlTagging = (int)$tagArticle->nAnzahlTagging + 1;
-                            $tagArticle->updateInDB();
-                        } else {
+                        if (empty($tagArticle->kTag)) {
                             $tagArticle->kTag           = $tagID;
                             $tagArticle->kArtikel       = (int)$product->kArtikel;
                             $tagArticle->nAnzahlTagging = 1;
                             $tagArticle->insertInDB();
+                        } else {
+                            $tagArticle->nAnzahlTagging = (int)$tagArticle->nAnzahlTagging + 1;
+                            $tagArticle->updateInDB();
                         }
-
                         if (!empty($variKindArtikel)) {
                             $childTag = new TagArticle($tagID, (int)$variKindArtikel);
-                            if (!empty($childTag->kTag)) {
-                                $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
-                                $childTag->updateInDB();
-                            } else {
+                            if (empty($childTag->kTag)) {
                                 $childTag->kTag           = $tagID;
                                 $childTag->kArtikel       = (int)$variKindArtikel;
                                 $childTag->nAnzahlTagging = 1;
                                 $childTag->insertInDB();
+                            } else {
+                                $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
+                                $childTag->updateInDB();
                             }
                         }
                     } else {
-                        require_once \PFAD_ROOT . \PFAD_DBES . 'seo.php';
                         $newTag           = new Tag();
                         $newTag->kSprache = Shop::getLanguage();
                         $newTag->cName    = $tagString;

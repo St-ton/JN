@@ -6,12 +6,12 @@ möchten Sie Ihre Erfahrungen mit Ihren kürzlich bei uns erworbenen Produkten m
 
 Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produkte:
 
-{foreach name=pos from=$Bestellung->Positionen item=Position}
-    {if $Position->nPosTyp==1}
+{foreach $Bestellung->Positionen as $Position}
+    {if $Position->nPosTyp == 1}
         {$Position->cName} ({$Position->cArtNr})
         {$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1#tab-votes
 
-        {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+        {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
         {/foreach}
@@ -20,10 +20,6 @@ Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produk
 
 Vielen Dank für Ihre Mühe.
 
-{if !empty($oTrustedShopsBewertenButton->cURL)}
-Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.
-Bewerten Sie uns unter {$oTrustedShopsBewertenButton->cURL}
-{/if}
 
 Mit freundlichem Gruß,
 Ihr Team von {$Firma->cName}

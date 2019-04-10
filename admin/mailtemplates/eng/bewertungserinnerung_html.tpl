@@ -6,13 +6,13 @@ We would love it if you could write a rating and share your experience with your
 <br>
 Please click on the product to rate it:<br>
 <br>
-{foreach name=pos from=$Bestellung->Positionen item=Position}
+{foreach $Bestellung->Positionen as $Position}
     <table cellpadding="00" cellspacing="0" border="0" width="100%">
         <tr>
             <td valign="top" style="padding-bottom:5px;">
-                {if $Position->nPosTyp==1}
+                {if $Position->nPosTyp == 1}
                     <a href="{$ShopURL}/index.php?a={$Position->kArtikel}&bewertung_anzeigen=1#tab-votes"><strong>{$Position->cName}</strong> ({$Position->cArtNr})</a>
-                    {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
+                    {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                         <br><strong>{$WKPosEigenschaft->cEigenschaftName}</strong>: {$WKPosEigenschaft->cEigenschaftWertName}
                     {/foreach}
                 {/if}

@@ -52,7 +52,7 @@
                         <input type="hidden" name="tab" value="uebersicht" />
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{__('AvailableCheckboxes')}</h3>
+                                <h3 class="panel-title">{__('availableCheckboxes')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">

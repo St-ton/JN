@@ -9,7 +9,7 @@ msgid "boxenURL"
 msgstr "https://jtl-url.de/2uknw"
 
 msgid "boxenDesc"
-msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Die generelle Verfügbarkeit eines Containers wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
+msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Ob ein spezieller Container verfügbar ist oder nicht, wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
 
 msgid "showContainer"
 msgstr "Container anzeigen"
@@ -45,7 +45,7 @@ msgid "remove"
 msgstr "Aus Liste entfernen"
 
 msgid "confirmDeleteBox"
-msgstr "Sind Sie sicher, dass Sie die Box \"%s\" löschen möchten? Alle Boxen innerhalb eines Containers werden ggf. ebenfalls gelöscht."
+msgstr "Sind Sie sicher, dass Sie die Box \"%s\" löschen möchten? Wenn Sie einen Container löschen, werden alle im Container enthaltenen Boxen ebenfalls entfernt."
 
 msgid "new"
 msgstr "Neue Box"
@@ -138,7 +138,7 @@ msgid "deactivatedOnAllPages"
 msgstr "auf allen Seiten deaktiviert"
 
 msgid "warningChangesForAllPages"
-msgstr "Die Auswahl \"Alle Seiten\" überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten gemacht wurden."
+msgstr "Die Auswahl „Alle Seiten“ überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten gemacht wurden."
 
 msgid "errorBoxesVisibilityEdit"
 msgstr "Fehler beim setzen der Sichtbarkeit der Boxen."

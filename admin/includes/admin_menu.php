@@ -175,12 +175,6 @@ $adminMenu = [
                 'link'   => 'gratisgeschenk.php',
                 'rights' => 'MODULE_GIFT_VIEW',
             ],
-            __('Trusted Shops')          => (object)[
-                'link'    => 'trustedshops.php',
-                'rights'  => 'ORDER_TRUSTEDSHOPS_VIEW',
-                'partner' => true,
-                'section' => CONF_TRUSTEDSHOPS,
-            ],
         ],
         __('Payments')      => [
             __('Method of payment') => (object)[

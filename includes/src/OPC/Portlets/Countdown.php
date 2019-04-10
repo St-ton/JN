@@ -17,38 +17,11 @@ use JTL\OPC\PortletInstance;
 class Countdown extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        $instance->setProperty('uid', \uniqid('cntdwn-', false));
-        $instance->addClass('countdown');
-        $instance->addClass($instance->getProperty('class'));
-
-        return $this->getPreviewHtmlFromTpl($instance);
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        $instance->addClass('countdown');
-        $instance->addClass($instance->getProperty('class'));
-
-        return $this->getFinalHtmlFromTpl($instance);
-    }
-
-    /**
      * @return string
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-bell"></i><br/> Countdown';
+        return $this->getFontAwesomeButtonHtml('bell');
     }
 
     /**
@@ -58,17 +31,17 @@ class Countdown extends Portlet
     {
         return [
             'date'         => [
-                'label'      => 'Zieldatum',
-                'type'       => InputType::DATE,
-                'dspl_width' => 50,
-                'required'   => true,
+                'label'    => 'Zieldatum',
+                'type'     => InputType::DATE,
+                'width'    => 50,
+                'required' => true,
             ],
             'time'         => [
-                'label'      => 'Zielzeit',
-                'type'       => InputType::TIME,
-                'dspl_width' => 50,
+                'label' => 'Zielzeit',
+                'type'  => InputType::TIME,
+                'width' => 50,
             ],
-            'class'        => [
+            'class'     => [
                 'label' => 'CSS Klasse',
             ],
             'expired-text' => [

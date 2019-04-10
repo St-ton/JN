@@ -7,6 +7,7 @@
 namespace JTL\Backend;
 
 use JTL\Cache\JTLCacheInterface;
+use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\Media\Image;
@@ -17,10 +18,7 @@ use JTL\Shop;
 use JTL\SingletonTrait;
 use JTL\Template;
 use JTL\Update\Updater;
-use JTL\Checkout\ZahlungsLog;
 use stdClass;
-use JTL\Exportformat;
-use JTL\Emailvorlage;
 use function Functional\some;
 
 /**
@@ -455,9 +453,9 @@ class Status
      */
     public function hasInsecureMailConfig(): bool
     {
-        $emailConf = Shop::getConfig([\CONF_EMAILS])['emails'];
+        $conf = Shop::getConfig([\CONF_EMAILS])['emails'];
 
-        return $emailConf['email_methode'] === 'smtp' && empty(\trim($emailConf['email_smtp_verschluesselung']));
+        return $conf['email_methode'] === 'smtp' && empty(\trim($conf['email_smtp_verschluesselung']));
     }
 
     /**
@@ -498,15 +496,10 @@ class Status
     public function getExportFormatErrorCount(): int
     {
         if (!isset($_SESSION['exportSyntaxErrorCount'])) {
-            $errorCount    = 0;
-            $exportFormats = Shop::Container()->getDB()->selectAll('texportformat', [], []);
-            foreach ($exportFormats as $exportFormat) {
-                $errorMessage = (new Exportformat($exportFormat->kExportformat))->checkSyntax();
-                if ($errorMessage) {
-                    $errorCount++;
-                }
-            }
-            $_SESSION['exportSyntaxErrorCount'] = $errorCount;
+            $_SESSION['exportSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
+                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt;
         }
 
         return $_SESSION['exportSyntaxErrorCount'];
@@ -514,27 +507,18 @@ class Status
 
     /**
      * @return int
-     * @throws \SmartyException
      */
     public function getEmailTemplateSyntaxErrorCount(): int
     {
         if (!isset($_SESSION['emailSyntaxErrorCount'])) {
-            $emailTemplates = Shop::Container()->getDB()->selectAll('temailvorlage', [], []);
-            $errorCount     = 0;
-            foreach ($emailTemplates as $emailTemplate) {
-                if ((new Emailvorlage($emailTemplate->kEmailvorlage))->checkSyntax() !== '') {
-                    $errorCount++;
-                }
-            }
-            $emailPluginTemplates = Shop::Container()->getDB()->selectAll('tpluginemailvorlage', [], []);
-            foreach ($emailPluginTemplates as $emailPluginTemplate) {
-                if ((new Emailvorlage($emailPluginTemplate->kEmailvorlage, true))->checkSyntax(
-                    $emailPluginTemplate->kPlugin
-                ) !== '') {
-                    $errorCount++;
-                }
-            }
-            $_SESSION['emailSyntaxErrorCount'] = $errorCount;
+            $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
+                    'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
+                    ReturnType::SINGLE_OBJECT
+                )->cnt
+                + (int)Shop::Container()->getDB()->query(
+                    'SELECT COUNT(*) AS cnt FROM tpluginemailvorlage WHERE nFehlerhaft = 1',
+                    ReturnType::SINGLE_OBJECT
+                )->cnt;
         }
 
         return $_SESSION['emailSyntaxErrorCount'];

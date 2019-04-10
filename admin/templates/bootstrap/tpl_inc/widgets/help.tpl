@@ -17,7 +17,7 @@
     <hr>
     <ul class="linklist">
         <li id="help_data_wrapper">
-            <p class="ajax_preloader">{__('loading')}</p>
+            <p class="ajax_preloader"><i class="fa fas fa-spinner fa-spin"></i> {__('loading')}</p>
         </li>
     </ul>
 </div>

@@ -11,6 +11,7 @@ use JTL\Shop;
 use JTL\Sprache;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Alert\Alert;
+use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
@@ -95,22 +96,31 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cValue    = $_POST[$cKeyValue] ?? null;
         }
 
-        $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
-        $oExtension                = new stdClass();
-        $oExtension->kSprache      = $kSprache;
-        $oExtension->kKundengruppe = $kKundengruppe;
-        $oExtension->nSeite        = $nSeite;
-        $oExtension->cKey          = $cKey;
-        $oExtension->cValue        = $cValue;
-        $oExtension->cClass        = 'ImageMap';
-        $oExtension->kInitial      = $kImageMap;
-
-        $ins = $db->insert('textensionpoint', $oExtension);
-        if ($kImageMap && $ins > 0) {
-            $cAction = 'view';
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'successSave');
+        if (!empty($cKeyValue) && empty($cValue)) {
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                sprintf(__('errorKeyMissing'), $cKey),
+                'errorKeyMissing'
+            );
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'errorSave');
+            $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
+            $oExtension                = new stdClass();
+            $oExtension->kSprache      = $kSprache;
+            $oExtension->kKundengruppe = $kKundengruppe;
+            $oExtension->nSeite        = $nSeite;
+            $oExtension->cKey          = $cKey;
+            $oExtension->cValue        = $cValue;
+            $oExtension->cClass        = 'ImageMap';
+            $oExtension->kInitial      = $kImageMap;
+
+            $ins = $db->insert('textensionpoint', $oExtension);
+
+            if ($kImageMap && $ins > 0) {
+                $cAction = 'view';
+                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'successSave');
+            } else {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'errorSave');
+            }
         }
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
@@ -191,8 +201,14 @@ switch ($cAction) {
     default:
         break;
 }
+$banners    = holeAlleBanner();
+$pagination = (new Pagination('banners'))
+    ->setRange(4)
+    ->setItemArray($banners)
+    ->assemble();
 
 $smarty->assign('cAction', $cAction)
        ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
-       ->assign('oBanner_arr', holeAlleBanner())
+       ->assign('pagination', $pagination)
+       ->assign('oBanner_arr', $pagination->getPageItems())
        ->display('banner.tpl');

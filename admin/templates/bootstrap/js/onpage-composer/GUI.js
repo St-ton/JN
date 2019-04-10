@@ -321,15 +321,15 @@ GUI.prototype = {
 
         for(var propname in configObject) {
             var propval   = configObject[propname];
-            var propInput = $('[name="' + propname + '"]');
+            var propInput = $('#config-' + propname);
 
             if (propInput.length > 0) {
                 var propType = propInput.data('prop-type');
 
-                if (propType === 'filter') {
+                if (propType === 'json') {
                     propval = JSON.parse(propval);
-                } else if (propInput[0].type === 'radio') {
-                    propval = Boolean(propval);
+                } else if (propInput[0].type === 'checkbox') {
+                    propval = propval === '1';
                 } else if (propInput[0].type === 'number') {
                     propval = parseInt(propval);
                 }
@@ -347,6 +347,7 @@ GUI.prototype = {
     {
         this.iframe.replaceSelectedPortletHtml(preview);
         this.configModal.modal('hide');
+        this.page.updateFlipcards();
     },
 
     onBlueprintForm: function(e)
@@ -503,7 +504,7 @@ GUI.prototype = {
          this.openElFinder(function(url) {
              this.configForm.find('[name="' + propName + '"]').val(url);
              this.configForm.find('#preview-vid-' + propName).attr('src', url);
-             this.configForm.find('#cont-preview-vid-' + propName).load();
+             this.configForm.find('#cont-preview-vid-' + propName)[0].load();
          }.bind(this),'video');
     },
 

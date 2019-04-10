@@ -70,18 +70,13 @@ class Image extends Portlet
                     'circle'    => 'Kreis',
                     'thumbnail' => 'Als Thumbnail',
                 ],
-                'dspl_width' => 50,
+                'width' => 50,
             ],
             'responsive' => [
                 'label'      => 'Responsives Bild?',
-                'type'       => InputType::RADIO,
-                'options'    => [
-                    true  => 'ja',
-                    false => 'nein',
-                ],
+                'type'       => InputType::CHECKBOX,
                 'default'    => true,
-                'inline'     => true,
-                'dspl_width' => 50,
+                'width' => 50,
             ],
             'alt'        => [
                 'label' => 'Alternativtext',

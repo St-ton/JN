@@ -3,10 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "imageTitle"
-msgstr "Bilder"
+msgstr "Images"
 
 msgid "bilderURL"
-msgstr "https://jtl-url.de/kgce4"
+msgstr "https://jtl-url.de/6jdo7"
 
 msgid "bilderDesc"
-msgstr "Bilder Einstellungen"
+msgstr "Image settings"

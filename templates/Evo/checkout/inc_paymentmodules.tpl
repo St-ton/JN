@@ -2,9 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if isset($abschlussseite) && $abschlussseite == 1}
-    {include file='checkout/inc_trustedshops_excellence.tpl'}
-{else}
+{if !isset($abschlussseite) || $abschlussseite !== 1}
     {assign var=cModulId value=$Bestellung->Zahlungsart->cModulId}
     {if (empty($oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId) || $Bestellung->Zahlungsart->cModulId != $oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId)
     && $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'}
@@ -38,6 +36,5 @@
             {include file=$oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cTemplateFileURL}
         {/if}
         <br />
-        {include file='checkout/inc_trustedshops_excellence.tpl'}
     </div>
 {/if}

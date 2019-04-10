@@ -141,7 +141,6 @@ class Cart
                     }
                     break;
 
-                case \C_WARENKORBPOS_TYP_TRUSTEDSHOPS:
                 case \C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
                     $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
@@ -1459,8 +1458,7 @@ class Cart
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
 
         Kupon::resetNewCustomerCoupon(false);
         if ($setzePositionsPreise) {
@@ -1469,8 +1467,7 @@ class Cart
         unset(
             $_SESSION['VersandKupon'],
             $_SESSION['Versandart'],
-            $_SESSION['Zahlungsart'],
-            $_SESSION['TrustedShops']
+            $_SESSION['Zahlungsart']
         );
         // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neu anlegen
         Kupon::reCheck();
@@ -1864,15 +1861,13 @@ class Cart
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERPACKUNG)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS)
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERPACKUNG)
                 ->checkIfCouponIsStillValid();
         unset(
             $_SESSION['Versandart'],
             $_SESSION['VersandKupon'],
             $_SESSION['oVersandfreiKupon'],
             $_SESSION['Verpackung'],
-            $_SESSION['TrustedShops'],
             $_SESSION['Zahlungsart']
         );
         Kupon::resetNewCustomerCoupon();

@@ -55,6 +55,11 @@ abstract class OptinBase extends OptinFactory
     protected $refData;
 
     /**
+     * @var object stdClass
+     */
+    protected $foundOptinTupel;
+
+    /**
      * @param string $mailaddress
      * @return Optin
      */
@@ -75,6 +80,22 @@ abstract class OptinBase extends OptinFactory
         $this->optCode      = \substr($optinCode, 2);
 
         return $this;
+    }
+
+    /**
+     * load a optin-tupel, via opt-code or email and
+     * restore its reference data
+     */
+    protected function loadOptin(): void
+    {
+        if (empty($this->emailAddress)) {
+            $this->foundOptinTupel = $this->dbHandler->select('toptin', 'kOptinCode', $this->optCode);
+        } else {
+            $this->foundOptinTupel = $this->dbHandler->select('toptin', 'cMail', $this->emailAddress);
+        }
+        if (!empty($this->foundOptinTupel)) {
+            $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['OptinRefData']);
+        }
     }
 
     /**

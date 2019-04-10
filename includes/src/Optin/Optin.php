@@ -17,11 +17,6 @@ use JTL\Shop;
 class Optin extends OptinBase
 {
     /**
-     * @var object stdClass
-     */
-    protected $foundOptinTupel;
-
-    /**
      * @var OptinAvailAgain|null
      */
     protected $currentOptin;
@@ -81,16 +76,11 @@ class Optin extends OptinBase
         if ($this->optCode === '' && $this->emailAddress === '') {
             throw new InvalidInputException('missing email and/or optin-code.');
         }
-        if (empty($this->emailAddress)) {
-            $this->foundOptinTupel = $this->dbHandler->select('toptin', 'kOptinCode', $this->optCode);
-        } else {
-            $this->foundOptinTupel = $this->dbHandler->select('toptin', 'cMail', $this->emailAddress);
-        }
+        $this->loadOptin();
         if (empty($this->foundOptinTupel)) {
             throw new EmptyResultSetException('Double-Opt-in not found: ' .
                 ($this->emailAddress === '' ?: $this->optCode));
         }
-        $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['OptinRefData']);
         $this->generateOptin($this->refData->getOptinClass());
         if ($this->actionPrefix === self::CLEAR_CODE || $this->externalAction === self::CLEAR_CODE) {
             $this->deactivateOptin();
@@ -121,8 +111,8 @@ class Optin extends OptinBase
     }
 
     /**
-     * deactivate the optin
-     * (class specific deactivations AND finishing)
+     * deactivate and cleanup this optin
+     * (class specific deactivations AND finishing here)
      */
     public function deactivateOptin(): void
     {
@@ -134,20 +124,20 @@ class Optin extends OptinBase
 
     /**
      * only move the optin-tupel to history
-     * (used for single opt-in actions)
+     * (e.g. used for "one shot opt-in" actions)
      */
     public function finishOptin(): void
     {
         $newRow               = new \stdClass();
-        $newRow->kOptinCode   = $this->optCode;
-        $newRow->kOptinType   = $this->refData->getOptinClass();
+        $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
+        $newRow->kOptinClass  = $this->refData->getOptinClass();
         $newRow->cMail        = 'anonym'; // anonymized for history
         $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
         $newRow->dCreated     = $this->foundOptinTupel->dCreated;
         $newRow->dActivated   = $this->foundOptinTupel->dActivated;
         $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');
         $this->dbHandler->insert('toptinhistory', $newRow);
-        $this->dbHandler->delete('toptin', 'kOptinCode', $this->optCode);
+        $this->dbHandler->delete('toptin', 'kOptinCode', $this->foundOptinTupel->kOptinCode);
     }
 
     /**
@@ -155,11 +145,7 @@ class Optin extends OptinBase
      */
     public function isActive(): bool
     {
-        if ($this->emailAddress === null) {
-            $this->foundOptinTupel = $this->dbHandler->select('toptin', 'kOptinCode', $this->optCode);
-        } else {
-            $this->foundOptinTupel = $this->dbHandler->select('toptin', 'cMail', $this->emailAddress);
-        }
+        $this->loadOptin();
 
         return !empty($this->foundOptinTupel->dActivated);
     }

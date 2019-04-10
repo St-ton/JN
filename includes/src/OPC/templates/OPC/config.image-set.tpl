@@ -1,241 +1,135 @@
-<div id="images">
-    {function name=slide level=0}
-        <tr class="text-vcenter" id="{$kSlide}">
-            <td class="tcenter">
-                <input id="{$kSlide}-url" type="hidden" name="{$propname}[{$kSlide}][url]"
-                       value=""/>
-                <input type="hidden" class="form-control" id="{$propname}[{$kSlide}][nSort]"
-                       name="{$propname}[{$kSlide}][nSort]" value="{if $kSlide}{$smarty.foreach.slide.iteration}{/if}"
-                       autocomplete="off"/>
-                <i class="btn btn-primary fa fa-bars"></i>
-            </td>
-            <td class="tcenter">
-                <img src="templates/bootstrap/gfx/layout/upload.png"
-                     id="{$kSlide}-img" onclick="opc.gui.openElFinder(elfinderCallback.bind(this, '{$kSlide}'), 'Bilder');"
-                     alt="Slidergrafik" class="img-responsive" role="button"/>
-            </td>
-            <td class="tcenter">
-                {if $useTitles}
-                    <input class="form-control margin2" id="cTitle{$kSlide}" type="text"
-                           name="{$propname}[{$kSlide}][cTitle]" value=""
-                           placeholder="title"/>
-                {/if}
-                <input class="form-control margin2" id="alt{$kSlide}" type="text"
-                       name="{$propname}[{$kSlide}][alt]" value=""
-                       placeholder="Alt-Text"/>
-                <input class="form-control margin2" id="desc{$kSlide}" type="text"
-                       name="{$propname}[{$kSlide}][desc]" value=""
-                       placeholder="Beschreibung"/>
-                {if $useLinks}
-                    <input class="form-control margin2" id="target-url{$kSlide}" type="text"
-                           name="{$propname}[{$kSlide}][target-url]" value=""
-                           placeholder="Link URL"/>
-                {/if}
-            </td>
-            {if $useColumns}
-                <td>
-                    <i class="fa fa-mobile"></i>
-                    <a title="more" class="pull-right" role="button"
-                       data-toggle="collapse"
-                       href="#collapseLayouts_{$kSlide}" aria-expanded="false"
-                       aria-controls="collapseLayouts_{$kSlide}">
-                        <i class="fa fa-gears"></i>
-                    </a>
-                    <input class="form-control margin2" id="width{$slide.nSort}" type="number"
-                           name="{$propname}[{$kSlide}][width][xs]" value=""
-                           placeholder="width in number of colums"/>
+{$useColumns = $propdesc.useColumns|default:false}
+{$useLinks   = $propdesc.useLinks|default:false}
+{$useTitles  = $propdesc.useTitles|default:false}
 
-                    <div class="collapse" id="collapseLayouts_{$kSlide}">
-                        <span class="help-block">
-                            Hier können Sie für die unterschiedlichen Gerätegrößen eine alternative Aufteilung angeben.
-                        </span>
-                        <i class="fa fa-tablet"></i>
-                        <input class="form-control margin2" id="width{$slide.nSort}"
-                               type="number"
-                               name="{$propname}[{$kSlide}][width][sm]" value=""
-                               placeholder="width in number of colums"/>
-                        <i class="fa fa-laptop"></i>
-                        <input class="form-control margin2" id="width{$slide.nSort}"
-                               type="number"
-                               name="{$propname}[{$kSlide}][width][md]" value=""
-                               placeholder="width in number of colums"/>
-                        <i class="fa fa-desktop"></i>
-                        <input class="form-control margin2" id="width{$slide.nSort}"
-                               type="number"
-                               name="{$propname}[{$kSlide}][width][lg]" value=""
-                               placeholder="width in number of colums"/>
-                    </div>
-                </td>
-            {/if}
-            <td class="vcenter">
-                <button type="button" onclick="$(this).parent().parent().remove();sortSlide();"
-                        class="slide_delete btn btn-danger btn-block fa fa-trash" title="L&ouml;schen"></button>
-            </td>
-        </tr>
-    {/function}
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">fügen Sie hier die einzelnen Bilder hinzu</h3>
+{function slideSize size='xs' fa='mobile'}
+    <div class="input-group" style="width: 24%">
+        <div class="input-group-addon" style="min-width:auto; padding: 0">
+            <i class="fa fa-{$fa} fa-fw"></i>
+        </div>
+        <input type="text" class="form-control" placeholder="{$size}" style="width: 100%"
+               name="{$propname}[#SORT#][{$size}]" value="{$slideData.$size}">
+    </div>
+{/function}
+
+{function slideEntry
+    slideData=['xs' => '', 'sm' => '', 'md' => '', 'lg' => '', 'desc' => '', 'url' => '', 'link' => '', 'title' => '']
+}
+    <div class="row slide-entry" style="margin-bottom: 1em;">
+        <div class="col-xs-2" style="width: 17%">
+            <div class="btn-group">
+                <div type="button" class="btn btn-primary btn-sm btn-slide-mover"
+                     title="Eintrag verschieben" style="cursor: move">
+                    <i class="fa fa-bars"></i>
                 </div>
-                <div class="table-responsive">
-                    <table id="tableSlide" class="table">
-                        <thead>
-                            <tr>
-                                <th class="tleft"></th>
-                                <th width="20%">Bild</th>
-                                <th width="35%">Beschreibung</th>
-                                {if $useColumns}
-                                    <th width="35%">Breite</th>
-                                {/if}
-                                <th width="5%"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {foreach from=$prop item=slide}
-                            {if !empty($slide['url'])}
-                                <tr class="text-vcenter" id="slide{$slide.nSort}">
-                                    <td class="tcenter">
-                                        <input id="gllry_image{$slide.nSort}-url" type="hidden"
-                                               name="{$propname}[slide{$slide.nSort}][url]"
-                                               value="{if isset($slide['url'])}{$slide['url']}{/if}"/>
-                                        <input type="hidden" class="form-control"
-                                               id="{$propname}[slide{$slide.nSort}][nSort]"
-                                               name="{$propname}[slide{$slide.nSort}][nSort]" value="{$slide.nSort}"
-                                               autocomplete="off"/>
-                                        <i class="btn btn-primary fa fa-bars"></i>
-                                    </td>
-                                    <td class="tcenter">
-                                        <img src="{if isset($slide['url'])}{$slide['url']}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
-                                             id="gllry_image{$slide.nSort}-img"
-                                             onclick="opc.gui.openElFinder(elfinderCallback.bind(this, '{$slide.nSort}'), 'Bilder');"
-                                             alt="image for gallery" class="img-responsive" role="button"/>
-                                    </td>
-                                    <td class="tcenter">
-                                        {if $useTitles}
-                                            <input class="form-control margin2" id="cTitle{$slide.nSort}" type="text"
-                                                   name="{$propname}[slide{$slide.nSort}][cTitle]"
-                                                   value="{if isset($slide['cTitle'])}{$slide['cTitle']}{/if}"
-                                                   placeholder="title"/>
-                                        {/if}
-                                        <input class="form-control margin2" id="alt{$slide.nSort}" type="text"
-                                               name="{$propname}[slide{$slide.nSort}][alt]"
-                                               value="{if isset($slide['alt'])}{$slide['alt']}{/if}"
-                                               placeholder="Alt-Text"/>
-                                        <input class="form-control margin2" id="desc{$slide.nSort}" type="text"
-                                               name="{$propname}[slide{$slide.nSort}][desc]"
-                                               value="{if isset($slide['desc'])}{$slide['desc']}{/if}"
-                                               placeholder="description"/>
-                                        {if $useLinks}
-                                            <input class="form-control margin2" id="target-url{$slide.nSort}"
-                                                   type="text"
-                                                   name="{$propname}[slide{$slide.nSort}][target-url]"
-                                                   value="{if isset($slide['target-url'])}{$slide['target-url']}{/if}"
-                                                   placeholder="URL"/>
-                                        {/if}
-                                    </td>
-                                    {if $useColumns}
-                                        <td>
-                                            <i class="fa fa-desktop"></i>
-                                            <a title="more" class="pull-right"
-                                               role="button" data-toggle="collapse"
-                                               href="#collapseLayouts_{$slide.nSort}"
-                                               aria-expanded="false"
-                                               aria-controls="collapseLayouts_{$slide.nSort}">
-                                                <i class="fa fa-gears"></i>
-                                            </a>
-                                            <input class="form-control margin2" id="width{$slide.nSort}"
-                                                   type="number"
-                                                   name="{$propname}[slide{$slide.nSort}][width][lg]"
-                                                   value="{if isset($slide['width']['lg'])}{$slide['width']['lg']}{/if}"
-                                                   placeholder="width in number of colums"/>
-                                            <div class="collapse" id="collapseLayouts_{$slide.nSort}">
-                                                <span class="help-block">
-                                                    Hier können Sie für die unterschiedlichen Gerätegrößen eine alternative Aufteilung angeben.
-                                                </span>
-                                                <i class="fa fa-laptop"></i>
-                                                <input class="form-control margin2"
-                                                       id="width{$slide.nSort}"
-                                                       type="number"
-                                                       name="{$propname}[slide{$slide.nSort}][width][md]"
-                                                       value="{if isset($slide['width']['md'])}{$slide['width']['md']}{/if}"
-                                                       placeholder="width in number of colums"/>
-                                                <i class="fa fa-tablet"></i>
-                                                <input class="form-control margin2"
-                                                       id="width{$slide.nSort}"
-                                                       type="number"
-                                                       name="{$propname}[slide{$slide.nSort}][width][sm]"
-                                                       value="{if isset($slide['width']['sm'])}{$slide['width']['sm']}{/if}"
-                                                       placeholder="width in number of colums"/>
-                                                <i class="fa fa-mobile"></i>
-                                                <input class="form-control margin2"
-                                                       id="width{$slide.nSort}"
-                                                       type="number"
-                                                       name="{$propname}[slide{$slide.nSort}][width][xs]"
-                                                       value="{if isset($slide['width']['xs'])}{$slide['width']['xs']}{/if}"
-                                                       placeholder="width in number of colums"/>
-                                            </div>
-                                        </td>
-                                    {/if}
-                                    <td class="vcenter">
-                                        <button type="button" onclick="$(this).parent().parent().remove();sortSlide();"
-                                                class="slide_delete btn btn-danger btn-block fa fa-trash"
-                                                title="L&ouml;schen"></button>
-                                    </td>
-                                </tr>
-                            {/if}
-                        {/foreach}
-                        </tbody>
-                    </table>
-                </div>
-                <table class="hidden">
-                    <tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody>
-                </table>
-                <div class="panel-footer">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success" onclick="addSlide();">
-                            <i class="glyphicon glyphicon-plus"></i> Hinzuf&uuml;gen
-                        </button>
-                    </div>
-                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeSlide_{$propname}()"
+                        title="Eintrag löschen">
+                    <i class="fa fa-trash"></i>
+                </button>
             </div>
         </div>
+        <div class="col-xs-3" style="width: 24%">
+            {$imgUrl = $slideData.url|default:'templates/bootstrap/gfx/layout/upload.png'}
+            <img src="{$imgUrl}" alt="Bild-Wähler" class="img-responsive"
+                 onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')"
+                 style="cursor: pointer" title="Bild auswählen">
+            <input type="hidden" name="{$propname}[#SORT#][url]" value="{$slideData.url|default:''}">
+        </div>
+        <div class="col-xs-7" style="width: 59%">
+            {if $useTitles}
+                <input type="text" class="form-control" placeholder="Titel"
+                       name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''}">
+            {/if}
+            <input type="text" class="form-control" placeholder="Alternativtext"
+                   name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
+            <input type="text" class="form-control" placeholder="Beschreibung"
+                   name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}">
+            {if $useLinks}
+                <input type="text" class="form-control" placeholder="Link"
+                       name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}">
+            {/if}
+            {if $useColumns}
+                <div class="form-inline">
+                    {slideSize size='xs' fa='mobile'}
+                    {slideSize size='sm' fa='tablet'}
+                    {slideSize size='md' fa='laptop'}
+                    {slideSize size='lg' fa='desktop'}
+                </div>
+            {/if}
+        </div>
     </div>
-    <script>
-        function elfinderCallback(id, url) {
-            $('#' + id + '-url').val(url);
-            $('#' + id + '-img').attr('src', url);
-        }
+{/function}
 
-        var count = {if isset($prop)}{$prop|@count+1}{else}0{/if};
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{$propdesc.label}</h3>
+    </div>
+    <div class="panel-body" id="{$propname}-slides">
+        {foreach $propval as $slideData}
+            {slideEntry slideData=$slideData}
+        {/foreach}
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary" onclick="addSlide_{$propname}()">
+                <i class="fa fa-plus"></i> Bild hinzufügen
+            </button>
+        </div>
+    </div>
+</div>
 
-        function addSlide(slide) {
-            var new_slide = $('#newSlide').html();
-            new_slide     = new_slide.replace(/NEU/g, "slide" + count);
-            $('#tableSlide tbody').append(new_slide);
-            count++;
-            sortSlide();
-        }
+<div class="hidden" id="{$propname}-slide-blueprint">
+    {slideEntry}
+</div>
 
-        function sortSlide() {
-            $("input[name*='\[nSort\]']").each(function (index) {
-                $(this).val(index + 1);
-            });
-        }
+<script>
+    opc.setConfigSaveCallback(saveImageSet_{$propname});
 
-        $(function () {
-            $("#tableSlide tbody ").sortable({
-                containerSelector: 'table',
-                itemPath:          '> tbody',
-                itemSelector:      'tr',
-                opacity:           '0',
-                axis:              "y",
-                cursor:            "move",
-                stop:              function (item) {
-                    sortSlide();
+    $(function () {
+        $('#{$propname}-slides').sortable({
+            handle: '.btn-slide-mover'
+        });
+    });
+
+    function elfinderCallback_{$propname}(url)
+    {
+        var image = $(this);
+        image.attr('src', url);
+        image.siblings('input').val(url);
+    }
+
+    function addSlide_{$propname}()
+    {
+        $('#{$propname}-slides').append(
+            $('#{$propname}-slide-blueprint').children().clone()
+        );
+    }
+
+    function removeSlide_{$propname}()
+    {
+        $(event.target).closest('.slide-entry').remove();
+    }
+
+    function saveImageSet_{$propname}()
+    {
+        $('#{$propname}-slides').children().each(function(i, slide)
+        {
+            slide = $(slide);
+            slide.find('input').each(function(j, input)
+            {
+                input = $(input);
+                var name = input.attr('name');
+                if (name === '{$propname}[#SORT#][url]') {
+                    var val = input.val();
+                    if (val === '') {
+                        slide.remove();
+                        return;
+                    }
                 }
+                name = name.replace(/#SORT#/, i);
+                input.attr('name', name);
             });
         });
-    </script>
-</div>
+        $('#{$propname}-slide-blueprint').remove();
+    }
+</script>

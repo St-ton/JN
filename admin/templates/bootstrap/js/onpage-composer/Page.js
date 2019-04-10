@@ -35,6 +35,13 @@ Page.prototype = {
         this.io.unlockDraft(this.key, unlockedCB);
     },
 
+    updateFlipcards: function()
+    {
+        this.rootAreas.find('.flipcard').each(function(i, elm) {
+            elm.updateFlipcardHeight();
+        });
+    },
+
     onTimeToLockAgain: function()
     {
         this.lock();

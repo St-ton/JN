@@ -46,8 +46,9 @@ function installJqueryFixes()
     $.fn.serializeControls = function()
     {
         var data = {};
+        var arr = this.serializeArray();
 
-        $.each(this.serializeArray(), function(i, item) {
+        arr.forEach(function(item, i) {
             var path   = item.name.split('[');
             var value  = item.value;
             var target = data;

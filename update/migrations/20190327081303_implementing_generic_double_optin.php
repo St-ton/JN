@@ -44,7 +44,7 @@ class Migration_20190327081303 extends Migration implements IMigration
         )
         ENGINE = innodb");
         $this->execute("CREATE TABLE IF NOT EXISTS toptinhistory(
-            kOptinHistory int(10) NOT NULL auto_increment COMMENT 'internal table key',
+            kOptinHistory int(10) NOT NULL AUTO_INCREMENT COMMENT 'internal table key',
             kOptinCode varchar(256) DEFAULT NULL COMMENT 'main OptInCode, derived from table toptin',
             kOptinClass varchar(1024) DEFAULT '' COMMENT 'the class name of this optin',
             cMail varchar(256) NOT NULL DEFAULT '' COMMENT 'customer mail address',
@@ -53,7 +53,7 @@ class Migration_20190327081303 extends Migration implements IMigration
             dActivated datetime DEFAULT NULL COMMENT 'time of opt-in activation',
             dDeActivated datetime DEFAULT NULL COMMENT 'time of de-activation (moved to this place)',
             PRIMARY KEY (kOptinHistory),
-            INDEX (kOptin)
+            INDEX (kOptinCode)
         )
         ENGINE = innodb");
 

@@ -267,7 +267,7 @@ class Notification implements IteratorAggregate, Countable
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 'Fehler in Exportvorlage',
-                sprintf('%d Exportvorlage(n) enthalten Syntax-Fehler.', $exportSyntaxErrorCount),
+                \sprintf('%d Exportvorlage(n) enthalten Syntax-Fehler.', $exportSyntaxErrorCount),
                 'exportformate.php'
             );
         }
@@ -276,7 +276,7 @@ class Notification implements IteratorAggregate, Countable
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 'Fehler in Emailvorlage',
-                sprintf('%d Emailvorlage(n) enthalten Syntax-Fehler.', $emailSyntaxErrorCount),
+                \sprintf('%d Emailvorlage(n) enthalten Syntax-Fehler.', $emailSyntaxErrorCount),
                 'emailvorlagen.php'
             );
         }

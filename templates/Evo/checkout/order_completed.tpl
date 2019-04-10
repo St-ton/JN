@@ -15,11 +15,6 @@
     <div class="order-completed">
         {include file='checkout/inc_paymentmodules.tpl'}
         {block name='order-completed'}
-        {if !empty($oTrustedShopsBewertenButton->cPicURL)}
-            <div>
-                <a href="{$oTrustedShopsBewertenButton->cURL}" target="_blank"><img src="{$oTrustedShopsBewertenButton->cPicURL}" /></a>
-            </div>
-        {/if}
         {if isset($abschlussseite)}
             {include file='checkout/inc_order_completed.tpl'}
         {/if}

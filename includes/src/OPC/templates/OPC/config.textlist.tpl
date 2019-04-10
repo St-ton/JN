@@ -1,39 +1,50 @@
-{foreach $prop as $i => $tabTitle}
-    <div class="input-group">
+<div class="form-group">
+    <label>{$propdesc.label}</label>
+    {foreach $propval as $i => $text}
+        <label class="sr-only" for="{$propname}-{$i}"></label>
+        <div class="input-group">
+            <div class="input-group-addon">
+                <button type="button" class="btn btn-xs btn-danger"
+                        onclick="removeLine_{$propname}(this);">
+                    <i class="fa fa-remove fa-fw"></i>
+                </button>
+            </div>
+            <input type="text" class="form-control" name="{$propname}[]" value="{$text}" id="{$propname}-{$i}">
+        </div>
+    {/foreach}
+    <label class="sr-only" for="{$propname}-new"></label>
+    <div class="input-group" id="new-input-group-{$propname}">
         <div class="input-group-addon">
-            <button type="button" class="btn btn-xs btn-danger"
-                    onclick="removeLine(this);">
-                <i class="fa fa-remove fa-fw"></i>
+            <button type="button" class="btn btn-xs btn-primary"
+                    onclick="addNewLine_{$propname}()">
+                <i class="fa fa-asterisk fa-fw"></i>
             </button>
         </div>
-        <input type="text" class="form-control" name="tabs[]" value="{$tabTitle}">
+        <input type="text" class="form-control" id="{$propname}-new" disabled>
     </div>
-{/foreach}
-<div class="input-group" id="new-input-group">
-    <div class="input-group-addon">
-        <button type="button" class="btn btn-xs btn-primary"
-                onclick="addNewLine()">
-            <i class="fa fa-asterisk fa-fw"></i>
-        </button>
-    </div>
-    <input type="text" class="form-control" disabled>
 </div>
 <script>
-    function removeLine(elm)
+    function removeLine_{$propname}(elm)
     {
         $(elm).closest('.input-group').remove();
     }
 
-    function addNewLine()
+    function addNewLine_{$propname}()
     {
-        var newInputGroup      = $('#new-input-group');
+        var newInputGroup      = $('#new-input-group-{$propname}');
         var newInputGroupClone = newInputGroup.clone();
 
         newInputGroupClone.attr('id', '');
-        newInputGroupClone.find('button').removeClass('btn-primary').addClass('btn-danger')
-            .attr('onclick', 'removeLine(this);');
-        newInputGroupClone.find('i.fa').removeClass('fa-asterisk').addClass('fa-remove');
-        newInputGroupClone.find('input').prop('disabled', false).attr('name', 'tabs[]');
+        newInputGroupClone.find('button')
+            .removeClass('btn-primary')
+            .addClass('btn-danger')
+            .attr('onclick', 'removeLine_{$propname}(this);');
+        newInputGroupClone.find('i.fa')
+            .removeClass('fa-asterisk')
+            .addClass('fa-remove');
+        newInputGroupClone.find('input')
+            .prop('disabled', false)
+            .attr('name', '{$propname}[]');
         newInputGroupClone.insertBefore(newInputGroup);
     }
 </script>

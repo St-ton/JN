@@ -64,7 +64,7 @@
                                         <td>
                                             {$oKupon->nVerwendungenBisher}
                                             {if $oKupon->nVerwendungen > 0}
-                                            {__('from')} {$oKupon->nVerwendungen}</td>
+                                            {__('of')} {$oKupon->nVerwendungen}</td>
                                             {/if}
                                         <td>
                                             {if !empty({$oKupon->cKundengruppe})}

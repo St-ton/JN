@@ -114,7 +114,6 @@ class_alias(\JTL\Catalog\Navigation::class, 'Navigation', true);
 class_alias(\JTL\Catalog\Wishlist\WunschlistePos::class, 'WunschlistePos', true);
 class_alias(\JTL\Catalog\Wishlist\WunschlistePosEigenschaft::class, 'WunschlistePosEigenschaft', true);
 class_alias(\JTL\Catalog\Wishlist\Wunschliste::class, 'Wunschliste', true);
-class_alias(\JTL\TrustedShops::class, 'TrustedShops', true);
 class_alias(\JTL\Alert\Alert::class, 'Alert', true);
 class_alias(\JTL\Network\Communication::class, 'Communication', true);
 class_alias(\JTL\Network\MultiRequest::class, 'MultiRequest', true);

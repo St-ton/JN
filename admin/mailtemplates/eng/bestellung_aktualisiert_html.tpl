@@ -416,11 +416,7 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}<b
 <br>
 You will be notified of the subsequent status of your order separately.
 
-{if $oTrustedShopsBewertenButton->cURL|strlen > 0}
-    <br><br>
-    Were you satisfied with your order? If so, we hope you'll take a minute to write a recommendation.<br>
-    <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Please rate our Shop!"></a>
-{/if}<br>
+<br>
 <br>
 Yours sincerely,<br>
 <br>

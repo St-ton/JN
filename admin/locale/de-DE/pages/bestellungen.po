@@ -18,10 +18,10 @@ msgid "orderPaymentName"
 msgstr "Zahlungsart"
 
 msgid "orderWawiPickedUp"
-msgstr "Bereits durch JTL-Wawi abgeholt"
+msgstr "Bereits an JTL-Wawi gesendet"
 
 msgid "orderCostumerRegistered"
-msgstr "Kunde registriert"
+msgstr "Registrierter Kunde"
 
 msgid "orderSum"
 msgstr "Warensumme"
@@ -30,7 +30,7 @@ msgid "orderDate"
 msgstr "Bestelldatum"
 
 msgid "orderPickedUpResetBTN"
-msgstr "Für den nächsten JTL-Wawi-Abgleich zur erneuten Abholung vormerken"
+msgstr "Für den nächsten JTL-Wawi-Abgleich zum erneuten Senden vormerken"
 
 msgid "orderSearch"
 msgstr "Suche"

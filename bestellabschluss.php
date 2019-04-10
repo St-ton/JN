@@ -4,24 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\Warenkorb;
 use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Cart;
+use JTL\Plugin\Helper;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
-use JTL\Helpers\Text;
-use JTL\TrustedShops;
-use JTL\Cart\Warenkorb;
-use JTL\Session\Frontend;
-use JTL\Plugin\Helper;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $conf       = Shopsetting::getInstance()->getAll();
@@ -97,12 +93,6 @@ if (isset($_GET['i'])) {
     }
     setzeSmartyWeiterleitung($bestellung);
 }
-if ($conf['trustedshops']['trustedshops_nutzen'] === 'Y') {
-    $oTrustedShops = new TrustedShops(-1, Text::convertISO2ISO639($_SESSION['cISOSprache']));
-    if ((int)$oTrustedShops->nAktiv === 1 && mb_strlen($oTrustedShops->tsId) > 0) {
-        $smarty->assign('oTrustedShops', $oTrustedShops);
-    }
-}
 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
        ->assign('Bestellung', $bestellung)
        ->assign('Link', $link)
@@ -115,16 +105,10 @@ $kPlugin = isset($bestellung->Zahlungsart->cModulId)
     ? Helper::getIDByModuleID($bestellung->Zahlungsart->cModulId)
     : 0;
 if ($kPlugin > 0) {
-    $loader = Helper::getLoaderByPluginID($kPlugin);
+    $loader = Helper::getLoaderByPluginID($kPlugin, $db);
     $smarty->assign('oPlugin', $loader->init($kPlugin));
 }
 if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung) || isset($_GET['i'])) {
-    if ($conf['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-        $smarty->assign(
-            'oTrustedShopsBewertenButton',
-            TrustedShops::getRatingButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr)
-        );
-    }
     $session->cleanUp();
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     executeHook(HOOK_BESTELLABSCHLUSS_PAGE, ['oBestellung' => $bestellung]);

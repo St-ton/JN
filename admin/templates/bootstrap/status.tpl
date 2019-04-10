@@ -161,7 +161,7 @@
                                                 <td>{$sub->cDomain}</td>
                                             </tr>
                                             <tr>
-                                                <td class="text-muted text-right"><strong>{__('valid')} {__('to')}</strong></td>
+                                                <td class="text-muted text-right"><strong>{__('validUntil')}</strong></td>
                                                 <td>{$sub->dDownloadBis_DE} <span class="text-muted">({$sub->nDayDiff} {__('days')})</span></td>
                                             </tr>
                                         </tbody>

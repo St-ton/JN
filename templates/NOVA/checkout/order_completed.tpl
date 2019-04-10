@@ -22,13 +22,6 @@
                 {include file='checkout/inc_paymentmodules.tpl'}
             {/block}
             {block name='checkout-order-completed-order-completed'}
-                {if !empty($oTrustedShopsBewertenButton->cPicURL)}
-                    {block name='checkout-order-completed-trusted-shops'}
-                        <div>
-                            {link href=$oTrustedShopsBewertenButton->cURL target="_blank"}{image src=$oTrustedShopsBewertenButton->cPicURL}{/link}
-                        </div>
-                    {/block}
-                {/if}
                 {if isset($abschlussseite)}
                     {block name='checkout-order-completed-include-inc-order-completed'}
                         {include file='checkout/inc_order_completed.tpl'}

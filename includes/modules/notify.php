@@ -126,10 +126,7 @@ if (strlen($cSh) > 0) {
             } else {
                 $logger->debug('finalizeOrder failed -> zurueck zur Zahlungsauswahl.');
                 $linkHelper = Shop::Container()->getLinkService();
-                // UOS Work Around
-                if ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl'
-                    || $paymentMethod->redirectOnCancel()
-                ) {
+                if ($paymentMethod->redirectOnCancel()) {
                     // Go to 'Edit PaymentMethod' Page
                     $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
                         '?editZahlungsart=1';

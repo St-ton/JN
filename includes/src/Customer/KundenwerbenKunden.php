@@ -87,7 +87,6 @@ class KundenwerbenKunden
      */
     public function __construct($email = '')
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
         if (\mb_strlen($email) > 0) {
             $this->loadFromDB($email);
         }

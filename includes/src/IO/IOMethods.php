@@ -218,15 +218,13 @@ class IOMethods
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
 
         unset(
             $_SESSION['VersandKupon'],
             $_SESSION['NeukundenKupon'],
             $_SESSION['Versandart'],
-            $_SESSION['Zahlungsart'],
-            $_SESSION['TrustedShops']
+            $_SESSION['Zahlungsart']
         );
         // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb,
         // dann verwerfen und neu anlegen

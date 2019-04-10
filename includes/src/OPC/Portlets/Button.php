@@ -17,221 +17,83 @@ use JTL\OPC\PortletInstance;
 class Button extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        // general
-        $text          = $instance->getProperty('btn-text');
-        $type          = $instance->getProperty('btn-type');
-        $size          = $instance->getProperty('btn-size');
-        $alignment     = $instance->getProperty('btn-alignment');
-        $fullWidthflag = $instance->getProperty('btn-full-width-flag');
-        // icon
-        $iconFlag      = $instance->getProperty('btn-icon-flag');
-        $icon          = $instance->getProperty('btn-icon');
-        $iconAlignment = $instance->getProperty('btn-icon-alignment');
-
-        $instance->addClass('btn')
-                 ->addClass('btn-' . $type)
-                 ->addClass('btn-' . $size)
-                 ->addClass(!empty($fullWidthflag) ? 'btn-block' : '');
-
-        $attributes    = $instance->getAttributeString();
-        $dataAttribute = $instance->getDataAttributeString();
-
-        $previewButton = '<a ';
-        $wrapperClass  = '';
-        if (!empty($alignment)) {
-            $wrapperClass = $alignment !== 'inline' ? 'text-' . $alignment : 'inline-block';
-        }
-        $previewButton .= $attributes . '>';
-
-        if (!empty($iconFlag) && $icon !== '') {
-            if ($iconAlignment === 'left') {
-                $previewButton .= '<i class="' . $icon . '" style="top:2px"></i> ' . $text . '</a>';
-            } else {
-                $previewButton .= $text . ' <i class="' . $icon . '" style="top:2px"></i></a>';
-            }
-        } else {
-            $previewButton .= $text . '</a>';
-        }
-
-        return '<div class="' . $wrapperClass . '" ' . $dataAttribute . '>' . $previewButton . '</div>';
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        // general
-        $text          = $instance->getProperty('btn-text');
-        $type          = $instance->getProperty('btn-type');
-        $size          = $instance->getProperty('btn-size');
-        $alignment     = $instance->getProperty('btn-alignment');
-        $fullWidthflag = $instance->getProperty('btn-full-width-flag');
-        // icon
-        $iconFlag      = $instance->getProperty('btn-icon-flag');
-        $icon          = $instance->getProperty('btn-icon');
-        $iconAlignment = $instance->getProperty('btn-icon-alignment');
-        // URL
-        $linkFlag       = $instance->getProperty('btn-link-flag');
-        $linkUrl        = $instance->getProperty('btn-link-url');
-        $linkTitle      = $instance->getProperty('btn-link-title');
-        $linkNewTabFlag = $instance->getProperty('btn-link-new-tab-flag');
-
-        $instance->addClass('btn')
-                 ->addClass('btn-' . $type)
-                 ->addClass('btn-' . $size)
-                 ->addClass(!empty($fullWidthflag) ? 'btn-block' : '');
-
-        $attributes    = $instance->getAttributeString();
-        $previewButton = '<a ';
-        $wrapperClass  = '';
-
-        if (!empty($linkFlag) && $linkFlag !== 'false' && !empty($linkUrl)) {
-            $previewButton .= ' href="' . $linkUrl . '" title="' . $linkTitle . '" ';
-            $previewButton .= !empty($linkNewTabFlag) ? ' target="_blank" ' : '';
-        }
-        if (!empty($alignment)) {
-            $wrapperClass = $alignment !== 'inline' ? 'text-' . $alignment : 'inline-block';
-        }
-
-        $previewButton .= $attributes . '>';
-
-        if (!empty($iconFlag) && $icon !== '') {
-            if ($iconAlignment === 'left') {
-                $previewButton .= '<i class="' . $icon . ' style="top:2px"></i> ' . $text . '</a>';
-            } else {
-                $previewButton .= $text . ' <i class="' . $icon . '" style="top:2px"></i></a>';
-            }
-        } else {
-            $previewButton .= $text . '</a>';
-        }
-
-        return '<div class="' . $wrapperClass . '">' . $previewButton . '</div>';
-    }
-
-    /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Button';
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
     {
         return [
-            'btn-text'              => [
-                'label'      => 'Text',
-                'default'    => 'Hey there!',
-                'dspl_width' => 50,
+            'label' => [
+                'label'   => 'Label',
+                'default' => 'Hey there!',
+                'width'   => 50,
             ],
-            'btn-type'              => [
-                'label'      => 'Typ',
-                'type'       => InputType::SELECT,
-                'options'    => [
-                    'default' => 'Standard',
+            'url' => [
+                'label' => 'URL',
+                'width' => 50,
+            ],
+            'style' => [
+                'type'    => InputType::SELECT,
+                'label'   => 'Stil',
+                'default' => 'primary',
+                'options' => [
                     'primary' => 'Primär',
                     'success' => 'Erfolg',
                     'info'    => 'Info',
                     'warning' => 'Warnung',
                     'danger'  => 'Gefahr',
                 ],
-                'default'    => 'default',
-                'dspl_width' => 50,
+                'width'   => 50,
             ],
-            'btn-size'              => [
-                'label'      => 'Größe',
+            'new-tab' => [
+                'type'       => InputType::CHECKBOX,
+                'label'      => 'In neuem Tab öffnen',
+                'width'      => 50,
+            ],
+            'size' => [
                 'type'       => InputType::SELECT,
+                'label'      => 'Größe',
+                'default'    => 'md',
                 'options'    => [
-                    'xs' => 'XS',
                     'sm' => 'S',
                     'md' => 'M',
                     'lg' => 'L',
                 ],
-                'default'    => 'md',
-                'dspl_width' => 50,
+                'width' => 50,
             ],
-            'btn-alignment'         => [
-                'label'      => 'Ausrichtung',
+            'link-title' => [
+                'label'      => 'Linktitel',
+                'width'      => 50,
+            ],
+            'align' => [
                 'type'       => InputType::SELECT,
+                'label'      => 'Ausrichtung',
                 'options'    => [
-                    'inline' => 'ohne',
+                    'block'  => 'gesamte Breite nutzen',
                     'left'   => 'links',
                     'right'  => 'rechts',
-                    'center' => 'mittig',
+                    'center' => 'zentriert',
                 ],
-                'default'    => 'inline',
-                'dspl_width' => 50,
+                'default'    => 'left',
+                'width'      => 50,
             ],
-            'btn-full-width-flag'   => [
-                'label' => 'gesamte Breite nutzen',
-                'type'  => InputType::CHECKBOX,
-            ],
-            'btn-icon-flag'         => [
-                'label'   => 'Icon?',
-                'type'    => InputType::RADIO,
-                'options' => [
-                    'true'  => 'ja',
-                    'false' => 'nein',
+            'use-icon' => [
+                'type'     => InputType::CHECKBOX,
+                'label'    => 'Button mit Icon versehen',
+                'children' => [
+                    'icon-align'    => [
+                        'type'    => InputType::SELECT,
+                        'label'   => 'Iconausrichtung',
+                        'options' => [
+                            'left'  => 'links',
+                            'right' => 'rechts'
+                        ],
+                    ],
+                    'icon' => [
+                        'type'  => InputType::ICON,
+                        'label' => 'Icon',
+                    ],
                 ],
-                'default' => 'false',
-                'inline'  => true,
             ],
-            'btn-icon-alignment'    => [
-                'label'                => 'Iconausrichtung',
-                'type'                 => InputType::SELECT,
-                'options'              => [
-                    'left'  => 'links',
-                    'right' => 'rechts'
-                ],
-                'collapseControlStart' => true,
-                'showOnProp'           => 'btn-icon-flag',
-                'showOnPropValue'      => 'true',
-                'dspl_width'           => 50,
-            ],
-            'btn-icon'              => [
-                'label'              => 'Icon',
-                'type'               => InputType::ICON,
-                'collapseControlEnd' => true,
-                'dspl_width'         => 100,
-            ],
-            'btn-link-flag'         => [
-                'label'      => 'Link?',
-                'type'       => InputType::RADIO,
-                'options'    => [
-                    'true'  => 'ja',
-                    'false' => 'nein',
-                ],
-                'default'    => 'false',
-                'dspl_width' => 100,
-            ],
-            'btn-link-url'          => [
-                'label'                => 'URL',
-                'collapseControlStart' => true,
-                'showOnProp'           => 'btn-link-flag',
-                'showOnPropValue'      => 'true',
-                'dspl_width'           => 50,
-            ],
-            'btn-link-title'        => [
-                'label'      => 'Linktitel',
-                'dspl_width' => 50,
-            ],
-            'btn-link-new-tab-flag' => [
-                'label'              => 'In neuem Tab öffnen?',
-                'type'               => InputType::CHECKBOX,
-                'dspl_width'         => 50,
-                'collapseControlEnd' => true,
-            ]
-
         ];
     }
 
@@ -242,15 +104,7 @@ class Button extends Portlet
     {
         return [
             'Icon'      => [
-                'btn-icon-flag',
-                'btn-icon-alignment',
-                'btn-icon',
-            ],
-            'Url'       => [
-                'btn-link-flag',
-                'btn-link-url',
-                'btn-link-title',
-                'btn-link-new-tab-flag'
+                'use-icon',
             ],
             'Styles'    => 'styles',
             'Animation' => 'animations',

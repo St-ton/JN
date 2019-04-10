@@ -6,6 +6,6 @@ $(document).ready(function() {ldelim}
 
 <div class="widget-custom-data">
    <div id="duk_data_wrapper">
-      <p class="ajax_preloader"></p>
+      <p class="ajax_preloader"><i class="fa fas fa-spinner fa-spin"></i> {__('loading')}</p>
    </div>
 </div>

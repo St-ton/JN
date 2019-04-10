@@ -3,85 +3,85 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "bearbeiteBewertung"
-msgstr "Bewertung bearbeiten"
+msgstr "Editing customer reviews"
 
 msgid "votesystem"
-msgstr "Bewertungssystem"
+msgstr "Review system"
 
 msgid "votesystemURL"
-msgstr "https://jtl-url.de/vpl3k"
+msgstr "https://jtl-url.de/cknmv"
 
 msgid "votesystemDesc"
-msgstr "Einstellungen zum Bewertungs- und Rezensionsmodul."
+msgstr "Here you can specify whether customers can write a review of your items. You can also search all existing active and inactive reviews and edit them if required."
 
 msgid "bewertungsText1"
 msgstr "Das Bewertungssystem zeigt eine von Ihnen angegebene Anzahl an Bewertungssternen unter den Artikeln in der Detailansicht an. "
 
 msgid "bewertungsText2"
-msgstr "Wir empfehlen bei Änderung der Bewertungsstern-Anzahl auf jeden Fall auch die Bewertungen zurückzusetzen, ansonsten kann es zu Rechenfehlern kommen!"
+msgstr "Wir empfehlen bei Änderung der Bewertungsstern-Anzahl auf jeden Fall, auch die Bewertungen zurückzusetzen. Ansonsten kann es zu Rechenfehlern kommen."
 
 msgid "bewertungsText3"
-msgstr "Kommentiert werden darf grundsätzlich nur von eingeloggten Benutzern, egal was unter \"Benutzung nur mit Login\" eingetragen wird.<br />Wenn angemeldete Benutzer eine Bewertung vornehmen, werden sie auch nicht nach einem Tag zurückgesetzt und können erneut bewerten.<br />Dies ist nur bei nicht eingeloggten Benutzern so."
+msgstr "Kommentiert werden darf grundsätzlich nur von eingeloggten Benutzern, egal was unter \"Benutzung nur mit Login\" eingetragen wird.<br/>Wenn angemeldete Benutzer eine Bewertung vornehmen, werden sie auch nicht nach einem Tag zurückgesetzt und können erneut bewerten.<br/>Dies ist nur bei nicht eingeloggten Benutzern so."
 
 msgid "popup"
-msgstr "als Popup"
+msgstr "as a dialogue box"
 
 msgid "clearVotes"
-msgstr "Alle Bewertungen zurücksetzen"
+msgstr "Reset all reviews"
 
 msgid "removeReply"
-msgstr "Antwort entfernen"
+msgstr "Delete reply"
 
 msgid "clearVotesComent"
-msgstr "Wählen Sie diesen Punkt wirklich nur dann aus, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen wollen. Das Bewertungssystem wird hierbei komplett zurückgesetzt, auch die Kommentare!"
+msgstr "Wählen Sie diese Option nur dann, wenn Sie alle bisher abgegebenen Bewertungspunkte löschen möchten. Das Bewertungssystem wird komplett zurückgesetzt, inklusive aller Kommentare."
 
 msgid "options"
-msgstr "Auswahl"
+msgstr "Selection"
 
 msgid "ratings"
-msgstr "Bewertungen"
+msgstr "Customer reviews"
 
 msgid "ratingsInaktive"
-msgstr "Inaktive Bewertungen"
+msgstr "Inactive customer reviews"
 
 msgid "productName"
-msgstr "Artikel"
+msgstr "Item"
 
 msgid "customerName"
-msgstr "Kundenname"
+msgstr "Customer name"
 
 msgid "ratingText"
-msgstr "Bewertungstext"
+msgstr "Review text"
 
 msgid "ratingReply"
-msgstr "Antwort"
+msgstr "Reply:"
 
 msgid "ratingStars"
-msgstr "Sterne"
+msgstr "Stars"
 
 msgid "ratingForProduct"
-msgstr "Bewertungen für einen bestimmten Artikel"
+msgstr "Customer review for a particular item"
 
 msgid "ratingcArtNr"
-msgstr "Artikelnummer/Artikelname"
+msgstr "SKU/item name"
 
 msgid "ratingSearchedFor"
-msgstr "Gesucht nach"
+msgstr "Searched for"
 
 msgid "ratingLast50"
-msgstr "Aktive Bewertungen"
+msgstr "Active customer reviews"
 
 msgid "successRatingEdit"
-msgstr "Ihre Bewertung wurde erfolgreich editiert."
+msgstr "Your review was edited successfully."
 
 msgid "errorCreditUnlock"
-msgstr "Guthabenbonus kann nur mit \"Bewertung freischalten\" verwendet werden."
+msgstr "In order to grant a credit bonus, the option \"Approve customer review\" must be activated."
 
 msgid "successRatingUnlock"
-msgstr " Bewertung(en) wurde(n) erfolgreich aktiviert."
+msgstr " Review(s) enabled successfully."
 
 msgid "successRatingDelete"
-msgstr " Bewertung(en) wurde(n) erfolgreich gelöscht."
+msgstr " Review(s) deleted successfully."
 
 msgid "successRatingCommentDelete"
-msgstr "Antwort zu einer Bewertung wurde entfernt."
+msgstr "Response deleted successfully."

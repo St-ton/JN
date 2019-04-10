@@ -5,7 +5,8 @@
 {if $instance->getProperty('panel-state') !== 'default'}
     {assign var=stateClass value=$instance->getProperty('panel-state')}
 {/if}
-{card no-body=true data=$data|default:null bg-variant=$stateClass|default:null}
+{card no-body=true data=$data|default:null border-variant=$stateClass|default:null
+        style=$instance->getStyleString()}
     {if $instance->getProperty('title-flag')}
         {cardheader class=$areaClass|default:null
                     data=['area-id' => 'header']}

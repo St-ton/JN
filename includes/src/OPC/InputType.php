@@ -54,5 +54,5 @@ class InputType extends Enum
 
     public const FILTER = 'filter';
 
-    public const BANNER_ZONES = 'banner-zones';
+    public const ZONES = 'zones';
 }

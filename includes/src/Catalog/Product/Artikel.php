@@ -2615,7 +2615,9 @@ class Artikel
                         // Lagerbestand beachten?
                         if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
                             && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
-                            && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                            && ($oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                            )
                             && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
                         ) {
                             $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
@@ -2623,7 +2625,9 @@ class Artikel
                     } elseif ($this->cLagerVariation === 'Y'
                         && $this->cLagerBeachten === 'Y'
                         && $this->cLagerKleinerNull === 'N'
-                        && $oVariationsWert->fLagerbestand <= 0
+                        && ($oVariationsWert->fLagerbestand <= 0
+                            || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                        )
                         && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
                     ) {
                         $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
@@ -3098,7 +3102,9 @@ class Artikel
                 }
                 // Lieferbar?
                 if ($varCombChildren[$i]->cLagerBeachten === 'Y'
-                    && $varCombChildren[$i]->cLagerKleinerNull === 'N'
+                    && ($varCombChildren[$i]->cLagerKleinerNull === 'N'
+                        || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                    )
                     && $varCombChildren[$i]->fLagerbestand <= 0
                 ) {
                     $varCombChildren[$i]->nNichtLieferbar = 1;
@@ -4316,7 +4322,9 @@ class Artikel
         }
         if ($this->fLagerbestand <= 0
             && $this->cLagerBeachten === 'Y'
-            && $this->cLagerKleinerNull !== 'Y'
+            && ($this->cLagerKleinerNull !== 'Y'
+                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+            )
             && $this->cLagerVariation !== 'Y'
         ) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;

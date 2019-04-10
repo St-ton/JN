@@ -1263,7 +1263,7 @@ class Product
                     ->setRealIP(Request::getRealIP());
                 try {
                     (new Optin(OptinAvailAgain::class))
-                        ->getOptin()
+                        ->getOptinInstance()
                         ->createOptin($refData)
                         ->sendActivationMail();
                 } catch (\Exception $e) {

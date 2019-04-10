@@ -33,23 +33,23 @@ class Optin extends OptinBase
 
     /**
      * Optin constructor.
-     * @param int|null $optinType
-     * @throws \Exception
+     * @param string|null $optinClass
+     * @throws EmptyResultSetException
      */
-    public function __construct(int $optinType = null)
+    public function __construct(string $optinClass = null)
     {
         $this->dbHandler   = Shop::Container()->getDB();
         $this->nowDataTime = new \DateTime();
 
-        if ($optinType !== null) {
-            $this->generateOptin($optinType);
+        if ($optinClass !== null) {
+            $this->generateOptin($optinClass);
         }
     }
 
     /**
-     * @return OptinAvailAgain
+     * @return OptinInterface
      */
-    public function getOptin(): OptinInterface
+    public function getOptinInstance(): OptinInterface
     {
         return $this->currentOptin;
     }
@@ -73,8 +73,8 @@ class Optin extends OptinBase
      * 'optinSuccededAgain' = user clicked again
      *
      * @return string
-     * @throws InvalidInputException
      * @throws EmptyResultSetException
+     * @throws InvalidInputException
      */
     public function handleOptin(): string
     {
@@ -91,7 +91,7 @@ class Optin extends OptinBase
                 ($this->emailAddress === '' ?: $this->optCode));
         }
         $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['OptinRefData']);
-        $this->generateOptin($this->refData->getOptinType());
+        $this->generateOptin($this->refData->getOptinClass());
         if ($this->actionPrefix === self::CLEAR_CODE || $this->externalAction === self::CLEAR_CODE) {
             $this->deactivateOptin();
 
@@ -121,7 +121,7 @@ class Optin extends OptinBase
     }
 
     /**
-     * @throws \Exception
+     * remove the optin
      */
     protected function deactivateOptin(): void
     {
@@ -130,7 +130,7 @@ class Optin extends OptinBase
         }
         $newRow               = new \stdClass();
         $newRow->kOptinCode   = $this->optCode;
-        $newRow->kOptinType   = $this->refData->getOptinType();
+        $newRow->kOptinType   = $this->refData->getOptinClass();
         $newRow->cMail        = 'anonym'; // anonymized for history
         $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
         $newRow->dCreated     = $this->foundOptinTupel->dCreated;
@@ -155,12 +155,13 @@ class Optin extends OptinBase
     }
 
     /**
-     * @param int $optinType
+     * @param string $optinClass
+     * @throws EmptyResultSetException
      */
-    private function generateOptin(int $optinType): void
+    private function generateOptin(string $optinClass): void
     {
-        $this->currentOptin = OptinFactory::instantiate(
-            $optinType,
+        $this->currentOptin = OptinFactory::getInstance(
+            $optinClass,
             $this->dbHandler,
             $this->nowDataTime,
             $this->refData,
@@ -168,5 +169,8 @@ class Optin extends OptinBase
             $this->optCode,
             $this->actionPrefix
         );
+        if ($this->currentOptin === null) {
+            throw new EmptyResultSetException('Optin class not found');
+        }
     }
 }

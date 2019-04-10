@@ -78,7 +78,7 @@ msgid "questionCatInGroup"
 msgstr "Hier legen Sie fest, für welche Kategorien die Fragengruppe angezeigt werden soll."
 
 msgid "noSpecialPageAvailable"
-msgstr "Keine Spezialseite \"Auswahlassistent\" vorhanden."
+msgstr "Keine Spezialseite „Auswahlassistent“ vorhanden."
 
 msgid "hintSpecialPage"
 msgstr "Hier legen Sie fest, auf welcher Spezialseite die Gruppe angezeigt werden soll. Sie können mit gehaltener Strg-Taste mehrere Seiten gleichzeitig wählen."
@@ -99,7 +99,7 @@ msgid "hintQuestionAttribute"
 msgstr "Hier legen Sie fest, welches Merkmal von der Frage abgefragt werden soll."
 
 msgid "hintQuestionPosition"
-msgstr "Hier legen Sie fest, wie weit oben die Frage erscheinen soll. Die Sortierung erfolgt von klein nach groß."
+msgstr "Hier legen Sie fest, wie weit oben die Frage erscheinen soll. Je kleiner die eingegebene Zahl, desto weiter oben wird die Frage angezeigt."
 
 msgid "hintQuestionActive"
 msgstr "Hier legen Sie fest, ob die Frage aktiv ist und somit angezeigt wird."

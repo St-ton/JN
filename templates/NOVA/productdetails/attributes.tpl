@@ -2,9 +2,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+{block name='productdetails-attributes'}
 {if $showAttributesTable}
     <div class="product-attributes mt-3">
-    {block name='productdetails-attributes'}
+    {block name='productdetails-attributes-table'}
         <table class="table table-condensed table-striped">
             {if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y'}
                 {block name='productdetails-attributes-characteristics'}
@@ -102,3 +103,4 @@
     {/block}
     </div>
 {/if}
+{/block}

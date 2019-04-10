@@ -32,7 +32,6 @@ use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Sprache;
 use JTL\Helpers\Text;
-use JTL\TrustedShops;
 use JTL\Checkout\Versandart;
 use JTL\Visitor;
 use JTL\Cart\WarenkorbPers;
@@ -804,13 +803,13 @@ function pruefeZahlungsartNutzbarkeit()
 /**
  * @param string $cMail
  * @param string $cBestellNr
- * @return null|stdClass
+ * @return null
  * @deprecated since 5.0.0
  */
 function gibTrustedShopsBewertenButton(string $cMail, string $cBestellNr)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use TrustedShops::getRatingButton instead.', E_USER_DEPRECATED);
-    return TrustedShops::getRatingButton($cMail, $cBestellNr);
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return null;
 }
 
 /**

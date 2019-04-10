@@ -2,24 +2,32 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{block name='header'}
-    {include file='layout/header.tpl'}
-{/block}
+{block name='poll-index'}
+    {block name='poll-index-include-header'}
+        {include file='layout/header.tpl'}
+    {/block}
 
-{block name='content'}
-    {if $step === 'umfrage_uebersicht'}
-        {include file='poll/overview.tpl'}
-    {elseif $step === 'umfrage_durchfuehren'}
-        {if $opcPageService->getCurPage()->isReplace()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-        {else}
-            {include file='poll/progress.tpl'}
+    {block name='poll-index-content'}
+        {if $step === 'umfrage_uebersicht'}
+            {block name='poll-index-include-overview'}
+                {include file='poll/overview.tpl'}
+            {/block}
+        {elseif $step === 'umfrage_durchfuehren'}
+            {if $opcPageService->getCurPage()->isReplace()}
+                {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
+            {else}
+                {block name='poll-index-include-progress'}
+                    {include file='poll/progress.tpl'}
+                {/block}
+            {/if}
+        {elseif $step === 'umfrage_ergebnis'}
+            {block name='poll-index-include-result'}
+                {include file='poll/result.tpl'}
+            {/block}
         {/if}
-    {elseif $step === 'umfrage_ergebnis'}
-        {include file='poll/result.tpl'}
-    {/if}
-{/block}
+    {/block}
 
-{block name='footer'}
-    {include file='layout/footer.tpl'}
+    {block name='poll-index-include-footer'}
+        {include file='layout/footer.tpl'}
+    {/block}
 {/block}

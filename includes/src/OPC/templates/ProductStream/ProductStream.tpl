@@ -1,57 +1,72 @@
-{assign var=productlist value=$portlet->getFilteredProducts($instance)}
-{assign var=style value=$instance->getProperty('listStyle')}
+{$style = $instance->getProperty('listStyle')}
 
-{if $style === 'gallery'}
-    {assign var='grid' value='col-xs-6 col-lg-4'}
-{else}
-    {assign var='grid' value='col-xs-12'}
-{/if}
-
-{if $style === 'slider'}
-    {include file="./final.slider.tpl"}
-{elseif $style === 'vertSlider'}
-    {assign var="title" value=$instance->getProperty('sliderTitle')}
-    <section class="panel{if !empty($title)} panel-default{/if}
-                    panel-slider box box-slider
-                    {if isset($class) && $class|strlen > 0} {$class}{/if}"
-            {if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
-        <div class="panel-heading">
-            {if !empty($title)}
-                <h5 class="panel-title">
-                    {$title}
-                </h5>
-            {/if}
-        </div>
-        <div{if $title|strlen > 0} class="panel-body"{/if}>
-            <div class="evo-box-vertical text-center">
-                {foreach $productlist as $product}
-                    <div class="product-wrapper{if isset($style)} {$style}{/if}"
-                            {if isset($Link) && $Link->getLinkType() == $smarty.const.LINKTYP_STARTSEITE}
-                                itemprop="about"
-                            {else}
-                                itemprop="isRelatedTo"
-                            {/if}
-                         itemscope itemtype="http://schema.org/Product">
-                        {include file='productlist/item_slider.tpl' Artikel=$product tplscope='box' class=''}
-                    </div>
-                {/foreach}
-            </div>
-        </div>
-    </section>{* /panel *}
-{else}
-    <div id="result-wrapper">
-        <div {$instance->getAttributeString()}>
-            <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list">
-                {foreach $portlet->getFilteredProducts($instance) as $Artikel}
-                    <div class="product-wrapper {$grid}">
-                        {if $style === 'list'}
-                            {include file='productlist/item_list.tpl' tplscope=$style}
-                        {else}
-                            {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
-                        {/if}
-                    </div>
-                {/foreach}
-            </div>
+{if $isPreview}
+    <div {$instance->getAttributeString()} {$instance->getDataAttributeString()}>
+        {image alt='' src=$portlet->getTemplateUrl()|cat:'preview.'|cat:$style|cat:'.png'
+            style='width: 98%; filter: grayscale(50%) opacity(60%)'}
+        <div style="color:#5cbcf6;font-size:40px;font-weight:bold;margin-top:-1em;line-height:1em;text-align:center;">
+            Produktliste
         </div>
     </div>
+{else}
+    {$productlist = $portlet->getFilteredProducts($instance)}
+
+    {if $style === 'slider'}
+        {include file="./final.slider.tpl"}
+    {elseif $style === 'vertSlider'}
+        {$title = $instance->getProperty('sliderTitle')}
+
+        {card no-body=true bg-variant='default' class='panel-slider box box-slider' id=$id|default:null
+                style=$instance->getStyleString()}
+            {if !empty($title)}
+                {cardheader}
+                    <h5 class="panel-title card-title">{$title}</h5>
+                {/cardheader}
+            {/if}
+            {cardbody}
+                <div class="evo-box-vertical" style="text-align:center">
+                    {foreach $productlist as $product}
+                        <div class="product-wrapper {if isset($style)}{$style}{/if}"
+                             {if isset($Link) && $Link->getLinkType() == $smarty.const.LINKTYP_STARTSEITE}
+                                 itemprop="about"
+                             {else}
+                                 itemprop="isRelatedTo"
+                             {/if}
+                             itemscope itemtype="http://schema.org/Product">
+                            {include file='productlist/item_slider.tpl' Artikel=$product tplscope='box' class=''}
+                        </div>
+                    {/foreach}
+                </div>
+            {/cardbody}
+        {/card}
+    {else}
+        {if $style === 'gallery'}
+            {$gridLG = 4}
+            {$gridXS = 6}
+        {else}
+            {$gridXS = 12}
+        {/if}
+
+        {if $style !== 'list'}
+            {$class = 'row-eq-height row-eq-img-height'}
+        {/if}
+
+        {$class = $class|default:''|cat:' '|cat:$style}
+
+        <div id="result-wrapper" style="{$instance->getStyleString()}">
+            <div {$instance->getAttributeString()}>
+                {row class=$class|default:null id='product-list'}
+                    {foreach $portlet->getFilteredProducts($instance) as $Artikel}
+                        {col cols=$gridXS lg=$gridLG|default:false class='product-wrapper'}
+                            {if $style === 'list'}
+                                {include file='productlist/item_list.tpl' tplscope=$style}
+                            {else}
+                                {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
+                            {/if}
+                        {/col}
+                    {/foreach}
+                {/row}
+            </div>
+        </div>
+    {/if}
 {/if}

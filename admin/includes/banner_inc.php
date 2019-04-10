@@ -13,9 +13,9 @@ use JTL\Shop;
  */
 function holeAlleBanner()
 {
-    $oBanner = new ImageMap();
+    $banner = new ImageMap(Shop::Container()->getDB());
 
-    return $oBanner->fetchAll();
+    return $banner->fetchAll();
 }
 
 /**
@@ -25,9 +25,9 @@ function holeAlleBanner()
  */
 function holeBanner(int $kImageMap, bool $fill = true)
 {
-    $oBanner = new ImageMap();
+    $banner = new ImageMap(Shop::Container()->getDB());
 
-    return $oBanner->fetch($kImageMap, true, $fill);
+    return $banner->fetch($kImageMap, true, $fill);
 }
 
 /**
@@ -45,10 +45,11 @@ function holeExtension(int $kImageMap)
  */
 function entferneBanner(int $kImageMap)
 {
-    $oBanner = new ImageMap();
-    Shop::Container()->getDB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
+    $db     = Shop::Container()->getDB();
+    $banner = new ImageMap($db);
+    $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
 
-    return $oBanner->delete($kImageMap);
+    return $banner->delete($kImageMap);
 }
 
 /**
@@ -56,36 +57,34 @@ function entferneBanner(int $kImageMap)
  */
 function holeBannerDateien()
 {
-    $cBannerFile_arr = [];
-    if (($nHandle = opendir(PFAD_ROOT . PFAD_BILDER_BANNER)) !== false) {
-        while (($cFile = readdir($nHandle)) !== false) {
-            if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
-                $cBannerFile_arr[] = $cFile;
+    $files = [];
+    if (($handle = opendir(PFAD_ROOT . PFAD_BILDER_BANNER)) !== false) {
+        while (($file = readdir($handle)) !== false) {
+            if ($file !== '.' && $file !== '..' && $file[0] !== '.') {
+                $files[] = $file;
             }
         }
-        closedir($nHandle);
+        closedir($handle);
     }
 
-    return $cBannerFile_arr;
+    return $files;
 }
 
 /**
- * @param mixed $cData
+ * @param mixed $data
  * @return IOResponse
  */
-function saveBannerAreasIO($cData)
+function saveBannerAreasIO($data)
 {
-    $oBanner  = new ImageMap();
+    $banner   = new ImageMap(Shop::Container()->getDB());
     $response = new IOResponse();
-    $oData    = json_decode($cData);
-
-    foreach ($oData->oArea_arr as $oArea) {
-        $oArea->kArtikel      = (int)$oArea->kArtikel;
-        $oArea->kImageMap     = (int)$oArea->kImageMap;
-        $oArea->kImageMapArea = (int)$oArea->kImageMapArea;
+    $data     = json_decode($data);
+    foreach ($data->oArea_arr as $area) {
+        $area->kArtikel      = (int)$area->kArtikel;
+        $area->kImageMap     = (int)$area->kImageMap;
+        $area->kImageMapArea = (int)$area->kImageMapArea;
     }
-
-    $oBanner->saveAreas($oData);
+    $banner->saveAreas($data);
 
     return $response;
 }

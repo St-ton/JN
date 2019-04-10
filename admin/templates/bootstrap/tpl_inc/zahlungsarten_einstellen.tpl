@@ -116,11 +116,7 @@
                         'za_rechnung_jtl',
                         'za_barzahlung_jtl',
                         'za_lastschrift_jtl',
-                        'za_kreditkarte_jtl',
-                        'za_billpay_invoice_jtl',
-                        'za_billpay_direct_debit_jtl',
-                        'za_billpay_rate_payment_jtl',
-                        'za_billpay_paylater_jtl'
+                        'za_kreditkarte_jtl'
                     ]}
 
                     {if !$zahlungsart->cModulId|in_array:$filters}

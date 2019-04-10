@@ -138,7 +138,6 @@ if (isset($_GET['fc']) && mb_strlen($_GET['fc']) > 0) {
     }
 }
 if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
     $customer            = new stdClass();
     $customer->cAnrede   = isset($_POST['cAnrede'])

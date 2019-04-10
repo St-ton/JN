@@ -89,7 +89,6 @@ if ($action !== null && Form::validateToken()) {
                 );
                 if (!empty($wlData->kWunschliste) && mb_strlen($wlData->cURLID) > 0) {
                     $step = 'wunschliste anzeigen';
-                    require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
                     if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
                             $mails = explode(' ', Text::filterXSS($_POST['email']));

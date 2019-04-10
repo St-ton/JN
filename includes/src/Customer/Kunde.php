@@ -821,7 +821,6 @@ class Kunde
             ReturnType::AFFECTED_ROWS
         );
 
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
         $linkParams             = ['fpwh' => $key];
         $obj                    = new stdClass();
         $obj->tkunde            = $this;

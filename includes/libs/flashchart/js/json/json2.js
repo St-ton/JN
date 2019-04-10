@@ -431,7 +431,7 @@ if (!this.JSON) {
 // we look to see that the remaining characters are only whitespace or ']' or
 // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
 
-                if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu] / g, '@').
+                if (/^[\],:{}\s]*$/.test(text.replace(/\\["\\\/bfnrtu]/g, '@').
                 replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
                 replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 // In the second stage we use the eval function to compile the text into a

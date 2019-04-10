@@ -20,7 +20,6 @@ if (isset($_SESSION['Kunde']->kKunde)
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
 
@@ -51,12 +50,6 @@ if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] =
 }
 if ($step === 'formular') {
     gibFormularDaten(Request::verifyGPCDataInt('checkout'));
-}
-if (isset($_FILES['vcard'])
-    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && Form::validateToken()
-) {
-    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
 Shop::Smarty()->assign('editRechnungsadresse', $edit)
     ->assign('Ueberschrift', $titel)

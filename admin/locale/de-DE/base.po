@@ -156,13 +156,13 @@ msgid "FillOut"
 msgstr "Bitte ausfüllen"
 
 msgid "nofopenError"
-msgstr "Leider steht die PHP-Stream-Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv. Bitte wenden Sie sich an den Serveradministrator und setzen Sie diese auf 1."
+msgstr "Leider steht die PHP-Stream-Konfigurationsoption \"<b>allow_url_fopen</b>\" nicht auf aktiv. Bitte wenden Sie sich an den Serveradministrator, um die Option auf 1 zu setzen."
 
 msgid "noCURLError"
-msgstr "Leider steht das Programm \"<b>CURL (curl_init)</b>\" nicht zur Verfügung. Bitte wenden Sie sich an den Serveradministrator und installieren dieses."
+msgstr "Leider steht das Programm \"<b>CURL (curl_init)</b>\" nicht zur Verfügung. Bitte wenden Sie sich an den Serveradministrator, um es zu installieren."
 
 msgid "noCURLAndFopenError"
-msgstr "Leider ist weder die PHP-Stream-Konfigurationsoption \"<b>allow_url_fopen</b>\" aktiv, noch existiert das Programm \"<b>CURL (curl_init)</b>\". Bitte wenden Sie sich an den Serveradministrator und aktivieren mindestens eins der beiden."
+msgstr "Leider ist weder die PHP-Stream-Konfigurationsoption \"<b>allow_url_fopen</b>\" aktiv, noch existiert das Programm \"<b>CURL (curl_init)</b>\". Bitte wenden Sie sich an den Serveradministrator, um mindestens eins der beiden zu aktivieren."
 
 msgid "noSOAPError"
 msgstr "Leider steht das Netzwerkprotokoll \"<b>SOAP</b>\" nicht zur Verfügung. Bitte wenden Sie sich an den Serveradministrator, damit dieses zur Verfügung gestellt wird."
@@ -192,7 +192,7 @@ msgid "importCsvChooseType"
 msgstr "Wie soll importiert werden?"
 
 msgid "importCsvType0"
-msgstr "Vorhandene Einträge löschen, dann importieren"
+msgstr "Vorhandene Einträge löschen, dann neue importieren"
 
 msgid "importCsvType1"
 msgstr "Vorhandene Einträge überschreiben und neue importieren"
@@ -234,7 +234,7 @@ msgid "errorFillRequired"
 msgstr "Fehler: Bitte füllen Sie alle Pflichtfelder korrekt aus."
 
 msgid "successConfigSave"
-msgstr "Ihre Einstellungen wurde erfolgreich gespeichert."
+msgstr "Ihre Einstellungen wurden erfolgreich gespeichert."
 
 msgid "errorConfigSave"
 msgstr "Fehler beim Speichern der Einstellungen."
@@ -297,7 +297,7 @@ msgid "errorNoPermission"
 msgstr "Keine Berechtigungen vorhanden"
 
 msgid "errorCSRF"
-msgstr "Cross site request forgery! Sind Cookies aktiviert?"
+msgstr "Cross-Site-Request-Forgery! Sind Cookies aktiviert?"
 
 msgid "errorSessionExpired"
 msgstr "Ihre Sitzung wurde zurückgesetzt. Bitte melden Sie sich neu an."
@@ -321,7 +321,7 @@ msgid "both"
 msgstr "Beide"
 
 msgid "successEmailSend"
-msgstr "Eine E-Mail mit weiteren Anweisung wurde an die hinterlegte Adresse, sofern vorhanden, gesendet."
+msgstr "Eine E-Mail mit weiteren Anweisungen wurde an die hinterlegte Adresse, sofern vorhanden, gesendet."
 
 msgid "successPasswordChange"
 msgstr "Passwort wurde erfolgreich geändert."
@@ -338,7 +338,7 @@ msgstr "Passwörter stimmen nicht überein."
 msgid "action"
 msgstr "Aktion"
 
-msgid "existing"
+msgid "available"
 msgstr "Vorhanden"
 
 msgid "html"
@@ -357,7 +357,7 @@ msgid "chooseCategory"
 msgstr "Kategorien auswählen"
 
 msgid "searchCategory"
-msgstr "suche Kategorien"
+msgstr "Suche nach Kategorien"
 
 msgid "category"
 msgstr "Kategorie"
@@ -375,7 +375,7 @@ msgid "general"
 msgstr "Allgemein"
 
 msgid "chooseAvailableFile"
-msgstr "vorhandene Datei wählen"
+msgstr "Vorhandene Datei wählen"
 
 msgid "pageType"
 msgstr "Seitentyp"
@@ -409,6 +409,9 @@ msgstr "Eigene Seite"
 
 msgid "product"
 msgstr "Artikel"
+
+msgid "chooseProducts"
+msgstr "Artikel wählen"
 
 msgid "chooseProduct"
 msgstr "Artikel wählen"
@@ -549,19 +552,19 @@ msgid "top"
 msgstr "oben"
 
 msgid "topRight"
-msgstr "oben-rechts"
+msgstr "oben rechts"
 
 msgid "topLeft"
-msgstr "oben-links"
+msgstr "oben links"
 
 msgid "bottom"
-msgstr "unten-rechts"
+msgstr "unten"
 
 msgid "bottomRight"
-msgstr "unten-rechts"
+msgstr "unten rechts"
 
 msgid "bottomLeft"
-msgstr "unten-links"
+msgstr "unten links"
 
 msgid "left"
 msgstr "links"
@@ -816,7 +819,7 @@ msgid "selection"
 msgstr "Auswahl"
 
 msgid "addValue"
-msgstr "Wert hinzufügen."
+msgstr "Wert hinzufügen"
 
 msgid "sortShort"
 msgstr "Sort."
@@ -883,9 +886,6 @@ msgstr "Suche nach Herstellernamen"
 
 msgid "chooseManufacturer"
 msgstr "Hersteller wählen"
-
-msgid "searchCatgeoryName"
-msgstr "Suche nach Kategorienamen"
 
 msgid "chooseCatgeory"
 msgstr "Kategorie wählen"
@@ -1047,7 +1047,7 @@ msgid "version"
 msgstr "Version"
 
 msgid "create"
-msgstr "erstellen"
+msgstr "Erstellen"
 
 msgid "visitors"
 msgstr "Besucher"
@@ -1583,9 +1583,6 @@ msgstr "Warnung"
 msgid "moreInfo"
 msgstr "Mehr Informationen"
 
-msgid "available"
-msgstr "verfügbar"
-
 msgid "info"
 msgstr "Info"
 
@@ -1630,3 +1627,42 @@ msgstr "Datum"
 
 msgid "syntax"
 msgstr "Syntax"
+
+msgid "typeAheadCategory"
+msgstr "Geben Sie den Titel der Kategorie ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadPage"
+msgstr "Geben Sie den Titel der Seite ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadTag"
+msgstr "Geben Sie den Namen des Tags ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadManufacturer"
+msgstr "Geben Sie den Namen des Herstellers ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadAttribute"
+msgstr "Geben Sie den Namen des Merkmals ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadProduct"
+msgstr "Geben Sie den Namen des Produkts ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "enterSearchTerm"
+msgstr "Geben Sie einen Suchbegriff ein."
+
+msgid "errorKeyMissing"
+msgstr "Es gab Probleme beim Anlegen des Inputs mit dem Key \"%s\"."
+
+msgid "statisticNoData"
+msgstr "Es liegen noch keine Statistiken vor."
+
+msgid "of"
+msgstr "von"
+
+msgid "activeFrom"
+msgstr "Aktiv von"
+
+msgid "activeTo"
+msgstr "Aktiv bis"
+
+msgid "validUntil"
+msgstr "Gültig bis"

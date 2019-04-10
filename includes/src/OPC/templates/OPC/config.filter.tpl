@@ -4,7 +4,8 @@
 <h2>Aktive Filter</h2>
 <div id="filters-enabled"></div>
 
-<input type="hidden" name="{$propname}" value="{$prop|json_encode|htmlentities}" data-prop-type="filter">
+<input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
+       data-prop-type="json">
 
 <script>
     var $filtersAvailable = $('#filters-available');

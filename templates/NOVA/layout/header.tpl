@@ -116,7 +116,7 @@
         {/if}
 
         {block name='layout-header-header'}
-            {if Shop::isAdmin()}
+            {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
                 {block name='layout-header-include-header-composer-menu'}
                     {include file='layout/header_composer_menu.tpl'}
                 {/block}

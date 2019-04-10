@@ -17,30 +17,6 @@ use JTL\OPC\PortletInstance;
 class Row extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        $instance->addClass($instance->getProperty('class'));
-
-        return $this->getPreviewHtmlFromTpl($instance);
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        $instance->addClass($instance->getProperty('class'));
-
-        return $this->getFinalHtmlFromTpl($instance);
-    }
-
-    /**
      * @return string
      */
     public function getButtonHtml(): string
@@ -56,23 +32,20 @@ class Row extends Portlet
         return [
             'layout-xs' => [
                 'label'          => '<i class="fa fa-mobile"></i> Layout XS',
-                'type'           => InputType::TEXT,
                 'default'        => '6+6',
-                'dspl_width'     => 50,
-                'layoutCollapse' => [
-                    'layout-sm' => [
-                        'label' => '<i class="fa fa-tablet"></i> Layout S',
-                        'type'  => InputType::TEXT,
-                    ],
-                    'layout-md' => [
-                        'label' => '<i class="fa fa-laptop"></i> Layout M',
-                        'type'  => InputType::TEXT,
-                    ],
-                    'layout-lg' => [
-                        'label' => '<i class="fa fa-desktop"></i> Layout L',
-                        'type'  => InputType::TEXT,
-                    ],
-                ]
+                'width'     => 25,
+            ],
+            'layout-sm' => [
+                'label' => '<i class="fa fa-tablet"></i> Layout S',
+                'width'     => 25,
+            ],
+            'layout-md' => [
+                'label' => '<i class="fa fa-laptop"></i> Layout M',
+                'width'     => 25,
+            ],
+            'layout-lg' => [
+                'label' => '<i class="fa fa-desktop"></i> Layout L',
+                'width'     => 25,
             ],
             'class'     => [
                 'label'      => 'CSS Klasse',
@@ -125,10 +98,10 @@ class Row extends Portlet
                 'md'      => $layoutMD[$i] ?? '',
                 'lg'      => $layoutLG[$i] ?? '',
                 'divider' => [
-                    'xs' => $sumXS === 0 ? false : ($sumXS % 12 === 0),
-                    'sm' => $sumSM === 0 ? false : ($sumSM % 12 === 0),
-                    'md' => $sumMD === 0 ? false : ($sumMD % 12 === 0),
-                    'lg' => $sumLG === 0 ? false : ($sumLG % 12 === 0),
+                    'xs' => $sumXS > 0 && $sumXS % 12 === 0,
+                    'sm' => $sumSM > 0 && $sumSM % 12 === 0,
+                    'md' => $sumMD > 0 && $sumMD % 12 === 0,
+                    'lg' => $sumLG > 0 && $sumLG % 12 === 0,
                 ],
             ];
         }
@@ -145,23 +118,7 @@ class Row extends Portlet
         $result = '';
         foreach ($colLayout as $size => $value) {
             if (!empty($value) && \is_array($value) === false) {
-                $result .= "col-$size-$value ";
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $colLayout
-     * @return string
-     */
-    public function getDividers(array $colLayout): string
-    {
-        $result = '';
-        foreach ($colLayout['divider'] as $size => $value) {
-            if (!empty($value)) {
-                $result .= '<div class="clearfix visible-' . $size . '-block"></div>';
+                $result .= 'col-' . $size . '-' . $value . ' ';
             }
         }
 

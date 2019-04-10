@@ -274,6 +274,8 @@ Iframe.prototype = {
                 this.gui.setUnsaved(true, true);
             }
         }
+
+        this.page.updateFlipcards();
     },
 
     onNewPortletCreated: function(data)
@@ -288,6 +290,7 @@ Iframe.prototype = {
         this.setSelected(newElement);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
+        this.page.updateFlipcards();
     },
 
     createPortletElm: function(previewHtml)
@@ -487,6 +490,7 @@ Iframe.prototype = {
             this.setSelected();
             this.updateDropTargets();
             this.gui.setUnsaved(true, true);
+            this.page.updateFlipcards();
         }
     },
 

@@ -1,6 +1,10 @@
-<div id="{$instance->getProperty('uid')}" {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
+<div
+    style="{$instance->getStyleString()}"
+    {$instance->getAttributeString()}
+    {if $isPreview}{$instance->getDataAttributeString()}{/if}
+>
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}
-        <video class="media media--height" autoplay="autoplay"
+        <video autoplay="autoplay"
                poster="{$instance->getProperty('video-poster-url')}" loop="loop" muted="muted"
                style="display: inherit; width: 100%; position: absolute; z-index: 1;opacity: 0.5;">
             {if !$isPreview}
@@ -8,11 +12,11 @@
             {/if}
         </video>
     {/if}
-    <div {if $isPreview}class='opc-area' data-area-id='cntr-0' {/if}style="position: relative; z-index: 2;">
+    <div {if $isPreview}class='opc-area' data-area-id='container'{/if} style="position: relative; z-index: 2;">
         {if $isPreview}
-            {$instance->getSubareaPreviewHtml('cntr-0')}
+            {$instance->getSubareaPreviewHtml('container')}
         {else}
-            {$instance->getSubareaFinalHtml('cntr-0')}
+            {$instance->getSubareaFinalHtml('container')}
         {/if}
     </div>
 </div>

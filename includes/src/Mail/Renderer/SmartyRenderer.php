@@ -204,9 +204,7 @@ class SmartyRenderer implements RendererInterface
     }
 
     /**
-     * @param string $id
-     * @return string
-     * @throws \SmartyException
+     * @inheritDoc
      */
     public function renderHTML(string $id): string
     {
@@ -214,9 +212,7 @@ class SmartyRenderer implements RendererInterface
     }
 
     /**
-     * @param string $id
-     * @return string
-     * @throws \SmartyException
+     * @inheritDoc
      */
     public function renderText(string $id): string
     {

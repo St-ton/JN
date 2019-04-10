@@ -1625,6 +1625,30 @@ msgstr "Antarktis"
 msgid "date"
 msgstr "Datum"
 
+msgid "typeAheadCategory"
+msgstr "Geben Sie den Titel der Kategorie ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadPage"
+msgstr "Geben Sie den Titel der Seite ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadTag"
+msgstr "Geben Sie den Namen des Tags ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadManufacturer"
+msgstr "Geben Sie den Namen des Herstellers ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadAttribute"
+msgstr "Geben Sie den Namen des Merkmals ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "typeAheadProduct"
+msgstr "Geben Sie den Namen des Produkts ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
+
+msgid "enterSearchTerm"
+msgstr "Geben Sie einen Suchbegriff ein."
+
+msgid "errorKeyMissing"
+msgstr "Es gab Probleme beim Anlegen des Inputs mit dem Key \"%s\"."
+
 msgid "statisticNoData"
 msgstr "Es liegen noch keine Statistiken vor."
 

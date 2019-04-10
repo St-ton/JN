@@ -1625,6 +1625,30 @@ msgstr "Antarctica"
 msgid "date"
 msgstr "Date"
 
+msgid "typeAheadCategory"
+msgstr "Enter the title of the category. After a short time you will get suggestions from which you can choose one."
+
+msgid "typeAheadPage"
+msgstr "Enter the title of the page. After a short time you will get suggestions from which you can choose one."
+
+msgid "typeAheadTag"
+msgstr "Enter the name of the tag. After a short time you will get suggestions from which you can choose one."
+
+msgid "typeAheadManufacturer"
+msgstr "Enter the name of the manufacturer. After a short time you will get suggestions from which you can choose one."
+
+msgid "typeAheadAttribute"
+msgstr "Enter the name of the attribute. After a short time you will get suggestions from which you can choose one."
+
+msgid "typeAheadProduct"
+msgstr "Enter the name of the product. After a short time you will get suggestions from which you can choose one."
+
+msgid "enterSearchTerm"
+msgstr "Enter a search term."
+
+msgid "errorKeyMissing"
+msgstr "The input with key \"%s\" could not be created."
+
 msgid "statisticNoData"
 msgstr "No statistics at the moment."
 

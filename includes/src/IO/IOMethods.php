@@ -776,14 +776,21 @@ class IOMethods
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
-        foreach ($valueIDs as $ID => $valueID) {
-            $currentValue = new EigenschaftWert((int)$valueID);
-            if ($currentValue->kEigenschaft === $ID) {
-                $weightDiff  += $currentValue->fGewichtDiff;
-                $newProductNr = (!empty($currentValue->cArtNr) && $product->cArtNr !== $currentValue->cArtNr)
-                    ? $currentValue->cArtNr
-                    : $product->cArtNr;
+
+        // Alle Variationen ohne Freifeld
+        $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
+        foreach ($valueIDs as $kKey => $cVal) {
+            if (!isset($keyValueVariations[$kKey])) {
+                unset($valueIDs[$kKey]);
             }
+        }
+
+        foreach ($valueIDs as $valueID) {
+            $currentValue = new EigenschaftWert((int)$valueID);
+            $weightDiff  += $currentValue->fGewichtDiff;
+            $newProductNr = (!empty($currentValue->cArtNr) && $product->cArtNr !== $currentValue->cArtNr)
+                ? $currentValue->cArtNr
+                : $product->cArtNr;
         }
         $weightTotal        = Trennzeichen::getUnit(
             \JTL_SEPARATOR_WEIGHT,
@@ -796,13 +803,6 @@ class IOMethods
             $product->fArtikelgewicht + $weightDiff
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
-        // Alle Variationen ohne Freifeld
-        $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
-        foreach ($valueIDs as $kKey => $cVal) {
-            if (!isset($keyValueVariations[$kKey])) {
-                unset($valueIDs[$kKey]);
-            }
-        }
 
         $nNettoPreise = Frontend::getCustomerGroup()->getIsMerchant();
         $fVKNetto     = $product->gibPreis($fAnzahl, $valueIDs, Frontend::getCustomerGroup()->getID());

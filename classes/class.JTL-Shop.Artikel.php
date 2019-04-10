@@ -2483,7 +2483,9 @@ class Artikel
                                 }
                                 // Lagerbestand beachten?
                                 if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
-                                    && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
+                                    && ($oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
+                                        || (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                                    )
                                     && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
                                     && $matrixConf === true
                                 ) {
@@ -2493,7 +2495,9 @@ class Artikel
                                 // Lagerbestand beachten?
                                 if ($this->cLagerVariation === 'Y'
                                     && $this->cLagerBeachten === 'Y'
-                                    && $this->cLagerKleinerNull === 'N'
+                                    && ($this->cLagerKleinerNull === 'N'
+                                        || (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                                    )
                                     && $oVariationsWert->fLagerbestand <= 0
                                     && $matrixConf === true
                                 ) {
@@ -2918,6 +2922,7 @@ class Artikel
     {
         $kKundengruppe                  = (int)$kKundengruppe;
         $oVariationKombiKinderAssoc_arr = [];
+        $conf                           = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELDETAILS]);
         if ($kKundengruppe > 0 && $kSprache > 0 && $this->nIstVater) {
             $oVariationsKombiKinder_arr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel, teigenschaft.kEigenschaft, teigenschaftwert.kEigenschaftWert
@@ -3003,7 +3008,9 @@ class Artikel
                         }
                         // Lieferbar?
                         if ($oVariationKombiKinderAssoc_arr[$i]->cLagerBeachten === 'Y'
-                            && $oVariationKombiKinderAssoc_arr[$i]->cLagerKleinerNull === 'N'
+                            && ($oVariationKombiKinderAssoc_arr[$i]->cLagerKleinerNull === 'N'
+                                || (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                            )
                             && $oVariationKombiKinderAssoc_arr[$i]->fLagerbestand <= 0
                         ) {
                             $oVariationKombiKinderAssoc_arr[$i]->nNichtLieferbar = 1;
@@ -4190,7 +4197,9 @@ class Artikel
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_NICHTVORBESTELLBAR;
         }
         if ($this->fLagerbestand <= 0 && $this->cLagerBeachten === 'Y' &&
-            $this->cLagerKleinerNull !== 'Y' && $this->cLagerVariation !== 'Y'
+            ($this->cLagerKleinerNull !== 'Y'
+                || (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+            ) && $this->cLagerVariation !== 'Y'
         ) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }

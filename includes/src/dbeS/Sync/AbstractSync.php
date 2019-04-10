@@ -13,12 +13,15 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
-use JTL\Optin\Optin;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\EmptyResultSetException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Customer\Kundengruppe;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Optin\Optin;
 use JTL\Optin\OptinAvailAgain;
 use JTL\Redirect;
 use JTL\Shop;
@@ -206,8 +209,9 @@ abstract class AbstractSync
     /**
      * @param object $product
      * @param array  $conf
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     * @throws EmptyResultSetException
      */
     protected function versendeVerfuegbarkeitsbenachrichtigung($product, array $conf): void
     {
@@ -243,12 +247,11 @@ abstract class AbstractSync
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $isOptinValidActive = (new Optin(OptinAvailAgain::class))
-                ->setEmail($msg->cMail)
-                ->isActive();
-            if (!$isOptinValidActive) {
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
+            if (!$availAgainOptin->isActive()) {
                 continue;
             }
+            $availAgainOptin->finishOptin();
             $tplData                                   = new stdClass();
             $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
             $tplData->tartikel                         = $product;

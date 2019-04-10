@@ -108,7 +108,7 @@ class Optin extends OptinBase
     /**
      * @throws \Exception
      */
-    protected function activateOptin(): void
+    public function activateOptin(): void
     {
         if (!empty($this->currentOptin)) {
             $this->currentOptin->activateOptin();
@@ -121,13 +121,23 @@ class Optin extends OptinBase
     }
 
     /**
-     * remove the optin
+     * deactivate the optin
+     * (class specific deactivations AND finishing)
      */
-    protected function deactivateOptin(): void
+    public function deactivateOptin(): void
     {
         if (!empty($this->currentOptin)) {
             $this->currentOptin->deactivateOptin();
         }
+        $this->finishOptin();
+    }
+
+    /**
+     * only move the optin-tupel to history
+     * (used for single opt-in actions)
+     */
+    public function finishOptin(): void
+    {
         $newRow               = new \stdClass();
         $newRow->kOptinCode   = $this->optCode;
         $newRow->kOptinType   = $this->refData->getOptinClass();

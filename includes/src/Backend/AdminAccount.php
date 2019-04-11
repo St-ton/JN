@@ -423,39 +423,7 @@ class AdminAccount
      */
     public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup, string $keyPrefix): array
     {
-        if ($nAdminLoginGroup === \ADMINGROUP) {
-            $links = $this->db->selectAll(
-                'tadminmenu',
-                'kAdminmenueGruppe',
-                $nAdminMenuGroup,
-                '*',
-                'cLinkname, nSort'
-            );
-        } else {
-            $links = $this->db->queryPrepared(
-                'SELECT tadminmenu.* 
-                    FROM tadminmenu 
-                    JOIN tadminrechtegruppe 
-                        ON tadminmenu.cRecht = tadminrechtegruppe.cRecht 
-                    WHERE kAdminmenueGruppe = :kAdminmenueGruppe 
-                        AND kAdminlogingruppe = :kAdminlogingruppe 
-                    ORDER BY cLinkname, nSort',
-                [
-                    'kAdminmenueGruppe' => $nAdminMenuGroup,
-                    'kAdminlogingruppe' => $nAdminLoginGroup
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        }
-
-        return map($links, function ($e) use ($keyPrefix) {
-            $e->kAdminmenu        = (int)$e->kAdminmenu;
-            $e->key               = $keyPrefix . '.' . $e->kAdminmenu;
-            $e->kAdminmenueGruppe = (int)$e->kAdminmenueGruppe;
-            $e->nSort             = (int)$e->nSort;
-
-            return $e;
-        });
+        return [];
     }
 
     /**

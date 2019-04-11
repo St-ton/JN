@@ -13,14 +13,14 @@
                                 {formgroup}
                                     {input type="email" name="email" id="email_quick"
                                            placeholder="{lang key='emailadress'}" required=true
-                                           autocomplete="quick-login-email"}
+                                           autocomplete="quick-login username"}
                                 {/formgroup}
                             {/block}
                             {block name='layout-header-nav-account-form-password'}
                                 {formgroup}
                                     {input type="password" name="passwort" id="password_quick"
                                            required=true placeholder="{lang key='password'}"
-                                           autocomplete="quick-login-password"}
+                                           autocomplete="quick-login current-password"}
                                 {/formgroup}
                             {/block}
                             {block name='layout-header-nav-account-form-captcha'}

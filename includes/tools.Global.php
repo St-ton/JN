@@ -1398,7 +1398,7 @@ function findeKindArtikelZuEigenschaft($kArtikel, $es0, $esWert0, $es1 = 0, $esW
         __FUNCTION__ . ' is deprecated. Use ArtikelHelper::getChildProdctIDByAttribute() instead.',
         E_USER_DEPRECATED
     );
-    return Product::getChildProdctIDByAttribute($kArtikel, $es0, $esWert0, $es1, $esWert1);
+    return Product::getChildProductIDByAttribute($kArtikel, $es0, $esWert0, $es1, $esWert1);
 }
 
 /**

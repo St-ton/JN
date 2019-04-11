@@ -1535,7 +1535,7 @@ table.matrix tbody > tr > td {
         width: 100%;
         height: 1px;
         background-color: #ccc;
-        z-order: 0;
+        z-index: 0;
     }
 }
 
@@ -2810,10 +2810,11 @@ div#add-to-cart {
 .no-drag {
     -moz-user-select: none;
     -webkit-user-select: none;
+    -khtml-user-select: none;
     -ms-user-select: none;
     user-select: none;
     -webkit-user-drag: none;
-    user-drag: none;
+    -khtml-user-drag: none;
 }
 
 .v-box {

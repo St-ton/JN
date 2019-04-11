@@ -22,7 +22,7 @@ abstract class OptinBase extends OptinFactory
     /**
      * action prefix
      */
-    protected const CLEAR_CODE = 'cc';
+    protected const DELETE_CODE = 'dc';
 
     /**
      * @var \DateTime

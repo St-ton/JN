@@ -77,8 +77,9 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
         $optin                  = new stdClass();
         $articleSeoURL          = Shop::getURL() . '/' . $this->product->cSeo;
-        $optin->activationURL   = $articleSeoURL . '?oc=' . self::ACTIVATE_CODE . $this->optCode;
-        $optin->deactivationURL = $articleSeoURL . '?oc=' . self::CLEAR_CODE . $this->optCode;
+        $optinCodePrefix        = '?oc=';
+        $optin->activationURL   = $articleSeoURL . $optinCodePrefix . self::ACTIVATE_CODE . $this->optCode;
+        $optin->deactivationURL = $articleSeoURL . $optinCodePrefix . self::DELETE_CODE . $this->optCode;
 
         $templateData                                   = new stdClass();
         $templateData->tkunde                           = $_SESSION['Kunde'] ?? null;

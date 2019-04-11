@@ -82,7 +82,7 @@ class Optin extends OptinBase
                 ($this->emailAddress === '' ?: $this->optCode));
         }
         $this->generateOptin($this->refData->getOptinClass());
-        if ($this->actionPrefix === self::CLEAR_CODE || $this->externalAction === self::CLEAR_CODE) {
+        if ($this->actionPrefix === self::DELETE_CODE || $this->externalAction === self::DELETE_CODE) {
             $this->deactivateOptin();
 
             return !empty($this->foundOptinTupel->dActivated) ? 'optinCanceled' : 'optinRemoved';

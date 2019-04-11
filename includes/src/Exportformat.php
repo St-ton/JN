@@ -1082,12 +1082,12 @@ class Exportformat
         bool $isCron = false,
         int $max = null
     ): bool {
+        $started = false;
         if (!$this->isOK()) {
             $this->log('Export is not ok.');
 
-            return false;
+            return !$started;
         }
-        $started = false;
         $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && \mb_strpos($this->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
@@ -1131,7 +1131,7 @@ class Exportformat
             include $oPlugin->getPaths()->getExportPath() .
                 \str_replace(\PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
-            if ($queueObject->jobQueueID > 0) {
+            if ($queueObject->jobQueueID > 0 && empty($queueObject->cronID)) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueObject->jobQueueID);
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
@@ -1141,7 +1141,7 @@ class Exportformat
             }
             $this->log('Finished export');
 
-            return true;
+            return !$started;
         }
         $start        = \microtime(true);
         $cacheHits    = 0;

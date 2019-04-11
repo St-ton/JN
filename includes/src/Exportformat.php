@@ -1600,7 +1600,7 @@ class Exportformat
     public function checkAll(): array
     {
         $allExports = $this->db->selectAll('texportformat', [], []);
-        $errors = [];
+        $errors     = [];
         foreach ($allExports as $export) {
             $this->loadFromDB((int)$export->kExportformat);
             $res = $this->checkSyntax();

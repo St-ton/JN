@@ -512,9 +512,9 @@ class Status
     {
         if (!isset($_SESSION['emailSyntaxErrorCount'])) {
             $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
-                    'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
-                    ReturnType::SINGLE_OBJECT
-                )->cnt
+                'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt
                 + (int)Shop::Container()->getDB()->query(
                     'SELECT COUNT(*) AS cnt FROM tpluginemailvorlage WHERE nFehlerhaft = 1',
                     ReturnType::SINGLE_OBJECT

@@ -162,17 +162,16 @@ class ShippingMethod
      */
     public static function getPossibleShippingMethods($countryCode, $zip, $shippingClasses, int $cgroupID): array
     {
-        $db                            = Shop::Container()->getDB();
-        $cart                          = Frontend::getCart();
-        $kSteuerklasse                 = $cart->gibVersandkostenSteuerklasse();
-        $minVersand                    = 10000;
-        $hasSpecificShippingcosts      = self::hasSpecificShippingcosts($countryCode);
-        $vatNote                       = null;
-        $cNurAbhaengigeVersandart      = self::normalerArtikelversand($countryCode) === false
+        $db                       = Shop::Container()->getDB();
+        $cart                     = Frontend::getCart();
+        $kSteuerklasse            = $cart->gibVersandkostenSteuerklasse();
+        $minVersand               = 10000;
+        $hasSpecificShippingcosts = self::hasSpecificShippingcosts($countryCode);
+        $vatNote                  = null;
+        $cNurAbhaengigeVersandart = self::normalerArtikelversand($countryCode) === false
             ? 'Y'
             : 'N';
-        $excludeShippingCostAttributes = $cNurAbhaengigeVersandart === 'N';
-        $methods                       = $db->queryPrepared(
+        $methods                  = $db->queryPrepared(
             "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = :depOnly
                     AND cLaender LIKE :iso
@@ -189,7 +188,7 @@ class ShippingMethod
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $netPricesActive               = Frontend::getCustomerGroup()->isMerchant();
+        $netPricesActive          = Frontend::getCustomerGroup()->isMerchant();
 
         foreach ($methods as $i => $shippingMethod) {
             $bSteuerPos = $shippingMethod->eSteuer !== 'netto';
@@ -204,8 +203,7 @@ class ShippingMethod
                 $shippingMethod,
                 $countryCode,
                 null,
-                0,
-                $excludeShippingCostAttributes
+                0
             );
             if ($shippingMethod->fEndpreis === -1) {
                 unset($methods[$i]);
@@ -998,8 +996,6 @@ class ShippingMethod
      * @param String            $iso
      * @param Artikel|stdClass  $additionalProduct
      * @param Artikel|null      $product
-     * @param bool              $excludeShippingCostAttributes - exclude articles with these attributes from weight,
-     *  amount and count calculation
      * @return int|string
      * @former berechneVersandpreis()
      */
@@ -1007,10 +1003,10 @@ class ShippingMethod
         $shippingMethod,
         $iso,
         $additionalProduct,
-        $product = null,
-        $excludeShippingCostAttributes = false
+        $product = null
     ) {
-        $db = Shop::Container()->getDB();
+        $db                            = Shop::Container()->getDB();
+        $excludeShippingCostAttributes = self::normalerArtikelversand($iso) === true;
         if (!isset($additionalProduct->fAnzahl)) {
             if ($additionalProduct === null) {
                 $additionalProduct = new stdClass();

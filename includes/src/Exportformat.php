@@ -1555,9 +1555,9 @@ class Exportformat
         $product     = null;
         $productData = $this->db->query(
             "SELECT * 
-                    FROM tartikel 
-                    WHERE kVaterArtikel = 0 
-                    AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+                FROM tartikel 
+                WHERE kVaterArtikel = 0 
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
             ReturnType::SINGLE_OBJECT
         );
         if (!empty($productData->kArtikel)) {
@@ -1595,19 +1595,43 @@ class Exportformat
     }
 
     /**
+     * @return array
+     */
+    public function checkAll(): array
+    {
+        $allExports = $this->db->selectAll('texportformat', [], []);
+        $errors = [];
+        foreach ($allExports as $export) {
+            $this->loadFromDB((int)$export->kExportformat);
+            $res = $this->checkSyntax();
+            if ($res === false) {
+                continue;
+            }
+            $errors[$this->kExportformat] = $res;
+        }
+
+        return $errors;
+    }
+
+    /**
      * @param int $error
      */
     public function updateError(int $error): void
     {
-        Shop::Container()->getDB()->update(
+        if (Shop::getShopDatabaseVersion()->getMajor() < 5) {
+            return;
+        }
+        $res = $this->db->update(
             'texportformat',
             'kExportformat',
             $this->kExportformat,
             (object)['nFehlerhaft' => $error]
         );
-
-        $_SESSION['exportSyntaxErrorCount'] = count(
-            Shop::Container()->getDB()->selectAll('texportformat', 'nFehlerhaft', 1)
-        );
+        if ($res !== -1) {
+            $_SESSION['exportSyntaxErrorCount'] = (int)$this->db->query(
+                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt;
+        }
     }
 }

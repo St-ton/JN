@@ -6,6 +6,7 @@
 
 namespace JTL;
 
+use JTL\DB\ReturnType;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Hydrator\TestHydrator;
 use Exception;
@@ -418,23 +419,30 @@ class Emailvorlage
      */
     public function updateError(bool $error = true, bool $force = false, int $pluginID = 0): void
     {
+        if (Shop::getShopDatabaseVersion()->getMajor() < 5) {
+            return;
+        }
         $upd              = new \stdClass();
         $upd->nFehlerhaft = (int)$error;
         if (!$force) {
             $upd->cAktiv = $error ? 'N' : 'Y';
         }
-        Shop::Container()->getDB()->update(
+        $res = Shop::Container()->getDB()->update(
             $pluginID > 0 ? 'tpluginemailvorlage' : 'temailvorlage',
             'kEmailvorlage',
             $this->kEmailvorlage,
             $upd
         );
-
-        $_SESSION['emailSyntaxErrorCount'] = count(
-            Shop::Container()->getDB()->selectAll('temailvorlage', 'nFehlerhaft', 1)
-        ) + count(
-            Shop::Container()->getDB()->selectAll('tpluginemailvorlage', 'nFehlerhaft', 1)
-        );
+        if ($res !== -1) {
+            $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
+                'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt
+            + (int)Shop::Container()->getDB()->query(
+             'SELECT COUNT(*) AS cnt FROM tpluginemailvorlage WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt;
+        }
     }
 
     /**

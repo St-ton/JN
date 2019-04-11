@@ -142,13 +142,13 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
     $customer            = new stdClass();
     $customer->cAnrede   = isset($_POST['cAnrede'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cAnrede'])))
-        : null;
+        : Frontend::getCustomer()->cAnrede;
     $customer->cVorname  = isset($_POST['cVorname'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cVorname'])))
-        : null;
+        : Frontend::getCustomer()->cVorname;
     $customer->cNachname = isset($_POST['cNachname'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cNachname'])))
-        : null;
+        : Frontend::getCustomer()->cNachname;
     $customer->cEmail    = isset($_POST['cEmail'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cEmail'])))
         : null;

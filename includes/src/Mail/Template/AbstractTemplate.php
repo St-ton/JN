@@ -311,11 +311,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     private function sanitizeText(?string $text): string
     {
-        if ($text === null || \mb_strlen(\strip_tags($text)) === 0) {
-            return '';
-        }
-
-        return $text;
+        return $text === null || \mb_strlen(\strip_tags($text)) === 0 ? '' : $text;
     }
 
     /**

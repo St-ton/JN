@@ -8,6 +8,10 @@ namespace JTL\Exceptions;
 
 use Exception;
 
+/**
+ * Class InvalidInputException
+ * @package JTL\Exceptions
+ */
 class InvalidInputException extends Exception
 {
 

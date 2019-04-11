@@ -126,15 +126,7 @@ class Migration_20190327081303 extends Migration implements IMigration
         $optin_cContentHtml_de = <<<'DEHTML'
 {includeMailTemplate template=header type=html}
 
-{if isset($Kunde->kKunde) && $Kunde->kKunde > 0}
-    Sehr {if $Kunde->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$Kunde->cNachname},<br>
-    <br>
-{elseif isset($NewsletterEmpfaenger->cNachname)}
-    Sehr {if $NewsletterEmpfaenger->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$NewsletterEmpfaenger->cNachname},<br>
-    <br>
-{else}
-	Sehr geeherte Kundin, sehr geehrter Kunde,<br>
-{/if}
+Guten Tag,<br>
 <br>
 Bitte klicken Sie den folgenden Freischalt-Link<br>
 <a href="{$Optin->activationURL}">{$Optin->activationURL}</a>,<br>
@@ -157,13 +149,8 @@ DEHTML;
         $optin_cContentText_de = <<<'DEPLAIN'
 {includeMailTemplate template=header type=plain}
 
-{if isset($Kunde->kKunde) && $Kunde->kKunde > 0}
-    Sehr {if $Kunde->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$Kunde->cNachname},
-{elseif isset($NewsletterEmpfaenger->cNachname)}
-    Sehr {if $NewsletterEmpfaenger->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$NewsletterEmpfaenger->cNachname},
-{else}
-	Sehr geeherte Kundin, sehr geehrter Kunde,
-{/if}
+Guten Tag,
+
 Bitte nutzen Sie den folgenden Freischalt-Link
 {$Optin->activationURL}
 den Sie in Ihren Browser einfügen können, um von uns informiert zu werden, sobald
@@ -183,14 +170,9 @@ DEPLAIN;
         $optin_cContentHtml_en = <<<'ENHTML'
 {includeMailTemplate template=header type=html}
 
-{if empty($Benachrichtigung->cVorname) && empty($Benachrichtigung->cNachname)}
-Dear Customer,<br>
-{else}
-Dear{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}
-{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},<br>
-{/if}
-<br>
 
+Dear Customer,<br>
+<br>
 Please use the following confirmation-Link<br>
 <a href="{$Optin->activationURL}">{$Optin->activationURL}</a>,<br>
 to get the information, if the article
@@ -211,12 +193,7 @@ ENHTML;
         $optin_cContentText_en = <<<'ENPLAIN'
 {includeMailTemplate template=header type=plain}
 
-{if empty($Benachrichtigung->cVorname) && empty($Benachrichtigung->cNachname)}
 Dear Customer,
-{else}
-Dear{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}
-{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},
-{/if}
 
 Please use the following confirmation-Link, which you can insert into your browser,
 to get the information, if the article
@@ -286,12 +263,7 @@ ENPLAIN;
         $cContentHtml_de = <<<'DEHTML'
 {includeMailTemplate template=header type=html}
 
-{if !empty($Benachrichtigung->cNachname) || !empty($Benachrichtigung->cVorname)}
-Hallo{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}
-{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},<br>
-{else}
-Sehr geehrte Kundin, sehr geehrter Kunde,<br>
-{/if}
+Guten Tag,<br>
 <br>
 wir freuen uns, Ihnen mitteilen zu dürfen, dass das Produkt {$Artikel->cName} ab sofort wieder bei uns erhältlich ist.<br>
 <br>
@@ -306,12 +278,7 @@ DEHTML;
         $cContentText_de = <<<'DEPLAIN'
 {includeMailTemplate template=header type=plain}
 
-{if !empty($Benachrichtigung->cNachname) || !empty($Benachrichtigung->cVorname)}
-Hallo{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}
-{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},
-{else}
-Sehr geehrte Kundin, sehr geehrter Kunde,
-{/if}
+Guten Tag,
 
 wir freuen uns, Ihnen mitteilen zu dürfen, dass das Produkt {$Artikel->cName} ab sofort wieder bei uns erhältlich ist.
 
@@ -326,12 +293,7 @@ DEPLAIN;
         $cContentHtml_en = <<<'ENHTML'
 {includeMailTemplate template=header type=html}
 
-{if !empty($Benachrichtigung->cNachname) || !empty($Benachrichtigung->cVorname)}
-Dear{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}
-{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},<br>
-{else}
 Dear customer,<br>
-{/if}
 <br>
 We\'re happy to inform you that our product {$Artikel->cName} is once again available in our online shop.<br>
 <br>
@@ -346,12 +308,7 @@ ENHTML;
         $cContentText_en = <<<'ENPLAIN'
 {includeMailTemplate template=header type=plain}
 
-{if !empty($Benachrichtigung->cNachname) || !empty($Benachrichtigung->cVorname)}
-Dear{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}
-{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},
-{else}
 Dear customer,
-{/if}
 
 We\'re happy to inform you that our product {$Artikel->cName} is once again available in our online shop.
 

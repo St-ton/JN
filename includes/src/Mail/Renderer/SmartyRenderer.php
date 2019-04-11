@@ -53,8 +53,8 @@ class SmartyRenderer implements RendererInterface
     }
 
     /**
-     * @param array                 $params
-     * @param \JTL\Smarty\JTLSmarty $smarty
+     * @param array     $params
+     * @param JTLSmarty $smarty
      * @return string
      */
     public function includeMailTemplate($params, $smarty): string

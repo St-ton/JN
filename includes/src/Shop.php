@@ -1971,10 +1971,10 @@ final class Shop
             foreach ($loggingConf as $value) {
                 if ($value === AdminLoginConfig::CONFIG_DB) {
                     $handlers[] = (new NiceDBHandler($container->getDB(), Logger::INFO))
-                        ->setFormatter(new LineFormatter('%message%', null, false, true));
+                        ->setFormatter(new LineFormatter('%message%', null, true, true));
                 } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
                     $handlers[] = (new StreamHandler(\PFAD_LOGFILES . 'auth.log', Logger::INFO))
-                        ->setFormatter(new LineFormatter(null, null, false, true));
+                        ->setFormatter(new LineFormatter(null, null, true, true));
                 }
             }
 
@@ -1983,7 +1983,7 @@ final class Shop
 
         $container->singleton(LoggerInterface::class, function (Container $container) {
             $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(\CONF_GLOBAL, 'systemlog_flag')))
-                ->setFormatter(new LineFormatter('%message%', null, false, true));
+                ->setFormatter(new LineFormatter('%message%', null, true, true));
 
             return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
         });

@@ -10,7 +10,4 @@
             {include file='checkout/inc_payment_methods.tpl'}
         {/block}
     {/row}
-    {block name='checkout-step4-payment-options-include-inc-payment-trustedshops'}
-        {include file='checkout/inc_payment_trustedshops.tpl'}
-    {/block}
 {/block}

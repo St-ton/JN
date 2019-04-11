@@ -16,131 +16,26 @@ use JTL\OPC\PortletInstance;
  */
 class ImageSlider extends Portlet
 {
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        $instance->setProperty('uid', \uniqid('sldr-', false));
-        $images = $instance->getProperty('slides');
-        unset($images['NEU']);
-        if (!empty($images)) {
-            \usort(
-                $images,
-                function ($a, $b) {
-                    return $a['nSort'] > $b['nSort'];
-                }
-            );
-        }
-        $instance->setProperty('slides', $images);
-        $instance->addClass('text-center');
-
-        if (!empty($images[0]['url'])) {
-            return
-                '<div ' . $instance->getAttributeString() . $instance->getDataAttributeString() .
-                '><img alt="" src="' . $images[0]['url'] .
-                '" style="width: 98%; filter: grayscale(50%) opacity(60%)">' .
-                '<p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">' .
-                'Slider</p></div>';
-        }
-
-        return '<div ' . $instance->getAttributeString() . $instance->getDataAttributeString() . '>Slider</div>';
-    }
+    const EFFECT_LIST = [
+        'sliceDown', 'sliceDownLeft', 'sliceUp', 'sliceUpLeft', 'sliceUpDown', 'sliceUpDownLeft', 'fold', 'fade',
+        'slideInRight', 'slideInLeft', 'boxRandom', 'boxRain', 'boxRainReverse', 'boxRainGrow', 'boxRainGrowReverse'
+    ];
 
     /**
      * @param PortletInstance $instance
      * @return string
-     * @throws \Exception
      */
-    public function getFinalHtml(PortletInstance $instance): string
+    public function getEnabledEffectList(PortletInstance $instance): string
     {
-        $images = $instance->getProperty('slides');
-        unset($images['NEU']);
-        if (!empty($images)) {
-            \usort(
-                $images,
-                function ($a, $b) {
-                    return $a['nSort'] > $b['nSort'];
-                }
-            );
-        }
-        foreach ($images as &$slide) {
-            if (empty($slide['width']['xs'])) {
-                $slide['width']['xs'] = 12;
-            }
-            if (empty($slide['width']['sm'])) {
-                $slide['width']['sm'] = $slide['width']['xs'];
-            }
-            if (empty($slide['width']['md'])) {
-                $slide['width']['md'] = $slide['width']['sm'];
-            }
-            if (empty($slide['width']['lg'])) {
-                $slide['width']['lg'] = $slide['width']['md'];
-            }
-            $slide['img_attr'] = $instance->getImageAttributes($slide['url'], null, null, $slide['width']);
-        }
-        unset($slide);
-        $instance->setProperty('slides', $images);
-
-        //effects
         $effects = [];
-        if ((bool)$instance->getProperty('effects-sliceDown') === true) {
-            $effects[] = 'sliceDown';
-        }
-        if ((bool)$instance->getProperty('effects-sliceDownLeft') === true) {
-            $effects[] = 'sliceDownLeft';
-        }
-        if ((bool)$instance->getProperty('effects-sliceUp') === true) {
-            $effects[] = 'sliceUp';
-        }
-        if ((bool)$instance->getProperty('effects-sliceUpLeft') === true) {
-            $effects[] = 'sliceUpLeft';
-        }
-        if ((bool)$instance->getProperty('effects-sliceUpDown') === true) {
-            $effects[] = 'sliceUpDown';
-        }
-        if ((bool)$instance->getProperty('effects-sliceUpDownLeft') === true) {
-            $effects[] = 'sliceUpDownLeft';
-        }
-        if ((bool)$instance->getProperty('effects-fold') === true) {
-            $effects[] = 'fold';
-        }
-        if ((bool)$instance->getProperty('effects-fade') === true) {
-            $effects[] = 'fade';
-        }
-        if ((bool)$instance->getProperty('effects-slideInRight') === true) {
-            $effects[] = 'slideInRight';
-        }
-        if ((bool)$instance->getProperty('effects-slideInLeft') === true) {
-            $effects[] = 'slideInLeft';
-        }
-        if ((bool)$instance->getProperty('effects-boxRandom') === true) {
-            $effects[] = 'boxRandom';
-        }
-        if ((bool)$instance->getProperty('effects-boxRain') === true) {
-            $effects[] = 'boxRain';
-        }
-        if ((bool)$instance->getProperty('effects-boxRainReverse') === true) {
-            $effects[] = 'boxRainReverse';
-        }
-        if ((bool)$instance->getProperty('effects-boxRainGrow') === true) {
-            $effects[] = 'boxRainGrow';
-        }
-        if ((bool)$instance->getProperty('effects-boxRainGrowReverse') === true) {
-            $effects[] = 'boxRainGrowReverse';
-        }
-        $instance->setProperty('effects', $effects);
 
-        return $this->getFinalHtmlFromTpl($instance);
-    }
+        foreach (self::EFFECT_LIST as $effect) {
+            if ($instance->getProperty('effects-' . $effect) === true) {
+                $effects[] = $effect;
+            }
+        }
 
-    /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"></i><br>Image Slider';
+        return implode(',', $effects);
     }
 
     /**
@@ -148,7 +43,7 @@ class ImageSlider extends Portlet
      */
     public function getPropertyDesc(): array
     {
-        return [
+        $desc = [
             'slider-theme'                => [
                 'label'      => 'Theme',
                 'type'       => InputType::SELECT,
@@ -158,19 +53,19 @@ class ImageSlider extends Portlet
                     'light'   => 'Hell',
                     'dark'    => 'Dunkel',
                 ],
-                'dspl_width' => 50,
+                'width' => 34,
             ],
             'slider-animation-speed'      => [
                 'label'      => 'Slidergeschwindigkeit',
                 'type'       => InputType::NUMBER,
                 'default'    => 1500,
-                'dspl_width' => 50,
+                'width'      => 34,
             ],
             'slider-animation-pause'      => [
                 'label'      => 'Pause',
                 'type'       => InputType::NUMBER,
                 'default'    => 6000,
-                'dspl_width' => 50,
+                'width'      => 34,
             ],
             'slider-start'                => [
                 'label'      => 'Autostart?',
@@ -181,7 +76,7 @@ class ImageSlider extends Portlet
                 ],
                 'default'    => 'true',
                 'inline'     => true,
-                'dspl_width' => 50,
+                'width'      => 34,
             ],
             'slider-pause'                => [
                 'label'      => 'Pause bei "hover"?',
@@ -191,7 +86,7 @@ class ImageSlider extends Portlet
                     'false' => 'weitermachen',
                 ],
                 'default'    => 'false',
-                'dspl_width' => 50,
+                'width'      => 34,
             ],
             'slider-navigation'           => [
                 'label'      => 'Punktnavigation?',
@@ -201,7 +96,12 @@ class ImageSlider extends Portlet
                     'false' => 'nein',
                 ],
                 'default'    => 'false',
-                'dspl_width' => 50,
+                'width'      => 34,
+            ],
+            'slider-kenburns'             => [
+                'label'      => 'Ken-Burns-Effekt nutzen?',
+                'type'       => InputType::CHECKBOX,
+                'hint'       => 'overrides other settings',
             ],
             'slider-direction-navigation' => [
                 'label'      => 'Navipfeile anzeigen?',
@@ -211,13 +111,7 @@ class ImageSlider extends Portlet
                     'false' => 'nein',
                 ],
                 'default'    => 'false',
-                'dspl_width' => 50
-            ],
-            'slider-kenburns'             => [
-                'label'      => 'Ken-Burns-Effekt nutzen?',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 50,
-                'hint'       => 'overrides other settings',
+                'width'      => 50
             ],
             'slider-effects-random'       => [
                 'label'   => 'zufällige Effekte?',
@@ -227,85 +121,7 @@ class ImageSlider extends Portlet
                     'false' => 'nein',
                 ],
                 'default' => 'true',
-            ],
-            'effects-sliceDown'           => [
-                'label'                => 'sliceDown',
-                'type'                 => InputType::CHECKBOX,
-                'collapseControlStart' => true,
-                'showOnProp'           => 'slider-effects-random',
-                'showOnPropValue'      => 'false',
-                'dspl_width'           => 25,
-            ],
-            'effects-sliceDownLeft'       => [
-                'label'      => 'sliceDownLeft',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-sliceUp'             => [
-                'label'      => 'sliceUp',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-sliceUpLeft'         => [
-                'label'      => 'sliceUpLeft',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-sliceUpDown'         => [
-                'label'      => 'sliceUpDown',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-sliceUpDownLeft'     => [
-                'label'      => 'sliceUpDownLeft',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-fold'                => [
-                'label'      => 'fold',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-fade'                => [
-                'label'      => 'fade',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-slideInRight'        => [
-                'label'      => 'sliceInRight',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-slideInLeft'         => [
-                'label'      => 'slideInRight',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-boxRandom'           => [
-                'label'      => 'boxRandom',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-boxRain'             => [
-                'label'      => 'boxRain',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-boxRainReverse'      => [
-                'label'      => 'boxRainReverse',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-boxRainGrow'         => [
-                'label'      => 'boxRainGrow',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'effects-boxRainGrowReverse'  => [
-                'label'              => 'boxRainGrowReverse',
-                'type'               => InputType::CHECKBOX,
-                'collapseControlEnd' => true,
-                'dspl_width'         => 25,
+                'width'   => 50
             ],
             'slides'                      => [
                 'label'      => 'Bilder',
@@ -316,6 +132,16 @@ class ImageSlider extends Portlet
                 'useTitles'  => true,
             ],
         ];
+
+        foreach (self::EFFECT_LIST as $effect) {
+            $desc['effects-' . $effect] = [
+                'label' => $effect,
+                'type'  => InputType::CHECKBOX,
+                'width' => 25,
+            ];
+        }
+
+        return $desc;
     }
 
     /**

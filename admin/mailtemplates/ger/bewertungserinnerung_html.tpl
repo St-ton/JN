@@ -23,10 +23,6 @@ Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produk
 <br>
 Vielen Dank für Ihre Mühe.<br>
 <br>
-{if !empty($oTrustedShopsBewertenButton->cURL)}
-    Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
-    <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Bewerten Sie uns!"></a><br><br>
-{/if}<br>
 <br>
 Mit freundlichem Gruß,<br>
 Ihr Team von {$Firma->cName}

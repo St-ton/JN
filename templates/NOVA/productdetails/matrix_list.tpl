@@ -9,13 +9,6 @@
                 {row class="mb-3 pt-2 pb-2 {cycle values="bg-light,"}"}
                     {if $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'Y' ||
                     ($Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten === 'Y' && $child->inWarenkorbLegbar == 1)}
-                        {assign var=cVariBox value=''}
-                        {foreach $child->oVariationKombi_arr as $variation}
-                            {if $cVariBox|strlen > 0}
-                                {assign var=cVariBox value=$cVariBox|cat:'_'}
-                            {/if}
-                            {assign var=cVariBox value=$cVariBox|cat:$variation->kEigenschaft|cat:':'|cat:$variation->kEigenschaftWert}
-                        {/foreach}
                         {block name='productdetails-matrix-list-image'}
                             {col cols=6 md=1}
                                 {image fluid=true lazy=true src=$child->Bilder[0]->cURLMini alt=$child->Bilder[0]->cAltAttribut}
@@ -42,16 +35,16 @@
                         {block name='productdetails-matrix-list-var-box-count'}
                             {col cols=6 md=2}
                                 {if $child->inWarenkorbLegbar == 1 && !$child->bHasKonfig && ($child->nVariationAnzahl == $child->nVariationOhneFreifeldAnzahl)}
-                                    {inputgroup size="sm" class="float-right {if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->bError) && $smarty.session.variBoxAnzahl_arr[$cVariBox]->bError} has-error{/if}"}
+                                    {inputgroup size="sm" class="float-right {if isset($smarty.session.variBoxAnzahl_arr[$child->kArtikel]->bError) && $smarty.session.variBoxAnzahl_arr[$child->kArtikel]->bError} has-error{/if}"}
                                         {if $child->cEinheit}
                                             {inputgroupaddon prepend=true is-text=true class="unit form-control"}
                                                 {$child->cEinheit}:
                                             {/inputgroupaddon}
                                         {/if}
                                     {input placeholder="0"
-                                        name="variBoxAnzahl[{$cVariBox}]"
+                                        name="variBoxAnzahl[{$child->kArtikel}]"
                                         type="text"
-                                        value="{if isset($smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$cVariBox]->fAnzahl|replace_delim}{/if}"
+                                        value="{if isset($smarty.session.variBoxAnzahl_arr[$child->kArtikel]->fAnzahl)}{$smarty.session.variBoxAnzahl_arr[$child->kArtikel]->fAnzahl|replace_delim}{/if}"
                                         class="text-right"
                                         aria=["label"=>"{lang key='quantity'} {$child->cName}"]}
                                     {/inputgroup}

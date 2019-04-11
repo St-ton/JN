@@ -89,14 +89,14 @@ class JSONAPI
     {
         $searchIn = null;
         if (\is_string($search)) {
-            $searchIn = ['cName'];
+            $searchIn = ['tkategorie.cName'];
         } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
 
         return $this->itemsToJson($this->getItems(
             'tkategorie',
-            ['kKategorie', 'cName'],
+            ['tkategorie.kKategorie', 'tkategorie.cName'],
             \CACHING_GROUP_CATEGORY,
             $searchIn,
             $search,
@@ -276,13 +276,23 @@ class JSONAPI
                 $conditions[] = Shop::Container()->getDB()->escape($column) . " LIKE '%" . $searchFor . "%'";
             }
 
-            $result = Shop::Container()->getDB()->query(
-                'SELECT ' . \implode(',', $columns) . '
+            if ($table === 'tkategorie') {
+                $result = Shop::Container()->getDB()->query(
+                    'SELECT ' . \implode(',', $columns) . ', t2.cName AS parentName
+                    FROM ' . $table . ' LEFT JOIN tkategorie AS t2 ON tkategorie.kOberKategorie=t2.kKategorie
+                    WHERE ' . \implode(' OR ', $conditions) . '
+                    ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+            } else {
+                $result = Shop::Container()->getDB()->query(
+                    'SELECT ' . \implode(',', $columns) . '
                     FROM ' . $table . '
                     WHERE ' . \implode(' OR ', $conditions) . '
                     ' . ($limit > 0 ? 'LIMIT ' . $limit : ''),
-                ReturnType::ARRAY_OF_OBJECTS
-            );
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+            }
         } elseif (\is_string($searchIn) && \is_array($searchFor)) {
             // key array select
             $searchIn = Shop::Container()->getDB()->escape($searchIn);

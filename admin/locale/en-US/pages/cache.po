@@ -3,100 +3,100 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "objectcache"
-msgstr "Object Cache"
+msgstr "Object cache"
 
 msgid "objectcacheDesc"
-msgstr "Der Object Cache puffert Daten, sodass sie schneller geladen werden"
+msgstr "Here you can set the cache used by JTL-Shop. The object cache buffers data to allow for faster loading times. You can specify for each type of object whether it is to be saved in the cache."
 
 msgid "cacheURL"
-msgstr "https://jtl-url.de/lt1ec"
+msgstr "https://jtl-url.de/r-j4i"
 
 msgid "cg_article_description"
-msgstr "Enthält Produktdaten"
+msgstr "Contains item data"
 
 msgid "cg_category_description"
-msgstr "Enthält Kategoriedaten"
+msgstr "Contains category data"
 
 msgid "cg_language_description"
-msgstr "Enthält Sprachvariablen und Übersetzungen"
+msgstr "Contains language variables and translations"
 
 msgid "cg_template_description"
-msgstr "Enthält Templateeinstellungen"
+msgstr "Contains template settings"
 
 msgid "cg_option_description"
-msgstr "Enthält allgemeine Einstellungen"
+msgstr "Contains general settings"
 
 msgid "cg_plugin_description"
-msgstr "Enthält Plugindaten"
+msgstr "Contains plug-in data"
 
 msgid "cg_core_description"
-msgstr "Enthält JTL-eigene Daten"
+msgstr "Contains proprietary JTL data"
 
 msgid "cg_object_description"
-msgstr "Enthält allgemeine Objekte"
+msgstr "Contains general objects"
 
 msgid "cg_box_description"
-msgstr "Enthält Boxen und deren Einstellungen"
+msgstr "Contains boxes and their settings"
 
 msgid "cg_news_description"
-msgstr "Enthält Newseinträge und -kategorien"
+msgstr "Contains news entries and categories"
 
 msgid "cg_attribute_description"
-msgstr "Enthält Attributdaten"
+msgstr "Contains attribute data"
 
 msgid "cg_manufacturer_description"
-msgstr "Enthält Herstellerdaten"
+msgstr "Contains manufacturer data"
 
 msgid "cg_filter_description"
-msgstr "Enthält Filterdaten"
+msgstr "Contains filter data"
 
 msgid "cg_article_nicename"
-msgstr "Artikel"
+msgstr "Items"
 
 msgid "cg_category_nicename"
-msgstr "Kategorien"
+msgstr "Categories"
 
 msgid "cg_language_nicename"
-msgstr "Sprache"
+msgstr "Language"
 
 msgid "cg_template_nicename"
 msgstr "Template"
 
 msgid "cg_option_nicename"
-msgstr "Optionen"
+msgstr "Options"
 
 msgid "cg_plugin_nicename"
-msgstr "Plugins"
+msgstr "Plug-ins"
 
 msgid "cg_core_nicename"
 msgstr "Core"
 
 msgid "cg_object_nicename"
-msgstr "Objekte"
+msgstr "Objects"
 
 msgid "cg_box_nicename"
-msgstr "Boxen"
+msgstr "Boxes"
 
 msgid "cg_news_nicename"
 msgstr "News"
 
 msgid "cg_attribute_nicename"
-msgstr "Attribute"
+msgstr "Attributes"
 
 msgid "cg_manufacturer_nicename"
-msgstr "Hersteller"
+msgstr "Manufacturers"
 
 msgid "cg_filter_nicename"
-msgstr "Produktfilter"
+msgstr "Item filters"
 
 msgid "entries"
-msgstr "Einträge"
+msgstr "Entries"
 
 msgid "management"
-msgstr "Verwaltung"
+msgstr "Administration"
 
 msgid "stats"
-msgstr "Statistik"
+msgstr "Reports"
 
 msgid "benchmark"
 msgstr "Benchmark"
@@ -105,79 +105,79 @@ msgid "status"
 msgstr "Status"
 
 msgid "type"
-msgstr "Typ"
+msgstr "Type"
 
 msgid "description"
-msgstr "Beschreibung"
+msgstr "Description"
 
 msgid "empty"
-msgstr "leeren"
+msgstr "empty"
 
 msgid "clearObjectCache"
-msgstr "Gesamten Objektcache leeren"
+msgstr "Empty whole object cache"
 
 msgid "clearPageCache"
-msgstr "Gesamten Seitencache leeren"
+msgstr "Empty whole page cache"
 
 msgid "clearTemplateCache"
-msgstr "Gesamten Templatecache leeren"
+msgstr "Empty whole template cache"
 
 msgid "config"
-msgstr "Konfiguration"
+msgstr "Configuration"
 
 msgid "startBenchmark"
-msgstr "Benchmark starten"
+msgstr "Start benchmark"
 
 msgid "showAdvanced"
-msgstr "Erweiterte Optionen anzeigen"
+msgstr "Show advanced settings"
 
 msgid "configurationError"
-msgstr "(fehlerhaft konfiguriert)"
+msgstr "(faulty configuration)"
 
 msgid "successCacheEmptied"
-msgstr " Caches erfolgreich geleert."
+msgstr " Caches emptied successfully."
 
 msgid "errorNoCacheType"
-msgstr "Kein Cache-Typ ausgewählt."
+msgstr "No cache type selected."
 
 msgid "errorCacheTypeDelete"
-msgstr "Konnte Cache %s nicht löschen (evtl. bereits leer)."
+msgstr "Could not empty cache %s (might already be empty)."
 
 msgid "successCacheTypeActivate"
-msgstr "Ausgewählte Typen erfolgreich aktiviert."
+msgstr "Selected types activated successfully."
 
 msgid "successCacheTypeDeactivate"
-msgstr "Ausgewählte Typen erfolgreich deaktiviert."
+msgstr "Selected types deactivated successfully."
 
 msgid "successCacheDelete"
-msgstr "Object Cache wurde erfolgreich gelöscht."
+msgstr "Object cash deleted successfully."
 
 msgid "errorCacheDelete"
-msgstr "Der Cache konnte nicht gelöscht werden."
+msgstr "Could not empty cache."
 
 msgid "successCacheMethodSave"
-msgstr " wurde als Cache-Methode gespeichert."
+msgstr " saved as cache method."
 
 msgid "errorCacheMethodSelect"
-msgstr "Konnte keine funktionierende Cache-Methode auswählen."
+msgstr "Could not select a working cache method."
 
 msgid "errorFileDelete"
-msgstr "Die Datei %s konnte nicht gelöscht werden!"
+msgstr "Could not delete file %s."
 
 msgid "errorDirDelete"
-msgstr "Das Verzeichnis %s konnte nicht gelöscht werden!"
+msgstr "Could not delete directory %s."
 
 msgid "successTemplateCacheDelete"
-msgstr "Es wurden %d Dateien im Templatecache gelöscht!"
+msgstr "%d files deleted from the template cache."
 
 msgid "uptime"
 msgstr "Uptime"
 
 msgid "fullSize"
-msgstr "Komplette Größe"
+msgstr "Total size"
 
 msgid "entriesCount"
-msgstr "Anzahl Einträge"
+msgstr "Number of entries"
 
 msgid "misses"
 msgstr "Misses"
@@ -192,40 +192,40 @@ msgid "slowlog"
 msgstr "Slowlog"
 
 msgid "hitRate"
-msgstr "Hit-Rate"
+msgstr "Hit rate"
 
 msgid "emptySpace"
-msgstr "Freier Speicher"
+msgstr "Free memory"
 
 msgid "busySpace"
-msgstr "Belegter Speicher"
+msgstr "Used memory"
 
 msgid "scriptCountInCache"
-msgstr "Anzahl Skripte im Cache"
+msgstr "Number of scripts in cache"
 
 msgid "keyCountInCache"
-msgstr "Anzahl Keys im Cache"
+msgstr "Number of keys in cache"
 
 msgid "templateCache"
-msgstr "Template Cache"
+msgstr "Template cache"
 
 msgid "filesFrontend"
-msgstr "Dateien Frontend"
+msgstr "Front end files"
 
 msgid "runs"
-msgstr "Durchläufe"
+msgstr "Runs"
 
 msgid "repeats"
-msgstr "Wiederholungen"
+msgstr "Repetitions"
 
 msgid "testData"
-msgstr "Testdaten"
+msgstr "Test data"
 
 msgid "time"
-msgstr "Zeit"
+msgstr "Times"
 
 msgid "errorBenchmark"
-msgstr "Konnte Benchmark nicht ausführen."
+msgstr "Could not run benchmark."
 
 msgid "errorMethodNotFound"
-msgstr "Keine Methoden gefunden."
+msgstr "No methods found."

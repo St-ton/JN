@@ -174,7 +174,7 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='articlePicker'
-                        modalTitle="{__('chooseProduct')}"
+                        modalTitle="{__('chooseProducts')}"
                         searchInputLabel="{__('searchProductName')}"
                     }
                     <script>
@@ -257,7 +257,7 @@ function checkNewsletterSend() {ldelim}
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
                         modalTitle="{__('chooseCatgeory')}"
-                        searchInputLabel="{__('searchCatgeoryName')}"
+                        searchInputLabel="{__('searchCategory')}"
                     }
                     <script>
                         $(function () {

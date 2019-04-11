@@ -128,7 +128,7 @@ msgid "somethingHappend"
 msgstr "Something happened"
 
 msgid "noteInfoInGuide"
-msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\">&lt;i class=\"fa fa-external-link\"&gt;</i> Guide</a>."
+msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
 
 msgid "generalIntroduction"
 msgstr "Allgemeine Einführung"

@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "artikel_artikelanzeigefilter_value(1)"
 msgstr "Show all items"
 
@@ -2123,18 +2127,6 @@ msgid "kwk_nutzen_value(Y)"
 msgstr "Yes"
 
 msgid "kwk_nutzen_value(N)"
-msgstr "No"
-
-msgid "trustedshops_nutzen_value(Y)"
-msgstr "Yes"
-
-msgid "trustedshops_nutzen_value(N)"
-msgstr "No"
-
-msgid "trustedshops_kundenbewertung_anzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "trustedshops_kundenbewertung_anzeigen_value(N)"
 msgstr "No"
 
 msgid "suchspecials_sortierung_bestseller_value(-1)"

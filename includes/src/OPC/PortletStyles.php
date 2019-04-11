@@ -18,39 +18,42 @@ trait PortletStyles
     public function getStylesPropertyDesc(): array
     {
         return [
-            'hidden-xs'        => [
-                'label'      => '<i class="fa fa-mobile"></i> ' . __('Visibility') . ' XS',
-                'option'     => __('hide'),
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'hidden-sm'        => [
-                'label'      => '<i class="fa fa-tablet"></i> ' . __('Visibility') . ' S',
-                'option'     => __('hide'),
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'hidden-md'        => [
-                'label'      => '<i class="fa fa-laptop"></i> ' . __('Visibility') . ' M',
-                'option'     => __('hide'),
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
-            'hidden-lg'        => [
-                'label'      => '<i class="fa fa-desktop"></i> ' . __('Visibility') . ' L',
-                'option'     => __('hide'),
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 25,
-            ],
+            // TODO: Support these options for both bootstrap versions
+//            'hidden-xs'        => [
+//                'type'       => InputType::CHECKBOX,
+//                'label'      => '<i class="fa fa-mobile"></i> ' . __('Visibility') . ' XS',
+//                'option'     => __('hide'),
+//                'width'      => 25,
+//            ],
+//            'hidden-sm'        => [
+//                'type'       => InputType::CHECKBOX,
+//                'label'      => '<i class="fa fa-tablet"></i> ' . __('Visibility') . ' S',
+//                'option'     => __('hide'),
+//                'width'      => 25,
+//            ],
+//            'hidden-md'        => [
+//                'type'       => InputType::CHECKBOX,
+//                'label'      => '<i class="fa fa-laptop"></i> ' . __('Visibility') . ' M',
+//                'option'     => __('hide'),
+//                'width'      => 25,
+//            ],
+//            'hidden-lg'        => [
+//                'type'       => InputType::CHECKBOX,
+//                'label'      => '<i class="fa fa-desktop"></i> ' . __('Visibility') . ' L',
+//                'option'     => __('hide'),
+//                'width'      => 25,
+//            ],
             'color'            => [
-                'label'   => __('Font color'),
                 'type'    => InputType::COLOR,
+                'label'   => __('Font color'),
                 'default' => '',
+                'width'   => 50,
             ],
             'background-color' => [
                 'label'   => __('Background color'),
                 'type'    => InputType::COLOR,
                 'default' => '',
+                'width'   => 50,
             ],
             'font-size'        => [
                 'label'   => __('Font size'),
@@ -61,63 +64,63 @@ trait PortletStyles
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'margin-right'     => [
                 'label'      => 'margin-right',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'margin-bottom'    => [
                 'label'      => 'margin-bottom',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'margin-left'      => [
                 'label'      => 'margin-left',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'padding-top'      => [
                 'label'      => 'padding-top',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'padding-right'    => [
                 'label'      => 'padding-right',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'padding-bottom'   => [
                 'label'      => 'padding-bottom',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'padding-left'     => [
                 'label'      => 'padding-left',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 25
+                'width'      => 25
             ],
             'border-width'     => [
                 'label'      => 'border-width',
                 'type'       => InputType::NUMBER,
                 'default'    => '',
                 'class'      => 'css-input-grid',
-                'dspl_width' => 50
+                'width'      => 50
             ],
             'border-style'     => [
                 'label'      => 'border-style',
@@ -136,12 +139,12 @@ trait PortletStyles
                     'initial' => 'initial',
                     'inherit' => 'inherit',
                 ],
-                'dspl_width' => 50
+                'width' => 50
             ],
             'border-color'     => [
-                'label'      => 'border-color',
-                'type'       => InputType::COLOR,
-                'dspl_width' => 100
+                'label' => 'border-color',
+                'type'  => InputType::COLOR,
+                'width' => 100,
             ]
         ];
     }

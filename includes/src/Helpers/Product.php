@@ -215,6 +215,52 @@ class Product
     }
 
     /**
+     * @param int $productID
+     * @param int $parentID
+     * @return array
+     */
+    public static function getPropertiesForVarCombiArticle(int $productID, &$parentID): array
+    {
+        $result   = [];
+        $parentID = 0;
+        $db       = Shop::Container()->getDB();
+
+        // Hole EigenschaftWerte zur gewaehlten VariationKombi
+        $children = $db->queryPrepared(
+            'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
+                FROM teigenschaftkombiwert
+                JOIN tartikel
+                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                    AND tartikel.kArtikel = :productID
+                LEFT JOIN tartikelsichtbarkeit
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = :customerGroup
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                ORDER BY tartikel.kArtikel',
+            [
+                'productID'     => $productID,
+                'customerGroup' => Frontend::getCustomerGroup()->getID(),
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (\count($children) === 0) {
+            return [];
+        }
+
+        foreach ($children as $child) {
+            if (!isset($result[$child->kEigenschaft])
+                || !\is_array($result[$child->kEigenschaft])
+            ) {
+                $result[(int)$child->kEigenschaft] = (int)$child->kEigenschaftWert;
+            }
+        }
+
+        $parentID = (int)$children[0]->kVaterArtikel;
+
+        return $result;
+    }
+
+    /**
      * @former gibGewaehlteEigenschaftenZuVariKombiArtikel()
      * @param int $productID
      * @param int $nArtikelVariAufbau
@@ -228,33 +274,13 @@ class Product
         $customerGroup  = Frontend::getCustomerGroup()->getID();
         $db             = Shop::Container()->getDB();
         $properties     = [];
-        $propertyValues = [];
+        $propertyValues = self::getPropertiesForVarCombiArticle($productID, $parentID);
         $exists         = true;
-        // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $children = $db->query(
-            'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
-                FROM teigenschaftkombiwert
-                JOIN tartikel
-                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                    AND tartikel.kArtikel = ' . $productID . '
-                LEFT JOIN tartikelsichtbarkeit
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroup . '
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                ORDER BY tartikel.kArtikel',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (\count($children) === 0) {
+
+        if (\count($propertyValues) === 0) {
             return [];
         }
-        $parentID = (int)$children[0]->kVaterArtikel;
-        foreach ($children as $oVariationKombiKind) {
-            if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft])
-                || !\is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
-            ) {
-                $propertyValues[(int)$oVariationKombiKind->kEigenschaft] = (int)$oVariationKombiKind->kEigenschaftWert;
-            }
-        }
+
         $attributes       = [];
         $attributeValues  = [];
         $langID           = Shop::getLanguage();
@@ -720,7 +746,7 @@ class Product
      * @since 5.0.0
      * @former findeKindArtikelZuEigenschaft()
      */
-    public static function getChildProdctIDByAttribute(
+    public static function getChildProductIDByAttribute(
         int $productID,
         int $es0,
         int $esWert0,

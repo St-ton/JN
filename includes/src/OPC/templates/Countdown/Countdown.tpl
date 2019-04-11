@@ -1,4 +1,5 @@
-<div id="{$instance->getProperty('uid')}"
+<div id="{$instance->getUid()}" class="countdown {$instance->getProperty('class')}"
+     style="{$instance->getStyleString()}"
      {$instance->getAttributeString()}
      {if $isPreview}{$instance->getDataAttributeString()}{/if}
 >
@@ -63,14 +64,14 @@
                     hours = 0;
                     minutes = 0;
                     seconds = 0;
-                    $("#{$instance->getProperty('uid')} .expired").show();
+                    $("#{$instance->getUid()} .expired").show();
                 }
 
                 // Display the result
-                $("#{$instance->getProperty('uid')} .days .cntdwn-item").html(days);
-                $("#{$instance->getProperty('uid')} .hours .cntdwn-item").html(hours);
-                $("#{$instance->getProperty('uid')} .minutes .cntdwn-item").html(minutes);
-                $("#{$instance->getProperty('uid')} .seconds .cntdwn-item").html(seconds);
+                $("#{$instance->getUid()} .days .cntdwn-item").html(days);
+                $("#{$instance->getUid()} .hours .cntdwn-item").html(hours);
+                $("#{$instance->getUid()} .minutes .cntdwn-item").html(minutes);
+                $("#{$instance->getUid()} .seconds .cntdwn-item").html(seconds);
             }, 1000);
         }
 

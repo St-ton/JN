@@ -595,10 +595,6 @@ ul.partlist-items {
 
   &::before {
     content: '\f053';
-
-    &[dir="rtl"] {
-      content: '\f054';
-    }
   }
 }
 
@@ -613,10 +609,6 @@ ul.partlist-items {
 
   &::before {
     content: '\f054';
-
-    &[dir="rtl"] {
-      content: '\f053';
-    }
   }
 }
 
@@ -869,6 +861,10 @@ ul.partlist-items {
         z-index: $zindex-dropdown + 1;
         box-shadow: 0 -10px 0 white, 0 2px 16px 0 rgba(0, 0, 0, 0.06);
         transition: opacity 0.2s;
+
+        dt {
+          text-align: left;
+        }
       }
       &::before {
         content: '';
@@ -1531,6 +1527,7 @@ $jqcloud-classes: 7;
       flex: 1 1 auto;
       width: 1%;
       margin-bottom: 0;
+      border-right: 0;
     }
     .unit {
       background: $input-bg;

@@ -595,10 +595,6 @@ ul.partlist-items {
 
   &::before {
     content: '\f053';
-
-    &[dir="rtl"] {
-      content: '\f054';
-    }
   }
 }
 
@@ -613,10 +609,6 @@ ul.partlist-items {
 
   &::before {
     content: '\f054';
-
-    &[dir="rtl"] {
-      content: '\f053';
-    }
   }
 }
 

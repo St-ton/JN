@@ -10747,7 +10747,7 @@ select.selectpicker {
 }
 
 .bootstrap-select {
-  width: 220px \0 ;
+  width: 220px;
   /*IE9 and below*/
 }
 .bootstrap-select > .dropdown-toggle {
@@ -11856,8 +11856,7 @@ input[type=file].file-loading, .file-loading input[type=file] {
   opacity: 1;
 }
 
-#add-to-cart .btn .btn-basket-check,
-.form-basket button[type=submit] .btn-basket-check {
+#add-to-cart .btn .btn-basket-check {
   /* this is the button text message */
   top: 0;
   left: 0;
@@ -11865,8 +11864,7 @@ input[type=file].file-loading, .file-loading input[type=file] {
   height: 100%;
   white-space: nowrap;
 }
-#add-to-cart .btn svg,
-.form-basket button[type=submit] svg {
+#add-to-cart .btn svg {
   /* this is the check icon */
   position: absolute;
   left: 0;
@@ -11874,15 +11872,13 @@ input[type=file].file-loading, .file-loading input[type=file] {
   width: 100%;
   /* move the icon on the right - outside the button */
 }
-#add-to-cart .btn.is-added .btn-basket-check,
-.form-basket button[type=submit].is-added .btn-basket-check {
+#add-to-cart .btn.is-added .btn-basket-check {
   /* product added to the cart - hide text message on the left with no transition*/
   color: transparent;
   top: 50%;
   transform: translateY(-50%);
 }
-#add-to-cart .btn.is-added svg,
-.form-basket button[type=submit].is-added svg {
+#add-to-cart .btn.is-added svg {
   /* product added to the cart - move the svg back inside the button */
   top: 50%;
   transform: translateY(-50%);
@@ -12638,9 +12634,6 @@ ul.partlist-items {
 .slick-prev::before {
   content: "";
 }
-.slick-prev::before[dir=rtl] {
-  content: "";
-}
 
 .slick-next {
   z-index: 2;
@@ -12652,9 +12645,6 @@ ul.partlist-items {
 }
 .slick-next::before {
   content: "";
-}
-.slick-next::before[dir=rtl] {
-  content: "";
 }
 
 .slick-dotted {

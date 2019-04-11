@@ -820,7 +820,7 @@ class Warenkorb
      * @param bool $excludeShippingCostAttributes
      * @return int|float
      */
-    public function gibAnzahlArtikelExt(array $posTypes, string $iso = '', bool $excludeShippingCostAttributes = false)
+    public function gibAnzahlArtikelExt(array $posTypes, bool $excludeShippingCostAttributes = false, string $iso = '')
     {
         if (!\is_array($posTypes)) {
             return 0;
@@ -1151,8 +1151,8 @@ class Warenkorb
     public function gibGesamtsummeWarenExt(
         array $posTypes,
         bool $gross = false,
-        string $iso = '',
-        bool $excludeShippingCostAttributes = false
+        bool $excludeShippingCostAttributes = false,
+        string $iso = ''
     ) {
         if (!\is_array($posTypes)) {
             return 0;
@@ -1548,7 +1548,7 @@ class Warenkorb
      * @param bool $excludeShippingCostAttributes
      * @return int|float
      */
-    public function getWeight(string $iso = '', bool $excludeShippingCostAttributes = false)
+    public function getWeight(bool $excludeShippingCostAttributes = false, string $iso = '')
     {
         $weight = 0;
         foreach ($this->PositionenArr as $pos) {

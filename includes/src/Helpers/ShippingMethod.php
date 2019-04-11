@@ -202,8 +202,7 @@ class ShippingMethod
             $shippingMethod->fEndpreis          = self::calculateShippingFees(
                 $shippingMethod,
                 $countryCode,
-                null,
-                0
+                null
             );
             if ($shippingMethod->fEndpreis === -1) {
                 unset($methods[$i]);
@@ -1029,7 +1028,7 @@ class ShippingMethod
             case 'vm_versandberechnung_gewicht_jtl':
                 $totalWeight  = $product
                     ? $product->fGewicht
-                    : Frontend::getCart()->getWeight($iso, $excludeShippingCostAttributes);
+                    : Frontend::getCart()->getWeight($excludeShippingCostAttributes, $iso);
                 $totalWeight += $additionalProduct->fGewicht;
                 $shipping     = $db->queryPrepared(
                     'SELECT *
@@ -1053,8 +1052,8 @@ class ShippingMethod
                     : Frontend::getCart()->gibGesamtsummeWarenExt(
                         [\C_WARENKORBPOS_TYP_ARTIKEL],
                         true,
-                        $iso,
-                        $excludeShippingCostAttributes
+                        $excludeShippingCostAttributes,
+                        $iso
                     );
                 $total   += $additionalProduct->fWarenwertNetto;
                 $shipping = $db->queryPrepared(
@@ -1079,8 +1078,8 @@ class ShippingMethod
                     $productCount = isset($_SESSION['Warenkorb'])
                         ? Frontend::getCart()->gibAnzahlArtikelExt(
                             [\C_WARENKORBPOS_TYP_ARTIKEL],
-                            $iso,
-                            $excludeShippingCostAttributes
+                            $excludeShippingCostAttributes,
+                            $iso
                         )
                         : 0;
                 }
@@ -1118,15 +1117,15 @@ class ShippingMethod
         if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
             $price += $shippingMethod->Zuschlag->fZuschlag;
         }
-        $productPrice = 0;
-        $grandTotal   = 0;
+        $productPrice         = 0;
+        $totalForShippingFree = 0;
         if ($shippingMethod->eSteuer === 'netto') {
             if ($product) {
                 $productPrice = $product->Preise->fVKNetto;
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $grandTotal = Tax::getNet(
-                    Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true),
+                $totalForShippingFree = Tax::getNet(
+                    Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $iso),
                     Tax::getSalesTax(Frontend::getCart()->gibVersandkostenSteuerklasse())
                 );
             }
@@ -1138,16 +1137,18 @@ class ShippingMethod
                 );
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $grandTotal = Frontend::getCart()->gibGesamtsummeWarenExt(
+                $totalForShippingFree = Frontend::getCart()->gibGesamtsummeWarenExt(
                     [\C_WARENKORBPOS_TYP_ARTIKEL],
-                    true
+                    true,
+                    true,
+                    $iso
                 );
             }
         }
 
         if ($shippingMethod->fVersandkostenfreiAbX > 0
             && (($product && $productPrice >= $shippingMethod->fVersandkostenfreiAbX)
-                || ($grandTotal >= $shippingMethod->fVersandkostenfreiAbX))
+                || ($totalForShippingFree >= $shippingMethod->fVersandkostenfreiAbX))
         ) {
             $price = 0;
         }

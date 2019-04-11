@@ -6789,9 +6789,10 @@ class Artikel
         $excludedAttributes = [\FKT_ATTRIBUT_VERSANDKOSTEN, \FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
 
         foreach ($excludedAttributes as $excludedAttribute) {
-            if ($cISO !== ''
-                && isset($this->FunktionsAttribute[$excludedAttribute])
-                && (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+            if (isset($this->FunktionsAttribute[$excludedAttribute])
+                && ($cISO === ''
+                    || (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+                )
             ) {
                 return false;
             }

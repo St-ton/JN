@@ -12,6 +12,7 @@ use JTL\Mail\Mail\MailInterface;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Validator\ValidatorInterface;
 use JTL\Shopsetting;
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use stdClass;
 
@@ -117,7 +118,7 @@ class Mailer
      * @param PHPMailer     $phpmailer
      * @param MailInterface $mail
      * @return Mailer
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     private function addAttachments(PHPMailer $phpmailer, MailInterface $mail): self
     {
@@ -199,7 +200,7 @@ class Mailer
     /**
      * @param MailInterface $mail
      * @return bool
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     private function sendViaPHPMailer(MailInterface $mail): bool
     {
@@ -234,7 +235,7 @@ class Mailer
     /**
      * @param MailInterface $mail
      * @return bool
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      * @throws \SmartyException
      */
     public function send(MailInterface $mail): bool

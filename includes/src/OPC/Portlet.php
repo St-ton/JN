@@ -81,6 +81,20 @@ class Portlet implements \JsonSerializable
 
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
             $defProps[$name] = $propDesc['default'] ?? '';
+
+            if (isset($propDesc['children'])) {
+                foreach ($propDesc['children'] as $childName => $childPropDesc) {
+                    $defProps[$childName] = $childPropDesc['default'] ?? '';
+                }
+            }
+
+            if (isset($propDesc['childrenFor'])) {
+                foreach ($propDesc['childrenFor'] as $optionalPropDescs) {
+                    foreach ($optionalPropDescs as $childName => $childPropDesc) {
+                        $defProps[$childName] = $childPropDesc['default'] ?? '';
+                    }
+                }
+            }
         }
 
         return $defProps;

@@ -4,10 +4,14 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use Nova\Plugins;
+use scc\DefaultComponentRegistrator;
+use scc\Renderer;
+
 require_once __DIR__ . '/Plugins.php';
 
-$plugins = new \Nova\Plugins();
-$scc     = new \scc\DefaultComponentRegistrator(new \scc\Renderer($smarty));
+$plugins = new Plugins();
+$scc     = new DefaultComponentRegistrator(new Renderer($smarty));
 $scc->registerComponents();
 
 if (isset($_GET['scc-demo']) && \JTL\Shop::isAdmin()) {
@@ -23,7 +27,6 @@ $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty'
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasCheckBoxForLocation', [$plugins, 'hasCheckBoxForLocation'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'aaURLEncode', [$plugins, 'aaURLEncode'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_navigation', [$plugins, 'getNavigation'])
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'ts_data', [$plugins, 'getTrustedShopsData'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_array', [$plugins, 'getCategoryArray'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_parents', [$plugins, 'getCategoryParents'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'prepare_image_details', [$plugins, 'prepareImageDetails'])

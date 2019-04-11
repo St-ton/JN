@@ -7,8 +7,8 @@
 namespace JTL;
 
 use Exception;
-use JTL\Catalog\Currency;
 use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\Kundengruppe;
@@ -17,8 +17,8 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -26,6 +26,8 @@ use JTL\Smarty\SmartyResourceNiceDB;
 use Psr\Log\LoggerInterface;
 use SmartyException;
 use stdClass;
+use function Functional\first;
+use function Functional\map;
 
 /**
  * Class Exportformat
@@ -775,7 +777,7 @@ class Exportformat
             : (new Currency())->getDefault();
         Tax::setTaxRates();
         $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
-        $languages = \Functional\map($this->db->query(
+        $languages = map($this->db->query(
             'SELECT *  FROM tsprache',
             ReturnType::ARRAY_OF_OBJECTS
         ), function ($lang) {
@@ -783,7 +785,7 @@ class Exportformat
 
             return $lang;
         });
-        $langISO   = \Functional\first($languages, function ($l) {
+        $langISO   = first($languages, function ($l) {
             return $l->kSprache === $this->getSprache();
         });
 
@@ -1093,7 +1095,7 @@ class Exportformat
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
                     ? 'enabled'
                     : 'disabled'));
-            $loader  = Plugin\Helper::getLoaderByPluginID($this->getPlugin());
+            $loader  = Plugin\Helper::getLoaderByPluginID($this->getPlugin(), $this->db);
             $oPlugin = $loader->init($this->getPlugin());
             if ($isCron === true) {
                 global $oJobQueue;

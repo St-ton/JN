@@ -817,10 +817,7 @@ class Kupon
         $categories  = [];
         $catQry      = '';
         $customerQry = '';
-        if ((isset($_SESSION['Zahlungsart']->cModulId)
-                && \mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0)
-            || (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'])
-        ) {
+        if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
             return 0;
         }
         foreach ($cart->PositionenArr as $Pos) {

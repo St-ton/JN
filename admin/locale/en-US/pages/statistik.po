@@ -38,9 +38,6 @@ msgstr "https://jtl-url.de/mx3hu"
 msgid "statisticDesc"
 msgstr "Detaillierte Statistiken für Ihren Online-Shop. Bitte wählen Sie den Zeitraum, für den Sie Ihre Shop-Statistiken einsehen möchten."
 
-msgid "statisticNoData"
-msgstr "Es liegen noch keine Statistiken vor."
-
 msgid "salesStatisticTitle"
 msgstr "Umsatz Statistiken"
 

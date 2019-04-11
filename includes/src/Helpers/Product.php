@@ -215,6 +215,52 @@ class Product
     }
 
     /**
+     * @param int $productID
+     * @param int $parentID
+     * @return array
+     */
+    public static function getPropertiesForVarCombiArticle(int $productID, &$parentID): array
+    {
+        $result   = [];
+        $parentID = 0;
+        $db       = Shop::Container()->getDB();
+
+        // Hole EigenschaftWerte zur gewaehlten VariationKombi
+        $children = $db->queryPrepared(
+            'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
+                FROM teigenschaftkombiwert
+                JOIN tartikel
+                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                    AND tartikel.kArtikel = :productID
+                LEFT JOIN tartikelsichtbarkeit
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = :customerGroup
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                ORDER BY tartikel.kArtikel',
+            [
+                'productID'     => $productID,
+                'customerGroup' => Frontend::getCustomerGroup()->getID(),
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (\count($children) === 0) {
+            return [];
+        }
+
+        foreach ($children as $child) {
+            if (!isset($result[$child->kEigenschaft])
+                || !\is_array($result[$child->kEigenschaft])
+            ) {
+                $result[(int)$child->kEigenschaft] = (int)$child->kEigenschaftWert;
+            }
+        }
+
+        $parentID = (int)$children[0]->kVaterArtikel;
+
+        return $result;
+    }
+
+    /**
      * @former gibGewaehlteEigenschaftenZuVariKombiArtikel()
      * @param int $productID
      * @param int $nArtikelVariAufbau
@@ -228,33 +274,13 @@ class Product
         $customerGroup  = Frontend::getCustomerGroup()->getID();
         $db             = Shop::Container()->getDB();
         $properties     = [];
-        $propertyValues = [];
+        $propertyValues = self::getPropertiesForVarCombiArticle($productID, $parentID);
         $exists         = true;
-        // Hole EigenschaftWerte zur gewaehlten VariationKombi
-        $children = $db->query(
-            'SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft, tartikel.kVaterArtikel
-                FROM teigenschaftkombiwert
-                JOIN tartikel
-                    ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                    AND tartikel.kArtikel = ' . $productID . '
-                LEFT JOIN tartikelsichtbarkeit
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroup . '
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                ORDER BY tartikel.kArtikel',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        if (\count($children) === 0) {
+
+        if (\count($propertyValues) === 0) {
             return [];
         }
-        $parentID = (int)$children[0]->kVaterArtikel;
-        foreach ($children as $oVariationKombiKind) {
-            if (!isset($propertyValues[$oVariationKombiKind->kEigenschaft])
-                || !\is_array($propertyValues[$oVariationKombiKind->kEigenschaft])
-            ) {
-                $propertyValues[(int)$oVariationKombiKind->kEigenschaft] = (int)$oVariationKombiKind->kEigenschaftWert;
-            }
-        }
+
         $attributes       = [];
         $attributeValues  = [];
         $langID           = Shop::getLanguage();
@@ -720,7 +746,7 @@ class Product
      * @since 5.0.0
      * @former findeKindArtikelZuEigenschaft()
      */
-    public static function getChildProdctIDByAttribute(
+    public static function getChildProductIDByAttribute(
         int $productID,
         int $es0,
         int $esWert0,
@@ -1139,8 +1165,6 @@ class Product
      */
     public static function sendProductQuestion(): string
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
-
         $conf             = Shop::getSettings([\CONF_EMAILS, \CONF_ARTIKELDETAILS, \CONF_GLOBAL]);
         $data             = new stdClass();
         $data->tartikel   = $GLOBALS['AktuellerArtikel'];
@@ -1408,7 +1432,7 @@ class Product
         ) {
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
             if (!($collection instanceof Collection)) {
-                collect($collection);
+                \collect($collection);
             }
             // Such die Position des aktuellen Artikels im Array der Artikelübersicht
             $kArtikelVorheriger = 0;
@@ -1665,34 +1689,32 @@ class Product
                     }
                     $tag = new Tag();
                     $tag->getByName($tagString);
-                    $tagID = isset($tag->kTag) ? (int)$tag->kTag : null;
-                    if (!empty($tagID)) {
+                    $tagID = isset($tag->kTag) ? (int)$tag->kTag : 0;
+                    if ($tagID !== 0) {
                         // Tag existiert bereits, TagArtikel updaten/anlegen
                         $tagArticle = new TagArticle($tagID, (int)$product->kArtikel);
-                        if (!empty($tagArticle->kTag)) {
-                            $tagArticle->nAnzahlTagging = (int)$tagArticle->nAnzahlTagging + 1;
-                            $tagArticle->updateInDB();
-                        } else {
+                        if (empty($tagArticle->kTag)) {
                             $tagArticle->kTag           = $tagID;
                             $tagArticle->kArtikel       = (int)$product->kArtikel;
                             $tagArticle->nAnzahlTagging = 1;
                             $tagArticle->insertInDB();
+                        } else {
+                            $tagArticle->nAnzahlTagging = (int)$tagArticle->nAnzahlTagging + 1;
+                            $tagArticle->updateInDB();
                         }
-
                         if (!empty($variKindArtikel)) {
                             $childTag = new TagArticle($tagID, (int)$variKindArtikel);
-                            if (!empty($childTag->kTag)) {
-                                $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
-                                $childTag->updateInDB();
-                            } else {
+                            if (empty($childTag->kTag)) {
                                 $childTag->kTag           = $tagID;
                                 $childTag->kArtikel       = (int)$variKindArtikel;
                                 $childTag->nAnzahlTagging = 1;
                                 $childTag->insertInDB();
+                            } else {
+                                $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
+                                $childTag->updateInDB();
                             }
                         }
                     } else {
-                        require_once \PFAD_ROOT . \PFAD_DBES . 'seo.php';
                         $newTag           = new Tag();
                         $newTag->kSprache = Shop::getLanguage();
                         $newTag->cName    = $tagString;

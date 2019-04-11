@@ -21,7 +21,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $notice          = '';
 $errorMsg        = '';

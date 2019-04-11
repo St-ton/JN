@@ -63,7 +63,7 @@
                     </table>
                 </div>
                 <div class="panel-footer">
-                    <button name="update" type="submit" title="{__('refresh')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('refresh')}</button>
+                    <button name="update" type="submit" title="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                 </div>
             </div>
         </form>

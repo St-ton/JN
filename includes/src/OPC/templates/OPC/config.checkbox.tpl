@@ -1,6 +1,28 @@
-<div class="checkbox{$class}">
+<div class="checkbox">
     <label>
-        <input id="config-{$propname}" type="checkbox" name="{$propname}" value="1" {if $prop == '1'}checked{/if} {if $required}required{/if}>
-        {if !empty($option)}{$option}{/if}
+        <input type="hidden" value="0" name="{$propname}">
+        <input type="checkbox" value="1" id="config-{$propname}" name="{$propname}"
+                {if $propval == '1'}checked{/if} {if $required === true}required{/if}>
+        {$propdesc.label}
     </label>
 </div>
+
+{if isset($propdesc.children)}
+    <script>
+        $('#config-{$propname}').on('change', function() {
+            if (this.checked === true) {
+                $('#children-{$propname}').collapse('show');
+            } else {
+                $('#children-{$propname}').collapse('hide');
+            }
+        });
+
+        $(function() {
+            {if $propval == '1'}
+                $('#children-{$propname}').collapse('show');
+            {else}
+                $('#children-{$propname}').collapse('hide');
+            {/if}
+        });
+    </script>
+{/if}

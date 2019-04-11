@@ -372,7 +372,6 @@ class Frontend extends AbstractSession
             $_SESSION['Bestellung'],
             $_SESSION['Warenkorb'],
             $_SESSION['IP'],
-            $_SESSION['TrustedShops'],
             $_SESSION['kommentar']
         );
         $_SESSION['Warenkorb'] = new Warenkorb();
@@ -671,12 +670,8 @@ class Frontend extends AbstractSession
                 if (isset($_SESSION['Vergleichsliste'])) {
                     self::getCompareList()->umgebungsWechsel();
                 }
-                unset($_SESSION['TrustedShops']);
-                if ($cart !== null) {
-                    $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
-                    if (\count($cart->PositionenArr) > 0) {
-                        $cart->setzePositionsPreise();
-                    }
+                if ($cart !== null && \count($cart->PositionenArr) > 0) {
+                    $cart->setzePositionsPreise();
                 }
             }
         }

@@ -764,29 +764,6 @@ class PaymentMethod
         } elseif ($moduleId === 'za_null_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
             $paymentMethod = new FallBackPayment('za_null_jtl');
-        } elseif ($moduleId === 'za_sofortueberweisung_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
-            $paymentMethod = new SofortUeberweisung($moduleId);
-        } elseif ($moduleId === 'za_billpay_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/Billpay.class.php';
-            $paymentMethod           = new Billpay($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_invoice_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayInvoice.class.php';
-            $paymentMethod           = new BillpayInvoice($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_direct_debit_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayDirectDebit.class.php';
-            $paymentMethod           = new BillpayDirectDebit($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_rate_payment_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayRatePayment.class.php';
-            $paymentMethod           = new BillpayRatePayment($moduleId);
-            $paymentMethod->cModulId = $moduleId;
-        } elseif ($moduleId === 'za_billpay_paylater_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'billpay/BillpayPaylater.class.php';
-            $paymentMethod           = new BillpayPaylater($moduleId);
-            $paymentMethod->cModulId = $moduleId;
         }
         $oPlugin = $oTmpPlugin;
 

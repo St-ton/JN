@@ -21,7 +21,6 @@ use JTL\Extensions\Download;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'registrieren_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
@@ -68,12 +67,6 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 }
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
-}
-if (isset($_FILES['vcard'])
-    && $conf['kunden']['kundenregistrierung_vcardupload'] === 'Y'
-    && Form::validateToken()
-) {
-    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
 }
 if (isset($_POST['unreg_form'])
     && (int)$_POST['unreg_form'] === 1
@@ -200,15 +193,6 @@ if ($step === 'Bestaetigung') {
     gibStepBestaetigung($_GET);
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
     Warenkorb::refreshChecksum($cart);
-}
-// Billpay
-if (isset($_SESSION['Zahlungsart'])
-    && $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl'
-    && $step === 'Bestaetigung'
-) {
-    /** @var Billpay $paymentMethod */
-    $paymentMethod = PaymentMethod::create('za_billpay_jtl');
-    $paymentMethod->handleConfirmation();
 }
 if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];

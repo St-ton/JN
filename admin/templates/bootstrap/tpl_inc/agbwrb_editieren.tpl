@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=__('agbwrb') cBeschreibung=__('trustedShopInfo')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('agbwrb') cBeschreibung=__('agbWrbInfo')}
 <div id="content" class="container-fluid">
     <div class="ocontainer">
         <form name="umfrage" method="post" action="agbwrb.php">

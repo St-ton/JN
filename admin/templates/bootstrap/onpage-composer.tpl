@@ -380,7 +380,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title"></h4>
+                    <h4 class="modal-title">{__('draftPublic')}</h4>
                 </div>
                 <form id="publishForm">
                     <div class="modal-body">

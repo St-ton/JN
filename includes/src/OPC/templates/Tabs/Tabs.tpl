@@ -1,26 +1,17 @@
-{assign var=tabuid value=$instance->getProperty('uniqid')}
 <div {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
-    <ul class="nav nav-tabs" role="tablist">
+    {tabs}
         {foreach $instance->getProperty('tabs') as $i => $tabTitle}
-            {assign var=areaId value='tab'|cat:$tabuid|cat:$i}
-            <li role="presentation"{if $i === 0} class="active"{/if}>
-                <a href="#{$areaId}" aria-controls="home" role="tab" data-toggle="tab">
-                    {$tabTitle}
-                </a>
-            </li>
+            {$tabId = $instance->getUid()|cat:'-'|cat:$i}
+            {$areaId = 'tab-'|cat:$tabId}
+            {tab id=$tabId title=$tabTitle active=$i==0}
+                <div data-area-id="{$areaId}" class="opc-area">
+                    {if $isPreview}
+                        {$instance->getSubareaPreviewHtml($areaId)}
+                    {else}
+                        {$instance->getSubareaFinalHtml($areaId)}
+                    {/if}
+                </div>
+            {/tab}
         {/foreach}
-    </ul>
-    <div class="tab-content">
-        {foreach $instance->getProperty('tabs') as $i => $tabTitle}
-            {assign var=areaId value='tab'|cat:$tabuid|cat:$i}
-            <div role="tabpanel" class="tab-pane{if $i === 0} active{/if} opc-area"
-                 id="{$areaId}" {if $isPreview}data-area-id="{$areaId}"{/if}>
-                {if $isPreview}
-                    {$instance->getSubareaPreviewHtml($areaId)}
-                {else}
-                    {$instance->getSubareaFinalHtml($areaId)}
-                {/if}
-            </div>
-        {/foreach}
-    </div>
+    {/tabs}
 </div>

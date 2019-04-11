@@ -3,97 +3,97 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "boxen"
-msgstr "Boxen"
+msgstr "Boxes"
 
 msgid "boxenURL"
-msgstr "https://jtl-url.de/2uknw"
+msgstr "https://jtl-url.de/li846"
 
 msgid "boxenDesc"
-msgstr "Mithilfe der Boxenverwaltung fügen Sie Boxen hinzu, ändern die Reihenfolge oder ändern die Sichtbarkeit von Boxen-Containern auf bestimmten Seiten. Eine Box befindet sich immer in einem vom Template vordefinierten Boxen-Container (z.B. Container links oder Container rechts) und kann dort mit Hilfe der Sortiernummer neu angeordnet werden. <br />Sie können eigene Boxen z.B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt in einem Boxen-Container anlegen. Bei Eigenen Boxen und Linkgruppen-Boxen erscheint eine Editieren-Grafik neben dem Boxnamen. Über diesen Grafischen Link verknüpfen Sie die Box mit einer Linkgruppe bzw. weisen der Box eigene xHTML-Inhalte zu.<br />"
+msgstr "Here you can add boxes to different box containers or remove them. You can specify for each container on which pages it should be visible. Whether a specific container is available or not is determined by the template. You can create customised boxes, e.g. link groups or boxes with an individual xHTML content, in a box container. Some boxes can also be further configured via the Edit button."
 
 msgid "showContainer"
-msgstr "Container anzeigen"
+msgstr "Show container"
 
 msgid "deactivateOnAnyPage"
-msgstr "%s auf jeder Seite deaktivieren"
+msgstr "Deactivate %s on every page"
 
 msgid "activateOnAnyPage"
-msgstr "%s auf jeder Seite aktivieren"
+msgstr "Activate %s on every page"
 
 msgid "boxTitle"
-msgstr "Titel"
+msgstr "Name"
 
 msgid "boxType"
-msgstr "Typ"
+msgstr "Type"
 
 msgid "boxLabel"
-msgstr "Bezeichnung"
+msgstr "Description"
 
 msgid "boxTemplate"
 msgstr "Template"
 
 msgid "catBoxNum"
-msgstr "Kategoriebox-Nummer"
+msgstr "Category box ID"
 
 msgid "catBoxNumTooltip"
-msgstr "Listet nur die Kategorien mit dem Wawi-Kategorieattribut \"kategoriebox\" und der gesetzten Nummer. Standard=0 für alle Kategorien mit oder ohne Funktionsattribut."
+msgstr "Only lists categories with the category attribute \"category box\" and the set number. For all categories with or without a function attribute, the default value is 0."
 
 msgid "linkgroup"
-msgstr "Linkgruppe"
+msgstr "Link group"
 
 msgid "remove"
-msgstr "Aus Liste entfernen"
+msgstr "Remove from list"
 
 msgid "confirmDeleteBox"
-msgstr "Sind Sie sicher, dass Sie die Box \"%s\" löschen möchten? Alle Boxen innerhalb eines Containers werden ggf. ebenfalls gelöscht!"
+msgstr "Delete box \"%s\"? If you delete a container, all boxes in the container will also be deleted."
 
 msgid "new"
-msgstr "Neue Box"
+msgstr "New box"
 
 msgid "inContainer"
-msgstr "in Container"
+msgstr "in container"
 
 msgid "newContainer"
-msgstr "Neuer Container"
+msgstr "New container"
 
 msgid "pleaseSelect"
-msgstr "Bitte auswählen"
+msgstr "Please select"
 
 msgid "resort"
-msgstr "sortieren"
+msgstr "Sort"
 
 msgid "noTemplateConfig"
-msgstr "Die Konfigurationsdatei (template.xml) wurde nicht gefunden."
+msgstr "Could not find configuration file (template.xml)."
 
 msgid "noBoxActivated"
-msgstr "Es wurde keine Box aktiviert."
+msgstr "No box activated."
 
 msgid "boxEdit"
-msgstr "Box bearbeiten"
+msgstr "Edit box"
 
 msgid "warningInvisibleBoxes"
-msgstr "Achtung - es existieren Boxen, die aktuell nicht angezeigt werden können."
+msgstr "Caution! Some boxes cannot currently be displayed."
 
 msgid "noBoxesAvailableFor"
-msgstr "Momentan sind noch keine Boxen vorhanden für \"%s\"."
+msgstr "Currently there are no boxes available for \"%s\"."
 
 msgid "showBoxOnlyFor"
-msgstr "Box \"%s\" nur anzeigen für:"
+msgstr "Show box \"%s\" only for:"
 
 msgid "visibleOnPages"
-msgstr "Sichtbar auf folgenden Seiten"
+msgstr "Visible on the following pages"
 
 msgid "invisibleBoxes"
-msgstr "Unsichtbare Boxen"
+msgstr "Invisible boxes"
 
 msgid "deleteSelected"
-msgstr "Markierte löschen"
+msgstr "Delete selected"
 
 msgid "sectionLeft"
-msgstr "Linke Seitenleiste"
+msgstr "Left side bar"
 
 msgid "sectionRight"
-msgstr "Rechte Seitenleiste"
+msgstr "Right side bar"
 
 msgid "sectionTop"
 msgstr "Header"
@@ -102,43 +102,43 @@ msgid "sectionBottom"
 msgstr "Footer"
 
 msgid "successBoxDelete"
-msgstr " Box(en) wurde(n) erfolgreich gelöscht."
+msgstr " Box(es) deleted successfully."
 
 msgid "successContainerCreate"
-msgstr "Container wurde erfolgreich hinzugefügt."
+msgstr "Container created successfully."
 
 msgid "errorContainerCreate"
-msgstr "Container konnte nicht angelegt werden."
+msgstr "Could not create container."
 
 msgid "successBoxCreate"
-msgstr "Box wurde erfolgreich hinzugefügt."
+msgstr "Box added successfully."
 
 msgid "errorBoxCreate"
-msgstr "Box konnte nicht angelegt werden."
+msgstr "Could not add box."
 
 msgid "errorBoxDelete"
-msgstr "Box konnte nicht entfernt werden."
+msgstr "Could not remove box."
 
 msgid "successBoxEdit"
-msgstr "Box wurde erfolgreich bearbeitet."
+msgstr "Box successfully edited."
 
 msgid "errorBoxEdit"
-msgstr "Box konnte nicht bearbeitet werden."
+msgstr "Could not edit box."
 
 msgid "successBoxRefresh"
-msgstr "Die Boxen wurden aktualisiert."
+msgstr "The boxes were updated."
 
 msgid "visibleOnAllPages"
-msgstr "sichtbar auf allen Seiten"
+msgstr "visible on all pages"
 
 msgid "visibleOnSomePages"
-msgstr "sichtbar auf manchen Seiten"
+msgstr "visible on some pages"
 
 msgid "deactivatedOnAllPages"
-msgstr "auf allen Seiten deaktiviert"
+msgstr "deactivated on all pages"
 
 msgid "warningChangesForAllPages"
-msgstr "Die Auswahl \"Alle Seiten\" überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten gemacht wurden."
+msgstr "The Option \"All pages\" overrides all changes previously made for single pages."
 
 msgid "errorBoxesVisibilityEdit"
 msgstr "Error setting the visibility of the boxes."

@@ -130,7 +130,7 @@ class Optin extends OptinBase
     {
         $newRow               = new \stdClass();
         $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
-        $newRow->kOptinClass  = $this->refData->getOptinClass();
+        $newRow->kOptinClass  = $this->foundOptinTupel->kOptinClass;
         $newRow->cMail        = 'anonym'; // anonymized for history
         $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
         $newRow->dCreated     = $this->foundOptinTupel->dCreated;

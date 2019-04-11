@@ -156,7 +156,7 @@ class Seo
             \chr(38)  => '-',
             \chr(180) => ''
         ];
-        $str = \preg_replace('~[^\w-/]~', '', strtr($str, $arr));
+        $str = \preg_replace('~[^\w\-/]~', '', strtr($str, $arr));
         while (\mb_strpos($str, '--') !== false) {
             $str = \str_replace('--', '-', $str);
         }

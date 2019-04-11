@@ -11,7 +11,12 @@
         {row}
             {block name='productlist-result-options-filter-link'}
                 {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0"}
-                    {link class="btn btn-link" data=["toggle" => "collapse"] href="#filter-collapsible" aria=["expanded" => {$Einstellungen.template.productlist.initial_display_filter === 'Y'}, "controls" => "filter-collapsible"]}
+                    {link class="btn btn-link"
+                        data=["toggle" => "collapse"]
+                        href="#filter-collapsible"
+                        aria=["expanded" => {$Einstellungen.template.productlist.initial_display_filter === 'Y'}, "controls" => "filter-collapsible"]
+                        role="button"
+                    }
                         <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
                         <i class="fas fa-chevron-down"></i>
                     {/link}

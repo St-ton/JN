@@ -25,34 +25,6 @@
                     {form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate"}
                         {block name='newsletter-index-newsletter-subscribe-form-content'}
                             <fieldset>
-                                {if !empty($oPlausi->cPost_arr.cVorname)}
-                                    {assign var=inputVal_firstname value=$oPlausi->cPost_arr.cVorname}
-                                {elseif !empty($oKunde->cVorname)}
-                                    {assign var=inputVal_firstname value=$oKunde->cVorname}
-                                {/if}
-                                {block name='newsletter-index-form-firstname'}
-                                    {include file='snippets/form_group_simple.tpl'
-                                        options=[
-                                            'text', 'newsletterfirstname', 'cVorname',
-                                            {$inputVal_firstname|default:null}, {lang key='newsletterfirstname' section='newsletter'},
-                                            false, null, 'given-name'
-                                        ]
-                                    }
-                                    {/block}
-                                {if !empty($oPlausi->cPost_arr.cNachname)}
-                                    {assign var=inputVal_lastName value=$oPlausi->cPost_arr.cNachname}
-                                {elseif !empty($oKunde->cNachname)}
-                                    {assign var=inputVal_lastName value=$oKunde->cNachname}
-                                {/if}
-                                {block name='newsletter-index-form-lastname'}
-                                    {include file='snippets/form_group_simple.tpl'
-                                        options=[
-                                            'text', 'lastName', 'cNachname',
-                                            {$inputVal_lastName|default:null}, {lang key='newsletterlastname' section='newsletter'},
-                                            false, null, 'family-name'
-                                        ]
-                                    }
-                                {/block}
                                 {if !empty($oPlausi->cPost_arr.cEmail)}
                                     {assign var=inputVal_email value=$oPlausi->cPost_arr.cEmail}
                                 {elseif !empty($oKunde->cMail)}

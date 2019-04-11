@@ -10747,7 +10747,7 @@ select.selectpicker {
 }
 
 .bootstrap-select {
-  width: 220px \0 ;
+  width: 220px;
   /*IE9 and below*/
 }
 .bootstrap-select > .dropdown-toggle {
@@ -11112,7 +11112,6 @@ select.selectpicker {
 }
 .slick-list.dragging {
   cursor: pointer;
-  cursor: hand;
 }
 
 .slick-slider .slick-track,
@@ -12635,9 +12634,6 @@ ul.partlist-items {
 .slick-prev::before {
   content: "";
 }
-.slick-prev::before[dir=rtl] {
-  content: "";
-}
 
 .slick-next {
   z-index: 2;
@@ -12649,9 +12645,6 @@ ul.partlist-items {
 }
 .slick-next::before {
   content: "";
-}
-.slick-next::before[dir=rtl] {
-  content: "";
 }
 
 .slick-dotted {
@@ -12899,6 +12892,9 @@ ul.partlist-items {
     z-index: 1001;
     box-shadow: 0 -10px 0 white, 0 2px 16px 0 rgba(0, 0, 0, 0.06);
     transition: opacity 0.2s;
+  }
+  .gallery .product-cell.hover-enabled .expandable dt {
+    text-align: left;
   }
   .gallery .product-cell.hover-enabled::before {
     content: "";
@@ -13556,6 +13552,7 @@ aside .badge-light {
   flex: 1 1 auto;
   width: 1%;
   margin-bottom: 0;
+  border-right: 0;
 }
 .choose_quantity .nmbr-cfg-group .unit,
 .quantity-wrapper .nmbr-cfg-group .unit,

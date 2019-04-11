@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productlist-productlist-actions'}
-    {form action="" method="post" class="product-actions actions-small d-none d-md-flex" data=["toggle" => "product-actions"]}
+    {form action="#" method="post" class="product-actions actions-small d-none d-md-flex" data=["toggle" => "product-actions"]}
         {buttongroup class="actions btn-group-justified d-flex" size="sm" aria=["label" => "..."] role="group"}
             {block name='productlist-productlist-actions-buttons'}
                 {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}

@@ -59,31 +59,32 @@ class SmartyRenderer implements RendererInterface
      */
     public function includeMailTemplate($params, $smarty): string
     {
-        if (isset($params['template'], $params['type']) && $smarty->getTemplateVars('int_lang') !== null) {
-            $res  = null;
-            $lang = null;
-            $tpl  = $this->db->select(
-                'temailvorlageoriginal',
-                'cDateiname',
-                $params['template']
+        if (!isset($params['template'], $params['type']) || $smarty->getTemplateVars('int_lang') === null) {
+            return '';
+        }
+        $res  = null;
+        $lang = null;
+        $tpl  = $this->db->select(
+            'temailvorlageoriginal',
+            'cDateiname',
+            $params['template']
+        );
+        if (isset($tpl->kEmailvorlage) && $tpl->kEmailvorlage > 0) {
+            $lang = $smarty->getTemplateVars('int_lang');
+            $row  = $params['type'] === 'html' ? 'cContentHtml' : 'cContentText';
+            $res  = $this->db->query(
+                'SELECT ' . $row . ' AS content
+                    FROM temailvorlagesprache
+                    WHERE kSprache = ' . (int)$lang->kSprache .
+                    ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage,
+                ReturnType::SINGLE_OBJECT
             );
-            if (isset($tpl->kEmailvorlage) && $tpl->kEmailvorlage > 0) {
-                $lang = $smarty->getTemplateVars('int_lang');
-                $row  = $params['type'] === 'html' ? 'cContentHtml' : 'cContentText';
-                $res  = $this->db->query(
-                    'SELECT ' . $row . ' AS content
-                        FROM temailvorlagesprache
-                        WHERE kSprache = ' . (int)$lang->kSprache .
-                        ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage,
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (isset($res->content)) {
-                    if ($params['type'] === 'plain') {
-                        $params['type'] = 'text';
-                    }
-
-                    return $smarty->fetch('db:' . $params['type'] . '_' . $tpl->kEmailvorlage . '_' . $lang->kSprache);
+            if (isset($res->content)) {
+                if ($params['type'] === 'plain') {
+                    $params['type'] = 'text';
                 }
+
+                return $smarty->fetch('db:' . $params['type'] . '_' . $tpl->kEmailvorlage . '_' . $lang->kSprache);
             }
         }
 

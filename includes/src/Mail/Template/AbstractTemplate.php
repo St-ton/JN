@@ -6,10 +6,13 @@
 
 namespace JTL\Mail\Template;
 
+use function Functional\first;
+use function Functional\tail;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Mail\Renderer\RendererInterface;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\map;
@@ -143,7 +146,7 @@ abstract class AbstractTemplate implements TemplateInterface
         $this->model           = null;
         $this->languageID      = $languageID;
         $this->customerGroupID = $customerGroupID;
-        $data                  = $this->getData()[$languageID] ?? null;
+        $data                  = $this->getData();
         if ($data === null) {
             return null;
         }
@@ -155,7 +158,14 @@ abstract class AbstractTemplate implements TemplateInterface
                 continue;
             }
             $method = 'set' . $mapping;
-            $this->model->$method($value);
+            if (\is_array($value)) {
+                // setter with language ID
+                foreach ($value as $langID => $content) {
+                    $this->model->$method($content, $langID);
+                }
+            } else {
+                $this->model->$method($value);
+            }
         }
 
         return $this->model;
@@ -171,9 +181,9 @@ abstract class AbstractTemplate implements TemplateInterface
     }
 
     /**
-     * @return array
+     * @return stdClass|null
      */
-    protected function getData(): array
+    protected function getData(): ?stdClass
     {
         if (\strpos($this->getID(), 'kPlugin') === 0) {
             // @todo: tpluginemailvorlageeinstellungen?
@@ -199,11 +209,11 @@ abstract class AbstractTemplate implements TemplateInterface
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-
-        return map(
-            reindex($data, function ($e) {
-                return (int)$e->kSprache;
-            }),
+        if (\count($data) === 0) {
+            return null;
+        }
+        $data              = map(
+            $data,
             function ($e) {
                 $e->kSprache      = (int)$e->kSprache;
                 $e->kPlugin       = (int)$e->kPlugin;
@@ -218,6 +228,27 @@ abstract class AbstractTemplate implements TemplateInterface
                 return $e;
             }
         );
+        $res               = first($data);
+        $res->cBetreff     = [$res->kSprache => $res->cBetreff];
+        $res->cContentHtml = [$res->kSprache => $res->cContentHtml];
+        $res->cContentText = [$res->kSprache => $res->cContentText];
+        $res->cPDFS        = [$res->kSprache => $res->cPDFS];
+        $res->cDateiname   = [$res->kSprache => $res->cDateiname];
+        foreach (tail($data) as $item) {
+            $keys = \get_object_vars($item);
+            foreach ($keys as $k => $v) {
+                if ($k === 'cBetreff'
+                    || $k === 'cContentHtml'
+                    || $k === 'cContentText'
+                    || $k === 'cPDFS'
+                    || $k === 'cDateiname'
+                ) {
+                    $res->$k[$item->kSprache] = $v;
+                }
+            }
+        }
+
+        return $res;
     }
 
     /**
@@ -445,5 +476,21 @@ abstract class AbstractTemplate implements TemplateInterface
     public function setSubject(?string $overrideSubject): void
     {
         $this->overrideSubject = $overrideSubject;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLanguageID(): int
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->languageID = $languageID;
     }
 }

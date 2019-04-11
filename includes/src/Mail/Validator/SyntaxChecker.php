@@ -51,7 +51,7 @@ final class SyntaxChecker
     public function __construct(DbInterface $db, TemplateFactory $factory, RendererInterface $renderer, HydratorInterface $hydrator)
     {
         $this->db       = $db;
-        $this->factory = $factory;
+        $this->factory  = $factory;
         $this->hydrator = $hydrator;
         $this->renderer = $renderer;
     }

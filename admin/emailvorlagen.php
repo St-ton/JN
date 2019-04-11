@@ -7,19 +7,23 @@
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\DB\ReturnType;
+use JTL\Emailvorlage;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Shop;
-use JTL\Smarty\JTLSmarty;
-use JTL\Sprache;
-use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Mail\Renderer\SmartyRenderer;
+use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
+use JTL\Mail\Validator\NullValidator;
+use JTL\Mail\Admin\Controller;
+use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Emailvorlage;
+use JTL\Smarty\JTLSmarty;
+use JTL\Sprache;
+use function Functional\filter;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -45,12 +49,15 @@ $db                  = Shop::Container()->getDB();
 $alertHelper         = Shop::Container()->getAlertService();
 $emailTemplateID     = Request::verifyGPCDataInt('kEmailvorlage');
 $pluginID            = Request::verifyGPCDataInt('kPlugin');
+$factory             = new TemplateFactory($db);
+$controller          = new Controller($db, $factory, $config);
 if ($pluginID > 0) {
     $tableName          = 'tpluginemailvorlage';
     $localizedTableName = 'tpluginemailvorlagesprache';
     $originalTableName  = 'tpluginemailvorlagespracheoriginal';
     $settingsTableName  = 'tpluginemailvorlageeinstellungen';
 }
+Shop::dbg($_POST);
 if (isset($_GET['err'])) {
     (new Emailvorlage($emailTemplateID, $pluginID))->updateError(
         true,
@@ -64,92 +71,21 @@ if (isset($_GET['err'])) {
     }
 }
 if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
-    $emailTemplate = $db->select($tableName, 'kEmailvorlage', (int)$_POST['resetConfirm']);
-    if (isset($emailTemplate->kEmailvorlage) && $emailTemplate->kEmailvorlage > 0) {
+    $mailTemplate = $controller->getTemplateByID((int)$_POST['resetConfirm']);
+    if ($mailTemplate !== null) {
         $step = 'zuruecksetzen';
-        $smarty->assign('oEmailvorlage', $emailTemplate);
+        $smarty->assign('mailTemplate', $mailTemplate);
     }
 }
 
-if (isset($_POST['resetEmailvorlage'], $emailTemplateID)
+if (isset($_POST['resetEmailvorlage'], $_POST['resetConfirmJaSubmit'], $emailTemplateID)
     && (int)$_POST['resetEmailvorlage'] === 1
     && $emailTemplateID > 0
     && Form::validateToken()
+    && $controller->getTemplateByID($emailTemplateID) !== null
 ) {
-    $emailTemplate = $db->select($tableName, 'kEmailvorlage', $emailTemplateID);
-    if ($emailTemplate->kEmailvorlage > 0 && isset($_POST['resetConfirmJaSubmit'])) {
-        // Resetten
-        if ($pluginID > 0) {
-            $db->delete(
-                'tpluginemailvorlagesprache',
-                'kEmailvorlage',
-                $emailTemplateID
-            );
-        } else {
-            $db->query(
-                'DELETE temailvorlage, temailvorlagesprache
-                    FROM temailvorlage
-                    LEFT JOIN temailvorlagesprache
-                        ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE temailvorlage.kEmailvorlage = ' . $emailTemplateID,
-                ReturnType::DEFAULT
-            );
-            $db->query(
-                'INSERT INTO temailvorlage
-                    SELECT *
-                    FROM temailvorlageoriginal
-                    WHERE temailvorlageoriginal.kEmailvorlage = ' . $emailTemplateID,
-                ReturnType::DEFAULT
-            );
-        }
-        $db->query(
-            'INSERT INTO ' . $localizedTableName . '
-                SELECT *
-                FROM ' . $originalTableName . '
-                WHERE ' . $originalTableName . '.kEmailvorlage = ' . $emailTemplateID,
-            ReturnType::DEFAULT
-        );
-        $languages = Sprache::getAllLanguages();
-        if ($pluginID === 0) {
-            $vorlage = $db->select(
-                'temailvorlageoriginal',
-                'kEmailvorlage',
-                $emailTemplateID
-            );
-            if (isset($vorlage->cDateiname) && mb_strlen($vorlage->cDateiname) > 0) {
-                foreach ($languages as $_lang) {
-                    $path      = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
-                    $fileHtml  = $path . '/' . $vorlage->cDateiname . '_html.tpl';
-                    $filePlain = $path . '/' . $vorlage->cDateiname . '_plain.tpl';
-                    if (!isset($_lang->cISO)
-                        || !file_exists(PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO)
-                        || !file_exists($fileHtml)
-                        || !file_exists($filePlain)
-                    ) {
-                        continue;
-                    }
-                    $upd               = new stdClass();
-                    $html              = file_get_contents($fileHtml);
-                    $text              = file_get_contents($filePlain);
-                    $doDecodeHtml      = function_exists('mb_detect_encoding')
-                        ? (mb_detect_encoding($html, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
-                        : (Text::is_utf8($html) === 1);
-                    $doDecodeText      = function_exists('mb_detect_encoding')
-                        ? (mb_detect_encoding($text, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
-                        : (Text::is_utf8($text) === 1);
-                    $upd->cContentHtml = $doDecodeHtml === true ? Text::convertUTF8($html) : $html;
-                    $upd->cContentText = $doDecodeText === true ? Text::convertUTF8($text) : $text;
-                    $db->update(
-                        $localizedTableName,
-                        ['kEmailVorlage', 'kSprache'],
-                        [$emailTemplateID, (int)$_lang->kSprache],
-                        $upd
-                    );
-                }
-            }
-        }
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateReset'), 'successTemplateReset');
-    }
+    $controller->resetTemplate($emailTemplateID, $pluginID);
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateReset'), 'successTemplateReset');
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $mailTpl  = $db->select(
@@ -164,7 +100,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     $settings  = Shopsetting::getInstance();
     $renderer  = new SmartyRenderer($db);
     $hydrator  = new TestHydrator($renderer->getSmarty(), $db, $settings);
-    $validator = new \JTL\Mail\Validator\NullValidator();
+    $validator = new NullValidator();
     $mailer    = new Mailer($hydrator, $renderer, $settings, $validator);
     $factory   = new TemplateFactory($db);
     $mail      = new Mail();
@@ -210,7 +146,8 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
 }
 if (isset($_POST['Aendern'], $emailTemplateID)
     && (int)$_POST['Aendern'] === 1
-    && $emailTemplateID > 0 && Form::validateToken()
+    && $emailTemplateID > 0
+    && Form::validateToken()
 ) {
     $step          = 'uebersicht';
     $uploadDir     = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
@@ -515,52 +452,29 @@ if ((($emailTemplateID > 0 && $continue === true)
     $table = isset($_REQUEST['kPlugin']) ? $pluginSettingsTable : $settingsTableName;
 
     $availableLanguages = Sprache::getAllLanguages();
-    $mailTpl            = $db->select($tableName, 'kEmailvorlage', $emailTemplateID);
-    $config             = $db->selectAll($table, 'kEmailvorlage', (int)$mailTpl->kEmailvorlage);
+    $config             = $db->selectAll($table, 'kEmailvorlage', $emailTemplateID);
     $configAssoc        = [];
     foreach ($config as $item) {
         $configAssoc[$item->cKey] = $item->cValue;
     }
-    foreach ($availableLanguages as $lang) {
-        $localized[$lang->kSprache] = $db->select(
-            $localizedTableName,
-            'kEmailvorlage',
-            $emailTemplateID,
-            'kSprache',
-            (int)$lang->kSprache
-        );
-        $pdfFiles                   = [];
-        $filenames                  = [];
-        if (!empty($localized[$lang->kSprache]->cPDFS)) {
-            $tmpPDFs = bauePDFArray($localized[$lang->kSprache]->cPDFS);
-            foreach ($tmpPDFs as $cPDFSTMP) {
-                $pdfFiles[] = $cPDFSTMP;
-            }
-            $tmpFileNames = baueDateinameArray($localized[$lang->kSprache]->cDateiname);
-            foreach ($tmpFileNames as $cDateinameTMP) {
-                $filenames[] = $cDateinameTMP;
-            }
-        }
-        if (!isset($localized[$lang->kSprache]) ||
-            $localized[$lang->kSprache] === false) {
-            $localized[$lang->kSprache] = new stdClass();
-        }
-        $localized[$lang->kSprache]->cPDFS_arr      = $pdfFiles;
-        $localized[$lang->kSprache]->cDateiname_arr = $filenames;
-    }
-    $smarty->assign('Sprachen', $availableLanguages)
-           ->assign('oEmailEinstellungAssoc_arr', $configAssoc)
+    $mailTpl = $controller->getTemplateByID($emailTemplateID);
+    $smarty->assign('availableLanguages', $availableLanguages)
+           ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);
 }
 
 if ($step === 'uebersicht') {
-    $smarty->assign('emailvorlagen', $db->selectAll('temailvorlage', [], [], '*', 'cModulId'))
-           ->assign('oPluginEmailvorlage_arr', $db->selectAll('tpluginemailvorlage', [], [], '*', 'cModulId'));
+    $templates = $controller->getAllTemplates();
+    $smarty->assign('mailTemplates', filter($templates, function (Model $e) {
+        return $e->getPluginID() === 0;
+    }))
+        ->assign('pluginMailTemplates', filter($templates, function (Model $e) {
+            return $e->getPluginID() > 0;
+        }));
 }
 
 if ($step === 'bearbeiten') {
-    $smarty->assign('Emailvorlage', $mailTpl)
-           ->assign('Emailvorlagesprache', $localized);
+    $smarty->assign('mailTemplate', $mailTpl);
 }
 $smarty->assign('kPlugin', $pluginID)
        ->assign('cFehlerAnhang_arr', $attachmentErrors)

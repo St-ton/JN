@@ -251,7 +251,7 @@ class SmartyRenderer implements RendererInterface
         if ($model === null) {
             return null;
         }
-        $subject = $model->getSubject();
+        $subject = $model->getSubject($template->getLanguageID());
         $matches = \preg_match_all('/#(.*?)#/', $subject, $hits);
         if ($matches === 0) {
             return $subject;

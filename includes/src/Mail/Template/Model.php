@@ -7,6 +7,8 @@
 namespace JTL\Mail\Template;
 
 use JTL\Helpers\Text;
+use JTL\Shop;
+use stdClass;
 
 /**
  * Class Model
@@ -90,19 +92,19 @@ final class Model
     protected $pluginID = 0;
 
     /**
-     * @var string
+     * @var array
      */
     protected $subject;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $html = '';
+    protected $html = [];
 
     /**
-     * @var string
+     * @var array
      */
-    protected $text = '';
+    protected $text = [];
 
     /**
      * @var array
@@ -219,19 +221,29 @@ final class Model
     }
 
     /**
+     * @param int $languageID
      * @return array
      */
-    public function getFileNames(): array
+    public function getFileNames(int $languageID = null): array
+    {
+        return $this->fileNames[$languageID ?? Shop::getLanguageID()] ?? [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllFileNames(): array
     {
         return $this->fileNames;
     }
 
     /**
      * @param array|string $fileNames
+     * @param int          $languageID
      */
-    public function setFileNames($fileNames): void
+    public function setFileNames($fileNames, int $languageID): void
     {
-        $this->fileNames = \is_string($fileNames)
+        $this->fileNames[$languageID] = \is_string($fileNames)
             ? Text::parseSSK($fileNames)
             : $fileNames;
     }
@@ -249,6 +261,11 @@ final class Model
      */
     public function setActive($active): void
     {
+        if ($active === 'N') {
+            $active = false;
+        } elseif ($active === 'Y') {
+            $active = true;
+        }
         $this->active = (bool)$active;
     }
 
@@ -381,67 +398,107 @@ final class Model
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getSubject(): string
+    public function getSubjects(): array
     {
         return $this->subject;
     }
 
     /**
-     * @param string $subject
+     * @param int|null $languageID
+     * @return string
      */
-    public function setSubject(string $subject): void
+    public function getSubject(int $languageID = null): string
     {
-        $this->subject = $subject;
+        return $this->subject[$languageID ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
-     * @return string
+     * @param string $subject
+     * @param int    $languageID
      */
-    public function getHTML(): string
+    public function setSubject(string $subject, int $languageID): void
+    {
+        $this->subject[$languageID] = $subject;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllHTML(): array
     {
         return $this->html;
     }
 
     /**
-     * @param string $html
+     * @param int|null $languageID
+     * @return string
      */
-    public function setHTML(string $html): void
+    public function getHTML(int $languageID = null): string
     {
-        $this->html = $html;
+        return $this->html[$languageID ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
-     * @return string
+     * @param string $html
+     * @param int    $languageID
      */
-    public function getText(): string
+    public function setHTML(string $html, int $languageID): void
+    {
+        $this->html[$languageID] = $html;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllText(): array
     {
         return $this->text;
     }
 
     /**
-     * @param string $text
+     * @param int|null $languageID
+     * @return string
      */
-    public function setText(string $text): void
+    public function getText(int $languageID = null): string
     {
-        $this->text = $text;
+        return $this->text[$languageID ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
+     * @param string $text
+     * @param int    $languageID
+     */
+    public function setText(string $text, int $languageID): void
+    {
+        $this->text[$languageID] = $text;
+    }
+
+    /**
+     * @param int|null $languageID
      * @return array|null
      */
-    public function getAttachments(): ?array
+    public function getAttachments(int $languageID = null): ?array
+    {
+        return $this->attachments[$languageID ?? Shop::getLanguageID()] ?? [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllAttachments(): array
     {
         return $this->attachments;
     }
 
     /**
      * @param string|array|null $attachments
+     * @param int               $languageID
      */
-    public function setAttachments($attachments): void
+    public function setAttachments($attachments, int $languageID): void
     {
-        $this->attachments = \is_string($attachments)
+        $this->attachments[$languageID] = \is_string($attachments)
             ? Text::parseSSK($attachments)
             : $attachments;
     }
@@ -460,5 +517,25 @@ final class Model
     public function setData($data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * this is only useful for revisions
+     *
+     * @return array
+     */
+    public function viewCompat(): array
+    {
+        $res = [];
+        foreach ($this->html as $langID => $data) {
+            $item                = new stdClass();
+            $item->kEmailvorlage = $this->getID();
+            $item->cBetreff      = $this->getSubject($langID);
+            $item->cContentHtml  = $this->getHTML($langID);
+            $item->cContentText  = $this->getText($langID);
+            $res[$langID]        = $item;
+        }
+
+        return $res;
     }
 }

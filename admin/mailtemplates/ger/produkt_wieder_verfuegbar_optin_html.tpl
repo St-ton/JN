@@ -1,14 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-{if isset($Kunde->kKunde) && $Kunde->kKunde > 0}
-    Sehr {if $Kunde->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$Kunde->cNachname},<br>
-    <br>
-{elseif isset($Receiver->cNachname) && $Receiver->cNachname !== ''}
-    Sehr {if $Receiver->cAnrede=="w"}geehrte Frau{else}geehrter Herr{/if} {$Receiver->cNachname},<br>
-    <br>
-{else}
-    Sehr geeherte Kundin, sehr geehrter Kunde,<br>
-{/if}
+Guten Tag,<br>
 <br>
 Bitte klicken Sie den folgenden Freischalt-Link<br>
 <a href="{$Optin->activationURL}">{$Optin->activationURL}</a>,<br>

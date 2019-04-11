@@ -1,13 +1,7 @@
 {includeMailTemplate template=header type=html}
 
-{if empty($Benachrichtigung->cVorname) && empty($Benachrichtigung->cNachname)}
 Dear Customer,<br>
-{else}
-Dear{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}
-{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},<br>
-{/if}
 <br>
-
 Please use the following confirmation-Link<br>
 <a href="{$Optin->activationURL}">{$Optin->activationURL}</a>,<br>
 to get the information, if the article

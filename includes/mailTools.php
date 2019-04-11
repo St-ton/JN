@@ -15,10 +15,10 @@ use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
-use JTL\TrustedShops;
 
 /**
  * @param array     $params
@@ -81,15 +81,7 @@ function sendeMail($moduleID, $data, $mail = null)
     if (!is_object($mail)) {
         $mail = new stdClass();
     }
-    $config     = Shop::getSettings([
-        CONF_EMAILS,
-        CONF_ZAHLUNGSARTEN,
-        CONF_GLOBAL,
-        CONF_KAUFABWICKLUNG,
-        CONF_KONTAKTFORMULAR,
-        CONF_ARTIKELDETAILS,
-        CONF_TRUSTEDSHOPS
-    ]);
+    $config     = Shopsetting::getInstance()->getAll();
     $senderName = $config['emails']['email_master_absender_name'];
     $senderMail = $config['emails']['email_master_absender'];
     $sendCopy   = '';
@@ -252,8 +244,7 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_BESTELLBESTAETIGUNG:
             $smarty->assign('Bestellung', $data->tbestellung)
-                   ->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null)
-                   ->assign('oTrustedShopsBewertenButton', null);
+                   ->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null);
             if (isset($data->tbestellung->Zahlungsart->cModulId)
                 && mb_strlen($data->tbestellung->Zahlungsart->cModulId) > 0
             ) {
@@ -270,18 +261,6 @@ function sendeMail($moduleID, $data, $mail = null)
                 );
                 if (isset($oZahlungsartConf->kZahlungsart) && $oZahlungsartConf->kZahlungsart > 0) {
                     $smarty->assign('Zahlungsart', $oZahlungsartConf);
-                }
-            }
-            if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langID   = $_SESSION['cISOSprache'] ?? 'ger'; //workaround for testmails from backend
-                $langCode = Text::convertISO2ISO639($langID);
-                $ts       = new TrustedShops(-1, $langCode);
-                $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if ($tsRating !== false && mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
-                    $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
-                        $data->tbestellung->oRechnungsadresse->cMail,
-                        $data->tbestellung->cBestellNr
-                    ));
                 }
             }
 
@@ -309,17 +288,6 @@ function sendeMail($moduleID, $data, $mail = null)
                     $smarty->assign('Zahlungsart', $oZahlungsartConf);
                 }
             }
-            if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache']);
-                $ts       = new TrustedShops(-1, $langCode);
-                $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if (mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
-                    $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
-                        $data->tbestellung->oRechnungsadresse->cMail,
-                        $data->tbestellung->cBestellNr
-                    ));
-                }
-            }
 
             break;
 
@@ -341,18 +309,6 @@ function sendeMail($moduleID, $data, $mail = null)
         case MAILTEMPLATE_BESTELLUNG_TEILVERSANDT:
         case MAILTEMPLATE_BESTELLUNG_VERSANDT:
             $smarty->assign('Bestellung', $data->tbestellung);
-            if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache']);
-                $ts       = new TrustedShops(-1, $langCode);
-                $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if (mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
-                    $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
-                        $data->tbestellung->oRechnungsadresse->cMail,
-                        $data->tbestellung->cBestellNr
-                    ));
-                }
-            }
-
             break;
 
         case MAILTEMPLATE_NEUKUNDENREGISTRIERUNG:
@@ -398,17 +354,6 @@ function sendeMail($moduleID, $data, $mail = null)
 
         case MAILTEMPLATE_BEWERTUNGERINNERUNG:
             $smarty->assign('Bestellung', $data->tbestellung);
-            if ($config['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langCode = Text::convertISO2ISO639($_SESSION['cISOSprache'] ?? 'ger');
-                $ts       = new TrustedShops(-1, $langCode);
-                $tsRating = $ts->holeKundenbewertungsstatus($langCode);
-                if (mb_strlen($tsRating->cTSID) > 0 && (int)$tsRating->nStatus === 1) {
-                    $smarty->assign('oTrustedShopsBewertenButton', TrustedShops::getRatingButton(
-                        $data->tbestellung->oRechnungsadresse->cMail,
-                        $data->tbestellung->cBestellNr
-                    ));
-                }
-            }
             break;
 
         case MAILTEMPLATE_NEWSLETTERANMELDEN:

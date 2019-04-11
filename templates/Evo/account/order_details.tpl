@@ -177,7 +177,3 @@
     <h3>{lang key='yourOrderComment' section='login'}</h3>
     <p>{$Bestellung->cKommentar}</p>
 {/if}
-
-{if !empty($oTrustedShopsBewertenButton->cPicURL)}
-    <a href="{$oTrustedShopsBewertenButton->cURL}" target="_blank"><img src="{$oTrustedShopsBewertenButton->cPicURL}" /></a>
-{/if}

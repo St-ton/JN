@@ -59,7 +59,7 @@
                 </a>
                 {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
                     <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
-                    <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('refresh')}</button>
+                    <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('update')}</button>
                 {/if}
             </div>
         </div>

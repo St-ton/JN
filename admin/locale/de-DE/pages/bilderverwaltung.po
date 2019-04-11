@@ -9,7 +9,7 @@ msgid "bilderverwaltungURL"
 msgstr "https://jtl-url.de/sbk4m"
 
 msgid "bilderverwaltungDesc"
-msgstr "Hier sehen Sie eine Übersicht zu den aktuell bereits generierten Artikelbildern und ggf. aufgetretenen Fehlern. Artikelbilder werden in den verschiedenen verfügbaren Größen in JTL-Shop erst dann generiert, wenn diese zum ersten Mal im Frontend aufgerufen werden. Dies kann vereinzelt zu längeren Ladezeiten führen. Über „Generieren“ können Sie alle noch nicht erzeugten Bilder automatisch erstellen lassen. Über „Cache leeren“ können Sie alle erzeugten Bilder entfernen."
+msgstr "Hier sehen Sie eine Übersicht zu den aktuell bereits generierten Artikelbildern und ggf. aufgetretenen Fehlern. Artikelbilder werden in den verschiedenen verfügbaren Größen in JTL-Shop erst dann generiert, wenn diese zum ersten Mal im Frontend aufgerufen werden. Dies kann vereinzelt zu längeren Ladezeiten führen. Über „Generieren“ können Sie alle noch nicht erzeugten Bilder automatisch erstellen lassen. Über „Cache leeren“ können Sie alle erzeugten Bilder löschen."
 
 msgid "headlineTyp"
 msgstr "Typ"
@@ -45,25 +45,25 @@ msgid "fallbackNote"
 msgstr "*Fallback: Bilder, die sich im Ordner „bilder/“ und nicht im Ordner „media/“ befinden."
 
 msgid "successCacheReset"
-msgstr "Cache wurde erfolgreich zurückgesetzt"
+msgstr "Cache wurde erfolgreich zurückgesetzt."
 
 msgid "successImageCleanup"
-msgstr "Bilder erfolgreich aufgeräumt"
+msgstr "Bilder wurden erfolgreich aufgeräumt."
 
 msgid "pendingImageCleanup"
-msgstr "Bilder werden aufgeräumt"
+msgstr "Bilder werden aufgeräumt…"
 
 msgid "successImageDelete"
-msgstr "Bilder gelöscht"
+msgstr "Bilder wurden erfolgreich gelöscht."
 
 msgid "successImageGenerate"
-msgstr "Bilder erfolgreich generiert"
+msgstr "Bilder wurden erfolgreich generiert."
 
 msgid "pendingImageDelete"
-msgstr "Lösche Bilder..."
+msgstr "Bilder werden gelöscht…"
 
 msgid "pendingStatisticCalc"
-msgstr "Statistiken werden berechnet..."
+msgstr "Statistiken werden berechnet…"
 
 msgid "pendingImageGenerate"
-msgstr "Bilder werden generiert"
+msgstr "Bilder werden generiert…"

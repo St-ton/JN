@@ -244,8 +244,5 @@
             <div class="h3">{lang key='yourOrderComment' section='login'}</div>
             <p>{$Bestellung->cKommentar}</p>
         {/if}
-        {if !empty($oTrustedShopsBewertenButton->cPicURL)}
-            {link href=$oTrustedShopsBewertenButton->cURL target="_blank"}{image src=$oTrustedShopsBewertenButton->cPicURL}{/link}
-        {/if}
     {/block}
 {/block}

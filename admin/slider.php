@@ -14,6 +14,7 @@ use JTL\Sprache;
 use JTL\DB\ReturnType;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Alert\Alert;
+use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
@@ -88,36 +89,43 @@ switch ($action) {
                 $cKeyValue = 'link_key';
                 $cValue    = $_POST[$cKeyValue];
             }
-
-            if (empty($slider->getEffects())) {
-                $slider->setEffects('random');
-            }
-            if ($slider->save() === true) {
-                Shop::Container()->getDB()->delete(
-                    'textensionpoint',
-                    ['cClass', 'kInitial'],
-                    ['slider', $slider->getID()]
-                );
-                $extension                = new stdClass();
-                $extension->kSprache      = $kSprache;
-                $extension->kKundengruppe = $kKundengruppe;
-                $extension->nSeite        = $nSeite;
-                $extension->cKey          = $cKey;
-                $extension->cValue        = $cValue;
-                $extension->cClass        = 'slider';
-                $extension->kInitial      = $slider->getID();
-                Shop::Container()->getDB()->insert('textensionpoint', $extension);
-
+            if (!empty($cKeyValue) && empty($cValue)) {
                 $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    __('successSliderSave'),
-                    'successSliderSave',
-                    ['saveInSession' => true]
+                    Alert::TYPE_ERROR,
+                    sprintf(__('errorKeyMissing'), $cKey),
+                    'errorKeyMissing'
                 );
-                header('Location: ' . $redirectUrl);
-                exit;
+            } else {
+                if (empty($slider->getEffects())) {
+                    $slider->setEffects('random');
+                }
+                if ($slider->save() === true) {
+                    Shop::Container()->getDB()->delete(
+                        'textensionpoint',
+                        ['cClass', 'kInitial'],
+                        ['slider', $slider->getID()]
+                    );
+                    $extension                = new stdClass();
+                    $extension->kSprache      = $kSprache;
+                    $extension->kKundengruppe = $kKundengruppe;
+                    $extension->nSeite        = $nSeite;
+                    $extension->cKey          = $cKey;
+                    $extension->cValue        = $cValue;
+                    $extension->cClass        = 'slider';
+                    $extension->kInitial      = $slider->getID();
+                    Shop::Container()->getDB()->insert('textensionpoint', $extension);
+
+                    $alertHelper->addAlert(
+                        Alert::TYPE_SUCCESS,
+                        __('successSliderSave'),
+                        'successSliderSave',
+                        ['saveInSession' => true]
+                    );
+                    header('Location: ' . $redirectUrl);
+                    exit;
+                }
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderSave'), 'errorSliderSave');
             }
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderSave'), 'errorSliderSave');
         }
         break;
 }
@@ -183,11 +191,15 @@ switch ($action) {
         break;
 }
 
+$sliders    = $db->query('SELECT * FROM tslider', ReturnType::ARRAY_OF_OBJECTS);
+$pagination = (new Pagination('sliders'))
+    ->setRange(4)
+    ->setItemArray($sliders)
+    ->assemble();
+
 $smarty->assign('cAction', $action)
        ->assign('kSlider', $kSlider)
        ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
-       ->assign('oSlider_arr', $db->query(
-           'SELECT * FROM tslider',
-           ReturnType::ARRAY_OF_OBJECTS
-       ))
+       ->assign('pagination', $pagination)
+       ->assign('oSlider_arr', $pagination->getPageItems())
        ->display('slider.tpl');

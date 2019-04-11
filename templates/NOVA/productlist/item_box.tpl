@@ -127,22 +127,31 @@
                                         {lang key='chooseVariations' section='messages'}
                                     {/alert}
                                 {else}
-                                    {inputgroup class="quantity-wrapper"}
-                                            {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                    step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
-                                                    id="quantity{$Artikel->kArtikel}"
-                                                    class="quantity text-right"
-                                                    name="anzahl"
-                                                    autocomplete="off"
-                                                    value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
-                                                {inputgroupaddon append=true}
-                                                    {button type="submit" variant="primary" id="submit{$Artikel->kArtikel}"
-                                                        title="{lang key='addToCart' section='global'}"
-                                                        class="ml-3"
-                                                    }
-                                                        <i class="fa fa-shopping-cart"></i>
-                                                    {/button}
-                                                {/inputgroupaddon}
+                                    {inputgroup class="quantity-wrapper choose_quantity"}
+                                        {if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}
+                                            {input type="text"
+                                                id="quantity{$Artikel->kArtikel}"
+                                                class="quantity text-right"
+                                                name="anzahl"
+                                                autocomplete="off"
+                                                value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                        {else}
+                                            {input type="number"
+                                                min="0"
+                                                step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
+                                                id="quantity{$Artikel->kArtikel}"
+                                                class="quantity text-right"
+                                                name="anzahl"
+                                                autocomplete="off"
+                                                data=["decimals"=>"{if $Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                                value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                        {/if}
+                                        {button type="submit" variant="primary" id="submit{$Artikel->kArtikel}"
+                                            title="{lang key='addToCart' section='global'}"
+                                            class="ml-3"
+                                        }
+                                            <i class="fa fa-shopping-cart"></i>
+                                        {/button}
                                     {/inputgroup}
                                 {/if}
                             {/formgroup}

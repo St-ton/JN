@@ -2,62 +2,63 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{block name='layout-header-composer-menu'}
+{function draftItem}
     {block name='layout-header-composer-menu-function-draft-item'}
-        {function draftItem}
-            {if $isCurDraft}
-                {assign var=draftTooltip value='Momentan öffentlich'}
-                {if $draftPublishTo !== null}
-                    {assign var=draftTooltip value=$draftTooltip|cat:' bis '|cat:($draftPublishTo|date_format:'d.m.Y')}
-                {/if}
-            {elseif $draftPublishFrom !== null}
-                {assign var=draftTooltip value='Öffentlich ab '|cat:($draftPublishFrom|date_format:'d.m.Y')}
-            {else}
-                {assign var=draftTooltip value='Entwurf'}
+        {if $isCurDraft}
+            {assign var=draftTooltip value='Momentan öffentlich'}
+            {if $draftPublishTo !== null}
+                {assign var=draftTooltip value=$draftTooltip|cat:' bis '|cat:($draftPublishTo|date_format:'d.m.Y')}
             {/if}
-            {buttongroup class="mb-2 w-100"}
-                {form method="post" action="admin/onpage-composer.php" class="w-100" addtoken=false}
-                    {input type="hidden" name="jtl_token" value=$adminSessionToken}
-                    {input type="hidden" name="pageKey" value=$draftKey}
-                    {button size="sm"
-                        variant="danger"
-                        class="opc-draft-item-discard float-right"
-                        title="Entwurf löschen" role="button" id="btnDiscard{$draftKey}"}
-                        <i class="fas fa-trash"></i>
-                    {/button}
-                    {button type="submit" name="action" value="edit" title="Entwurf bearbeiten" variant="{if $isCurDraft}secondary{else}light{/if}" size="sm"}
-                        {if $isCurDraft}
-                            <b><i class="fas fa-newspaper"></i> {$draftName}</b>
-                        {else}
-                            <i class="fas fa-file"></i> {$draftName}
-                        {/if}
-                    {/button}
-                    <script>
-                        (function() {
-                            var btnDiscard = $('#btnDiscard{$draftKey}');
-                            btnDiscard.on('click', function(e) {
-                                e.preventDefault();
-                                if(confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
-                                    $.ajax({
-                                        method: 'post',
-                                        url: 'admin/onpage-composer.php',
-                                        data: { action: 'discard', pageKey: {$draftKey}, jtl_token: '{$adminSessionToken}' },
-                                        success: function(jqxhr, textStatus) {
-                                            if(jqxhr === 'ok') {
-                                                btnDiscard.closest('.list-group-item').remove();
-                                                window.localStorage.removeItem('opcpage.{$draftKey}');
-                                            }
+        {elseif $draftPublishFrom !== null}
+            {assign var=draftTooltip value='Öffentlich ab '|cat:($draftPublishFrom|date_format:'d.m.Y')}
+        {else}
+            {assign var=draftTooltip value='Entwurf'}
+        {/if}
+        {buttongroup class="mb-2 w-100"}
+            {form method="post" action="admin/onpage-composer.php" class="w-100" addtoken=false}
+                {input type="hidden" name="jtl_token" value=$adminSessionToken}
+                {input type="hidden" name="pageKey" value=$draftKey}
+                {button size="sm"
+                    variant="danger"
+                    class="opc-draft-item-discard float-right"
+                    title="Entwurf löschen" role="button" id="btnDiscard{$draftKey}"}
+                    <i class="fas fa-trash"></i>
+                {/button}
+                {button type="submit" name="action" value="edit" title="Entwurf bearbeiten"
+                        variant="{if $isCurDraft}secondary{else}light{/if}" size="sm"}
+                    {if $isCurDraft}
+                        <b><i class="fas fa-newspaper"></i> {$draftName}</b>
+                    {else}
+                        <i class="fas fa-file"></i> {$draftName}
+                    {/if}
+                {/button}
+                <script>
+                    (function() {
+                        var btnDiscard = $('#btnDiscard{$draftKey}');
+                        btnDiscard.on('click', function(e) {
+                            e.preventDefault();
+                            if(confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
+                                $.ajax({
+                                    method: 'post',
+                                    url: 'admin/onpage-composer.php',
+                                    data: { action: 'discard', pageKey: {$draftKey}, jtl_token: '{$adminSessionToken}' },
+                                    success: function(jqxhr, textStatus) {
+                                        if(jqxhr === 'ok') {
+                                            btnDiscard.closest('form').remove();
+                                            window.localStorage.removeItem('opcpage.{$draftKey}');
                                         }
-                                    });
-                                }
-                            });
-                        })();
-                    </script>
-                {/form}
-            {/buttongroup}
-        {/function}
+                                    }
+                                });
+                            }
+                        });
+                    })();
+                </script>
+            {/form}
+        {/buttongroup}
     {/block}
+{/function}
 
+{block name='layout-header-composer-menu'}
     {assign var=curPage value=$opcPageService->getCurPage()}
     {assign var=curPageId value=$curPage->getId()}
     {assign var=pageDrafts value=$opcPageService->getDrafts($curPageId)}
@@ -77,23 +78,24 @@
                     </div>
                     <div class="switcher-content">
                         {if $pageDrafts|count > 0}
-                            {if $curDraftKey > 0}
-                                {call draftItem isCurDraft=true
-                                draftKey=$curDraftKey
-                                draftPublishFrom=$curPage->getPublishFrom()
-                                draftPublishTo=$curPage->getPublishTo()
-                                draftName=$curPage->getName()}
-                            {/if}
-
-                            {foreach $pageDrafts as $i => $draft}
-                                {if $curDraftKey != $draft->getKey()}
-                                    {call draftItem isCurDraft=false
-                                    draftKey=$draft->getKey()
-                                    draftPublishFrom=$draft->getPublishFrom()
-                                    draftPublishTo=$draft->getPublishTo()
-                                    draftName=$draft->getName()}
+                            {listgroup}
+                                {if $curDraftKey > 0}
+                                    {call draftItem isCurDraft=true
+                                    draftKey=$curDraftKey
+                                    draftPublishFrom=$curPage->getPublishFrom()
+                                    draftPublishTo=$curPage->getPublishTo()
+                                    draftName=$curPage->getName()}
                                 {/if}
-                            {/foreach}
+                                {foreach $pageDrafts as $i => $draft}
+                                    {if $curDraftKey != $draft->getKey()}
+                                        {call draftItem isCurDraft=false
+                                        draftKey=$draft->getKey()
+                                        draftPublishFrom=$draft->getPublishFrom()
+                                        draftPublishTo=$draft->getPublishTo()
+                                        draftName=$draft->getName()}
+                                    {/if}
+                                {/foreach}
+                            {/listgroup}
                         {/if}
                         {if $pageDrafts|count > 0}
                             <p class="mt-3">

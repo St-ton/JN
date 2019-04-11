@@ -23,7 +23,6 @@ use JTL\Media\MediaImage;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
-use JTL\TrustedShops;
 use Illuminate\Support\Collection;
 
 /**
@@ -500,19 +499,6 @@ class Plugins
         }
 
         return $oNew_arr;
-    }
-
-    /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
-     */
-    public function getTrustedShopsData($params, $smarty)
-    {
-        $oTrustedShops = new TrustedShops(-1, \StringHandler::convertISO2ISO639(Shop::getLanguageCode()));
-        $smarty->assign($params['assign'], [
-            'tsId'   => $oTrustedShops->tsId,
-            'nAktiv' => $oTrustedShops->nAktiv
-        ]);
     }
 
     /**

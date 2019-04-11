@@ -346,7 +346,7 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="aktualisieren" type="submit" value="{__('refresh')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('refresh')}</button>
+                                <button name="aktualisieren" type="submit" value="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                                 <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>

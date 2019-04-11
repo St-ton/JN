@@ -75,7 +75,7 @@ class ImageMap implements IExtensionPoint
                     OR CURDATE() <= DATE(bDatum)
                     OR bDatum = 0), 1, 0) AS active 
                 FROM timagemap
-                ORDER BY bDatum DESC',
+                ORDER BY cTitel ASC',
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

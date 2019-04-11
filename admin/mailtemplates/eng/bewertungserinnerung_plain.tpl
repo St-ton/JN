@@ -20,10 +20,6 @@ Please click on the product to rate it:
 
 Thank you for sharing!
 
-{if !empty($oTrustedShopsBewertenButton->cURL)}
-Were you satisfied with your order? If so, we hope you'll take a minute to write a recommendation.
-{$oTrustedShopsBewertenButton->cURL}
-{/if}
 
 Yours sincerely,
 {$Firma->cName}

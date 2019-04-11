@@ -323,22 +323,24 @@ ul.partlist-items {
 }
 
 .banner {
-  position: relative;
-  > a.area {
-    position: absolute;
-    display: block;
-  }
-  > a {
-    border: 0 solid #fff;
-    border-radius: $border-radius;
-    > .area-desc {
-      display: none;
+    position: relative;
+
+    > .area {
+        display: block;
+        position: absolute;
+        border: 0 solid #fff;
+        border-radius: $border-radius;
+
+        > .area-desc {
+            display: none;
+        }
     }
-  }
-  .img-fluid {
-    width: 100%;
-  }
+
+    .img-fluid {
+        width: 100%;
+    }
 }
+
 #cfg-sticky-sidebar{
   z-index: $zindex-sticky - 1;
   top: ($nav-link-height + $highlight-border-size + $navbar-padding-y);
@@ -593,10 +595,6 @@ ul.partlist-items {
 
   &::before {
     content: '\f053';
-
-    &[dir="rtl"] {
-      content: '\f054';
-    }
   }
 }
 
@@ -611,10 +609,6 @@ ul.partlist-items {
 
   &::before {
     content: '\f054';
-
-    &[dir="rtl"] {
-      content: '\f053';
-    }
   }
 }
 
@@ -867,6 +861,10 @@ ul.partlist-items {
         z-index: $zindex-dropdown + 1;
         box-shadow: 0 -10px 0 white, 0 2px 16px 0 rgba(0, 0, 0, 0.06);
         transition: opacity 0.2s;
+
+        dt {
+          text-align: left;
+        }
       }
       &::before {
         content: '';
@@ -1529,6 +1527,7 @@ $jqcloud-classes: 7;
       flex: 1 1 auto;
       width: 1%;
       margin-bottom: 0;
+      border-right: 0;
     }
     .unit {
       background: $input-bg;
@@ -2077,82 +2076,133 @@ table caption {
   white-space: nowrap;
 }
 
-.gllry-container {
-  padding: 12px;
+.flipcard {
+  .flipcard-inner {
+    position: relative;
+    width: 100%;
+  }
 
-  .gllry-item {
-    overflow: hidden;
-    padding: 3px;
+  .flipcard-face {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    backface-visibility: hidden;
+    transition: 0.5s;
+  }
 
-    .box {
-      overflow: hidden;
+  &.flipcard-v {
+    .flipcard-front {
+      transform: rotateX(0deg);
+    }
 
-      img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        -o-object-fit: cover;
+    .flipcard-back {
+      transform: rotateX(180deg);
+    }
+
+    .flipped {
+      .flipcard-front {
+          transform: rotateX(-180deg);
       }
-    }
 
-    a:focus {
-      outline: none;
-    }
-
-    a:after {
-      content: "\f002";
-      font-family: FontAwesome;
-      opacity: 0;
-      background-color: rgba(0, 0, 0, 0.75);
-      position: absolute;
-      right: 3px;
-      left: 3px;
-      top: 3px;
-      bottom: 3px;
-      text-align: center;
-      font-size: 30px;
-      color: #fff;
-      -webkit-transition: all 0.5s ease-in-out 0s;
-      -moz-transition: all 0.5s ease-in-out 0s;
-      transition: all 0.5s ease-in-out 0s;
-    }
-
-    a:hover:after {
-      opacity: 1;
+      .flipcard-back {
+        transform: rotateX(0deg);
+      }
     }
   }
 
-  .modal.fade {
-    .modal-dialog {
-      -webkit-transform: scale(0.1);
-      -moz-transform: scale(0.1);
-      -ms-transform: scale(0.1);
-      transform: scale(0.1);
-      top: 100px;
-      opacity: 0;
-      -webkit-transition: all 0.3s;
-      -moz-transition: all 0.3s;
-      transition: all 0.3s;
+  &.flipcard-h {
+    .flipcard-front {
+      transform: rotateY(0deg);
     }
 
-    &.in,
-    &.show {
-      .modal-dialog {
-        -webkit-transform: scale(1);
-        -moz-transform: scale(1);
-        -ms-transform: scale(1);
-        transform: scale(1);
-        -webkit-transform: translate3d(0, -100px, 0);
-        transform: translate3d(0, -100px, 0);
-        opacity: 1;
+    .flipcard-back {
+      transform: rotateY(180deg);
+    }
+
+    .flipped {
+      .flipcard-front {
+        transform: rotateY(-180deg);
+      }
+
+      .flipcard-back {
+        transform: rotateY(0deg);
       }
     }
   }
 }
-.fas,
-.fab,
-.fa,
-.far {
+
+.img-gallery {
+  margin-left: -4px;
+  margin-right: -4px;
+
+  .img-gallery-item {
+    overflow: hidden;
+    padding-right: 4px;
+    padding-left: 4px;
+    margin-bottom: 8px;
+
+    .img-gallery-btn {
+      display: block;
+      position: relative;
+
+      &:after {
+        content: " ";
+        opacity: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        transition: all 0.5s ease-in-out 0s;
+      }
+
+      &:hover:after {
+        opacity: 0.75;
+      }
+
+      .img-gallery-zoom {
+        opacity: 0;
+        color: #fff;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 0.5s ease-in-out 0s;
+      }
+
+      &:hover .img-gallery-zoom {
+        opacity: 1;
+      }
+    }
+
+    .img-gallery-img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+.img-gallery-modal {
+  .modal-dialog {
+    transform: scale(0.1);
+    top: 50px;
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 700px;
+  }
+
+  &.in, &.show {
+    .modal-dialog {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+.fas, .fab, .fa, .far {
   vertical-align: middle;
 }
 
@@ -2273,5 +2323,29 @@ input.form-control[name="wishlist-url"] {
     background: #fff;
     vertical-align: top;
     z-index: $zindex-dropdown - 1;
+  }
+}
+
+/* Artikel Bilder Slider vertikal */
+
+.slick-down ,
+.slick-up {
+  outline: none;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  width: 19px;
+  height: 19px;
+  color: #ccc;
+  opacity: 0.75;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:hover {
+    opacity: 1;
   }
 }

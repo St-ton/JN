@@ -6,6 +6,6 @@
 
 <div class="widget-custom-data">
     <div id="news_data_wrapper">
-        <p class="ajax_preloader">{__('loading')}</p>
+        <p class="ajax_preloader"><i class="fa fas fa-spinner fa-spin"></i><i class="fa fas fa-spinner fa-spin"></i> {__('loading')}</p>
     </div>
 </div>

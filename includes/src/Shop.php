@@ -79,6 +79,7 @@ use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\MailSmarty;
 use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -2052,7 +2053,7 @@ final class Shop
         $container->bind(Mailer::class, function (Container $container) {
             $db        = $container->getDB();
             $settings  = Shopsetting::getInstance();
-            $smarty    = new SmartyRenderer($db);
+            $smarty    = new SmartyRenderer(new MailSmarty($db));
             $hydrator  = new DefaultsHydrator($smarty->getSmarty(), $db, $settings);
             $validator = new MailValidator($db, $settings->getAll());
 

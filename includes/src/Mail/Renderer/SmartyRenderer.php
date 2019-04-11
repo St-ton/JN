@@ -14,6 +14,7 @@ use JTL\Mail\Template\TemplateInterface;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\MailSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
 
 /**
@@ -28,67 +29,12 @@ class SmartyRenderer implements RendererInterface
     private $smarty;
 
     /**
-     * @var DbInterface
+     * SmartyRenderer constructor.
+     * @param MailSmarty $smarty
      */
-    private $db;
-
-    /**
-     * Smarty constructor.
-     * @param DbInterface $db
-     * @throws \SmartyException
-     */
-    public function __construct(DbInterface $db)
+    public function __construct(MailSmarty $smarty)
     {
-        $this->db     = $db;
-        $this->smarty = new JTLSmarty(true, ContextType::MAIL);
-        $this->smarty->registerResource('db', new SmartyResourceNiceDB($db, ContextType::MAIL))
-            ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])
-            ->setCaching(0)
-            ->setDebugging(0)
-            ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
-            ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES);
-        if (\MAILTEMPLATE_USE_SECURITY) {
-            $this->smarty->activateBackendSecurityMode();
-        }
-    }
-
-    /**
-     * @param array     $params
-     * @param JTLSmarty $smarty
-     * @return string
-     */
-    public function includeMailTemplate($params, $smarty): string
-    {
-        if (!isset($params['template'], $params['type']) || $smarty->getTemplateVars('int_lang') === null) {
-            return '';
-        }
-        $res  = null;
-        $lang = null;
-        $tpl  = $this->db->select(
-            'temailvorlageoriginal',
-            'cDateiname',
-            $params['template']
-        );
-        if (isset($tpl->kEmailvorlage) && $tpl->kEmailvorlage > 0) {
-            $lang = $smarty->getTemplateVars('int_lang');
-            $row  = $params['type'] === 'html' ? 'cContentHtml' : 'cContentText';
-            $res  = $this->db->query(
-                'SELECT ' . $row . ' AS content
-                    FROM temailvorlagesprache
-                    WHERE kSprache = ' . (int)$lang->kSprache .
-                    ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage,
-                ReturnType::SINGLE_OBJECT
-            );
-            if (isset($res->content)) {
-                if ($params['type'] === 'plain') {
-                    $params['type'] = 'text';
-                }
-
-                return $smarty->fetch('db:' . $params['type'] . '_' . $tpl->kEmailvorlage . '_' . $lang->kSprache);
-            }
-        }
-
-        return '';
+        $this->smarty = $smarty;
     }
 
     /**

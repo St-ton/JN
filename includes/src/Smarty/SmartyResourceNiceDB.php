@@ -39,6 +39,22 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     }
 
     /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @param string $name
      * @param string $source
      * @param int    $mtime
@@ -105,7 +121,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             $newsletter = $this->db->select($table, $row, $parts[1]);
             if ($parts[2] === 'html') {
                 $source = $newsletter->cInhaltHTML;
-            } elseif ($parts[2] === 'text') {
+            } elseif ($parts[2] === 'text' || $parts[2] === 'plain') {
                 $source = $newsletter->cInhaltText;
             }
         } else {

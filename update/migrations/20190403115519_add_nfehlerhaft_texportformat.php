@@ -10,6 +10,7 @@ use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Validator\SyntaxChecker;
+use JTL\Smarty\MailSmarty;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -27,12 +28,13 @@ class Migration_20190403115519 extends Migration implements IMigration
         $this->execute('ALTER TABLE texportformat ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
         $this->execute('ALTER TABLE tpluginemailvorlage ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
 
-        $renderer = new SmartyRenderer($this->getDB());
+        $smarty   = new MailSmarty($this->getDB());
+        $renderer = new SmartyRenderer($smarty);
         $checker  = new SyntaxChecker(
             $this->getDB(),
             new TemplateFactory($this->getDB()),
             $renderer,
-            new TestHydrator($renderer->getSmarty(), $this->getDB(), Shopsetting::getInstance())
+            new TestHydrator($smarty, $this->getDB(), Shopsetting::getInstance())
         );
         $checker->checkAll();
         $ef = new \JTL\Exportformat(0, $this->getDB());

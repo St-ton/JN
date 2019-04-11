@@ -21,6 +21,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
+use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
 use Psr\Log\LoggerInterface;
@@ -740,22 +741,13 @@ class Exportformat
 
     /**
      * @return Exportformat
-     * @throws SmartyException
      */
     private function initSmarty(): self
     {
-        $this->smarty = (new JTLSmarty(true, ContextType::EXPORT))
-            ->setCaching(0)
-            ->setTemplateDir(\PFAD_TEMPLATES)
-            ->setCompileDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR)
-            ->registerResource('db', new SmartyResourceNiceDB($this->db, ContextType::EXPORT))
-            ->assign('URL_SHOP', Shop::getURL())
+        $this->smarty = new ExportSmarty($this->db);
+        $this->smarty->assign('URL_SHOP', Shop::getURL())
             ->assign('Waehrung', Frontend::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
-        // disable php execution in export format templates for security
-        if (\EXPORTFORMAT_USE_SECURITY) {
-            $this->smarty->activateBackendSecurityMode();
-        }
 
         return $this;
     }

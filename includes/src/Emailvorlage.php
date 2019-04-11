@@ -10,6 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Hydrator\TestHydrator;
 use Exception;
+use JTL\Smarty\MailSmarty;
 
 /**
  * Class Emailvorlage
@@ -453,7 +454,7 @@ class Emailvorlage
     public function checkSyntax(int $pluginID = 0): string
     {
         $db           = Shop::Container()->getDB();
-        $renderer     = new SmartyRenderer($db);
+        $renderer     = new SmartyRenderer(new MailSmarty($db));
         $settings     = Shopsetting::getInstance();
         $hydrator     = new TestHydrator($renderer->getSmarty(), $db, $settings);
         $templateType = $pluginID ?: '_temailvorlagesprache';

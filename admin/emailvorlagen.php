@@ -10,7 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\Emailvorlage;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
+use JTL\Mail\Admin\Controller;
 use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -18,10 +18,10 @@ use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Validator\NullValidator;
-use JTL\Mail\Admin\Controller;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\MailSmarty;
 use JTL\Sprache;
 use function Functional\filter;
 
@@ -98,7 +98,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
         $moduleID = 'kPlugin_' . $pluginID . '_' . $moduleID;
     }
     $settings  = Shopsetting::getInstance();
-    $renderer  = new SmartyRenderer($db);
+    $renderer  = new SmartyRenderer(new MailSmarty($db));
     $hydrator  = new TestHydrator($renderer->getSmarty(), $db, $settings);
     $validator = new NullValidator();
     $mailer    = new Mailer($hydrator, $renderer, $settings, $validator);
@@ -332,7 +332,7 @@ if (isset($_POST['Aendern'], $emailTemplateID)
                 ]
             );
             $db->insert($localizedTableName, $localized);
-            $renderer = new SmartyRenderer($db);
+            $renderer = new SmartyRenderer(new MailSmarty($db));
             $settings = Shopsetting::getInstance();
             $hydrator = new TestHydrator($renderer->getSmarty(), $db, $settings);
             try {

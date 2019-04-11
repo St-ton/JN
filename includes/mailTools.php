@@ -16,54 +16,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\ContextType;
-use JTL\Smarty\JTLSmarty;
-use JTL\Smarty\SmartyResourceNiceDB;
-
-/**
- * @param array     $params
- * @param JTLSmarty $smarty
- * @return string
- * @deprecated since 5.0.0
- */
-function includeMailTemplate($params, $smarty)
-{
-    if (isset($params['template'], $params['type'])
-        && ($params['type'] === 'text' || $params['type'] === 'plain' || $params['type'] === 'html')
-        && $smarty->getTemplateVars('int_lang') !== null
-    ) {
-        $res  = null;
-        $lang = null;
-        $tpl  = Shop::Container()->getDB()->select(
-            'temailvorlageoriginal',
-            'cDateiname',
-            $params['template']
-        );
-        if (isset($tpl->kEmailvorlage) && $tpl->kEmailvorlage > 0) {
-            $row  = 'cContentText';
-            $lang = $smarty->getTemplateVars('int_lang');
-            if ($params['type'] === 'html') {
-                $row = 'cContentHtml';
-            }
-            $res = Shop::Container()->getDB()->query(
-                'SELECT ' . $row . ' AS content
-                    FROM temailvorlagesprache
-                    WHERE kSprache = ' . (int)$lang->kSprache .
-                ' AND kEmailvorlage = ' . (int)$tpl->kEmailvorlage,
-                ReturnType::SINGLE_OBJECT
-            );
-        }
-        if (isset($res->content)) {
-            if ($params['type'] === 'plain') {
-                $params['type'] = 'text';
-            }
-
-            return $smarty->fetch('db:' . $params['type'] . '_' . $tpl->kEmailvorlage . '_' . $lang->kSprache);
-        }
-    }
-
-    return '';
-}
+use JTL\Smarty\MailSmarty;
 
 /**
  * @param string        $moduleID
@@ -85,16 +38,7 @@ function sendeMail($moduleID, $data, $mail = null)
     $senderName = $config['emails']['email_master_absender_name'];
     $senderMail = $config['emails']['email_master_absender'];
     $sendCopy   = '';
-    $smarty     = new JTLSmarty(true, ContextType::MAIL);
-    $smarty->registerResource('db', new SmartyResourceNiceDB($db, ContextType::MAIL))
-               ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', 'includeMailTemplate')
-               ->setCaching(0)
-               ->setDebugging(0)
-               ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
-               ->setTemplateDir(PFAD_ROOT . PFAD_EMAILTEMPLATES);
-    if (\MAILTEMPLATE_USE_SECURITY) {
-        $smarty->activateBackendSecurityMode();
-    }
+    $smarty     = new MailSmarty($db);
     if (!isset($data->tkunde)) {
         $data->tkunde = new stdClass();
     }

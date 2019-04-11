@@ -6,6 +6,10 @@
  * @created Wed, 03 Apr 2019 11:55:19 +0200
  */
 
+use JTL\Mail\Hydrator\TestHydrator;
+use JTL\Mail\Renderer\SmartyRenderer;
+use JTL\Mail\Template\TemplateFactory;
+use JTL\Mail\Validator\SyntaxChecker;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -14,13 +18,25 @@ use JTL\Update\Migration;
  */
 class Migration_20190403115519 extends Migration implements IMigration
 {
-    protected $author      = 'mh';
+    protected $author = 'mh';
     protected $description = 'Add nFehlerhaft to texportformat, tpluginemailvorlage';
 
     public function up()
     {
+        $this->execute('DELETE FROM texportformat WHERE nSpecial = 1 AND kPlugin = 0');
         $this->execute('ALTER TABLE texportformat ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
         $this->execute('ALTER TABLE tpluginemailvorlage ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
+
+        $renderer = new SmartyRenderer($this->getDB());
+        $checker  = new SyntaxChecker(
+            $this->getDB(),
+            new TemplateFactory($this->getDB()),
+            $renderer,
+            new TestHydrator($renderer->getSmarty(), $this->getDB(), Shopsetting::getInstance())
+        );
+        $checker->checkAll();
+        $ef = new \JTL\Exportformat(0, $this->getDB());
+        $ef->checkAll();
     }
 
     public function down()

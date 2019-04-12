@@ -79,7 +79,7 @@ class Optin extends OptinBase
         $this->loadOptin();
         if (empty($this->foundOptinTupel)) {
             throw new EmptyResultSetException('Double-Opt-in not found: ' .
-                ($this->emailAddress === '' ?: $this->optCode));
+                (($this->emailAddress === '') ? $this->emailAddress : $this->optCode));
         }
         $this->generateOptin($this->refData->getOptinClass());
         if ($this->actionPrefix === self::DELETE_CODE || $this->externalAction === self::DELETE_CODE) {

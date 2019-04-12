@@ -352,12 +352,28 @@ class PortletInstance implements \JsonSerializable
         $data = [];
 
         foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
-            if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0) {
+            if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
+                !empty($this->getProperty($propname))
+            ) {
                 $data[$propname] = $this->getProperty($propname);
             }
         }
 
         return $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnimationDataAttributeString(): string
+    {
+        $res = '';
+
+        foreach ($this->getAnimationData() as $key => $val) {
+            $res .= ' data-' . $key . '="' . $val . '"';
+        }
+
+        return $res;
     }
 
     /**

@@ -1,6 +1,4 @@
-{if $isPreview}
-    {$dataAttrib = ['portlet' => $instance->getDataAttribute()]}
-{else}
+{if $isPreview === false}
     {$href = $instance->getProperty('url')}
 {/if}
 

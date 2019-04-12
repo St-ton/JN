@@ -2,13 +2,13 @@
     <div>
         <b-progress v-model="installProgress" striped :animated="installProgress < 100" class="mb-3 mt-3 d-print-none"></b-progress>
         <div id="install-wrapper">
-            <finished class="steps" id="step-11" v-if="step === 11"></finished>
+<!--            <finished class="steps" id="step-11" v-if="step === 11"></finished>-->
 
-            <wizard class="steps" id="step-10" v-if="step === 10" wizardStepID="2"></wizard>
+<!--            <wizard class="steps" id="step-10" v-if="step === 10" wizardStepID="2"></wizard>-->
 
-            <wizard class="steps" id="step-9" v-if="step === 9" wizardStepID="1"></wizard>
+<!--            <wizard class="steps" id="step-9" v-if="step === 9" wizardStepID="1"></wizard>-->
 
-            <wawi-check class="steps" id="step-8" v-if="step === 8"></wawi-check>
+<!--            <wawi-check class="steps" id="step-8" v-if="step === 8"></wawi-check>-->
 
             <installation-summary class="steps" id="step-7" v-if="step === 7"></installation-summary>
 

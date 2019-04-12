@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col">
                 <h3>Webshop-Einstellungen in Wawi eintragen</h3>
-                <p>Tragen Sie nun die nachfolgenden Daten im Menü <code>Webshop -&gt; Webshop-Einstellungen</code>
+                <p>Tragen Sie nun die nachfolgenden Daten im Menü <code>Onlineshop -&gt; Onlineshop-Anbindung</code>
                     der Wawi ein:</p>
                 <table class="table table-striped">
                     <tbody>
@@ -74,7 +74,6 @@
                         <icon name="share"></icon> Zum Shop
                     </b-btn>
                 </div>
-                <continue :disableBack="true" :disable="false"></continue>
             </div>
         </div>
     </div>

@@ -31,7 +31,7 @@ $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 /** @global JTLSmarty $smarty */
 $mailTpl             = null;
-$nFehler             = 0;
+$hasError            = false;
 $continue            = true;
 $emailTemplate       = null;
 $localized           = [];
@@ -57,7 +57,6 @@ if ($pluginID > 0) {
     $originalTableName  = 'tpluginemailvorlagespracheoriginal';
     $settingsTableName  = 'tpluginemailvorlageeinstellungen';
 }
-Shop::dbg($_POST);
 if (isset($_GET['err'])) {
     (new Emailvorlage($emailTemplateID, $pluginID))->updateError(
         true,
@@ -155,7 +154,7 @@ if (isset($_POST['Aendern'], $emailTemplateID)
         $localizedTableName,
         'kEmailvorlage',
         $emailTemplateID,
-        'cPDFS, cDateiname, kSprache'
+        'cPDFS, cPDFNames, kSprache'
     );
     $localizedTPLs = [];
     foreach ($localizedData as $translation) {
@@ -174,188 +173,123 @@ if (isset($_POST['Aendern'], $emailTemplateID)
 
     $revision = new Revision($db);
     $revision->addRevision('mail', $emailTemplateID, true);
+
+    $old = $controller->getTemplateByID($emailTemplateID);
+    Shop::dbg($old->getAllAttachments(), false, 'allAttachments:');
+    Shop::dbg($old->getAllAttachmentNames(), false, 'AllAttachmentNames:');
+
+    Shop::dbg($emailTemplateID, false, '$emailTemplateID:');
     foreach ($availableLanguages as $lang) {
         $filenames    = [];
         $pdfFiles     = [];
-        $tmpPDFs      = isset($localizedTPLs[$lang->kSprache]->cPDFS)
-            ? bauePDFArray($localizedTPLs[$lang->kSprache]->cPDFS)
-            : [];
-        $tmpFileNames = isset($localizedTPLs[$lang->kSprache]->cDateiname)
-            ? baueDateinameArray($localizedTPLs[$lang->kSprache]->cDateiname)
-            : [];
-        if (!isset($localizedTPLs[$lang->kSprache]->cPDFS)
-            || mb_strlen($localizedTPLs[$lang->kSprache]->cPDFS) === 0
-            || count($tmpPDFs) < 3
-        ) {
-            if (count($tmpPDFs) < 3) {
-                foreach ($tmpPDFs as $i => $cPDFSTMP) {
-                    $pdfFiles[] = $cPDFSTMP;
+        $tmpPDFs      = bauePDFArray($localizedTPLs[$lang->kSprache]->cPDFS ?? '');
+        $tmpFileNames = baueDateinameArray($localizedTPLs[$lang->kSprache]->cPDFNames ?? '');
+        Shop::dbg($tmpPDFs, false, '$tmpPDFs:');
+        Shop::dbg($_POST['cPDFNames_' . $lang->kSprache], false, '@post:');
 
-                    if (mb_strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]) > 0) {
-                        $regs = [];
-                        preg_match(
-                            '/[A-Za-z0-9_-]+/',
-                            $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache],
-                            $regs
-                        );
-                        if (mb_strlen($regs[0]) ===
-                            mb_strlen($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache])
-                        ) {
-                            $filenames[] = $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache];
-                            unset($_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]);
-                        } else {
-                            $alertHelper->addAlert(
-                                Alert::TYPE_ERROR,
-                                sprintf(
-                                    __('errorFileName'),
-                                    $_POST['dateiname_' . ($i + 1) . '_' . $lang->kSprache]
-                                ),
-                                'errorFileName'
-                            );
-                            $nFehler = 1;
-                            break;
-                        }
-                    } else {
-                        $filenames[] = $tmpFileNames[$i];
-                    }
-                }
-            }
+//        foreach ($tmpPDFs as $i => $cPDFSTMP) {
+//            $pdfFiles[] = $cPDFSTMP;
+//
+//            if (mb_strlen($_POST['cPDFNames_' . $lang->kSprache]) > 0) {
+//                $regs = [];
+//                preg_match(
+//                    '/[A-Za-z0-9_-]+/',
+//                    $_POST['cPDFNames_' . $lang->kSprache],
+//                    $regs
+//                );
+//                if (mb_strlen($regs[0]) ===
+//                    mb_strlen($_POST['cPDFNames_' . $lang->kSprache])
+//                ) {
+//                    $filenames[] = $_POST['cPDFNames_' . ($i + 1) . '_' . $lang->kSprache];
+//                    unset($_POST['cPDFNames_' . ($i + 1) . '_' . $lang->kSprache]);
+//                } else {
+//                    $alertHelper->addAlert(
+//                        Alert::TYPE_ERROR,
+//                        sprintf(
+//                            __('errorFileName'),
+//                            $_POST['cPDFNames_' . ($i + 1) . '_' . $lang->kSprache]
+//                        ),
+//                        'errorFileName'
+//                    );
+//                    $hasError = true;
+//                    break;
+//                }
+//            } else {
+//                $filenames[] = $tmpFileNames[$i];
+//            }
+//        }
 
-            for ($i = 1; $i <= 3; $i++) {
-                if (isset($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'])
-                    && mb_strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
-                    && mb_strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) > 0
-                ) {
-                    if ($_FILES['pdf_' . $i . '_' . $lang->kSprache]['size'] <= 2097152) {
-                        if (!mb_strrpos($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'], ';')
-                            && !mb_strrpos($_POST['dateiname_' . $i . '_' . $lang->kSprache], ';')
-                        ) {
-                            $cPlugin = '';
-                            if ($pluginID > 0) {
-                                $cPlugin = '_' . $pluginID;
-                            }
-                            $cUploadDatei = $uploadDir . $localized->kEmailvorlage .
-                                '_' . $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
-                            if (!move_uploaded_file(
-                                $_FILES['pdf_' . $i . '_' . $lang->kSprache]['tmp_name'],
-                                $cUploadDatei
-                            )) {
-                                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileSave'), 'errorFileSave');
-                                $nFehler = 1;
-                                break;
-                            }
-                            $filenames[] = $_POST['dateiname_' . $i . '_' . $lang->kSprache];
-                            $pdfFiles[]  = $localized->kEmailvorlage . '_' .
-                                $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
-                        } else {
-                            $alertHelper->addAlert(
-                                Alert::TYPE_ERROR,
-                                __('errorFileNameMissing'),
-                                'errorFileNameMissing'
-                            );
-                            $nFehler = 1;
-                            break;
-                        }
-                    } else {
-                        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileSizeType'), 'errorFileSizeType');
-                        $nFehler = 1;
-                        break;
-                    }
-                } elseif (isset(
-                    $_FILES['pdf_' . $i . '_' . $lang->kSprache]['name'],
-                    $_POST['dateiname_' . $i . '_' . $lang->kSprache]
-                )
-                    && mb_strlen($_FILES['pdf_' . $i . '_' . $lang->kSprache]['name']) > 0
-                    && mb_strlen($_POST['dateiname_' . $i . '_' . $lang->kSprache]) === 0
-                ) {
-                    $attachmentErrors[$lang->kSprache][$i] = 1;
-                    $nFehler                               = 1;
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileNamePdfMissing'), 'errorFileNamePdfMissing');
-                    break;
-                }
-            }
-        } else {
-            $pdfFiles = bauePDFArray($localizedTPLs[$lang->kSprache]->cPDFS);
-            foreach ($pdfFiles as $i => $pdf) {
-                $j   = $i + 1;
-                $idx = 'dateiname_' . $j . '_' . $lang->kSprache;
-                if (mb_strlen($_POST['dateiname_' . $j . '_' . $lang->kSprache]) > 0
-                    && mb_strlen($pdfFiles[$j - 1]) > 0
-                ) {
-                    $regs = [];
-                    preg_match('/[A-Za-z0-9_-öäüÖÄÜß]+/u', $_POST[$idx], $regs);
-                    if (mb_strlen($regs[0]) === mb_strlen($_POST[$idx])) {
-                        $filenames[] = $_POST[$idx];
-                    } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
-                            sprintf(__('errorFileName'), $_POST[$idx]),
-                            'errorFileName'
-                        );
-                        $nFehler = 1;
-                        break;
-                    }
-                } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileNamePdfMissing'), 'errorFileNamePdfMissing');
-                    $nFehler = 1;
-                    break;
-                }
-            }
-        }
-        $localized->cDateiname   = '';
-        $localized->kSprache     = $lang->kSprache;
-        $localized->cBetreff     = $_POST['cBetreff_' . $lang->kSprache] ?? null;
-        $localized->cContentHtml = $_POST['cContentHtml_' . $lang->kSprache] ?? null;
-        $localized->cContentText = $_POST['cContentText_' . $lang->kSprache] ?? null;
-        $localized->cPDFS        = '';
-        if (count($pdfFiles) > 0) {
-            $localized->cPDFS = ';' . implode(';', $pdfFiles) . ';';
-        } elseif (isset($localizedTPLs[$lang->kSprache]->cPDFS)
-            && mb_strlen($localizedTPLs[$lang->kSprache]->cPDFS) > 0
-        ) {
-            $localized->cPDFS = $localizedTPLs[$lang->kSprache]->cPDFS;
-        }
-        if (count($filenames) > 0) {
-            $localized->cDateiname = ';' . implode(';', $filenames) . ';';
-        } elseif (isset($localizedTPLs[$lang->kSprache]->cDateiname)
-            && mb_strlen($localizedTPLs[$lang->kSprache]->cDateiname) > 0
-        ) {
-            $localized->cDateiname = $localizedTPLs[$lang->kSprache]->cDateiname;
-        }
-        if ($nFehler === 0) {
-            $db->delete(
-                $localizedTableName,
-                ['kSprache', 'kEmailvorlage'],
-                [
-                    (int)$lang->kSprache,
-                    $emailTemplateID
-                ]
-            );
-            $db->insert($localizedTableName, $localized);
-            $renderer = new SmartyRenderer(new MailSmarty($db));
-            $settings = Shopsetting::getInstance();
-            $hydrator = new TestHydrator($renderer->getSmarty(), $db, $settings);
-            try {
+//        for ($i = 1; $i <= 3; $i++) {
+//            if (isset($_FILES['cPDFS__' . $i . '_' . $lang->kSprache]['name'])
+//                && mb_strlen($_FILES['cPDFS_' . $i . '_' . $lang->kSprache]['name']) > 0
+//                && mb_strlen($_POST['cPDFNames_' . $i . '_' . $lang->kSprache]) > 0
+//            ) {
+//                if ($_FILES['cPDFS_' . $i . '_' . $lang->kSprache]['size'] <= 2097152) {
+//                    if (!mb_strrpos($_FILES['cPDFS_' . $i . '_' . $lang->kSprache]['name'], ';')
+//                        && !mb_strrpos($_POST['cPDFNames_' . $i . '_' . $lang->kSprache], ';')
+//                    ) {
+//                        $cPlugin = '';
+//                        if ($pluginID > 0) {
+//                            $cPlugin = '_' . $pluginID;
+//                        }
+//                        $cUploadDatei = $uploadDir . $localized->kEmailvorlage .
+//                            '_' . $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
+//                        if (!move_uploaded_file(
+//                            $_FILES['cPDFS_' . $i . '_' . $lang->kSprache]['tmp_name'],
+//                            $cUploadDatei
+//                        )) {
+//                            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileSave'), 'errorFileSave');
+//                            $hasError = true;
+//                            break;
+//                        }
+//                        $filenames[] = $_POST['cPDFNames_' . $i . '_' . $lang->kSprache];
+//                        $pdfFiles[]  = $localized->kEmailvorlage . '_' .
+//                            $lang->kSprache . '_' . $i . $cPlugin . '.pdf';
+//                    } else {
+//                        $alertHelper->addAlert(
+//                            Alert::TYPE_ERROR,
+//                            __('errorFileNameMissing'),
+//                            'errorFileNameMissing'
+//                        );
+//                        $hasError = true;
+//                        break;
+//                    }
+//                } else {
+//                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileSizeType'), 'errorFileSizeType');
+//                    $hasError = true;
+//                    break;
+//                }
+//            } elseif (isset(
+//                $_FILES['cPDFS_' . $i . '_' . $lang->kSprache]['name'],
+//                    $_POST['cPDFNames_' . $i . '_' . $lang->kSprache]
+//            )
+//                && mb_strlen($_FILES['cPDFS_' . $i . '_' . $lang->kSprache]['name']) > 0
+//                && mb_strlen($_POST['cPDFNames_' . $i . '_' . $lang->kSprache]) === 0
+//            ) {
+//                $attachmentErrors[$lang->kSprache][$i] = 1;
+//                $hasError                              = true;
+//                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileNamePdfMissing'), 'errorFileNamePdfMissing');
+//                break;
+//            }
+//        }
+    }
+
+    if ($hasError === false) {
+        $model      = $controller->updateTemplate($emailTemplateID, $_POST);
+        $mailSmarty = new MailSmarty($db);
+        $hydrator   = new TestHydrator($mailSmarty, $db, Shopsetting::getInstance());
+        try {
+            foreach ($availableLanguages as $lang) {
                 $hydrator->hydrate(null, $lang);
-                $id = $localized->kEmailvorlage . '_' . $lang->kSprache . '_' .
-                    ($pluginID === 0 ? $localizedTableName : $pluginID);
-                $renderer->renderHTML($id);
-                $renderer->renderText($id);
-            } catch (Exception $e) {
-                $smartyError->cText = $e->getMessage();
-                $smartyError->nCode = 1;
+                $mailSmarty->fetch('string:' . $model->getHTML($lang->kSprache));
+                $mailSmarty->fetch('string:' . $model->getText($lang->kSprache));
             }
+        } catch (Exception $e) {
+            $smartyError->cText = $e->getMessage();
+            $smartyError->nCode = 1;
         }
     }
-    $upd           = new stdClass();
-    $upd->cMailTyp = $_POST['cMailTyp'];
-    $upd->cAktiv   = $_POST['cEmailActive'];
-    $upd->nAKZ     = Request::verifyGPCDataInt('nAKZ');
-    $upd->nAGB     = Request::verifyGPCDataInt('nAGB');
-    $upd->nWRB     = Request::verifyGPCDataInt('nWRB');
-    $upd->nWRBForm = Request::verifyGPCDataInt('nWRBForm');
-    $upd->nDSE     = Request::verifyGPCDataInt('nDSE');
-    $db->update($tableName, 'kEmailvorlage', $emailTemplateID, $upd);
+
     $db->delete($settingsTableName, 'kEmailvorlage', $emailTemplateID);
     if (mb_strlen(Request::verifyGPDataString('cEmailOut')) > 0) {
         saveEmailSetting($settingsTableName, $emailTemplateID, 'cEmailOut', Request::verifyGPDataString('cEmailOut'));
@@ -377,7 +311,7 @@ if (isset($_POST['Aendern'], $emailTemplateID)
         );
     }
 
-    if ($nFehler === 1) {
+    if ($hasError === true) {
         $step = 'prebearbeiten';
     } elseif ($smartyError->nCode === 0) {
         (new Emailvorlage($emailTemplateID, $pluginID))->updateError(
@@ -389,8 +323,8 @@ if (isset($_POST['Aendern'], $emailTemplateID)
         $step     = 'uebersicht';
         $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
     } else {
-        $nFehler = 1;
-        $step    = 'prebearbeiten';
+        $hasError = true;
+        $step     = 'prebearbeiten';
         $alertHelper->addAlert(
             Alert::TYPE_ERROR,
             __('errorTemplate') . '<br />' . $smartyError->cText,
@@ -425,7 +359,7 @@ if ((($emailTemplateID > 0 && $continue === true)
             null,
             null,
             false,
-            'cPDFS, cDateiname'
+            'cPDFS, cPDFNames'
         );
         $pdfFiles      = bauePDFArray($localizedData->cPDFS);
         foreach ($pdfFiles as $pdf) {
@@ -433,9 +367,9 @@ if ((($emailTemplateID > 0 && $continue === true)
                 @unlink($uploadDir . $pdf);
             }
         }
-        $upd             = new stdClass();
-        $upd->cPDFS      = '';
-        $upd->cDateiname = '';
+        $upd            = new stdClass();
+        $upd->cPDFS     = '';
+        $upd->cPDFNames = '';
         $db->update(
             $localizedTableName,
             ['kEmailvorlage', 'kSprache'],
@@ -459,8 +393,8 @@ if ((($emailTemplateID > 0 && $continue === true)
     }
     $mailTpl = $controller->getTemplateByID($emailTemplateID);
     $smarty->assign('availableLanguages', $availableLanguages)
-           ->assign('mailConfig', $configAssoc)
-           ->assign('cUploadVerzeichnis', $uploadDir);
+        ->assign('mailConfig', $configAssoc)
+        ->assign('cUploadVerzeichnis', $uploadDir);
 }
 
 if ($step === 'uebersicht') {
@@ -477,10 +411,10 @@ if ($step === 'bearbeiten') {
     $smarty->assign('mailTemplate', $mailTpl);
 }
 $smarty->assign('kPlugin', $pluginID)
-       ->assign('cFehlerAnhang_arr', $attachmentErrors)
-       ->assign('step', $step)
-       ->assign('Einstellungen', $conf)
-       ->display('emailvorlagen.tpl');
+    ->assign('cFehlerAnhang_arr', $attachmentErrors)
+    ->assign('step', $step)
+    ->assign('Einstellungen', $conf)
+    ->display('emailvorlagen.tpl');
 
 /**
  * @param string $cPDF

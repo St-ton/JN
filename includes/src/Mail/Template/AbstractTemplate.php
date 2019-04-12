@@ -6,17 +6,15 @@
 
 namespace JTL\Mail\Template;
 
-use function Functional\first;
-use function Functional\tail;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Mail\Renderer\RendererInterface;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
+use function Functional\first;
 use function Functional\map;
-use function Functional\reindex;
+use function Functional\tail;
 
 /**
  * Class AbstractTemplate
@@ -100,31 +98,6 @@ abstract class AbstractTemplate implements TemplateInterface
     protected $config = [];
 
     /**
-     * @var array
-     */
-    protected static $mapping = [
-        'kEmailvorlage' => 'ID',
-        'cName'         => 'Name',
-        'cBeschreibung' => 'Description',
-        'cMailTyp'      => 'Type',
-        'cModulId'      => 'ModuleID',
-        'cDateiname'    => 'FileNames',
-        'cAktiv'        => 'Active',
-        'nAKZ'          => 'ShowAKZ',
-        'nAGB'          => 'ShowAGB',
-        'nWRB'          => 'ShowWRB',
-        'nWRBForm'      => 'ShowWRBForm',
-        'nFehlerhaft'   => 'HasError',
-        'nDSE'          => 'ShowDSE',
-        'kSprache'      => 'LanguageID',
-        'cBetreff'      => 'Subject',
-        'cContentHtml'  => 'HTML',
-        'cContentText'  => 'Text',
-        'cPDFS'         => 'Attachments',
-        'kPlugin'       => 'PluginID',
-    ];
-
-    /**
      * AbstractTemplate constructor.
      * @param DbInterface $db
      */
@@ -146,109 +119,15 @@ abstract class AbstractTemplate implements TemplateInterface
         $this->model           = null;
         $this->languageID      = $languageID;
         $this->customerGroupID = $customerGroupID;
-        $data                  = $this->getData();
-        if ($data === null) {
+        $this->model           = new Model($this->db);
+        $this->model           = $this->model->load($this->getID());
+        if ($this->model === null) {
             return null;
         }
-        $this->getAdditionalData($data->kEmailvorlage);
+        $this->getAdditionalData($this->model->getID());
         $this->initLegalData();
-        $this->model = new Model();
-        foreach (\get_object_vars($data) as $key => $value) {
-            if (($mapping = $this->getMapping($key)) === null) {
-                continue;
-            }
-            $method = 'set' . $mapping;
-            if (\is_array($value)) {
-                // setter with language ID
-                foreach ($value as $langID => $content) {
-                    $this->model->$method($content, $langID);
-                }
-            } else {
-                $this->model->$method($value);
-            }
-        }
 
         return $this->model;
-    }
-
-    /**
-     * @param string $type
-     * @return string|null
-     */
-    private function getMapping(string $type): ?string
-    {
-        return self::$mapping[$type] ?? null;
-    }
-
-    /**
-     * @return stdClass|null
-     */
-    protected function getData(): ?stdClass
-    {
-        if (\strpos($this->getID(), 'kPlugin') === 0) {
-            // @todo: tpluginemailvorlageeinstellungen?
-            [, $pluginID, $moduleID] = \explode('_', $this->getID());
-            $data                    = $this->db->queryPrepared(
-                'SELECT *, 0 AS nFehlerhaft
-                    FROM tpluginemailvorlage
-                    LEFT JOIN tpluginemailvorlagesprache
-                        ON tpluginemailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
-                    WHERE tpluginemailvorlage.kPlugin = :pid
-                        AND cModulId = :mid',
-                ['pid' => $pluginID, 'mid' => $moduleID],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        } else {
-            $data = $this->db->queryPrepared(
-                'SELECT *, 0 AS kPlugin
-                    FROM temailvorlage
-                    LEFT JOIN temailvorlagesprache
-                        ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE cModulId = :mid',
-                ['mid' => $this->getID()],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        }
-        if (\count($data) === 0) {
-            return null;
-        }
-        $data              = map(
-            $data,
-            function ($e) {
-                $e->kSprache      = (int)$e->kSprache;
-                $e->kPlugin       = (int)$e->kPlugin;
-                $e->kEmailvorlage = (int)$e->kEmailvorlage;
-                $e->nAKZ          = (int)$e->nAKZ;
-                $e->nAGB          = (int)$e->nAGB;
-                $e->nWRB          = (int)$e->nWRB;
-                $e->nWRBForm      = (int)$e->nWRBForm;
-                $e->nDSE          = (int)$e->nDSE;
-                $e->nFehlerhaft   = (int)$e->nFehlerhaft;
-
-                return $e;
-            }
-        );
-        $res               = first($data);
-        $res->cBetreff     = [$res->kSprache => $res->cBetreff];
-        $res->cContentHtml = [$res->kSprache => $res->cContentHtml];
-        $res->cContentText = [$res->kSprache => $res->cContentText];
-        $res->cPDFS        = [$res->kSprache => $res->cPDFS];
-        $res->cDateiname   = [$res->kSprache => $res->cDateiname];
-        foreach (tail($data) as $item) {
-            $keys = \get_object_vars($item);
-            foreach ($keys as $k => $v) {
-                if ($k === 'cBetreff'
-                    || $k === 'cContentHtml'
-                    || $k === 'cContentText'
-                    || $k === 'cPDFS'
-                    || $k === 'cDateiname'
-                ) {
-                    $res->$k[$item->kSprache] = $v;
-                }
-            }
-        }
-
-        return $res;
     }
 
     /**

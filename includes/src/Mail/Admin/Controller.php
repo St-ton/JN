@@ -6,6 +6,7 @@
 
 namespace JTL\Mail\Admin;
 
+use InvalidArgumentException;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -49,6 +50,34 @@ final class Controller
         $this->db      = $db;
         $this->factory = $factory;
         $this->config  = $config;
+    }
+
+    /**
+     * @param int   $templateID
+     * @param array $post
+     * @return Model
+     */
+    public function updateTemplate(int $templateID, array $post): Model
+    {
+        $model = $this->getTemplateByID($templateID);
+        if ($model === null) {
+            throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
+        }
+        foreach (Sprache::getAllLanguages() as $lang) {
+            $langID = $lang->kSprache;
+            foreach ($model->getMapping() as $field => $method) {
+                $method         = 'set' . $method;
+                $localizedIndex = $field . '_' . $langID;
+                if (isset($post[$field])) {
+                    $model->$method($post[$field]);
+                } elseif (isset($post[$localizedIndex])) {
+                    $model->$method($post[$localizedIndex], $langID);
+                }
+            }
+        }
+        $model->save();
+
+        return $model;
     }
 
     /**
@@ -121,27 +150,19 @@ final class Controller
     {
         $affected = 0;
         foreach (Sprache::getAllLanguages() as $lang) {
-            $path      = \PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->cISO;
-            $fileHtml  = $path . '/' . $data->cDateiname . '_html.tpl';
-            $filePlain = $path . '/' . $data->cDateiname . '_plain.tpl';
-            if (!isset($lang->cISO)
-                || !\file_exists(\PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->cISO)
-                || !\file_exists($fileHtml)
-                || !\file_exists($filePlain)
-            ) {
+            $base      = \PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->cISO . '/' . $data->cDateiname;
+            $fileHtml  = $base . '_html.tpl';
+            $filePlain = $base . '_plain.tpl';
+            if (!\file_exists($fileHtml) || !\file_exists($filePlain)) {
                 continue;
             }
             $upd               = new stdClass();
-            $html              = \file_get_contents($fileHtml);
-            $text              = \file_get_contents($filePlain);
-            $doDecodeHtml      = \function_exists('mb_detect_encoding')
-                ? (\mb_detect_encoding($html, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
-                : (Text::is_utf8($html) === 1);
-            $doDecodeText      = \function_exists('mb_detect_encoding')
-                ? (\mb_detect_encoding($text, ['UTF-8', 'ISO-8859-1', 'ISO-8859-15'], true) !== 'UTF-8')
-                : (Text::is_utf8($text) === 1);
-            $upd->cContentHtml = $doDecodeHtml === true ? Text::convertUTF8($html) : $html;
-            $upd->cContentText = $doDecodeText === true ? Text::convertUTF8($text) : $text;
+            $upd->html         = \file_get_contents($fileHtml);
+            $upd->text         = \file_get_contents($filePlain);
+            $convertHTML       = \mb_detect_encoding($upd->html, ['UTF-8'], true) !== 'UTF-8';
+            $convertText       = \mb_detect_encoding($upd->text, ['UTF-8'], true) !== 'UTF-8';
+            $upd->cContentHtml = $convertHTML === true ? Text::convertUTF8($upd->html) : $upd->html;
+            $upd->cContentText = $convertText === true ? Text::convertUTF8($upd->text) : $upd->text;
             $affected         += $this->db->update(
                 'temailvorlagesprache',
                 ['kEmailVorlage', 'kSprache'],

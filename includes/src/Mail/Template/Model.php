@@ -6,6 +6,11 @@
 
 namespace JTL\Mail\Template;
 
+use function Functional\first;
+use function Functional\map;
+use function Functional\tail;
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
@@ -19,107 +24,117 @@ final class Model
     /**
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
      */
-    protected $name;
+    private $name;
 
     /**
      * @var string
      */
-    protected $description;
+    private $description;
 
     /**
      * @var string
      */
-    protected $type;
+    private $type;
 
     /**
      * @var string
      */
-    protected $moduleID;
+    private $moduleID;
 
     /**
-     * @var array[]
+     * @var string
      */
-    protected $fileNames = [];
-
-    /**
-     * @var bool
-     */
-    protected $active = true;
+    private $fileName;
 
     /**
      * @var bool
      */
-    protected $showAKZ = true;
+    private $active = true;
 
     /**
      * @var bool
      */
-    protected $showAGB = true;
+    private $showAKZ = true;
 
     /**
      * @var bool
      */
-    protected $showWRB = true;
+    private $showAGB = true;
 
     /**
      * @var bool
      */
-    protected $showWRBForm = true;
+    private $showWRB = true;
 
     /**
      * @var bool
      */
-    protected $showDSE = true;
+    private $showWRBForm = true;
 
     /**
      * @var bool
      */
-    protected $hasError = false;
+    private $showDSE = true;
+
+    /**
+     * @var bool
+     */
+    private $hasError = false;
 
     /**
      * @var int
      */
-    protected $languageID = 0;
+    private $languageID = 0;
 
     /**
      * @var int
      */
-    protected $pluginID = 0;
+    private $pluginID = 0;
 
     /**
      * @var array
      */
-    protected $subject;
+    private $subject;
 
     /**
      * @var array
      */
-    protected $html = [];
+    private $html = [];
 
     /**
      * @var array
      */
-    protected $text = [];
+    private $text = [];
 
     /**
      * @var array
      */
-    protected $attachments = [];
+    private $attachments = [];
+
+    /**
+     * @var array
+     */
+    private $attachmentNames = [];
 
     /**
      * @var mixed
      */
-    protected $data;
+    private $data;
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
 
     /**
      * @var array
      */
-    protected static $mapping = [
+    private static $mapping = [
         'kEmailvorlage' => 'ID',
         'cName'         => 'Name',
         'cBeschreibung' => 'Description',
@@ -138,7 +153,29 @@ final class Model
         'cContentHtml'  => 'HTML',
         'cContentText'  => 'Text',
         'cPDFS'         => 'Attachments',
+        'cPDFNames'     => 'AttachmentNames',
+        'kPlugin'       => 'PluginID',
     ];
+
+    /**
+     * Model constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @param string|null $type
+     * @return string|array|null
+     */
+    public function getMapping(string $type = null)
+    {
+        return $type === null
+            ? self::$mapping
+            : self::$mapping[$type] ?? null;
+    }
 
     /**
      * @return int
@@ -151,9 +188,9 @@ final class Model
     /**
      * @param int $id
      */
-    public function setID(int $id): void
+    public function setID($id): void
     {
-        $this->id = $id;
+        $this->id = (int)$id;
     }
 
     /**
@@ -221,31 +258,19 @@ final class Model
     }
 
     /**
-     * @param int $languageID
-     * @return array
+     * @return string
      */
-    public function getFileNames(int $languageID = null): array
+    public function getFileName(): string
     {
-        return $this->fileNames[$languageID ?? Shop::getLanguageID()] ?? [];
+        return $this->fileName ?? '';
     }
 
     /**
-     * @return array
+     * @param string $fileName
      */
-    public function getAllFileNames(): array
+    public function setFileName($fileName): void
     {
-        return $this->fileNames;
-    }
-
-    /**
-     * @param array|string $fileNames
-     * @param int          $languageID
-     */
-    public function setFileNames($fileNames, int $languageID): void
-    {
-        $this->fileNames[$languageID] = \is_string($fileNames)
-            ? Text::parseSSK($fileNames)
-            : $fileNames;
+        $this->fileName = $fileName;
     }
 
     /**
@@ -376,9 +401,9 @@ final class Model
     /**
      * @param int $languageID
      */
-    public function setLanguageID(int $languageID): void
+    public function setLanguageID($languageID): void
     {
-        $this->languageID = $languageID;
+        $this->languageID = (int)$languageID;
     }
 
     /**
@@ -392,9 +417,9 @@ final class Model
     /**
      * @param int $pluginID
      */
-    public function setPluginID(int $pluginID): void
+    public function setPluginID($pluginID): void
     {
-        $this->pluginID = $pluginID;
+        $this->pluginID = (int)$pluginID;
     }
 
     /**
@@ -504,6 +529,34 @@ final class Model
     }
 
     /**
+     * @param int|null $languageID
+     * @return array|null
+     */
+    public function getAttachmentNames(int $languageID = null): ?array
+    {
+        return $this->attachmentNames[$languageID ?? Shop::getLanguageID()] ?? [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllAttachmentNames(): array
+    {
+        return $this->attachmentNames;
+    }
+
+    /**
+     * @param string|array|null $names
+     * @param int               $languageID
+     */
+    public function setAttachmentNames($names, int $languageID): void
+    {
+        $this->attachmentNames[$languageID] = \is_string($names)
+            ? Text::parseSSK($names)
+            : $names;
+    }
+
+    /**
      * @return mixed
      */
     public function getData()
@@ -517,6 +570,132 @@ final class Model
     public function setData($data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * @return int
+     */
+    public function save(): int
+    {
+        $res = 0;
+        foreach ($this->text as $langID => $text) {
+            $updates = ['id' => $this->getID(), 'lid' => $langID];
+            $sets    = [];
+            foreach (self::$mapping as $field => $method) {
+                $method          = 'get' . $method;
+                $data            = $this->$method($langID);
+                $updates[$field] = \is_array($data) ? Text::createSSK($data) : $data;
+                $sets[$field]    = $field . ' = :' . $field;
+            }
+            if ($this->getPluginID() === 0) {
+                unset($updates['kPlugin'], $sets['kPlugin']);
+            }
+            unset($updates['kEmailvorlage'], $updates['kSprache'], $sets['kEmailvorlage'], $sets['kSprache']);
+            $res += $this->db->queryPrepared(
+                'UPDATE temailvorlage a
+                    LEFT JOIN temailvorlagesprache b
+                        ON a.kEmailvorlage = b.kEmailvorlage
+                    SET ' . \implode(', ', $sets) . '
+                    WHERE a.kEmailvorlage = :id
+                        AND b.kSprache = :lid',
+                $updates,
+                ReturnType::AFFECTED_ROWS
+            );
+        }
+
+        return $res;
+    }
+
+    /**
+     * @param string $templateID
+     * @return $this|null
+     */
+    public function load(string $templateID): ?self
+    {
+        $data = $this->loadFromDB($templateID);
+        if ($data === null) {
+            return null;
+        }
+        $arrayRows = ['cBetreff', 'cContentHtml', 'cContentText', 'cPDFS', 'cPDFNames'];
+        $res       = first($data);
+        foreach (tail($data) as $item) {
+            $keys = \get_object_vars($item);
+            foreach ($keys as $k => $v) {
+                if (\in_array($k, $arrayRows, true)) {
+                    if (!\is_array($res->$k)) {
+                        $res->$k = [$res->kSprache => $res->$k];
+                    }
+                    $res->$k[$item->kSprache] = $v;
+                }
+            }
+        }
+        foreach (\get_object_vars($res) as $key => $value) {
+            if (($mapping = $this->getMapping($key)) === null) {
+                continue;
+            }
+            $method = 'set' . $mapping;
+            if (\is_array($value)) {
+                // setter with language ID
+                foreach ($value as $langID => $content) {
+                    $this->$method($content, $langID);
+                }
+            } else {
+                $this->$method($value);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $templateID
+     * @return array|null
+     */
+    private function loadFromDB(string $templateID): ?array
+    {
+        if (\strpos($templateID, 'kPlugin') === 0) {
+            // @todo: tpluginemailvorlageeinstellungen?
+            [, $pluginID, $moduleID] = \explode('_', $templateID);
+            $data                    = $this->db->queryPrepared(
+                'SELECT *, 0 AS nFehlerhaft
+                    FROM tpluginemailvorlage
+                    LEFT JOIN tpluginemailvorlagesprache
+                        ON tpluginemailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
+                    WHERE tpluginemailvorlage.kPlugin = :pid
+                        AND cModulId = :mid',
+                ['pid' => $pluginID, 'mid' => $moduleID],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        } else {
+            $data = $this->db->queryPrepared(
+                'SELECT *, 0 AS kPlugin
+                    FROM temailvorlage
+                    LEFT JOIN temailvorlagesprache
+                        ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
+                    WHERE cModulId = :mid',
+                ['mid' => $templateID],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        }
+
+        return \count($data) === 0
+            ? null
+            : map(
+                $data,
+                function ($e) {
+                    $e->kSprache      = (int)$e->kSprache;
+                    $e->kPlugin       = (int)$e->kPlugin;
+                    $e->kEmailvorlage = (int)$e->kEmailvorlage;
+                    $e->nAKZ          = (int)$e->nAKZ;
+                    $e->nAGB          = (int)$e->nAGB;
+                    $e->nWRB          = (int)$e->nWRB;
+                    $e->nWRBForm      = (int)$e->nWRBForm;
+                    $e->nDSE          = (int)$e->nDSE;
+                    $e->nFehlerhaft   = (int)$e->nFehlerhaft;
+
+                    return $e;
+                }
+            );
     }
 
     /**

@@ -27,6 +27,14 @@ class Migration_20190403115519 extends Migration implements IMigration
         $this->execute('DELETE FROM texportformat WHERE nSpecial = 1 AND kPlugin = 0');
         $this->execute('ALTER TABLE texportformat ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
         $this->execute('ALTER TABLE tpluginemailvorlage ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
+        $this->execute('ALTER TABLE temailvorlagesprache 
+            CHANGE COLUMN `cDateiname` `cPDFNames` VARCHAR(255) NULL DEFAULT NULL');
+        $this->execute('ALTER TABLE temailvorlagespracheoriginal 
+            CHANGE COLUMN `cDateiname` `cPDFNames` VARCHAR(255) NULL DEFAULT NULL');
+        $this->execute('ALTER TABLE tpluginemailvorlagesprache 
+            CHANGE COLUMN `cDateiname` `cPDFNames` VARCHAR(255) NULL DEFAULT NULL');
+        $this->execute('ALTER TABLE tpluginemailvorlagespracheoriginal
+            CHANGE COLUMN `cDateiname` `cPDFNames` VARCHAR(255) NULL DEFAULT NULL');
 
         $smarty   = new MailSmarty($this->getDB());
         $renderer = new SmartyRenderer($smarty);
@@ -45,5 +53,13 @@ class Migration_20190403115519 extends Migration implements IMigration
     {
         $this->execute('ALTER TABLE texportformat DROP COLUMN nFehlerhaft');
         $this->execute('ALTER TABLE tpluginemailvorlage DROP COLUMN nFehlerhaft');
+        $this->execute('ALTER TABLE temailvorlagesprache 
+            CHANGE COLUMN `cPDFNames` `cDateiname` VARCHAR(255) NULL DEFAULT NULL');
+        $this->execute('ALTER TABLE temailvorlagespracheoriginal 
+            CHANGE COLUMN `cPDFNames` `cDateiname` VARCHAR(255) NULL DEFAULT NULL');
+        $this->execute('ALTER TABLE tpluginemailvorlagesprache 
+            CHANGE COLUMN `cPDFNames` `cDateiname` VARCHAR(255) NULL DEFAULT NULL');
+        $this->execute('ALTER TABLE tpluginemailvorlagespracheeoriginal 
+            CHANGE COLUMN `cPDFNames` `cDateiname` VARCHAR(255) NULL DEFAULT NULL');
     }
 }

@@ -193,7 +193,7 @@
                                     (<a href="emailvorlagen.php?kEmailvorlage={$mailTemplate->getID()}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if $mailTemplate->getPluginID() > 0}&kPlugin={$mailTemplate->getPluginID()}{/if}">{__('deleteAll')}</a>)
                                 </div>
                                 <div class="for">
-                                    {foreach $mailTemplate->getFileNames($kSprache) as $cPDF}
+                                    {foreach $mailTemplate->getAttachmentNames($kSprache) as $cPDF}
                                         {assign var=i value=$cPDF@iteration-1}
                                         <div>
                                             <span class="pdf">{$cPDF}.pdf</span>
@@ -203,21 +203,21 @@
                             </div>
                         {/if}
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
-                            {$attachments = $mailTemplate->getFileNames($kSprache)}
+                            {$attachments = $mailTemplate->getAttachmentNames($kSprache)}
                             {section name=anhaenge loop=4 start=1 step=1}
                                 <div class="item well">
                                     <div class="name">
-                                        <label for="pdf_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}</label>
+                                        <label for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}</label>
                                     </div>
                                     <div class="for">
                                         {math equation="x-y" x=$smarty.section.anhaenge.index y=1 assign=loopdekr}
-                                        <label for="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}</label>
-                                        <input id="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}"
-                                           name="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}"
+                                        <label for="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}</label>
+                                        <input id="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}"
+                                           name="cPDFNames_{$kSprache}[]"
                                            type="text"
                                            value="{if isset($attachments[$loopdekr + 1])}{$attachments[$loopdekr + 1]}{/if}"
                                            class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}" />
-                                        <input id="pdf_{$smarty.section.anhaenge.index}_{$kSprache}" name="pdf_{$smarty.section.anhaenge.index}_{$kSprache}" type="file" class="form-control" maxlength="2097152" style="margin-top:5px;" />
+                                        <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="form-control" maxlength="2097152" style="margin-top:5px;" />
                                     </div>
                                 </div>
                             {/section}

@@ -82,7 +82,7 @@ class MailTemplates extends AbstractItem
                     $localizedTpl->cContentHtml  = $localized['ContentHtml'];
                     $localizedTpl->cContentText  = $localized['ContentText'];
                     $localizedTpl->cPDFS         = $localized['PDFS'] ?? null;
-                    $localizedTpl->cDateiname    = $localized['Filename'] ?? null;
+                    $localizedTpl->cPDFNames     = $localized['Filename'] ?? null;
                     if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
                         $this->db->insert('tpluginemailvorlagesprache', $localizedTpl);
                     }

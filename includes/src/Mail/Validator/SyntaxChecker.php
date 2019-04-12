@@ -48,8 +48,12 @@ final class SyntaxChecker
      * @param RendererInterface $renderer
      * @param HydratorInterface $hydrator
      */
-    public function __construct(DbInterface $db, TemplateFactory $factory, RendererInterface $renderer, HydratorInterface $hydrator)
-    {
+    public function __construct(
+        DbInterface $db,
+        TemplateFactory $factory,
+        RendererInterface $renderer,
+        HydratorInterface $hydrator
+    ) {
         $this->db       = $db;
         $this->factory  = $factory;
         $this->hydrator = $hydrator;
@@ -89,7 +93,10 @@ final class SyntaxChecker
 //        }
 //    }
 
-    public function checkAll()
+    /**
+     *
+     */
+    public function checkAll(): void
     {
         $items = \array_merge(
             $this->db->query(
@@ -107,6 +114,11 @@ final class SyntaxChecker
         }
     }
 
+    /**
+     * @param string $templateID
+     * @param int    $pluginID
+     * @return string
+     */
     public function checkSyntax(string $templateID, int $pluginID = 0): string
     {
         if ($pluginID > 0) {
@@ -114,8 +126,7 @@ final class SyntaxChecker
         }
         $template = $this->factory->getTemplate($templateID);
         if ($template === null) {
-            echo $templateID;
-            return 'null!';
+            return '';
         }
 
         foreach (Sprache::getAllLanguages() as $lang) {

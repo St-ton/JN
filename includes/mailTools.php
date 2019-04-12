@@ -467,7 +467,7 @@ function sendeMail($moduleID, $data, $mail = null)
         $mail->replyToName = $data->mail->replyToName;
     }
     if (isset($localization->cPDFS) && mb_strlen($localization->cPDFS) > 0) {
-        $mail->cPDFS_arr = getPDFAttachments($localization->cPDFS, $localization->cDateiname);
+        $mail->cPDFS_arr = getPDFAttachments($localization->cPDFS, $localization->cPDFNames);
     }
     executeHook(HOOK_MAILTOOLS_SENDEMAIL_ENDE, [
         'mailsmarty'    => &$smarty,

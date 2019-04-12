@@ -152,7 +152,7 @@ class Mail implements MailInterface
         if ($model === null) {
             throw new InvalidArgumentException('Cannot parse model for ' . $template->getID());
         }
-        $names = $model->getFileNames($this->languageID);
+        $names = $model->getAttachmentNames($this->languageID);
         foreach ($model->getAttachments($this->languageID) as $i => $attachment) {
             $this->addPdfFile($names[$i], $attachment);
         }

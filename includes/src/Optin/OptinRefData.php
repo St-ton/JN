@@ -6,6 +6,9 @@
 
 namespace JTL\Optin;
 
+use JTL\Cron\Job\GeneralDataProtect;
+use JTL\GeneralDataProtection\IpAnonymizer;
+
 /**
  * Class OptinRefData
  * @package JTL\Optin
@@ -270,7 +273,9 @@ class OptinRefData implements \Serializable
     public function anonymized(): self
     {
         $this->setEmail('anonym');
-        $this->setRealIP('-');
+        $this->setRealIP((new IpAnonymizer($this->getRealIP()))->anonymize());
+        $this->setFirstName('anonym');
+        $this->setLastName('anonym');
 
         return $this;
     }

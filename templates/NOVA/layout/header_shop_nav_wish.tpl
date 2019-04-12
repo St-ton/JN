@@ -10,17 +10,17 @@
         {/if}
         <div class="wishlist-icon-dropdown">
             {navitem tag="div"
-            aria=['expanded' => 'false']
-            data=['toggle' => 'collapse', 'target' => '#nav-wishlist-collapse']
-            id='shop-nav-wish'
-            class="d-none d-md-flex{if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}"
+                aria=['expanded' => 'false']
+                data=['toggle' => 'collapse', 'target' => '#nav-wishlist-collapse']
+                id='shop-nav-wish'
+                class="d-none d-md-flex{if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}"
             }
                 <i class='fas fa-heart'></i>
                 <sup>
                     {badge pill=true
-                    variant="primary"
-                    class="{if $wlCount === 0} d-none{/if}"
-                    id="badge-wl-count"
+                        variant="primary"
+                        class="{if $wlCount === 0} d-none{/if}"
+                        id="badge-wl-count"
                     }
                     {$wlCount}
                     {/badge}

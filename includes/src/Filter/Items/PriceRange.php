@@ -11,6 +11,7 @@ use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
+use JTL\Filter\MultiJoin;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
@@ -187,19 +188,19 @@ class PriceRange extends AbstractFilter
             : 0.0;
         $rateKeys            = \array_keys($_SESSION['Steuersatz']);
         if (Frontend::getCustomerGroup()->isMerchant()) {
-            $this->condition .= ' ROUND(LEAST((tpreise.fVKNetto * ' .
+            $this->condition .= ' ROUND(LEAST((tpreisdetail.fVKNetto * ' .
                 $conversionFactor . ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                 Frontend::getCustomerGroup()->getDiscount() . ', ' . $discount . ', 0)) / 100), ' .
-                'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
+                'IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' .
                 $conversionFactor . '))), 2)';
         } else {
             foreach ($rateKeys as $nSteuersatzKeys) {
                 $taxRate          = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $this->condition .= ' IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ', ROUND(
-                    LEAST(tpreise.fVKNetto * 
+                    LEAST(tpreisdetail.fVKNetto *
                     ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                     Frontend::getCustomerGroup()->getDiscount() . ', ' . $discount . ', 0)) / 100), ' .
-                    'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
+                    'IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' .
                     $conversionFactor . '))) * ((100 + ' . $taxRate . ') / 100), 2),';
             }
             $this->condition .= '0';
@@ -211,17 +212,17 @@ class PriceRange extends AbstractFilter
         }
         $this->condition .= ' < ' . $this->offsetEnd . ' AND ';
         if (Frontend::getCustomerGroup()->isMerchant()) {
-            $this->condition .= ' ROUND(LEAST(tpreise.fVKNetto * 
+            $this->condition .= ' ROUND(LEAST(tpreisdetail.fVKNetto *
                 ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                 Frontend::getCustomerGroup()->getDiscount() . ', ' . $discount . ', 0)) / 100), ' .
-                'IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' . $conversionFactor . '))), 2)';
+                'IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' . $conversionFactor . '))), 2)';
         } else {
             foreach ($rateKeys as $nSteuersatzKeys) {
                 $taxRate          = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                 $this->condition .= ' IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ',
-                    ROUND(LEAST(tpreise.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
+                    ROUND(LEAST(tpreisdetail.fVKNetto * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                     Frontend::getCustomerGroup()->getDiscount() . ', ' . $discount . ', 0)) / 100), 
-                    IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
+                    IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' .
                     $conversionFactor . '))) * ((100 + ' . $taxRate . ') / 100), 2),';
             }
             $this->condition .= '0';
@@ -250,12 +251,19 @@ class PriceRange extends AbstractFilter
     public function getSQLJoin()
     {
         return [
-            (new Join())
+            (new MultiJoin())
+                ->addJoin(
+                    (new Join())
+                        ->setComment('subjoin for tpreis table')
+                        ->setType('JOIN')
+                        ->setTable('tpreisdetail')
+                        ->setOn('tpreisdetail.kPreis = tpreis.kPreis AND tpreisdetail.nAnzahlAb = 0')
+                )
                 ->setComment('join1 from ' . __METHOD__)
                 ->setType('JOIN')
-                ->setTable('tpreise')
-                ->setOn('tartikel.kArtikel = tpreise.kArtikel 
-                        AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID())
+                ->setTable('tpreis')
+                ->setOn('tartikel.kArtikel = tpreis.kArtikel
+                        AND tpreis.kKundengruppe = ' . $this->getCustomerGroupID())
                 ->setOrigin(__CLASS__),
             (new Join())
                 ->setComment('join2 from ' . __METHOD__)
@@ -315,10 +323,10 @@ class PriceRange extends AbstractFilter
                 foreach ($rates as $nSteuersatzKeys) {
                     $fSteuersatz = (float)$_SESSION['Steuersatz'][$nSteuersatzKeys];
                     $sql        .= 'IF(tartikel.kSteuerklasse = ' . $nSteuersatzKeys . ',
-                        ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() .
+                        ROUND(LEAST((tpreisdetail.fVKNetto * ' . $currency->getConversionFactor() .
                         ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                         Frontend::getCustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .
-                        ', 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
+                        ', 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' .
                         $currency->getConversionFactor() . '))) * ((100 + ' . $fSteuersatz . ') / 100), 2),';
                 }
                 $sql  .= '0';
@@ -327,10 +335,10 @@ class PriceRange extends AbstractFilter
                     $sql .= ')';
                 }
             } elseif (Frontend::getCustomerGroup()->isMerchant()) {
-                $sql .= 'ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() .
+                $sql .= 'ROUND(LEAST((tpreisdetail.fVKNetto * ' . $currency->getConversionFactor() .
                     ') * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                     Frontend::getCustomerGroup()->getDiscount() . ', ' . $fKundenrabatt .
-                    ', 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
+                    ', 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' .
                     $currency->getConversionFactor() . '))), 2)';
             }
 
@@ -384,13 +392,25 @@ class PriceRange extends AbstractFilter
             ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
                         AND tsonderpreise.kKundengruppe = ' . $this->getCustomerGroupID())
             ->setOrigin(__CLASS__));
-        $sql->addJoin((new Join())
-            ->setComment('join1 from ' . __METHOD__)
-            ->setTable('tpreise')
+        $sql->addJoin((new MultiJoin())->addJoin(
+            (new Join())
+                ->setComment('subjoin for tpreis table')
+                ->setType('JOIN')
+                ->setTable('tpreisdetail')
+                ->setOn('tpreisdetail.kPreis = tpreis.kPreis AND tpreisdetail.nAnzahlAb = 0')
+        )
+        ->setComment('join1 from ' . __METHOD__)
+        ->setTable('tpreis')
+        ->setType('JOIN')
+        ->setOn('tpreis.kArtikel = tartikel.kArtikel
+                    AND tpreis.kKundengruppe = ' . $this->getCustomerGroupID())
+        ->setOrigin(__CLASS__));
+        /*$sql->addJoin((new Join())
+            ->setComment('join preisdetail from ' . __METHOD__)
             ->setType('JOIN')
-            ->setOn('tpreise.kArtikel = tartikel.kArtikel 
-                        AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID())
-            ->setOrigin(__CLASS__));
+            ->setTable('tpreisdetail')
+            ->setOn('tpreisdetail.kPreis = tpreis.kPreis AND tpreisdetail.nAnzahlAb = 0')
+            ->setOrigin(__CLASS__));*/
         $sql->addJoin((new Join())
             ->setComment('join2 from ' . __METHOD__)
             ->setTable('tartikelsichtbarkeit')
@@ -422,15 +442,15 @@ class PriceRange extends AbstractFilter
             $state->setSelect([
                 'ROUND(
                 LEAST(
-                    (tpreise.fVKNetto * ' . $currency->getConversionFactor() . ') *
+                    (tpreisdetail.fVKNetto * ' . $currency->getConversionFactor() . ') *
                     ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                 Frontend::getCustomerGroup()->getDiscount() . ', ' . $discount . ', 0)) / 100),
-                    IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
+                    IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' .
                 $currency->getConversionFactor() . '))) * ((100 + ' . $maxTaxRate . ') / 100), 2) AS fMax,
-                    ROUND(LEAST((tpreise.fVKNetto * ' . $currency->getConversionFactor() . ') *
+                    ROUND(LEAST((tpreisdetail.fVKNetto * ' . $currency->getConversionFactor() . ') *
                     ((100 - greatest(IFNULL(tartikelkategorierabatt.fRabatt, 0), ' .
                 Frontend::getCustomerGroup()->getDiscount() . ', ' . $discount . ', 0)) / 100),
-                    IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * ' .
+                    IFNULL(tsonderpreise.fNettoPreis, (tpreisdetail.fVKNetto * ' .
                 $currency->getConversionFactor() . '))) * ((100 + ' . $minTaxRate . ') / 100), 2) AS fMin'
             ]);
             $state->setOrderBy(null);

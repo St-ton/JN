@@ -17,12 +17,12 @@ abstract class OptinBase extends OptinFactory
     /**
      * action prefix
      */
-    protected const ACTIVATE_CODE = 'ac';
+    public const ACTIVATE_CODE = 'ac';
 
     /**
      * action prefix
      */
-    protected const DELETE_CODE = 'dc';
+    public const DELETE_CODE = 'dc';
 
     /**
      * @var \DateTime

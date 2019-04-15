@@ -20,10 +20,10 @@
                     <div class="panel-body">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cEmailActive">{__('emailActive')}</label>
+                                <label for="cAktiv">{__('emailActive')}</label>
                             </span>
                             <span class="input-group-wrap">
-                                <select name="cEmailActive" id="cEmailActive" class="form-control">
+                                <select name="cAktiv" id="cAktiv" class="form-control">
                                     <option value="Y"{if $mailTemplate->getActive()} selected{/if}>
                                         {__('yes')}
                                     </option>

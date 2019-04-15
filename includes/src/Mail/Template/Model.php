@@ -52,7 +52,7 @@ final class Model
     private $fileName;
 
     /**
-     * @var bool
+     * @var string
      */
     private $active = true;
 
@@ -141,7 +141,7 @@ final class Model
         'cMailTyp'      => 'Type',
         'cModulId'      => 'ModuleID',
         'cDateiname'    => 'FileName',
-        'cAktiv'        => 'Active',
+        'cAktiv'        => 'ActiveCompat',
         'nAKZ'          => 'ShowAKZ',
         'nAGB'          => 'ShowAGB',
         'nWRB'          => 'ShowWRB',
@@ -274,24 +274,40 @@ final class Model
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function getActive(): bool
+    public function getActiveCompat(): string
     {
         return $this->active;
     }
 
     /**
-     * @param bool|int $active
+     * @param bool|int|string $active
      */
-    public function setActive($active): void
+    public function setActiveCompat($active): void
     {
-        if ($active === 'N') {
-            $active = false;
-        } elseif ($active === 'Y') {
-            $active = true;
+        if ($active === false || $active === 0) {
+            $active = 'N';
+        } elseif ($active === true || $active === 1) {
+            $active = 'Y';
         }
-        $this->active = (bool)$active;
+        $this->active = $active;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getActive(): bool
+    {
+        return $this->active === 'Y';
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 
     /**
@@ -518,6 +534,14 @@ final class Model
     }
 
     /**
+     * @param array $attachments
+     */
+    public function setAllAttachments(array $attachments): void
+    {
+        $this->attachments = $attachments;
+    }
+
+    /**
      * @param string|array|null $attachments
      * @param int               $languageID
      */
@@ -543,6 +567,14 @@ final class Model
     public function getAllAttachmentNames(): array
     {
         return $this->attachmentNames;
+    }
+
+    /**
+     * @param array $names
+     */
+    public function setAllAttachmentNames(array $names): void
+    {
+        $this->attachmentNames = $names;
     }
 
     /**
@@ -582,8 +614,11 @@ final class Model
             $updates = ['id' => $this->getID(), 'lid' => $langID];
             $sets    = [];
             foreach (self::$mapping as $field => $method) {
-                $method          = 'get' . $method;
-                $data            = $this->$method($langID);
+                $method = 'get' . $method;
+                $data   = $this->$method($langID);
+                if (\is_bool($data)) {
+                    $data = (int)$data;
+                }
                 $updates[$field] = \is_array($data) ? Text::createSSK($data) : $data;
                 $sets[$field]    = $field . ' = :' . $field;
             }
@@ -692,6 +727,7 @@ final class Model
                     $e->nWRBForm      = (int)$e->nWRBForm;
                     $e->nDSE          = (int)$e->nDSE;
                     $e->nFehlerhaft   = (int)$e->nFehlerhaft;
+                    $e->cAktiv        = $e->cAktiv === 'Y';
 
                     return $e;
                 }

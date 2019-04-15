@@ -16,7 +16,6 @@ use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
-use JTL\Shop;
 use JTL\Sprache;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
@@ -117,9 +116,7 @@ final class Controller
         }
         $res = self::OK;
         foreach ($model->getAttachments($languageID) as $attachment) {
-            if (\file_exists(self::UPLOAD_DIR . $attachment) && \unlink(self::UPLOAD_DIR . $attachment)) {
-                Shop::dbg(self::UPLOAD_DIR . $attachment, false, 'OK!');
-            } else {
+            if (!(\file_exists(self::UPLOAD_DIR . $attachment) && \unlink(self::UPLOAD_DIR . $attachment))) {
                 $res = self::ERROR_DELETE;
             }
         }

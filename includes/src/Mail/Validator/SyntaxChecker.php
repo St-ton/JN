@@ -12,7 +12,6 @@ use JTL\DB\ReturnType;
 use JTL\Mail\Hydrator\HydratorInterface;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Template\TemplateFactory;
-use JTL\Shop;
 use JTL\Sprache;
 
 /**

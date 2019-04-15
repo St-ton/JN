@@ -6,16 +6,12 @@
 
 namespace JTL\Mail\Renderer;
 
-use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Mail\Mail\MailInterface;
 use JTL\Mail\Template\Plugin;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Shop;
-use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
-use JTL\Smarty\SmartyResourceNiceDB;
 
 /**
  * Class SmartyRenderer

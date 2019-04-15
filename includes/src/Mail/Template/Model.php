@@ -6,14 +6,14 @@
 
 namespace JTL\Mail\Template;
 
-use function Functional\first;
-use function Functional\map;
-use function Functional\tail;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use stdClass;
+use function Functional\first;
+use function Functional\map;
+use function Functional\tail;
 
 /**
  * Class Model

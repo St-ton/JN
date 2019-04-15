@@ -7,14 +7,10 @@
 namespace JTL\Mail\Template;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use function Functional\first;
-use function Functional\map;
-use function Functional\tail;
 
 /**
  * Class AbstractTemplate

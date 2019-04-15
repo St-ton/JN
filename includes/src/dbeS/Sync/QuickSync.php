@@ -47,49 +47,31 @@ final class QuickSync extends AbstractSync
         $products = $this->mapper->mapArray($xml['quicksync'], 'tartikel', 'mArtikelQuickSync');
         $count    = \count($products);
         if ($count < 2) {
-            $this->updateXMLinDB(
-                $xml['quicksync']['tartikel'],
-                'tpreise',
-                'mPreise',
-                'kKundengruppe',
-                'kArtikel'
-            );
-
             if (isset($xml['quicksync']['tartikel']['tpreis'])) {
                 $this->handleNewPriceFormat($xml['quicksync']['tartikel']);
-            } else {
-                $this->handleOldPriceFormat(
-                    $this->mapper->mapArray(
-                        $xml['quicksync']['tartikel'],
-                        'tpreise',
-                        'mPreise'
-                    )
-                );
             }
-            $prices = $this->mapper->mapArray($xml['quicksync']['tartikel'], 'tpreise', 'mPreise');
+            $prices = $this->mapper->mapArray($xml['quicksync']['tartikel'], 'tpreis', 'mPreis');
             foreach ($prices as $price) {
-                $this->setzePreisverlauf($price->kArtikel, $price->kKundengruppe, $price->fVKNetto);
+                if ((int)$price->kKundenGruppe > 0) {
+                    $nettoPrice = isset($price->tpreisdetail[0]) && (int)$price->tpreisdetail[0]['nAnzahlAb'] === 0
+                        ? $price->tpreisdetail[0]['fNettoPreis']
+                        : $products[0]->fStandardpreisNetto;
+                    $this->setzePreisverlauf($price->kArtikel, $price->kKundenGruppe, $nettoPrice);
+                }
             }
         } else {
             for ($i = 0; $i < $count; ++$i) {
-                $this->updateXMLinDB(
-                    $xml['quicksync']['tartikel'][$i],
-                    'tpreise',
-                    'mPreise',
-                    'kKundengruppe',
-                    'kArtikel'
-                );
                 if (isset($xml['quicksync']['tartikel'][$i]['tpreis'])) {
                     $this->handleNewPriceFormat($xml['quicksync']['tartikel'][$i]);
-                } else {
-                    $this->handleOldPriceFormat(
-                        $this->mapper->mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', 'mPreise')
-                    );
                 }
-                // Preise für Preisverlauf
-                $prices = $this->mapper->mapArray($xml['quicksync']['tartikel'][$i], 'tpreise', 'mPreise');
+                $prices = $this->mapper->mapArray($xml['quicksync']['tartikel'][$i], 'tpreis', 'mPreis');
                 foreach ($prices as $price) {
-                    $this->setzePreisverlauf($price->kArtikel, $price->kKundengruppe, $price->fVKNetto);
+                    if ((int)$price->kKundenGruppe > 0) {
+                        $nettoPrice = isset($price->tpreisdetail[0]) && (int)$price->tpreisdetail[0]['nAnzahlAb'] === 0
+                            ? $price->tpreisdetail[0]['fNettoPreis']
+                            : $products[0]->fStandardpreisNetto;
+                        $this->setzePreisverlauf($price->kArtikel, $price->kKundenGruppe, $nettoPrice);
+                    }
                 }
             }
         }

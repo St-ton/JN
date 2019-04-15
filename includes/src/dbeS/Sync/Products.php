@@ -518,12 +518,8 @@ final class Products extends AbstractSync
             );
         }
 
-        $this->updateXMLinDB($xml['tartikel'], 'tpreise', 'mPreise', 'kKundengruppe', 'kArtikel');
-
         if (isset($xml['tartikel']['tpreis'])) {
             $this->handleNewPriceFormat($xml['tartikel']);
-        } else {
-            $this->handleOldPriceFormat($this->mapper->mapArray($xml['tartikel'], 'tpreise', 'mPreise'));
         }
 
         $this->updateXMLinDB(
@@ -720,9 +716,14 @@ final class Products extends AbstractSync
             && isset($xml['tartikel']['tartikelsonderpreis'])
             && \is_array($xml['tartikel']['tartikelsonderpreis']))
         ) {
-            $prices = $this->mapper->mapArray($xml['tartikel'], 'tpreise', 'mPreise');
+            $prices = $this->mapper->mapArray($xml['tartikel'], 'tpreis', 'mPreis');
             foreach ($prices as $price) {
-                $this->setzePreisverlauf($price->kArtikel, $price->kKundengruppe, $price->fVKNetto);
+                if ((int)$price->kKundenGruppe > 0) {
+                    $nettoPrice = isset($price->tpreisdetail[0]) && (int)$price->tpreisdetail[0]['nAnzahlAb'] === 0
+                        ? $price->tpreisdetail[0]['fNettoPreis']
+                        : $products[0]->fStandardpreisNetto;
+                    $this->setzePreisverlauf($price->kArtikel, $price->kKundenGruppe, $nettoPrice);
+                }
             }
         }
         if (isset($xml['tartikel']['teigenschaft']) && \is_array($xml['tartikel']['teigenschaft'])) {
@@ -1012,7 +1013,6 @@ final class Products extends AbstractSync
         if ($id > 0) {
             $this->db->delete('tseo', ['cKey', 'kKey'], ['kArtikel', $id]);
             $this->db->delete('tartikel', 'kArtikel', $id);
-            $this->db->delete('tpreise', 'kArtikel', $id);
             $this->db->delete('tpricerange', 'kArtikel', $id);
             $this->db->delete('tkategorieartikel', 'kArtikel', $id);
             $this->db->delete('tartikelsprache', 'kArtikel', $id);
@@ -1021,6 +1021,7 @@ final class Products extends AbstractSync
             $this->deleteProductAttributes($id);
             $this->deleteProductAttributeValues($id);
             $this->deleteProductCharacteristics($id);
+            $this->deletePrices($id);
             $this->deleteSpecialPrices($id);
             $this->db->delete('txsell', 'kArtikel', $id);
             $this->db->delete('tartikelmerkmal', 'kArtikel', $id);
@@ -1237,6 +1238,24 @@ final class Products extends AbstractSync
      * @param int $productID
      * @return int
      */
+    private function deletePrices(int $productID): int
+    {
+        return $this->db->queryPrepared(
+            'DELETE p, pd
+                FROM tpreis p
+                INNER JOIN tpreisdetail pd ON pd.kPreis = p.kPreis
+                WHERE  p.kArtikel = :productID',
+            [
+                'productID' => $productID,
+            ],
+            ReturnType::AFFECTED_ROWS
+        );
+    }
+
+    /**
+     * @param int $productID
+     * @return int
+     */
     private function deleteSpecialPrices(int $productID): int
     {
         return $this->db->queryPrepared(
@@ -1244,8 +1263,8 @@ final class Products extends AbstractSync
             FROM tartikelsonderpreis asp
             LEFT JOIN tsonderpreise sp
                 ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-            WHERE asp.kArtikel = :articleID',
-            ['articleID' => $productID],
+            WHERE asp.kArtikel = :productID',
+            ['productID' => $productID],
             ReturnType::AFFECTED_ROWS
         );
     }

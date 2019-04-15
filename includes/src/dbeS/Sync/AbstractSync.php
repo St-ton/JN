@@ -320,22 +320,29 @@ abstract class AbstractSync
     }
 
     /**
-     * @param int      $kArtikel
-     * @param int      $kKundengruppe
-     * @param int|null $kKunde
+     * @param int $kArtikel
+     * @param int $kKundengruppe
+     * @param int $kKunde
      * @return mixed
      */
-    protected function handlePriceFormat(int $kArtikel, int $kKundengruppe, int $kKunde = null)
+    protected function handlePriceFormat(int $kArtikel, int $kKundengruppe, int $kKunde = 0)
     {
-        $ins                = new stdClass();
-        $ins->kArtikel      = $kArtikel;
-        $ins->kKundengruppe = $kKundengruppe;
-        if ($kKunde !== null && $kKunde > 0) {
-            $ins->kKunde = $kKunde;
-            $this->flushCustomerPriceCache($ins->kKunde);
+        if ($kKunde > 0) {
+            $this->flushCustomerPriceCache($kKunde);
         }
 
-        return $this->db->insert('tpreis', $ins);
+        return $this->db->queryPrepared(
+            'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde)
+                VALUES (:productID, :customerGroup, :customerID)
+                ON DUPLICATE KEY UPDATE
+                    kKunde = :customerID',
+            [
+                'productID'     => $kArtikel,
+                'customerGroup' => $kKundengruppe,
+                'customerID'    => $kKunde,
+            ],
+            ReturnType::DEFAULT
+        );
     }
 
     /**
@@ -385,122 +392,83 @@ abstract class AbstractSync
             return;
         }
         $productID = (int)$prices[0]->kArtikel;
-        $customers = $this->db->selectAll(
-            'tpreis',
-            ['kArtikel', 'kKundengruppe'],
-            [$productID, 0],
-            'kKunde'
-        );
-        foreach ($customers as $customer) {
-            $customerID = (int)$customer->kKunde;
-            if ($customerID > 0) {
-                $this->flushCustomerPriceCache($customerID);
-            }
-        }
-        $this->db->query(
-            'DELETE p, d
-            FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
-                ON d.kPreis = p.kPreis
-            WHERE p.kArtikel = ' . $productID,
+
+        // Delete prices and price details from not existing customer groups
+        $this->db->queryPrepared(
+            'DELETE tpreis, tpreisdetail
+                FROM tpreis
+                    INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                    LEFT JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tpreis.kKundengruppe
+                WHERE tpreis.kArtikel = :productID
+                    AND tpreis.kKundengruppe IS NULL',
+            [
+                'productID' => $productID,
+            ],
             ReturnType::DEFAULT
         );
-        $customerGroupHandled = [];
+        // Delete all prices who are not base prices
+        $this->db->queryPrepared(
+            'DELETE tpreisdetail
+                FROM tpreis
+                    INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                WHERE tpreis.kArtikel = :productID
+                    AND tpreisdetail.nAnzahlAb > 0',
+            [
+                'productID' => $productID,
+            ],
+            ReturnType::DEFAULT
+        );
+        // Insert price record for each customer group - ignore existing
+        $this->db->queryPrepared(
+            'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
+                SELECT :productID, kKundengruppe, 0
+                FROM tkundengruppe',
+            [
+                'productID' => $productID,
+            ],
+            ReturnType::DEFAULT
+        );
+        // Insert base price for each price record - update existing
+        $this->db->queryPrepared(
+            'INSERT INTO tpreisdetail (kPreis, nAnzahlAb, fVKNetto)
+                SELECT tpreis.kPreis, 0, :basePrice
+                FROM tpreis
+                WHERE tpreis.kArtikel = :productID
+                ON DUPLICATE KEY UPDATE
+                    tpreisdetail.fVKNetto = :basePrice',
+            [
+                'basePrice' => $xml['fStandardpreisNetto'],
+                'productID' => $productID,
+            ],
+            ReturnType::DEFAULT
+        );
+        // Handle price details from xml...
         foreach ($prices as $i => $price) {
-            $priceID         = $this->handlePriceFormat($price->kArtikel, $price->kKundenGruppe, (int)$price->kKunde);
-            $details         = empty($xml['tpreis'][$i])
+            $this->handlePriceFormat($price->kArtikel, $price->kKundenGruppe, (int)$price->kKunde);
+            $details = empty($xml['tpreis'][$i])
                 ? $this->mapper->mapArray($xml['tpreis'], 'tpreisdetail', 'mPreisDetail')
                 : $this->mapper->mapArray($xml['tpreis'][$i], 'tpreisdetail', 'mPreisDetail');
-            $hasDefaultPrice = false;
+
             foreach ($details as $preisdetail) {
-                $ins = (object)[
-                    'kPreis'    => $priceID,
-                    'nAnzahlAb' => $preisdetail->nAnzahlAb,
-                    'fVKNetto'  => $preisdetail->fNettoPreis
-                ];
-                $this->db->insert('tpreisdetail', $ins);
-                if ((int)$ins->nAnzahlAb === 0) {
-                    $hasDefaultPrice = true;
-                }
+                $this->db->queryPrepared(
+                    'INSERT INTO tpreisdetail (kPreis, nAnzahlAb, fVKNetto)
+                        SELECT tpreis.kPreis, :countingFrom, :nettoPrice
+                        FROM tpreis
+                        WHERE tpreis.kArtikel = :productID
+                            AND tpreis.kKundengruppe = :customerGroup
+                            AND tpreis.kKunde = :customerPrice
+                        ON DUPLICATE KEY UPDATE
+                            tpreisdetail.fVKNetto = :nettoPrice',
+                    [
+                        'countingFrom'  => $preisdetail->nAnzahlAb,
+                        'nettoPrice'    => $preisdetail->fNettoPreis,
+                        'productID'     => $productID,
+                        'customerGroup' => $price->kKundenGruppe,
+                        'customerPrice' => (int)$price->kKunde,
+                    ],
+                    ReturnType::DEFAULT
+                );
             }
-            // default price for customergroup set?
-            if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) {
-                $ins = (object)[
-                    'kPreis'    => $priceID,
-                    'nAnzahlAb' => 0,
-                    'fVKNetto'  => $xml['fStandardpreisNetto']
-                ];
-                $this->db->insert('tpreisdetail', $ins);
-            }
-            $customerGroupHandled[] = (int)$price->kKundenGruppe;
-        }
-        // any customergroups with missing tpreis node left?
-        foreach (Kundengruppe::getGroups() as $customergroup) {
-            $id = $customergroup->getID();
-            if (isset($xml['fStandardpreisNetto']) && !\in_array($id, $customerGroupHandled, true)) {
-                $priceID = $this->handlePriceFormat($productID, $id);
-                $ins     = (object)[
-                    'kPreis'    => $priceID,
-                    'nAnzahlAb' => 0,
-                    'fVKNetto'  => $xml['fStandardpreisNetto']
-                ];
-                $this->db->insert('tpreisdetail', $ins);
-            }
-        }
-    }
-
-    /**
-     * @param array $objs
-     */
-    protected function handleOldPriceFormat($objs): void
-    {
-        if (!\is_array($objs) || \count($objs) === 0) {
-            return;
-        }
-        $productID = (int)$objs[0]->kArtikel;
-        $customers = $this->db->selectAll(
-            'tpreis',
-            ['kArtikel', 'kKundengruppe'],
-            [$productID, 0],
-            'kKunde'
-        );
-        foreach ($customers as $customer) {
-            $this->flushCustomerPriceCache((int)$customer->kKunde);
-        }
-        $this->db->query(
-            'DELETE p, d
-            FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
-                ON d.kPreis = p.kPreis
-            WHERE p.kArtikel = ' . $productID,
-            ReturnType::DEFAULT
-        );
-        foreach ($objs as $obj) {
-            $priceID = $this->handlePriceFormat((int)$obj->kArtikel, (int)$obj->kKundengruppe);
-            $this->insertPriceDetail($obj, 0, $priceID);
-            for ($i = 1; $i <= 5; $i++) {
-                $this->insertPriceDetail($obj, $i, $priceID);
-            }
-        }
-    }
-
-    /**
-     * @param object $obj
-     * @param int    $index
-     * @param int    $priceId
-     */
-    protected function insertPriceDetail($obj, $index, $priceId): void
-    {
-        $count = 'nAnzahl' . $index;
-        $price = 'fPreis' . $index;
-
-        if ((isset($obj->{$count}) && (int)$obj->{$count} > 0) || $index === 0) {
-            $ins            = new stdClass();
-            $ins->kPreis    = $priceId;
-            $ins->nAnzahlAb = $index === 0 ? 0 : $obj->{$count};
-            $ins->fVKNetto  = $index === 0 ? $obj->fVKNetto : $obj->{$price};
-
-            $this->db->insert('tpreisdetail', $ins);
         }
     }
 

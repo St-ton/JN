@@ -13,7 +13,7 @@
 * nginx
   
 **Database** 
-* MySQL >= 5.0
+* MySQL >= 5.6
 * MariaDB >= 10.1
 
 **PHP**

@@ -307,7 +307,7 @@ final class Model
      */
     public function setActive(bool $active): void
     {
-        $this->active = $active;
+        $this->active = $active === true ? 'Y' : 'N';
     }
 
     /**

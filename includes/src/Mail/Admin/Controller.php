@@ -253,6 +253,7 @@ final class Controller
             }
         }
         $model->save();
+        unset($_SESSION['emailSyntaxErrorCount']);
 
         return self::OK;
     }

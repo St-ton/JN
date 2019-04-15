@@ -12,7 +12,7 @@ use JTL\DB\DbInterface;
  * Class TemplateFactory
  * @package JTL\Mail\Template
  */
-class TemplateFactory
+final class TemplateFactory
 {
     /**
      * @var DbInterface
@@ -36,9 +36,8 @@ class TemplateFactory
     public function getTemplateByID(int $id, int $pluginID = null): ?TemplateInterface
     {
         $data = $pluginID > 0
-            ? $this->db->select('tpluginemailvorlage', ['kPlugin', 'kEmailvorlage'], [$id, $pluginID])
+            ? $this->db->select('tpluginemailvorlage', ['kEmailvorlage', 'kPlugin'], [$id, $pluginID])
             : $this->db->select('temailvorlage', 'kEmailvorlage', $id);
-
         if ($data === null) {
             return null;
         }

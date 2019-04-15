@@ -16,5 +16,5 @@ rm(base, err => {
 
 module.exports = {
 	outputDir:  base,
-	publicPath: '/install'
+	publicPath: ''
 }

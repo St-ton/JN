@@ -63,16 +63,17 @@
                         <p>Drucken Sie diese Seite aus und verwahren Sie diese gut.</p>
                         <strong>Wir wünschen Ihnen viel Erfolg und Spaß mit Ihrem neuen JTL-Shop!</strong>
                     </b-alert>
-
-                    <b-btn variant="secondary" @click="print">
-                        <icon name="print"></icon> Diese Seite drucken
-                    </b-btn>
-                    <b-btn variant="primary" :href="shopURL + 'admin'">
-                        <icon name="share"></icon> Zum Backend
-                    </b-btn>
-                    <b-btn variant="secondary" :href="shopURL">
-                        <icon name="share"></icon> Zum Shop
-                    </b-btn>
+                    <span class="btn-group">
+                        <b-btn variant="secondary" @click="print">
+                            <icon name="print"></icon> Diese Seite drucken
+                        </b-btn>
+                        <b-btn variant="primary" :href="shopURL + 'admin'">
+                            <icon name="share"></icon> Zum Backend
+                        </b-btn>
+                        <b-btn variant="secondary" :href="shopURL">
+                            <icon name="share"></icon> Zum Shop
+                        </b-btn>
+                    </span>
                 </div>
             </div>
         </div>
@@ -80,23 +81,23 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex';
-    export default {
-        name:     'installationsummary',
-        data() {
-            return { };
-        },
-        computed: mapGetters({
-            wawi:      'getWawiUser',
-            admin:     'getAdminUser',
-            shopURL:   'getShopURL',
-            secretKey: 'getSecretKey'
-        }),
-        methods: {
-            print() {
-                window.print();
-                return false;
-            }
+import { mapGetters } from 'vuex';
+export default {
+    name:     'installationsummary',
+    data() {
+        return { };
+    },
+    computed: mapGetters({
+        wawi:      'getWawiUser',
+        admin:     'getAdminUser',
+        shopURL:   'getShopURL',
+        secretKey: 'getSecretKey'
+    }),
+    methods: {
+        print() {
+            window.print();
+            return false;
         }
-    };
+    }
+};
 </script>

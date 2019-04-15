@@ -7,12 +7,12 @@
 </template>
 
 <script>
-    export default {
-        name: 'pageFooter',
-        data() {
-            return { };
-        }
-    };
+export default {
+    name: 'pageFooter',
+    data() {
+        return { };
+    }
+};
 </script>
 
 <style scoped>

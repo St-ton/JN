@@ -25,7 +25,7 @@ import plugin from './helpers/plugin';
 
 Vue.use(BootstrapVue);
 Vue.use(Vuex);
-Vue.use({install: plugin});
+Vue.use({ install: plugin });
 Vue.component('icon', Icon);
 Vue.mixin(mixin);
 Vue.config.productionTip = false;

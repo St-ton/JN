@@ -30,35 +30,35 @@
 </template>
 
 <script>
-    import PageHeader from './Header';
-    import InstalledCheck from './InstalledCheck';
-    import Hello from './Hello';
-    import ServerCheck from './ServerCheck';
-    import DirectoryCheck from './DirectoryCheck';
-    import DatabaseParameters from './DatabaseParameters';
-    import AdminUser from './AdminUser';
-    import Schema from './Schema';
-    import InstallationSummary from './InstallationSummary';
-    import Wizard from './Wizard';
-    import WawiCheck from './WawiCheck';
-    import Finished from './Finished';
-    export default {
-        name:       'installer',
-        components: {
-            PageHeader,
-            InstalledCheck,
-            Hello,
-            DirectoryCheck,
-            ServerCheck,
-            DatabaseParameters,
-            AdminUser,
-            Schema,
-            InstallationSummary,
-            Wizard,
-            WawiCheck,
-            Finished
-        }
-    };
+// import PageHeader from './Header';
+import InstalledCheck from './InstalledCheck';
+import Hello from './Hello';
+import ServerCheck from './ServerCheck';
+import DirectoryCheck from './DirectoryCheck';
+import DatabaseParameters from './DatabaseParameters';
+import AdminUser from './AdminUser';
+import Schema from './Schema';
+import InstallationSummary from './InstallationSummary';
+// import Wizard from './Wizard';
+// import WawiCheck from './WawiCheck';
+// import Finished from './Finished';
+export default {
+    name:       'installer',
+    components: {
+        // PageHeader,
+        InstalledCheck,
+        Hello,
+        DirectoryCheck,
+        ServerCheck,
+        DatabaseParameters,
+        AdminUser,
+        Schema,
+        InstallationSummary
+        // Wizard,
+        // WawiCheck,
+        // Finished
+    }
+};
 </script>
 
 <style scoped>

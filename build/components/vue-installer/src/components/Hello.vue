@@ -14,10 +14,10 @@
 </template>
 
 <script>
-    export default {
-        name:  'hello',
-        data() {
-            return { };
-        }
-    };
+export default {
+    name:  'hello',
+    data() {
+        return { };
+    }
+};
 </script>

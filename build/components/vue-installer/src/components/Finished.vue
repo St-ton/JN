@@ -40,10 +40,10 @@
 </template>
 
 <script>
-    export default {
-        name: 'finished',
-        data() {
-            return { };
-        }
-    };
+export default {
+    name: 'finished',
+    data() {
+        return { };
+    }
+};
 </script>

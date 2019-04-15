@@ -6,10 +6,12 @@
  * @created Wed, 03 Apr 2019 11:55:19 +0200
  */
 
+use JTL\Exportformat;
 use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Validator\SyntaxChecker;
+use JTL\Shopsetting;
 use JTL\Smarty\MailSmarty;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
@@ -24,6 +26,7 @@ class Migration_20190403115519 extends Migration implements IMigration
 
     public function up()
     {
+        unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
         $this->execute('DELETE FROM texportformat WHERE nSpecial = 1 AND kPlugin = 0');
         $this->execute('ALTER TABLE texportformat ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
         $this->execute('ALTER TABLE tpluginemailvorlage ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
@@ -45,12 +48,13 @@ class Migration_20190403115519 extends Migration implements IMigration
             new TestHydrator($smarty, $this->getDB(), Shopsetting::getInstance())
         );
         $checker->checkAll();
-        $ef = new \JTL\Exportformat(0, $this->getDB());
+        $ef = new Exportformat(0, $this->getDB());
         $ef->checkAll();
     }
 
     public function down()
     {
+        unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
         $this->execute('ALTER TABLE texportformat DROP COLUMN nFehlerhaft');
         $this->execute('ALTER TABLE tpluginemailvorlage DROP COLUMN nFehlerhaft');
         $this->execute('ALTER TABLE temailvorlagesprache 

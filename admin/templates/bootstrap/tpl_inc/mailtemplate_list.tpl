@@ -31,6 +31,9 @@
 						</td>
 						<td class="tcenter">
 							<form method="post" action="emailvorlagen.php">
+								{if $template->getPluginID() > 0}
+									<input type="hidden" name="kPlugin" value="{$template->getPluginID()}" />
+								{/if}
 								{$jtl_token}
 								<div class="btn-group">
 									<button type="submit" name="preview" value="{$template->getID()}" class="btn btn-default mail">

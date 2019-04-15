@@ -12,6 +12,7 @@ use JTL\DB\ReturnType;
 use JTL\Mail\Hydrator\HydratorInterface;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Template\TemplateFactory;
+use JTL\Shop;
 use JTL\Sprache;
 
 /**
@@ -58,39 +59,6 @@ final class SyntaxChecker
         $this->hydrator = $hydrator;
         $this->renderer = $renderer;
     }
-
-//    /**
-//     * @param bool $error
-//     * @param bool $force
-//     * @param int $pluginID
-//     */
-//    public function updateError(bool $error = true, bool $force = false, int $pluginID = 0): void
-//    {
-//        if (Shop::getShopDatabaseVersion()->getMajor() < 5) {
-//            return;
-//        }
-//        $upd              = new \stdClass();
-//        $upd->nFehlerhaft = (int)$error;
-//        if (!$force) {
-//            $upd->cAktiv = $error ? 'N' : 'Y';
-//        }
-//        $res = $this->db->update(
-//            $pluginID > 0 ? 'tpluginemailvorlage' : 'temailvorlage',
-//            'kEmailvorlage',
-//            $this->kEmailvorlage,
-//            $upd
-//        );
-//        if ($res !== -1) {
-//            $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
-//                    'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
-//                    ReturnType::SINGLE_OBJECT
-//                )->cnt
-//                + (int)Shop::Container()->getDB()->query(
-//                    'SELECT COUNT(*) AS cnt FROM tpluginemailvorlage WHERE nFehlerhaft = 1',
-//                    ReturnType::SINGLE_OBJECT
-//                )->cnt;
-//        }
-//    }
 
     /**
      *
@@ -141,7 +109,8 @@ final class SyntaxChecker
                 $this->renderer->renderText($id);
             } catch (Exception $e) {
                 $model->setHasError(true);
-                // @todo: save to DB
+                $model->setActive(false);
+                $model->save();
 
                 return $e->getMessage();
             }

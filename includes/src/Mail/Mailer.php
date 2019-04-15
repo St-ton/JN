@@ -62,6 +62,70 @@ class Mailer
     }
 
     /**
+     * @return RendererInterface
+     */
+    public function getRenderer(): RendererInterface
+    {
+        return $this->renderer;
+    }
+
+    /**
+     * @param RendererInterface $renderer
+     */
+    public function setRenderer(RendererInterface $renderer): void
+    {
+        $this->renderer = $renderer;
+    }
+
+    /**
+     * @return HydratorInterface
+     */
+    public function getHydrator(): HydratorInterface
+    {
+        return $this->hydrator;
+    }
+
+    /**
+     * @param HydratorInterface $hydrator
+     */
+    public function setHydrator(HydratorInterface $hydrator): void
+    {
+        $this->hydrator = $hydrator;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setConfig(array $config): void
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @return ValidatorInterface
+     */
+    public function getValidator(): ValidatorInterface
+    {
+        return $this->validator;
+    }
+
+    /**
+     * @param ValidatorInterface $validator
+     */
+    public function setValidator(ValidatorInterface $validator): void
+    {
+        $this->validator = $validator;
+    }
+
+    /**
      * @return stdClass
      */
     private function getMethod(): stdClass

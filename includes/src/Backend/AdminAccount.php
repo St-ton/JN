@@ -415,18 +415,6 @@ class AdminAccount
     }
 
     /**
-     * @param int    $nAdminLoginGroup
-     * @param int    $nAdminMenuGroup
-     * @param string $keyPrefix
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getVisibleMenu(int $nAdminLoginGroup, int $nAdminMenuGroup, string $keyPrefix): array
-    {
-        return [];
-    }
-
-    /**
      *
      */
     public function redirectOnUrl(): void

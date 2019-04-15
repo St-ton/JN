@@ -6,7 +6,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Backend\Revision;
-use JTL\Emailvorlage;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Mail\Admin\Controller;
@@ -37,7 +36,6 @@ $emailTemplate       = null;
 $attachmentErrors    = [];
 $step                = 'uebersicht';
 $conf                = Shop::getSettings([CONF_EMAILS]);
-$localizedTableName  = 'temailvorlagesprache';
 $settingsTableName   = 'temailvorlageeinstellungen';
 $pluginSettingsTable = 'tpluginemailvorlageeinstellungen';
 $db                  = Shop::Container()->getDB();
@@ -54,8 +52,7 @@ $factory             = new TemplateFactory($db);
 $controller          = new Controller($db, $mailer, $factory);
 $availableLanguages  = Sprache::getAllLanguages();
 if ($pluginID > 0) {
-    $localizedTableName = 'tpluginemailvorlagesprache';
-    $settingsTableName  = 'tpluginemailvorlageeinstellungen';
+    $settingsTableName = 'tpluginemailvorlageeinstellungen';
 }
 if (isset($_GET['err'])) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplate'), 'errorTemplate');
@@ -97,7 +94,7 @@ if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
     }
 }
 if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::validateToken()) {
-    $step                     = 'uebersicht';
+    $step     = 'uebersicht';
     $revision = new Revision($db);
     $revision->addRevision('mail', $emailTemplateID, true);
 
@@ -156,7 +153,7 @@ if ((($emailTemplateID > 0 && $continue === true)
         && $_GET['a'] === 'pdfloeschen'
         && $_GET['token'] === $_SESSION['jtl_token']
     ) {
-        $languageID    = Request::verifyGPCDataInt('kS');
+        $languageID = Request::verifyGPCDataInt('kS');
         $controller->deleteAttachments($emailTemplateID, $languageID);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFileAppendixDelete'), 'successFileAppendixDelete');
     }

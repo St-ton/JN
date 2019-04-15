@@ -1,5 +1,5 @@
 <?php
-define('PFAD_ROOT', '/var/www/shop' . '/');
+define('PFAD_ROOT', dirname(__DIR__) . '/');
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
 

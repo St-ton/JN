@@ -19,7 +19,7 @@
             {block name='boxes-box-filter-characteristics-characteristics'}
                 {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 0}
                     {block name='boxes-box-filter-characteristics-select'}
-                        {dropdown variant="link" text="{lang key='selectFilter' section='global'} "}
+                        {dropdown variant="light" text="{lang key='selectFilter' section='global'} " toggle-class="btn-block text-left"}
                             {block name='boxes-box-filter-characteristics-include-characteristics-dropdown'}
                                 {include file='snippets/filter/characteristic.tpl' Merkmal=$Merkmal class="dropdown-menu"}
                             {/block}

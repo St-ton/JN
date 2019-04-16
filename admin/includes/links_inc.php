@@ -61,38 +61,38 @@ function gibLetzteBildNummer($kLink)
 }
 
 /**
- * @param string $cText
- * @param int    $kLink
+ * @param string $text
+ * @param int    $linkID
  * @return mixed
  */
-function parseText($cText, $kLink)
+function parseText($text, $linkID)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $cBild_arr          = [];
-    $nSort_arr          = [];
-    if (is_dir($cUploadVerzeichnis . $kLink)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kLink);
-        while (($Datei = readdir($DirHandle)) !== false) {
+    $uploadDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
+    $images    = [];
+    $sort      = [];
+    if (is_dir($uploadDir . $linkID)) {
+        $dirHandle = opendir($uploadDir . $linkID);
+        while (($Datei = readdir($dirHandle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = (int)mb_substr(
+                $imageNumber          = (int)mb_substr(
                     str_replace('Bild', '', $Datei),
                     0,
                     mb_strpos(str_replace('Bild', '', $Datei), '.')
                 );
-                $cBild_arr[$nBild] = $Datei;
-                $nSort_arr[]       = $nBild;
+                $images[$imageNumber] = $Datei;
+                $sort[]               = $imageNumber;
             }
         }
     }
-    usort($nSort_arr, 'cmp');
+    usort($sort, 'cmp');
 
-    foreach ($nSort_arr as $nSort) {
-        $cText = str_replace('$#Bild' . $nSort . '#$', '<img src="' .
-            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $kLink . '/' . $cBild_arr[$nSort] .
-            '" />', $cText);
+    foreach ($sort as $no) {
+        $text = str_replace('$#Bild' . $no . '#$', '<img src="' .
+            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $linkID . '/' . $images[$no] .
+            '" />', $text);
     }
 
-    return $cText;
+    return $text;
 }
 
 /**
@@ -133,7 +133,7 @@ function cmp_obj($a, $b)
  */
 function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 {
-    list($ImageBreite, $ImageHoehe) = getimagesize($cDatei);
+    [$ImageBreite, $ImageHoehe] = getimagesize($cDatei);
 
     return [$ImageBreite, $ImageHoehe];
 }
@@ -166,14 +166,13 @@ function removeLink($kLink, $kLinkgruppe = 0)
  * @param string $var
  * @return array
  */
-function getLinkVar($kLink, $var)
+function getLinkVar(int $kLink, $var)
 {
     $namen = [];
 
     if (!$kLink) {
         return $namen;
     }
-    $kLink = (int)$kLink;
     // tseo work around
     if ($var === 'cSeo') {
         $links = Shop::Container()->getDB()->query(

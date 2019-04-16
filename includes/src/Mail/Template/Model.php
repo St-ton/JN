@@ -404,6 +404,10 @@ final class Model
     public function setHasError($hasError): void
     {
         $this->hasError = (bool)$hasError;
+        if ($this->hasError) {
+            $this->setActive(false);
+        }
+
     }
 
     /**

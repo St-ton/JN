@@ -312,7 +312,7 @@ final class Controller
     {
         $this->db->delete(
             'tpluginemailvorlagesprache',
-            ['kEmailvorlage', 'kPlugin'],
+            'kEmailvorlage',
             $templateID
         );
         $this->db->queryPrepared(

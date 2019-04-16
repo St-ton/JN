@@ -39,6 +39,7 @@ class Migration_20190403115519 extends Migration implements IMigration
             $this->getDB()->delete('temailvorlagesprache', 'kEmailvorlage', $id->kEmailvorlage);
             $this->getDB()->delete('temailvorlagespracheoriginal', 'kEmailvorlage', $id->kEmailvorlage);
         }
+        $this->getDB()->delete('trevisions', 'type', 'mail');
         $this->execute("UPDATE temailvorlagesprache SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL");
         $this->execute("UPDATE temailvorlagespracheoriginal 
             SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL"

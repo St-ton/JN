@@ -14,7 +14,6 @@ use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
-use JTL\Customer\Kundengruppe;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Redirect;
@@ -203,6 +202,8 @@ abstract class AbstractSync
     /**
      * @param object $product
      * @param array  $conf
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     protected function versendeVerfuegbarkeitsbenachrichtigung($product, array $conf): void
     {
@@ -380,18 +381,16 @@ abstract class AbstractSync
      *      </tpreisdetail>
      *  </tpreis>
      *
+     * @param int   $productID
      * @param array $xml
      */
-    protected function handleNewPriceFormat(array $xml): void
+    protected function handleNewPriceFormat(int $productID, array $xml): void
     {
-        if (!\is_array($xml) || !isset($xml['tpreis'])) {
+        if (!\is_array($xml)) {
             return;
         }
-        $prices = $this->mapper->mapArray($xml, 'tpreis', 'mPreis');
-        if (\count($prices) === 0) {
-            return;
-        }
-        $productID = (int)$prices[0]->kArtikel;
+
+        $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
 
         // Delete prices and price details from not existing customer groups
         $this->db->queryPrepared(

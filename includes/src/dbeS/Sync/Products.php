@@ -518,10 +518,7 @@ final class Products extends AbstractSync
             );
         }
 
-        if (isset($xml['tartikel']['tpreis'])) {
-            $this->handleNewPriceFormat($xml['tartikel']);
-        }
-
+        $this->handleNewPriceFormat($product->kArtikel, $xml['tartikel']);
         $this->updateXMLinDB(
             $xml['tartikel'],
             'tartikelsonderpreis',

@@ -47,9 +47,7 @@ final class QuickSync extends AbstractSync
         $products = $this->mapper->mapArray($xml['quicksync'], 'tartikel', 'mArtikelQuickSync');
         $count    = \count($products);
         if ($count < 2) {
-            if (isset($xml['quicksync']['tartikel']['tpreis'])) {
-                $this->handleNewPriceFormat($xml['quicksync']['tartikel']);
-            }
+            $this->handleNewPriceFormat((int)$products[0]->kArtikel, $xml['quicksync']['tartikel']);
             $prices = $this->mapper->mapArray($xml['quicksync']['tartikel'], 'tpreis', 'mPreis');
             foreach ($prices as $price) {
                 if ((int)$price->kKundenGruppe > 0) {
@@ -61,9 +59,7 @@ final class QuickSync extends AbstractSync
             }
         } else {
             for ($i = 0; $i < $count; ++$i) {
-                if (isset($xml['quicksync']['tartikel'][$i]['tpreis'])) {
-                    $this->handleNewPriceFormat($xml['quicksync']['tartikel'][$i]);
-                }
+                $this->handleNewPriceFormat((int)$products[$i]->kArtikel, $xml['quicksync']['tartikel'][$i]);
                 $prices = $this->mapper->mapArray($xml['quicksync']['tartikel'][$i], 'tpreis', 'mPreis');
                 foreach ($prices as $price) {
                     if ((int)$price->kKundenGruppe > 0) {

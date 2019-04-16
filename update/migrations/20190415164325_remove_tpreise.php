@@ -22,6 +22,8 @@ class Migration_20190415164325 extends Migration implements IMigration
         $this->execute('DROP TABLE tpreise');
         $this->execute('DROP INDEX kArtikel ON tpreis');
         $this->execute('CREATE UNIQUE INDEX kArtikel on tpreis(kArtikel, kKundengruppe, kKunde)');
+        $this->execute('DROP INDEX kArtikel ON tpreisverlauf');
+        $this->execute('CREATE UNIQUE INDEX kArtikel on tpreisverlauf(kArtikel, kKundengruppe, dDate)');
         $this->execute('UPDATE tpreis SET kKunde = 0 WHERE kKunde IS NULL');
         $this->execute('CREATE UNIQUE INDEX kPreis_nAnzahlAb ON tpreisdetail(kPreis, nAnzahlAb)');
     }
@@ -30,6 +32,8 @@ class Migration_20190415164325 extends Migration implements IMigration
     {
         $this->execute('DROP INDEX kPreis_nAnzahlAb ON tpreisdetail');
         $this->execute('UPDATE tpreis SET kKunde = NULL WHERE kKunde = 0');
+        $this->execute('DROP INDEX kArtikel ON tpreisverlauf');
+        $this->execute('CREATE INDEX kArtikel on tpreisverlauf(kArtikel, kKundengruppe, dDate)');
         $this->execute('DROP INDEX kArtikel ON tpreis');
         $this->execute('CREATE INDEX kArtikel on tpreis(kArtikel, kKundengruppe, kKunde)');
         $this->execute(

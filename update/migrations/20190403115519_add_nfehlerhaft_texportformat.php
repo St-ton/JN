@@ -39,7 +39,25 @@ class Migration_20190403115519 extends Migration implements IMigration
             $this->getDB()->delete('temailvorlagesprache', 'kEmailvorlage', $id->kEmailvorlage);
             $this->getDB()->delete('temailvorlagespracheoriginal', 'kEmailvorlage', $id->kEmailvorlage);
         }
-        $this->getDB()->delete('trevisions', 'type', 'mail');
+        $revs = $this->getDB()->selectAll('trevisions', 'type', 'mail');
+        foreach ($revs as $rev) {
+            $update  = false;
+            $content = json_decode($rev->content);
+            if (isset($content->references)) {
+                foreach ((array)$content->references as $ref) {
+                    if (isset($ref->cDateiname)) {
+                        $update         = true;
+                        $ref->cPDFNames = $ref->cDateiname;
+                        unset($ref->cDateiname);
+                    }
+                }
+            }
+            if ($update === true) {
+                $rev->content             =\json_encode($content);
+                $rev->reference_secondary = $rev->reference_secondary ?? '_DBNULL_';
+                $this->getDB()->update('trevisions', 'id', $rev->id, $rev);
+            }
+        }
         $this->execute("UPDATE temailvorlagesprache SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL");
         $this->execute("UPDATE temailvorlagespracheoriginal 
             SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL"

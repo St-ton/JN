@@ -1,7 +1,8 @@
 {$uid = $instance->getUid()}
 
 <div id="{$uid}" {if $isPreview}{$instance->getDataAttributeString()}{/if}
-     class="flipcard {$instance->getProperty('flip-dir')}"
+     {$instance->getAnimationDataAttributeString()}
+     class="flipcard {$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}
         <button type="button" class="btn btn-default">

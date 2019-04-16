@@ -11,6 +11,9 @@ use function Functional\map;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Download;
 use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Konfigitem;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Filter\Metadata;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -1594,8 +1597,8 @@ class Artikel
      * @param int  $kKundengruppe
      * @param bool $bGetInvisibleParts
      * @return $this
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeStueckliste(int $kKundengruppe = 0, bool $bGetInvisibleParts = false): self
     {
@@ -1629,8 +1632,8 @@ class Artikel
 
     /**
      * @return $this
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeProductBundle(): self
     {
@@ -2616,7 +2619,8 @@ class Artikel
                         if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
                             && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
                             && ($oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
-                                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                                \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
                             )
                             && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
                         ) {
@@ -2626,7 +2630,8 @@ class Artikel
                         && $this->cLagerBeachten === 'Y'
                         && $this->cLagerKleinerNull === 'N'
                         && ($oVariationsWert->fLagerbestand <= 0
-                            || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                            || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                            \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
                         )
                         && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
                     ) {
@@ -3008,8 +3013,8 @@ class Artikel
      * @param int $kKundengruppe
      * @param int $kSprache
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeVariationKombiKinderAssoc(int $kKundengruppe, int $kSprache): array
     {
@@ -3103,7 +3108,8 @@ class Artikel
                 // Lieferbar?
                 if ($varCombChildren[$i]->cLagerBeachten === 'Y'
                     && ($varCombChildren[$i]->cLagerKleinerNull === 'N'
-                        || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                        || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                        \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
                     )
                     && $varCombChildren[$i]->fLagerbestand <= 0
                 ) {
@@ -3721,8 +3727,8 @@ class Artikel
      * @param int      $kSprache
      * @param bool     $noCache
      * @return null|$this
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @throws \Exception
      */
     public function fuelleArtikel(
@@ -4054,7 +4060,11 @@ class Artikel
         $this->fUVP                              = $oArtikelTMP->fUVP;
         $this->fUVPBrutto                        = $oArtikelTMP->fUVP;
         $this->fVPEWert                          = $oArtikelTMP->fVPEWert;
-        $this->cName                             = $oArtikelTMP->cName;
+        $this->cName                             = \htmlspecialchars(
+            $oArtikelTMP->cName,
+            \ENT_COMPAT | \ENT_HTML401,
+            \JTL_CHARSET
+        );
         $this->cSeo                              = $oArtikelTMP->cSeo;
         $this->cBeschreibung                     = Text::parseNewsText($oArtikelTMP->cBeschreibung);
         $this->cAnmerkung                        = $oArtikelTMP->cAnmerkung;
@@ -4323,7 +4333,8 @@ class Artikel
         if ($this->fLagerbestand <= 0
             && $this->cLagerBeachten === 'Y'
             && ($this->cLagerKleinerNull !== 'Y'
-                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
             )
             && $this->cLagerVariation !== 'Y'
         ) {
@@ -5572,7 +5583,7 @@ class Artikel
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
             foreach ($this->oKonfig_arr as $gruppe) {
-                /** @var \JTL\Extensions\Konfigitem $piece */
+                /** @var Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
                     $konfigItemArticle = $piece->getArtikel();
                     if (!empty($konfigItemArticle)) {
@@ -5753,8 +5764,8 @@ class Artikel
 
     /**
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeAehnlicheArtikel(): array
     {
@@ -5765,8 +5776,8 @@ class Artikel
      * build actual similar products
      *
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     private function buildProductsFromSimilarArticles(): array
     {
@@ -6793,8 +6804,8 @@ class Artikel
      * @since 4.06.10
      * @param bool $onlyStockRelevant
      * @return object[]
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function getAllDependentProducts(bool $onlyStockRelevant = false): array
     {

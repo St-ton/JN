@@ -6,6 +6,7 @@
  * @created Wed, 03 Apr 2019 11:55:19 +0200
  */
 
+use JTL\DB\ReturnType;
 use JTL\Exportformat;
 use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Renderer\SmartyRenderer;
@@ -27,6 +28,17 @@ class Migration_20190403115519 extends Migration implements IMigration
     public function up()
     {
         unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
+        $id = $this->getDB()->query(
+            "SELECT kEmailvorlage 
+                FROM temailvorlage 
+                WHERE cModulId = 'core_jtl_rma_submitted'",
+            ReturnType::SINGLE_OBJECT
+        );
+        if (isset($id->kEmailvorlage)) {
+            $this->getDB()->delete('temailvorlage', 'kEmailvorlage', $id->kEmailvorlage);
+            $this->getDB()->delete('temailvorlagesprache', 'kEmailvorlage', $id->kEmailvorlage);
+            $this->getDB()->delete('temailvorlagespracheoriginal', 'kEmailvorlage', $id->kEmailvorlage);
+        }
         $this->execute("UPDATE temailvorlagesprache SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL");
         $this->execute("UPDATE temailvorlagespracheoriginal 
             SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL"

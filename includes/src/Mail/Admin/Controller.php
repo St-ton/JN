@@ -392,8 +392,8 @@ final class Controller
             $upd               = new stdClass();
             $upd->cContentHtml = \file_get_contents($fileHtml);
             $upd->cContentText = \file_get_contents($filePlain);
-            $convertHTML       = \mb_detect_encoding($upd->html, ['UTF-8'], true) !== 'UTF-8';
-            $convertText       = \mb_detect_encoding($upd->text, ['UTF-8'], true) !== 'UTF-8';
+            $convertHTML       = \mb_detect_encoding($upd->cContentHtml, ['UTF-8'], true) !== 'UTF-8';
+            $convertText       = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
             $upd->cContentHtml = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
             $upd->cContentText = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
             $affected         += $this->db->update(

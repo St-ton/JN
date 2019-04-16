@@ -4,31 +4,33 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
+use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkInterface;
 use JTL\Shop;
 
 /**
- * @param \JTL\Link\LinkGroupInterface $linkGroup
- * @param int                          $kVaterLink
- * @return \Illuminate\Support\Collection
+ * @param LinkGroupInterface $linkGroup
+ * @param int                $parentLinkID
+ * @return Collection
  */
-function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
+function build_navigation_subs_admin($linkGroup, $parentLinkID = 0)
 {
-    $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Illuminate\Support\Collection();
-    $lh         = Shop::Container()->getLinkService();
+    $parentLinkID = (int)$parentLinkID;
+    $collection   = new Collection();
+    $service      = Shop::Container()->getLinkService();
     foreach ($linkGroup->getLinks() as $link) {
-        $link->setLevel(count($lh->getParentIDs($link->getID())));
+        $link->setLevel(count($service->getParentIDs($link->getID())));
         /** @var \JTL\Link\Link $link */
-        if ($link->getParent() !== $kVaterLink) {
+        if ($link->getParent() !== $parentLinkID) {
             continue;
         }
         $link->setChildLinks(build_navigation_subs_admin($linkGroup, $link->getID()));
-        $oNew_arr->push($link);
+        $collection->push($link);
     }
 
-    return $oNew_arr;
+    return $collection;
 }
 
 /**

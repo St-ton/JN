@@ -653,13 +653,13 @@ final class Model
         }
         $arrayRows = ['cBetreff', 'cContentHtml', 'cContentText', 'cPDFS', 'cPDFNames'];
         $res       = first($data);
+        foreach ($arrayRows as $row) {
+            $res->$row = [$res->kSprache => $res->$row];
+        }
         foreach (tail($data) as $item) {
             $keys = \get_object_vars($item);
             foreach ($keys as $k => $v) {
                 if (\in_array($k, $arrayRows, true)) {
-                    if (!\is_array($res->$k)) {
-                        $res->$k = [$res->kSprache => $res->$k];
-                    }
                     $res->$k[$item->kSprache] = $v;
                 }
             }

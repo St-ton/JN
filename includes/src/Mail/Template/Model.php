@@ -407,7 +407,6 @@ final class Model
         if ($this->hasError) {
             $this->setActive(false);
         }
-
     }
 
     /**

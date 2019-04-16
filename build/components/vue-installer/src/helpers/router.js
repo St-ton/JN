@@ -9,6 +9,7 @@ export default new Router({
         {
             path:      '/',
             name:      'Installer',
+            base:      '/install',
             component: Installer
         }
     ]

@@ -63,7 +63,7 @@ class Migration_20190403115519 extends Migration implements IMigration
             CHANGE COLUMN `cPDFNames` `cDateiname` VARCHAR(255) NULL DEFAULT NULL');
         $this->execute('ALTER TABLE tpluginemailvorlagesprache 
             CHANGE COLUMN `cPDFNames` `cDateiname` VARCHAR(255) NULL DEFAULT NULL');
-        $this->execute('ALTER TABLE tpluginemailvorlagespracheeoriginal 
+        $this->execute('ALTER TABLE tpluginemailvorlagespracheoriginal 
             CHANGE COLUMN `cPDFNames` `cDateiname` VARCHAR(255) NULL DEFAULT NULL');
     }
 }

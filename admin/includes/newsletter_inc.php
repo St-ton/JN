@@ -87,7 +87,7 @@ function versendeNewsletter(
         $oKundengruppe = Shop::Container()->getDB()->query(
             'SELECT tkundengruppe.nNettoPreise
                 FROM tkunde
-                JOIN tkundengruppe 
+                JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
                 WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
             ReturnType::SINGLE_OBJECT
@@ -858,9 +858,9 @@ function getNewsletterEmpfaenger(int $kNewsletter)
     $recipients = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
-            LEFT JOIN tsprache 
+            LEFT JOIN tsprache
                 ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-            LEFT JOIN tkunde 
+            LEFT JOIN tkunde
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
             WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
                 AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
@@ -914,15 +914,15 @@ function holeAbonnentenAnzahl($cAktiveSucheSQL): int
 function holeAbonnenten($cSQL, $cAktiveSucheSQL): array
 {
     return Shop::Container()->getDB()->query(
-        "SELECT tnewsletterempfaenger.*, 
+        "SELECT tnewsletterempfaenger.*,
             DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
-            DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de, 
-            tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp, 
+            DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
+            tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp,
             DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
             FROM tnewsletterempfaenger
-            LEFT JOIN tkunde 
+            LEFT JOIN tkunde
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            LEFT JOIN tkundengruppe 
+            LEFT JOIN tkundengruppe
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             LEFT JOIN tnewsletterempfaengerhistory
                 ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
@@ -1061,14 +1061,14 @@ function gibAbonnent($post)
         $cSQL .= "tnewsletterempfaenger.cEmail LIKE '%" . strip_tags($db->realEscape($cEmail)) . "%'";
     }
     $oAbonnent = $db->query(
-        "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname, 
-            tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname, 
-            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName, 
+        "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname,
+            tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname,
+            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName,
             DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterempfaenger
-            JOIN tkunde 
+            JOIN tkunde
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            JOIN tkundengruppe 
+            JOIN tkundengruppe
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE " . $cSQL . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC',

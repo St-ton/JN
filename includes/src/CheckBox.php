@@ -10,10 +10,14 @@ use InvalidArgumentException;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Link\Link;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinNewsletter;
+use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
 use stdClass;
 
@@ -141,8 +145,8 @@ class CheckBox
         }
         $db       = Shop::Container()->getDB();
         $checkbox = $db->queryPrepared(
-            "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE 
-                FROM tcheckbox 
+            "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
+                FROM tcheckbox
                 WHERE kCheckBox = :cbid",
             ['cbid' => $id],
             ReturnType::SINGLE_OBJECT
@@ -379,8 +383,8 @@ class CheckBox
             $sql = ' WHERE nAktiv = 1';
         }
         $ids = Shop::Container()->getDB()->query(
-            'SELECT kCheckBox 
-                FROM tcheckbox' . $sql . ' 
+            'SELECT kCheckBox
+                FROM tcheckbox' . $sql . '
                 ORDER BY nSort ' . $limitSQL,
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -398,7 +402,7 @@ class CheckBox
     public function getAllCheckBoxCount(bool $bAktiv = false): int
     {
         return (int)Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS nAnzahl 
+            'SELECT COUNT(*) AS nAnzahl
                 FROM tcheckbox' . ($bAktiv ? ' WHERE nAktiv = 1' : ''),
             ReturnType::SINGLE_OBJECT
         )->nAnzahl;
@@ -450,7 +454,7 @@ class CheckBox
         Shop::Container()->getDB()->query(
             'DELETE tcheckbox, tcheckboxsprache
                 FROM tcheckbox
-                LEFT JOIN tcheckboxsprache 
+                LEFT JOIN tcheckboxsprache
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
                 WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')',
             ReturnType::AFFECTED_ROWS
@@ -466,8 +470,8 @@ class CheckBox
     public function getCheckBoxFunctions(): array
     {
         return Shop::Container()->getDB()->query(
-            'SELECT * 
-                FROM tcheckboxfunktion 
+            'SELECT *
+                FROM tcheckboxfunktion
                 ORDER BY cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -543,23 +547,30 @@ class CheckBox
     }
 
     /**
-     * @param object $customer
+     * @param $customer
      * @return bool
+     * @throws \Exception
      */
     private function sfCheckBoxNewsletter($customer): bool
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'newsletter_inc.php';
-
         if (!\is_object($customer)) {
             return false;
         }
-        $oKundeTMP            = new stdClass();
-        $oKundeTMP->cAnrede   = $customer->cAnrede;
-        $oKundeTMP->cVorname  = $customer->cVorname;
-        $oKundeTMP->cNachname = $customer->cNachname;
-        $oKundeTMP->cEmail    = $customer->cMail;
-
-        \fuegeNewsletterEmpfaengerEin($oKundeTMP);
+        $refData = (new OptinRefData())
+            ->setSalutation($customer->cAnrede)
+            ->setFirstName($customer->cVorname)
+            ->setLastName($customer->cNachname)
+            ->setEmail($customer->cMail)
+            ->setLanguageID(Shop::getLanguage())
+            ->setRealIP(Request::getRealIP());
+        try {
+            (new Optin(OptinNewsletter::class))
+                ->getOptinInstance()
+                ->createOptin($refData)
+                ->sendActivationMail();
+        } catch (\Exception $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+        }
 
         return true;
     }

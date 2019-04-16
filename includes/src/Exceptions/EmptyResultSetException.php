@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -18,8 +18,8 @@ class EmptyResultSetException extends Exception
      * EmptyResultSetException constructor.
      * @param string $message
      */
-    public function __construct($message)
+    public function __construct(string $message)
     {
-        parent::__construct($this->file . ': ' . $message);
+        parent::__construct(\str_replace(PFAD_ROOT, '', $this->file) . ': ' . $message);
     }
 }

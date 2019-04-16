@@ -47,6 +47,8 @@ function unique_NewsletterCode($dbfeld, $code): bool
  * @param Kunde|stdClass $customer
  * @param bool           $validate
  * @return stdClass
+ * @throws Exception
+ * @deprecated since 5.0.0
  */
 function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 {
@@ -88,7 +90,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($recipient->cEmail) && mb_strlen($recipient->cEmail) > 0)
+            if ((isset($recipient->cEmail) && $recipient->cEmail !== '')
                 || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
             ) {
                 $alertHelper->addAlert(

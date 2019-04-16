@@ -301,8 +301,8 @@ final class Products extends AbstractSync
                 "INSERT INTO tseo
                 SELECT tartikel.cSeo, 'kArtikel', tartikel.kArtikel, tsprache.kSprache
                 FROM tartikel, tsprache
-                WHERE tartikel.kArtikel = " . (int)$products[0]->kArtikel . " 
-                    AND tsprache.cStandard = 'Y' 
+                WHERE tartikel.kArtikel = " . (int)$products[0]->kArtikel . "
+                    AND tsprache.cStandard = 'Y'
                     AND tartikel.cSeo != ''",
                 ReturnType::AFFECTED_ROWS
             );
@@ -557,8 +557,8 @@ final class Products extends AbstractSync
             $this->db->query(
                 'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
-                    (SELECT SUM(fLagerbestand) 
-                        FROM tartikel 
+                    (SELECT SUM(fLagerbestand)
+                        FROM tartikel
                         WHERE kVaterartikel = ' . (int)$products[0]->kArtikel . '
                      ) AS x
                  )
@@ -573,8 +573,8 @@ final class Products extends AbstractSync
             $this->db->query(
                 'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
-                    (SELECT SUM(fLagerbestand) 
-                        FROM tartikel 
+                    (SELECT SUM(fLagerbestand)
+                        FROM tartikel
                         WHERE kVaterartikel = ' . (int)$products[0]->kVaterArtikel . '
                     ) AS x
                 )
@@ -616,7 +616,7 @@ final class Products extends AbstractSync
                         }
                         $this->db->query(
                             'DELETE
-                            FROM teigenschaftkombiwert 
+                            FROM teigenschaftkombiwert
                             WHERE kEigenschaftKombi IN (' . \implode(',', $itemIDs) . ')',
                             ReturnType::AFFECTED_ROWS
                         );
@@ -954,7 +954,7 @@ final class Products extends AbstractSync
             $this->db->queryPrepared(
                 'DELETE teigenschaftkombiwert
                     FROM teigenschaftkombiwert
-                    JOIN tartikel 
+                    JOIN tartikel
                         ON tartikel.kArtikel = :pid
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
                 ['pid' => $productID],
@@ -1291,7 +1291,7 @@ final class Products extends AbstractSync
             $maxDiscount = $this->db->queryPrepared(
                 'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                 FROM tkategoriekundengruppe
-                JOIN tkategorieartikel 
+                JOIN tkategorieartikel
                     ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
                     AND tkategorieartikel.kArtikel = :kArtikel
                 LEFT JOIN tkategoriesichtbarkeit
@@ -1341,8 +1341,8 @@ final class Products extends AbstractSync
             $configGroupIDs[] = (int)$_configItem->kKonfiggruppe;
         }
         $parents = $this->db->query(
-            'SELECT kArtikel 
-            FROM tartikelkonfiggruppe 
+            'SELECT kArtikel
+            FROM tartikelkonfiggruppe
             WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -1401,9 +1401,9 @@ final class Products extends AbstractSync
         if (\count($deps) > 0) {
             // flush cache tags associated with the product's manufacturer ID
             $manufacturers = $this->db->query(
-                'SELECT DISTINCT kHersteller 
-                FROM tartikel 
-                WHERE kArtikel IN (' . \implode(',', $deps) . ') 
+                'SELECT DISTINCT kHersteller
+                FROM tartikel
+                WHERE kArtikel IN (' . \implode(',', $deps) . ')
                     AND kHersteller > 0',
                 ReturnType::ARRAY_OF_OBJECTS
             );

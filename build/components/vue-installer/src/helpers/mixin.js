@@ -1,4 +1,4 @@
-import {mapGetters} from 'vuex';
+import { mapGetters } from 'vuex';
 import store from './store';
 import Continue from '../components/Continue';
 import Jumbotron from '../components/Jumbotron';
@@ -14,11 +14,11 @@ export default {
                 'Datenbankdaten',
                 'Adminnutzer',
                 'Schema',
-                'Abschluss',
-                'Wawi-Abgleich',
-                'Globale Einstellungen',
-                'Formulare',
-                'Weiterführende Links'
+                'Abschluss'
+                // 'Wawi-Abgleich',
+                // 'Globale Einstellungen',
+                // 'Formulare',
+                // 'Weiterführende Links'
             ]
         };
     },

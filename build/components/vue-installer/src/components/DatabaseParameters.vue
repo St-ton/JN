@@ -69,44 +69,44 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    import qs from 'qs';
-    export default {
-        name: 'databaseparameters',
-        data() {
-            let msg   = null,
-                error = null;
-            return {
-                db: {
-                    host:   'localhost',
-                    pass:   '',
-                    socket: '',
-                    user:   '',
-                    name:   '',
-                },
-                installDemoData: false,
-                error,
-                msg
-            };
-        },
-        methods: {
-            checkCredentials(db) {
-                axios.post(this.$getApiUrl('credentialscheck'), qs.stringify(db))
-                    .then(response => {
-                        this.msg = response.data.msg;
-                        this.error = response.data.error;
-                        this.$store.commit('setDBCredentials', db);
-                        this.$store.commit('setDoInstallDemoData', this.installDemoData);
-                    })
-                    .catch(error => {
-                        this.msg   = error.response
-                            ? error.response
-                            : `URL ${this.$getApiUrl('credentialscheck')} nicht erreichbar.`;
-                        this.error = true;
-                    });
-            }
+import axios from 'axios';
+import qs from 'qs';
+export default {
+    name: 'databaseparameters',
+    data() {
+        let msg   = null,
+            error = null;
+        return {
+            db: {
+                host:   'localhost',
+                pass:   '',
+                socket: '',
+                user:   '',
+                name:   ''
+            },
+            installDemoData: false,
+            error,
+            msg
+        };
+    },
+    methods: {
+        checkCredentials(db) {
+            axios.post(this.$getApiUrl('credentialscheck'), qs.stringify(db))
+                .then(response => {
+                    this.msg = response.data.msg;
+                    this.error = response.data.error;
+                    this.$store.commit('setDBCredentials', db);
+                    this.$store.commit('setDoInstallDemoData', this.installDemoData);
+                })
+                .catch(error => {
+                    this.msg = error.response
+                        ? error.response
+                        : `URL ${this.$getApiUrl('credentialscheck')} nicht erreichbar.`;
+                    this.error = true;
+                });
         }
-    };
+    }
+};
 </script>
 <style scoped>
     .input-group-addon.fixed-addon {

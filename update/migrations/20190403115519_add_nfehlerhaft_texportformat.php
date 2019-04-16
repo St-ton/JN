@@ -27,6 +27,10 @@ class Migration_20190403115519 extends Migration implements IMigration
     public function up()
     {
         unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
+        $this->execute("UPDATE temailvorlagesprache SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL");
+        $this->execute("UPDATE temailvorlagespracheoriginal 
+            SET cBetreff = '' WHERE kEmailvorlage > 0 AND cBetreff IS NULL"
+        );
         $this->execute('DELETE FROM texportformat WHERE nSpecial = 1 AND kPlugin = 0');
         $this->execute('ALTER TABLE texportformat ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');
         $this->execute('ALTER TABLE tpluginemailvorlage ADD COLUMN nFehlerhaft TINYINT(1) DEFAULT 0');

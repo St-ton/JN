@@ -390,12 +390,12 @@ final class Controller
                 continue;
             }
             $upd               = new stdClass();
-            $upd->html         = \file_get_contents($fileHtml);
-            $upd->text         = \file_get_contents($filePlain);
+            $upd->cContentHtml = \file_get_contents($fileHtml);
+            $upd->cContentText = \file_get_contents($filePlain);
             $convertHTML       = \mb_detect_encoding($upd->html, ['UTF-8'], true) !== 'UTF-8';
             $convertText       = \mb_detect_encoding($upd->text, ['UTF-8'], true) !== 'UTF-8';
-            $upd->cContentHtml = $convertHTML === true ? Text::convertUTF8($upd->html) : $upd->html;
-            $upd->cContentText = $convertText === true ? Text::convertUTF8($upd->text) : $upd->text;
+            $upd->cContentHtml = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
+            $upd->cContentText = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
             $affected         += $this->db->update(
                 'temailvorlagesprache',
                 ['kEmailVorlage', 'kSprache'],

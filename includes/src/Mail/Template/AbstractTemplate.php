@@ -11,6 +11,7 @@ use JTL\Helpers\Text;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class AbstractTemplate
@@ -156,11 +157,16 @@ abstract class AbstractTemplate implements TemplateInterface
         $wrb                   = new stdClass();
         $wrbForm               = new stdClass();
         $dse                   = new stdClass();
-        $data                  = $this->db->select(
+        $data                  = $this->db->selectAll(
             'ttext',
-            ['kSprache', 'kKundengruppe'],
-            [$this->languageID, $this->customerGroupID]
+            ['kKundengruppe'],
+            [$this->customerGroupID]
         );
+        $data                  = first(
+            $data,
+            function ($e) {
+                return (int)$e->kSprache === $this->languageID;
+            }) ?? first($data);
         $agb->cContentText     = $this->sanitizeText($data->cAGBContentText);
         $agb->cContentHtml     = $this->sanitizeText($data->cAGBContentHtml);
         $wrb->cContentText     = $this->sanitizeText($data->cWRBContentText);

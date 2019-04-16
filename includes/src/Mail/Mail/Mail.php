@@ -119,7 +119,6 @@ class Mail implements MailInterface
     public function __construct()
     {
         $this->initDefaults();
-        $this->getLanguage();
     }
 
     /**
@@ -152,11 +151,11 @@ class Mail implements MailInterface
         if ($model === null) {
             throw new InvalidArgumentException('Cannot parse model for ' . $template->getID());
         }
-        $names = $model->getFileNames();
-        foreach ($model->getAttachments() as $i => $attachment) {
+        $names = $model->getAttachmentNames($this->languageID);
+        foreach ($model->getAttachments($this->languageID) as $i => $attachment) {
             $this->addPdfFile($names[$i], $attachment);
         }
-        $this->setSubject($model->getSubject());
+        $this->setSubject($model->getSubject($this->languageID));
         $this->setLanguageCode(Sprache::getIsoFromLangID($model->getLanguageID())->cISO);
         $this->fromName       = $template->getFromName() ?? $this->fromName;
         $this->fromMail       = $template->getFromMail() ?? $this->fromMail;
@@ -211,15 +210,15 @@ class Mail implements MailInterface
         if ($this->languageID !== null && $this->languageCode !== null) {
             return (object)['kSprache' => $this->getLanguageID(), 'cISO' => $this->getLanguageCode()];
         }
-        if (isset($_SESSION['currentLanguage']->kSprache)) {
-            return $_SESSION['currentLanguage'];
-        }
         $allLanguages = Sprache::getAllLanguages(1);
         if (isset($this->data->tkunde->kSprache) && $this->data->tkunde->kSprache > 0) {
             return $allLanguages[(int)$this->data->tkunde->kSprache];
         }
         if (isset($this->data->NewsletterEmpfaenger->kSprache) && $this->data->NewsletterEmpfaenger->kSprache > 0) {
             return $allLanguages[(int)$this->data->NewsletterEmpfaenger->kSprache];
+        }
+        if (isset($_SESSION['currentLanguage']->kSprache)) {
+            return $_SESSION['currentLanguage'];
         }
 
         return isset($_SESSION['kSprache'])

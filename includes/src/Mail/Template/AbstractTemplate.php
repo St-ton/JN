@@ -7,13 +7,11 @@
 namespace JTL\Mail\Template;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use function Functional\map;
-use function Functional\reindex;
+use function Functional\first;
 
 /**
  * Class AbstractTemplate
@@ -97,31 +95,6 @@ abstract class AbstractTemplate implements TemplateInterface
     protected $config = [];
 
     /**
-     * @var array
-     */
-    protected static $mapping = [
-        'kEmailvorlage' => 'ID',
-        'cName'         => 'Name',
-        'cBeschreibung' => 'Description',
-        'cMailTyp'      => 'Type',
-        'cModulId'      => 'ModuleID',
-        'cDateiname'    => 'FileNames',
-        'cAktiv'        => 'Active',
-        'nAKZ'          => 'ShowAKZ',
-        'nAGB'          => 'ShowAGB',
-        'nWRB'          => 'ShowWRB',
-        'nWRBForm'      => 'ShowWRBForm',
-        'nFehlerhaft'   => 'HasError',
-        'nDSE'          => 'ShowDSE',
-        'kSprache'      => 'LanguageID',
-        'cBetreff'      => 'Subject',
-        'cContentHtml'  => 'HTML',
-        'cContentText'  => 'Text',
-        'cPDFS'         => 'Attachments',
-        'kPlugin'       => 'PluginID',
-    ];
-
-    /**
      * AbstractTemplate constructor.
      * @param DbInterface $db
      */
@@ -143,81 +116,15 @@ abstract class AbstractTemplate implements TemplateInterface
         $this->model           = null;
         $this->languageID      = $languageID;
         $this->customerGroupID = $customerGroupID;
-        $data                  = $this->getData()[$languageID] ?? null;
-        if ($data === null) {
+        $this->model           = new Model($this->db);
+        $this->model           = $this->model->load($this->getID());
+        if ($this->model === null) {
             return null;
         }
-        $this->getAdditionalData($data->kEmailvorlage);
+        $this->getAdditionalData($this->model->getID());
         $this->initLegalData();
-        $this->model = new Model();
-        foreach (\get_object_vars($data) as $key => $value) {
-            if (($mapping = $this->getMapping($key)) === null) {
-                continue;
-            }
-            $method = 'set' . $mapping;
-            $this->model->$method($value);
-        }
 
         return $this->model;
-    }
-
-    /**
-     * @param string $type
-     * @return string|null
-     */
-    private function getMapping(string $type): ?string
-    {
-        return self::$mapping[$type] ?? null;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getData(): array
-    {
-        if (\strpos($this->getID(), 'kPlugin') === 0) {
-            // @todo: tpluginemailvorlageeinstellungen?
-            [, $pluginID, $moduleID] = \explode('_', $this->getID());
-            $data                    = $this->db->queryPrepared(
-                'SELECT *, 0 AS nFehlerhaft
-                    FROM tpluginemailvorlage
-                    LEFT JOIN tpluginemailvorlagesprache
-                        ON tpluginemailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
-                    WHERE tpluginemailvorlage.kPlugin = :pid
-                        AND cModulId = :mid',
-                ['pid' => $pluginID, 'mid' => $moduleID],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        } else {
-            $data = $this->db->queryPrepared(
-                'SELECT *, 0 AS kPlugin
-                    FROM temailvorlage
-                    LEFT JOIN temailvorlagesprache
-                        ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE cModulId = :mid',
-                ['mid' => $this->getID()],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        }
-
-        return map(
-            reindex($data, function ($e) {
-                return (int)$e->kSprache;
-            }),
-            function ($e) {
-                $e->kSprache      = (int)$e->kSprache;
-                $e->kPlugin       = (int)$e->kPlugin;
-                $e->kEmailvorlage = (int)$e->kEmailvorlage;
-                $e->nAKZ          = (int)$e->nAKZ;
-                $e->nAGB          = (int)$e->nAGB;
-                $e->nWRB          = (int)$e->nWRB;
-                $e->nWRBForm      = (int)$e->nWRBForm;
-                $e->nDSE          = (int)$e->nDSE;
-                $e->nFehlerhaft   = (int)$e->nFehlerhaft;
-
-                return $e;
-            }
-        );
     }
 
     /**
@@ -250,11 +157,17 @@ abstract class AbstractTemplate implements TemplateInterface
         $wrb                   = new stdClass();
         $wrbForm               = new stdClass();
         $dse                   = new stdClass();
-        $data                  = $this->db->select(
+        $data                  = $this->db->selectAll(
             'ttext',
-            ['kSprache', 'kKundengruppe'],
-            [$this->languageID, $this->customerGroupID]
+            ['kKundengruppe'],
+            [$this->customerGroupID]
         );
+        $data                  = first(
+            $data,
+            function ($e) {
+                return (int)$e->kSprache === $this->languageID;
+            }
+        ) ?? first($data);
         $agb->cContentText     = $this->sanitizeText($data->cAGBContentText);
         $agb->cContentHtml     = $this->sanitizeText($data->cAGBContentHtml);
         $wrb->cContentText     = $this->sanitizeText($data->cWRBContentText);
@@ -280,11 +193,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     private function sanitizeText(?string $text): string
     {
-        if ($text === null || \mb_strlen(\strip_tags($text)) === 0) {
-            return '';
-        }
-
-        return $text;
+        return $text === null || \mb_strlen(\strip_tags($text)) === 0 ? '' : $text;
     }
 
     /**
@@ -445,5 +354,21 @@ abstract class AbstractTemplate implements TemplateInterface
     public function setSubject(?string $overrideSubject): void
     {
         $this->overrideSubject = $overrideSubject;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLanguageID(): int
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->languageID = $languageID;
     }
 }

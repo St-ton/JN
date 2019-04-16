@@ -22,26 +22,26 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    export default {
-        name: 'installedcheck',
-        data() {
-            let isInstalled  = false,
-                networkError = false;
-            axios.get(this.$getApiUrl('installedcheck'))
-                .then(response => {
-                    this.isInstalled = response.data.installed;
-                    this.$store.commit('setShopURL', response.data.shopURL);
-                })
-                .catch(error => {
-                    this.networkError = error.response
-                        ? error.response
-                        : `URL ${this.$getApiUrl('installedcheck')} nicht erreichbar.`;
-                });
-            return {
-                isInstalled,
-                networkError
-            };
-        }
-    };
+import axios from 'axios';
+export default {
+    name: 'installedcheck',
+    data() {
+        let isInstalled  = false,
+            networkError = false;
+        axios.get(this.$getApiUrl('installedcheck'))
+            .then(response => {
+                this.isInstalled = response.data.installed;
+                this.$store.commit('setShopURL', response.data.shopURL);
+            })
+            .catch(error => {
+                this.networkError = error.response
+                    ? error.response
+                    : `URL ${this.$getApiUrl('installedcheck')} nicht erreichbar.`;
+            });
+        return {
+            isInstalled,
+            networkError
+        };
+    }
+};
 </script>

@@ -12,6 +12,7 @@ use JTL\Mail\Mail\MailInterface;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Validator\ValidatorInterface;
 use JTL\Shopsetting;
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 use stdClass;
 
@@ -57,6 +58,70 @@ class Mailer
         $this->hydrator  = $hydrator;
         $this->renderer  = $renderer;
         $this->config    = $settings->getAll();
+        $this->validator = $validator;
+    }
+
+    /**
+     * @return RendererInterface
+     */
+    public function getRenderer(): RendererInterface
+    {
+        return $this->renderer;
+    }
+
+    /**
+     * @param RendererInterface $renderer
+     */
+    public function setRenderer(RendererInterface $renderer): void
+    {
+        $this->renderer = $renderer;
+    }
+
+    /**
+     * @return HydratorInterface
+     */
+    public function getHydrator(): HydratorInterface
+    {
+        return $this->hydrator;
+    }
+
+    /**
+     * @param HydratorInterface $hydrator
+     */
+    public function setHydrator(HydratorInterface $hydrator): void
+    {
+        $this->hydrator = $hydrator;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setConfig(array $config): void
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @return ValidatorInterface
+     */
+    public function getValidator(): ValidatorInterface
+    {
+        return $this->validator;
+    }
+
+    /**
+     * @param ValidatorInterface $validator
+     */
+    public function setValidator(ValidatorInterface $validator): void
+    {
         $this->validator = $validator;
     }
 
@@ -117,7 +182,7 @@ class Mailer
      * @param PHPMailer     $phpmailer
      * @param MailInterface $mail
      * @return Mailer
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     private function addAttachments(PHPMailer $phpmailer, MailInterface $mail): self
     {
@@ -199,7 +264,7 @@ class Mailer
     /**
      * @param MailInterface $mail
      * @return bool
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      */
     private function sendViaPHPMailer(MailInterface $mail): bool
     {
@@ -234,7 +299,7 @@ class Mailer
     /**
      * @param MailInterface $mail
      * @return bool
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      * @throws \SmartyException
      */
     public function send(MailInterface $mail): bool

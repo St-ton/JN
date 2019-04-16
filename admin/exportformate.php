@@ -50,6 +50,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
     $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
+        unset($_SESSION['exportSyntaxErrorCount']);
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
             $kExportformat = (int)$_POST['kExportformat'];
@@ -264,7 +265,7 @@ if ($step === 'neuer Export') {
                     ORDER BY cStandard DESC',
                ReturnType::ARRAY_OF_OBJECTS
            ))
-           ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
+           ->assign('oKampagne_arr', holeAlleKampagnen());
 
     $exportformat = null;
     if (isset($_POST['kExportformat']) && (int)$_POST['kExportformat'] > 0) {
@@ -283,7 +284,7 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
-    $gettext = JTL\Shop::Container()->getGetText();
+    $gettext = Shop::Container()->getGetText();
     $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
     $gettext->localizeConfigs($configs);
 

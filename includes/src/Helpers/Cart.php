@@ -1488,10 +1488,11 @@ class Cart
 
     /**
      * @param array $positions
+     * @param bool $removeShippingCoupon
      * @former loescheWarenkorbPositionen()
      * @since 5.0.0
      */
-    public static function deleteCartPositions(array $positions): void
+    public static function deleteCartPositions(array $positions, $removeShippingCoupon = true): void
     {
         $cart    = Frontend::getCart();
         $uniques = [];
@@ -1533,7 +1534,7 @@ class Cart
                 }
             }
         }
-        self::deleteAllSpecialPositions();
+        self::deleteAllSpecialPositions($removeShippingCoupon);
         if (!$cart->posTypEnthalten(\C_WARENKORBPOS_TYP_ARTIKEL)) {
             unset($_SESSION['Kupon']);
             $_SESSION['Warenkorb'] = new Warenkorb();
@@ -1848,10 +1849,11 @@ class Cart
     }
 
     /**
+     * @param bool $removeShippingCoupon
      * @former loescheAlleSpezialPos()
      * @since 5.0.0
      */
-    public static function deleteAllSpecialPositions(): void
+    public static function deleteAllSpecialPositions($removeShippingCoupon = true): void
     {
         Frontend::getCart()
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
@@ -1865,11 +1867,15 @@ class Cart
                 ->checkIfCouponIsStillValid();
         unset(
             $_SESSION['Versandart'],
-            $_SESSION['VersandKupon'],
-            $_SESSION['oVersandfreiKupon'],
             $_SESSION['Verpackung'],
             $_SESSION['Zahlungsart']
         );
+        if ($removeShippingCoupon) {
+            unset(
+                $_SESSION['VersandKupon'],
+                $_SESSION['oVersandfreiKupon']
+            );
+        }
         Kupon::resetNewCustomerCoupon();
         Kupon::reCheck();
 

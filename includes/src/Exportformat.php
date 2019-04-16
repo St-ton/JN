@@ -21,6 +21,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
+use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
 use Psr\Log\LoggerInterface;
@@ -740,22 +741,13 @@ class Exportformat
 
     /**
      * @return Exportformat
-     * @throws SmartyException
      */
     private function initSmarty(): self
     {
-        $this->smarty = (new JTLSmarty(true, ContextType::EXPORT))
-            ->setCaching(0)
-            ->setTemplateDir(\PFAD_TEMPLATES)
-            ->setCompileDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR)
-            ->registerResource('db', new SmartyResourceNiceDB($this->db, ContextType::EXPORT))
-            ->assign('URL_SHOP', Shop::getURL())
+        $this->smarty = new ExportSmarty($this->db);
+        $this->smarty->assign('URL_SHOP', Shop::getURL())
             ->assign('Waehrung', Frontend::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
-        // disable php execution in export format templates for security
-        if (\EXPORTFORMAT_USE_SECURITY) {
-            $this->smarty->activateBackendSecurityMode();
-        }
 
         return $this;
     }
@@ -1551,45 +1543,87 @@ class Exportformat
     public function checkSyntax()
     {
         $this->initSession()->initSmarty();
-        $error = false;
-        try {
-            $product     = null;
-            $productData = $this->db->query(
-                "SELECT * 
-                    FROM tartikel 
-                    WHERE kVaterArtikel = 0 
-                    AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-                ReturnType::SINGLE_OBJECT
-            );
-            if (!empty($productData->kArtikel)) {
-                $options                            = new stdClass();
-                $options->nMerkmale                 = 1;
-                $options->nAttribute                = 1;
-                $options->nArtikelAttribute         = 1;
-                $options->nKategorie                = 1;
-                $options->nKeinLagerbestandBeachten = 1;
-                $options->nMedienDatei              = 1;
+        $error       = false;
+        $product     = null;
+        $productData = $this->db->query(
+            "SELECT kArtikel 
+                FROM tartikel 
+                WHERE kVaterArtikel = 0 
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+            ReturnType::SINGLE_OBJECT
+        );
+        if (!empty($productData->kArtikel)) {
+            $options                            = new stdClass();
+            $options->nMerkmale                 = 1;
+            $options->nAttribute                = 1;
+            $options->nArtikelAttribute         = 1;
+            $options->nKategorie                = 1;
+            $options->nKeinLagerbestandBeachten = 1;
+            $options->nMedienDatei              = 1;
 
-                $product = new Artikel();
-                $product->fuelleArtikel($productData->kArtikel, $options);
-                $product->cDeeplink             = '';
-                $product->Artikelbild           = '';
-                $product->Lieferbar             = '';
-                $product->Lieferbar_01          = '';
-                $product->cBeschreibungHTML     = '';
-                $product->cKurzBeschreibungHTML = '';
-                $product->fUst                  = 0;
-                $product->Kategorie             = new Kategorie();
-                $product->Kategoriepfad         = '';
-                $product->Versandkosten         = -1;
-            }
+            $product = new Artikel();
+            $product->fuelleArtikel($productData->kArtikel, $options);
+            $product->cDeeplink             = '';
+            $product->Artikelbild           = '';
+            $product->Lieferbar             = '';
+            $product->Lieferbar_01          = '';
+            $product->cBeschreibungHTML     = '';
+            $product->cKurzBeschreibungHTML = '';
+            $product->fUst                  = 0;
+            $product->Kategorie             = new Kategorie();
+            $product->Kategoriepfad         = '';
+            $product->Versandkosten         = -1;
+        }
+        try {
             $this->smarty->assign('Artikel', $product)
                          ->fetch('db:' . $this->kExportformat);
         } catch (Exception $e) {
             $error  = '<strong>Smarty-Syntaxfehler:</strong><br />';
             $error .= '<pre>' . $e->getMessage() . '</pre>';
         }
+        $this->updateError($error ? 1 : 0);
 
         return $error;
+    }
+
+    /**
+     * @return array
+     */
+    public function checkAll(): array
+    {
+        $allExports = $this->db->selectAll('texportformat', [], [], 'kExportformat');
+        $errors     = [];
+        foreach ($allExports as $export) {
+            $this->loadFromDB((int)$export->kExportformat);
+            $res = $this->checkSyntax();
+            if ($res === false) {
+                continue;
+            }
+            $errors[$this->kExportformat] = $res;
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @param int $error
+     */
+    public function updateError(int $error): void
+    {
+        if (Shop::getShopDatabaseVersion()->getMajor() < 5) {
+            return;
+        }
+        $res = $this->db->update(
+            'texportformat',
+            'kExportformat',
+            $this->kExportformat,
+            (object)['nFehlerhaft' => $error]
+        );
+        if ($res !== -1) {
+            $_SESSION['exportSyntaxErrorCount'] = (int)$this->db->query(
+                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt;
+        }
     }
 }

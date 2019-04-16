@@ -111,25 +111,25 @@ trait PortletAnimations
                     ],
                 ],
             ],
-            'data-wow-duration'  => [
+            'wow-duration'  => [
                 'label'       => __('Duration'),
                 'help'        => __('Change the animation duration (e.g. 2s)'),
                 'placeholder' => '1s',
                 'width'       => 50,
             ],
-            'data-wow-delay'     => [
+            'wow-delay'     => [
                 'label'      => __('Delay'),
                 'help'       => __('Delay before the animation starts'),
                 'width'      => 50,
             ],
-            'data-wow-offset'    => [
+            'wow-offset'    => [
                 'label'       => __('Offset (px)'),
                 'type'        => InputType::NUMBER,
                 'placeholder' => 200,
                 'help'        => __('Distance to start the animation (related to the browser bottom)'),
                 'width'       => 50,
             ],
-            'data-wow-Iteration' => [
+            'wow-iteration' => [
                 'label'      => __('Iteration'),
                 'type'       => InputType::NUMBER,
                 'help'       => __('Number of times the animation is repeated'),

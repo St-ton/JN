@@ -12,7 +12,7 @@ use JTL\DB\DbInterface;
  * Class TemplateFactory
  * @package JTL\Mail\Template
  */
-class TemplateFactory
+final class TemplateFactory
 {
     /**
      * @var DbInterface
@@ -26,6 +26,25 @@ class TemplateFactory
     public function __construct(DbInterface $db)
     {
         $this->db = $db;
+    }
+
+    /**
+     * @param int      $id
+     * @param int|null $pluginID
+     * @return TemplateInterface|null
+     */
+    public function getTemplateByID(int $id, int $pluginID = null): ?TemplateInterface
+    {
+        $data = $pluginID > 0
+            ? $this->db->select('tpluginemailvorlage', ['kEmailvorlage', 'kPlugin'], [$id, $pluginID])
+            : $this->db->select('temailvorlage', 'kEmailvorlage', $id);
+        if ($data === null) {
+            return null;
+        }
+
+        return $pluginID > 0
+            ? $this->getTemplate('kPlugin_' . $data->kPlugin . '_' . $data->cModulId)
+            : $this->getTemplate($data->cModulId);
     }
 
     /**
@@ -89,6 +108,12 @@ class TemplateFactory
                 return new StatusMail($this->db);
             case \MAILTEMPLATE_WUNSCHLISTE:
                 return new Wishlist($this->db);
+            case \MAILTEMPLATE_HEADER:
+                return new Header($this->db);
+            case \MAILTEMPLATE_FOOTER:
+                return new Footer($this->db);
+            case \MAILTEMPLATE_AKZ:
+                return new AKZ($this->db);
             case \strpos($templateID, 'kPlugin') !== false:
                 $tpl = new Plugin($this->db);
                 $tpl->setID($templateID);

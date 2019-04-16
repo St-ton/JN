@@ -115,66 +115,66 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    export default {
-        name: 'servercheck',
-        data() {
-            let phpConfig         = [],
-                phpModules        = [],
-                programs          = [],
-                configStatus      = 0,
-                modulesStatus     = 0,
-                programsStatus    = 0,
-                serverStatus      = 0,
-                collapseIsVisible = false,
-                checkedServer     = false,
-                networkError      = false;
-            this.check();
-            return {
-                phpConfig,
-                serverStatus,
-                phpModules,
-                programs,
-                configStatus,
-                modulesStatus,
-                programsStatus,
-                checkedServer,
-                collapseIsVisible,
-                networkError
-            };
+import axios from 'axios';
+export default {
+    name: 'servercheck',
+    data() {
+        let phpConfig         = [],
+            phpModules        = [],
+            programs          = [],
+            configStatus      = 0,
+            modulesStatus     = 0,
+            programsStatus    = 0,
+            serverStatus      = 0,
+            collapseIsVisible = false,
+            checkedServer     = false,
+            networkError      = false;
+        this.check();
+        return {
+            phpConfig,
+            serverStatus,
+            phpModules,
+            programs,
+            configStatus,
+            modulesStatus,
+            programsStatus,
+            checkedServer,
+            collapseIsVisible,
+            networkError
+        };
+    },
+    methods: {
+        collapseHide() {
+            this.collapseIsVisible = false;
         },
-        methods: {
-            collapseHide() {
-                this.collapseIsVisible = false;
-            },
-            collapseShow() {
-                this.collapseIsVisible = true;
-            },
-            check() {
-                axios.get(this.$getApiUrl('systemcheck'))
-                    .then(response => {
-                        this.phpModules = response.data.testresults.php_modules.map(this.$addClasses);
-                        this.programs = response.data.testresults.programs.map(this.$addClasses);
-                        this.phpConfig = response.data.testresults.php_config.map(this.$addClasses);
-                        this.modulesStatus = this.phpModules.reduce(this.$getTotalResultCode, 0);
-                        this.configStatus = this.phpConfig.reduce(this.$getTotalResultCode, 0);
-                        this.programsStatus = this.programs.reduce(this.$getTotalResultCode, 0);
-                        this.checkedServer = true;
-                        this.serverStatus = 2;
-                        if (this.modulesStatus === 0 && this.configStatus === 0 && this.programsStatus === 0) {
-                            this.serverStatus = 0;
-                        } else if (this.modulesStatus === 1 || this.configStatus === 1 || this.programsStatus === 1) {
-                            this.serverStatus = 1;
-                        }
-                    })
-                    .catch(error => {
-                        this.networkError = error.response
-                            ? error.response
-                            : `URL ${this.$getApiUrl('systemcheck')} nicht erreichbar.`;
-                    });
-            }
+        collapseShow() {
+            this.collapseIsVisible = true;
+        },
+        check() {
+            axios.get(this.$getApiUrl('systemcheck'))
+                .then(response => {
+                    this.phpModules = response.data.testresults.php_modules.map(this.$addClasses);
+                    this.programs = response.data.testresults.programs.map(this.$addClasses);
+                    this.phpConfig = response.data.testresults.php_config.map(this.$addClasses);
+                    this.modulesStatus = this.phpModules.reduce(this.$getTotalResultCode, 0);
+                    this.configStatus = this.phpConfig.reduce(this.$getTotalResultCode, 0);
+                    this.programsStatus = this.programs.reduce(this.$getTotalResultCode, 0);
+                    this.checkedServer = true;
+                    this.serverStatus = 2;
+                    if (this.modulesStatus === 0 && this.configStatus === 0 && this.programsStatus === 0) {
+                        this.serverStatus = 0;
+                    } else if (this.modulesStatus === 1 || this.configStatus === 1 || this.programsStatus === 1) {
+                        this.serverStatus = 1;
+                    }
+                })
+                .catch(error => {
+                    this.networkError = error.response
+                        ? error.response
+                        : `URL ${this.$getApiUrl('systemcheck')} nicht erreichbar.`;
+                });
         }
-    };
+    }
+};
 </script>
 <style scoped>
     .card-body {

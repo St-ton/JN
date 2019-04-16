@@ -29,7 +29,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 /** @global JTLSmarty $smarty */
-$mailTpl             = null;
+$mailTemplate        = null;
 $hasError            = false;
 $continue            = true;
 $emailTemplate       = null;
@@ -62,10 +62,9 @@ if (isset($_GET['err'])) {
     }
 }
 if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
-    $mailTemplate = $controller->getTemplateByID((int)$_POST['resetConfirm']);
+    $mailTemplate = $controller->getTemplateByID((int)$_POST['resetConfirm'], $pluginID);
     if ($mailTemplate !== null) {
         $step = 'zuruecksetzen';
-        $smarty->assign('mailTemplate', $mailTemplate);
     }
 }
 
@@ -164,7 +163,7 @@ if ((($emailTemplateID > 0 && $continue === true)
     foreach ($config as $item) {
         $configAssoc[$item->cKey] = $item->cValue;
     }
-    $mailTpl = $controller->getTemplateByID($emailTemplateID);
+    $mailTemplate = $controller->getTemplateByID($emailTemplateID, $pluginID);
     $smarty->assign('availableLanguages', $availableLanguages)
            ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);
@@ -179,9 +178,8 @@ if ($step === 'uebersicht') {
             return $e->getPluginID() > 0;
         }));
 }
-
 $smarty->assign('kPlugin', $pluginID)
-       ->assign('mailTemplate', $mailTpl)
+       ->assign('mailTemplate', $mailTemplate)
        ->assign('cFehlerAnhang_arr', $attachmentErrors)
        ->assign('step', $step)
        ->assign('Einstellungen', $conf)

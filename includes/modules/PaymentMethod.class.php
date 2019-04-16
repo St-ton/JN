@@ -665,8 +665,8 @@ class PaymentMethod
         $order->fuelleBestellung(false);
         $customer = new Kunde($order->kKunde);
         $data     = new stdClass();
-        $mailer = Shop::Container()->get(Mailer::class);
-        $mail   = new Mail();
+        $mailer   = Shop::Container()->get(Mailer::class);
+        $mail     = new Mail();
 
         switch ($type) {
             case MAILTEMPLATE_BESTELLBESTAETIGUNG:

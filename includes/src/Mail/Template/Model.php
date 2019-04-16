@@ -6,7 +6,14 @@
 
 namespace JTL\Mail\Template;
 
+use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Shop;
+use stdClass;
+use function Functional\first;
+use function Functional\map;
+use function Functional\tail;
 
 /**
  * Class Model
@@ -17,114 +24,124 @@ final class Model
     /**
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
      */
-    protected $name;
+    private $name;
 
     /**
      * @var string
      */
-    protected $description;
+    private $description;
 
     /**
      * @var string
      */
-    protected $type;
+    private $type;
 
     /**
      * @var string
      */
-    protected $moduleID;
+    private $moduleID;
 
     /**
-     * @var array[]
+     * @var string
      */
-    protected $fileNames = [];
+    private $fileName;
 
     /**
-     * @var bool
+     * @var string
      */
-    protected $active = true;
-
-    /**
-     * @var bool
-     */
-    protected $showAKZ = true;
+    private $active = true;
 
     /**
      * @var bool
      */
-    protected $showAGB = true;
+    private $showAKZ = true;
 
     /**
      * @var bool
      */
-    protected $showWRB = true;
+    private $showAGB = true;
 
     /**
      * @var bool
      */
-    protected $showWRBForm = true;
+    private $showWRB = true;
 
     /**
      * @var bool
      */
-    protected $showDSE = true;
+    private $showWRBForm = true;
 
     /**
      * @var bool
      */
-    protected $hasError = false;
+    private $showDSE = true;
+
+    /**
+     * @var bool
+     */
+    private $hasError = false;
 
     /**
      * @var int
      */
-    protected $languageID = 0;
+    private $languageID = 0;
 
     /**
      * @var int
      */
-    protected $pluginID = 0;
-
-    /**
-     * @var string
-     */
-    protected $subject;
-
-    /**
-     * @var string
-     */
-    protected $html = '';
-
-    /**
-     * @var string
-     */
-    protected $text = '';
+    private $pluginID = 0;
 
     /**
      * @var array
      */
-    protected $attachments = [];
+    private $subject;
+
+    /**
+     * @var array
+     */
+    private $html = [];
+
+    /**
+     * @var array
+     */
+    private $text = [];
+
+    /**
+     * @var array
+     */
+    private $attachments = [];
+
+    /**
+     * @var array
+     */
+    private $attachmentNames = [];
 
     /**
      * @var mixed
      */
-    protected $data;
+    private $data;
+
+    /**
+     * @var DbInterface
+     */
+    private $db;
 
     /**
      * @var array
      */
-    protected static $mapping = [
+    private static $mapping = [
         'kEmailvorlage' => 'ID',
         'cName'         => 'Name',
         'cBeschreibung' => 'Description',
         'cMailTyp'      => 'Type',
         'cModulId'      => 'ModuleID',
         'cDateiname'    => 'FileName',
-        'cAktiv'        => 'Active',
+        'cAktiv'        => 'ActiveCompat',
         'nAKZ'          => 'ShowAKZ',
         'nAGB'          => 'ShowAGB',
         'nWRB'          => 'ShowWRB',
@@ -136,7 +153,29 @@ final class Model
         'cContentHtml'  => 'HTML',
         'cContentText'  => 'Text',
         'cPDFS'         => 'Attachments',
+        'cPDFNames'     => 'AttachmentNames',
+        'kPlugin'       => 'PluginID',
     ];
+
+    /**
+     * Model constructor.
+     * @param DbInterface $db
+     */
+    public function __construct(DbInterface $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @param string|null $type
+     * @return string|array|null
+     */
+    public function getMapping(string $type = null)
+    {
+        return $type === null
+            ? self::$mapping
+            : self::$mapping[$type] ?? null;
+    }
 
     /**
      * @return int
@@ -149,9 +188,9 @@ final class Model
     /**
      * @param int $id
      */
-    public function setID(int $id): void
+    public function setID($id): void
     {
-        $this->id = $id;
+        $this->id = (int)$id;
     }
 
     /**
@@ -219,21 +258,40 @@ final class Model
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getFileNames(): array
+    public function getFileName(): string
     {
-        return $this->fileNames;
+        return $this->fileName ?? '';
     }
 
     /**
-     * @param array|string $fileNames
+     * @param string $fileName
      */
-    public function setFileNames($fileNames): void
+    public function setFileName($fileName): void
     {
-        $this->fileNames = \is_string($fileNames)
-            ? Text::parseSSK($fileNames)
-            : $fileNames;
+        $this->fileName = $fileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActiveCompat(): string
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool|int|string $active
+     */
+    public function setActiveCompat($active): void
+    {
+        if ($active === false || $active === 0) {
+            $active = 'N';
+        } elseif ($active === true || $active === 1) {
+            $active = 'Y';
+        }
+        $this->active = $active;
     }
 
     /**
@@ -241,15 +299,15 @@ final class Model
      */
     public function getActive(): bool
     {
-        return $this->active;
+        return $this->active === 'Y';
     }
 
     /**
-     * @param bool|int $active
+     * @param bool $active
      */
-    public function setActive($active): void
+    public function setActive(bool $active): void
     {
-        $this->active = (bool)$active;
+        $this->active = $active === true ? 'Y' : 'N';
     }
 
     /**
@@ -346,6 +404,9 @@ final class Model
     public function setHasError($hasError): void
     {
         $this->hasError = (bool)$hasError;
+        if ($this->hasError) {
+            $this->setActive(false);
+        }
     }
 
     /**
@@ -359,9 +420,9 @@ final class Model
     /**
      * @param int $languageID
      */
-    public function setLanguageID(int $languageID): void
+    public function setLanguageID($languageID): void
     {
-        $this->languageID = $languageID;
+        $this->languageID = (int)$languageID;
     }
 
     /**
@@ -375,75 +436,159 @@ final class Model
     /**
      * @param int $pluginID
      */
-    public function setPluginID(int $pluginID): void
+    public function setPluginID($pluginID): void
     {
-        $this->pluginID = $pluginID;
+        $this->pluginID = (int)$pluginID;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getSubject(): string
+    public function getSubjects(): array
     {
         return $this->subject;
     }
 
     /**
-     * @param string $subject
+     * @param int|null $languageID
+     * @return string
      */
-    public function setSubject(string $subject): void
+    public function getSubject(int $languageID = null): string
     {
-        $this->subject = $subject;
+        return $this->subject[$languageID ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
-     * @return string
+     * @param string $subject
+     * @param int    $languageID
      */
-    public function getHTML(): string
+    public function setSubject(string $subject, int $languageID): void
+    {
+        $this->subject[$languageID] = $subject;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllHTML(): array
     {
         return $this->html;
     }
 
     /**
-     * @param string $html
+     * @param int|null $languageID
+     * @return string
      */
-    public function setHTML(string $html): void
+    public function getHTML(int $languageID = null): string
     {
-        $this->html = $html;
+        return $this->html[$languageID ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
-     * @return string
+     * @param string $html
+     * @param int    $languageID
      */
-    public function getText(): string
+    public function setHTML(string $html, int $languageID): void
+    {
+        $this->html[$languageID] = $html;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllText(): array
     {
         return $this->text;
     }
 
     /**
-     * @param string $text
+     * @param int|null $languageID
+     * @return string
      */
-    public function setText(string $text): void
+    public function getText(int $languageID = null): string
     {
-        $this->text = $text;
+        return $this->text[$languageID ?? Shop::getLanguageID()] ?? '';
     }
 
     /**
+     * @param string $text
+     * @param int    $languageID
+     */
+    public function setText(string $text, int $languageID): void
+    {
+        $this->text[$languageID] = $text;
+    }
+
+    /**
+     * @param int|null $languageID
      * @return array|null
      */
-    public function getAttachments(): ?array
+    public function getAttachments(int $languageID = null): ?array
+    {
+        return $this->attachments[$languageID ?? Shop::getLanguageID()] ?? [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllAttachments(): array
     {
         return $this->attachments;
     }
 
     /**
-     * @param string|array|null $attachments
+     * @param array $attachments
      */
-    public function setAttachments($attachments): void
+    public function setAllAttachments(array $attachments): void
     {
-        $this->attachments = \is_string($attachments)
+        $this->attachments = $attachments;
+    }
+
+    /**
+     * @param string|array|null $attachments
+     * @param int               $languageID
+     */
+    public function setAttachments($attachments, int $languageID): void
+    {
+        $this->attachments[$languageID] = \is_string($attachments)
             ? Text::parseSSK($attachments)
             : $attachments;
+    }
+
+    /**
+     * @param int|null $languageID
+     * @return array|null
+     */
+    public function getAttachmentNames(int $languageID = null): ?array
+    {
+        return $this->attachmentNames[$languageID ?? Shop::getLanguageID()] ?? [];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllAttachmentNames(): array
+    {
+        return $this->attachmentNames;
+    }
+
+    /**
+     * @param array $names
+     */
+    public function setAllAttachmentNames(array $names): void
+    {
+        $this->attachmentNames = $names;
+    }
+
+    /**
+     * @param string|array|null $names
+     * @param int               $languageID
+     */
+    public function setAttachmentNames($names, int $languageID): void
+    {
+        $this->attachmentNames[$languageID] = \is_string($names)
+            ? Text::parseSSK($names)
+            : $names;
     }
 
     /**
@@ -460,5 +605,155 @@ final class Model
     public function setData($data): void
     {
         $this->data = $data;
+    }
+
+    /**
+     * @return int
+     */
+    public function save(): int
+    {
+        $res = 0;
+        foreach ($this->text as $langID => $text) {
+            $updates = ['id' => $this->getID(), 'lid' => $langID];
+            $sets    = [];
+            foreach (self::$mapping as $field => $method) {
+                $method = 'get' . $method;
+                $data   = $this->$method($langID);
+                if (\is_bool($data)) {
+                    $data = (int)$data;
+                }
+                $updates[$field] = \is_array($data) ? Text::createSSK($data) : $data;
+                $sets[$field]    = $field . ' = :' . $field;
+            }
+            if ($this->getPluginID() === 0) {
+                unset($updates['kPlugin'], $sets['kPlugin']);
+            }
+            unset($updates['kEmailvorlage'], $updates['kSprache'], $sets['kEmailvorlage'], $sets['kSprache']);
+            $res += $this->db->queryPrepared(
+                'UPDATE temailvorlage a
+                    LEFT JOIN temailvorlagesprache b
+                        ON a.kEmailvorlage = b.kEmailvorlage
+                    SET ' . \implode(', ', $sets) . '
+                    WHERE a.kEmailvorlage = :id
+                        AND b.kSprache = :lid',
+                $updates,
+                ReturnType::AFFECTED_ROWS
+            );
+        }
+
+        return $res;
+    }
+
+    /**
+     * @param string $templateID
+     * @return $this|null
+     */
+    public function load(string $templateID): ?self
+    {
+        $data = $this->loadFromDB($templateID);
+        if ($data === null) {
+            return null;
+        }
+        $arrayRows = ['cBetreff', 'cContentHtml', 'cContentText', 'cPDFS', 'cPDFNames'];
+        $res       = first($data);
+        foreach ($arrayRows as $row) {
+            $res->$row = [$res->kSprache => $res->$row];
+        }
+        foreach (tail($data) as $item) {
+            $keys = \get_object_vars($item);
+            foreach ($keys as $k => $v) {
+                if (\in_array($k, $arrayRows, true)) {
+                    $res->$k[$item->kSprache] = $v;
+                }
+            }
+        }
+        foreach (\get_object_vars($res) as $key => $value) {
+            if (($mapping = $this->getMapping($key)) === null) {
+                continue;
+            }
+            $method = 'set' . $mapping;
+            if (\is_array($value)) {
+                // setter with language ID
+                foreach ($value as $langID => $content) {
+                    $this->$method($content, $langID);
+                }
+            } else {
+                $this->$method($value);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $templateID
+     * @return array|null
+     */
+    private function loadFromDB(string $templateID): ?array
+    {
+        if (\strpos($templateID, 'kPlugin') === 0) {
+            // @todo: tpluginemailvorlageeinstellungen?
+            [, $pluginID, $moduleID] = \explode('_', $templateID);
+            $data                    = $this->db->queryPrepared(
+                'SELECT *
+                    FROM tpluginemailvorlage
+                    LEFT JOIN tpluginemailvorlagesprache
+                        ON tpluginemailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
+                    WHERE tpluginemailvorlage.kPlugin = :pid
+                        AND cModulId = :mid',
+                ['pid' => $pluginID, 'mid' => $moduleID],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        } else {
+            $data = $this->db->queryPrepared(
+                'SELECT *, 0 AS kPlugin
+                    FROM temailvorlage
+                    LEFT JOIN temailvorlagesprache
+                        ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
+                    WHERE cModulId = :mid',
+                ['mid' => $templateID],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+        }
+
+        return \count($data) === 0
+            ? null
+            : map(
+                $data,
+                function ($e) {
+                    $e->kSprache      = (int)$e->kSprache;
+                    $e->kPlugin       = (int)$e->kPlugin;
+                    $e->kEmailvorlage = (int)$e->kEmailvorlage;
+                    $e->nAKZ          = (int)$e->nAKZ;
+                    $e->nAGB          = (int)$e->nAGB;
+                    $e->nWRB          = (int)$e->nWRB;
+                    $e->nWRBForm      = (int)$e->nWRBForm;
+                    $e->nDSE          = (int)$e->nDSE;
+                    $e->nFehlerhaft   = (int)$e->nFehlerhaft;
+                    $e->cAktiv        = $e->cAktiv === 'Y';
+
+                    return $e;
+                }
+            );
+    }
+
+    /**
+     * this is only useful for revisions
+     *
+     * @return array
+     */
+    public function viewCompat(): array
+    {
+        $res = [];
+        foreach ($this->html as $langID => $data) {
+            $item                = new stdClass();
+            $item->kEmailvorlage = $this->getID();
+            $item->cBetreff      = $this->getSubject($langID);
+            $item->cContentHtml  = $this->getHTML($langID);
+            $item->cContentText  = $this->getText($langID);
+            $res[$langID]        = $item;
+        }
+
+        return $res;
     }
 }

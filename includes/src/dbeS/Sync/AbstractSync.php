@@ -267,7 +267,7 @@ abstract class AbstractSync
             $mail   = new Mail();
             $mail->setToMail($tplMail->toEmail);
             $mail->setToName($tplMail->toName);
-            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
 
             $upd                    = new stdClass();
             $upd->nStatus           = 1;

@@ -106,7 +106,7 @@ abstract class OptinBase extends OptinFactory
         $count       = 0;
         $safetyLimit = 50;
         $Id          = function () {
-            return md5($this->refData->getEmail() . \time() . \random_int(123, 456));
+            return \md5($this->refData->getEmail() . \time() . \random_int(123, 456));
         };
         do {
             $newId = $Id();

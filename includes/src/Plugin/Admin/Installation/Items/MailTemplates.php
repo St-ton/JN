@@ -80,7 +80,7 @@ class MailTemplates extends AbstractItem
                     $localizedTpl->cContentText  = $localized['ContentText'];
                     $localizedTpl->cPDFS         = $localized['PDFS'] ?? null;
                     $localizedTpl->cPDFNames     = $localized['Filename'] ?? null;
-                    $availableLocalizations[] = $localizedTpl;
+                    $availableLocalizations[]    = $localizedTpl;
                     if ($fallbackLocalization === null) {
                         $fallbackLocalization = $localizedTpl;
                     }

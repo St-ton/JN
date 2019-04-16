@@ -166,7 +166,8 @@ abstract class AbstractTemplate implements TemplateInterface
             $data,
             function ($e) {
                 return (int)$e->kSprache === $this->languageID;
-            }) ?? first($data);
+            }
+        ) ?? first($data);
         $agb->cContentText     = $this->sanitizeText($data->cAGBContentText);
         $agb->cContentHtml     = $this->sanitizeText($data->cAGBContentHtml);
         $wrb->cContentText     = $this->sanitizeText($data->cWRBContentText);

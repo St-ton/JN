@@ -1546,7 +1546,7 @@ class Exportformat
         $error       = false;
         $product     = null;
         $productData = $this->db->query(
-            "SELECT * 
+            "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
@@ -1591,7 +1591,7 @@ class Exportformat
      */
     public function checkAll(): array
     {
-        $allExports = $this->db->selectAll('texportformat', [], []);
+        $allExports = $this->db->selectAll('texportformat', [], [], 'kExportformat');
         $errors     = [];
         foreach ($allExports as $export) {
             $this->loadFromDB((int)$export->kExportformat);

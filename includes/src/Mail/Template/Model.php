@@ -692,7 +692,7 @@ final class Model
             // @todo: tpluginemailvorlageeinstellungen?
             [, $pluginID, $moduleID] = \explode('_', $templateID);
             $data                    = $this->db->queryPrepared(
-                'SELECT *, 0 AS nFehlerhaft
+                'SELECT *
                     FROM tpluginemailvorlage
                     LEFT JOIN tpluginemailvorlagesprache
                         ON tpluginemailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage

@@ -51,7 +51,7 @@ msgid "dbVersion"
 msgstr "Database version"
 
 msgid "dbLastUpdate"
-msgstr "Datenbase last updated"
+msgstr "Database last updated"
 
 msgid "subscriptionValidUntil"
 msgstr "Subscription valid until"
@@ -79,3 +79,21 @@ msgstr "See <a href=\"statistik.php?s=3\">Statistics</a> for more details."
 
 msgid "noStatisticsFound"
 msgstr "No statistics found"
+
+msgid "moduleSurvey"
+msgstr "Survey Module"
+
+msgid "moduleSelectionWizard"
+msgstr "Selection Wizard Module"
+
+msgid "moduleUpload"
+msgstr "Upload Module"
+
+msgid "moduleDownload"
+msgstr "Download Module"
+
+msgid "moduleConfigurator"
+msgstr "Configurator Module"
+
+msgid "moduleBrandFree"
+msgstr "Brandfree Option"

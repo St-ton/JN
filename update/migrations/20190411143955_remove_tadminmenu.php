@@ -35,7 +35,7 @@ class Migration_20190411143955 extends Migration implements IMigration
                 `cRecht` varchar(255) NOT NULL,                                                                                                                                                                                                     
                 `nSort` int(10) unsigned DEFAULT NULL,                                                                                                                                                                                              
                 PRIMARY KEY (`kAdminmenu`)                                                                                                                                                                                                          
-          ) ENGINE=MyISAM AUTO_INCREMENT=89 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
+          ) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
         );
         $this->execute("INSERT INTO `tadminmenu` VALUES
               (2,4,'core_jtl','Eigene Seiten','links.php','CONTENT_PAGE_VIEW',110),
@@ -120,7 +120,7 @@ class Migration_20190411143955 extends Migration implements IMigration
                  `nSort` int(10) unsigned NOT NULL,                                                                                                                                                                                                  
                  PRIMARY KEY (`kAdminmenueGruppe`),                                                                                                                                                                                                  
                  KEY `kAdminmenueOberGruppe` (`kAdminmenueOberGruppe`)                                                                                                                                                                               
-           ) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
+           ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci"
         );
 
         $this->execute(

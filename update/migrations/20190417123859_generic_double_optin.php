@@ -88,7 +88,7 @@ class Migration_20190417123859 extends Migration implements IMigration
                 nAGB,
                 nWRB
             ) VALUE (
-                'Benachrichtigung, wenn Produkt wieder verf&uuml;gbar (Double Opt-in Anfrage)',
+                'Benachrichtigung, wenn Produkt wieder verfügbar (Double Opt-in Anfrage)',
                 '',
                 'text/html',
                 'core_jtl_verfuegbarkeitsbenachrichtigung_optin',
@@ -110,7 +110,7 @@ class Migration_20190417123859 extends Migration implements IMigration
                 nAGB,
                 nWRB
             ) VALUE (
-                'Benachrichtigung, wenn Produkt wieder verf&uuml;gbar (Double Opt-in Anfrage)',
+                'Benachrichtigung, wenn Produkt wieder verfügbar (Double Opt-in Anfrage)',
                 '',
                 'text/html',
                 'core_jtl_verfuegbarkeitsbenachrichtigung_optin',

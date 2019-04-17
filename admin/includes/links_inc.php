@@ -4,31 +4,33 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
+use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkInterface;
 use JTL\Shop;
 
 /**
- * @param \JTL\Link\LinkGroupInterface $linkGroup
- * @param int                          $kVaterLink
- * @return \Illuminate\Support\Collection
+ * @param LinkGroupInterface $linkGroup
+ * @param int                $parentLinkID
+ * @return Collection
  */
-function build_navigation_subs_admin($linkGroup, $kVaterLink = 0)
+function build_navigation_subs_admin($linkGroup, $parentLinkID = 0)
 {
-    $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Illuminate\Support\Collection();
-    $lh         = Shop::Container()->getLinkService();
+    $parentLinkID = (int)$parentLinkID;
+    $collection   = new Collection();
+    $service      = Shop::Container()->getLinkService();
     foreach ($linkGroup->getLinks() as $link) {
-        $link->setLevel(count($lh->getParentIDs($link->getID())));
+        $link->setLevel(count($service->getParentIDs($link->getID())));
         /** @var \JTL\Link\Link $link */
-        if ($link->getParent() !== $kVaterLink) {
+        if ($link->getParent() !== $parentLinkID) {
             continue;
         }
         $link->setChildLinks(build_navigation_subs_admin($linkGroup, $link->getID()));
-        $oNew_arr->push($link);
+        $collection->push($link);
     }
 
-    return $oNew_arr;
+    return $collection;
 }
 
 /**
@@ -59,38 +61,38 @@ function gibLetzteBildNummer($kLink)
 }
 
 /**
- * @param string $cText
- * @param int    $kLink
+ * @param string $text
+ * @param int    $linkID
  * @return mixed
  */
-function parseText($cText, $kLink)
+function parseText($text, $linkID)
 {
-    $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $cBild_arr          = [];
-    $nSort_arr          = [];
-    if (is_dir($cUploadVerzeichnis . $kLink)) {
-        $DirHandle = opendir($cUploadVerzeichnis . $kLink);
-        while (($Datei = readdir($DirHandle)) !== false) {
+    $uploadDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
+    $images    = [];
+    $sort      = [];
+    if (is_dir($uploadDir . $linkID)) {
+        $dirHandle = opendir($uploadDir . $linkID);
+        while (($Datei = readdir($dirHandle)) !== false) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = (int)mb_substr(
+                $imageNumber          = (int)mb_substr(
                     str_replace('Bild', '', $Datei),
                     0,
                     mb_strpos(str_replace('Bild', '', $Datei), '.')
                 );
-                $cBild_arr[$nBild] = $Datei;
-                $nSort_arr[]       = $nBild;
+                $images[$imageNumber] = $Datei;
+                $sort[]               = $imageNumber;
             }
         }
     }
-    usort($nSort_arr, 'cmp');
+    usort($sort, 'cmp');
 
-    foreach ($nSort_arr as $nSort) {
-        $cText = str_replace('$#Bild' . $nSort . '#$', '<img src="' .
-            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $kLink . '/' . $cBild_arr[$nSort] .
-            '" />', $cText);
+    foreach ($sort as $no) {
+        $text = str_replace('$#Bild' . $no . '#$', '<img src="' .
+            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $linkID . '/' . $images[$no] .
+            '" />', $text);
     }
 
-    return $cText;
+    return $text;
 }
 
 /**
@@ -131,7 +133,7 @@ function cmp_obj($a, $b)
  */
 function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 {
-    list($ImageBreite, $ImageHoehe) = getimagesize($cDatei);
+    [$ImageBreite, $ImageHoehe] = getimagesize($cDatei);
 
     return [$ImageBreite, $ImageHoehe];
 }
@@ -164,14 +166,13 @@ function removeLink($kLink, $kLinkgruppe = 0)
  * @param string $var
  * @return array
  */
-function getLinkVar($kLink, $var)
+function getLinkVar(int $kLink, $var)
 {
     $namen = [];
 
     if (!$kLink) {
         return $namen;
     }
-    $kLink = (int)$kLink;
     // tseo work around
     if ($var === 'cSeo') {
         $links = Shop::Container()->getDB()->query(

@@ -6,11 +6,11 @@
 
 namespace JTL\Link;
 
+use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
-use Illuminate\Support\Collection;
 use function Functional\group;
 
 /**
@@ -180,13 +180,13 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $groups         = [];
         $groupLanguages = $this->db->query(
-            'SELECT tlinkgruppesprache.*, tlinkgruppe.cTemplatename AS template, tsprache.kSprache 
-                FROM tlinkgruppe
-                JOIN tlinkgruppesprache
-                    ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
-                JOIN tsprache 
-                    ON tsprache.cISO = tlinkgruppesprache.cISOSprache
-                WHERE tlinkgruppe.kLinkgruppe > 0 AND tlinkgruppesprache.kLinkgruppe > 0',
+            'SELECT loc.*, g.cTemplatename AS template, IFNULL(tsprache.kSprache, 0) AS kSprache 
+                FROM tlinkgruppe AS g
+                LEFT JOIN tlinkgruppesprache AS loc
+                    ON g.kLinkgruppe = loc.kLinkgruppe
+                LEFT JOIN tsprache 
+                    ON tsprache.cISO = loc.cISOSprache
+                WHERE g.kLinkgruppe > 0 AND loc.kLinkgruppe > 0',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $grouped        = group($groupLanguages, function ($e) {

@@ -4,13 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Exceptions\EmptyResultSetException;
-use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Request;
 use JTL\Alert\Alert;
 use JTL\Customer\Kunde;
 use JTL\Shop;
-use JTL\SimpleMail;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;

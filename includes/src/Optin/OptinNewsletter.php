@@ -68,19 +68,12 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
         if (!SimpleMail::checkBlacklist($this->refData->getEmail())) {
             //$plausi = fuegeNewsletterEmpfaengerEin($customer, true);
-            //
             // the following code replaces the function from "newsletter_inc.php"
 
-
-            // from newsletter.php:
-            $validate = true; // --TODO-- handling this value (it's maybe --OBSOLETE--)
-
-
-            // --START-- moved and adjusted code
             $plausi              = new \stdClass();
             $plausi->nPlausi_arr = [];
             $nlCustomer          = null;
-            if (!$validate || Text::filterEmailAddress($this->refData->getEmail()) !== false) {
+            if (Text::filterEmailAddress($this->refData->getEmail()) !== false) {
                 $plausi->nPlausi_arr = newsletterAnmeldungPlausi();
                 $kKundengruppe       = Frontend::getCustomerGroup()->getID();
                 $checkBox            = new CheckBox();
@@ -96,7 +89,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $plausi->cPost_arr['captcha']   = isset($_POST['captcha'])
                     ? Text::htmlentities(Text::filterXSS($_POST['captcha']))
                     : null;
-                if (!$validate || count($plausi->nPlausi_arr) === 0) {
+                if (count($plausi->nPlausi_arr) === 0) {
                     $recipient = $this->dbHandler->select(
                         'tnewsletterempfaenger',
                         'cEmail',
@@ -106,11 +99,13 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         $recipient->Datum = (new \DateTime($recipient->dEingetragen))->format('d.m.Y H:i');
                     }
                     // Pruefen ob Kunde bereits eingetragen
-                    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
+                    $customer   = Frontend::getCustomer();
+                    $customerId = $customer->getID();
+                    if ($customerId > 0) {
                         $nlCustomer = $this->dbHandler->select(
                             'tnewsletterempfaenger',
                             'kKunde',
-                            (int)$_SESSION['Kunde']->kKunde
+                            $customerId
                         );
                     }
                     if ((isset($recipient->cEmail) && $recipient->cEmail !== '')
@@ -140,12 +135,9 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         unset($recipient);
                         $recipient                     = new \stdClass();
                         $recipient->kSprache           = Shop::getLanguage();
-                        $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
-                            ? (int)$_SESSION['Kunde']->kKunde
-                            : 0;
-                        $recipient->nAktiv             = isset($_SESSION['Kunde']->kKunde)
-                            && $_SESSION['Kunde']->kKunde > 0
-                            && $this->conf['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
+                        $recipient->kKunde             = ($customerId ?? 0);
+                        $recipient->nAktiv             = ($customerId > 0 &&
+                            $this->conf['newsletter']['newsletter_doubleopt'] === 'U') ? 1 : 0;
                         $recipient->cAnrede            = $this->refData->getSalutation();
                         $recipient->cVorname           = $this->refData->getFirstName();
                         $recipient->cNachname          = $this->refData->getLastName();
@@ -161,7 +153,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         $this->dbHandler->insert('tnewsletterempfaenger', $recipient);
                         $history               = new \stdClass();
                         $history->kSprache     = Shop::getLanguage();
-                        $history->kKunde       = (int)($_SESSION['Kunde']->kKunde ?? 0);
+                        $history->kKunde       = ($customerId ?? 0);
                         $history->cAnrede      = $this->refData->getSalutation();
                         $history->cVorname     = $this->refData->getFirstName();
                         $history->cNachname    = $this->refData->getLastName();
@@ -181,40 +173,17 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, [
                             'oNewsletterEmpfaengerHistory' => $history
                         ]);
+
+                        $this->oLogger->debug('this->conf: '.print_r($this->conf['newsletter'], true)); // --DEBUG--
+
+
+                        // double-opt-in only for unknown user or for all customers too (setting no. 680)
                         if (($this->conf['newsletter']['newsletter_doubleopt'] === 'U'
                             && empty($_SESSION['Kunde']->kKunde))
                             || $this->conf['newsletter']['newsletter_doubleopt'] === 'A'
                         ) {
-                            $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .
-                                $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
-                            $recipient->cFreischaltURL = Shop::getURL() . '/newsletter.php?lang=' .
-                                $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
-                            //$obj                       = new \stdClass();
-                            //$obj->tkunde               = $_SESSION['Kunde'] ?? null;
-                            //$obj->NewsletterEmpfaenger = $recipient;
-
-                            /*
-                            $mailer = Shop::Container()->get(Mailer::class);
-                            $mail   = new Mail();
-                            $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_NEWSLETTERANMELDEN, $obj));
-                            */
-                            $this->hasSendingPermission = true;   // --DEBUG--
-
-                            /* moved into sendActivationmail()
-
-                            Shop::Container()->getDB()->update(
-                                'tnewsletterempfaengerhistory',
-                                'kNewsletterEmpfaengerHistory',
-                                $historyID,
-                                (object)['cEmailBodyHtml' => $mail->getBodyHTML()]
-                            );
-                            $alertHelper->addAlert(
-                                Alert::TYPE_NOTE,
-                                Shop::Lang()->get('newsletterAdd', 'messages'),
-                                'newsletterAdd'
-                            );
-                            */
-                            $plausi = new \stdClass();
+                            $this->hasSendingPermission = true;
+                            $plausi                     = new \stdClass();
                         } else {
                             $this->alertHelper->addAlert(
                                 Alert::TYPE_NOTE,
@@ -231,10 +200,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                     'newsletterWrongemail'
                 );
             }
-            //return $plausi;
-            // --END--
-
-
 
             Shop::Smarty()->assign('oPlausi', $plausi);
             $this->dbHandler->delete('tnewsletterempfaengerblacklist', 'cMail', $this->refData->getEmail());
@@ -249,8 +214,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
             throw new InvalidInputException('invalid email: ', $this->refData->getEmail());
         }
-
-
 
         if ($this->hasSendingPermission === true) {
             $this->saveOptin($this->optCode);
@@ -397,7 +360,9 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $blacklist->dErstellt = 'NOW()';
                 $this->dbHandler->insert('tnewsletterempfaengerblacklist', $blacklist);
 
-                /*
+                /* --OBSOLETE--  comes from Shop::Optin...
+                former "Sie wurden erfolgreich aus unserem Newsletterverteiler ausgetragen."
+
                 $this->alertHelper->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('newsletterDelete', 'messages'),

@@ -4,224 +4,237 @@
  *}
 {block name='productdetails-config-container'}
     {block name='productdetails-config-container-main'}
-        {col cols=12 md=7}
-            <div id="cfg-container">
+        {col cols=12}
+            <div id="cfg-container" class="mb-5">
                 <div id="cfg-top"></div>
                 {block name='productdetails-config-container-groups'}
                 {foreach $Artikel->oKonfig_arr as $oGruppe}
                     {if $oGruppe->getItemCount() > 0}
-                        {assign var=oSprache value=$oGruppe->getSprache()}
-                        {assign var=cBildPfad value=$oGruppe->getBildPfad()}
-                        {assign var=kKonfiggruppe value=$oGruppe->getKonfiggruppe()}
-                        {card class="cfg-group mb-4" data=["id"=>"{$kKonfiggruppe}"] no-body=true}
-                            {block name='productdetails-config-container-cardheader'}
-                                {cardheader id="crd-hdr-{$oGruppe@iteration}" class="h5 mb-0 p-2"}
-                                    {button variant="link" block=true data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$kKonfiggruppe}"] class="text-left"}
-                                        {$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional'}</span>{/if}
-                                        <span class="float-right"><i class="fas fa-minus"></i></span>
-                                    {/button}
-                                {/cardheader}
-                            {/block}
-                            {block name='productdetails-config-container-group-main'}
-                            {collapse visible=true id="cfg-grp-cllps-{$kKonfiggruppe}" aria=["labelledby"=>"crd-hdr-{$oGruppe@iteration}"]}
-                                {cardbody class="group-description"}
-                                    {block name='productdetails-config-container-group-description'}
-                                        <div class="group-description">
-                                            {if !empty($aKonfigerror_arr[$kKonfiggruppe])}
-                                                {alert variant="danger"}
-                                                {$aKonfigerror_arr[$kKonfiggruppe]}
-                                                {/alert}
-                                            {/if}
-                                            {if $oSprache->hatBeschreibung()}
-                                                <p class="desc">{$oSprache->getBeschreibung()}</p>
-                                            {/if}
-                                        </div>
-                                    {/block}
-                                    {block name='productdetails-config-container-group-main-content'}
-                                    {row}
-                                        {if !empty($cBildPfad)}
-                                            {block name='productdetails-config-container-group-image'}
-                                                {col md=2 class="d-none d-md-block group-image"}
-                                                    {image src=$cBildPfad alt=$oSprache->getName() id="img{$kKonfiggruppe}" fluid=true }
-                                                {/col}
-                                            {/block}
+                        {$oSprache = $oGruppe->getSprache()}
+                        {$cBildPfad = $oGruppe->getBildPfad()}
+                        {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
+                        <div class="cfg-group mb-4" data-id="{$kKonfiggruppe}">
+                            <div class="hr-sect mt-5 mb-0">
+                                {button
+                                    id="crd-hdr-{$oGruppe@iteration}"
+                                    variant="link"
+                                    data=["toggle"=>"collapse","target"=>"#cfg-grp-cllps-{$kKonfiggruppe}"]
+                                    class="text-left text-decoration-none"}
+                                    {$oSprache->getName()}{if $oGruppe->getMin() == 0}<span class="optional"> - {lang key='optional'}</span>{/if}
+                                    <span class="ml-3 float-right"><i class="fas fa-chevron-down"></i></span>
+                                {/button}
+                            </div>
+
+                            {collapse visible=true id="cfg-grp-cllps-{$kKonfiggruppe}" aria=["labelledby"=>"#crd-hdr-{$oGruppe@iteration}"]}
+                                <div class="text-center mb-5">
+                                    {badge variant="light"}
+                                        {if $oGruppe->getMin() === 1 && $oGruppe->getMax() === 1}
+                                            {lang key='configChooseOneComponent' section='productDetails'}
+                                        {else}
+                                            {if !empty($oGruppe->getMin())}{lang key='configChooseMinComponents' section='productDetails' printf=$oGruppe->getMin()}{/if}{if $oGruppe->getMax()<$oGruppe->getItemCount()}, {lang key='configChooseMaxComponents' section='productDetails' printf=$oGruppe->getMax()}{/if}
                                         {/if}
-                                        {block name='productdetails-config-container-group-items'}
-                                        {col md="{if empty($cBildPfad)}12{else}10{/if}" class="group-items"}
-                                            {block name='productdetails-config-container-group-item-listgroup'}
-                                            {listgroup class="form-group"}
-                                                {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}
-                                                    {block name='productdetails-config-container-group-item-type-checkbox'}
-                                                    {foreach $oGruppe->oItem_arr as $oItem}
+                                    {/badge}
+                                </div>
+                                {block name='productdetails-config-container-group-description'}
+                                    {row class="group-description mb-3"}
+                                        {if !empty($aKonfigerror_arr[$kKonfiggruppe])}
+                                            {col cols=12}
+                                                {alert variant="danger"}
+                                                   {$aKonfigerror_arr[$kKonfiggruppe]}
+                                                {/alert}
+                                            {/col}
+                                        {/if}
+                                        {if $oSprache->hatBeschreibung()}
+                                            {col cols=12 lg="{if !empty($cBildPfad)}8{else}12{/if}" order=1 order-lg=0}
+                                                <p class="desc">{$oSprache->getBeschreibung()}</p>
+                                            {/col}
+                                        {/if}
+                                        {if !empty($cBildPfad)}
+                                            {col cols=12 lg="{if $oSprache->hatBeschreibung()}4{else}12{/if}" order=0 order-lg=1}
+                                                {image src=$cBildPfad alt=$oSprache->getName() id="img{$kKonfiggruppe}" fluid=true class="w-100"}
+                                            {/col}
+                                        {/if}
+                                    {/row}
+                                {/block}
+
+                                {block name='productdetails-config-container-group-items'}
+                                    {row}
+                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
+                                            {block name='productdetails-config-container-group-item-type-swatch'}
+                                                {foreach $oGruppe->oItem_arr as $oItem}
+                                                    {col cols=6 md=4 lg=3}
+                                                        {$bSelectable = 0}
                                                         {if $oItem->isInStock()}
-                                                            {assign var=bSelectable value=1}
-                                                        {else}
-                                                            {assign var=bSelectable value=0}
+                                                            {$bSelectable = 1}
                                                         {/if}
-                                                        {listgroupitem data-id=$oItem->getKonfigitem() class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
-                                                            {assign var=kKonfigitem value=$oItem->getKonfigitem()}
-                                                            {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
-                                                            {if !empty($cKurzBeschreibung)}
-                                                                {assign var=cBeschreibung value=$oItem->getKurzBeschreibung()}
-                                                            {else}
-                                                                {assign var=cBeschreibung value=$oItem->getBeschreibung()}
-                                                            {/if}
-                                                            {block name='productdetails-config-container-group-item-alert'}
-                                                                {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
-                                                                    <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
-                                                                {/if}
-                                                            {/block}
-                                                            {block name='productdetails-config-container-group-item-checkbox'}
+                                                        {$kKonfigitem = $oItem->getKonfigitem()}
+                                                        {$checkboxActive = (!empty($aKonfigerror_arr)
+                                                            && isset($smarty.post.item)
+                                                            && isset($smarty.post.item[$kKonfiggruppe])
+                                                            && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
+                                                                || ($oItem->getSelektiert()
+                                                                    && (!isset($aKonfigerror_arr)
+                                                            || !$aKonfigerror_arr))}
+                                                        {$cKurzBeschreibung = $oItem->getKurzBeschreibung()}
+                                                        {$cBeschreibung = $oItem->getBeschreibung()}
+                                                        {if !empty($cKurzBeschreibung)}
+                                                            {$cBeschreibung = $cKurzBeschreibung}
+                                                        {/if}
+
+                                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO}
+                                                            {radio name="item[{$kKonfiggruppe}][]"
+                                                                value=$oItem->getKonfigitem()
+                                                                disabled=empty($bSelectable)
+                                                                data=["selected"=>{isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}]
+                                                                checked=$checkboxActive
+                                                                id="item{$oItem->getKonfigitem()}"
+                                                                class="cfg-swatch"
+                                                            }
+                                                                <div data-id="$oItem->getKonfigitem()" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+
+                                                                    {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
+                                                                        <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
+                                                                    {/if}
+                                                                    {badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}
+                                                                    {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
+                                                                        <p>{image src=$oItem->getArtikel()->Bilder[0]->cURLNormal fluid=true alt=$oItem->getName() title=$oItem->getName()}</p>
+                                                                    {/if}
+                                                                    <p class="mb-2">
+                                                                        {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
+                                                                        {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                                            {badge variant="light"}
+                                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
+                                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
+                                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
+                                                                                {/if}
+                                                                                {$oItem->getPreisLocalized()}
+                                                                            {/badge}
+                                                                        {/if}
+                                                                    </p>
+
+                                                                    {if !empty($cBeschreibung)}
+                                                                        <div class="mb-2">
+                                                                            {button
+                                                                                id="desc_link_{$kKonfigitem}"
+                                                                                variant="link"
+                                                                                data=["toggle"=>"collapse","target"=>"#desc_{$kKonfigitem}"]
+                                                                                size="sm"
+                                                                                role="button"
+                                                                                aria=["expanded"=>false, "controls"=>"desc_{$kKonfigitem}"]
+                                                                            }
+                                                                                {lang key='showDescription'} <i class="fas fa-chevron-down"></i></span>
+                                                                            {/button}
+                                                                            {collapse visible=false id="desc_{$kKonfigitem}" aria=["labelledby"=>"#desc_link_{$kKonfigitem}"]}
+                                                                                {$cBeschreibung}
+                                                                            {/collapse}
+                                                                        </div>
+                                                                    {/if}
+
+                                                                    {if $oItem->getMin() == $oItem->getMax()}
+                                                                        {lang key='quantity'}: {$oItem->getInitial()}
+                                                                    {else}
+                                                                        {input
+                                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                            min="{$oItem->getMin()}"
+                                                                            max="{$oItem->getMax()}"
+                                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                            id="quantity{$oItem->getKonfigitem()}"
+                                                                            class="quantity text-right"
+                                                                            name="item_quantity[{$kKonfigitem}]"
+                                                                            autocomplete="off"
+                                                                            value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
+                                                                        }
+                                                                    {/if}
+                                                                </div>
+                                                            {/radio}
+                                                        {else}
                                                             {checkbox name="item[{$kKonfiggruppe}][]"
                                                                 value=$oItem->getKonfigitem()
                                                                 disabled=empty($bSelectable)
                                                                 data=["selected"=>{isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}]
-                                                                checked=(!empty($aKonfigerror_arr)
-                                                                && isset($smarty.post.item)
-                                                                && isset($smarty.post.item[$kKonfiggruppe])
-                                                                && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
-                                                                || ($oItem->getSelektiert()
-                                                                && (!isset($aKonfigerror_arr)
-                                                                || !$aKonfigerror_arr))
+                                                                checked=$checkboxActive
                                                                 id="item{$oItem->getKonfigitem()}"
+                                                                class="cfg-swatch"
                                                             }
-                                                                {if !empty($oItem->getArtikel()->Bilder[0]->cURLMini)}
-                                                                    {image src=$oItem->getArtikel()->Bilder[0]->cURLMini alt=$oItem->getName() title=$oItem->getName()}
-                                                                {/if}
-                                                                {if $oItem->getMin() == $oItem->getMax()}{$oItem->getInitial()}x {/if}
-                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                                {if !empty($cBeschreibung)}
-                                                                    <br>
-                                                                    <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_checkdio_{$oItem->getKonfigitem()}" aria-expanded="false" aria-controls="filter-collapsible">
-                                                                        {lang key='showDescription'} <i class="caret"></i>
-                                                                    </a>
-                                                                {/if}
-                                                            {/checkbox}
-                                                            {/block}
-                                                            {block name='productdetails-config-container-group-item-description'}
-                                                            {if !empty($cBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
-                                                                <div class="panel-collapse">
-                                                                    <div id="filter-collapsible_dropdown_{$kKonfiggruppe}" class="collapse top10 panel-body{if empty($cBeschreibung)} hidden{/if}">
-                                                                        {$cBeschreibung}
-                                                                    </div>
-                                                                </div>
-                                                            {elseif !empty($cBeschreibung) && ($oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO)}
-                                                                <div class="panel-collapse">
-                                                                    <div id="filter-collapsible_checkdio_{$oItem->getKonfigitem()}" class="collapse top10 panel-body">
-                                                                        {$cBeschreibung}
-                                                                    </div>
-                                                                </div>
-                                                            {/if}
-                                                            {/block}
-                                                            {if $smarty.session.Kundengruppe->mayViewPrices()}
-                                                                {block name='productdetails-config-container-group-item-badge'}
-                                                                    {badge variant="light" class="float-right"}
-                                                                        {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                                            <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                                            <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
-                                                                        {/if}
-                                                                        {$oItem->getPreisLocalized()}
-                                                                    {/badge}
-                                                                {/block}
-                                                            {/if}
-                                                        {/listgroupitem}
-                                                    {/foreach}
-                                                    {/block}
-                                                {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO}
-                                                    {block name='productdetails-config-container-group-item-type-radio'}
-                                                    {foreach $oGruppe->oItem_arr as $oItem}
-                                                        {if $oItem->isInStock()}
-                                                            {assign var=bSelectable value=1}
-                                                        {else}
-                                                            {assign var=bSelectable value=0}
-                                                        {/if}
-                                                        {listgroupitem data-id=$oItem->getKonfigitem() class="{if $oItem->getEmpfohlen()}list-group-item-info{/if}{if empty($bSelectable)} disabled{/if}"}
-                                                            {assign var=kKonfigitem value=$oItem->getKonfigitem()}
-                                                            {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
-                                                            {if !empty($cKurzBeschreibung)}
-                                                                {assign var=cBeschreibung value=$oItem->getKurzBeschreibung()}
-                                                            {else}
-                                                                {assign var=cBeschreibung value=$oItem->getBeschreibung()}
-                                                            {/if}
-
-                                                            {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
-                                                                <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
-                                                            {/if}
-                                                            {radio name="item[{$kKonfiggruppe}][]"
-                                                                class="form-control"
-                                                                value=$oItem->getKonfigitem()
-                                                                disabled=empty($bSelectable)
-                                                                data=["selected"=>{isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}]
-                                                                checked=(!empty($aKonfigerror_arr)
-                                                                && isset($smarty.post.item)
-                                                                && isset($smarty.post.item[$kKonfiggruppe])
-                                                                && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
-                                                                || ($oItem->getSelektiert()
-                                                                && (!isset($aKonfigerror_arr)
-                                                                || !$aKonfigerror_arr))
-                                                                id="item{$oItem->getKonfigitem()}"
-                                                                required= $oGruppe->getMin() != 0
-                                                            }
-                                                                {if !empty($oItem->getArtikel()->Bilder[0]->cURLMini)}
-                                                                    {image src=$oItem->getArtikel()->Bilder[0]->cURLMini alt=$oItem->getName() title=$oItem->getName()}
-                                                                {/if}
-                                                                {if $oItem->getMin() == $oItem->getMax()}{$oItem->getInitial()}x {/if}
-                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                                {if !empty($cBeschreibung)}
-                                                                    <br>
-                                                                    <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_checkdio_{$oItem->getKonfigitem()}" aria-expanded="false" aria-controls="filter-collapsible">
-                                                                        {lang key='showDescription'} <i class="caret"></i>
-                                                                    </a>
-                                                                {/if}
-                                                            {/radio}
-                                                            {if !empty($cBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
-                                                                <div class="panel-collapse">
-                                                                    <div id="filter-collapsible_dropdown_{$kKonfiggruppe}" class="collapse top10 panel-body{if empty($cBeschreibung)} hidden{/if}">
-                                                                        {$cBeschreibung}
-                                                                    </div>
-                                                                </div>
-                                                            {elseif !empty($cBeschreibung) && ($oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO)}
-                                                                <div class="panel-collapse">
-                                                                    <div id="filter-collapsible_checkdio_{$oItem->getKonfigitem()}" class="collapse top10 panel-body">
-                                                                        {$cBeschreibung}
-                                                                    </div>
-                                                                </div>
-                                                            {/if}
-                                                            {if $smarty.session.Kundengruppe->mayViewPrices()}
-                                                                {badge variant="light" class="float-right"}
-                                                                    {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                                        <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                                        <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
+                                                                <div data-id="$oItem->getKonfigitem()" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                                    {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
+                                                                        <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                                     {/if}
-                                                                    {$oItem->getPreisLocalized()}
-                                                                {/badge}
-                                                            {/if}
-                                                        {/listgroupitem}
-                                                    {/foreach}
-                                                    {/block}
-                                                {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
-                                                    {$kKonfiggruppe = $oGruppe->getKonfiggruppe()}
-                                                    {block name='productdetails-config-container-group-item-type-dropdown'}
-                                                    {listgroupitem data-id=$kKonfiggruppe}
+                                                                    {badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}
+                                                                    {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
+                                                                        <p>{image src=$oItem->getArtikel()->Bilder[0]->cURLNormal fluid=true alt=$oItem->getName() title=$oItem->getName()}</p>
+                                                                    {/if}
+                                                                    <p class="mb-2">
+                                                                        {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
+                                                                        {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                                            {badge variant="light"}
+                                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
+                                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
+                                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
+                                                                                {/if}
+                                                                                {$oItem->getPreisLocalized()}
+                                                                            {/badge}
+                                                                        {/if}
+                                                                    </p>
+
+                                                                    {if !empty($cBeschreibung)}
+                                                                        <div class="mb-2">
+                                                                            {button
+                                                                                id="desc_link_{$kKonfigitem}"
+                                                                                variant="link"
+                                                                                data=["toggle"=>"collapse","target"=>"#desc_{$kKonfigitem}"]
+                                                                                size="sm"
+                                                                                role="button"
+                                                                                aria=["expanded"=>false, "controls"=>"desc_{$kKonfigitem}"]
+                                                                            }
+                                                                                {lang key='showDescription'} <i class="fas fa-chevron-down"></i></span>
+                                                                            {/button}
+                                                                            {collapse visible=false id="desc_{$kKonfigitem}" aria=["labelledby"=>"#desc_link_{$kKonfigitem}"]}
+                                                                                {$cBeschreibung}
+                                                                            {/collapse}
+                                                                        </div>
+                                                                    {/if}
+
+                                                                    {if $oItem->getMin() == $oItem->getMax()}
+                                                                        {lang key='quantity'}: {$oItem->getInitial()}
+                                                                    {else}
+                                                                        {input
+                                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                            min="{$oItem->getMin()}"
+                                                                            max="{$oItem->getMax()}"
+                                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                            id="quantity{$oItem->getKonfigitem()}"
+                                                                            class="quantity text-right"
+                                                                            name="item_quantity[{$kKonfigitem}]"
+                                                                            autocomplete="off"
+                                                                            value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
+                                                                        }
+                                                                    {/if}
+                                                                </div>
+                                                            {/checkbox}
+                                                        {/if}
+                                                    {/col}
+                                                {/foreach}
+                                            {/block}
+                                        {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                            {block name='productdetails-config-container-group-item-type-dropdown'}
+                                                {col cols=12 md=3 data=["id"=>$kKonfiggruppe] class="mb-3"}
+                                                    {formgroup}
                                                         {select name="item[{$kKonfiggruppe}][]"
-                                                            multiple=$oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI
-                                                            size="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}4{else}1{/if}"
                                                             data=["ref"=>$kKonfiggruppe]
                                                             required=$oGruppe->getMin() > 0
                                                         }
                                                             <option value="">{lang key='pleaseChoose'}</option>
                                                             {foreach $oGruppe->oItem_arr as $oItem}
+                                                                {$bSelectable = 0}
                                                                 {if $oItem->isInStock()}
-                                                                    {assign var=bSelectable value=1}
-                                                                {else}
-                                                                    {assign var=bSelectable value=0}
+                                                                    {$bSelectable = 1}
                                                                 {/if}
                                                                 <option value="{$oItem->getKonfigitem()}"
                                                                         id="item{$oItem->getKonfigitem()}"
                                                                         {if empty($bSelectable)} disabled{/if}
                                                                         {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"
                                                                         {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
-                                                                    {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}{$oItem->getInitial()} &times; {/if}
                                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section='productDetails' key='productOutOfStock'}{/if}
                                                                     {if $smarty.session.Kundengruppe->mayViewPrices()}
                                                                         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -231,75 +244,98 @@
                                                                 </option>
                                                             {/foreach}
                                                         {/select}
-                                                    {/listgroupitem}
-                                                    {/block}
-                                                {/if}
-                                            {/listgroup}
+                                                    {/formgroup}
+                                                {/col}
+                                                {col}
+                                                    {foreach $oGruppe->oItem_arr as $oItem}
+                                                        {$bSelectable = 0}
+                                                        {if $oItem->isInStock()}
+                                                            {$bSelectable = 1}
+                                                        {/if}
+                                                        {$cKurzBeschreibung = $oItem->getKurzBeschreibung()}
+                                                        {$cBeschreibung = $oItem->getBeschreibung()}
+                                                        {if !empty($cKurzBeschreibung)}
+                                                            {$cBeschreibung = $cKurzBeschreibung}
+                                                        {/if}
+                                                        {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
+                                                            <p class="mb-2 d-none d-md-block">
+                                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
+                                                                {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                                    {badge variant="light"}
+                                                                    {if $oItem->hasRabatt() && $oItem->showRabatt()}
+                                                                        <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
+                                                                        <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
+                                                                    {/if}
+                                                                    {$oItem->getPreisLocalized()}
+                                                                    {/badge}
+                                                                {/if}
+                                                            </p>
+                                                            {row}
+                                                                {col cols=4}
+                                                                    {if !empty($oItem->getArtikel()->Bilder[0]->cURLNormal)}
+                                                                        <p>{image src=$oItem->getArtikel()->Bilder[0]->cURLNormal fluid=true alt=$oItem->getName() title=$oItem->getName()}</p>
+                                                                    {/if}
+                                                                {/col}
+                                                                {col cols=8}
+                                                                    {if !empty($cBeschreibung)}
+                                                                        <div class="mb-2">
+                                                                            {$cBeschreibung}
+                                                                        </div>
+                                                                    {/if}
+
+                                                                    {if $oItem->getMin() == $oItem->getMax()}
+                                                                        {lang key='quantity'}: {$oItem->getInitial()}
+                                                                    {else}
+                                                                        {input
+                                                                            type="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                            min="{$oItem->getMin()}"
+                                                                            max="{$oItem->getMax()}"
+                                                                            step="{if $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{/if}"
+                                                                            id="quantity{$oItem->getKonfigitem()}"
+                                                                            class="quantity text-right"
+                                                                            name="item_quantity[{$oItem->getKonfigitem()}]"
+                                                                            autocomplete="off"
+                                                                            value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}1{/if}{/if}"
+                                                                        }
+                                                                    {/if}
+                                                                {/col}
+                                                            {/row}
+                                                        {/collapse}
+                                                    {/foreach}
+                                                {/col}
                                             {/block}
-                                            {if ($oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN)}
-                                                {assign var=quantity value=$oGruppe->getInitQuantity()}
-                                                {if isset($nKonfiggruppeAnzahl_arr) && array_key_exists($kKonfiggruppe, $nKonfiggruppeAnzahl_arr)}
-                                                    {assign var=quantity value=$nKonfiggruppeAnzahl_arr[$kKonfiggruppe]}
-                                                {/if}
-                                                {block name='productdetails-config-container-group-item-quantity'}
-                                                {if !$oGruppe->quantityEquals()}
-                                                    <div class="quantity" data-id="{$kKonfiggruppe}" style="display:none">
-                                                        {inputgroup}
-                                                            {inputgroupaddon prepend=true}
-                                                                {inputgrouptext}
-                                                                    {lang key='quantity'}:
-                                                                {/inputgrouptext}
-                                                            {/inputgroupaddon}
-                                                            {input size="2" type="number"
-                                                                id="quantity{$kKonfiggruppe}"
-                                                                name="quantity[{$kKonfiggruppe}]"
-                                                                value=$quantity autocomplete="off"
-                                                                min=$oGruppe->getMin() max=$oGruppe->getMax()}
-                                                        {/inputgroup}
-                                                    </div>
-                                                {else}
-                                                    <div class="quantity">
-                                                        {input type="hidden" id="quantity{$kKonfiggruppe}"
-                                                            name="quantity[{$kKonfiggruppe}]"
-                                                            value=$quantity}
-                                                    </div>
-                                                {/if}
-                                                {/block}
-                                            {/if}
-                                        {/col}
-                                        {/block}
+                                        {/if}
                                     {/row}
-                                    {/block}
-                                {/cardbody}
+                                {/block}
                             {/collapse}
-                            {/block}
-                        {/card}
+                        </div>
                     {/if}
                 {/foreach}
                 {/block}
             </div>
-            {block name='productdetails-config-container-link'}
-                <hr>
-                {link variant="light" href="#cfg-top" class="float-right m-2 btn btn-link"}
-                    <i class="fas fa-angle-double-up"></i>
-                {/link}
-            {/block}
+            {link variant="light" href="#cfg-top" class="float-right m-2 btn btn-link"}
+                <i class="fas fa-angle-double-up"></i>
+            {/link}
         {/col}
     {/block}
     {block name='productdetails-config-container-sticky-sidebar'}
-        {col cols=12 md=5}
-            <div id="cfg-sticky-sidebar" class="sticky-top mb-4 d-none d-md-block">
+        {col cols=12 class="mb-6"}
+            <div id="cfg-sticky-sidebar" class="mb-4">
                 {if $Artikel->bHasKonfig}
                     {block name='productdetails-config-container-include-config-sidebar'}
                         {include file='productdetails/config_sidebar.tpl'}
                     {/block}
                 {/if}
-                {block name='productdetails-config-container-include-basket'}
-                    <div class="mt-3">
-                        {include file='productdetails/basket.tpl'}
-                    </div>
-                {/block}
             </div>
+            {row}
+                {col cols=12 md=6 offset-md=6}
+                    {block name='productdetails-config-container-include-basket'}
+                        <div class="mt-3">
+                            {include file='productdetails/basket.tpl'}
+                        </div>
+                    {/block}
+                {/col}
+            {/row}
         {/col}
     {/block}
 {/block}

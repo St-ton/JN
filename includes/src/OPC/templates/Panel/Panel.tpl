@@ -1,12 +1,17 @@
+{$data = $instance->getAnimationData()}
+
 {if $isPreview}
-    {assign var=data value=['portlet' => $instance->getDataAttribute()]}
-    {assign var=areaClass value='opc-area'}
+    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
+    {$areaClass = 'opc-area'}
 {/if}
+
 {if $instance->getProperty('panel-state') !== 'default'}
-    {assign var=stateClass value=$instance->getProperty('panel-state')}
+    {$stateClass = $instance->getProperty('panel-state')}
 {/if}
+
 {card no-body=true data=$data|default:null border-variant=$stateClass|default:null
-        style=$instance->getStyleString()}
+        style=$instance->getStyleString()
+        class=$instance->getAnimationClass()}
     {if $instance->getProperty('title-flag')}
         {cardheader class=$areaClass|default:null
                     data=['area-id' => 'header']}

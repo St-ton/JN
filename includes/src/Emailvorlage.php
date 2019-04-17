@@ -6,6 +6,12 @@
 
 namespace JTL;
 
+use JTL\DB\ReturnType;
+use JTL\Mail\Renderer\SmartyRenderer;
+use JTL\Mail\Hydrator\TestHydrator;
+use Exception;
+use JTL\Smarty\MailSmarty;
+
 /**
  * Class Emailvorlage
  * @package JTL

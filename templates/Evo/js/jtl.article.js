@@ -167,9 +167,10 @@
 
         registerBulkPrices: function($wrapper) {
             var $bulkPrice = $('.bulk-price', $wrapper),
-                that       = this;
+                that       = this,
+                $config    = $('#product-configurator');
 
-            if ($bulkPrice.length > 0) {
+            if ($bulkPrice.length > 0 && $config.length === 0) {
                 $('#quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),

@@ -94,7 +94,7 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false)
                 }
             }
 
-            $result->cWHERE .= ' AND cWertName IN (' . implode(', ', $valueNames) . ')';
+            $result->cWHERE .= ' AND cWertName IN (' . (implode(', ', $valueNames) ?: "''") . ')';
             $result->cWHERE .= " AND cConf = 'Y'";
         }
     }

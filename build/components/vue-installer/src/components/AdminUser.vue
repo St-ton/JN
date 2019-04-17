@@ -56,38 +56,38 @@
 </template>
 
 <script>
-    export default {
-        name: 'adminuser',
-        data() {
-            return {
-                admin: {
-                    name: 'admin',
-                    pass: this.generatePassword()
-                },
-                wawi:  {
-                    name: 'sync',
-                    pass: this.generatePassword()
-                }
-            };
-        },
-        methods: {
-            saveUsers() {
-                this.$store.commit('setAdminUser', this.admin);
-                this.$store.commit('setWawiUser', this.wawi);
-                return this.admin.name.length > 0
-                    && this.admin.pass.length > 0
-                    && this.wawi.name.length > 0
-                    && this.wawi.pass.length > 0;
+export default {
+    name: 'adminuser',
+    data() {
+        return {
+            admin: {
+                name: 'admin',
+                pass: this.generatePassword()
             },
-            generatePassword() {
-                let crypto = window.crypto || window.msCrypto,
-                    buf    = new Uint8Array(9);
-                return typeof crypto !== 'undefined'
-                    ? btoa(String.fromCharCode.apply(null, crypto.getRandomValues(buf)))
-                    : '';
+            wawi:  {
+                name: 'sync',
+                pass: this.generatePassword()
             }
+        };
+    },
+    methods: {
+        saveUsers() {
+            this.$store.commit('setAdminUser', this.admin);
+            this.$store.commit('setWawiUser', this.wawi);
+            return this.admin.name.length > 0
+                && this.admin.pass.length > 0
+                && this.wawi.name.length > 0
+                && this.wawi.pass.length > 0;
+        },
+        generatePassword() {
+            let crypto = window.crypto || window.msCrypto,
+                buf    = new Uint8Array(9);
+            return typeof crypto !== 'undefined'
+                ? btoa(String.fromCharCode.apply(null, crypto.getRandomValues(buf)))
+                : '';
         }
-    };
+    }
+};
 </script>
 <style scoped>
     .input-group-addon.fixed-addon {

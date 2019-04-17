@@ -49,8 +49,8 @@ class VueInstaller
      */
     public function __construct($task, $post = null)
     {
-        $this->task  = $task;
-        $this->post  = $post;
+        $this->task = $task;
+        $this->post = $post;
     }
 
     /**

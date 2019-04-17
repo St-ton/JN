@@ -6,9 +6,9 @@
     {if $Artikel->nIstVater == 1 && $Artikel->oVariationKombiKinderAssoc_arr|count > 0}
         {block name='productdetails-index-childs'}
             {foreach $Artikel->oVariationKombiKinderAssoc_arr as $child}
-                {row class="mb-3 pt-2 pb-2 {cycle values="bg-light,"}"}
-                    {if $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'Y' ||
-                    ($Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten === 'Y' && $child->inWarenkorbLegbar == 1)}
+                {if $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'Y' ||
+                ($Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten === 'Y' && $child->inWarenkorbLegbar == 1)}
+                    {row class="mb-3 pt-2 pb-2 {cycle values="bg-light,"}"}
                         {block name='productdetails-matrix-list-image'}
                             {col cols=6 md=1}
                                 {image fluid=true lazy=true src=$child->Bilder[0]->cURLMini alt=$child->Bilder[0]->cAltAttribut}
@@ -61,14 +61,14 @@
                                 {include file='productdetails/price.tpl' Artikel=$child tplscope='matrix'}
                             {/col}
                         {/block}
-                    {/if}
-                {/row}
+                    {/row}
+                {/if}
             {/foreach}
         {/block}
         {block name='productdetails-matrix-list-submit'}
             {input type="hidden" name="variBox" value="1"}
             {input type="hidden" name="varimatrix" value="1"}
-            {button name="inWarenkorb" type="submit" value="1" variant="primary" class="pull-right"}{lang key='addToCart'}{/button}
+            {button name="inWarenkorb" type="submit" value="1" variant="primary" class="float-right mb-5"}{lang key='addToCart'}{/button}
         {/block}
     {/if}
 {/block}

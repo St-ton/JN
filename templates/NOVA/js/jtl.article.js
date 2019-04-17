@@ -251,7 +251,18 @@
             var that   = this,
                 config = $('#product-configurator')
                     .closest('form')
-                    .find('input[type="radio"], input[type="checkbox"], input[type="number"], select');
+                    .find('input[type="radio"], input[type="checkbox"], input[type="number"], select'),
+                dropdown = $('#product-configurator')
+                    .closest('form')
+                    .find('select');
+
+            if (dropdown.length > 0) {
+                dropdown.on('change', function () {
+                    var item = $(this).val();
+                    $(this).parents('.cfg-group').find('.cfg-drpdwn-item.collapse.show').collapse('hide');
+                    $('#drpdwn_qnt_' + item).collapse('show');
+                })
+            }
 
             if (config.length > 0) {
                 config.on('change', function() {
@@ -299,9 +310,10 @@
 
         registerBulkPrices: function($wrapper) {
             var $bulkPrice = $('.bulk-price', $wrapper),
-                that       = this;
+                that       = this,
+                $config    = $('#product-configurator');
 
-            if ($bulkPrice.length > 0) {
+            if ($bulkPrice.length > 0 && $config.length === 0) {
                 $('#quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),
@@ -598,8 +610,7 @@
                     var $modal  = $modalBody.closest(".modal-dialog"),
                         title   = $modal.find('.modal-body h1'),
                         $config = $('#product-configurator', $modalBody);
-                    /*console.log('Title: ', title, title.text());
-                    console.log('$modal: ', $modal);*/
+
                     if ($config.length > 0) {
                         // Configurator in child article!? Currently not supported!
                         $config.remove();
@@ -607,9 +618,7 @@
                         var spinner = $.evo.extended().spinner($modalBody.get(0));
                         location.href = url;
                     }
-                    // console.log('t.len:',title.length,title.text().length);
                     if (title.length > 0 && title.text().length > 0) {
-                        // console.log('find: ', $modal.find('.modal-title'));
                         $modal.find('.modal-title').text(title.text());
                         title.remove();
                     }
@@ -907,8 +916,7 @@
                 }
 
                 if (init) {
-                    var top = $('#evo-main-nav-wrapper').outerHeight(true);
-                    sidebar.css('top',top);
+
                 }
 
                 $('#buy_form').find('*[data-selected="true"]')
@@ -947,58 +955,6 @@
                     that.setStockInformation(result.cEstimatedDelivery);
 
                     $('#content .summary').html(result.cTemplate);
-
-                    // groups
-                    for (i = 0; i < result.oKonfig_arr.length; i++) {
-                        grp = result.oKonfig_arr[i];
-                        quantityWrapper = that.getConfigGroupQuantity(grp.kKonfiggruppe);
-                        quantityInput   = that.getConfigGroupQuantityInput(grp.kKonfiggruppe);
-                        if (grp.bAktiv) {
-                            enableQuantity = grp.bAnzahl;
-                            for (j = 0; j < grp.oItem_arr.length; j++) {
-                                item = grp.oItem_arr[j];
-                                if (item.bAktiv) {
-                                    if (item.cBildPfad) {
-                                        that.setConfigItemImage(grp.kKonfiggruppe, item.cBildPfad.cPfadKlein);
-                                    } else {
-                                        that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
-                                    }
-                                    that.setConfigItemDescription(grp.kKonfiggruppe, item.cBeschreibung);
-                                    enableQuantity = item.bAnzahl;
-                                    if (!enableQuantity) {
-                                        quantityInput
-                                            .attr('min', item.fInitial)
-                                            .attr('max', item.fInitial)
-                                            .val(item.fInitial)
-                                            .attr('disabled', true);
-                                        if (item.fInitial === 1) {
-                                            quantityWrapper.slideUp(200);
-                                        } else {
-                                            quantityWrapper.slideDown(200);
-                                        }
-                                    } else {
-                                        if (quantityWrapper.css('display') === 'none' && !init) {
-                                            quantityInput.val(item.fInitial);
-                                        }
-                                        quantityWrapper.slideDown(200);
-                                        quantityInput
-                                            .attr('disabled', false)
-                                            .attr('min', item.fMin)
-                                            .attr('max', item.fMax);
-                                        value = quantityInput.val();
-                                        if (value < item.fMin || value > item.fMax) {
-                                            quantityInput.val(item.fInitial);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            that.setConfigItemDescription(grp.kKonfiggruppe, '');
-                            quantityInput.attr('disabled', true);
-                            quantityWrapper.slideUp(200);
-                        }
-                    }
 
                     $.evo.extended()
                         .trigger('priceChanged', result);
@@ -1380,7 +1336,6 @@
             }
 
             args.wrapper = wrapper;
-
             io.call('checkDependencies', [args], null, function (error, data) {
                 $wrapper.removeClass('loading');
                 if (animation) {

@@ -9,12 +9,12 @@
 </template>
 
 <script>
-    import PageHeader from './components/Header';
-    import PageFooter from './components/Footer';
-    export default {
-        name:       'app',
-        components: {PageFooter, PageHeader}
-    };
+import PageHeader from './components/Header';
+import PageFooter from './components/Footer';
+export default {
+    name:       'app',
+    components: { PageFooter, PageHeader }
+};
 </script>
 
 <style>

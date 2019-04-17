@@ -702,7 +702,7 @@ msgid "companyStub"
 msgstr "Muster GmbH"
 
 msgid "faulty"
-msgstr "fehlerhaft"
+msgstr "Fehlerhaft"
 
 msgid "week"
 msgstr "Woche"
@@ -1624,6 +1624,9 @@ msgstr "Antarktis"
 
 msgid "date"
 msgstr "Datum"
+
+msgid "syntax"
+msgstr "Syntax"
 
 msgid "typeAheadCategory"
 msgstr "Geben Sie den Titel der Kategorie ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."

@@ -49,26 +49,21 @@ class MailTemplates extends AbstractItem
             $mailTpl->cModulId      = $template['ModulId'];
             $mailTpl->cDateiname    = $template['Filename'] ?? null;
             $mailTpl->cAktiv        = $template['Active'] ?? 'N';
-            $mailTpl->nAKZ          = $template['AKZ'] ?? 0;
-            $mailTpl->nAGB          = $template['AGB'] ?? 0;
-            $mailTpl->nWRB          = $template['WRB'] ?? 0;
-            $mailTpl->nWRBForm      = $template['WRBForm'] ?? 0;
-            $mailTpl->nDSE          = $template['DSE'] ?? 0;
+            $mailTpl->nAKZ          = (int)($template['AKZ'] ?? 0);
+            $mailTpl->nAGB          = (int)($template['AGB'] ?? 0);
+            $mailTpl->nWRB          = (int)($template['WRB'] ?? 0);
+            $mailTpl->nWRBForm      = (int)($template['WRBForm'] ?? 0);
+            $mailTpl->nDSE          = (int)($template['DSE'] ?? 0);
             $mailTplID              = $this->db->insert('tpluginemailvorlage', $mailTpl);
             if ($mailTplID <= 0) {
                 return InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE;
             }
-            $localizedTpl                = new stdClass();
-            $iso                         = '';
-            $localizedTpl->kEmailvorlage = $mailTplID;
-            // Hole alle Sprachen des Shops
-            // Assoc cISO
-            $allLanguages = Sprache::getAllLanguages(2);
-            // Ist das erste Standard Template gesetzt worden? => wird etwas weiter unten gebraucht
-            // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
-            // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-            $isDefault       = false;
-            $defaultLanguage = new stdClass();
+            $iso                    = '';
+            $allLanguages           = Sprache::getAllLanguages(2);
+            $fallbackLocalization   = null;
+            $availableLocalizations = [];
+            $addedLanguages         = [];
+            $first                  = true;
             foreach ($template['TemplateLanguage'] as $l => $localized) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -76,37 +71,49 @@ class MailTemplates extends AbstractItem
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $iso = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
                 } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($l)) {
+                    $localizedTpl                = new stdClass();
                     $localizedTpl->kEmailvorlage = $mailTplID;
-                    $localizedTpl->kSprache      = $allLanguages[$iso]->kSprache;
+                    $localizedTpl->kSprache      = $allLanguages[$iso]->kSprache ?? 0;
                     $localizedTpl->cBetreff      = $localized['Subject'];
                     $localizedTpl->cContentHtml  = $localized['ContentHtml'];
                     $localizedTpl->cContentText  = $localized['ContentText'];
                     $localizedTpl->cPDFS         = $localized['PDFS'] ?? null;
-                    $localizedTpl->cDateiname    = $localized['Filename'] ?? null;
-                    if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
-                        $this->db->insert('tpluginemailvorlagesprache', $localizedTpl);
-                    }
-                    $this->db->insert('tpluginemailvorlagespracheoriginal', $localizedTpl);
-                    // Erste Templatesprache vom Plugin als Standard setzen
-                    if (!$isDefault) {
-                        $defaultLanguage = $localizedTpl;
-                        $isDefault       = true;
-                    }
-                    if (isset($allLanguages[$iso])) {
-                        // Resette aktuelle Sprache
-                        unset($allLanguages[$iso]);
-                        $allLanguages = \array_merge($allLanguages);
+                    $localizedTpl->cPDFNames     = $localized['Filename'] ?? null;
+                    $availableLocalizations[]    = $localizedTpl;
+                    if ($fallbackLocalization === null) {
+                        $fallbackLocalization = $localizedTpl;
                     }
                 }
             }
-            foreach ($allLanguages as $language) {
-                if ($language->kSprache > 0) {
-                    $defaultLanguage->kSprache = $language->kSprache;
-                    if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
-                        $this->db->insert('tpluginemailvorlagesprache', $defaultLanguage);
-                    }
-                    $this->db->insert('tpluginemailvorlagespracheoriginal', $defaultLanguage);
+            foreach ($availableLocalizations as $localizedTpl) {
+                if ($localizedTpl->kSprache === 0) {
+                    continue;
                 }
+                $addedLanguages[] = $localizedTpl->kSprache;
+                if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
+                    $this->db->insert('tpluginemailvorlagesprache', $localizedTpl);
+                }
+                $this->db->insert('tpluginemailvorlagespracheoriginal', $localizedTpl);
+            }
+            // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
+            foreach ($allLanguages as $language) {
+                if (\in_array($language->kSprache, $addedLanguages, true)) {
+                    continue;
+                }
+                if ($first === true) {
+                    $this->db->update(
+                        'tpluginemailvorlage',
+                        'kEmailvorlage',
+                        $mailTplID,
+                        (object)['nFehlerhaft' => 1, 'cAktiv' => 'N']
+                    );
+                    $first = false;
+                }
+                $fallbackLocalization->kSprache = $language->kSprache;
+                if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
+                    $this->db->insert('tpluginemailvorlagesprache', $fallbackLocalization);
+                }
+                $this->db->insert('tpluginemailvorlagespracheoriginal', $fallbackLocalization);
             }
         }
 

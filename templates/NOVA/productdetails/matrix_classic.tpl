@@ -23,7 +23,7 @@
                                     || $Artikel->nIstVater == 0)}
                                     {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                         {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                            {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
+                                            {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariationWertHead->cName}<br>
                                         {/if}
                                     {/foreach}
                                 {/if}
@@ -45,7 +45,7 @@
                                             || $Artikel->nIstVater == 0)}
                                         {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                             {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWert1->kEigenschaftWert}
-                                                {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
+                                                {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariationWert1->cName}<br>
                                             {/if}
                                         {/foreach}
                                     {/if}
@@ -281,7 +281,7 @@
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                                    {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
+                                                    {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariationWertHead->cName}<br>
                                                 {/if}
                                             {/foreach}
                                         {/if}
@@ -474,7 +474,7 @@
                                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                                    {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariBoxMatrixBild->cName}<br>
+                                                    {image src=$oVariBoxMatrixBild->cBild fluid=true alt=$oVariationWertHead->cName}<br>
                                                 {/if}
                                             {/foreach}
                                         {/if}

@@ -21,7 +21,7 @@ class Row extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('columns');
+        return '<i class="fa fa-columns"></i><br>Spalten';
     }
 
     /**
@@ -30,11 +30,11 @@ class Row extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'layout-xs' => [
-                'label'   => '<i class="fa fa-mobile"></i> Layout XS',
-                'default' => '6+6',
-                'width'   => 25,
-            ],
+//            'layout-xs' => [
+//                'label'   => '<i class="fa fa-mobile"></i> Layout XS',
+//                'default' => '6+6',
+//                'width'   => 25,
+//            ],
             'layout-sm' => [
                 'label' => '<i class="fa fa-tablet"></i> Layout S',
                 'width' => 25,
@@ -45,6 +45,10 @@ class Row extends Portlet
             ],
             'layout-lg' => [
                 'label' => '<i class="fa fa-desktop"></i> Layout L',
+                'width' => 25,
+            ],
+            'layout-xl' => [
+                'label' => '<i class="fa fa-desktop"></i> Layout XL',
                 'width' => 25,
             ],
             'class'     => [
@@ -71,19 +75,21 @@ class Row extends Portlet
      */
     public function getLayouts(PortletInstance $instance): array
     {
-        $layoutXS = \explode('+', $instance->getProperty('layout-xs'));
+        //$layoutXS = \explode('+', $instance->getProperty('layout-xs'));
         $layoutSM = \explode('+', $instance->getProperty('layout-sm'));
         $layoutMD = \explode('+', $instance->getProperty('layout-md'));
         $layoutLG = \explode('+', $instance->getProperty('layout-lg'));
-        $colCount = \max(\count($layoutXS), \count($layoutSM), \count($layoutMD), \count($layoutLG));
+        $layoutXL = \explode('+', $instance->getProperty('layout-xl'));
+        $colCount = \max(\count($layoutSM), \count($layoutMD), \count($layoutLG), \count($layoutXL));
 
         $colLayouts = \array_fill(0, $colCount, '');
 
         foreach ($colLayouts as $i => &$colLayout) {
-            $sumXS = 0;
+            //$sumXS = 0;
             $sumSM = 0;
             $sumMD = 0;
             $sumLG = 0;
+            $sumXL = 0;
 
             for ($x = 0; $x <= $i; ++$x) {
                 $sumXS = !empty($layoutXS[$x]) ? ($sumXS + $layoutXS[$x]) : $sumXS;

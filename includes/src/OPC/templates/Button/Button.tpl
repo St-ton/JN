@@ -1,6 +1,4 @@
-{if $isPreview}
-    {$dataAttrib = ['portlet' => $instance->getDataAttribute()]}
-{else}
+{if $isPreview === false}
     {$href = $instance->getProperty('url')}
 {/if}
 
@@ -28,6 +26,8 @@
             block=$block|default:false
             variant=$instance->getProperty('style')
             title=$instance->getProperty('link-title')|default:null
+            class=$instance->getAnimationClass()
+            data=$instance->getAnimationData()
     }
         {if $instance->getProperty('use-icon') === true && $instance->getProperty('icon-align') === 'left'}
             <i class="{$instance->getProperty('icon')}" style="top:2px;"></i>

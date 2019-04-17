@@ -1,7 +1,10 @@
 {$imgAttribs = $instance->getImageAttributes(null, null, null, 1, $portlet->getPlaceholderImgUrl())}
 
 {if $isPreview}
-    <div style="text-align: center;" {$instance->getAttributeString()} {$instance->getDataAttributeString()} >
+    <div style="text-align: center; {$instance->getStyleString()}"
+         class="{$instance->getAnimationClass()}"
+         {$instance->getAnimationDataAttributeString()}
+         {$instance->getDataAttributeString()}>
         {image
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset
@@ -14,7 +17,9 @@
         <p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -56px;">Banner</p>
     </div>
 {else}
-    <div class="banner" style="{$instance->getStyleString()}">
+    <div style="{$instance->getStyleString()}"
+         class="banner {$instance->getAnimationClass()}"
+         {$instance->getAnimationDataAttributeString()}>
         {image
             src=$imgAttribs.src
             srcset=$imgAttribs.srcset

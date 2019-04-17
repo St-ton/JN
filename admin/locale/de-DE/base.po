@@ -1625,6 +1625,9 @@ msgstr "Antarktis"
 msgid "date"
 msgstr "Datum"
 
+msgid "syntax"
+msgstr "Syntax"
+
 msgid "typeAheadCategory"
 msgstr "Geben Sie den Titel der Kategorie ein. Sie bekommen nach kurzer Verzögerung passende Vorschläge angezeigt, von denen Sie einen auswählen können."
 

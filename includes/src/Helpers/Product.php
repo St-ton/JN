@@ -2142,6 +2142,7 @@ class Product
      * @param array     $configGroups
      * @param array     $configGroupAmounts
      * @param array     $configItemAmounts
+     * @param bool      $singleProductOutput
      * @return stdClass|null
      * @since 5.0.0
      */
@@ -2151,7 +2152,8 @@ class Product
         $variations,
         $configGroups,
         $configGroupAmounts,
-        $configItemAmounts
+        $configItemAmounts,
+        $singleProductOutput = false
     ): ?stdClass {
         $config                  = new stdClass;
         $config->fAnzahl         = $amount;
@@ -2192,14 +2194,16 @@ class Product
             $amount = (int)$amount;
         }
 
+        $_amount              = $singleProductOutput ? 1 : $amount;
         $config->fGesamtpreis = [
             Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
                 Tax::getSalesTax($product->kSteuerklasse)
-            ) * $amount,
-            $product->gibPreis($amount, $selectedProperties) * $amount
+            ) * $_amount,
+            $product->gibPreis($amount, $selectedProperties) * $_amount
         ];
-        $config->oKonfig_arr  = $product->oKonfig_arr;
+
+        $config->oKonfig_arr = $product->oKonfig_arr;
 
         foreach ($configGroups as $i => $data) {
             $configGroups[$i] = (array)$data;
@@ -2225,7 +2229,7 @@ class Product
                     $configItem->fAnzahl = 1;
                 }
                 $configItem->fAnzahlWK = $configItem->fAnzahl;
-                if (!$configItem->ignoreMultiplier()) {
+                if (!$configItem->ignoreMultiplier() && !$singleProductOutput) {
                     $configItem->fAnzahlWK *= $amount;
                 }
                 $configItem->bAktiv = \in_array($configItemID, $configItems);

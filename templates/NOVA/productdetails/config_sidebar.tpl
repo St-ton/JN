@@ -10,7 +10,7 @@
             {/button}
         {/block}
         {block name='productdetails-config-sidebar-table'}
-            <table id="configuration-table" class="table table-striped collapse show">
+            <table id="configuration-table" class="table table-striped collapse">
                 <tbody class="summary"></tbody>
                 <tfoot>
                 <tr>

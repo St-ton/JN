@@ -1,0 +1,114 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "hasPendingUpdatesTitle"
+msgstr "Systemupdate"
+
+msgid "hasPendingUpdatesMessage"
+msgstr "Ein Datenbank-Update ist zwingend notwendig"
+
+msgid "validFolderPermissionsTitle"
+msgstr "Dateisystem"
+
+msgid "validFolderPermissionsMessage"
+msgstr "Es sind Verzeichnisse nicht beschreibbar."
+
+msgid "hasInstallDirTitle"
+msgstr "System"
+
+msgid "hasInstallDirMessage"
+msgstr "Bitte löschen Sie das Installationsverzeichnis \"/install/\" im Shop-Wurzelverzeichnis."
+
+msgid "validDatabaseStructTitle"
+msgstr "Datenbankstruktur"
+
+msgid "validDatabaseStructMessage"
+msgstr "Es liegen Fehler in der Datenbankstruktur vor."
+
+msgid "validModifiedFileStructTitle"
+msgstr "Dateistruktur"
+
+msgid "validModifiedFileStructMessage"
+msgstr "Es liegen Fehler in der Dateistruktur vor."
+
+msgid "hasMobileTemplateIssueTitle"
+msgstr "Template"
+
+msgid "hasMobileTemplateIssueMessage"
+msgstr "Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig."
+
+msgid "hasStandardTemplateIssueTitle"
+msgstr "Template"
+
+msgid "hasStandardTemplateIssueMessage"
+msgstr "Sie haben kein Standard-Template aktiviert!"
+
+msgid "hasActiveProfilerTitle"
+msgstr "Plugin"
+
+msgid "hasActiveProfilerMessage"
+msgstr "Der Profiler ist aktiv. Dies kann zu starken Leistungseinbußen im Shop führen."
+
+msgid "hasNewPluginVersionsTitle"
+msgstr "Plugin"
+
+msgid "hasNewPluginVersionsMessage"
+msgstr "Es sind neue Plugin-Versionen vorhanden."
+
+msgid "hasInvalidPollCouponsTitle"
+msgstr "Umfrage"
+
+msgid "hasInvalidPollCouponsMessage"
+msgstr "In einer Umfrage wird ein Kupon verwendet, welcher inaktiv ist oder nicht mehr existiert."
+
+msgid "hasFullTextIndexErrorTitle"
+msgstr "Volltextsuche"
+
+msgid "hasFullTextIndexErrorMessage"
+msgstr "Der Volltextindex ist nicht vorhanden!"
+
+msgid "hasInvalidPasswordResetMailTemplateTitle"
+msgstr "E-Mail-Vorlage defekt"
+
+msgid "hasInvalidPasswordResetMailTemplateMessage"
+msgstr "Die E-Mail-Vorlage „Passwort Vergessen“ ist veraltet.<br> Die Variable $neues_passwort ist nicht mehr verfügbar.<br> Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück."
+
+msgid "hasInsecureMailConfigTitle"
+msgstr "Unsichere SMTP-Verbindung"
+
+msgid "hasInsecureMailConfigMessage"
+msgstr "Sie haben SMTP als Mail-Methode gewählt, allerdings keine Verschlüsselungsmethode ausgewählt.<br> Wir empfehlen Ihnen dringend, Ihre Mail-Einstellungen anzupassen.<br> Sie finden die Optionen unter „System > E-Mails > Emaileinstellungen > SMTP Security“."
+
+msgid "needPasswordRehash2FATryTitle"
+msgstr "Benutzerverwaltung"
+
+msgid "needPasswordRehash2FATryMessage"
+msgstr "Der Algorithmus zur Passwortspeicherung hat sich geändert.<br> Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung."
+
+msgid "needPasswordRehash2FACatchTitle"
+msgstr "Datenbank-Update"
+
+msgid "needPasswordRehash2FACatchMessage"
+msgstr "Die Methode needPasswordRehash2FA hat eine Exception geworfen.<br/> Bitte führen Sie die Migration 20170306130802_create_emergency_code_table aus."
+
+msgid "getDuplicateLinkGroupTemplateNamesTitle"
+msgstr "Ungültige Linkgruppen"
+
+#placeholder: comma separated list of the duplicate linkgroup template-names
+msgid "getDuplicateLinkGroupTemplateNamesMessage"
+msgstr "Eine oder mehrere Linkgruppen nutzen nicht-eindeutige Template-Namen: %s"
+
+msgid "getExportFormatErrorCountTitle"
+msgstr "Fehler in Exportvorlage"
+
+#placeholder: number of affected export formats
+msgid "getExportFormatErrorCountMessage"
+msgstr "%d Exportvorlage(n) enthalten Syntax-Fehler."
+
+msgid "getEmailTemplateSyntaxErrorCountTitle"
+msgstr "Fehler in Emailvorlage"
+
+#placeholder: number of affected email templates
+msgid "getEmailTemplateSyntaxErrorCountMessage"
+msgstr "%d Emailvorlage(n) enthalten Syntax-Fehler."

@@ -109,3 +109,6 @@ msgstr "Alle exportieren"
 
 msgid "sureDeleteFormat"
 msgstr "Möchten Sie das Exportformat wirklich löschen?"
+
+msgid "useCache"
+msgstr "Cache nutzen?"

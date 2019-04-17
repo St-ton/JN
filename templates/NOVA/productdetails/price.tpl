@@ -163,7 +163,7 @@
                                     <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
                                 </span>
                             </div>
-                        {/block}
+                            {/block}
                         {/if}
                         {block name='productdetails-price-special-prices'}
                             {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige == 2}

@@ -702,7 +702,7 @@ msgid "companyStub"
 msgstr "Muster GmbH"
 
 msgid "faulty"
-msgstr "fehlerhaft"
+msgstr "Fehlerhaft"
 
 msgid "week"
 msgstr "Woche"

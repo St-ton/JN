@@ -50,8 +50,6 @@ class Optin extends OptinBase
     }
 
     /**
-     * set a action-prefix, if we have no code but a email
-     *
      * @param string $action
      * @return Optin
      */
@@ -87,7 +85,7 @@ class Optin extends OptinBase
         if ($this->actionPrefix === self::DELETE_CODE || $this->externalAction === self::DELETE_CODE) {
             $this->deactivateOptin();
 
-            return !empty($this->foundOptinTupel->dActivated) ? 'optinCanceled' : 'optinRemoved';
+            return empty($this->foundOptinTupel->dActivated) ? 'optinRemoved' : 'optinCanceled';
         }
         if ($this->actionPrefix === self::ACTIVATE_CODE || $this->externalAction === self::ACTIVATE_CODE) {
             $this->activateOptin();

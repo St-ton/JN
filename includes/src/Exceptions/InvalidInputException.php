@@ -14,7 +14,6 @@ use Exception;
  */
 class InvalidInputException extends Exception
 {
-
     /**
      * InvalidInputException constructor.
      * @param string $message

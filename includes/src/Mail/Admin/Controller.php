@@ -217,7 +217,7 @@ final class Controller
      */
     public function updateTemplate(int $templateID, array $post, array $files): int
     {
-        $model = $this->getTemplateByID($templateID);
+        $model = $this->getTemplateByID($templateID, (int)($post['kPlugin'] ?? 0));
         if ($model === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
         }
@@ -389,19 +389,23 @@ final class Controller
             if (!\file_exists($fileHtml) || !\file_exists($filePlain)) {
                 continue;
             }
-            $upd               = new stdClass();
-            $upd->cContentHtml = \file_get_contents($fileHtml);
-            $upd->cContentText = \file_get_contents($filePlain);
-            $convertHTML       = \mb_detect_encoding($upd->cContentHtml, ['UTF-8'], true) !== 'UTF-8';
-            $convertText       = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
-            $upd->cContentHtml = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
-            $upd->cContentText = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
-            $affected         += $this->db->update(
+            $upd                = new stdClass();
+            $upd->cContentHtml  = \file_get_contents($fileHtml);
+            $upd->cContentText  = \file_get_contents($filePlain);
+            $upd->kEmailvorlage = $templateID;
+            $upd->kSprache      = (int)$lang->kSprache;
+            $convertHTML        = \mb_detect_encoding($upd->cContentHtml, ['UTF-8'], true) !== 'UTF-8';
+            $convertText        = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
+            $upd->cContentHtml  = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
+            $upd->cContentText  = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
+            $this->db->delete(
                 'temailvorlagesprache',
                 ['kEmailVorlage', 'kSprache'],
-                [$templateID, (int)$lang->kSprache],
-                $upd
+                [$templateID, (int)$lang->kSprache]
             );
+            if ($this->db->insert('temailvorlagesprache', $upd)) {
+                ++$affected;
+            }
         }
 
         return $affected;
@@ -448,6 +452,6 @@ final class Controller
             }
         }
 
-        return $templates;
+        return \array_filter($templates);
     }
 }

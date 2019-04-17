@@ -19,10 +19,6 @@ abstract class OptinFactory
      */
     public static function getInstance(string $optinClass, ...$inheritData): ?OptinInterface
     {
-        if (class_exists($optinClass)) {
-            return new $optinClass($inheritData);
-        }
-
-        return null;
+        return \class_exists($optinClass) ? new $optinClass($inheritData) : null;
     }
 }

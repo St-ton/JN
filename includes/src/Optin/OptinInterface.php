@@ -16,7 +16,7 @@ interface OptinInterface
      * @param OptinRefData $refData
      * @return OptinInterface
      */
-    public function createOptin(OptinRefData $refData);
+    public function createOptin(OptinRefData $refData): OptinInterface;
 
     /**
      * @return mixed

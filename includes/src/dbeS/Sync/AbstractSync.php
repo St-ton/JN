@@ -6,17 +6,23 @@
 
 namespace JTL\dbeS\Sync;
 
+use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\EmptyResultSetException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Customer\Kundengruppe;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinAvailAgain;
 use JTL\Redirect;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
@@ -203,6 +209,9 @@ abstract class AbstractSync
     /**
      * @param object $product
      * @param array  $conf
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     * @throws EmptyResultSetException
      */
     protected function versendeVerfuegbarkeitsbenachrichtigung($product, array $conf): void
     {
@@ -238,20 +247,27 @@ abstract class AbstractSync
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $obj                                   = new stdClass();
-            $obj->tverfuegbarkeitsbenachrichtigung = $msg;
-            $obj->tartikel                         = $product;
-            $obj->tartikel->cName                  = Text::htmlentitydecode($obj->tartikel->cName);
-            $mail                                  = new stdClass();
-            $mail->toEmail                         = $msg->cMail;
-            $mail->toName                          = ($msg->cVorname || $msg->cNachname)
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
+            if (!$availAgainOptin->isActive()) {
+                continue;
+            }
+            $availAgainOptin->finishOptin();
+            $tplData                                   = new stdClass();
+            $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
+            $tplData->tartikel                         = $product;
+            $tplData->tartikel->cName                  = Text::htmlentitydecode($tplData->tartikel->cName);
+            $tplMail                                   = new stdClass();
+            $tplMail->toEmail                          = $msg->cMail;
+            $tplMail->toName                           = ($msg->cVorname || $msg->cNachname)
                 ? ($msg->cVorname . ' ' . $msg->cNachname)
                 : $msg->cMail;
-            $obj->mail                             = $mail;
+            $tplData->mail                             = $tplMail;
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
-            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj));
+            $mail->setToMail($tplMail->toEmail);
+            $mail->setToName($tplMail->toName);
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
 
             $upd                    = new stdClass();
             $upd->nStatus           = 1;
@@ -400,7 +416,7 @@ abstract class AbstractSync
         $this->db->query(
             'DELETE p, d
             FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
+            LEFT JOIN tpreisdetail AS d
                 ON d.kPreis = p.kPreis
             WHERE p.kArtikel = ' . $productID,
             ReturnType::DEFAULT
@@ -470,7 +486,7 @@ abstract class AbstractSync
         $this->db->query(
             'DELETE p, d
             FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
+            LEFT JOIN tpreisdetail AS d
                 ON d.kPreis = p.kPreis
             WHERE p.kArtikel = ' . $productID,
             ReturnType::DEFAULT
@@ -663,9 +679,9 @@ abstract class AbstractSync
                     tpreisdetail.fVKNetto,
                     null dStart, null dEnde
                 FROM tartikel
-                INNER JOIN tpreis 
+                INNER JOIN tpreis
                     ON tpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tpreisdetail 
+                INNER JOIN tpreisdetail
                     ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
             . $uniqueProductIDs . ')
@@ -679,18 +695,18 @@ abstract class AbstractSync
                     null kKunde,
                     IF(tartikelsonderpreis.nIstAnzahl = 0 AND tartikelsonderpreis.nIstDatum = 0, 5, 3) nRangeType,
                     IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
-                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto, 
+                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
                         tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
                     tartikelsonderpreis.dStart dStart,
                     IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
                 FROM tartikel
-                INNER JOIN tpreis 
+                INNER JOIN tpreis
                     ON tpreis.kArtikel = tartikel.kArtikel
-	            INNER JOIN tpreisdetail 
+	            INNER JOIN tpreisdetail
 	                ON tpreisdetail.kPreis = tpreis.kPreis
-                INNER JOIN tartikelsonderpreis 
+                INNER JOIN tartikelsonderpreis
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tsonderpreise 
+                INNER JOIN tsonderpreise
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                 WHERE tartikelsonderpreis.cAktiv = \'Y\'
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
@@ -704,22 +720,22 @@ abstract class AbstractSync
                     SELECT teigenschaft.kArtikel,
                         tkundengruppe.kKundengruppe,
                         teigenschaft.kEigenschaft,
-                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
                             teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
-                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
                             teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
                     FROM teigenschaft
                     INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                     JOIN tkundengruppe
-                    LEFT JOIN teigenschaftwertaufpreis 
+                    LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
                     WHERE teigenschaft.kArtikel IN (' . $uniqueProductIDs . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
-            ) varaufpreis 
-                ON varaufpreis.kArtikel = baseprice.kKindArtikel 
+            ) varaufpreis
+                ON varaufpreis.kArtikel = baseprice.kKindArtikel
                 AND baseprice.nIstVater = 0
             WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
             GROUP BY baseprice.kArtikel,

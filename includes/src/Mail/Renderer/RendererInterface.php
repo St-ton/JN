@@ -17,13 +17,6 @@ use JTL\Smarty\JTLSmarty;
 interface RendererInterface
 {
     /**
-     * @param array                 $params
-     * @param \JTL\Smarty\JTLSmarty $smarty
-     * @return string
-     */
-    public function includeMailTemplate($params, $smarty): string;
-
-    /**
      * @return JTLSmarty
      */
     public function getSmarty(): JTLSmarty;
@@ -34,6 +27,20 @@ interface RendererInterface
      * @throws \SmartyException
      */
     public function renderTemplate(TemplateInterface $template, int $languageID): void;
+
+    /**
+     * @param string $id
+     * @return string
+     * @throws \SmartyException
+     */
+    public function renderHTML(string $id): string;
+
+    /**
+     * @param string $id
+     * @return string
+     * @throws \SmartyException
+     */
+    public function renderText(string $id): string;
 
     /**
      * @param MailInterface $mail

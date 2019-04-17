@@ -1,6 +1,7 @@
 <div
     style="{$instance->getStyleString()}"
-    {$instance->getAttributeString()}
+    class="{$instance->getAnimationClass()}"
+    {$instance->getAnimationDataAttributeString()}
     {if $isPreview}{$instance->getDataAttributeString()}{/if}
 >
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}

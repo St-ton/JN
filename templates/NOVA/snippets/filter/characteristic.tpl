@@ -4,6 +4,8 @@
  *}
 {block name='snippets-filter-characteristics'}
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
+    {$limit = $Einstellungen.template.productlist.filter_max_options}
+    {$collapseInit = false}
     {foreach $Merkmal->getOptions() as $attributeValue}
         {assign var=attributeImageURL value=''}
         {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $attributeValue->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALWERTBILD_VORHANDEN}
@@ -30,6 +32,10 @@
             {/block}
         {else}
             {block name='snippets-filter-characteristics-nav'}
+                {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
+                    <div class="collapse" id="box-collps-{$Merkmal->kMerkmal}" aria-expanded="false">
+                        {$collapseInit = true}
+                {/if}
                 {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}
                     {navitem
                         class="{if $attributeValue->isActive()}active{/if}"
@@ -62,4 +68,15 @@
             {/block}
         {/if}
     {/foreach}
+    {if $limit != -1 && $Merkmal->getOptions()|count > $limit && !$is_dropdown}
+            </div>
+        {button
+            variant="link"
+            role="button"
+            class="text-right pr-0"
+            data=["toggle"=> "collapse", "target"=>"#box-collps-{$Merkmal->kMerkmal}"]
+        }
+            {lang key='showAll'} <i class="fas fa-chevron-down"></i>
+        {/button}
+    {/if}
 {/block}

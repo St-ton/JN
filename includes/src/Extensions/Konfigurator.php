@@ -143,7 +143,7 @@ class Konfigurator
                 }
             }
         }
-        Cart::deleteCartPositions($deletedPositions);
+        Cart::deleteCartPositions($deletedPositions, false);
     }
 
     /**

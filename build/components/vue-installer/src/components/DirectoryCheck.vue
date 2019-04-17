@@ -45,54 +45,54 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    export default {
-        name:  'directorycheck',
-        data() {
-            let directories        = [],
-                directoriesStatus  = 0,
-                networkError       = false,
-                collapseIsVisible  = false,
-                checkedDirectories = false;
-            this.check();
-            return {
-                directories,
-                directoriesStatus,
-                checkedDirectories,
-                networkError,
-                collapseIsVisible
-            };
+import axios from 'axios';
+export default {
+    name:  'directorycheck',
+    data() {
+        let directories        = [],
+            directoriesStatus  = 0,
+            networkError       = false,
+            collapseIsVisible  = false,
+            checkedDirectories = false;
+        this.check();
+        return {
+            directories,
+            directoriesStatus,
+            checkedDirectories,
+            networkError,
+            collapseIsVisible
+        };
+    },
+    methods: {
+        collapseHide() {
+            this.collapseIsVisible = false;
         },
-        methods: {
-            collapseHide() {
-                this.collapseIsVisible = false;
-            },
-            collapseShow() {
-                this.collapseIsVisible = true;
-            },
-            check() {
-                axios.get(this.$getApiUrl('dircheck'))
-                    .then(response => {
-                        this.directories = [];
-                        Object.keys(response.data.testresults).forEach((dir, idx) => {
-                            this.directories.push({
-                                idx,
-                                dir,
-                                isWriteable: response.data.testresults[dir]
-                            });
+        collapseShow() {
+            this.collapseIsVisible = true;
+        },
+        check() {
+            axios.get(this.$getApiUrl('dircheck'))
+                .then(response => {
+                    this.directories = [];
+                    Object.keys(response.data.testresults).forEach((dir, idx) => {
+                        this.directories.push({
+                            idx,
+                            dir,
+                            isWriteable: response.data.testresults[dir]
                         });
-                        /* eslint-disable no-confusing-arrow */
-                        this.directoriesStatus  = this.directories.reduce((acc, val) => acc && (val.isWriteable || val === 1 ? 1 : 0), 1);
-                        this.checkedDirectories = true;
-                    })
-                    .catch(error => {
-                        this.networkError = error.response
-                            ? error.response
-                            : `URL ${this.$getApiUrl('dircheck')} nicht erreichbar.`;
                     });
-            }
+                    /* eslint-disable no-confusing-arrow */
+                    this.directoriesStatus = this.directories.reduce((acc, val) => acc && (val.isWriteable || val === 1 ? 1 : 0), 1);
+                    this.checkedDirectories = true;
+                })
+                .catch(error => {
+                    this.networkError = error.response
+                        ? error.response
+                        : `URL ${this.$getApiUrl('dircheck')} nicht erreichbar.`;
+                });
         }
-    };
+    }
+};
 </script>
 <style scoped>
     .card-body {

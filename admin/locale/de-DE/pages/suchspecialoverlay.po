@@ -55,3 +55,30 @@ msgstr "Overlay konnte nicht gespeichert werden - bitte Schreibrechte des Ordner
 
 msgid "invalidOverlay"
 msgstr "Unbekanntes Overlay"
+
+msgid "overlayName_1"
+msgstr "Bestseller"
+
+msgid "overlayName_2"
+msgstr "Sonderangebote"
+
+msgid "overlayName_3"
+msgstr "Neu im Sortiment"
+
+msgid "overlayName_4"
+msgstr "Top Angebote"
+
+msgid "overlayName_5"
+msgstr "In kürze Verfügbar"
+
+msgid "overlayName_6"
+msgstr "Top bewertet"
+
+msgid "overlayName_7"
+msgstr "Lagerbestand 0"
+
+msgid "overlayName_8"
+msgstr "Auf Lager"
+
+msgid "overlayName_9"
+msgstr "Vorbestellbar"

@@ -180,7 +180,7 @@ class Overlay
                 ->setTransparence($overlay->nTransparenz)
                 ->setSize($overlay->nGroesse)
                 ->setImageName($overlay->cBildPfad)
-                ->setName($overlay->cSuchspecial);
+                ->setName(__('overlayName_' . $overlay->kSuchspecialOverlay));
 
             if ($setFallbackPath) {
                 $this->setFallbackPath($overlay->cTemplate);

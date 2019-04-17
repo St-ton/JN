@@ -1,9 +1,9 @@
 <?php
 /**
- * implementing generic double optin
+ * generic double optin
  *
  * @author Clemens Rudolph
- * @created Wed, 27 Mar 2019 08:13:03 +0100
+ * @created Wed, 17 Apr 2019 12:38:59 +0200
  */
 
 use JTL\Update\IMigration;
@@ -23,10 +23,10 @@ use JTL\Update\Migration;
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_20190327081303 extends Migration implements IMigration
+class Migration_20190417123859 extends Migration implements IMigration
 {
     protected $author      = 'Clemens Rudolph';
-    protected $description = 'implementing generic double optin';
+    protected $description = 'generic double optin';
     protected $kEmailvorlage;
 
     public function up()
@@ -123,115 +123,38 @@ class Migration_20190327081303 extends Migration implements IMigration
         );
         $this->kEmailvorlage = $this->fetchOne('SELECT last_insert_id() AS last_insert_id')->last_insert_id;
 
-        $optin_cContentHtml_de = <<<'DEHTML'
-{includeMailTemplate template=header type=html}
-
-Guten Tag,<br>
-<br>
-Bitte klicken Sie den folgenden Freischalt-Link<br>
-<a href="{$Optin->activationURL}">{$Optin->activationURL}</a>,<br>
-<br>
-um von uns informiert zu werden, sobald der Artikel<br>
-<b>{$Artikel->cName}</b><br>
-wieder verfügbar ist.<br>
-<br>
-Wenn Sie sich von dieser Benachrichtigungsfunktion abmelden möchten,<br>
-klicken Sie bitte den folgenden Link an:<br>
-<a href="{$Optin->deactivationURL}">{$Optin->deactivationURL}</a>,<br>
-<br>
-<br>
-Mit freundlichem Gruß,<br>
-Ihr Team von {$Firma->cName}
-
-{includeMailTemplate template=footer type=html}
-DEHTML;
-
-        $optin_cContentText_de = <<<'DEPLAIN'
-{includeMailTemplate template=header type=plain}
-
-Guten Tag,
-
-Bitte nutzen Sie den folgenden Freischalt-Link
-{$Optin->activationURL}
-den Sie in Ihren Browser einfügen können, um von uns informiert zu werden, sobald
-"{$Artikel->cName}" wieder verfügbar ist.
-
-Wenn Sie sich von dieser Benachrichtigungsfunktion abmelden möchten,
-folgen Sie bitte dem folgenden Link mit Ihrem Browser an:
-{$Optin->deactivationURL}
-
-
-Mit freundlichem Gruß,
-Ihr Team von {$Firma->cName}
-
-{includeMailTemplate template=footer type=plain}
-DEPLAIN;
-
-        $optin_cContentHtml_en = <<<'ENHTML'
-{includeMailTemplate template=header type=html}
-
-
-Dear Customer,<br>
-<br>
-Please use the following confirmation-Link<br>
-<a href="{$Optin->activationURL}">{$Optin->activationURL}</a>,<br>
-to get the information, if the article
-<b>{$Artikel->cName}</b><br>
-is available again.<br>
-<br>
-If you want to unsubscribe from this notification feature,<br>
-please click the following link:<br>
-<a href="{$Optin->deactivationURL}">{$Optin->deactivationURL}<a><br>
-<br>
-<br>
-Yours sincerely,<br>
-{$Einstellungen.global.global_shopname}
-
-{includeMailTemplate template=footer type=html}
-ENHTML;
-
-        $optin_cContentText_en = <<<'ENPLAIN'
-{includeMailTemplate template=header type=plain}
-
-Dear Customer,
-
-Please use the following confirmation-Link, which you can insert into your browser,
-to get the information, if the article
-"{$Artikel->cName}"
-is available again: {$Optin->activationURL}
-
-If you want to unsubscribe from this notification feature,
-please follow the following link with your browser:
-{$Optin->deactivationURL}
-
-
-Yours sincerely,
-{$Einstellungen.global.global_shopname}
-
-{includeMailTemplate template=footer type=plain}
-ENPLAIN;
+        // inserting the contents of the new file
+        $optin_cContentHtml_de = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/ger/produkt_wieder_verfuegbar_optin_html.tpl')
+        );
+        $optin_cContentText_de = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/ger/produkt_wieder_verfuegbar_optin_plain.tpl')
+        );
+        $optin_cContentHtml_en = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/eng/produkt_wieder_verfuegbar_optin_html.tpl')
+        );
+        $optin_cContentText_en = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/eng/produkt_wieder_verfuegbar_optin_plain.tpl')
+        );
 
         $this->execute('INSERT INTO temailvorlagespracheoriginal(
                 kEmailvorlage,
                 kSprache,
                 cBetreff,
                 cContentHtml,
-                cContentText,
-                cDateiname
+                cContentText
             ) VALUES (
                 ' . $this->kEmailvorlage . ",
                 1,
                 'Bestätigung für Produktinformation: #artikel.name#',
                 '" . $optin_cContentHtml_de . "',
-                '" . $optin_cContentText_de . "',
-                'produkt_wieder_verfuegbar_optin'
+                '" . $optin_cContentText_de . "'
             ), (
                 " . $this->kEmailvorlage . ",
                 2,
                 'Confirmation for product information: #artikel.name#',
                 '" . $optin_cContentHtml_en . "',
-                '" . $optin_cContentText_en . "',
-                'produkt_wieder_verfuegbar_optin'
+                '" . $optin_cContentText_en . "'
             )
         ");
 
@@ -240,103 +163,71 @@ ENPLAIN;
                 kSprache,
                 cBetreff,
                 cContentHtml,
-                cContentText,
-                cDateiname
+                cContentText
             ) VALUES (
                 ' . $this->kEmailvorlage . ",
                 1,
                 'Bestätigung für Produktinformation: #artikel.name#',
                 '" . $optin_cContentHtml_de . "',
-                '" . $optin_cContentText_de . "',
-                'produkt_wieder_verfuegbar_optin'
+                '" . $optin_cContentText_de . "'
             ), (
                 " . $this->kEmailvorlage . ",
                 2,
                 'Confirmation for product information: #artikel.name#',
                 '" . $optin_cContentHtml_en . "',
-                '" . $optin_cContentText_en . "',
-                'produkt_wieder_verfuegbar_optin'
+                '" . $optin_cContentText_en . "'
             )
         ");
 
-        // update current availablity mail templates
-        $cContentHtml_de = <<<'DEHTML'
-{includeMailTemplate template=header type=html}
+        // update current availablity mail templates (according to the updated files)
+        $kEmailvorlageProductAvailable = $this->fetchOne(
+            "SELECT kEmailvorlage FROM temailvorlage where cModulId = 'core_jtl_verfuegbarkeitsbenachrichtigung'"
+        )->kEmailvorlage;
 
-Guten Tag,<br>
-<br>
-wir freuen uns, Ihnen mitteilen zu dürfen, dass das Produkt {$Artikel->cName} ab sofort wieder bei uns erhältlich ist.<br>
-<br>
-Über diesen Link kommen Sie direkt zum Produkt in unserem Onlineshop: <a href="{$ShopURL}/{$Artikel->cURL}">{$Artikel->cName}</a><br>
-<br>
-Mit freundlichem Gruß,<br>
-Ihr Team von {$Firma->cName}
-
-{includeMailTemplate template=footer type=html}
-DEHTML;
-
-        $cContentText_de = <<<'DEPLAIN'
-{includeMailTemplate template=header type=plain}
-
-Guten Tag,
-
-wir freuen uns, Ihnen mitteilen zu dürfen, dass das Produkt {$Artikel->cName} ab sofort wieder bei uns erhältlich ist.
-
-Über diesen Link kommen Sie direkt zum Produkt in unserem Onlineshop: {$ShopURL}/{$Artikel->cURL}.
-
-Mit freundlichem Gruß,
-Ihr Team von {$Firma->cName}
-
-{includeMailTemplate template=footer type=plain}
-DEPLAIN;
-
-        $cContentHtml_en = <<<'ENHTML'
-{includeMailTemplate template=header type=html}
-
-Dear customer,<br>
-<br>
-We\'re happy to inform you that our product {$Artikel->cName} is once again available in our online shop.<br>
-<br>
-Link to product: <a href="{$ShopURL}/{$Artikel->cURL}">{$ShopURL}/{$Artikel->cURL}</a><br>
-<br>
-Yours sincerely,<br>
-{$Einstellungen.global.global_shopname}
-
-{includeMailTemplate template=footer type=html}
-ENHTML;
-
-        $cContentText_en = <<<'ENPLAIN'
-{includeMailTemplate template=header type=plain}
-
-Dear customer,
-
-We\'re happy to inform you that our product {$Artikel->cName} is once again available in our online shop.
-
-Link to product: {$ShopURL}/{$Artikel->cURL}
-
-Yours sincerely,
-{$Einstellungen.global.global_shopname}
-
-{includeMailTemplate template=footer type=plain}
-ENPLAIN;
+        $cContentHtml_de = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/ger/produkt_wieder_verfuegbar_html.tpl')
+        );
+        $cContentText_de = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/ger/produkt_wieder_verfuegbar_plain.tpl')
+        );
+        $cContentHtml_en = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/eng/produkt_wieder_verfuegbar_html.tpl')
+        );
+        $cContentText_en = addslashes(
+            file_get_contents(PFAD_ROOT . 'admin/mailtemplates/eng/produkt_wieder_verfuegbar_plain.tpl')
+        );
 
         $this->execute("UPDATE temailvorlagespracheoriginal
             SET
                 cContentHtml = '" . $cContentHtml_de . "',
                 cContentText = '" . $cContentText_de . "' " .
             'WHERE
-                kEmailvorlage = ' . $this->kEmailvorlage . ' ' .
+                kEmailvorlage = ' . $kEmailvorlageProductAvailable . ' ' .
                 'AND kSprache = 1');
 
+        $this->execute("UPDATE temailvorlagespracheoriginal
+            SET
+                cContentHtml = '" . $cContentHtml_en . "',
+                cContentText = '" . $cContentText_en . "' " .
+            'WHERE
+                kEmailvorlage = ' . $kEmailvorlageProductAvailable . ' ' .
+            'AND kSprache = 2');
+
+        $this->execute("UPDATE temailvorlagesprache
+            SET
+                cContentHtml = '" . $cContentHtml_de . "',
+                cContentText = '" . $cContentText_de. "' " .
+            'WHERE
+                kEmailvorlage = ' . $kEmailvorlageProductAvailable . ' ' .
+            'AND kSprache = 1');
 
         $this->execute("UPDATE temailvorlagesprache
             SET
                 cContentHtml = '" . $cContentHtml_en . "',
                 cContentText = '" . $cContentText_en . "' " .
             'WHERE
-                kEmailvorlage = ' . $this->kEmailvorlage . ' ' .
-                'AND kSprache = 2');
-
+                kEmailvorlage = ' . $kEmailvorlageProductAvailable  . ' ' .
+            'AND kSprache = 2');
 
         $this->execute("ALTER TABLE temailvorlage MODIFY cDateiname
             varchar(255) DEFAULT '' NOT NULL COMMENT 'base file name in admin/mailtemplates/[ger|eng]/'");
@@ -352,10 +243,15 @@ ENPLAIN;
 
     public function down()
     {
-        $this->execute("DELETE FROM temailvorlageoriginal WHERE cModulId = 'core_jtl_verfuegbarkeitsbenachrichtigung_optin'");
-        $this->execute("DELETE FROM temailvorlage WHERE cModulId = 'core_jtl_verfuegbarkeitsbenachrichtigung_optin'");
-        $this->execute("DELETE FROM temailvorlagespracheoriginal WHERE cDateiname = 'produkt_wieder_verfuegbar_optin'");
-        $this->execute("DELETE FROM temailvorlagesprache WHERE cDateiname = 'produkt_wieder_verfuegbar_optin'");
+        $this->kEmailvorlage = $this->fetchOne(
+            "SELECT kEmailvorlage FROM temailvorlage where cModulId = 'core_jtl_verfuegbarkeitsbenachrichtigung_optin'"
+        )->kEmailvorlage;
+
+        $this->execute('DELETE FROM temailvorlagespracheoriginal WHERE kEmailvorlage = ' . $this->kEmailvorlage);
+        $this->execute('DELETE FROM temailvorlagesprache WHERE kEmailvorlage = ' . $this->kEmailvorlage);
+
+        $this->execute('DELETE FROM temailvorlageoriginal WHERE kEmailvorlage = ' . $this->kEmailvorlage);
+        $this->execute('DELETE FROM temailvorlage WHERE kEmailvorlage = ' . $this->kEmailvorlage);
 
         $this->removeLocalization('optinRemoved');
         $this->removeLocalization('optinCanceled');

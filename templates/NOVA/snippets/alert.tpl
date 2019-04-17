@@ -9,7 +9,7 @@
         id="{if $alert->getId()}{$alert->getId()}{/if}"
     }
         {if $alert->getIcon()}
-            <i class="fa fa-{if $alert->getIcon() === 'warning'}exclamation-triangle{else}{$alert->getIcon()}{/if}"></i>
+            <i class="fas fa-{if $alert->getIcon() === 'warning'}exclamation-triangle{else}{$alert->getIcon()}{/if}"></i>
         {/if}
         {if $alert->getDismissable()}<div class="close ml-3">&times;</div>{/if}
         {if !empty($alert->getLinkHref()) && empty($alert->getLinkText())}

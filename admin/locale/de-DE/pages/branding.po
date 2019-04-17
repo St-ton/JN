@@ -52,3 +52,7 @@ msgstr "Merkmalwerte"
 
 msgid "Hersteller"
 msgstr "Hersteller"
+
+#placeholder: name of image category
+msgid "headingEditBrandingForProduct"
+msgstr "Branding für %s bearbeiten"

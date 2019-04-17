@@ -58,14 +58,12 @@ class MailTemplates extends AbstractItem
             if ($mailTplID <= 0) {
                 return InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE;
             }
-            $localizedTpl                = new stdClass();
-            $localizedTpl->kEmailvorlage = $mailTplID;
-            $iso                         = '';
-            $allLanguages                = Sprache::getAllLanguages(2);
-            $fallbackLocalization        = null;
-            $availableLocalizations      = [];
-            $addedLanguages              = [];
-            $first                       = true;
+            $iso                    = '';
+            $allLanguages           = Sprache::getAllLanguages(2);
+            $fallbackLocalization   = null;
+            $availableLocalizations = [];
+            $addedLanguages         = [];
+            $first                  = true;
             foreach ($template['TemplateLanguage'] as $l => $localized) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -73,6 +71,7 @@ class MailTemplates extends AbstractItem
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     $iso = \mb_convert_case($localized['iso'], \MB_CASE_LOWER);
                 } elseif (isset($hits2[0]) && \mb_strlen($hits2[0]) === \mb_strlen($l)) {
+                    $localizedTpl                = new stdClass();
                     $localizedTpl->kEmailvorlage = $mailTplID;
                     $localizedTpl->kSprache      = $allLanguages[$iso]->kSprache ?? 0;
                     $localizedTpl->cBetreff      = $localized['Subject'];
@@ -86,7 +85,6 @@ class MailTemplates extends AbstractItem
                     }
                 }
             }
-
             foreach ($availableLocalizations as $localizedTpl) {
                 if ($localizedTpl->kSprache === 0) {
                     continue;
@@ -97,7 +95,6 @@ class MailTemplates extends AbstractItem
                 }
                 $this->db->insert('tpluginemailvorlagespracheoriginal', $localizedTpl);
             }
-
             // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
             foreach ($allLanguages as $language) {
                 if (\in_array($language->kSprache, $addedLanguages, true)) {

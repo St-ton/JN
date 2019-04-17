@@ -11,6 +11,7 @@ use JTL\Kampagne;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Customer\Kunde;
 use JTL\Shop;
+use JTL\Smarty\MailSmarty;
 use JTL\Sprache;
 use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
@@ -28,21 +29,15 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 function bereiteNewsletterVor($conf)
 {
     $db         = Shop::Container()->getDB();
-    $mailSmarty = new JTLSmarty(true, ContextType::NEWSLETTER);
-    $mailSmarty->setCaching(0)
-               ->setDebugging(0)
-               ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
-               ->registerResource('db', new SmartyResourceNiceDB($db, ContextType::NEWSLETTER))
-               ->assign('Firma', $db->query(
-                   'SELECT *  FROM tfirma',
-                   ReturnType::SINGLE_OBJECT
-               ))
-               ->assign('URL_SHOP', Shop::getURL())
-               ->assign('Einstellungen', $conf);
-    if (NEWSLETTER_USE_SECURITY) {
-        $mailSmarty->activateBackendSecurityMode();
-    }
-    return $mailSmarty;
+    $mailSmarty = new MailSmarty($db, ContextType::NEWSLETTER);
+
+    return $mailSmarty
+        ->assign('Firma', $db->query(
+            'SELECT *  FROM tfirma',
+            ReturnType::SINGLE_OBJECT
+        ))
+       ->assign('URL_SHOP', Shop::getURL())
+       ->assign('Einstellungen', $conf);
 }
 
 /**

@@ -335,6 +335,48 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getAnimationClass(): string
+    {
+        $style = $this->getProperty('animation-style');
+
+        return $style !== '' ? 'wow ' . $style : '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getAnimationData(): array
+    {
+        $data = [];
+
+        foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
+            if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
+                !empty($this->getProperty($propname))
+            ) {
+                $data[$propname] = $this->getProperty($propname);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnimationDataAttributeString(): string
+    {
+        $res = '';
+
+        foreach ($this->getAnimationData() as $key => $val) {
+            $res .= ' data-' . $key . '="' . $val . '"';
+        }
+
+        return $res;
+    }
+
+    /**
      * @return $this
      */
     public function updateAttributes(): self
@@ -370,7 +412,7 @@ class PortletInstance implements \JsonSerializable
         $result = '';
 
         foreach ($this->getAttributes() as $name => $value) {
-            $result .= "$name='$value'";
+            $result .= ' ' . $name . '="' . $value . '"';
         }
 
         return $result;

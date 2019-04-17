@@ -133,43 +133,43 @@
 </template>
 
 <script>
-    /* eslint-disable */
-    import {mapGetters} from 'vuex';
-    import axios from 'axios';
-    import qs from 'qs';
-    export default {
-        name:     'wawicheck',
-        data() {
-            return {
-                syncData: null,
-                error:    false,
-                syncOK:   false
-            };
-        },
-        computed: mapGetters({
-            wawi:      'getWawiUser',
-            admin:     'getAdminUser',
-            shopURL:   'getShopURL',
-            secretKey: 'getSecretKey'
-        }),
-        mounted() {
-            this.checkWawi();
-        },
-        methods: {
-            checkWawi() {
-                const postData = qs.stringify({
-                    db:     this.$store.state.database,
-                    stepId: 0
+/* eslint-disable */
+import {mapGetters} from 'vuex';
+import axios from 'axios';
+import qs from 'qs';
+export default {
+    name:     'wawicheck',
+    data() {
+        return {
+            syncData: null,
+            error:    false,
+            syncOK:   false
+        };
+    },
+    computed: mapGetters({
+        wawi:      'getWawiUser',
+        admin:     'getAdminUser',
+        shopURL:   'getShopURL',
+        secretKey: 'getSecretKey'
+    }),
+    mounted() {
+        this.checkWawi();
+    },
+    methods: {
+        checkWawi() {
+            const postData = qs.stringify({
+                db:     this.$store.state.database,
+                stepId: 0
+            });
+            axios.post(this.$getApiUrl('wizard'), postData)
+                .then(response => {
+                    this.syncData = response.data.payload;
+                    this.syncOK = response.data.payload.isSynced;
+                })
+                .catch(error => {
+                    console.log('caught: ', error);
                 });
-                axios.post(this.$getApiUrl('wizard'), postData)
-                    .then(response => {
-                        this.syncData = response.data.payload;
-                        this.syncOK = response.data.payload.isSynced;
-                    })
-                    .catch(error => {
-                        console.log('caught: ', error);
-                    });
-            }
         }
-    };
+    }
+};
 </script>

@@ -5,10 +5,19 @@
 {if !isset($itemClass)}
     {assign var=itemClass value=''}
 {/if}
+{if !isset($class)}
+    {$class = ''}
+{/if}
+{$limit = $Einstellungen.template.productlist.filter_max_options}
+{$collapseInit = false}
 
-<ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
+<ul class="{if !empty($class)}{$class}{else}nav nav-list{/if}">
     {foreach $filter->getOptions() as $filterOption}
         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
+        {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit && $class!='dropdown-menu'}
+            <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false"><ul class="nav nav-list">
+            {$collapseInit = true}
+        {/if}
         <li class="filter-item{if $filterIsActive === true} active{/if}">
             <a rel="nofollow"
                href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
@@ -28,4 +37,14 @@
             </a>
         </li>
     {/foreach}
+    {if $limit != -1 && $filter->getOptions()|count > $limit && $class!='dropdown-menu'}
+    </ul></div>
+        <button class="btn btn-link pull-right"
+                role="button"
+                data-toggle="collapse"
+                data-target="#box-collps-filter{$filter->getNiceName()}"
+        >
+            {lang key='showAll'} <span class="caret"></span>
+        </button>
+    {/if}
 </ul>

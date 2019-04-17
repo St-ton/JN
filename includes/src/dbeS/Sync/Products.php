@@ -26,6 +26,8 @@ final class Products extends AbstractSync
     /**
      * @param Starter $starter
      * @return mixed|null
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function handle(Starter $starter)
     {
@@ -62,6 +64,8 @@ final class Products extends AbstractSync
      * @param array $xml
      * @param array $conf
      * @return array - list of product IDs to flush
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     private function handleInserts($xml, array $conf): array
     {
@@ -519,6 +523,7 @@ final class Products extends AbstractSync
         }
 
         $this->handleNewPriceFormat($product->kArtikel, $xml['tartikel']);
+        $this->handlePriceHistory($product->kArtikel, $xml['tartikel']);
         $this->updateXMLinDB(
             $xml['tartikel'],
             'tartikelsonderpreis',
@@ -645,58 +650,13 @@ final class Products extends AbstractSync
                 );
             }
         }
-        $testSepcialPrice = false;
         if (isset($xml['tartikel']['tartikelsonderpreis']) && \is_array($xml['tartikel']['tartikelsonderpreis'])) {
             $productSpecialPrices = $this->mapper->mapArray(
                 $xml['tartikel'],
                 'tartikelsonderpreis',
                 'mArtikelSonderpreis'
             );
-            if ($productSpecialPrices[0]->cAktiv === 'Y') {
-                $specialPriceStart = \explode('-', $productSpecialPrices[0]->dStart);
-                if (\count($specialPriceStart) > 2) {
-                    [$startYear, $startMonth, $startDay] = $specialPriceStart;
-                } else {
-                    $startYear  = null;
-                    $startMonth = null;
-                    $startDay   = null;
-                }
-                $specialPriceEnd = \explode('-', $productSpecialPrices[0]->dEnde);
-                if (\count($specialPriceEnd) > 2) {
-                    [$endYear, $endMonth, $endDay] = $specialPriceEnd;
-                } else {
-                    $endYear  = null;
-                    $endMonth = null;
-                    $endDay   = null;
-                }
-                $stampEnd   = \time();
-                $stampStart = \mktime(0, 0, 0, $startMonth, $startDay, $startYear);
-                $stampNow   = \time();
-
-                if ($endYear > 0) {
-                    $stampEnd = \mktime(0, 0, 0, $endMonth, $endDay + 1, $endYear);
-                }
-                $testSepcialPrice = ($stampNow >= $stampStart
-                    && ($stampNow < $stampEnd || (int)$productSpecialPrices[0]->dEnde === 0)
-                    && ($productSpecialPrices[0]->nIstAnzahl === 0 || ((int)$productSpecialPrices[0]->nIstAnzahl === 1
-                            && (int)$productSpecialPrices[0]->nAnzahl < (int)$xml['tartikel']['fLagerbestand'])));
-            }
-            $spCount = \count($productSpecialPrices);
-            for ($i = 0; $i < $spCount; ++$i) {
-                if ($testSepcialPrice === true) {
-                    $specialPrices = $this->mapper->mapArray(
-                        $xml['tartikel']['tartikelsonderpreis'],
-                        'tsonderpreise',
-                        'mSonderpreise'
-                    );
-                    foreach ($specialPrices as $specialPrice) {
-                        $this->setzePreisverlauf(
-                            $productSpecialPrices[0]->kArtikel,
-                            $specialPrice->kKundengruppe,
-                            $specialPrice->fNettoPreis
-                        );
-                    }
-                }
+            for ($i = 0; $i < \count($productSpecialPrices); ++$i) {
                 $this->updateXMLinDB(
                     $xml['tartikel']['tartikelsonderpreis'],
                     'tsonderpreise',
@@ -706,22 +666,6 @@ final class Products extends AbstractSync
                 );
             }
             $this->upsert('tartikelsonderpreis', $productSpecialPrices, 'kArtikelSonderpreis');
-        }
-        // Preise für Preisverlauf
-        // NettoPreis übertragen, falls kein Sonderpreis gesetzt wurde
-        if (!($testSepcialPrice === true
-            && isset($xml['tartikel']['tartikelsonderpreis'])
-            && \is_array($xml['tartikel']['tartikelsonderpreis']))
-        ) {
-            $prices = $this->mapper->mapArray($xml['tartikel'], 'tpreis', 'mPreis');
-            foreach ($prices as $price) {
-                if ((int)$price->kKundenGruppe > 0) {
-                    $nettoPrice = isset($price->tpreisdetail[0]) && (int)$price->tpreisdetail[0]['nAnzahlAb'] === 0
-                        ? $price->tpreisdetail[0]['fNettoPreis']
-                        : $products[0]->fStandardpreisNetto;
-                    $this->setzePreisverlauf($price->kArtikel, $price->kKundenGruppe, $nettoPrice);
-                }
-            }
         }
         if (isset($xml['tartikel']['teigenschaft']) && \is_array($xml['tartikel']['teigenschaft'])) {
             $attributes = $this->mapper->mapArray($xml['tartikel'], 'teigenschaft', 'mEigenschaft');

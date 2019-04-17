@@ -19,7 +19,7 @@ class Migration_20190415164325 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute('DROP TABLE tpreise');
+        $this->execute('DROP TABLE IF EXISTS tpreise');
         $this->execute('DROP INDEX kArtikel ON tpreis');
         $this->execute('CREATE UNIQUE INDEX kArtikel on tpreis(kArtikel, kKundengruppe, kKunde)');
         $this->execute('DROP INDEX kArtikel ON tpreisverlauf');

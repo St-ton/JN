@@ -64,6 +64,11 @@ function getAdminDefPermissions(): array
         $group->kAdminrechtemodul = (int)$group->kAdminrechtemodul;
         $group->nSort             = (int)$group->nSort;
         $group->oPermission_arr   = $perms[$group->kAdminrechtemodul] ?? [];
+        $group->cName             = __('permissionModule_' . $group->kAdminrechtemodul);
+
+        foreach ($group->oPermission_arr as $permsTMP) {
+            $permsTMP->cBeschreibung = __('permission_' . $permsTMP->cRecht);
+        }
     }
 
     return $groups;

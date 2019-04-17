@@ -100,7 +100,7 @@
                             <tr>
                                 <td class="tleft">{$oGroup->kAdminlogingruppe}</td>
                                 <td class="tleft">{$oGroup->cGruppe}</td>
-                                <td class="tleft">{$oGroup->cBeschreibung}</td>
+                                <td class="tleft">{__($oGroup->cBeschreibung)}</td>
                                 <td class="tcenter">{$oGroup->nCount}</td>
                                 <td class="tcenter">
                                     {if $oGroup->kAdminlogingruppe !== '1'}

@@ -6,7 +6,6 @@
 
 namespace JTL\Optin;
 
-use JTL\Cron\Job\GeneralDataProtect;
 use JTL\GeneralDataProtection\IpAnonymizer;
 
 /**

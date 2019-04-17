@@ -49,7 +49,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      * @param OptinRefData $refData
      * @return OptinAvailAgain
      */
-    public function createOptin(OptinRefData $refData): self
+    public function createOptin(OptinRefData $refData): OptinInterface
     {
         $this->refData = $refData;
         $this->product = $this->dbHandler->select('tartikel', 'kArtikel', $this->refData->getProductId());

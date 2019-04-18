@@ -73,7 +73,7 @@ class LegacyPluginLoader extends AbstractLoader
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
-        } elseif (($plugin = $this->loadFromCache()) !== null) {
+        } elseif (false && ($plugin = $this->loadFromCache()) !== null) {
             $this->plugin = $plugin;
 
             return $this->plugin;

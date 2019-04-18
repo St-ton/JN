@@ -88,7 +88,7 @@ function ackCheck(kPlugin, hash)
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'verfuegbar'} active{/if}">
                     <a data-toggle="tab" role="tab" href="#verfuegbar">
-                        {__('existing')} <span class="badge">{$pluginsAvailable->count()}</span>
+                        {__('available')} <span class="badge">{$pluginsAvailable->count()}</span>
                     </a>
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'fehlerhaft'} active{/if}">

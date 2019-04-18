@@ -479,7 +479,7 @@ final class Installer
             $this->db->update('tplugincustomtabelle', 'kPlugin', $pluginID, $upd);
             $this->db->update('tplugintemplate', 'kPlugin', $pluginID, $upd);
             $this->db->update('tpluginlinkdatei', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tpluginemailvorlage', 'kPlugin', $pluginID, $upd);
+            $this->db->update('temailvorlage', 'kPlugin', $pluginID, $upd);
             $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
             $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
             $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
@@ -565,8 +565,8 @@ final class Installer
                     WHERE kPlugin = " . $pluginID,
                 ReturnType::AFFECTED_ROWS
             );
-            $oldMailTpl = $this->db->select('tpluginemailvorlage', 'kPlugin', $oldPluginID);
-            $newMailTpl = $this->db->select('tpluginemailvorlage', 'kPlugin', $pluginID);
+            $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
+            $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
             if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
                 $this->db->update(
                     'tpluginemailvorlageeinstellungen',
@@ -579,7 +579,7 @@ final class Installer
             $kEmailvorlageAlt = 0;
             foreach ($this->plugin->getMailTemplates()->getTemplatesAssoc() as $cModulId => $oldMailTpl) {
                 $newMailTpl = $this->db->select(
-                    'tpluginemailvorlage',
+                    'temailvorlage',
                     'kPlugin',
                     $oldPluginID,
                     'cModulId',
@@ -595,7 +595,7 @@ final class Installer
                         $kEmailvorlageAlt = (int)$oldMailTpl->kEmailvorlage;
                     }
                     $this->db->update(
-                        'tpluginemailvorlagesprache',
+                        'temailvorlagesprache',
                         'kEmailvorlage',
                         $oldMailTpl->kEmailvorlage,
                         (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]

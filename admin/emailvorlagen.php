@@ -62,23 +62,22 @@ if (isset($_GET['err'])) {
     }
 }
 if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
-    $mailTemplate = $controller->getTemplateByID((int)$_POST['resetConfirm'], $pluginID);
+    $mailTemplate = $controller->getTemplateByID((int)$_POST['resetConfirm']);
     if ($mailTemplate !== null) {
         $step = 'zuruecksetzen';
     }
 }
-
 if (isset($_POST['resetEmailvorlage'], $_POST['resetConfirmJaSubmit'])
     && (int)$_POST['resetEmailvorlage'] === 1
     && $emailTemplateID > 0
     && Form::validateToken()
     && $controller->getTemplateByID($emailTemplateID) !== null
 ) {
-    $controller->resetTemplate($emailTemplateID, $pluginID);
+    $controller->resetTemplate($emailTemplateID);
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateReset'), 'successTemplateReset');
 }
 if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
-    $state = $controller->sendPreviewMails((int)$_POST['preview'], $pluginID);
+    $state = $controller->sendPreviewMails((int)$_POST['preview']);
     if ($state === $controller::OK) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
     } elseif ($state === $controller::ERROR_CANNOT_SEND) {
@@ -125,13 +124,15 @@ if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::
             $step     = 'uebersicht';
             $continue = (bool)Request::verifyGPCDataInt('continue');
         } elseif ($res === $controller::ERROR_SMARTY) {
-            $step = 'prebearbeiten';
+            $mailTemplate = $controller->getModel();
+            $step         = 'prebearbeiten';
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
                 __('errorTemplate') . '<br />' . first($controller->getErrorMessages()),
                 'errorTemplate'
             );
         } else {
+            $mailTemplate = $controller->getModel();
             foreach ($controller->getErrorMessages() as $i => $msg) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
@@ -163,7 +164,7 @@ if ((($emailTemplateID > 0 && $continue === true)
     foreach ($config as $item) {
         $configAssoc[$item->cKey] = $item->cValue;
     }
-    $mailTemplate = $controller->getTemplateByID($emailTemplateID, $pluginID);
+    $mailTemplate = $mailTemplate ?? $controller->getTemplateByID($emailTemplateID);
     $smarty->assign('availableLanguages', $availableLanguages)
            ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);

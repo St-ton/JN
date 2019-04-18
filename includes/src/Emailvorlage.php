@@ -115,9 +115,8 @@ class Emailvorlage
      */
     private function loadFromDB(int $kEmailvorlage, bool $bPlugin): self
     {
-        $cTable        = $bPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
-        $oObj          = Shop::Container()->getDB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
+        $oObj          = Shop::Container()->getDB()->select('temailvorlage', 'kEmailvorlage', $kEmailvorlage);
 
         if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
             foreach (\array_keys(\get_object_vars($oObj)) as $member) {
@@ -395,9 +394,8 @@ class Emailvorlage
      */
     public static function load(string $modulId, $isPlugin = false): ?self
     {
-        $table = $isPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
-        $obj   = Shop::Container()->getDB()->select(
-            $table,
+        $obj = Shop::Container()->getDB()->select(
+            'temailvorlage',
             'cModulId',
             $modulId,
             null,

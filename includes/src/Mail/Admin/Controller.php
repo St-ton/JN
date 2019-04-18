@@ -16,6 +16,7 @@ use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
+use JTL\Shop;
 use JTL\Sprache;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
@@ -67,6 +68,11 @@ final class Controller
     private $errorMessages = [];
 
     /**
+     * @var Model|null
+     */
+    private $model;
+
+    /**
      * Controller constructor.
      * @param DbInterface     $db
      * @param Mailer          $mailer
@@ -77,6 +83,22 @@ final class Controller
         $this->db      = $db;
         $this->mailer  = $mailer;
         $this->factory = $factory;
+    }
+
+    /**
+     * @return Model|null
+     */
+    public function getModel(): ?Model
+    {
+        return $this->model;
+    }
+
+    /**
+     * @param Model $model
+     */
+    public function setModel(Model $model): void
+    {
+        $this->model = $model;
     }
 
     /**
@@ -217,24 +239,24 @@ final class Controller
      */
     public function updateTemplate(int $templateID, array $post, array $files): int
     {
-        $model = $this->getTemplateByID($templateID);
-        if ($model === null) {
+        $this->model = $this->getTemplateByID($templateID);
+        if ($this->model === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
         }
         $languages = Sprache::getAllLanguages();
         foreach ($languages as $lang) {
             $langID = $lang->kSprache;
-            foreach ($model->getMapping() as $field => $method) {
+            foreach ($this->model->getMapping() as $field => $method) {
                 $method         = 'set' . $method;
                 $localizedIndex = $field . '_' . $langID;
                 if (isset($post[$field])) {
-                    $model->$method($post[$field]);
+                    $this->model->$method($post[$field]);
                 } elseif (isset($post[$localizedIndex])) {
-                    $model->$method($post[$localizedIndex], $langID);
+                    $this->model->$method($post[$localizedIndex], $langID);
                 }
             }
         }
-        $res = $this->updateUploads($model, $languages, $post, $files);
+        $res = $this->updateUploads($this->model, $languages, $post, $files);
         if ($res !== self::OK) {
             return $res;
         }
@@ -242,40 +264,39 @@ final class Controller
         foreach ($languages as $lang) {
             try {
                 $this->mailer->getHydrator()->hydrate(null, $lang);
-                $smarty->fetch('string:' . $model->getHTML($lang->kSprache));
-                $smarty->fetch('string:' . $model->getText($lang->kSprache));
-                $model->setHasError(false);
+                $smarty->fetch('string:' . $this->model->getHTML($lang->kSprache));
+                $smarty->fetch('string:' . $this->model->getText($lang->kSprache));
+                $this->model->setHasError(false);
             } catch (\Exception $e) {
                 $this->setErrorMessages([$e->getMessage()]);
-                $model->setHasError(true);
+                $this->model->setHasError(true);
 
                 return self::ERROR_SMARTY;
             }
         }
-        $model->save();
+        $this->model->save();
         unset($_SESSION['emailSyntaxErrorCount']);
 
         return self::OK;
     }
 
     /**
-     * @param int      $templateID
-     * @param int|null $pluginID
+     * @param int $templateID
      * @return int
      * @throws Exception
      * @throws \SmartyException
      */
-    public function sendPreviewMails(int $templateID, int $pluginID = null): int
+    public function sendPreviewMails(int $templateID): int
     {
-        $mailTpl = $this->getTemplateByID($templateID, $pluginID);
+        $mailTpl = $this->getTemplateByID($templateID);
         if ($mailTpl === null) {
             $this->addErrorMessage(__('errorTemplateMissing') . $templateID);
 
             return self::ERROR_NO_TEMPLATE;
         }
         $moduleID = $mailTpl->getModuleID();
-        if ($pluginID > 0) {
-            $moduleID = 'kPlugin_' . $pluginID . '_' . $moduleID;
+        if ($mailTpl->getPluginID() > 0) {
+            $moduleID = 'kPlugin_' . $mailTpl->getPluginID() . '_' . $moduleID;
         }
         $template = $this->factory->getTemplate($moduleID);
         if ($template === null) {
@@ -308,49 +329,11 @@ final class Controller
      * @param int $templateID
      * @return bool
      */
-    private function resetPluginTemplate(int $templateID): bool
+    public function resetTemplate(int $templateID): bool
     {
-        $this->db->delete(
-            'tpluginemailvorlagesprache',
-            'kEmailvorlage',
-            $templateID
-        );
         $this->db->queryPrepared(
-            'INSERT INTO tpluginemailvorlagesprache
-                SELECT *
-                FROM tpluginemailvorlagespracheoriginal
-                WHERE tpluginemailvorlagespracheoriginal.kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
-        );
-
-        return true;
-    }
-
-    /**
-     * @param int $templateID
-     * @param int $pluginID
-     * @return bool
-     */
-    public function resetTemplate(int $templateID, int $pluginID): bool
-    {
-        if ($pluginID > 0) {
-            return $this->resetPluginTemplate($templateID);
-        }
-        $this->db->queryPrepared(
-            'DELETE temailvorlage, temailvorlagesprache
-                FROM temailvorlage
-                LEFT JOIN temailvorlagesprache
-                    ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                WHERE temailvorlage.kEmailvorlage = :tid',
-            ['tid' => $templateID],
-            ReturnType::DEFAULT
-        );
-        $this->db->queryPrepared(
-            'INSERT INTO temailvorlage
-                SELECT *
-                FROM temailvorlageoriginal
-                WHERE temailvorlageoriginal.kEmailvorlage = :tid',
+            'DELETE FROM temailvorlagesprache
+                WHERE kEmailvorlage = :tid',
             ['tid' => $templateID],
             ReturnType::DEFAULT
         );
@@ -363,7 +346,7 @@ final class Controller
             ReturnType::DEFAULT
         );
         $data = $this->db->select(
-            'temailvorlageoriginal',
+            'temailvorlage',
             'kEmailvorlage',
             $templateID
         );
@@ -389,19 +372,23 @@ final class Controller
             if (!\file_exists($fileHtml) || !\file_exists($filePlain)) {
                 continue;
             }
-            $upd               = new stdClass();
-            $upd->cContentHtml = \file_get_contents($fileHtml);
-            $upd->cContentText = \file_get_contents($filePlain);
-            $convertHTML       = \mb_detect_encoding($upd->cContentHtml, ['UTF-8'], true) !== 'UTF-8';
-            $convertText       = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
-            $upd->cContentHtml = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
-            $upd->cContentText = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
-            $affected         += $this->db->update(
+            $upd                = new stdClass();
+            $upd->cContentHtml  = \file_get_contents($fileHtml);
+            $upd->cContentText  = \file_get_contents($filePlain);
+            $upd->kEmailvorlage = $templateID;
+            $upd->kSprache      = (int)$lang->kSprache;
+            $convertHTML        = \mb_detect_encoding($upd->cContentHtml, ['UTF-8'], true) !== 'UTF-8';
+            $convertText        = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
+            $upd->cContentHtml  = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
+            $upd->cContentText  = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
+            $this->db->delete(
                 'temailvorlagesprache',
                 ['kEmailVorlage', 'kSprache'],
-                [$templateID, (int)$lang->kSprache],
-                $upd
+                [$templateID, (int)$lang->kSprache]
             );
+            if ($this->db->insert('temailvorlagesprache', $upd)) {
+                ++$affected;
+            }
         }
 
         return $affected;
@@ -410,12 +397,11 @@ final class Controller
 
     /**
      * @param int      $templateID
-     * @param int|null $pluginID
      * @return Model|null
      */
-    public function getTemplateByID(int $templateID, int $pluginID = null): ?Model
+    public function getTemplateByID(int $templateID): ?Model
     {
-        $mailTpl = $this->factory->getTemplateByID($templateID, $pluginID);
+        $mailTpl = $this->factory->getTemplateByID($templateID);
         if ($mailTpl !== null) {
             $mailTpl->load(1, 1);
 
@@ -431,15 +417,12 @@ final class Controller
     public function getAllTemplates(): array
     {
         $templates   = [];
-        $templateIDs = \array_merge(
-            $this->db->selectAll('temailvorlage', [], [], 'cModulId'),
-            $this->db->selectAll('tpluginemailvorlage', [], [], 'cModulId, kPlugin')
-        );
+        $templateIDs = $this->db->selectAll('temailvorlage', [], [], 'cModulId, kPlugin');
         $langID      = Sprache::getDefaultLanguage()->kSprache;
         $cgroupID    = Kundengruppe::getDefaultGroupID();
         foreach ($templateIDs as $templateID) {
             $module = $templateID->cModulId;
-            if (isset($templateID->kPlugin) && $templateID->kPlugin > 0) {
+            if ($templateID->kPlugin > 0) {
                 $module = 'kPlugin_' . $templateID->kPlugin . '_' . $templateID->cModulId;
             }
             if (($template = $this->factory->getTemplate($module)) !== null) {
@@ -448,6 +431,6 @@ final class Controller
             }
         }
 
-        return $templates;
+        return \array_filter($templates);
     }
 }

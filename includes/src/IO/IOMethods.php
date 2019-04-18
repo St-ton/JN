@@ -672,11 +672,20 @@ class IOMethods
             $variationValues,
             $items,
             $quantities,
-            $itemQuantities
+            $itemQuantities,
+            true
         );
         $net             = Frontend::getCustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID);
-        $Artikel->Preise->cVKLocalized[$net] = Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount);
+        $fVKNetto                      = $Artikel->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
+        $fVK                           = [
+            Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$Artikel->kSteuerklasse]),
+            $fVKNetto
+        ];
+        $Artikel->Preise->cVKLocalized = [
+            0 => Preise::getLocalizedPriceString($fVK[0]),
+            1 => Preise::getLocalizedPriceString($fVK[1])
+        ];
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)

@@ -1,9 +1,9 @@
 <?php
 /**
- * correct_selection_wizard_permission
+ * syntax checks
  *
- * @author mh
- * @created Fri, 12 Apr 2019 12:41:20 +0200
+ * @author fm
+ * @created Thu, 18 Apr 2019 14:47:00 +0200
  */
 
 use JTL\Exportformat;
@@ -22,7 +22,7 @@ use JTL\Update\Migration;
 class Migration_20190418144700 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'Unify mail template tables';
+    protected $description = 'Syntax checks';
 
     public function up()
     {

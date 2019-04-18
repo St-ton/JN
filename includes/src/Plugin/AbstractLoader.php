@@ -399,14 +399,17 @@ abstract class AbstractLoader implements LoaderInterface
      */
     protected function loadMailTemplates(PluginInterface $extension): MailTemplates
     {
-        $data          = $this->db->queryPrepared(
-            'SELECT * FROM tpluginemailvorlage
-            JOIN tpluginemailvorlagesprache AS loc
-                ON loc.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-            WHERE tpluginemailvorlage.kPlugin = :id',
+        $data = $this->db->queryPrepared(
+            'SELECT * FROM temailvorlage
+            JOIN temailvorlagesprache AS loc
+                ON loc.kEmailvorlage = temailvorlage.kEmailvorlage
+            WHERE temailvorlage.kPlugin = :id',
             ['id' => $extension->getID()],
             ReturnType::ARRAY_OF_OBJECTS
         );
+        if ($data === 0) { // race condition with migrations
+            $data = [];
+        }
         $mailTemplates = new MailTemplates();
 
         return $mailTemplates->load($data);

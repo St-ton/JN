@@ -651,15 +651,7 @@ final class Model
             }
             $upd->$field = \is_array($data) ? Text::createSSK($data) : $data;
         }
-        if ($this->getPluginID() === 0) {
-            $table    = 'temailvorlage';
-            $tableLoc = 'temailvorlagesprache';
-            unset($upd->kPlugin);
-        } else {
-            $table    = 'tpluginemailvorlage';
-            $tableLoc = 'tpluginemailvorlagesprache';
-        }
-        $this->db->update($table, 'kEmailvorlage', $this->getID(), $upd);
+        $this->db->update('temailvorlage', 'kEmailvorlage', $this->getID(), $upd);
         foreach ($this->text as $langID => $text) {
             $upd = new stdClass();
             foreach ($this->getLocalizedMapping() as $field => $method) {
@@ -671,8 +663,8 @@ final class Model
                 $upd->$field = \is_array($data) ? Text::createSSK($data) : $data;
             }
             $upd->kSprache = $langID;
-            $this->db->delete($tableLoc, ['kEmailvorlage', 'kSprache'], [$this->getID(), $langID]);
-            $this->db->insert($tableLoc, $upd);
+            $this->db->delete('temailvorlagesprache', ['kEmailvorlage', 'kSprache'], [$this->getID(), $langID]);
+            $this->db->insert('temailvorlagesprache', $upd);
             ++$res;
         }
 
@@ -726,30 +718,21 @@ final class Model
      */
     private function loadFromDB(string $templateID): ?array
     {
+        $pluginID = 0;
+        $moduleID = $templateID;
         if (\strpos($templateID, 'kPlugin') === 0) {
-            // @todo: tpluginemailvorlageeinstellungen?
             [, $pluginID, $moduleID] = \explode('_', $templateID);
-            $data                    = $this->db->queryPrepared(
-                'SELECT *, tpluginemailvorlage.kEmailvorlage AS id
-                    FROM tpluginemailvorlage
-                    LEFT JOIN tpluginemailvorlagesprache
-                        ON tpluginemailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
-                    WHERE tpluginemailvorlage.kPlugin = :pid
-                        AND cModulId = :mid',
-                ['pid' => $pluginID, 'mid' => $moduleID],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        } else {
-            $data = $this->db->queryPrepared(
-                'SELECT *, 0 AS kPlugin, temailvorlage.kEmailvorlage AS id
-                    FROM temailvorlage
-                    LEFT JOIN temailvorlagesprache
-                        ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE cModulId = :mid',
-                ['mid' => $templateID],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
         }
+        $data = $this->db->queryPrepared(
+            'SELECT *, temailvorlage.kEmailvorlage AS id
+                FROM temailvorlage
+                LEFT JOIN temailvorlagesprache
+                    ON temailvorlage.kEmailvorlage = temailvorlagesprache.kEmailvorlage
+                WHERE temailvorlage.kPlugin = :pid
+                    AND cModulId = :mid',
+            ['pid' => $pluginID, 'mid' => $moduleID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
 
         return \count($data) === 0
             ? null

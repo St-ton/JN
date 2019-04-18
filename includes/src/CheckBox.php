@@ -549,7 +549,8 @@ class CheckBox
     /**
      * @param $customer
      * @return bool
-     * @throws \Exception
+     * @throws Exceptions\CircularReferenceException
+     * @throws Exceptions\ServiceNotFoundException
      */
     private function sfCheckBoxNewsletter($customer): bool
     {

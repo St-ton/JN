@@ -68,9 +68,9 @@ if (Form::checkSubject()) {
     $subjects = Shop::Container()->getDB()->query(
         "SELECT *
             FROM tkontaktbetreff
-            WHERE (cKundengruppen = 0 
+            WHERE (cKundengruppen = 0
             OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
-        . "', REPLACE(cKundengruppen, ';', ',')) > 0) 
+        . "', REPLACE(cKundengruppen, ';', ',')) > 0)
             ORDER BY nSort",
         ReturnType::ARRAY_OF_OBJECTS
     );

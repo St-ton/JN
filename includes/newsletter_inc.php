@@ -200,6 +200,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 
 /**
  * @return array
+ * @deprecated since 5.0.0
  */
 function newsletterAnmeldungPlausi(): array
 {

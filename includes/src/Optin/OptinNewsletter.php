@@ -10,6 +10,7 @@ use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\DB\ReturnType;
 use JTL\Exceptions\InvalidInputException;
+use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
@@ -56,25 +57,40 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $this->conf        = Shop::getSettings([CONF_NEWSLETTER]);
     }
 
+
+
+    /**
+     * @return array
+     */
+    public function newsletterAnmeldungPlausi(): array
+    {
+        $res = [];
+        if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
+            && !Form::validateCaptcha($_POST)) {
+            $res['captcha'] = 2;
+        }
+
+        return $res;
+    }
+
+
     /**
      * @param OptinRefData $refData
      * @return OptinNewsletter
      * @throws InvalidInputException
      */
-    public function createOptin(OptinRefData $refData): self
+    public function createOptin(OptinRefData $refData): OptinInterface
     {
         $this->refData = $refData;
         $this->optCode = $this->generateUniqOptinCode();
 
         if (!SimpleMail::checkBlacklist($this->refData->getEmail())) {
-            //$plausi = fuegeNewsletterEmpfaengerEin($customer, true);
             // the following code replaces the function from "newsletter_inc.php"
-
             $plausi              = new \stdClass();
             $plausi->nPlausi_arr = [];
             $nlCustomer          = null;
             if (Text::filterEmailAddress($this->refData->getEmail()) !== false) {
-                $plausi->nPlausi_arr = newsletterAnmeldungPlausi();
+                $plausi->nPlausi_arr = $this->newsletterAnmeldungPlausi();
                 $kKundengruppe       = Frontend::getCustomerGroup()->getID();
                 $checkBox            = new CheckBox();
                 $plausi->nPlausi_arr = array_merge(
@@ -173,11 +189,8 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, [
                             'oNewsletterEmpfaengerHistory' => $history
                         ]);
-
-                        $this->oLogger->debug('this->conf: '.print_r($this->conf['newsletter'], true)); // --DEBUG--
-
-
-                        // double-opt-in only for unknown user or for all customers too (setting no. 680)
+                        // double-opt-in mail only for unknown users
+                        // or for all customers too (setting no. 680)
                         if (($this->conf['newsletter']['newsletter_doubleopt'] === 'U'
                             && empty($_SESSION['Kunde']->kKunde))
                             || $this->conf['newsletter']['newsletter_doubleopt'] === 'A'
@@ -185,6 +198,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                             $this->hasSendingPermission = true;
                             $plausi                     = new \stdClass();
                         } else {
+                            $this->saveOptin($this->optCode);
                             $this->alertHelper->addAlert(
                                 Alert::TYPE_NOTE,
                                 Shop::Lang()->get('newsletterNomailAdd', 'messages'),
@@ -255,7 +269,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $recipient->cFreischaltURL     = $shopURL . $optinCodePrefix . self::ACTIVATE_CODE . $this->optCode;
         $recipient->dLetzterNewsletter = '_DBNULL_';
         $recipient->dEingetragen       = $this->nowDataTime->format('Y-m-d H:i:s');
-        // --TODO-- dEingetragen: needed? only used in old-fashioned table with 'NOW()'-sql - for mail not relevant
 
         $templateData                       = new \stdClass();
         $templateData->tkunde               = $_SESSION['Kunde'] ?? null;
@@ -325,7 +338,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     public function deactivateOptin(): void
     {
         if (!empty($this->optCode)) {
-            // de-activate by opt-code
             $deleteCode = self::DELETE_CODE . $this->optCode;
             $recicpient = $this->dbHandler->select('tnewsletterempfaenger', 'cLoeschCode', $deleteCode);
             if (!empty($recicpient->cLoeschCode)) {

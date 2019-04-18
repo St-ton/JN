@@ -123,8 +123,6 @@ function sendeMail($moduleID, $data, $mail = null)
     $cSQLWhere     = " cModulId = '" . $moduleID . "'";
     if (mb_strpos($moduleID, 'kPlugin') !== false) {
         [$cPlugin, $kPlugin, $cModulId] = explode('_', $moduleID);
-        $cTable                         = 'tpluginemailvorlage';
-        $cTableSprache                  = 'tpluginemailvorlagesprache';
         $cTableSetting                  = 'tpluginemailvorlageeinstellungen';
         $cSQLWhere                      = ' kPlugin = ' . $kPlugin . " AND cModulId = '" . $cModulId . "'";
         $smarty->assign('oPluginMail', $data);

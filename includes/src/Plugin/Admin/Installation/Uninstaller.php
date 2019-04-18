@@ -150,16 +150,16 @@ final class Uninstaller
             ReturnType::DEFAULT
         );
         $this->db->query(
-            'DELETE tpluginemailvorlageeinstellungen, tpluginemailvorlagespracheoriginal,
-                tpluginemailvorlage, tpluginemailvorlagesprache
-                FROM tpluginemailvorlage
-                LEFT JOIN tpluginemailvorlagespracheoriginal
-                    ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
+            'DELETE tpluginemailvorlageeinstellungen, temailvorlagespracheoriginal,
+                temailvorlage, temailvorlagesprache
+                FROM temailvorlage
+                LEFT JOIN temailvorlagespracheoriginal
+                    ON temailvorlagespracheoriginal.kEmailvorlage = temailvorlage.kEmailvorlage
                 LEFT JOIN tpluginemailvorlageeinstellungen
-                    ON tpluginemailvorlageeinstellungen.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                LEFT JOIN tpluginemailvorlagesprache
-                    ON tpluginemailvorlagesprache.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = ' . $pluginID,
+                    ON tpluginemailvorlageeinstellungen.kEmailvorlage = temailvorlage.kEmailvorlage
+                LEFT JOIN temailvorlagesprache
+                    ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
+                WHERE temailvorlage.kPlugin = ' . $pluginID,
             ReturnType::DEFAULT
         );
     }
@@ -180,11 +180,11 @@ final class Uninstaller
         $this->db->delete('tboxvorlage', ['kCustomID', 'eTyp'], [$pluginID, 'plugin']);
         $this->db->delete('tpluginlinkdatei', 'kPlugin', $pluginID);
         $this->db->query(
-            'DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal
-                FROM tpluginemailvorlage
-                LEFT JOIN tpluginemailvorlagespracheoriginal
-                    ON tpluginemailvorlagespracheoriginal.kEmailvorlage = tpluginemailvorlage.kEmailvorlage
-                WHERE tpluginemailvorlage.kPlugin = ' . $pluginID,
+            'DELETE temailvorlage, temailvorlagespracheoriginal
+                FROM temailvorlage
+                LEFT JOIN temailvorlagespracheoriginal
+                    ON temailvorlagespracheoriginal.kEmailvorlage = temailvorlage.kEmailvorlage
+                WHERE temailvorlage.kPlugin = ' . $pluginID,
             ReturnType::DEFAULT
         );
     }

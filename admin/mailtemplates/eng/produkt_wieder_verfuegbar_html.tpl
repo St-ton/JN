@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=html}
 
-Dear{if !empty($Benachrichtigung->cVorname)} {$Benachrichtigung->cVorname}{/if}{if !empty($Benachrichtigung->cNachname)} {$Benachrichtigung->cNachname}{/if},<br>
+Dear customer,<br>
 <br>
 We're happy to inform you that our product {$Artikel->cName} is once again available in our online shop.<br>
 <br>

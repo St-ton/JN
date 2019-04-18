@@ -125,6 +125,7 @@ define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber')
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
+define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN', 'core_jtl_verfuegbarkeitsbenachrichtigung_optin');
 define('MAILTEMPLATE_FOOTER', 'core_jtl_footer');
 define('MAILTEMPLATE_HEADER', 'core_jtl_header');
 define('MAILTEMPLATE_AKZ', 'core_jtl_anbieterkennzeichnung');

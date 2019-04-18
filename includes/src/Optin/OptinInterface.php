@@ -14,7 +14,7 @@ interface OptinInterface
 {
     /**
      * @param OptinRefData $refData
-     * @return OptinInterface
+     * @return OptinAvailAgain|OptinNewsletter
      */
     public function createOptin(OptinRefData $refData): OptinInterface;
 

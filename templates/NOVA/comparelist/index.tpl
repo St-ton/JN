@@ -81,78 +81,83 @@
                         <tr>
                             <th class="sticky-top">&nbsp;</th>
                             {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                <th style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center sticky-top">
-                                    <div class="text-right">
-                                        {link href=$oArtikel->cURLDEL class="text-decoration-none"}
-                                            &times;
-                                        {/link}
-                                    </div>
-                                    <div>
-                                        {link href=$oArtikel->cURLFull}
-                                            {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
-                                        {/link}
-                                    </div>
-                                    <p>
-                                        {link href=$oArtikel->cURLFull}{$oArtikel->cName}{/link}
-                                    </p>
-                                    {block name='comparelist-index-include-rating'}
-                                        {include file='productdetails/rating.tpl' stars=$oArtikel->fDurchschnittsBewertung}
-                                    {/block}
-                                    {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
-                                        <p>{lang key='productOutOfStock' section='productDetails'}</p>
-                                    {elseif $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-                                        <p>{lang key='priceOnApplication' section='global'}</p>
-                                    {else}
-                                        {block name='comparelist-index-include-price'}
-                                            <p>
-                                                {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='detail'}
-                                            </p>
+                                <th style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center sticky-top equal-height">
+                                    <div class="stretched">
+                                        <div>
+                                            <div class="text-right">
+                                                {link href=$oArtikel->cURLDEL class="text-decoration-none"}
+                                                    &times;
+                                                {/link}
+                                            </div>
+                                            {link href=$oArtikel->cURLFull}
+                                                {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
+                                            {/link}
+                                        </div>
+                                        <p>
+                                            {link href=$oArtikel->cURLFull}{$oArtikel->cName}{/link}
+                                        </p>
+                                        {block name='comparelist-index-include-rating'}
+                                            {include file='productdetails/rating.tpl' stars=$oArtikel->fDurchschnittsBewertung}
                                         {/block}
-                                    {/if}
-                                    {if ($oArtikel->inWarenkorbLegbar === 1 || ($oArtikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))}
-                                        {if $oArtikel->bHasKonfig}
-                                            {link href=$oArtikel->cURLFull class="btn btn-primary"
-                                                title="{lang key='product' section='global'} {lang key='configure' section='global'}"
-                                            }
-                                                <span class="fa fa-cogs"></span>
-                                            {/link}
-                                        {elseif !empty($oArtikel->Variationen)}
-                                            {link href=$oArtikel->cURLFull class="btn btn-primary"
-                                                title="{lang key='product' section='global'} {lang key='wishlistaddToCart' section='global'}"
-                                            }
-                                                <span class="fas fa-shopping-cart"></span>
-                                            {/link}
+                                        {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+                                            <p>{lang key='productOutOfStock' section='productDetails'}</p>
+                                        {elseif $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                                            <p>{lang key='priceOnApplication' section='global'}</p>
                                         {else}
-                                            {block name='comparelist-index-form'}
-                                                {form method='post'}
-                                                    {block name='comparelist-index-form-quantity'}
-                                                        {formgroup class="quantity-wrapper"}
-                                                            {inputgroup class="quantity-wrapper"}
-                                                                {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                                    step="{if $oArtikel->fAbnahmeintervall > 0}{$oArtikel->fAbnahmeintervall}{/if}"
-                                                                    id="quantity{$oArtikel->kArtikel}"
-                                                                    class="quantity text-right"
-                                                                    name="anzahl"
-                                                                    autocomplete="off"
-                                                                    value="{if $oArtikel->fAbnahmeintervall > 0}{if $oArtikel->fMindestbestellmenge > $oArtikel->fAbnahmeintervall}{$oArtikel->fMindestbestellmenge}{else}{$oArtikel->fAbnahmeintervall}{/if}{else}1{/if}"}
-                                                            {/inputgroup}
-                                                        {/formgroup}
-                                                    {/block}
-                                                    {block name='comparelist-index-form-submit'}
-                                                        {button
-                                                            type="submit"
-                                                            name="addToCart"
-                                                            value=$oArtikel->kArtikel
-                                                            variant="primary"
-                                                            title="{lang key='wishlistaddToCart' section='login'}"
-                                                        }
-                                                            <span class="fas fa-shopping-cart"></span>
-                                                        {/button}
-                                                    {/block}
-                                                {/form}
+                                            {block name='comparelist-index-include-price'}
+                                                <p>
+                                                    {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='detail'}
+                                                </p>
                                             {/block}
                                         {/if}
-                                    {/if}
+                                        {if ($oArtikel->inWarenkorbLegbar === 1 || ($oArtikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))}
+                                            {if $oArtikel->bHasKonfig}
+                                                {link href=$oArtikel->cURLFull class="btn btn-primary mb-3 mx-3"
+                                                title="{lang key='product' section='global'} {lang key='configure' section='global'}"
+                                                }
+                                                    <span class="fa fa-cogs"></span>
+                                                {/link}
+                                            {elseif !empty($oArtikel->Variationen)}
+                                                {link href=$oArtikel->cURLFull class="btn btn-primary mb-3 mx-3"
+                                                title="{lang key='product' section='global'} {lang key='wishlistaddToCart' section='global'}"
+                                                }
+                                                    <span class="fas fa-shopping-cart"></span>
+                                                {/link}
+                                            {else}
+                                                {block name='comparelist-index-form'}
+                                                    {form method='post'}
+                                                    {block name='comparelist-index-form-quantity'}
+                                                        {formgroup class="quantity-wrapper"}
+                                                        {inputgroup class="quantity-wrapper px-3"}
+                                                        {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
+                                                        step="{if $oArtikel->fAbnahmeintervall > 0}{$oArtikel->fAbnahmeintervall}{/if}"
+                                                        id="quantity{$oArtikel->kArtikel}"
+                                                        class="quantity text-right"
+                                                        name="anzahl"
+                                                        autocomplete="off"
+                                                        value="{if $oArtikel->fAbnahmeintervall > 0}{if $oArtikel->fMindestbestellmenge > $oArtikel->fAbnahmeintervall}{$oArtikel->fMindestbestellmenge}{else}{$oArtikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                        {block name='comparelist-index-form-submit'}
+                                                            {inputgroupaddon}
+                                                                {button
+                                                                type="submit"
+                                                                name="addToCart"
+                                                                value=$oArtikel->kArtikel
+                                                                variant="primary"
+                                                                class="ml-3"
+                                                                title="{lang key='wishlistaddToCart' section='login'}"
+                                                                }
+                                                                    <span class="fas fa-shopping-cart"></span>
+                                                                {/button}
+                                                            {/inputgroupaddon}
+                                                        {/block}
+                                                        {/inputgroup}
+                                                        {/formgroup}
+                                                    {/block}
+                                                    {/form}
+                                                {/block}
+                                            {/if}
+                                        {/if}
+                                    </div>
                                 </th>
                             {/foreach}
                         </tr>

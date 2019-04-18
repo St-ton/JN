@@ -17,28 +17,32 @@
                 <tr>
                     <td>&nbsp;</td>
                     {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                        <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
-                            <div class="thumbnail">
-                                <a href="{$oArtikel->cURLFull}">
-                                    {imageTag src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
-                                </a>
-                            </div>
-                            <p>
-                                <a href="{$oArtikel->cURLFull}">{$oArtikel->cName}</a>
-                            </p>
-
-                            {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
-                                <p>{lang key='productOutOfStock' section='productDetails'}</p>
-                            {elseif $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
-                                <p>{lang key='priceOnApplication' section='global'}</p>
-                            {else}
+                        <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center equal-height">
+                            <div class="stretched">
+                                <div class="thumbnail">
+                                    <a href="{$oArtikel->cURLFull}">
+                                        {imageTag src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
+                                    </a>
+                                </div>
                                 <p>
-                                    {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='detail'}
+                                    <a href="{$oArtikel->cURLFull}">{$oArtikel->cName}</a>
                                 </p>
-                            {/if}
-                            <p>
-                                <a href="{$oArtikel->cURLDEL}" data-id="{$oArtikel->kArtikel}" class="remove"><span class="fa fa-trash-o"></span></a>
-                            </p>
+
+                                {if $oArtikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
+                                    <p>{lang key='productOutOfStock' section='productDetails'}</p>
+                                {elseif $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                                    <p>{lang key='priceOnApplication' section='global'}</p>
+                                {else}
+                                    <p>
+                                        {include file='productdetails/price.tpl' Artikel=$oArtikel tplscope='detail'}
+                                    </p>
+                                {/if}
+                                <p>
+                                    <a href="{$oArtikel->cURLDEL}" data-id="{$oArtikel->kArtikel}" class="remove">
+                                        <span class="fa fa-trash-o"></span>
+                                    </a>
+                                </p>
+                            </div>
                         </td>
                     {/foreach}
                 </tr>

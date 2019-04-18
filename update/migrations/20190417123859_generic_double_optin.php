@@ -42,7 +42,9 @@ class Migration_20190417123859 extends Migration implements IMigration
             PRIMARY KEY (kOptin),
             UNIQUE KEY (kOptinCode)
         )
-        ENGINE = innodb");
+        ENGINE = innodb
+        DEFAULT CHARSET = utf8
+        COLLATE = utf8_unicode_ci");
         $this->execute("CREATE TABLE IF NOT EXISTS toptinhistory(
             kOptinHistory int(10) NOT NULL AUTO_INCREMENT COMMENT 'internal table key',
             kOptinCode varchar(256) DEFAULT NULL COMMENT 'main OptInCode, derived from table toptin',
@@ -55,7 +57,9 @@ class Migration_20190417123859 extends Migration implements IMigration
             PRIMARY KEY (kOptinHistory),
             INDEX (kOptinCode)
         )
-        ENGINE = innodb");
+        ENGINE = innodb
+        DEFAULT CHARSET = utf8
+        COLLATE = utf8_unicode_ci");
 
         $this->setLocalization('ger', 'errorMessages', 'optinCodeUnknown', 'Der übergebene Bestätigungscode ist nicht bekannt.');
         $this->setLocalization('eng', 'errorMessages', 'optinCodeUnknown', 'The given confirmation code is unknown.');

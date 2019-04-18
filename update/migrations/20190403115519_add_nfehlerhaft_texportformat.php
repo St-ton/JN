@@ -52,7 +52,7 @@ class Migration_20190403115519 extends Migration implements IMigration
                 }
             }
             if ($update === true) {
-                $rev->content             =\json_encode($content);
+                $rev->content             = json_encode($content);
                 $rev->reference_secondary = $rev->reference_secondary ?? '_DBNULL_';
                 $this->getDB()->update('trevisions', 'id', $rev->id, $rev);
             }

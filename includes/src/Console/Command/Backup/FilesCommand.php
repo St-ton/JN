@@ -12,6 +12,7 @@ use JTL\Filesystem\LocalFilesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 class FilesCommand extends Command
 {
@@ -40,14 +41,19 @@ class FilesCommand extends Command
             'jtllogs',
             'install/logs'], $this->getOption('exclude-dir'));
         $localFilesystem    = new Filesystem(new LocalFilesystem([
-            'root'         => PFAD_ROOT,
-            'exclude_dirs' => $excludeDirectories
+            'root'         => PFAD_ROOT
         ]));
+
+        $finder = Finder::create()
+            ->ignoreVCS(false)
+            ->ignoreDotFiles(false)
+            ->exclude($excludeDirectories)
+            ->in(PFAD_ROOT);
 
         $io
             ->progress(
-                function ($mycb) use ($localFilesystem, $archivePath, $excludeDirectories) {
-                    $localFilesystem->zip($archivePath, function ($count, $index) use (&$mycb) {
+                function ($mycb) use ($localFilesystem, $archivePath, $finder) {
+                    $localFilesystem->zip($finder, $archivePath, function ($count, $index) use (&$mycb) {
                         $mycb($count, $index);
                     });
                 },

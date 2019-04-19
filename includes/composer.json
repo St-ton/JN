@@ -50,12 +50,12 @@
         "jtl/oauth2-client": "^1.0",
         "squizlabs/php_codesniffer": "^3.4",
         "illuminate/container": "^5.7",
-        "symfony/console": "^4.2"
+        "symfony/console": "^4.2",
+        "symfony/finder": "^4.2"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
         "nikic/php-parser": "^2.1",
-        "symfony/finder": "^4.0",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3",
         "sensiolabs/security-checker": "^5.0",

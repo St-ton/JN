@@ -9,6 +9,7 @@ namespace JTL\Filesystem;
 use Exception;
 use Generator;
 use JTL\Path;
+use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
 /**
@@ -316,9 +317,9 @@ class Filesystem implements IFilesystem
         return true;
     }
 
-    public function zip(string $fileName, callable $callback = null): bool
+    public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
     {
-        return $this->getAdapter()->zip($fileName, $callback);
+        return $this->getAdapter()->zip($finder, $archivePath, $callback);
     }
 
     public function getOwner($identity)

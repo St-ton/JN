@@ -13,6 +13,7 @@ use SplFileInfo;
 use FilesystemIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class LocalFilesystem
@@ -329,15 +330,8 @@ class LocalFilesystem extends AbstractFilesystem
      */
     protected function getRecursiveDirectoryIterator($path, $mode = RecursiveIteratorIterator::SELF_FIRST)
     {
-        /*$iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
-            $mode
-        );*/
         $iterator = new RecursiveIteratorIterator(
-            new DirectoryFilter(
-                new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
-                $this->options['exclude_dirs']
-            ),
+            new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
             $mode
         );
 
@@ -355,26 +349,28 @@ class LocalFilesystem extends AbstractFilesystem
     }
 
     /**
-     * @param string $fileName
+     * @param Finder $finder
+     * @param string $archivePath
      * @param callable|null $callback
      * @return bool
      * @throws Exception
      */
-    public function zip(string $fileName, callable $callback = null): bool
+    public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
     {
-        $files      = $this->listContents(PFAD_ROOT, true);
         $zipArchive = new \ZipArchive();
-        $count      = count(iterator_to_array($this->listContents(PFAD_ROOT, true)));
+        $count      = $finder->count();
         $index      = 0;
 
-        if (($code = $zipArchive->open($fileName, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
+        if (($code = $zipArchive->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
             throw new Exception('Archive file could not be created.', $code);
         }
 
-        foreach ($files as $file) {
+        foreach ($finder->files() as $file) {
+            /**
+             * exclude dir check
+             */
             if (!$file->isDir()) {
-                $zipArchive->addFile(PFAD_ROOT.$file->getPath(), $file->getPath());
-
+                /*$zipArchive->addFile($path.$file->getPath(), $file->getPath());*/
                 if (is_callable($callback)) {
                     $callback($count, $index);
                     ++$index;

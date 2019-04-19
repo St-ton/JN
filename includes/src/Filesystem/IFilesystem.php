@@ -7,6 +7,7 @@
 namespace JTL\Filesystem;
 
 use Generator;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Interface IFilesystem
@@ -63,5 +64,5 @@ interface IFilesystem
 
     public function deleteDirectory($directory, $preserve = false) : bool;
 
-    public function zip(string $fileName, callable $callback = null) : bool;
+    public function zip(Finder $finder, string $archivePath, callable $callback = null) : bool;
 }

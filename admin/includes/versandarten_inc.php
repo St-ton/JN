@@ -370,3 +370,23 @@ function getMissingShippingClassCombi()
 
     return $res;
 }
+
+/**
+ * @param int|null $shippingTypeID
+ * @return array|object
+ */
+function getShippingTypes(int $shippingTypeID = null)
+{
+    $shippingTypes = Shop::Container()->getDB()->query(
+        'SELECT *
+            FROM tversandberechnung'
+                . ($shippingTypeID ? ' WHERE kVersandberechnung = ' . $shippingTypeID : '')
+                . ' ORDER BY cName',
+        ReturnType::ARRAY_OF_OBJECTS
+    );
+    foreach ($shippingTypes as $shippingType) {
+        $shippingType->cName = __('shippingType_' . $shippingType->cModulId);
+    }
+
+    return count($shippingTypes) === 1 ? $shippingTypes[0] : $shippingTypes;
+}

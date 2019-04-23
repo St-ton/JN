@@ -174,6 +174,7 @@ class CheckBox
                 (int)$this->kCheckBoxFunktion
             );
             if (isset($func->kCheckBoxFunktion) && $func->kCheckBoxFunktion > 0) {
+                $func->cName             = __($func->cName);
                 $this->oCheckBoxFunktion = $func;
             } else {
                 $this->kCheckBoxFunktion = 0;
@@ -465,12 +466,17 @@ class CheckBox
      */
     public function getCheckBoxFunctions(): array
     {
-        return Shop::Container()->getDB()->query(
+        $checkboxFunctions = Shop::Container()->getDB()->query(
             'SELECT * 
                 FROM tcheckboxfunktion 
                 ORDER BY cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
+        foreach ($checkboxFunctions as $checkboxFunction) {
+            $checkboxFunction->cName = __($checkboxFunction->cName);
+        }
+
+        return $checkboxFunctions;
     }
 
     /**

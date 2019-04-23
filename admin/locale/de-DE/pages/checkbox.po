@@ -88,3 +88,9 @@ msgstr "Hier legen Sie fest, an welcher Stelle die Checkbox stehen soll, falls e
 
 msgid "hintCheckboxCustomerGroup"
 msgstr "Hier legen Sie fest, welche Kundengruppen die Checkbox sehen sollen. Mit gehaltener Strg-Taste können Sie mehrere Kundengruppen auswählen."
+
+msgid "Newsletteranmeldung"
+msgstr "Newsletteranmeldung"
+
+msgid "Emailbenachrichtigung an Shopbetreiber"
+msgstr "Emailbenachrichtigung an Shopbetreiber"

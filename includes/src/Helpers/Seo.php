@@ -67,11 +67,11 @@ class Seo
     public static function sanitizeSeoSlug(string $str): string
     {
         // for better german slugs without using setlocale()
-        $a = ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü'];
-        $b = ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue'];
+        $a = ['Ä', 'Ö', 'Ü', 'ß', 'ä', 'ö', 'ü', 'æ'];
+        $b = ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'];
 
         $str = preg_replace('/[^\pL\d\-\/_\ ]+/u', '', str_replace($a, $b, $str));
-        $str = preg_replace('/[\/_\ ]+/u', '-', $str);
+        $str = preg_replace('/[\-\/_\ ]+/u', '-', $str);
         $str = transliterator_transliterate(
             'Any-Latin; Latin-ASCII;' . (SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
             trim($str, ' -_')

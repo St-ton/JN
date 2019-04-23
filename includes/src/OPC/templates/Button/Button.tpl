@@ -16,9 +16,7 @@
 
 <div {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
         {if $instance->getProperty('align') !== 'block'}
-            style="text-align: {$instance->getProperty('align')}; {$instance->getStyleString()}"
-        {else}
-            style="{$instance->getStyleString()}"
+            style="text-align: {$instance->getProperty('align')}"
         {/if}>
     {button href=$href|default:null
             target=$target|default:null
@@ -28,6 +26,7 @@
             title=$instance->getProperty('link-title')|default:null
             class=$instance->getAnimationClass()
             data=$instance->getAnimationData()
+            style=$instance->getStyleString()
     }
         {if $instance->getProperty('use-icon') === true && $instance->getProperty('icon-align') === 'left'}
             <i class="{$instance->getProperty('icon')}" style="top:2px;"></i>

@@ -74,7 +74,8 @@ class Seo
         $str = preg_replace('/[\-\/_\ ]+/u', '-', $str);
         $str = transliterator_transliterate(
             'Any-Latin; Latin-ASCII;' . (SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
-            trim($str, ' -_'));
+            trim($str, ' -_')
+        );
 
         return $str;
     }

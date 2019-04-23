@@ -20,7 +20,7 @@
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='pagePicker'
     modalTitle="{__('titleChoosePage')}"
-    searchInputLabel="{__('titleChoosePage')}"
+    searchInputLabel="{__('labelSearchPage')}"
 }
 
 <script>

@@ -36,7 +36,7 @@ function checkSeo($cSeo)
 function iso2ascii($str)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Seo::iso2ascii($str);
+    return Seo::sanitizeSeoSlug($str);
 }
 
 /**

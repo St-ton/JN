@@ -733,6 +733,6 @@ class Plugins
      */
     public function seofy ($optStr = ''): string
     {
-        return Seo::iso2ascii($optStr);
+        return Seo::sanitizeSeoSlug($optStr);
     }
 }

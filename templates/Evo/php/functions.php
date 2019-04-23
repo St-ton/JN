@@ -766,5 +766,5 @@ function getStates($params, $smarty)
  */
 function seofy ($optStr = '')
 {
-    return Seo::iso2ascii($optStr);
+    return Seo::sanitizeSeoSlug($optStr);
 }

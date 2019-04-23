@@ -56,29 +56,38 @@ msgstr "Overlay konnte nicht gespeichert werden - bitte Schreibrechte des Ordner
 msgid "invalidOverlay"
 msgstr "Unbekanntes Overlay"
 
-msgid "overlayName_1"
+#overlay name (tsuchspecialoverlay)
+msgid "Bestseller"
 msgstr "Bestseller"
 
-msgid "overlayName_2"
+#overlay name (tsuchspecialoverlay)
+msgid "Sonderangebote"
 msgstr "Sonderangebote"
 
-msgid "overlayName_3"
+#overlay name (tsuchspecialoverlay)
+msgid "Neu im Sortiment"
 msgstr "Neu im Sortiment"
 
-msgid "overlayName_4"
+#overlay name (tsuchspecialoverlay)
+msgid "Top Angebote"
 msgstr "Top Angebote"
 
-msgid "overlayName_5"
+#overlay name (tsuchspecialoverlay)
+msgid "In kürze Verfügbar"
 msgstr "In kürze Verfügbar"
 
-msgid "overlayName_6"
+#overlay name (tsuchspecialoverlay)
+msgid "Top bewertet"
 msgstr "Top bewertet"
 
-msgid "overlayName_7"
+#overlay name (tsuchspecialoverlay)
+msgid "Lagerbestand 0"
 msgstr "Lagerbestand 0"
 
-msgid "overlayName_8"
+#overlay name (tsuchspecialoverlay)
+msgid "Auf Lager"
 msgstr "Auf Lager"
 
-msgid "overlayName_9"
+#overlay name (tsuchspecialoverlay)
+msgid "Vorbestellbar"
 msgstr "Vorbestellbar"

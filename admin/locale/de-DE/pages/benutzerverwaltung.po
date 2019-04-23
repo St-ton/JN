@@ -173,34 +173,44 @@ msgstr "Neue Notfall-Codes erzeugen"
 msgid "shopEmergencyCodes"
 msgstr "Notfall-Codes für das JTL-Shop-Backend"
 
-msgid "permissionModule_1"
+#module name (tadminrechtemodul)
+msgid "Admin"
 msgstr "Admin"
 
-msgid "permissionModule_2"
+#module name (tadminrechtemodul)
+msgid "Einstellungen"
 msgstr "Einstellungen"
 
-msgid "permissionModule_3"
+#module name (tadminrechtemodul)
+msgid "Darstellung"
 msgstr "Darstellung"
 
-msgid "permissionModule_4"
+#module name (tadminrechtemodul)
+msgid "Inhalt"
 msgstr "Inhalt"
 
-msgid "permissionModule_5"
+#module name (tadminrechtemodul)
+msgid "Kaufabwicklung"
 msgstr "Kaufabwicklung"
 
-msgid "permissionModule_6"
+#module name (tadminrechtemodul)
+msgid "Module"
 msgstr "Module"
 
-msgid "permissionModule_7"
+#module name (tadminrechtemodul)
+msgid "Import / Export"
 msgstr "Import / Export"
 
-msgid "permissionModule_8"
+#module name (tadminrechtemodul)
+msgid "Erweiterungen"
 msgstr "Erweiterungen"
 
-msgid "permissionModule_9"
+#module name (tadminrechtemodul)
+msgid "Plugins"
 msgstr "Plugins"
 
-msgid "permissionModule_10"
+#module name (tadminrechtemodul)
+msgid "Statistik"
 msgstr "Statistik"
 
 msgid "permission_ORDER_VIEW"

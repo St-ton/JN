@@ -46,13 +46,16 @@ final class Newsletter extends Job
         $oNewsletter->kNewsletter = (int)$oNewsletter->kNewsletter;
         $oNewsletter->kSprache    = (int)$oNewsletter->kSprache;
         $oNewsletter->kKampagne   = (int)$oNewsletter->kKampagne;
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'newsletter_inc.php';
-        $conf            = Shop::getSettings([\CONF_NEWSLETTER]);
-        $smarty          = \bereiteNewsletterVor($conf);
-        $productIDs      = \gibAHKKeys($oNewsletter->cArtikel, true);
-        $manufacturerIDs = \gibAHKKeys($oNewsletter->cHersteller);
-        $categoryIDs     = \gibAHKKeys($oNewsletter->cKategorie);
-        $customerGroups  = \gibAHKKeys($oNewsletter->cKundengruppe);
+
+        $conf = Shop::getSettings([\CONF_NEWSLETTER]);
+
+        $instance = new \JTL\Newsletter\Newsletter($this->db, $conf);
+        $instance->initSmarty();
+
+        $productIDs      = $instance->getKeys($oNewsletter->cArtikel, true);
+        $manufacturerIDs = $instance->getKeys($oNewsletter->cHersteller);
+        $categoryIDs     = $instance->getKeys($oNewsletter->cKategorie);
+        $customerGroups  = $instance->getKeys($oNewsletter->cKundengruppe);
         $campaign        = new Kampagne($oNewsletter->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
@@ -63,15 +66,15 @@ final class Newsletter extends Job
         $products   = [];
         $categories = [];
         foreach ($customerGroups as $groupID) {
-            $products[$groupID]   = \gibArtikelObjekte($productIDs, $campaign, $groupID, (int)$oNewsletter->kSprache);
-            $categories[$groupID] = \gibKategorieObjekte($categoryIDs, $campaign);
+            $products[$groupID]   = $instance->getProducts($productIDs, $campaign, $groupID, (int)$oNewsletter->kSprache);
+            $categories[$groupID] = $instance->getCategories($categoryIDs, $campaign);
         }
         $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
         if (\in_array(0, $customerGroups, true)) {
             $cgSQL .= ' OR tkunde.kKundengruppe IS NULL';
         }
         $cgSQL        .= ')';
-        $manufacturers = \gibHerstellerObjekte($manufacturerIDs, $campaign, $oNewsletter->kSprache);
+        $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign, $oNewsletter->kSprache);
         $recipients    = $this->db->query(
             'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, 
             tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname, 
@@ -99,10 +102,8 @@ final class Newsletter extends Job
                     ? (int)$recipient->kKundengruppe
                     : 0;
 
-                \versendeNewsletter(
-                    $smarty,
+                $instance->send(
                     $oNewsletter,
-                    $conf,
                     $recipient,
                     $products[$cgID],
                     $manufacturers,

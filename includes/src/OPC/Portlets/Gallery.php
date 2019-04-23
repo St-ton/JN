@@ -28,10 +28,6 @@ class Gallery extends Portlet
                 'default' => 250,
                 'width'   => 50,
             ],
-            'class'  => [
-                'label' => 'CSS Klasse',
-                'width' => 50,
-            ],
             'images' => [
                 'type'       => InputType::IMAGE_SET,
                 'label'      => 'Bilder-Liste',

@@ -6,7 +6,7 @@
 {/if}
 
 {row data=$data|default:[]
-     class=$instance->getProperty('class')|cat:' '|cat:$instance->getAnimationClass()
+     class=$instance->getAnimationClass()
      style=$instance->getStyleString()|default:null}
     {foreach $portlet->getLayouts($instance) as $i => $colLayout}
         {assign var=areaId value="col-$i"}

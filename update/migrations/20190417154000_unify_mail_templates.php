@@ -42,6 +42,24 @@ class Migration_20190417154000 extends Migration implements IMigration
 
     public function down()
     {
+        $this->execute("CREATE TABLE `temailvorlageoriginal` (
+              `kEmailvorlage` int(10) unsigned NOT NULL AUTO_INCREMENT,
+              `cName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `cBeschreibung` text COLLATE utf8_unicode_ci NOT NULL,
+              `cMailTyp` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'text/html',
+              `cModulId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `cDateiname` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+              `cAktiv` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
+              `nAKZ` tinyint(3) unsigned NOT NULL,
+              `nAGB` tinyint(3) unsigned NOT NULL,
+              `nWRB` tinyint(3) unsigned NOT NULL,
+              `nFehlerhaft` tinyint(4) NOT NULL DEFAULT 0,
+              `nWRBForm` tinyint(3) unsigned NOT NULL DEFAULT 0,
+              `nDSE` tinyint(3) unsigned NOT NULL DEFAULT 0,
+              PRIMARY KEY (`kEmailvorlage`)
+            ) ENGINE=InnoDB 
+            DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;"
+        );
         $this->execute("CREATE TABLE `tpluginemailvorlage` (
               `kEmailvorlage` int(10) unsigned NOT NULL AUTO_INCREMENT,
               `kPlugin` int(10) unsigned NOT NULL DEFAULT '0',

@@ -19,11 +19,14 @@
                         {card no-body=true class='mb-3'}
                             {cardheader class="bg-info"}
                                 {row}
-                                    {col md=4}
+                                    {col md=3}
                                         <strong><i class="far fa-calendar-alt"></i> {$order->dBestelldatum}</strong>
                                     {/col}
-                                    {col md=3}
+                                    {col md=2}
                                         {$order->cBestellwertLocalized}
+                                    {/col}
+                                    {col md=2}
+                                        {$order->cBestellNr}
                                     {/col}
                                     {col md=4}
                                         <span class="{if $order->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG}text-success{/if}">

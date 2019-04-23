@@ -3,112 +3,112 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "emailTemplates"
-msgstr "E-Mail-Vorlagen"
+msgstr "Email templates"
 
 msgid "emailTemplateURL"
-msgstr "https://jtl-url.de/wjkma"
+msgstr "https://jtl-url.de/mvfr2"
 
 msgid "emailTemplatesHint"
-msgstr "Hier können Vorlagen für alle E-Mails angepasst werden, die der Shop verschicken kann. Diese Vorlagen werden von der Smarty-Template Engine bearbeitet. Wenn Sie eine Test-E-Mail anfordern, so erhalten Sie E-Mails in jeder im Shop verfügbaren Sprache."
+msgstr "Here you can edit the templates of all emails that can be sent with JTL-Shop. These templates are edited using the Smarty Template engine. When you request a test email, you can choose between every language available for the shop."
 
 msgid "testmail"
-msgstr "Testmail anfordern"
+msgstr "Request test email"
 
 msgid "testmailsGoToEmail"
-msgstr "Testmails werden an folgende Adresse versendet: "
+msgstr "Test emails will be sent to the following address: "
 
 msgid "noMasterEmailSpecified"
-msgstr "Keine Master-E-Mailadresse hinterlegt! Bitte tragen Sie eine Master-Absender E-Mailadresse unter Einstellungen->E-Mails ein!"
+msgstr "No master email address found. Please enter a master sender email address under Contents &gt; Emails &gt; Settings."
 
 msgid "emailTemplateModifyHint"
-msgstr "Hier können Sie den Betreff zu dieser E-Mail verändern. Der Inhalt der E-Mail im HTML- und Textformat wird in den unten aufgeführten Textfeldern spezifiziert."
+msgstr "Here you can edit the content of an email template in every language available for JTL-Shop. You can also specify the email address from which the email is to be send and whether certain attachments will be added by default."
 
 msgid "mailText"
-msgstr "Inhalt Text"
+msgstr "Content (text)"
 
 msgid "mailHtml"
-msgstr "Inhalt Html"
+msgstr "Content (HTML)"
 
 msgid "mailType"
-msgstr "Diese E-Mailart versenden als"
+msgstr "Send this email type as"
 
 msgid "pdf"
-msgstr "PDF-Datei"
+msgstr "PDF file"
 
 msgid "currentFiles"
-msgstr "Aktuelle Anhänge"
+msgstr "Current attachments"
 
 msgid "emailAddAKZ"
-msgstr "Dieser E-Mailart Ihre Anbieterkennzeichnung anhängen"
+msgstr "Attach legal disclosure"
 
 msgid "emailAddAGB"
-msgstr "Dieser E-Mailart Ihre AGB anhängen"
+msgstr "Attach terms and conditions"
 
 msgid "emailAddWRB"
-msgstr "Dieser E-Mailart Ihre WRB anhängen"
+msgstr "Attach withdrawal"
 
 msgid "emailAddWRBForm"
-msgstr "Dieser E-Mailart Ihr Muster-Widerrufsformular anhängen"
+msgstr "Attach exemplary instructions on withdrawal"
 
 msgid "emailAddDSE"
-msgstr "Dieser E-Mailart Ihre Datenschutzerklärung anhängen"
+msgstr "Attach data privacy statement"
 
 msgid "emailActive"
-msgstr "E-Mail versenden"
+msgstr "Send email"
 
 msgid "emailOut"
-msgstr "E-Mail Ausgangsadresse"
+msgstr "Sender email address"
 
 msgid "emailSenderName"
-msgstr "E-Mail Absendername"
+msgstr "Address name"
 
 msgid "emailCopyTo"
-msgstr "E-Mail Kopieadresse"
+msgstr "Send copy of email (bcc) to"
 
 msgid "errorTemplate"
-msgstr "Die Emailvorlage ist fehlerhaft."
+msgstr "Faulty email template."
 
 msgid "successTemplateReset"
-msgstr "Ihre markierte Emailvorlage wurde erfolgreich zurückgesetzt"
+msgstr "Selected email template reset successfully."
 
 msgid "errorTemplateMissing"
-msgstr "Es existiert keine Emailvorlage: "
+msgstr "Email template not found: "
 
 msgid "successEmailSend"
-msgstr "E-Mail wurde erfolgreich versendet."
+msgstr "Email sent successfully."
 
 msgid "errorEmailSend"
-msgstr "E-Mail konnte nicht versendet werden."
+msgstr "Could not send email."
 
 msgid "errorFileName"
-msgstr "Fehler: Ihr Dateiname %s enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -)."
+msgstr "File name %s contains forbidden characters (A–Z, a–z, 0–9, _ and - are allowed)."
 
 msgid "errorFileSave"
-msgstr "Fehler: Die Dateien konnten nicht geschrieben werden. 'Prüfen Sie bitte, ob das PDF Verzeichnis Schreibrechte besitzt."
+msgstr "Could not write files. Please check whether write access is set for the PDF directory."
 
 msgid "errorFileNameMissing"
-msgstr "Fehler: Bitte geben Sie zu jeder Datei auch einen Dateinamen (Wunschnamen) ein."
+msgstr "Please also enter a name for every file."
 
 msgid "errorFileSizeType"
-msgstr "Fehler: Die Datei muss ein PDF sein und darf maximal 2MB groß sein"
+msgstr "The file must be a PDF and must not be larger than 2 MB."
 
 msgid "errorFileNamePdfMissing"
-msgstr "Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben."
+msgstr "The PDF file does not have a name."
 
 msgid "successTemplateEdit"
-msgstr "Emailvorlage erfolgreich geändert."
+msgstr "Email template edited successfully."
 
 msgid "successFileAppendixDelete"
-msgstr "Ihre Dateianhänge für Ihre gewählte Sprache, wurden erfolgreich gelöscht."
+msgstr "Attachments for the selected languages deleted successfully."
 
 msgid "multipleDividedColon"
-msgstr "(mehrere durch Semikolon getrennt)"
+msgstr "(separate several recipients by semicolon)"
 
 msgid "resetEmailTemplate"
-msgstr "Ihre Emailvorlage wird zurückgesetzt!"
+msgstr "The email template will be reset."
 
 msgid "sureResetEmailTemplate"
-msgstr "Wollen Sie die Emailvorlage \"<b>%s</b>\" wirklich zurücksetzen?"
+msgstr "Reset email template \"<b>%s</b>\"?"
 
 msgid "pluginTemplates"
-msgstr "Plugin-Vorlagen"
+msgstr "Plug-in templates"

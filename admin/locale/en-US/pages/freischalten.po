@@ -3,151 +3,151 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "freischalten"
-msgstr "Freischaltzentrale"
+msgstr "Approvals"
 
 msgid "freischaltenURL"
-msgstr "https://jtl-url.de/ihwlq"
+msgstr "https://jtl-url.de/z3qa0"
 
 msgid "freischaltenDesc"
-msgstr "Hier können Bewertungen, Livesuchen, Tags, Newskommentare und Newsletterempfänger auf einem Blick in der aktuell ausgewählten Sprache freigeschaltet werden."
+msgstr "Here you approve customer reviews, live searches, tags, news comments and the recipients of newsletters in the currently selected language."
 
 msgid "freischaltenActivate"
-msgstr "Freischalten"
+msgstr "Approve"
 
 msgid "freischaltenReviewsCustomer"
-msgstr "Kundenname"
+msgstr "Customer name"
 
 msgid "freischaltenReviewsText"
-msgstr "Bewertungstext"
+msgstr "Review text"
 
 msgid "freischaltenReviewsDate"
-msgstr "Erstellt am"
+msgstr "Created on"
 
 msgid "freischaltenLivesearch"
-msgstr "Livesuche"
+msgstr "Live search"
 
 msgid "freischaltenLivesearchSearch"
-msgstr "Suche"
+msgstr "Search"
 
 msgid "freischaltenLivesearchCount"
-msgstr "Suchanzahl"
+msgstr "Number of searches"
 
 msgid "freischaltenLivesearchHits"
-msgstr "Suchtreffer"
+msgstr "Search results"
 
 msgid "freischaltenLiveseachDate"
-msgstr "Zuletzt gesucht am"
+msgstr "Last searched on"
 
 msgid "freischaltenTagsCount"
-msgstr "Taganzahl"
+msgstr "Number of tags"
 
 msgid "freischaltenNewsComments"
-msgstr "Newskommentare"
+msgstr "News comments"
 
 msgid "freischaltenNewsCommentsHeadline"
-msgstr "Überschrift"
+msgstr "Headline"
 
 msgid "freischaltenNewsCommentsDate"
-msgstr "Erstellt am"
+msgstr "Created on"
 
 msgid "freischaltenNewsletterReceiver"
-msgstr "Newsletterempfänger"
+msgstr "Newsletter recipient"
 
 msgid "freischaltenSearch"
 msgstr "Suche"
 
 msgid "freischaltenSearchItem"
-msgstr "Suchbegriff"
+msgstr "Search term"
 
 msgid "freischaltenSearchType"
-msgstr "Suchkategorie"
+msgstr "Search category"
 
 msgid "freischaltenMappingOn"
-msgstr "Mappen auf"
+msgstr "Link with"
 
 msgid "freischaltenMappingOnBTN"
-msgstr "Mappen"
+msgstr "Link"
 
 msgid "freischaltenMappingDesc"
-msgstr "* Achtung * Bei einem Mapping werden die Livesuchen direkt freigeschaltet."
+msgstr "* Warning: * When a link exists, live searches are approved immediately."
 
 msgid "errorSearchTermMissing"
-msgstr "Fehler: Bitte geben Sie einen Suchbegriff ein."
+msgstr "Please enter a search term."
 
 msgid "successRatingUnlock"
-msgstr "Ihre markierten Bewertungen wurden erfolgreich freigeschaltet."
+msgstr "Selected reviews approved successfully."
 
 msgid "errorAtLeastOneRating"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Bewertung."
+msgstr "Please select at least one review."
 
 msgid "successRatingDelete"
-msgstr "Ihre markierten Bewertungen wurden erfolgreich gelöscht."
+msgstr "Selected reviews deleted successfully."
 
 msgid "successLiveSearchMap"
-msgstr "Ihre markierten Livesuchen wurden erfolgreich auf %s gemappt."
+msgstr "Selected live searches linked with %s successfully."
 
 msgid "errorLiveSearchMapNotUnlock"
-msgstr "Fehler: Ihre Livesuche wurde zwar erfolgreich gemappt, konnte jedoch aufgrund eines unbekannten Fehlers, nicht freigeschaltet werden."
+msgstr "The live search was linked successfully but could not be approved due to an unknown error."
 
 msgid "errorMapUnknown"
-msgstr "Fehler: Mapping konnte aufgrund eines unbekannten Fehlers nicht durchgeführt werden."
+msgstr "Could not perform linking due to an unknown error."
 
 msgid "errorSearchNotFoundDB"
-msgstr "Fehler: Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden."
+msgstr "Could not find at least one search query in the database."
 
 msgid "errorMapDB"
-msgstr "Fehler: Mindestens eine Suchanfrage konnte nicht als Mapping in die Datenbank gespeichert werden."
+msgstr "Could not save at least one search query as a link in the database."
 
 msgid "errorMapToNotExisting"
-msgstr "Fehler: Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen."
+msgstr "The search query to be linked does not exist."
 
 msgid "errorMapSelf"
-msgstr "Fehler: Es kann nicht auf sich selbst gemappt werden."
+msgstr "A live search cannot be linked with itself."
 
 msgid "errorAtLeastOneLiveSearch"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Livesuche."
+msgstr "Please select at least one live search."
 
 msgid "errorMapNameMissing"
-msgstr "Fehler: Bitte geben Sie ein Mappingnamen an."
+msgstr "Please enter a name for the link."
 
 msgid "successSearchUnlock"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich freigeschaltet."
+msgstr "Selected search queries approved successfully."
 
 msgid "errorAtLeastOneSearch"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Suchanfrage."
+msgstr "Please select at least one search query."
 
 msgid "successSearchDelete"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
+msgstr "Selected search queries deleted successfully."
 
 msgid "successTagUnlock"
-msgstr "Ihre markierten Tags wurden erfolgreich freigeschaltet."
+msgstr "Selected tags approved successfully."
 
 msgid "errorAtLeastOneTag"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Tag."
+msgstr "Please select at least one tag."
 
 msgid "successTagDelete"
-msgstr "Ihre markierten Tags wurden erfolgreich gelöscht."
+msgstr "Selected tags deleted successfully."
 
 msgid "successNewsCommentUnlock"
-msgstr "Ihre markierten Newskommentare wurden erfolgreich freigeschaltet."
+msgstr "Selected news comments approved successfully."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newskommentar."
+msgstr "Please select at least one news comment."
 
 msgid "successNewsCommentDelete"
-msgstr "Ihre markierten Newskommentare wurden erfolgreich gelöscht."
+msgstr "Selected news comments deleted successfully."
 
 msgid "successNewsletterUnlock"
-msgstr "Ihre markierten Newsletterempfänger wurden erfolgreich freigeschaltet."
+msgstr "Selected newsletter recipients approved successfully."
 
 msgid "errorAtLeastOneNewsletter"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletterempfänger."
+msgstr "Please select at least one newsletter recipient."
 
 msgid "successNewsletterDelete"
-msgstr "Ihre markierten Newsletterempfänger wurden erfolgreich gelöscht."
+msgstr "Selected newsletter recipients deleted successfully."
 
 msgid "unlockMarked"
-msgstr "Markierte freischalten"
+msgstr "Approve selected"
 
 msgid "linkMarked"
-msgstr "Markierte verknüpfen mit"
+msgstr "Link approved with"

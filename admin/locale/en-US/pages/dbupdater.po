@@ -3,85 +3,85 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "dbupdater"
-msgstr "Datenbank-Update"
+msgstr "Database update"
 
 msgid "dbupdaterURL"
-msgstr "https://jtl-url.de/8qef4"
+msgstr "https://jtl-url.de/3ajp1"
 
 msgid "dbupdaterDesc"
-msgstr "Hier können Sie Ihre JTL-Shop-Datenbank aktualisieren. Die Zielversion für das Datenbank-Update entspricht der derzeit installierten Shop-Version."
+msgstr "Here you can update the database of your JTL-Shop. The target version of the database update corresponds to the currently installed shop version."
 
 msgid "updateNow"
-msgstr "Datenbank-Update starten"
+msgstr "Start database update"
 
 msgid "nextStep"
-msgstr "fortfahren"
+msgstr "Continue"
 
 msgid "fromVersion"
-msgstr "Von Version"
+msgstr "From version"
 
 msgid "toVersion"
-msgstr "Nach Version"
+msgstr "To version"
 
 msgid "errorSqlUpdate"
-msgstr "Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut."
+msgstr "An SQL command in the update could not be run. Please try again."
 
 msgid "successUpdate"
-msgstr "Das Update wurde erfolgreich abgeschlossen"
+msgstr "Update completed successfully."
 
 msgid "errorUpdate"
-msgstr "Fehler: Ein SQL-Befehl im Update hat 3 mal nicht funktioniert. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support!"
+msgstr "An SQL command in the update could not be run 3 times. The update has been cancelled. Please contact the Support team."
 
 msgid "eventProtocol"
-msgstr "Ereignisprotokoll"
+msgstr "Event log"
 
 msgid "isDownloaded"
-msgstr " wird heruntergeladen"
+msgstr " is being downloaded…"
 
 msgid "createSuccess"
-msgstr " wurde erfolgreich erstellt"
+msgstr " created successfully."
 
 msgid "errorSaveCopy"
-msgstr "Sicherungskopie konnte nicht erstellt werden"
+msgstr "Could not create backup copy."
 
 msgid "infoUpdatePause"
-msgstr "Update wurde angehalten: "
+msgstr "Update cancelled: "
 
 msgid "successMigrations"
-msgstr "Migrations wurden ausgeführt"
+msgstr "Migrations completed successfully."
 
 msgid "successMigration"
-msgstr "Migration wurde erfolgreich ausgef&uuml;hrt"
+msgstr "Migration completed successfully."
 
 msgid "updateTo"
-msgstr "Update auf "
+msgstr "Update to "
 
 msgid "successfull"
-msgstr " erfolgreich"
+msgstr " completed successfully."
 
 msgid "sessionExpired"
-msgstr "Sitzung abgelaufen"
+msgstr "Session expired."
 
 msgid "redirectToLogin"
-msgstr "Sie werden zur Anmelde-Maske weitergeleitet..."
+msgstr "You will shortly be forwarded to the login form…"
 
 msgid "dbUpToDate"
-msgstr "Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version"
+msgstr "Your database matches the current system status (version"
 
 msgid "successfullMigrations"
-msgstr "Erfolgreiche Migrationen"
+msgstr "Successful migrations"
 
 msgid "openMigrations"
-msgstr "Nicht-ausgeführte Migrationen"
+msgstr "Missed migrations"
 
 msgid "putOnServer"
-msgstr "Auf Server ablegen"
+msgstr "Save on server"
 
 msgid "infoUpdateNow"
-msgstr "Klicken Sie auf <a href=\"dbupdater.php?action=update\" data-callback=\"update\">jetzt aktualisieren</a>, um die Datenbankaktualisierung durchzuführen."
+msgstr "Click on <a href=\"dbupdater.php?action=update\" data-callback=\"update\">update now</a> to perform the database update."
 
 msgid "dbUpdate"
-msgstr "Datenbankaktualisierung"
+msgstr "Database update"
 
 msgid "required"
-msgstr "erforderlich"
+msgstr "required"

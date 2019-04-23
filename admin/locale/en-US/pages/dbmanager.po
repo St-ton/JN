@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "dbManager"
-msgstr "Datenbank-Manager"
+msgstr "Database manager"
 
 msgid "tableViews"
-msgstr "Tabellen und Views"
+msgstr "Tables and views"
 
 msgid "sqlCommand"
-msgstr "SQL Kommando"
+msgstr "SQL command"
 
 msgid "codeCompletion"
-msgstr "Code-Vervollständigung via <span class=\"label label-default\">STRG+Leertaste</span> ausführen"
+msgstr "Perform code completion via <span class=\"label label-default\">CTRL+Space</span>"

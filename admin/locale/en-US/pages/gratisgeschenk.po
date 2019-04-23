@@ -3,37 +3,37 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "ggActiveProducts"
-msgstr "Aktive Geschenke"
+msgstr "Active gifts"
 
 msgid "ggCommonBuyedProducts"
-msgstr "am häufigsten gekauft"
+msgstr "Bought most frequently"
 
 msgid "ggLast100Products"
-msgstr "Letzten 100"
+msgstr "Last 100"
 
 msgid "ggOrderValueMin"
-msgstr "Bestellbar ab"
+msgstr "Order possible from"
 
 msgid "ggCount"
-msgstr "Gewählt"
+msgstr "Selected"
 
 msgid "ggDate"
-msgstr "Erstellt"
+msgstr "Created"
 
 msgid "ggHeader"
-msgstr "Gratisgeschenk"
+msgstr "Free gift"
 
 msgid "ggURL"
-msgstr "https://jtl-url.de/qoo2h"
+msgstr "https://jtl-url.de/lb6mn"
 
 msgid "ggOrdered"
-msgstr "Bestellt am"
+msgstr "Ordered on"
 
 msgid "gglastOrdered"
-msgstr "Zuletzt"
+msgstr "Most recent"
 
 msgid "ggOrderValue"
-msgstr "Bestellwert"
+msgstr "Order value"
 
 msgid "ggOrderValueAverage"
-msgstr "Durchschn. Bestellwert"
+msgstr "Average order value"

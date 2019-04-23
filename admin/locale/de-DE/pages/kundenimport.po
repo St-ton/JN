@@ -21,7 +21,7 @@ msgid "language"
 msgstr "Kunden diese Sprache zuweisen"
 
 msgid "generateNewPass"
-msgstr "Passwort neu erstellen und Kunden per E-Mail informieren"
+msgstr "Neues Passwort erstellen und Kunden per E-Mail informieren"
 
 msgid "passYes"
 msgstr "Ja, für jeden Kunden ein neues Passwort erstellen und per E-Mail informieren"
@@ -30,28 +30,28 @@ msgid "passNo"
 msgstr "Nein, Passwort aus CSV-Datei übernehmen und Kunden nicht per E-Mail benachrichtigen"
 
 msgid "errorInvalidEmail"
-msgstr "Keine gültige E-Mail-Adresse ($kunde-&gt;cMail) ! Übergehe diesen Datensatz."
+msgstr "Keine gültige E-Mail-Adresse ($kunde-&gt;cMail)! Datensatz wurde übersprungen."
 
 msgid "errorNoPassword"
-msgstr "Kein Passwort. Übergehe diesen Datensatz. (Könnte unregistrierter JTL-Shop-Kunde sein)"
+msgstr "Kein Passwort. Datensatz wurde übersprungen. (Es könnte sich um einen nicht registrierten JTL-Shop-Kunden handeln)"
 
 msgid "errorNoSurname"
-msgstr "Kein Nachname! Übergehe diesen Datensatz."
+msgstr "Kein Nachname! Datensatz wurde übersprungen."
 
 msgid "errorEmailDuplicate"
-msgstr "Kunde mit dieser E-Mail-Adresse bereits vorhanden: %s. Übergehe diesen Datensatz."
+msgstr "Kunde mit dieser E-Mail-Adresse bereits vorhanden: %s. Datensatz wurde übersprungen."
 
 msgid "errorImportRecord"
-msgstr "Fehler beim Import dieser Zeile. Bitte in Root/logs/ nachschauen."
+msgstr "Fehler beim Import dieser Zeile. Bitte sehen Sie sich die Log-Datei (Root/logs/) an und beheben Sie die entsprechenden Fehler in der CSV-Datei."
 
 msgid "successImportRecord"
 msgstr "Datensatz OK. Importiere: "
 
 msgid "checkHead"
-msgstr "Überprüfe Kopfzeile... "
+msgstr "Überprüfe Kopfzeile… "
 
 msgid "errorFormatNotFound"
-msgstr " - Format nicht erkannt!"
+msgstr " Format nicht erkannt!"
 
 msgid "importPending"
-msgstr "Importiere..."
+msgstr "Importiere…"

@@ -71,7 +71,7 @@ class Seo
         $b = ['Ae', 'Oe', 'Ue', 'ss', 'ae', 'oe', 'ue', 'ae'];
 
         $str = preg_replace('/[^\pL\d\-\/_\ ]+/u', '', str_replace($a, $b, $str));
-        $str = preg_replace('/[\-\/_\ ]+/u', '-', $str);
+        $str = preg_replace('/[\-_\ ]+/u', '-', $str);
         $str = transliterator_transliterate(
             'Any-Latin; Latin-ASCII;' . (SEO_SLUG_LOWERCASE ? ' Lower();' : ''),
             trim($str, ' -_')

@@ -488,7 +488,7 @@ class PortletInstance implements \JsonSerializable
                     $constraint->aspectRatio();
                 });
 
-                $img->save($sizedImgPath,$settings['bilder']['bilder_jpg_quali']);
+                $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
             }
 
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';

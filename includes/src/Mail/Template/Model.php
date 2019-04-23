@@ -146,15 +146,22 @@ final class Model
         'nAGB'          => 'ShowAGB',
         'nWRB'          => 'ShowWRB',
         'nWRBForm'      => 'ShowWRBForm',
-        'nFehlerhaft'   => 'HasError',
         'nDSE'          => 'ShowDSE',
+        'nFehlerhaft'   => 'HasError',
+        'kPlugin'       => 'PluginID'
+    ];
+
+    /**
+     * @var array
+     */
+    private static $localizedMapping = [
+        'kEmailvorlage' => 'ID',
         'kSprache'      => 'LanguageID',
         'cBetreff'      => 'Subject',
         'cContentHtml'  => 'HTML',
         'cContentText'  => 'Text',
         'cPDFS'         => 'Attachments',
-        'cPDFNames'     => 'AttachmentNames',
-        'kPlugin'       => 'PluginID',
+        'cPDFNames'     => 'AttachmentNames'
     ];
 
     /**
@@ -172,9 +179,27 @@ final class Model
      */
     public function getMapping(string $type = null)
     {
-        return $type === null
-            ? self::$mapping
-            : self::$mapping[$type] ?? null;
+        $combined = \array_merge(self::$mapping, self::$localizedMapping);
+
+        return $type === null ? $combined : $combined[$type] ?? null;
+    }
+
+    /**
+     * @param string|null $type
+     * @return array|string|null
+     */
+    public function getMainMapping(string $type = null)
+    {
+        return $type === null ? self::$mapping : self::$mapping[$type] ?? null;
+    }
+
+    /**
+     * @param string|null $type
+     * @return array|string|null
+     */
+    public function getLocalizedMapping(string $type = null)
+    {
+        return $type === null ? self::$localizedMapping : self::$localizedMapping[$type] ?? null;
     }
 
     /**
@@ -462,9 +487,9 @@ final class Model
      * @param string $subject
      * @param int    $languageID
      */
-    public function setSubject(string $subject, int $languageID): void
+    public function setSubject($subject, int $languageID): void
     {
-        $this->subject[$languageID] = $subject;
+        $this->subject[$languageID] = $subject ?? '';
     }
 
     /**
@@ -550,6 +575,10 @@ final class Model
      */
     public function setAttachments($attachments, int $languageID): void
     {
+        if ($attachments === null) {
+            // if (DB-)NULL, use class-default
+            return;
+        }
         $this->attachments[$languageID] = \is_string($attachments)
             ? Text::parseSSK($attachments)
             : $attachments;
@@ -613,32 +642,30 @@ final class Model
     public function save(): int
     {
         $res = 0;
+        $upd = new stdClass();
+        foreach ($this->getMainMapping() as $field => $method) {
+            $method = 'get' . $method;
+            $data   = $this->$method();
+            if (\is_bool($data)) {
+                $data = (int)$data;
+            }
+            $upd->$field = \is_array($data) ? Text::createSSK($data) : $data;
+        }
+        $this->db->update('temailvorlage', 'kEmailvorlage', $this->getID(), $upd);
         foreach ($this->text as $langID => $text) {
-            $updates = ['id' => $this->getID(), 'lid' => $langID];
-            $sets    = [];
-            foreach (self::$mapping as $field => $method) {
+            $upd = new stdClass();
+            foreach ($this->getLocalizedMapping() as $field => $method) {
                 $method = 'get' . $method;
                 $data   = $this->$method($langID);
                 if (\is_bool($data)) {
                     $data = (int)$data;
                 }
-                $updates[$field] = \is_array($data) ? Text::createSSK($data) : $data;
-                $sets[$field]    = $field . ' = :' . $field;
+                $upd->$field = \is_array($data) ? Text::createSSK($data) : $data;
             }
-            if ($this->getPluginID() === 0) {
-                unset($updates['kPlugin'], $sets['kPlugin']);
-            }
-            unset($updates['kEmailvorlage'], $updates['kSprache'], $sets['kEmailvorlage'], $sets['kSprache']);
-            $res += $this->db->queryPrepared(
-                'UPDATE temailvorlage a
-                    LEFT JOIN temailvorlagesprache b
-                        ON a.kEmailvorlage = b.kEmailvorlage
-                    SET ' . \implode(', ', $sets) . '
-                    WHERE a.kEmailvorlage = :id
-                        AND b.kSprache = :lid',
-                $updates,
-                ReturnType::AFFECTED_ROWS
-            );
+            $upd->kSprache = $langID;
+            $this->db->delete('temailvorlagesprache', ['kEmailvorlage', 'kSprache'], [$this->getID(), $langID]);
+            $this->db->insert('temailvorlagesprache', $upd);
+            ++$res;
         }
 
         return $res;
@@ -657,7 +684,7 @@ final class Model
         $arrayRows = ['cBetreff', 'cContentHtml', 'cContentText', 'cPDFS', 'cPDFNames'];
         $res       = first($data);
         foreach ($arrayRows as $row) {
-            $res->$row = [$res->kSprache => $res->$row];
+            $res->$row = $res->kSprache > 0 ? [$res->kSprache => $res->$row] : [];
         }
         foreach (tail($data) as $item) {
             $keys = \get_object_vars($item);
@@ -692,30 +719,21 @@ final class Model
      */
     private function loadFromDB(string $templateID): ?array
     {
+        $pluginID = 0;
+        $moduleID = $templateID;
         if (\strpos($templateID, 'kPlugin') === 0) {
-            // @todo: tpluginemailvorlageeinstellungen?
             [, $pluginID, $moduleID] = \explode('_', $templateID);
-            $data                    = $this->db->queryPrepared(
-                'SELECT *
-                    FROM tpluginemailvorlage
-                    LEFT JOIN tpluginemailvorlagesprache
-                        ON tpluginemailvorlage.kEmailvorlage = tpluginemailvorlagesprache.kEmailvorlage
-                    WHERE tpluginemailvorlage.kPlugin = :pid
-                        AND cModulId = :mid',
-                ['pid' => $pluginID, 'mid' => $moduleID],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        } else {
-            $data = $this->db->queryPrepared(
-                'SELECT *, 0 AS kPlugin
-                    FROM temailvorlage
-                    LEFT JOIN temailvorlagesprache
-                        ON temailvorlagesprache.kEmailvorlage = temailvorlage.kEmailvorlage
-                    WHERE cModulId = :mid',
-                ['mid' => $templateID],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
         }
+        $data = $this->db->queryPrepared(
+            'SELECT *, temailvorlage.kEmailvorlage AS id
+                FROM temailvorlage
+                LEFT JOIN temailvorlagesprache
+                    ON temailvorlage.kEmailvorlage = temailvorlagesprache.kEmailvorlage
+                WHERE temailvorlage.kPlugin = :pid
+                    AND cModulId = :mid',
+            ['pid' => $pluginID, 'mid' => $moduleID],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
 
         return \count($data) === 0
             ? null
@@ -724,7 +742,7 @@ final class Model
                 function ($e) {
                     $e->kSprache      = (int)$e->kSprache;
                     $e->kPlugin       = (int)$e->kPlugin;
-                    $e->kEmailvorlage = (int)$e->kEmailvorlage;
+                    $e->kEmailvorlage = (int)$e->id;
                     $e->nAKZ          = (int)$e->nAKZ;
                     $e->nAGB          = (int)$e->nAGB;
                     $e->nWRB          = (int)$e->nWRB;
@@ -732,6 +750,9 @@ final class Model
                     $e->nDSE          = (int)$e->nDSE;
                     $e->nFehlerhaft   = (int)$e->nFehlerhaft;
                     $e->cAktiv        = $e->cAktiv === 'Y';
+                    $e->cBetreff      = $e->cBetreff ?? '';
+                    $e->cContentHtml  = $e->cContentHtml ?? '';
+                    $e->cContentText  = $e->cContentText ?? '';
 
                     return $e;
                 }

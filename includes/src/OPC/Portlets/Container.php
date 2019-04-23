@@ -124,10 +124,6 @@ class Container extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'class'           => [
-                'label'      => 'CSS Klasse',
-                'width' => 50,
-            ],
             'min-height'      => [
                 'type'               => InputType::NUMBER,
                 'label'              => 'Mindesthöhe in px',

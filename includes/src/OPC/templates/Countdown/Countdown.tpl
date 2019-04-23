@@ -1,5 +1,5 @@
 <div id="{$instance->getUid()}"
-     class="countdown {$instance->getProperty('class')} {$instance->getAnimationClass()}"
+     class="countdown {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}"
      {$instance->getAnimationDataAttributeString()}
      {if $isPreview}{$instance->getDataAttributeString()}{/if}

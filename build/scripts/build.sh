@@ -149,7 +149,7 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates/NOVA/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
@@ -307,6 +307,8 @@ build_add_files_to_patch_dir()
 {
     local PATCH_VERSION=$1;
     local PATCH_DIR=$2;
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
 
     echo "  Patch ${PATCH_VERSION} to ${APPLICATION_VERSION}";
 
@@ -324,8 +326,9 @@ build_add_files_to_patch_dir()
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
 
     # Rsync shopmd5files
-    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
-    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${VERSION}.csv ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/dbstruct_${VERSION}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/deleted_files_${VERSION}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then

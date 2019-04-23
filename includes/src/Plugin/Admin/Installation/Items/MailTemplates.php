@@ -54,7 +54,7 @@ class MailTemplates extends AbstractItem
             $mailTpl->nWRB          = (int)($template['WRB'] ?? 0);
             $mailTpl->nWRBForm      = (int)($template['WRBForm'] ?? 0);
             $mailTpl->nDSE          = (int)($template['DSE'] ?? 0);
-            $mailTplID              = $this->db->insert('tpluginemailvorlage', $mailTpl);
+            $mailTplID              = $this->db->insert('temailvorlage', $mailTpl);
             if ($mailTplID <= 0) {
                 return InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE;
             }
@@ -91,9 +91,9 @@ class MailTemplates extends AbstractItem
                 }
                 $addedLanguages[] = $localizedTpl->kSprache;
                 if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
-                    $this->db->insert('tpluginemailvorlagesprache', $localizedTpl);
+                    $this->db->insert('temailvorlagesprache', $localizedTpl);
                 }
-                $this->db->insert('tpluginemailvorlagespracheoriginal', $localizedTpl);
+                $this->db->insert('temailvorlagespracheoriginal', $localizedTpl);
             }
             // Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
             foreach ($allLanguages as $language) {
@@ -102,7 +102,7 @@ class MailTemplates extends AbstractItem
                 }
                 if ($first === true) {
                     $this->db->update(
-                        'tpluginemailvorlage',
+                        'temailvorlage',
                         'kEmailvorlage',
                         $mailTplID,
                         (object)['nFehlerhaft' => 1, 'cAktiv' => 'N']
@@ -111,9 +111,9 @@ class MailTemplates extends AbstractItem
                 }
                 $fallbackLocalization->kSprache = $language->kSprache;
                 if (!isset($this->oldPlugin->kPlugin) || !$this->oldPlugin->kPlugin) {
-                    $this->db->insert('tpluginemailvorlagesprache', $fallbackLocalization);
+                    $this->db->insert('temailvorlagesprache', $fallbackLocalization);
                 }
-                $this->db->insert('tpluginemailvorlagespracheoriginal', $fallbackLocalization);
+                $this->db->insert('temailvorlagespracheoriginal', $fallbackLocalization);
             }
         }
 

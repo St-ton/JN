@@ -722,7 +722,8 @@ abstract class AbstractSync
                     ON tpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tpreisdetail
                     ON tpreisdetail.kPreis = tpreis.kPreis
-                WHERE IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                WHERE tartikel.nIstVater = 0
+                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
             . $uniqueProductIDs . ')
 
                 UNION ALL
@@ -775,6 +776,7 @@ abstract class AbstractSync
                 GROUP BY variations.kArtikel, variations.kKundengruppe
             ) varaufpreis
                 ON varaufpreis.kArtikel = baseprice.kKindArtikel
+                AND varaufpreis.kKundengruppe = baseprice.kKundengruppe
                 AND baseprice.nIstVater = 0
             WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
             GROUP BY baseprice.kArtikel,

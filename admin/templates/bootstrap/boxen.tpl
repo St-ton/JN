@@ -4,23 +4,23 @@
 
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='articlePicker'
-    modalTitle='Artikel auswählen'
-    searchInputLabel='Suche nach Artikelnamen'
+    modalTitle="{__('titleChooseProducts')}"
+    searchInputLabel="{__('labelSearchProduct')}"
 }
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='categoryPicker'
-    modalTitle='Kategorien auswählen'
-    searchInputLabel='Suche nach Kategorienamen'
+    modalTitle="{__('titleChooseCategory')}"
+    searchInputLabel="{__('labelSearchCategory')}"
 }
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='manufacturerPicker'
-    modalTitle='Hersteller auswählen'
-    searchInputLabel='Suche nach Herstellernamen'
+    modalTitle="{__('titleChooseManufacturer')}"
+    searchInputLabel="{__('labelSearchManufacturer')}"
 }
 {include file='tpl_inc/searchpicker_modal.tpl'
     searchPickerName='pagePicker'
-    modalTitle='Eigene Seiten auswählen'
-    searchInputLabel='Suche nach Seitennamen'
+    modalTitle="{__('titleChoosePage')}"
+    searchInputLabel="{__('titleChoosePage')}"
 }
 
 <script>

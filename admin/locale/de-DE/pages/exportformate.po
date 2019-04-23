@@ -29,9 +29,6 @@ msgstr "Exportdatei erstellen"
 msgid "createExportFileAsync"
 msgstr "Exportdatei asynchron erstellen"
 
-msgid "createExportFileAsyncShort"
-msgstr "Asynchron erstellen"
-
 msgid "newExportformat"
 msgstr "Neues Exportformat erstellen"
 

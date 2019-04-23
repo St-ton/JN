@@ -41,10 +41,10 @@ msgstr "Feldname in JTL-Wawi"
 msgid "kundenfeldEditable"
 msgstr "Nachträglich bearbeitbar"
 
-msgid "kundenfeldEdit"
+msgid "headingKundenfeldEdit"
 msgstr "Formularfeld bearbeiten"
 
-msgid "kundenfeldCreate"
+msgid "headingKundenfeldCreate"
 msgstr "Neues Formularfeld erstellen"
 
 msgid "successCustomerFieldDelete"
@@ -56,10 +56,10 @@ msgstr "Die ausgewählten Formularfelder konnten nicht gelöscht werden."
 msgid "errorAtLeastOneCustomerField"
 msgstr "Bitte wählen Sie mindestens ein Formularfeld aus."
 
-msgid "successCustomerFieldRefresh"
+msgid "successCustomerFieldUpdate"
 msgstr "Die Formularfelder wurden erfolgreich aktualisiert."
 
-msgid "errorCustomerFieldRefresh"
+msgid "errorCustomerFieldUpdate"
 msgstr "Die Formularfelder konnten nicht aktualisiert werden."
 
 msgid "successCustomerFieldSave"

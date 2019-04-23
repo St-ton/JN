@@ -30,7 +30,7 @@ msgid "passNo"
 msgstr "No, use the password from the CSV file and do not inform customers via email"
 
 msgid "errorInvalidEmail"
-msgstr "Invalid email address ($kunde-&gt;cMail)! Data set was skipped."
+msgstr "Invalid email address (%s)! Data set was skipped."
 
 msgid "errorNoPassword"
 msgstr "No password. Data set was skipped. (Could be unregistered customer of JTL-Shop)"

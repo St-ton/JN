@@ -32,22 +32,19 @@ msgstr "Minimum order value"
 msgid "curmaxusage"
 msgstr "Number of claimed coupons"
 
-msgid "manageArticlesHint"
-msgstr "Artikel verwalten"
-
 msgid "validFrom"
 msgstr "Valid from"
 
 msgid "validUntil"
 msgstr "Valid until"
 
-msgid "newCoupon"
+msgid "buttonNewCoupon"
 msgstr "Create new coupon"
 
 msgid "newCouponDesc"
 msgstr "Please complete all fields to create a new coupon.<br/>If no code is entered, one is created automatically.<br/>If you want to limit the coupon to a small number of items, enter their SKUs (separated by a semicolon).<br/>If you want the coupon to be valid for all items in the online shop, leave this field empty."
 
-msgid "modifyCoupon"
+msgid "buttonModifyCoupon"
 msgstr "Edit coupon"
 
 msgid "minOrderValue"

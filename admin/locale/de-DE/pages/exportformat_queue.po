@@ -62,7 +62,7 @@ msgstr "Die ausgewählten Warteschlangen wurden erfolgreich gelöscht."
 msgid "errorCronStart"
 msgstr "Es wurde kein Cron-Job gestartet."
 
-msgid "errorCronsStart"
+msgid "successCronsStart"
 msgstr "Es wurden %s Cron-Jobs erfolgreich gestartet."
 
 msgid "successCronStart"

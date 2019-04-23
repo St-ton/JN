@@ -30,7 +30,7 @@ msgid "passNo"
 msgstr "Nein, Passwort aus CSV-Datei übernehmen und Kunden nicht per E-Mail benachrichtigen"
 
 msgid "errorInvalidEmail"
-msgstr "Keine gültige E-Mail-Adresse ($kunde-&gt;cMail)! Datensatz wurde übersprungen."
+msgstr "Keine gültige E-Mail-Adresse (%s)! Datensatz wurde übersprungen."
 
 msgid "errorNoPassword"
 msgstr "Kein Passwort. Datensatz wurde übersprungen. (Es könnte sich um einen nicht registrierten JTL-Shop-Kunden handeln)"

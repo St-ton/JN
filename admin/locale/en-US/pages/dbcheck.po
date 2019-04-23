@@ -131,7 +131,7 @@ msgstr "I do not want to activate the maintenance mode."
 msgid "yesEnoughSpace"
 msgstr "I made sure that there is enough space in the InnoDB tablespace."
 
-msgid "migrationStart"
+msgid "buttonMigrationStart"
 msgstr "Start migration"
 
 msgid "noteMigrationScript"
@@ -155,7 +155,7 @@ msgstr "Use a server console and do <strong>NOT</strong> use phpMyAdmin to run t
 msgid "warningUseThisShopScript"
 msgstr "Only use the script for running the migration of <strong>THIS</strong> JTL-Shop."
 
-msgid "createScript"
+msgid "buttonCreateScript"
 msgstr "Create script"
 
 msgid "sureCancelStructureMigration"

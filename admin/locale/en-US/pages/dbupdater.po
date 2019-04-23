@@ -11,7 +11,7 @@ msgstr "https://jtl-url.de/3ajp1"
 msgid "dbupdaterDesc"
 msgstr "Here you can update the database of your JTL-Shop. The target version of the database update corresponds to the currently installed shop version."
 
-msgid "updateNow"
+msgid "buttonUpdateNow"
 msgstr "Start database update"
 
 msgid "nextStep"
@@ -66,7 +66,7 @@ msgid "redirectToLogin"
 msgstr "You will shortly be forwarded to the login form…"
 
 msgid "dbUpToDate"
-msgstr "Your database matches the current system status (version"
+msgstr "Your database matches the current system status (version %s)"
 
 msgid "successfullMigrations"
 msgstr "Successful migrations"

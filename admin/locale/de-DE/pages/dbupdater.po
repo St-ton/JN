@@ -11,7 +11,7 @@ msgstr "https://jtl-url.de/8qef4"
 msgid "dbupdaterDesc"
 msgstr "Hier können Sie Ihre JTL-Shop-Datenbank aktualisieren. Die Zielversion für das Datenbank-Update entspricht der derzeit installierten Shop-Version."
 
-msgid "updateNow"
+msgid "buttonUpdateNow"
 msgstr "Datenbank-Update starten"
 
 msgid "nextStep"
@@ -66,7 +66,7 @@ msgid "redirectToLogin"
 msgstr "Sie werden zur Anmelde-Maske weitergeleitet…"
 
 msgid "dbUpToDate"
-msgstr "Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version"
+msgstr "Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version %s)"
 
 msgid "successfullMigrations"
 msgstr "Erfolgreiche Migrationen"
@@ -85,3 +85,9 @@ msgstr "Datenbankaktualisierung"
 
 msgid "required"
 msgstr "erforderlich"
+
+msgid "currentShopVersion"
+msgstr "Ihre aktuelle Shopversion"
+
+msgid "currentTemplateVersion"
+msgstr "Ihre aktuelle Templateversion"

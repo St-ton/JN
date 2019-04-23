@@ -53,9 +53,6 @@ msgstr "Erstellt am"
 msgid "freischaltenNewsletterReceiver"
 msgstr "Newsletter-Empfänger"
 
-msgid "freischaltenSearch"
-msgstr "Suche"
-
 msgid "freischaltenSearchItem"
 msgstr "Suchbegriff"
 

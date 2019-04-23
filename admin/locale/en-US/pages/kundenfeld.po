@@ -41,10 +41,10 @@ msgstr "Name of field in JTL-Wawi"
 msgid "kundenfeldEditable"
 msgstr "Allow editing"
 
-msgid "kundenfeldEdit"
+msgid "headingKundenfeldEdit"
 msgstr "Editing form fields"
 
-msgid "kundenfeldCreate"
+msgid "headingKundenfeldCreate"
 msgstr "Creating new form fields"
 
 msgid "successCustomerFieldDelete"
@@ -56,10 +56,10 @@ msgstr "Could not delete the selected form fields."
 msgid "errorAtLeastOneCustomerField"
 msgstr "Please select at least one form field."
 
-msgid "successCustomerFieldRefresh"
+msgid "successCustomerFieldUpdate"
 msgstr "Form fields updated successfully."
 
-msgid "errorCustomerFieldRefresh"
+msgid "errorCustomerFieldUpdate"
 msgstr "Could not update form fields."
 
 msgid "successCustomerFieldSave"

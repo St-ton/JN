@@ -65,15 +65,9 @@ final class SyntaxChecker
      */
     public function checkAll(): void
     {
-        $items = \array_merge(
-            $this->db->query(
-                'SELECT cModulId AS id, 0 AS pluginID FROM temailvorlage',
-                ReturnType::ARRAY_OF_OBJECTS
-            ),
-            $this->db->query(
-                'SELECT cModulId AS id, kPlugin AS pluginID FROM tpluginemailvorlage',
-                ReturnType::ARRAY_OF_OBJECTS
-            )
+        $items = $this->db->query(
+            'SELECT cModulId AS id, kPlugin AS pluginID FROM temailvorlage',
+            ReturnType::ARRAY_OF_OBJECTS
         );
 
         foreach ($items as $template) {

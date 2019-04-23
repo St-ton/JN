@@ -40,7 +40,7 @@
                                                 {else}
                                                     {assign var=bSelectable value=0}
                                                 {/if}
-                                                <li class="list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
+                                                <li class="form-group list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
                                                     {assign var=kKonfigitem value=$oItem->getKonfigitem()}
                                                     {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
                                                     {if !empty($cKurzBeschreibung)}

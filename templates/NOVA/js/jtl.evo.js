@@ -707,6 +707,11 @@
             }
         },
 
+        setCompareListHeight: function() {
+            var h = parseInt($('.comparelist .equal-height').outerHeight());
+            $('.comparelist .equal-height').height(h);
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -731,6 +736,7 @@
             this.addCartBtnAnimation();
             this.checkout();
             this.addInactivityCheck();
+            this.setCompareListHeight();
         }
     };
 

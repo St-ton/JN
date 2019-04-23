@@ -195,9 +195,11 @@
                 {/col}
                 {if $Artikel->bHasKonfig}
                     {block name='productdetails-details-include-config-container'}
-                        {row id="product-configurator"}
-                            {include file='productdetails/config_container.tpl'}
-                        {/row}
+                        {col}
+                            {row id="product-configurator"}
+                                {include file='productdetails/config_container.tpl'}
+                            {/row}
+                        {/col}
                     {/block}
                 {/if}
             {/row}

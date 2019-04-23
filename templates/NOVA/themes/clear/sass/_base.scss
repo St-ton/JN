@@ -2003,8 +2003,8 @@ table caption {
   &::after {
     content: "";
     flex-grow: 1;
-    background: $gray-lighter;
-    height: 1px;
+    background: $sand;
+    height: 2px;
     font-size: 0px;
     line-height: 0px;
     margin: 0px 8px;
@@ -2324,10 +2324,67 @@ input.form-control[name="wishlist-url"] {
     vertical-align: top;
     z-index: $zindex-dropdown - 1;
   }
+
+  .stretched {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+  }
+}
+
+.cfg-group {
+  .config-item {
+    padding: $alert-padding-y;
+    border: 2px solid $cool-white;
+    @include border-radius($dropdown-border-radius);
+    .badge-circle{
+      display: none;
+    }
+    .nmbr-cfg-group {
+      display: none;
+    }
+  }
+
+  .cfg-swatch{
+    ~ .custom-control-label::before,
+    ~ .custom-control-label::after {
+      display: none;
+    }
+    &:disabled ~ .custom-control-label .config-item {
+      background: $cool-white;
+      color: $gray-light;
+    }
+  }
+
+  .custom-control {
+    margin-right: 0;
+    padding-left: 0;
+  }
+
+  .cfg-swatch:checked ~ .custom-control-label .config-item {
+    border-color: $primary;
+    .badge-circle{
+      display: flex;
+      background-color: #F8BF00;
+      border-color: #F8BF00;
+      color: #fff;
+      opacity: 1;
+      align-items: center;
+      position: absolute;
+      top: -20px;
+      right: -22px;
+    }
+    .nmbr-cfg-group {
+      display: flex;
+    }
+  }
+  .drpdwn_qnt{
+    display: none;
+  }
 }
 
 /* Artikel Bilder Slider vertikal */
-
 .slick-down ,
 .slick-up {
   outline: none;

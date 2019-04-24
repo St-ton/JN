@@ -164,7 +164,10 @@ GUI.prototype = {
 
     onBtnImport: function()
     {
-        this.page.loadFromImport(this.iframe.onPageLoad);
+        this.page.loadFromImport(
+            this.iframe.onPageLoad,
+            er => this.showError('Could not import OPC page JSON: ' + er.error.message)
+        );
     },
 
     onBtnExport: function()
@@ -197,7 +200,7 @@ GUI.prototype = {
 
     onSavePageError: function(error)
     {
-        this.showError('Page could not be saved: ' + error);
+        this.showError('Page could not be saved: ' + error.error.message);
     },
 
     setUnsaved: function(enable, record)
@@ -457,7 +460,7 @@ GUI.prototype = {
         this.page.publishFrom = this.publishFromEnabled.prop('checked') ? this.publishFrom.val() : null;
         this.page.publishTo   = this.publishToEnabled.prop('checked') ? this.publishTo.val() : null;
 
-        this.page.publicate();
+        this.page.publicate(noop, er => this.showError(er.error.message));
 
         this.publishModal.modal('hide');
     },

@@ -86,22 +86,30 @@ Page.prototype = {
         }
     },
 
-    loadFromData: function(data, loadCB)
+    loadFromData: function(data, loadCB, errorCB)
     {
         this.io.createPagePreview(
             {areas: data.areas},
-            this.onLoad.bind(this, loadCB || noop)
+            this.onLoad.bind(this, loadCB || noop),
+            errorCB || noop,
         );
     },
 
-    loadFromJSON: function(json, loadCB)
+    loadFromJSON: function(json, loadCB, errorCB)
     {
-        this.loadFromData(JSON.parse(json), loadCB);
+        try {
+            var data = JSON.parse(json);
+        } catch (e) {
+            errorCB({error:{message:'JSON data could not be loaded'}});
+        }
+
+        this.loadFromData(data, loadCB, errorCB);
     },
 
-    loadFromImport: function(loadCB)
+    loadFromImport: function(loadCB, errorCB)
     {
-        this.jq('<input type="file" accept=".json">').on('change', this.onImportChosen.bind(this, loadCB)).click();
+        this.jq('<input type="file" accept=".json">')
+            .on('change', this.onImportChosen.bind(this, loadCB, errorCB)).click();
     },
 
     loadPageFromWebStorage: function(loadCB)
@@ -157,16 +165,16 @@ Page.prototype = {
         return 'opcpage.' + this.key;
     },
 
-    onImportChosen: function(loadCB, e)
+    onImportChosen: function(loadCB, errorCB, e)
     {
         this.importReader = new FileReader();
-        this.importReader.onload = this.onReaderLoad.bind(this, loadCB);
+        this.importReader.onload = this.onReaderLoad.bind(this, loadCB, errorCB);
         this.importReader.readAsText(e.target.files[0]);
     },
 
-    onReaderLoad: function(loadCB)
+    onReaderLoad: function(loadCB, errorCB)
     {
-        this.loadFromJSON(this.importReader.result, loadCB);
+        this.loadFromJSON(this.importReader.result, loadCB, errorCB);
     },
 
     onLoadDraft: function(loadCB, pageData)

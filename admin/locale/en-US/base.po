@@ -353,10 +353,10 @@ msgstr "for customer group"
 msgid "customerGroup"
 msgstr "Customer group"
 
-msgid "chooseCategory"
+msgid "titleChooseCategory"
 msgstr "Select category"
 
-msgid "searchCategory"
+msgid "labelSearchCategory"
 msgstr "Search for categories"
 
 msgid "category"
@@ -410,7 +410,7 @@ msgstr "Custom page"
 msgid "product"
 msgstr "Item"
 
-msgid "chooseProducts"
+msgid "titleChooseProducts"
 msgstr "Select items"
 
 msgid "chooseProduct"
@@ -662,7 +662,7 @@ msgstr "Executed"
 msgid "download"
 msgstr "Download"
 
-msgid "updateNow"
+msgid "buttonUpdateNow"
 msgstr "Update now"
 
 msgid "danger"
@@ -878,13 +878,13 @@ msgstr "selected"
 msgid "textHtml"
 msgstr "text/html"
 
-msgid "searchProductName"
+msgid "labelSearchProduct"
 msgstr "Search for item names"
 
-msgid "searchManufacturerName"
+msgid "labelSearchManufacturer"
 msgstr "Search for manufacturer names"
 
-msgid "chooseManufacturer"
+msgid "titleChooseManufacturer"
 msgstr "Select manufacturer"
 
 msgid "chooseCatgeory"
@@ -1666,3 +1666,12 @@ msgstr "Active to"
 
 msgid "validUntil"
 msgstr "Valid until"
+
+msgid "system"
+msgstr "System"
+
+msgid "labelSearchPage"
+msgstr "Search for own page"
+
+msgid "titleChoosePage"
+msgstr "Choose own page"

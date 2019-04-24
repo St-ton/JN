@@ -222,8 +222,8 @@
 
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle="{__('chooseProducts')}"
-                    searchInputLabel="{__('searchProductName')}"
+                    modalTitle="{__('titleChooseProducts')}"
+                    searchInputLabel="{__('labelSearchProduct')}"
                 }
                 <script>
                     $(function () {
@@ -263,8 +263,8 @@
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='manufacturerPicker'
-                    modalTitle="{__('chooseManufacturer')}"
-                    searchInputLabel="{__('searchManufacturerName')}"
+                    modalTitle="{__('titleChooseManufacturer')}"
+                    searchInputLabel="{__('labelSearchManufacturer')}"
                 }
                 <script>
                     $(function () {
@@ -304,8 +304,8 @@
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='categoryPicker'
-                    modalTitle="{__('chooseCatgeory')}"
-                    searchInputLabel="{__('searchCategory')}"
+                    modalTitle="{__('titleChooseCategory')}"
+                    searchInputLabel="{__('labelSearchCategory')}"
                 }
                 <script>
                     $(function () {

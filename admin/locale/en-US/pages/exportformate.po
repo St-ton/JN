@@ -3,112 +3,109 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "exportformats"
-msgstr "Exportformate"
+msgstr "Export formats"
 
 msgid "exportformatsURL"
-msgstr "https://jtl-url.de/ycaxd"
+msgstr "https://jtl-url.de/oh65a"
 
 msgid "exportformatsDesc"
-msgstr "Hier können Sie Formate zum Exportieren Ihrer Artikeldaten definieren."
+msgstr "Here you can define the export formats for item data."
 
 msgid "languageCurrencyCustGrp"
-msgstr "Sprache/Währung/Kundengruppe"
+msgstr "Language/Currency/Customer group"
 
 msgid "campaigns"
-msgstr "Kampagne"
+msgstr "Campaign"
 
 msgid "lastModified"
-msgstr "zuletzt erstellt"
+msgstr "Last created"
 
 msgid "markedElement"
-msgstr "Markiertes Element"
+msgstr "Selected element"
 
 msgid "createExportFile"
-msgstr "Erstelle Exportdatei"
+msgstr "Create export file"
 
 msgid "createExportFileAsync"
-msgstr "Erstelle Exportdatei (asynchron)"
-
-msgid "createExportFileAsyncShort"
-msgstr "Erstellen (asynchron)"
+msgstr "Create export file asynchronously"
 
 msgid "newExportformat"
-msgstr "Neues Exportformat erstellen"
+msgstr "Create new export format"
 
 msgid "modifyExportformat"
-msgstr "Exportformat bearbeiten"
+msgstr "Edit export format"
 
 msgid "newExportformatSave"
-msgstr "Neues Exportformat speichern"
+msgstr "Save new export format"
 
 msgid "modifyExportformatSave"
-msgstr "Überarbeitetes Exportformat speichern"
+msgstr "Save edited export format"
 
 msgid "onlyIfNeeded"
-msgstr "Nur angeben, wenn Exportdatei die Kopfzeile enthalten soll"
+msgstr "Only complete if header is to be included in the export file"
 
 msgid "template"
-msgstr "Vorlage des Inhalts"
+msgstr "Export template"
 
 msgid "smartyRules"
-msgstr "Smarty wird genutzt. Achtung: PHP-Tags und Inhalte sind nicht erlaubt."
+msgstr "Smarty is active. Warning: PHP tags and contents are forbidden."
 
 msgid "download"
-msgstr "Datei herunterladen"
+msgstr "Download file"
 
 msgid "onlyIfNeededFooter"
-msgstr "Nur angeben, wenn die Fusszeile angehängt werden soll"
+msgstr "Only complete if footer is to be added"
 
 msgid "saveSettings"
-msgstr "Einstellungen speichern"
+msgstr "Save settings"
 
 msgid "StartTime"
-msgstr "Startdatum (nur beim Erstellen)"
+msgstr "Start date (only during creation)"
 
 msgid "encoding"
-msgstr "Zeichenkodierung"
+msgstr "Character encoding"
 
 msgid "varikombiOption"
-msgstr "VariationKombi Option"
+msgstr "Export of child items"
 
 msgid "varikombiOption1"
-msgstr "Vater- und Kindartikel exportieren"
+msgstr "Export parent and child items"
 
 msgid "varikombiOption2"
-msgstr "Nur Vaterartikel exportieren"
+msgstr "Export parent items only"
 
 msgid "varikombiOption3"
-msgstr "Nur Kindartikel exportieren"
+msgstr "Export child items only"
 
 msgid "splitSize"
-msgstr "Grösse pro Datei (MB)"
+msgstr "Size per file (MB)"
 
 msgid "successFormatEdit"
-msgstr "Das Exportformat %s wurde erfolgreich geändert."
+msgstr "Export format %s edited successfully."
 
 msgid "successFormatCreate"
-msgstr "Das Exportformat %s wurde erfolgreich erstellt."
+msgstr "Export format %s created successfully."
 
 msgid "successFormatDelete"
-msgstr "Exportformat erfolgreich gelöscht."
+msgstr "Export format deleted successfully."
 
 msgid "errorFormatDelete"
-msgstr "Exportformat konnte nicht gelöscht werden."
+msgstr "Could not delete export format log."
 
 msgid "errorFormatCreate"
-msgstr "Das Exportformat %s konnte nicht erstellt werden. Fehlende Schreibrechte?"
+msgstr "Could not create export format %s. Please check write access."
 
 msgid "errorExport"
-msgstr "Es ist ein Fehler beim Erstellen der Exportdatei aufgetreten."
+msgstr "Could not create export file."
 
 msgid "availableFormats"
-msgstr "Vorhandene Exportformate"
+msgstr "Existing export formats"
 
 msgid "exportAll"
-msgstr "Alle exportieren"
+msgstr "Exporting all"
 
 msgid "sureDeleteFormat"
-msgstr "Exportformat löschen?"
+msgstr "Delete export format?"
 
 msgid "useCache"
 msgstr "Use Cache?"

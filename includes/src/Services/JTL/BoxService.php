@@ -395,11 +395,19 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0 ' . $activeSQL . $plgnSQL . ' 
+                    WHERE tboxen.kContainer > -1 AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0 '
+                        . $activeSQL . $plgnSQL . ' 
                     GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
                     ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
+            if (isset($_SESSION['AdminAccount'])) {
+                $boxData = map($boxData, function ($box) {
+                    $box->cName = __($box->cName);
+
+                    return $box;
+                });
+            }
             $grouped = group($boxData, function ($e) {
                 return (int)$e->kBox;
             });

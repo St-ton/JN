@@ -47,10 +47,6 @@ class Row extends Portlet
                 'label' => '<i class="fa fa-desktop"></i> Layout L',
                 'width' => 25,
             ],
-            'class'     => [
-                'label' => 'CSS Klasse',
-                'width' => 50,
-            ],
         ];
     }
 

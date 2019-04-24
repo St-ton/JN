@@ -472,11 +472,12 @@ class PortletInstance implements \JsonSerializable
 
         $settings        = Shop::getSettings([\CONF_BILDER]);
         $name            = \basename($src);
+        $decodedName     = \rawurldecode($name);
         $widthHeuristics = $this->widthHeuristics;
-        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $name;
+        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
 
         foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
+            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $decodedName;
 
             if (!\file_exists($sizedImgPath)) {
                 $manager = new ImageManager(['driver' => Image::getImageDriver()]);
@@ -487,10 +488,7 @@ class PortletInstance implements \JsonSerializable
                     $constraint->aspectRatio();
                 });
 
-                $img->save(
-                    \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
-                    $settings['bilder']['bilder_jpg_quali']
-                );
+                $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
             }
 
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';

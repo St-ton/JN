@@ -307,6 +307,8 @@ build_add_files_to_patch_dir()
 {
     local PATCH_VERSION=$1;
     local PATCH_DIR=$2;
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
 
     echo "  Patch ${PATCH_VERSION} to ${APPLICATION_VERSION}";
 
@@ -324,8 +326,9 @@ build_add_files_to_patch_dir()
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
 
     # Rsync shopmd5files
-    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
-    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${VERSION}.csv ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/dbstruct_${VERSION}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/deleted_files_${VERSION}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then

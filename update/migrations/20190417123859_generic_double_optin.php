@@ -33,7 +33,7 @@ class Migration_20190417123859 extends Migration implements IMigration
     {
         $this->execute("CREATE TABLE IF NOT EXISTS toptin(
             kOptin int(10) NOT NULL AUTO_INCREMENT COMMENT 'internal table key',
-            kOptinCode varchar(256) NOT NULL DEFAULT '' COMMENT 'main opt-in code',
+            kOptinCode varchar(255) NOT NULL DEFAULT '' COMMENT 'main opt-in code',
             kOptinClass varchar(1024) DEFAULT '' COMMENT 'the class name of this optin',
             cMail varchar(256) NOT NULL DEFAULT '' COMMENT 'customer mail address',
             cRefData varchar(1024) DEFAULT NULL COMMENT 'additional reference data (e.g. text output in emails)',
@@ -47,7 +47,7 @@ class Migration_20190417123859 extends Migration implements IMigration
         COLLATE = utf8_unicode_ci");
         $this->execute("CREATE TABLE IF NOT EXISTS toptinhistory(
             kOptinHistory int(10) NOT NULL AUTO_INCREMENT COMMENT 'internal table key',
-            kOptinCode varchar(256) DEFAULT NULL COMMENT 'main OptInCode, derived from table toptin',
+            kOptinCode varchar(255) DEFAULT NULL COMMENT 'main OptInCode, derived from table toptin',
             kOptinClass varchar(1024) DEFAULT '' COMMENT 'the class name of this optin',
             cMail varchar(256) NOT NULL DEFAULT '' COMMENT 'customer mail address',
             cRefData varchar(1024) DEFAULT NULL COMMENT 'additional reference data (e.g. text output in emails)',

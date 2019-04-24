@@ -353,10 +353,10 @@ msgstr "für Kundengruppe"
 msgid "customerGroup"
 msgstr "Kundengruppe"
 
-msgid "chooseCategory"
+msgid "titleChooseCategory"
 msgstr "Kategorien auswählen"
 
-msgid "searchCategory"
+msgid "labelSearchCategory"
 msgstr "Suche nach Kategorien"
 
 msgid "category"
@@ -410,7 +410,7 @@ msgstr "Eigene Seite"
 msgid "product"
 msgstr "Artikel"
 
-msgid "chooseProducts"
+msgid "titleChooseProducts"
 msgstr "Artikel wählen"
 
 msgid "chooseProduct"
@@ -662,7 +662,7 @@ msgstr "Ausgeführt"
 msgid "download"
 msgstr "Herunterladen"
 
-msgid "updateNow"
+msgid "buttonUpdateNow"
 msgstr "Jetzt aktualisieren"
 
 msgid "danger"
@@ -878,13 +878,13 @@ msgstr "markiert"
 msgid "textHtml"
 msgstr "text/html"
 
-msgid "searchProductName"
+msgid "labelSearchProduct"
 msgstr "Suche nach Artikelnamen"
 
-msgid "searchManufacturerName"
+msgid "labelSearchManufacturer"
 msgstr "Suche nach Herstellernamen"
 
-msgid "chooseManufacturer"
+msgid "titleChooseManufacturer"
 msgstr "Hersteller wählen"
 
 msgid "chooseCatgeory"
@@ -1703,3 +1703,12 @@ msgstr "Aktiv bis"
 
 msgid "validUntil"
 msgstr "Gültig bis"
+
+msgid "system"
+msgstr "System"
+
+msgid "labelSearchPage"
+msgstr "Suche nach Seitennamen"
+
+msgid "titleChoosePage"
+msgstr "Eigene Seiten auswählen"

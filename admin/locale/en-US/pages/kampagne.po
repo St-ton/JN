@@ -3,112 +3,112 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "kampagne"
-msgstr "Kampagnen"
+msgstr "Campaigns"
 
 msgid "kampagneDesc"
 msgstr " "
 
 msgid "kampagneURL"
-msgstr "https://jtl-url.de/v5kan"
+msgstr "https://jtl-url.de/mdy-n"
 
 msgid "kampagneSingle"
-msgstr "Kampagne"
+msgstr "Campaign"
 
 msgid "kampagneIntern"
-msgstr "Interne Shop-Kampagnen"
+msgstr "Internal shop campaigns"
 
 msgid "kampagneExtern"
-msgstr "Eigene Kampagnen"
+msgstr "Custom campaigns"
 
 msgid "kampagneOverview"
-msgstr "Kampagnen"
+msgstr "Campaigns"
 
 msgid "kampagneNewBTN"
-msgstr "neue Kampagne erstellen"
+msgstr "Create new campaign"
 
 msgid "kampagneDetailStatsBTN"
-msgstr "Aktualisieren"
+msgstr "Refresh"
 
 msgid "kampagneDetailStats"
-msgstr "Detaillierte Statistiken zu Kampagne"
+msgstr "Detailed campaign reports"
 
 msgid "kampagneDetailStatsDef"
-msgstr "Detaillierte Statistiken"
+msgstr "Detailed reports"
 
 msgid "kampagneDetailGraph"
-msgstr "Graphen"
+msgstr "Graphs"
 
 msgid "kampagneGlobalStats"
-msgstr "Globale Statistiken"
+msgstr "Global reports"
 
 msgid "kampagneDetailView"
-msgstr "Ansicht"
+msgstr "View"
 
 msgid "kampagneOverall"
-msgstr "Gesamt"
+msgstr "Total"
 
 msgid "kampagnePeriod"
-msgstr "Zeitraum"
+msgstr "Period"
 
 msgid "kampagneView"
-msgstr "Ansicht"
+msgstr "View"
 
 msgid "kampagneDateTill"
-msgstr "bis (inkl.)"
+msgstr "up to and including"
 
 msgid "kampagneCreate"
-msgstr "Neue Kampagne"
+msgstr "Creating new campaigns"
 
 msgid "kampagneEdit"
-msgstr "Kampagne editieren"
+msgstr "Editing campaigns"
 
 msgid "kampagneName"
-msgstr "Kampagnenname"
+msgstr "Campaign name"
 
 msgid "kampagneParam"
-msgstr "Kampagnenparameter (GET/POST)"
+msgstr "Campaign parameter (GET/POST)"
 
 msgid "kampagneValue"
-msgstr "Kampagnenwert"
+msgstr "Campaign value"
 
 msgid "kampagneValueType"
-msgstr "Typ des Kampagnenwertes"
+msgstr "Campaign value type"
 
 msgid "kampagneValueStatic"
-msgstr "Fester Kampagnenwert"
+msgstr "Fixed campaign value"
 
 msgid "kampagneStatic"
-msgstr "Fester Wert"
+msgstr "Fixed value"
 
 msgid "kampagnenDate"
-msgstr "Erstellt am"
+msgstr "Created on"
 
 msgid "kampagnenNLInfo"
-msgstr "Anzahl Aufrufe von Newslettern, welche mit der Kampagne verknüpft sind. Standard: 0, wenn die Kampagne keinem Newsletter zugewiesen ist oder keine Newsletteraufrufe gezählt wurden"
+msgstr "Number of calls of newsletters linked with the campaign Default: 0 if the campaign is not assigned to a newsletter or there were no newsletter calls"
 
 msgid "successCampaignSave"
-msgstr "Ihre Kampagne wurde erfolgreich gespeichert."
+msgstr "Campaign saved successfully."
 
 msgid "successCampaignDelete"
-msgstr "Ihre ausgewählten Kampagnen wurden erfolgreich gelöscht."
+msgstr "Selected campaigns deleted successfully."
 
 msgid "errorAtLeastOneCampaign"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Kampagne."
+msgstr "Please select at least one campaign."
 
 msgid "errorCampaignSave"
-msgstr "Fehler: Kampagne konnte nicht gespeichert werden."
+msgstr "Could not save campaign."
 
 msgid "errorCampaignNameMissing"
-msgstr "Fehler: Bitte geben Sie einen Kampagnennamen ein."
+msgstr "Please enter a campaign name."
 
 msgid "errorCampaignParameterMissing"
-msgstr "Fehler: Bitte geben Sie einen Kampagnenparameter ein."
+msgstr "Please enter a campaign parameter."
 
 msgid "errorCampaignValueMissing"
-msgstr "Fehler: Bitte geben Sie einen Kampagnenwert ein."
+msgstr "Please enter a campaign value."
 
 msgid "errorCampaignNameDuplicate"
-msgstr "Fehler: Der angegebene Kampagnenname ist bereits vergeben."
+msgstr "The entered campaign name already exists."
 
 msgid "errorCampaignParameterDuplicate"
-msgstr "Fehler: Der angegebene Kampagnenparameter ist bereits vergeben."
+msgstr "The entered campaign parameters is already in use."

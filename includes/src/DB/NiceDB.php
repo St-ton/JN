@@ -379,7 +379,7 @@ class NiceDB implements DbInterface
      * @throws InvalidEntityNameException
      * @throws InvalidArgumentException
      */
-    public function insertRow(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int
+    public function insertRow(string $tableName, $object, bool $echo = false): int
     {
         $this->validateEntityName($tableName);
         $this->validateDbObject($object);
@@ -398,18 +398,18 @@ class NiceDB implements DbInterface
 
             return 0;
         }
-        foreach ($arr as $_key => $_val) {
-            $keys[] = $_key;
-            if ($_val === '_DBNULL_') {
-                $_val = null;
-            } elseif ($_val === null) {
-                $_val = '';
+        foreach ($arr as $col => $val) {
+            $keys[] = '`' . $col . '`';
+            if ($val === '_DBNULL_') {
+                $val = null;
+            } elseif ($val === null) {
+                $val = '';
             }
-            if (\mb_convert_case($_val, \MB_CASE_LOWER) === 'now()') {
-                $values[] = $_val;
+            if (\mb_convert_case($val, \MB_CASE_LOWER) === 'now()') {
+                $values[] = $val;
             } else {
-                $values[]             = ':' . $_key;
-                $assigns[':' . $_key] = $_val;
+                $values[]            = ':' . $col;
+                $assigns[':' . $col] = $val;
             }
         }
         $stmt = 'INSERT INTO ' . $tableName .
@@ -432,14 +432,6 @@ class NiceDB implements DbInterface
 
             return 0;
         }
-
-        if ($bExecuteHook) {
-            \executeHook(\HOOK_NICEDB_CLASS_INSERTROW, [
-                'mysqlerrno' => $this->pdo->errorCode(),
-                'statement'  => $stmt
-            ]);
-        }
-
         if (!$res) {
             if ($this->logErrors) {
                 Shop::Container()->getLogService()->error(
@@ -501,9 +493,9 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function insert(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int
+    public function insert(string $tableName, $object, bool $echo = false): int
     {
-        return $this->insertRow($tableName, $object, $echo, $bExecuteHook);
+        return $this->insertRow($tableName, $object, $echo);
     }
 
     /**
@@ -549,9 +541,9 @@ class NiceDB implements DbInterface
                 $_val = '';
             }
             if (\mb_convert_case($_val, \MB_CASE_LOWER) === 'now()') {
-                $updates[] = $_key . '=' . $_val;
+                $updates[] = '`' . $_key . '`=' . $_val;
             } else {
-                $updates[] = $_key . '=?';
+                $updates[] = '`' . $_key . '`=?';
                 $assigns[] = $_val;
             }
         }
@@ -568,7 +560,7 @@ class NiceDB implements DbInterface
                 return -1;
             }
             $keynamePrepared = \array_map(function ($_v) {
-                return $_v . '=?';
+                return '`' . $_v . '`=?';
             }, $keyname);
             $where           = ' WHERE ' . \implode(' AND ', $keynamePrepared);
             foreach ($keyvalue as $_v) {
@@ -576,13 +568,12 @@ class NiceDB implements DbInterface
             }
         } else {
             $assigns[] = $keyvalue;
-            $where     = ' WHERE ' . $keyname . '=?';
+            $where     = ' WHERE `' . $keyname . '`=?';
         }
         $stmt = 'UPDATE ' . $tableName . ' SET ' . \implode(',', $updates) . $where;
         if ($echo) {
             echo $stmt;
         }
-
         try {
             $s   = $this->pdo->prepare($stmt);
             $res = $s->execute($assigns);
@@ -623,18 +614,19 @@ class NiceDB implements DbInterface
                 } elseif ($_val === null) {
                     $_val = '';
                 }
-                $updates[] = $_key . '=' . $this->pdo->quote($_val);
+                $updates[] = '`' . $_key . '`=' . $this->pdo->quote($_val);
             }
             if (\is_array($keyname) && \is_array($keyvalue)) {
                 $combined = [];
                 foreach ($keyname as $i => $key) {
-                    $combined[] = $key . '=' . $this->pdo->quote($keyvalue[$i]);
+                    $combined[] = '`' . $key . '`=' . $this->pdo->quote($keyvalue[$i]);
                 }
                 $where = ' WHERE ' . \implode(' AND ', $combined);
             } else {
-                $where = ' WHERE ' . $keyname . '=' . $this->pdo->quote($keyvalue);
+                $where = ' WHERE `' . $keyname . '`=' . $this->pdo->quote($keyvalue);
             }
             $stmt = 'UPDATE ' . $tableName . ' SET ' . \implode(',', $updates) . $where;
+            Shop::dbg($stmt, true);
             $this->analyzeQuery('update', $stmt, $end - $start, $backtrace);
         }
 
@@ -684,7 +676,7 @@ class NiceDB implements DbInterface
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
-                $_key     .= '=?';
+                $_key      = '`' . $_key . '`=?';
                 $assigns[] = $values[$i];
             } else {
                 unset($keys[$i]);
@@ -741,7 +733,7 @@ class NiceDB implements DbInterface
             $i      = 0;
             foreach ($keys as &$k) {
                 if ($k !== null) {
-                    $k .= '=' . $this->pdo->quote($values[$i]);
+                    $k = '`' . $k . '`=' . $this->pdo->quote($values[$i]);
                 } else {
                     unset($keys[$i]);
                 }
@@ -811,7 +803,7 @@ class NiceDB implements DbInterface
                 \count($keys) . ' key(s) and ' . \count($values) . ' value(s).');
         }
         foreach ($keys as $_key) {
-            $kv[] = $_key . '=:' . $_key;
+            $kv[] = '`' . $_key . '`=:' . $_key;
         }
         $stmt = 'SELECT ' . $select . ' FROM ' . $tableName .
             ((\count($keys) > 0) ?
@@ -849,9 +841,9 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function executeQuery($stmt, $return, bool $echo = false, bool $bExecuteHook = false, $fnInfo = null)
+    public function executeQuery($stmt, $return, bool $echo = false, $fnInfo = null)
     {
-        return $this->_execute(0, $stmt, null, $return, $echo, $bExecuteHook, $fnInfo);
+        return $this->_execute(0, $stmt, null, $return, $echo, $fnInfo);
     }
 
     /**
@@ -862,10 +854,9 @@ class NiceDB implements DbInterface
         array $params,
         $return,
         bool $echo = false,
-        bool $bExecuteHook = false,
         $fnInfo = null
     ) {
-        return $this->_execute(1, $stmt, $params, $return, $echo, $bExecuteHook, $fnInfo);
+        return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
     }
 
     /**
@@ -876,10 +867,9 @@ class NiceDB implements DbInterface
         $params,
         $return,
         bool $echo = false,
-        bool $bExecuteHook = false,
         $fnINfo = null
     ) {
-        return $this->executeQueryPrepared($stmt, $params, $return, $echo, $bExecuteHook, $fnINfo);
+        return $this->executeQueryPrepared($stmt, $params, $return, $echo, $fnINfo);
     }
 
     /**
@@ -925,7 +915,6 @@ class NiceDB implements DbInterface
      * @param array         $params - An array of values with as many elements as there are bound parameters
      * @param int           $return - what should be returned.
      * @param int|bool      $echo print current stmt
-     * @param bool          $bExecuteHook should function executeHook be executed
      * @param null|callable $fnInfo
      * 1  - single fetched object
      * 2  - array of fetched objects
@@ -938,7 +927,7 @@ class NiceDB implements DbInterface
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
-    protected function _execute($type, $stmt, $params, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
+    protected function _execute($type, $stmt, $params, $return, $echo = false, $fnInfo = null)
     {
         $type   = (int)$type;
         $return = (int)$return;
@@ -960,7 +949,7 @@ class NiceDB implements DbInterface
             echo $stmt;
         }
 
-        $start = ($this->debug === true || $this->collectData === true || $bExecuteHook === true || $fnInfo !== null)
+        $start = ($this->debug === true || $this->collectData === true || $fnInfo !== null)
             ? \microtime(true)
             : 0;
         try {
@@ -993,17 +982,12 @@ class NiceDB implements DbInterface
             return 0;
         }
 
-        if ($bExecuteHook || $fnInfo !== null) {
+        if ($fnInfo !== null) {
             $info = [
                 'mysqlerrno' => $this->pdo->errorCode(),
                 'statement'  => $stmt,
                 'time'       => \microtime(true) - $start
             ];
-
-            if ($bExecuteHook) {
-                \executeHook(\HOOK_NICEDB_CLASS_EXECUTEQUERY, $info);
-            }
-
             if ($fnInfo !== null) {
                 $fnInfo($info);
             }
@@ -1108,7 +1092,7 @@ class NiceDB implements DbInterface
                 return -1;
             }
             $keyname = \array_map(function ($_v) {
-                return $_v . '=?';
+                return '`' . $_v . '`=?';
             }, $keyname);
             $where   = \implode(' AND ', $keyname);
             foreach ($keyvalue as $_v) {
@@ -1116,7 +1100,7 @@ class NiceDB implements DbInterface
             }
         } else {
             $assigns[] = $keyvalue;
-            $where     = $keyname . '=?';
+            $where     = '`' . $keyname . '`=?';
         }
 
         $stmt = 'DELETE FROM ' . $tableName . ' WHERE ' . $where;
@@ -1158,7 +1142,7 @@ class NiceDB implements DbInterface
             if (!\is_int($keyvalue)) {
                 $keyvalue = $this->pdo->quote($keyvalue);
             }
-            $stmt = 'DELETE FROM ' . $tableName . ' WHERE ' . $keyname . '=' . $keyvalue;
+            $stmt = 'DELETE FROM ' . $tableName . ' WHERE `' . $keyname . '`=' . $keyvalue;
             $this->analyzeQuery('delete', $stmt, $end - $start, $backtrace);
         }
 
@@ -1208,9 +1192,9 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function query($stmt, $return, bool $echo = false, bool $bExecuteHook = false)
+    public function query($stmt, $return, bool $echo = false)
     {
-        return $this->executeQuery($stmt, $return, $echo, $bExecuteHook);
+        return $this->executeQuery($stmt, $return, $echo);
     }
 
     /**

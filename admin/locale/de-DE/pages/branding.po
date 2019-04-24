@@ -35,21 +35,27 @@ msgstr "Datei für Wasserzeichen"
 msgid "brandingFileNameDesc"
 msgstr "Hier können Sie eine Bilddatei für das Wasserzeichen angeben. Wir empfehlen eine PNG-Datei mit transparentem Hintergrund."
 
+# branding types (tbranding)
 msgid "Artikel"
 msgstr "Artikel"
 
+# branding types (tbranding)
 msgid "Kategorie"
 msgstr "Kategorie"
 
+# branding types (tbranding)
 msgid "Variationen"
 msgstr "Variationen"
 
+# branding types (tbranding)
 msgid "Merkmale"
 msgstr "Merkmale"
 
+# branding types (tbranding)
 msgid "Merkmalwerte"
 msgstr "Merkmalwerte"
 
+# branding types (tbranding)
 msgid "Hersteller"
 msgstr "Hersteller"
 

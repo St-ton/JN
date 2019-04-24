@@ -113,92 +113,122 @@ msgstr "Möchten Sie die E-Mail-Vorlage \"<b>%s</b>\" wirklich zurücksetzen?"
 msgid "pluginTemplates"
 msgstr "Plugin-Vorlagen"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_kupon"
 msgstr "Kupon (Standard / Versandkupon)"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_gutschein"
 msgstr "Kunde erhält Guthaben"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bestellbestaetigung"
 msgstr "Bestellbestätigung"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_passwort_vergessen"
 msgstr "Passwort vergessen"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_neukundenregistrierung"
 msgstr "Neukundenregistrierung"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_accounterstellung_durch_betreiber"
 msgstr "Accounterstellung durch Shopbetreiber"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bestellung_bezahlt"
 msgstr "Bestellung bezahlt"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bestellung_versandt"
 msgstr "Bestellung versandt"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_account_geloescht"
 msgstr "Kundenaccount-Löschung"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_kdgrp_zuweisung"
 msgstr "Kundengruppenzuweisung durch Shopbetreiber"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_kontaktformular"
 msgstr "Kontaktformular"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_produktanfrage"
 msgstr "Frage zum Produkt"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung"
 msgstr "Benachrichtigung, wenn Produkt wieder verfügbar"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_wunschliste"
 msgstr "Wunschzettelversand an Freunde"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bewertungerinnerung"
 msgstr "Bewertungserinnerung nach Artikelkauf"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bestellung_aktualisiert"
 msgstr "Bestellung aktualisiert"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bestellung_storno"
 msgstr "Bestellung storniert"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bestellung_restorno"
 msgstr "Bestellung reaktiviert"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bestellung_teilversandt"
 msgstr "Bestellung teilversandt"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_footer"
 msgstr "Footer"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_header"
 msgstr "Header"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_newsletteranmelden"
 msgstr "Freischaltungsemail nach Newsletteranmeldung"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_kundenwerbenkunden"
 msgstr "Kunden werben Kunden"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_kundenwerbenkundenboni"
 msgstr "Kunden werben Kunden Belohnung"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"
 msgstr "Artikel Weiterempfehlen"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_bewertung_guthaben"
 msgstr "Bonusguthaben für Bewertung"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_anbieterkennzeichnung"
 msgstr "Anbieterkennzeichnung"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_checkbox_shopbetreiber"
 msgstr "Checkbox Emailvorlage"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_admin_passwort_vergessen"
 msgstr "Passwort vergessen (Admin)"
 
+# email name (temailvorlage)
 msgid "name_core_jtl_statusemail"
 msgstr "Status Email"

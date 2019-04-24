@@ -462,5 +462,6 @@ msgstr "PLZ-Import"
 msgid "permission_STATS_CAMPAIGN_VIEW"
 msgstr "Kampagnen"
 
+# description of admin group (tadminlogingruppe)
 msgid "Voller Zugriff auf den Administrationsbereich."
 msgstr "Voller Zugriff auf den Administrationsbereich."

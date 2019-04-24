@@ -169,6 +169,7 @@ class Overlay
      */
     public function loadFromDB(bool $setFallbackPath): self
     {
+        Shop::Container()->getGetText();
         $overlay = $this->getDataForLanguage($this->getLanguage());
         // get overlay data for fallback language
         $overlay = $overlay ?? $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);

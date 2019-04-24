@@ -60,9 +60,10 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
 
     /**
+     * former "newsletterAnmeldungPlausi()"
      * @return array
      */
-    public function newsletterAnmeldungPlausi(): array
+    public function checkCaptcha(): array
     {
         $res = [];
         if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
@@ -86,18 +87,17 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
         if (!SimpleMail::checkBlacklist($this->refData->getEmail())) {
             // the following code replaces the function from "newsletter_inc.php"
-            $plausi              = new \stdClass();
+            $plausi              = new stdClass();
             $plausi->nPlausi_arr = [];
             $nlCustomer          = null;
             if (Text::filterEmailAddress($this->refData->getEmail()) !== false) {
-                $plausi->nPlausi_arr = $this->newsletterAnmeldungPlausi();
-                $kKundengruppe       = Frontend::getCustomerGroup()->getID();
-                $checkBox            = new CheckBox();
-                $plausi->nPlausi_arr = array_merge(
+                $plausi->nPlausi_arr            = $this->checkCaptcha();
+                $kKundengruppe                  = Frontend::getCustomerGroup()->getID();
+                $checkBox                       = new CheckBox();
+                $plausi->nPlausi_arr            = array_merge(
                     $plausi->nPlausi_arr,
                     $checkBox->validateCheckBox(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
                 );
-
                 $plausi->cPost_arr['cAnrede']   = $this->refData->getSalutation();
                 $plausi->cPost_arr['cVorname']  = $this->refData->getFirstName();
                 $plausi->cPost_arr['cNachname'] = $this->refData->getLastName();
@@ -189,16 +189,19 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, [
                             'oNewsletterEmpfaengerHistory' => $history
                         ]);
-                        // double-opt-in mail only for unknown users
-                        // or for all customers too (setting no. 680)
                         if (($this->conf['newsletter']['newsletter_doubleopt'] === 'U'
                             && empty($_SESSION['Kunde']->kKunde))
                             || $this->conf['newsletter']['newsletter_doubleopt'] === 'A'
                         ) {
+                            // opt-in mail (only for unknown users)
                             $this->hasSendingPermission = true;
-                            $plausi                     = new \stdClass();
+                            $plausi                     = new stdClass();
                         } else {
+                            // do not send an opt-in mail, but activate this subscription
                             $this->saveOptin($this->optCode);
+                            $this->activateOptin();
+
+                            // "Vielen Dank, Sie wurden in den Newsletterversand eingetragen."
                             $this->alertHelper->addAlert(
                                 Alert::TYPE_NOTE,
                                 Shop::Lang()->get('newsletterNomailAdd', 'messages'),
@@ -208,6 +211,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                     }
                 }
             } else {
+                // "Entschuldigung, Ihre E-Mail-Adresse ist nicht im richtigen Format."
                 $this->alertHelper->addAlert(
                     Alert::TYPE_ERROR,
                     Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
@@ -244,14 +248,12 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         if ($this->hasSendingPermission !== true) {
             return;
         }
-        // --TODO-- maybe find a better place to check and complain this
         if (!Text::filterEmailAddress($this->refData->getEmail()) !== false) {
             throw new InvalidInputException(
                 Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
                 $this->refData->getEmail()
             );
         }
-
         $shopURL                       = Shop::getURL();
         $optinCodePrefix               = '/?oc=';
         $recipient                     = new \stdClass();
@@ -293,6 +295,8 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
     public function activateOptin(): void
     {
+        parent::activateOptin();
+
         $optinCode  = self::ACTIVATE_CODE . $this->optCode;
         $recicpient = $this->dbHandler->select('tnewsletterempfaenger', 'cOptCode', $optinCode);
         if (isset($recicpient->kNewsletterEmpfaenger) && $recicpient->kNewsletterEmpfaenger > 0) {
@@ -322,7 +326,9 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 [$optinCode, 'Eingetragen'],
                 $upd
             );
-            /*
+            /* --OBSOLETE--   no more needed, because this message comes from Shop::Optin::...
+            former "Ihre E-Mail-Adresse wurde erfolgreich für unseren Newsletter freigeschaltet."
+
             $this->alertHelper->addAlert(
                 Alert::TYPE_NOTE,
                 Shop::Lang()->get('newsletterActive', 'messages'),
@@ -443,7 +449,5 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 );
             }
         }
-
-        // --TODO-- do perant deactivation, however
     }
 }

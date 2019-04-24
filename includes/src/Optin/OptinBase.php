@@ -131,4 +131,43 @@ abstract class OptinBase extends OptinFactory
         $newRow->dCreated    = $this->nowDataTime->format('Y-m-d H:i:s');
         $this->dbHandler->insert('toptin', $newRow);
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function activateOptin(): void
+    {
+        $rowData = new \stdClass();
+        if (empty($this->foundOptinTupel->dActivated)) {
+            $rowData->dActivated = $this->nowDataTime->format('Y-m-d H:i:s');
+            $this->dbHandler->update('toptin', 'kOptinCode', $this->optCode, $rowData);
+        }
+    }
+
+    /**
+     * deactivate and cleanup this optin
+     * (class specific deactivations AND finishing here)
+     */
+    public function deactivateOptin(): void
+    {
+        $this->finishOptin();
+    }
+
+    /**
+     * only move the optin-tupel to history
+     * (e.g. used for "one shot opt-in" actions)
+     */
+    public function finishOptin(): void
+    {
+        $newRow               = new \stdClass();
+        $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
+        $newRow->kOptinClass  = $this->foundOptinTupel->kOptinClass;
+        $newRow->cMail        = 'anonym'; // anonymized for history
+        $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
+        $newRow->dCreated     = $this->foundOptinTupel->dCreated;
+        $newRow->dActivated   = $this->foundOptinTupel->dActivated;
+        $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');
+        $this->dbHandler->insert('toptinhistory', $newRow);
+        $this->dbHandler->delete('toptin', 'kOptinCode', $this->foundOptinTupel->kOptinCode);
+    }
 }

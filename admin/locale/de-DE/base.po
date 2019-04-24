@@ -1451,37 +1451,37 @@ msgstr "Konto"
 msgid "shop"
 msgstr "Shop"
 
-msgid "pageHome"
+msgid "Startseite"
 msgstr "Startseite"
 
-msgid "pageShipping"
-msgstr "Versand"
+msgid "Informationen zum Versand"
+msgstr "Informationen zum Versand"
 
-msgid "pageWRB"
+msgid "WRB"
 msgstr "WRB"
 
-msgid "pageAGB"
+msgid "AGB"
 msgstr "AGB"
 
-msgid "pageTagging"
+msgid "Tagging Übersicht"
 msgstr "Tagging"
 
-msgid "pageLiveSearch"
+msgid "Livesuche"
 msgstr "Livesuche"
 
-msgid "pageDataProtection"
+msgid "Datenschutz"
 msgstr "Datenschutz"
 
-msgid "pageManufacturer"
+msgid "Hersteller Übersicht"
 msgstr "Hersteller"
 
-msgid "pageSitemap"
+msgid "Sitemap"
 msgstr "Sitemap"
 
-msgid "pageGifts"
+msgid "Gratis Geschenk"
 msgstr "Gratisgeschenke"
 
-msgid "pageSelectionAssitant"
+msgid "Auswahlassistent"
 msgstr "Auswahlassistent"
 
 msgid "pageCustom"
@@ -1490,28 +1490,28 @@ msgstr "Eigene Seite"
 msgid "pageAccount"
 msgstr "Mein Konto"
 
-msgid "pageLogin"
+msgid "Login"
 msgstr "Login"
 
-msgid "pageRegister"
+msgid "Registrieren"
 msgstr "Registrieren"
 
-msgid "pageCart"
+msgid "Warenkorb"
 msgstr "Warenkorb"
 
-msgid "pageForgotPassword"
+msgid "Passwort vergessen"
 msgstr "Passwort vergessen"
 
-msgid "pageContact"
+msgid "Kontakt"
 msgstr "Kontakt"
 
-msgid "pageNewsletter"
+msgid "Newsletter"
 msgstr "Newsletter"
 
-msgid "pageNewsletterArchive"
+msgid "Newsletterarchiv"
 msgstr "Newsletterarchiv"
 
-msgid "pageNews"
+msgid "News"
 msgstr "News"
 
 msgid "pageNewsMonth"
@@ -1523,25 +1523,25 @@ msgstr "Newskategorie"
 msgid "pageNewsDetail"
 msgstr "Newsdetail"
 
-msgid "pagePoll"
+msgid "Umfrage"
 msgstr "Umfrage"
 
 msgid "pagePlugin"
 msgstr "Plugin"
 
-msgid "page404"
+msgid "404"
 msgstr "404"
 
-msgid "pageOrderProcess"
+msgid "Bestellvorgang"
 msgstr "Bestellvorgang"
 
-msgid "pageOrderFinalize"
+msgid "Bestellabschluss"
 msgstr "Bestellabschluss"
 
-msgid "pageWishList"
+msgid "Wunschliste"
 msgstr "Wunschliste"
 
-msgid "pageCompareList"
+msgid "Vergleichsliste"
 msgstr "Vergleichsliste"
 
 msgid "pageProduct"
@@ -1561,6 +1561,15 @@ msgstr "Bestellstatus"
 
 msgid "pageUnknown"
 msgstr "Unbekannt"
+
+msgid "Impressum"
+msgstr "Impressum"
+
+msgid "Batteriegesetzhinweise"
+msgstr "Batteriegesetzhinweise"
+
+msgid "WRB-Formular"
+msgstr "WRB-Formular"
 
 msgid "exception"
 msgstr "Ausnahme"

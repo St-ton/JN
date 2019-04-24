@@ -87,7 +87,7 @@
                                 <select id="nLink3" name="nSpezialseite">
                                     <option value="0">{__('choose')}</option>
                                     {foreach $oSpezialseite_arr as $oSpezialseite}
-                                        <option value="{$oSpezialseite->nLinkart}" {if $Link->getLinkType() == $oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
+                                        <option value="{$oSpezialseite->nLinkart}" {if $Link->getLinkType() == $oSpezialseite->nLinkart}selected{/if}>{__($oSpezialseite->cName)}</option>
                                     {/foreach}
                                 </select>
                             </p>

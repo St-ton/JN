@@ -1451,37 +1451,37 @@ msgstr "Account"
 msgid "shop"
 msgstr "Online shop"
 
-msgid "pageHome"
+msgid "Startseite"
 msgstr "Home"
 
-msgid "pageShipping"
+msgid "Informationen zum Versand"
 msgstr "Shipping"
 
-msgid "pageWRB"
+msgid "WRB"
 msgstr "Cancellation"
 
-msgid "pageAGB"
+msgid "AGB"
 msgstr "Conditions"
 
-msgid "pageTagging"
+msgid "Tagging Übersicht"
 msgstr "Tagging"
 
-msgid "pageLiveSearch"
+msgid "Livesuche"
 msgstr "Livesearch"
 
-msgid "pageDataProtection"
+msgid "Datenschutz"
 msgstr "Data protection"
 
-msgid "pageManufacturer"
+msgid "Hersteller Übersicht"
 msgstr "Manufacturer"
 
-msgid "pageSitemap"
+msgid "Sitemap"
 msgstr "Sitemap"
 
-msgid "pageGifts"
+msgid "Gratis Geschenk"
 msgstr "Gifts"
 
-msgid "pageSelectionAssitant"
+msgid "Auswahlassistent"
 msgstr "Selection assitant"
 
 msgid "pageCustom"
@@ -1490,28 +1490,28 @@ msgstr "Custom Page"
 msgid "pageAccount"
 msgstr "Account"
 
-msgid "pageLogin"
+msgid "Login"
 msgstr "Login"
 
-msgid "pageRegister"
+msgid "Registrieren"
 msgstr "Register"
 
-msgid "pageCart"
+msgid "Warenkorb"
 msgstr "Cart"
 
-msgid "pageForgotPassword"
+msgid "Passwort vergessen"
 msgstr "Forgot Password"
 
-msgid "pageContact"
+msgid "Kontakt"
 msgstr "Contact"
 
-msgid "pageNewsletter"
+msgid "Newsletter"
 msgstr "Newsletter"
 
 msgid "pageNewsletterArchive"
 msgstr "Newsletterarchive"
 
-msgid "pageNews"
+msgid "News"
 msgstr "News"
 
 msgid "pageNewsMonth"
@@ -1523,25 +1523,25 @@ msgstr "Newscategory"
 msgid "pageNewsDetail"
 msgstr "Newsdetail"
 
-msgid "pagePoll"
+msgid "Umfrage"
 msgstr "Poll"
 
 msgid "pagePlugin"
 msgstr "Plugin"
 
-msgid "page404"
+msgid "404"
 msgstr "404"
 
-msgid "pageOrderProcess"
+msgid "Bestellvorgang"
 msgstr "Order process"
 
-msgid "pageOrderFinalize"
+msgid "Bestellabschluss"
 msgstr "Order finalize"
 
-msgid "pageWishList"
-msgstr "wishlist"
+msgid "Wunschliste"
+msgstr "Wishlist"
 
-msgid "pageCompareList"
+msgid "Vergleichsliste"
 msgstr "Comparelist"
 
 msgid "pageProduct"
@@ -1561,6 +1561,15 @@ msgstr "Order status"
 
 msgid "pageUnknown"
 msgstr "Unknown"
+
+msgid "Impressum"
+msgstr "Imprint"
+
+msgid "Batteriegesetzhinweise"
+msgstr "Battery-law notes"
+
+msgid "WRB-Formular"
+msgstr "Cancellation Form"
 
 msgid "exception"
 msgstr "Exception"

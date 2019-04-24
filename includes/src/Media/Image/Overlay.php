@@ -169,7 +169,6 @@ class Overlay
      */
     public function loadFromDB(bool $setFallbackPath): self
     {
-        Shop::Container()->getGetText();
         $overlay = $this->getDataForLanguage($this->getLanguage());
         // get overlay data for fallback language
         $overlay = $overlay ?? $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
@@ -181,7 +180,7 @@ class Overlay
                 ->setTransparence($overlay->nTransparenz)
                 ->setSize($overlay->nGroesse)
                 ->setImageName($overlay->cBildPfad)
-                ->setName(__($overlay->cSuchspecial));
+                ->setName(isset($_SESSION['AdminAccount']) ? __($overlay->cSuchspecial) : $overlay->cSuchspecial);
 
             if ($setFallbackPath) {
                 $this->setFallbackPath($overlay->cTemplate);

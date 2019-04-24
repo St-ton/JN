@@ -626,7 +626,6 @@ class NiceDB implements DbInterface
                 $where = ' WHERE `' . $keyname . '`=' . $this->pdo->quote($keyvalue);
             }
             $stmt = 'UPDATE ' . $tableName . ' SET ' . \implode(',', $updates) . $where;
-            Shop::dbg($stmt, true);
             $this->analyzeQuery('update', $stmt, $end - $start, $backtrace);
         }
 

@@ -748,6 +748,7 @@ abstract class AbstractSync
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 INNER JOIN tsonderpreise
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                    AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
                 WHERE tartikelsonderpreis.cAktiv = \'Y\'
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
             . $uniqueProductIDs . ')

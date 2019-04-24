@@ -49,14 +49,9 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     return;
 }
 
-
-
 $cCanonicalURL = '';
 $option        = 'eintragen';
 if (Request::verifyGPCDataInt('abonnieren') > 0) {
-
-    $oLogger->debug('REQUEST: '.print_r($_REQUEST, true)); // --DEBUG--
-
     if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
         $refData = (new OptinRefData())
             ->setSalutation(
@@ -97,7 +92,6 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
                 ->setAction(Optin::DELETE_CODE)
                 ->handleOptin();
         } catch (Exception $e) {
-            $oLogger->debug('Exception: '.$e->getMessage()); // --DEBUG--
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('newsletterNoexists', 'errorMessages'),

@@ -135,6 +135,8 @@ build_add_old_files()
     while read line; do
         echo "<?php // moved to /includes/src" > ${REPOSITORY_DIR}/${line};
     done < ${REPOSITORY_DIR}/oldfiles.txt;
+
+    rm ${REPOSITORY_DIR}/oldfiles.txt;
 }
 
 build_create_shop_installer() {
@@ -325,11 +327,13 @@ build_add_files_to_patch_dir()
         fi
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
 
-    # Rsync shopmd5files
     rsync -R admin/includes/shopmd5files/${VERSION}.csv ${PATCH_DIR};
     rsync -R admin/includes/shopmd5files/dbstruct_${VERSION}.json ${PATCH_DIR};
     rsync -R admin/includes/shopmd5files/deleted_files_${VERSION}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
+    rsync -R admin/classes ${PATCH_DIR};
+    rsync -R classes ${PATCH_DIR};
+    rsync -R includes/ext ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp_composer;

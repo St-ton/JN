@@ -343,7 +343,10 @@ GUI.prototype = {
 
         portletData.properties = configObject;
 
-        this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml);
+        this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml, er => {
+            this.configModal.modal('hide');
+            this.showError('Error wahile saving Portlet configuration: ' + er.error.message);
+        });
     },
 
     onPortletPreviewHtml: function(preview)

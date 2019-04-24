@@ -40,8 +40,8 @@
 
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle="{__('chooseCategory')}"
-                        searchInputLabel="{__('searchCategory')}"
+                        modalTitle="{__('titleChooseCategory')}"
+                        searchInputLabel="{__('labelSearchCategory')}"
                     }
                     <script>
                         $(function () {

@@ -3,40 +3,40 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "kundenwerbenkunden"
-msgstr "Kunden werben Kunden"
+msgstr "Customer referral programme"
 
 msgid "kundenwerbenkundenURL"
-msgstr "https://jtl-url.de/l0if2"
+msgstr "https://jtl-url.de/rawsu"
 
 msgid "kundenwerbenkundenDesc"
-msgstr "Mit Hilfe der Kunden-werben-Kunden Funktion können Shop-Besucher im Kundenbereich des Shops E-Mail-Einladungen an Freunde und Bekannte verschicken, damit diese sich im Shop registrieren. Werber und/oder der Geworbene können optional mit einem Guthaben belohnt werden. Bitte überprüfen Sie die rechtlichen Bedingungen der Kunden-werben-Kunden-Funktion für Ihr Land, bevor Sie diese Funktion aktivieren."
+msgstr "Via the \"customer referral programme\", customers of your online shop can send email invitations to other parties via their customer accounts to recommend a registration for your online shop. You can give credit to both the inviting customer and the invited customer if the referral is successful. Please check the legal framework of your country for using customer referral programmes before activating the option."
 
 msgid "kundenwerbenkundenFromReg"
-msgstr "Geworben von"
+msgstr "Referred by"
 
 msgid "kundenwerbenkundenExtraPoints"
-msgstr "Bonuspunkte"
+msgstr "Bonus points"
 
 msgid "kundenwerbenkundenDateInvite"
-msgstr "Einladungsdatum"
+msgstr "Date of invitation"
 
 msgid "kundenwerbenkundenDateErstellt"
-msgstr "Registriert am"
+msgstr "Registered on"
 
 msgid "kundenwerbenkundenNotReggt"
-msgstr "Verschickte Einladungen"
+msgstr "Sent invitations"
 
 msgid "kundenwerbenkundenReggt"
-msgstr "Registrierungen aufgrund von Einladungen"
+msgstr "Registrations after invitations"
 
 msgid "kundenwerbenkundenBonis"
-msgstr "Kundenprämien, die erfolgreich geworben haben"
+msgstr "Customers who have successfully invited others"
 
 msgid "kundenwerbenkundenDateBoni"
-msgstr "Guthaben erhalten"
+msgstr "Credit received on"
 
 msgid "successNewCustomerDelete"
-msgstr "Ihre markierten Neukunden wurden erfolgreich gelöscht."
+msgstr "Selected new customers deleted successfully."
 
 msgid "errorAtLeastOneNewCustomer"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Neukunden."
+msgstr "Please select at least one new customer."

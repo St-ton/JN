@@ -34,7 +34,7 @@ stages:
   }
 
 .testingScript: &testingScript |
-  export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+  export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-testing-$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
 
   function testing() {
     if [[ -n "$CI_USER_VAR" ]]; then
@@ -59,16 +59,16 @@ stages:
 
 .cleanUpTesting: &cleanUpTesting |
   function failedCodeQuality() {
-    export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
-    export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
+    CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
+    running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
 
     if [[ ! -z "$running" ]]; then
       docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
     fi
   }
   function failedTesting() {
-    export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_testing_$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
-    export running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
+    CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-testing-$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
+    running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
 
     if [[ ! -z "$running" ]]; then
       docker stop $CI_CONTAINER_NAME && docker rm -fv $CI_CONTAINER_NAME
@@ -76,7 +76,7 @@ stages:
   }
 
 .preBuildDeployScripts: &preBuildDeployScripts |
-  export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_build_deploy_$CI_COMMIT_SHA
+  export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-build-deploy-$CI_COMMIT_SHA
   export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
   export BUILD_SCRIPT_PATH=build/scripts/build.sh
   export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
@@ -99,10 +99,10 @@ stages:
     cat gl-code-quality-report.json
   }
   function buildProcess() {
-    export RAND_CHAR=$(date +%s|sha256sum|head -c 6)
-    export DB_NAME="build_$RAND_CHAR"
-    export DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
-    export DB_HOST="${DB_HOST_NET::-3}"
+    RAND_CHAR=$(date +%s|sha256sum|head -c 6)
+    DB_NAME="build_$RAND_CHAR"
+    DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
+    DB_HOST="${DB_HOST_NET::-3}"
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
@@ -140,8 +140,8 @@ stages:
 
 .cleanUpScript: &cleanUpScript |
   function failedScript() {
-    export CI_CONTAINER_NAME=ci_job_$CI_PROJECT_NAME_build_deploy_$CI_COMMIT_SHA
-    export running=$(docker inspect -f '{{.State.Running}}' ci_job_build_deploy_$CI_COMMIT_SHA)
+    CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-build-deploy-$CI_COMMIT_SHA
+    running=$(docker inspect -f '{{.State.Running}}' $CI_CONTAINER_NAME)
 
     if [[ ! -z "$running" ]]; then
       docker network disconnect mysql-php-network $CI_CONTAINER_NAME
@@ -154,21 +154,21 @@ stages:
   export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
 
   function downloadProcess() {
-    export RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
-    export DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+    RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
+    DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
 
     curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL
     unzip -qo $RUNNER_PATH_ZIP -d $EXTRACTION_PATH
     rm $RUNNER_PATH_ZIP
   }
   function deployProcess() {
-    export PHP_VERSION=$1;
-    export DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
-    export MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
+    PHP_VERSION=$1;
+    DEPLOY_PATH="$STAGING_USER_PATH/php$PHP_VERSION/$FILENAME";
+    MIGRATION_COUNT_BEFORE=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     sudo /usr/bin/rsync -rt -og --chown=www-data:www-data $EXTRACTION_PATH/. $DEPLOY_PATH;
 
-    export MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
+    MIGRATION_COUNT_AFTER=$(ls -1 $DEPLOY_PATH/update/migrations/ | wc -l);
 
     if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
       php -r "

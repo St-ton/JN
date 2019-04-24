@@ -3,25 +3,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "emailblacklist"
-msgstr "E-Mail-Blacklist"
+msgstr "Email blacklist"
 
 msgid "emailblacklistURL"
-msgstr "https://jtl-url.de/paktb"
+msgstr "https://jtl-url.de/m1wu2"
 
 msgid "emailblacklistDesc"
-msgstr "Mit Hilfe der E-Mail-Blacklist können Sie E-Mail-Adressen sperren. Gesperrte E-Mail-Adressen können nicht für unregistrierte Bestellvorgänge verwendet werden."
+msgstr "Use the email blacklist to block certain email addresses. Blocked email addresses cannot be used for the online shop registration or order processes by unregistered customers."
 
 msgid "emailblacklistEmail"
-msgstr "E-Mail-Adressen"
+msgstr "Email addresses"
 
 msgid "emailblacklistSeperator"
-msgstr "(E-Mails getrennt durch \";\")"
+msgstr "(Email addresses separated by ;)"
 
 msgid "emailblacklistEmailSingle"
-msgstr "E-Mail-Adresse"
+msgstr "Email address"
 
 msgid "emailblacklistLastBlock"
-msgstr "Letzter Block am"
+msgstr "Blocked last on"
 
 msgid "emailblacklistBlockedEmails"
-msgstr "Letzten 100 geblockten E-Mail-Adressen"
+msgstr "Last 100 blocked email addresses"

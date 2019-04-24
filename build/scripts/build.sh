@@ -331,9 +331,9 @@ build_add_files_to_patch_dir()
     rsync -R admin/includes/shopmd5files/dbstruct_${VERSION}.json ${PATCH_DIR};
     rsync -R admin/includes/shopmd5files/deleted_files_${VERSION}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
-    rsync -R admin/classes ${PATCH_DIR};
-    rsync -R classes ${PATCH_DIR};
-    rsync -R includes/ext ${PATCH_DIR};
+    rsync -rR admin/classes/ ${PATCH_DIR};
+    rsync -rR classes/ ${PATCH_DIR};
+    rsync -rR includes/ext/ ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp_composer;

@@ -55,3 +55,39 @@ msgstr "Overlays could not be created - please check write permissions of folder
 
 msgid "invalidOverlay"
 msgstr "Invalid overlay"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Bestseller"
+msgstr "Bestseller"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Sonderangebote"
+msgstr "Sonderangebote"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Neu im Sortiment"
+msgstr "Neu im Sortiment"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Top Angebote"
+msgstr "Top Angebote"
+
+#overlay name (tsuchspecialoverlay)
+msgid "In kürze Verfügbar"
+msgstr "In kürze Verfügbar"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Top bewertet"
+msgstr "Top bewertet"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Lagerbestand 0"
+msgstr "Lagerbestand 0"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Auf Lager"
+msgstr "Auf Lager"
+
+#overlay name (tsuchspecialoverlay)
+msgid "Vorbestellbar"
+msgstr "Vorbestellbar"

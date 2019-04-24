@@ -34,3 +34,31 @@ msgstr "Watermark file"
 
 msgid "brandingFileNameDesc"
 msgstr "Here you can specify which file to use for the watermark. We recommend using a .png file with a transparent background."
+
+# branding types (tbranding)
+msgid "Artikel"
+msgstr "Artikel"
+
+# branding types (tbranding)
+msgid "Kategorie"
+msgstr "Kategorie"
+
+# branding types (tbranding)
+msgid "Variationen"
+msgstr "Variationen"
+
+# branding types (tbranding)
+msgid "Merkmale"
+msgstr "Merkmale"
+
+# branding types (tbranding)
+msgid "Merkmalwerte"
+msgstr "Merkmalwerte"
+
+# branding types (tbranding)
+msgid "Hersteller"
+msgstr "Hersteller"
+
+#placeholder: name of image category
+msgid "headingEditBrandingForProduct"
+msgstr "Branding für %s bearbeiten"

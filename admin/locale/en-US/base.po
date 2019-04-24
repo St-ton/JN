@@ -1451,36 +1451,47 @@ msgstr "Account"
 msgid "shop"
 msgstr "Online shop"
 
+# page type (tspezialseite)
 msgid "Startseite"
 msgstr "Home"
 
+# page type (tspezialseite)
 msgid "Informationen zum Versand"
 msgstr "Shipping"
 
+# page type (tspezialseite)
 msgid "WRB"
 msgstr "Cancellation"
 
+# page type (tspezialseite)
 msgid "AGB"
 msgstr "Conditions"
 
+# page type (tspezialseite)
 msgid "Tagging Übersicht"
 msgstr "Tagging"
 
+# page type (tspezialseite)
 msgid "Livesuche"
 msgstr "Livesearch"
 
+# page type (tspezialseite)
 msgid "Datenschutz"
 msgstr "Data protection"
 
+# page type (tspezialseite)
 msgid "Hersteller Übersicht"
 msgstr "Manufacturer"
 
+# page type (tspezialseite)
 msgid "Sitemap"
 msgstr "Sitemap"
 
+# page type (tspezialseite)
 msgid "Gratis Geschenk"
 msgstr "Gifts"
 
+# page type (tspezialseite)
 msgid "Auswahlassistent"
 msgstr "Selection assitant"
 
@@ -1490,27 +1501,34 @@ msgstr "Custom Page"
 msgid "pageAccount"
 msgstr "Account"
 
+# page type (tspezialseite)
 msgid "Login"
 msgstr "Login"
 
+# page type (tspezialseite)
 msgid "Registrieren"
 msgstr "Register"
 
+# page type (tspezialseite)
 msgid "Warenkorb"
 msgstr "Cart"
 
+# page type (tspezialseite)
 msgid "Passwort vergessen"
 msgstr "Forgot Password"
 
+# page type (tspezialseite)
 msgid "Kontakt"
 msgstr "Contact"
 
+# page type (tspezialseite)
 msgid "Newsletter"
 msgstr "Newsletter"
 
 msgid "pageNewsletterArchive"
 msgstr "Newsletterarchive"
 
+# page type (tspezialseite)
 msgid "News"
 msgstr "News"
 
@@ -1523,24 +1541,30 @@ msgstr "Newscategory"
 msgid "pageNewsDetail"
 msgstr "Newsdetail"
 
+# page type (tspezialseite)
 msgid "Umfrage"
 msgstr "Poll"
 
 msgid "pagePlugin"
 msgstr "Plugin"
 
+# page type (tspezialseite)
 msgid "404"
 msgstr "404"
 
+# page type (tspezialseite)
 msgid "Bestellvorgang"
 msgstr "Order process"
 
+# page type (tspezialseite)
 msgid "Bestellabschluss"
 msgstr "Order finalize"
 
+# page type (tspezialseite)
 msgid "Wunschliste"
 msgstr "Wishlist"
 
+# page type (tspezialseite)
 msgid "Vergleichsliste"
 msgstr "Comparelist"
 
@@ -1562,12 +1586,15 @@ msgstr "Order status"
 msgid "pageUnknown"
 msgstr "Unknown"
 
+# page type (tspezialseite)
 msgid "Impressum"
 msgstr "Imprint"
 
+# page type (tspezialseite)
 msgid "Batteriegesetzhinweise"
 msgstr "Battery-law notes"
 
+# page type (tspezialseite)
 msgid "WRB-Formular"
 msgstr "Cancellation Form"
 

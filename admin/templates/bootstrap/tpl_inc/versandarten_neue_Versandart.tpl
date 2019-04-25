@@ -103,7 +103,7 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cName)}{$oVersandartSpracheAssoc_arr[$cISO]->cName}{/if}" />
                                 </li>
@@ -121,7 +121,7 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$sprache->name})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cLieferdauer_{$cISO}" name="cLieferdauer_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer)}{$oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer}{/if}" />
                                 </li>
@@ -235,7 +235,7 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->name})</label>
                                     </span>
                                     <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
                                 </li>
@@ -247,7 +247,7 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->name})</label>
                                     </span>
                                     <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>

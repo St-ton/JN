@@ -18,6 +18,7 @@ use JTL\News\Item;
 use JTL\Session\Frontend;
 use stdClass;
 use Illuminate\Support\Collection;
+use JTL\Helpers\Text;
 
 /**
  * Class Sprache
@@ -573,6 +574,12 @@ class Sprache
             ),
             function ($e) {
                 $e->kSprache = (int)$e->kSprache;
+                if (isset($_SESSION['AdminAccount'])) {
+                    $e->name = \Locale::getDisplayLanguage(
+                        Text::convertISO2ISO639($e->cISO),
+                        $_SESSION['AdminAccount']->language
+                    );
+                }
 
                 return $e;
             }
@@ -980,6 +987,14 @@ class Sprache
                 )
             );
         }
+        if (isset($_SESSION['AdminAccount'])) {
+            foreach ($languages as $language) {
+                $language->name = \Locale::getDisplayLanguage(
+                    Text::convertISO2ISO639($language->cISO),
+                    $_SESSION['AdminAccount']->language
+                );
+            }
+        }
 
         switch ($returnType) {
             case 2:
@@ -1221,5 +1236,26 @@ class Sprache
         $iso = Shop::Container()->getCountryService()->getIsoByCountryName($country);
 
         return $iso ?? 'noISO';
+    }
+
+    /**
+     * @param int $langID
+     * @return stdClass|null
+     */
+    public function getLanguageByID(int $langID): ?stdClass
+    {
+        $lang = Shop::Container()->getDB()->select(
+            'tsprache',
+            'kSprache',
+            $langID
+        );
+        if ($lang !== null && isset($_SESSION['AdminAccount'])) {
+            $lang->name = \Locale::getDisplayLanguage(
+                Text::convertISO2ISO639($lang->cISO),
+                $_SESSION['AdminAccount']->language
+            );
+        }
+
+        return $lang;
     }
 }

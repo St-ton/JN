@@ -17,7 +17,7 @@
                     <span class="input-group-wrap">
                         <select name="kSprache" id="kSprache" class="form-control combo">
                             {foreach $sprachen as $sprache}
-                                <option value="{$sprache->kSprache}">{$sprache->cNameDeutsch}</option>
+                                <option value="{$sprache->kSprache}">{$sprache->name}</option>
                             {/foreach}
                         </select>
                     </span>

@@ -36,7 +36,7 @@
                             </tr>
                             {foreach $pluginLanguages as $lang}
                                 <tr>
-                                    <td>{$lang->cNameDeutsch}</td>
+                                    <td>{$lang->name}</td>
                                     <td>
                                         {assign var=cISOSprache value=strtoupper($lang->cISO)}
                                         {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}

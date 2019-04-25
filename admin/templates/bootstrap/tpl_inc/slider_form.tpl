@@ -200,7 +200,7 @@
                             <select id="kSprache" name="kSprache" class="form-control">
                                 <option value="0">{__('all')}</option>
                                 {foreach $oSprachen_arr as $oSprache}
-                                    <option value="{$oSprache->kSprache}" {if isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
+                                    <option value="{$oSprache->kSprache}" {if isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->name}</option>
                                 {/foreach}
                             </select>
                         </div>

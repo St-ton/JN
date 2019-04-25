@@ -160,7 +160,7 @@
                 <div class="box_info panel panel-default">
                     {assign var=kSprache value=$language->kSprache}
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__('content')} {$language->cNameDeutsch}</h3>
+                        <h3 class="panel-title">{__('content')} {$language->name}</h3>
                     </div>
                     <div class="panel-body">
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}

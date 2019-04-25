@@ -48,7 +48,7 @@ if (isset($_FILES['csvfile']['tmp_name'])
 $oSprachISO         = $lang->getLangIDFromIso($cISOSprache);
 $kSprachISO         = $oSprachISO->kSprachISO ?? 0;
 $installedLanguages = $lang->getInstalled();
-$availableLanguages = $lang->getAvailable();
+$availableLanguages = $lang->gibInstallierteSprachen();
 $oSektion_arr       = $lang->getSections();
 $bSpracheAktiv      = false;
 

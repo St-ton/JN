@@ -226,9 +226,7 @@ if ($step === 'uebersicht') {
     );
     $eCount        = count($exportformate);
     for ($i = 0; $i < $eCount; $i++) {
-        $exportformate[$i]->Sprache              = $db->select(
-            'tsprache',
-            'kSprache',
+        $exportformate[$i]->Sprache              = Sprache::getInstance()->getLanguageByID(
             (int)$exportformate[$i]->kSprache
         );
         $exportformate[$i]->Waehrung             = $db->select(

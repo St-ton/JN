@@ -270,6 +270,7 @@ if ($controller->getStep() === 'news_uebersicht') {
         $prefixes[$i]->kSprache      = $lang->kSprache;
         $prefixes[$i]->cNameEnglisch = $lang->cNameEnglisch;
         $prefixes[$i]->cNameDeutsch  = $lang->cNameDeutsch;
+        $prefixes[$i]->name          = $lang->name;
         $prefixes[$i]->cISOSprache   = $lang->cISO;
         $monthPrefix                 = $db->select(
             'tnewsmonatspraefix',

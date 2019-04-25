@@ -11,7 +11,7 @@
                 {foreach $oSprache_arr as $key => $oSprache}
                     {assign var=cISO value=$oSprache->cISO}
                     <tr>
-                        <td><label for="cName_{$oSprache->cISO}">{__('name')} ({$oSprache->cNameDeutsch})</label></td>
+                        <td><label for="cName_{$oSprache->cISO}">{__('name')} ({$oSprache->name})</label></td>
                         <td>
                             <input class="form-control" id="cName_{$oSprache->cISO}" name="cName_{$oSprache->cISO}" type="text" value="{if isset($oVerpackungEdit->oSprach_arr[$cISO]->cName)}{$oVerpackungEdit->oSprach_arr[$cISO]->cName}{/if}" {if $key === 0}required{/if}>
                         </td>
@@ -41,7 +41,7 @@
                 {foreach $oSprache_arr as $oSprache}
                     {assign var=cISO value=$oSprache->cISO}
                     <tr>
-                        <td><label for="cBeschreibung_{$cISO}">{__('description')} ({$oSprache->cNameDeutsch})</label></td>
+                        <td><label for="cBeschreibung_{$cISO}">{__('description')} ({$oSprache->name})</label></td>
                         <td>
                             <textarea id="cBeschreibung_{$cISO}" name="cBeschreibung_{$cISO}" rows="5" cols="35" class="form-control combo">{if isset($oVerpackungEdit->oSprach_arr[$cISO]->cBeschreibung)}{$oVerpackungEdit->oSprach_arr[$cISO]->cBeschreibung}{/if}</textarea>
                         </td>

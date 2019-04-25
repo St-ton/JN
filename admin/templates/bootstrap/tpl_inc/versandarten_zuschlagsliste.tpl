@@ -16,7 +16,7 @@
                     {foreach $sprachen as $sprache}
                         {assign var=cISO value=$sprache->cISO}
                         <tr>
-                            <td width="35%">{__('showedName')} ({$sprache->cNameDeutsch})</td>
+                            <td width="35%">{__('showedName')} ({$sprache->name})</td>
                             <td>{$zuschlag->angezeigterName[$cISO]}</td>
                         </tr>
                     {/foreach}
@@ -108,7 +108,7 @@
                         {assign var=idx value=$idx+1}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
                             </span>
                             <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandzuschlag->oVersandzuschlagSprache_arr.$cISO->cName)}{$oVersandzuschlag->oVersandzuschlagSprache_arr.$cISO->cName}{/if}" tabindex="{$idx}" />
                         </div>

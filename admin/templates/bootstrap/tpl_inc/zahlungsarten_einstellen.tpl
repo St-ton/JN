@@ -15,7 +15,7 @@
                         {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
                             </span>
                             <input class="form-control" type="text" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($Zahlungsartname[$cISO])}{$Zahlungsartname[$cISO]}{/if}" tabindex="1" />
                         </li>
@@ -31,7 +31,7 @@
                         {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cGebuehrname_{$cISO}">{__('feeName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cGebuehrname_{$cISO}">{__('feeName')} ({$sprache->name})</label>
                             </span>
                             <input class="form-control" type="text" name="cGebuehrname_{$cISO}" id="cGebuehrname_{$cISO}" value="{if isset($Gebuehrname[$cISO])}{$Gebuehrname[$cISO]}{/if}" tabindex="2" />
                         </li>
@@ -62,7 +62,7 @@
                         {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cHinweisTextShop_{$cISO}">{__('noticeTextShop')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cHinweisTextShop_{$cISO}">{__('noticeTextShop')} ({$sprache->name})</label>
                             </span>
                             <textarea class="form-control" id="cHinweisTextShop_{$cISO}" name="cHinweisTextShop_{$cISO}">{if isset($cHinweisTexteShop_arr[$cISO])}{$cHinweisTexteShop_arr[$cISO]}{/if}</textarea>
                         </li>
@@ -72,7 +72,7 @@
                         {assign var=cISO value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cHinweisText_{$cISO}">{__('noticeTextEmail')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cHinweisText_{$cISO}">{__('noticeTextEmail')} ({$sprache->name})</label>
                             </span>
                             <textarea class="form-control" id="cHinweisText_{$cISO}" name="cHinweisText_{$cISO}">{if isset($cHinweisTexte_arr[$cISO])}{$cHinweisTexte_arr[$cISO]}{/if}</textarea>
                         </li>

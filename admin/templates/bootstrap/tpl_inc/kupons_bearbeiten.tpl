@@ -59,7 +59,7 @@
                 {foreach $oSprache_arr as $oSprache}
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cName_{$oSprache->cISO}">{__('showedName')} ({$oSprache->cNameDeutsch})</label>
+                            <label for="cName_{$oSprache->cISO}">{__('showedName')} ({$oSprache->name})</label>
                         </span>
                         <span class="input-group-wrap">
                             <input

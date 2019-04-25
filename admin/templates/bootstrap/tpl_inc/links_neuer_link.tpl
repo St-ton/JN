@@ -202,7 +202,7 @@
                         <span class="input-group-wrap">
                             <select class="form-control" name="cISO" id="lang">
                                 {foreach $sprachen as $sprache}
-                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
+                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->name} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
                                 {/foreach}
                             </select>
                         </span>
@@ -216,7 +216,7 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->name})</h3>
                         </div>
                         <div class="panel-body">
                             <div class="input-group">

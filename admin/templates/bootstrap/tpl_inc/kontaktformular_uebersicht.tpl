@@ -108,7 +108,7 @@
                                 {assign var=cISO value=$sprache->cISO}
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cTitle_{$cISO}">{__('title')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cTitle_{$cISO}">{__('title')} ({$sprache->name})</label>
                                     </span>
                                     <span class="input-group-wrap">
                                         <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
@@ -118,13 +118,13 @@
                             {foreach $sprachen as $sprache}
                                 {assign var=cISOcat value=$sprache->cISO|cat:'_oben'}
                                 {assign var=cISO value=$sprache->cISO}
-                                <div class="category">{__('topContent')} ({$sprache->cNameDeutsch})</div>
+                                <div class="category">{__('topContent')} ({$sprache->name})</div>
                                 <textarea class="ckeditor form-control" name="cContentTop_{$cISO}" id="cContentTop_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}
                             {foreach $sprachen as $sprache}
                                 {assign var=cISOcat value=$sprache->cISO|cat:'_unten'}
                                 {assign var=cISO value=$sprache->cISO}
-                                <div class="category">{__('bottomContent')} ({$sprache->cNameDeutsch})</div>
+                                <div class="category">{__('bottomContent')} ({$sprache->name})</div>
                                 <textarea class="ckeditor form-control" name="cContentBottom_{$cISO}" id="cContentBottom_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}
                         </div>

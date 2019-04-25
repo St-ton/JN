@@ -11,7 +11,7 @@
                 <span class="input-group-wrap last">
                     <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                         {foreach $Sprachen as $sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->name}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -242,7 +242,7 @@
                             <span class="input-group-wrap">
                                 <select class="form-control" name="kSprache" id="kSprache">
                                     {foreach $Sprachen as $oSprache}
-                                        <option value="{$oSprache->kSprache}">{$oSprache->cNameDeutsch}</option>
+                                        <option value="{$oSprache->kSprache}">{$oSprache->name}</option>
                                     {/foreach}
                                 </select>
                             </span>

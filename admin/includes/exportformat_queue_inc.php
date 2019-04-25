@@ -35,11 +35,7 @@ function holeExportformatCron()
     );
     foreach ($exports as $export) {
         $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
-        $export->Sprache         = $db->select(
-            'tsprache',
-            'kSprache',
-            (int)$export->kSprache
-        );
+        $export->Sprache         = Sprache::getInstance()->getLanguageByID((int)$export->kSprache);
         $export->Waehrung        = $db->select(
             'twaehrung',
             'kWaehrung',
@@ -135,11 +131,7 @@ function holeAlleExportformate()
         'cName, kSprache, kKundengruppe, kWaehrung'
     );
     foreach ($formats as $format) {
-        $format->Sprache      = Shop::Container()->getDB()->select(
-            'tsprache',
-            'kSprache',
-            (int)$format->kSprache
-        );
+        $format->Sprache      = Sprache::getInstance()->getLanguageByID((int)$format->kSprache);
         $format->Waehrung     = new Currency((int)$format->kWaehrung);
         $format->Kundengruppe = new Kundengruppe((int)$format->kKundengruppe);
     }

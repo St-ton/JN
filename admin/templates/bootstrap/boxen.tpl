@@ -181,7 +181,7 @@
                                 {foreach $oSprachen_arr as $oSprache}
                                     <div class="input-group">
                                         <span class="input-group-addon">
-                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}</label>
+                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->name}</label>
                                         </span>
                                         <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                     </div>
@@ -207,7 +207,7 @@
                                 {foreach $oSprachen_arr as $oSprache}
                                     <div class="input-group">
                                         <span class="input-group-addon">
-                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}:</label>
+                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->name}:</label>
                                         </span>
                                         <input class="form-control" id="title-{$oSprache->cISO}" type="text"
                                                name="title[{$oSprache->cISO}]"
@@ -233,7 +233,7 @@
                                 {foreach $oSprachen_arr as $oSprache}
                                     <div class="input-group">
                                         <span class="input-group-addon">
-                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->cNameDeutsch}</label>
+                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->name}</label>
                                         </span>
                                         <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                     </div>

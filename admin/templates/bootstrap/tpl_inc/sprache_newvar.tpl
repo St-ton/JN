@@ -38,7 +38,7 @@
                                 <label for="bOverwrite_{$oSprache->cISO}_yes">
                                     <input type="radio" id="bOverwrite_{$oSprache->cISO}_yes"
                                            name="bOverwrite_arr[{$oSprache->cISO}]" value="1">
-                                    {$oSprache->cNameDeutsch} ({__('new')})
+                                    {$oSprache->name} ({__('new')})
                                 </label>
                             </span>
                             <span class="input-group-wrap">
@@ -51,7 +51,7 @@
                                 <label for="bOverwrite_{$oSprache->cISO}_no">
                                     <input type="radio" id="bOverwrite_{$oSprache->cISO}_no"
                                            name="bOverwrite_arr[{$oSprache->cISO}]" value="0" checked>
-                                    {$oSprache->cNameDeutsch} ({__('current')})
+                                    {$oSprache->name} ({__('current')})
                                 </label>
                             </span>
                                 <span class="input-group-wrap">
@@ -64,7 +64,7 @@
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="cWert_{$oSprache->cISO}">
-                                    {$oSprache->cNameDeutsch}
+                                    {$oSprache->name}
                                 </label>
                             </span>
                             <span class="input-group-wrap">

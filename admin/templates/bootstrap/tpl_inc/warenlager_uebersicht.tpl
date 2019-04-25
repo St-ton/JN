@@ -51,7 +51,7 @@
                                     {assign var=kSprache value=$oSprache->kSprache}
                                         <div class="input-group">
                                             <span class="input-group-addon">
-                                                <label for="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]">{$oSprache->cNameDeutsch}</label>
+                                                <label for="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]">{$oSprache->name}</label>
                                             </span>
                                             <input id="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]" name="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]" type="text" value="{if isset($oWarenlager->cSpracheAssoc_arr[$kSprache])}{$oWarenlager->cSpracheAssoc_arr[$kSprache]}{/if}" class="form-control large" />
                                         </div>

@@ -20,7 +20,7 @@
                         {assign var=cISO value=$sprache->cISO}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
                             </span>
                             <input type="text" class="form-control" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($Betreffname[$cISO])}{$Betreffname[$cISO]}{/if}" tabindex="2" />
                         </div>

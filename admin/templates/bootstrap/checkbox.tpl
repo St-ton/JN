@@ -160,9 +160,9 @@
                                     {assign var=cISOText value="cText_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cText)} error{/if}">
                                         <span class="input-group-addon">
-                                            <label for="cText_{$oSprache->cISO}">{__('text')} ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cText)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                            <label for="cText_{$oSprache->cISO}">{__('text')} ({$oSprache->name}){if isset($cPlausi_arr.cText)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
-                                        <textarea id="cText_{$oSprache->cISO}" placeholder="Text ({$oSprache->cNameDeutsch})" class="form-control {if isset($cPlausi_arr.cText)}fieldfillout{else}field{/if}" name="cText_{$oSprache->cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
+                                        <textarea id="cText_{$oSprache->cISO}" placeholder="Text ({$oSprache->name})" class="form-control {if isset($cPlausi_arr.cText)}fieldfillout{else}field{/if}" name="cText_{$oSprache->cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
                                         <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxText')}</span>
                                     </div>
                                 {/foreach}
@@ -173,7 +173,7 @@
                                     {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cBeschreibung)} error{/if}">
                                         <span class="input-group-addon">
-                                            <label for="cBeschreibung_{$oSprache->cISO}">{__('description')} ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                            <label for="cBeschreibung_{$oSprache->cISO}">{__('description')} ({$oSprache->name}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
                                         <textarea id="cBeschreibung_{$oSprache->cISO}" class="form-control {if isset($cPlausi_arr.cBeschreibung)}fieldfillout{else}field{/if}" name="cBeschreibung_{$oSprache->cISO}">{if isset($cPost_arr.$cISOBeschreibung)}{$cPost_arr.$cISOBeschreibung}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung}{/if}</textarea>
                                         <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxDescription')}</span>

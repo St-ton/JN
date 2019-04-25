@@ -46,7 +46,7 @@
                         <option value="{$oSprache->kSprache}"
                                 {if (int)$smarty.session.kSprache === (int)$oSprache->kSprache}selected{/if}
                                 {if !$oSprache->bImported}class="alert-success"{/if}>
-                            {$oSprache->cNameDeutsch}
+                            {$oSprache->name}
                             {if $oSprache->cShopStandard === 'Y'}({__('standard')}){/if}
                         </option>
                     {/foreach}

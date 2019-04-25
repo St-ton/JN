@@ -39,10 +39,15 @@ class Migration_20190424093517 extends Migration implements IMigration
         $this->setLocalization('eng', 'messages', 'optinSucceeded', 'Your confirmation was successfull.');
         $this->setLocalization('ger', 'messages', 'optinSucceededAgain', 'Ihre Freischaltung ist bereits erfolgt.');
         $this->setLocalization('eng', 'messages', 'optinSucceededAgain', 'Your confirmation is already active.');
+
+        $this->setLocalization('ger', 'messages', 'optinSucceededMailSent', 'Die Mail mit Ihrem Freischalt-Code wurde bereits an Sie verschickt');
+        $this->setLocalization('eng', 'messages', 'optinSucceededMailSent', 'The mail with your activation-code was already sent.');
     }
 
     public function down()
     {
+        $this->removeLocalization('optinSucceededMailSent');
+
         $this->removeLocalization('optinSucceeded');
         $this->removeLocalization('optinSucceededAgain');
         $this->setLocalization('ger', 'messages', 'optinSucceded', 'Ihre Freischaltung ist erfolgt.');

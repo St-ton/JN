@@ -17,7 +17,7 @@ use JTL\Shop;
 class Optin extends OptinBase
 {
     /**
-     * @var OptinAvailAgain|null
+     * @var OptinInterface
      */
     protected $currentOptin;
 

@@ -127,10 +127,11 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                     if ((isset($recipient->cEmail) && $recipient->cEmail !== '')
                         || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
                     ) {
+                        // former: TYPE_ERROR, newsletterExists = "Fehler: Ihre E-Mail-Adresse ist bereits vorhanden."
                         $this->alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
-                            Shop::Lang()->get('newsletterExists', 'errorMessages'),
-                            'newsletterExists'
+                            Alert::TYPE_INFO,
+                            Shop::Lang()->get('optinSucceededMailSent', 'messages'),
+                            'optinSucceededMailSent'
                         );
                     } else {
                         $customer            = new \stdClass();
@@ -435,11 +436,11 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $blacklist->cMail     = $recicpient->cEmail;
                 $blacklist->dErstellt = 'NOW()';
                 $this->dbHandler->insert('tnewsletterempfaengerblacklist', $blacklist);
-
+                // former: newsletterDelete = "Sie wurden erfolgreich aus unserem Newsletterverteiler ausgetragen."
                 $this->alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
-                    Shop::Lang()->get('newsletterDelete', 'messages'),
-                    'newsletterDelete'
+                    Alert::TYPE_INFO,
+                    Shop::Lang()->get('optinCanceled', 'messages'),
+                    'optinCanceled'
                 );
             } else {
                 $this->alertHelper->addAlert(

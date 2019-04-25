@@ -3,85 +3,85 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "exportformat"
-msgstr "Aufgabenplaner Exporte"
+msgstr "Task scheduler for exports"
 
 msgid "exportformatDesc"
-msgstr "Mit dem Aufgabenplaner können Sie automatisch auszuführende Aufgaben z.B. für Preissuchmaschinen-Exportformate anlegen."
+msgstr "Use the task scheduler to create tasks that will then be executed automatically, e.g. exports for price search engines."
 
 msgid "exportformatUrl"
-msgstr "https://jtl-url.de/jl5z1"
+msgstr "https://jtl-url.de/7mp5g"
 
 msgid "exportformatOptions"
-msgstr "Sprache/Währung/Kundengrp"
+msgstr "Language/Currency/Customer group"
 
 msgid "exportformatAdd"
-msgstr "Neue Planung erstellen"
+msgstr "Create new task"
 
 msgid "exportformatStart"
-msgstr "Startdatum"
+msgstr "Start date"
 
 msgid "exportformatEveryXHour"
-msgstr "Alle X Stunden"
+msgstr "Every X hours"
 
 msgid "exportformatLastXHourPre"
-msgstr "Letzten"
+msgstr "Previous"
 
 msgid "exportformatDelete"
-msgstr "Planung löschen"
+msgstr "Delete selected tasks"
 
 msgid "exportformatQueue"
-msgstr "Aktive, geplante Aufgaben"
+msgstr "Scheduled tasks"
 
 msgid "exportformatNoFormat"
-msgstr "Keine Exportformate vorhanden"
+msgstr "No export formats available"
 
 msgid "exportformatExported"
-msgstr "Exportiert"
+msgstr "Exported"
 
 msgid "exportformatLastStart"
-msgstr "letzter Start"
+msgstr "Last start"
 
 msgid "exportformatNextStart"
-msgstr "vsl. nächster Start"
+msgstr "Next start (scheduled)"
 
 msgid "exportformatTodaysWork"
-msgstr "Zuletzt fertiggestellt"
+msgstr "Finished most recently"
 
 msgid "exportformatTriggerCron"
-msgstr "Cron manuell anstoßen"
+msgstr "Trigger Cron manually"
 
 msgid "exportformatNoTodaysWork"
-msgstr "Es wurden im ausgewählten Zeitraum keine Exportformate bearbeitet."
+msgstr "No export formats were edited in the selected period."
 
 msgid "errorWrongQueue"
-msgstr "Fehler: Bitte wählen Sie eine gültige Warteschlange aus."
+msgstr "Please select a valid queue."
 
 msgid "successQueueDelete"
-msgstr "Ihr ausgewählten Warteschlangen wurde erfolgreich gelöscht."
+msgstr "Selected queues deleted successfully."
 
 msgid "errorCronStart"
-msgstr "Es wurde kein Cron-Job gestartet."
+msgstr "Cron task(s) could not be started."
 
-msgid "errorCronsStart"
-msgstr "Es wurden %s Cron-Jobs gestartet."
+msgid "successCronsStart"
+msgstr "%s Cron tasks started successfully."
 
 msgid "successCronStart"
-msgstr "Es wurde ein Cron-Job gestartet."
+msgstr "One Cron task started successfully."
 
 msgid "successQueueDone"
-msgstr "Es wurde eine Job-Queue abgearbeitet"
+msgstr "One task queue completed successfully."
 
 msgid "successQueuseDone"
-msgstr "Es wurden %s Job-Queues abgearbeitet"
+msgstr "%s task queues completed successfully."
 
 msgid "errorFormatInQueue"
-msgstr "Fehler: Das Exportformat ist bereits in der Warteschlange vorhanden."
+msgstr "The export format is already part of the queue."
 
 msgid "successQueueCreate"
-msgstr "Ihre neue Exportwarteschlange wurde erfolgreich angelegt."
+msgstr "New export queue created successfully."
 
 msgid "errorGreaterEqualOne"
-msgstr "Fehler: Bitte geben Sie einen Wert größer oder gleich 1 ein."
+msgstr "Please enter a value that equals or exceeds 1."
 
 msgid "errorFormatSelect"
-msgstr "Fehler: Bitte wählen Sie ein gültiges Exportformat aus."
+msgstr "Please select a valid export format."

@@ -116,7 +116,7 @@
                             </div>
                         </div>
                         <div class="btn-group">
-                            <button class="btn btn-primary" name="update" value="automatic"><i class="fa fa-cogs"></i> {__('migrationStart')}</button>
+                            <button class="btn btn-primary" name="update" value="automatic"><i class="fa fa-cogs"></i> {__('buttonMigrationStart')}</button>
                         </div>
                     </form>
                 </div>
@@ -133,7 +133,7 @@
                     <form action="{$shopURL}/{$smarty.const.PFAD_ADMIN}/dbcheck.php" method="post">
                         {$jtl_token}
                         <div class="btn-group">
-                            <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i> {__('createScript')}</button>
+                            <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i> {__('buttonCreateScript')}</button>
                         </div>
                     </form>
                 </div>

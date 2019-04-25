@@ -144,13 +144,13 @@
                         <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
                             {foreach $smarty.session.Sprachen as $Sprache}
                                 {if $Sprache->kSprache == $smarty.session.kSprache}
-                                    <li class="active lang-{$lang} visible-xs"><a>{if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</a></li>
+                                    <li class="active lang-{$lang} visible-xs"><a>{$Sprache->nameOriginal}</a></li>
                                 {/if}
                             {/foreach}
                             {foreach $smarty.session.Sprachen as $oSprache}
                                 {if $oSprache->kSprache != $smarty.session.kSprache}
                                     <li>
-                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{$oSprache->nameOriginal}</a>
                                     </li>
                                 {/if}
                             {/foreach}

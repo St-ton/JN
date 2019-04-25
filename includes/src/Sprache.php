@@ -574,12 +574,14 @@ class Sprache
             ),
             function ($e) {
                 $e->kSprache = (int)$e->kSprache;
+                $ISO2        = Text::convertISO2ISO639($e->cISO);
                 if (isset($_SESSION['AdminAccount'])) {
                     $e->name = \Locale::getDisplayLanguage(
-                        Text::convertISO2ISO639($e->cISO),
+                        $ISO2,
                         $_SESSION['AdminAccount']->language
                     );
                 }
+                $e->nameOriginal = \Locale::getDisplayLanguage($ISO2, $ISO2);
 
                 return $e;
             }

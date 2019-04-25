@@ -163,7 +163,7 @@
                                     text="<i class='fa fa-language'></i> {lang key='language'}"}
                                     {foreach $smarty.session.Sprachen as $oSprache}
                                         {dropdownitem href="{if isset($oSprache->cURLFull)}{$oSprache->cURLFull}{else}{$oSprache->cURL}{/if}" rel="nofollow" }
-                                            {if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}
+                                            {$oSprache->nameOriginal}
                                         {/dropdownitem}
                                     {/foreach}
                                 {/dropdown}

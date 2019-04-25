@@ -275,7 +275,11 @@ GUI.prototype = {
         var revId = elm.data('revision-id');
 
         this.showLoader();
-        this.page.loadRev(revId, this.iframe.onPageLoad);
+        this.page.loadRev(
+            revId,
+            this.iframe.onPageLoad,
+            er => this.showError('Error while loading draft preview: ' + er.error.message),
+        );
         this.setUnsaved(revId !== 0);
     },
 

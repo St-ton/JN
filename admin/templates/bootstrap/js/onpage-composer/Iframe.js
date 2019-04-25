@@ -86,7 +86,11 @@ Iframe.prototype = {
 
         this.portletPreviewLabel.appendTo(this.body);
         this.portletToolbar.appendTo(this.body);
-        this.page.initIframe(this.jq, this.onPageLoad.bind(this, loadCB));
+        this.page.initIframe(
+            this.jq,
+            this.onPageLoad.bind(this,loadCB),
+            er => this.gui.showError('Error while loading draft preview: ' + er.error.message)
+        );
     },
 
     onPopperLoad: function()

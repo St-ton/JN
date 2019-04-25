@@ -52,13 +52,13 @@ Page.prototype = {
         this.io.getRevisionList(this.key, revisionsCB);
     },
 
-    initIframe: function(jq, loadCB)
+    initIframe: function(jq, loadCB, errorCB)
     {
         debuglog('Page initIframe');
 
         this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
-        this.loadDraftPreview(loadCB);
+        this.loadDraftPreview(loadCB, errorCB);
     },
 
     loadDraft: function(loadCB)
@@ -68,21 +68,21 @@ Page.prototype = {
         this.io.getDraft(this.key, this.onLoadDraft.bind(this, loadCB || noop));
     },
 
-    loadDraftPreview: function(loadCB)
+    loadDraftPreview: function(loadCB, errorCB)
     {
         debuglog('Page loadDraftPreview');
 
-        this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
+        this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
     },
 
-    loadRev: function(revId, loadCB)
+    loadRev: function(revId, loadCB, errorCB)
     {
         if(revId === -1) {
-            this.loadPageFromWebStorage(loadCB || noop);
+            this.loadPageFromWebStorage(loadCB || noop, errorCB || noop);
         } else if(revId === 0) {
-            this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
+            this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
         } else {
-            this.io.getRevisionPreview(revId, this.onLoad.bind(this, loadCB || noop));
+            this.io.getRevisionPreview(revId, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
         }
     },
 
@@ -112,13 +112,15 @@ Page.prototype = {
             .on('change', this.onImportChosen.bind(this, loadCB, errorCB)).click();
     },
 
-    loadPageFromWebStorage: function(loadCB)
+    loadPageFromWebStorage: function(loadCB, errorCB)
     {
         var pageJson = window.localStorage.getItem(this.getStorageId());
 
         if(pageJson !== null) {
             this.clear();
-            this.loadFromJSON(pageJson, loadCB);
+            this.loadFromJSON(pageJson, loadCB, errorCB);
+        } else {
+            errorCB({error:{message:'could not find locally stored draft data'}})
         }
     },
 

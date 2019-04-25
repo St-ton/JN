@@ -262,7 +262,14 @@ Iframe.prototype = {
             if(this.dragNewPortletCls) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.createPortlet(this.dragNewPortletCls, this.onNewPortletCreated);
+                this.io.createPortlet(
+                    this.dragNewPortletCls,
+                    this.onNewPortletCreated,
+                    er => {
+                        this.newPortletDropTarget.remove();
+                        this.gui.showError(er.error.message);
+                    },
+                );
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();

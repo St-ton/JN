@@ -13,6 +13,7 @@ use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Alert\Alert;
+use JTL\Sprache;
 
 /**
  * @return array|bool
@@ -271,8 +272,8 @@ function holeExportformatQueueBearbeitet($hours)
             return false;
         }
     }
-
-    return Shop::Container()->getDB()->queryPrepared(
+    $languages         = Sprache::getInstance()->getAllLanguages(1);
+    $exportFormatQueue = Shop::Container()->getDB()->queryPrepared(
         "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*, 
             DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE, 
             tsprache.cNameDeutsch AS cNameSprache, tkundengruppe.cName AS cNameKundengruppe, 
@@ -292,6 +293,11 @@ function holeExportformatQueueBearbeitet($hours)
         ['lid' => $kSprache, 'hrs' => $hours],
         ReturnType::ARRAY_OF_OBJECTS
     );
+    foreach ($exportFormatQueue as $exportFormat) {
+        $exportFormat->name = $languages[$kSprache]->name;
+    }
+
+    return $exportFormatQueue;
 }
 
 /**

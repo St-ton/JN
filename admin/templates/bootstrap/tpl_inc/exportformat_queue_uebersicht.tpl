@@ -118,7 +118,7 @@
                                         <td>{$oExportformatQueueBearbeitet->cName}</td>
                                         <td>{$oExportformatQueueBearbeitet->cDateiname}</td>
                                         <td>
-                                            {$oExportformatQueueBearbeitet->cNameSprache}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
+                                            {$oExportformatQueueBearbeitet->name}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
                                         </td>
                                         <td>{$oExportformatQueueBearbeitet->nLimitN}</td>
                                         <td>{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>

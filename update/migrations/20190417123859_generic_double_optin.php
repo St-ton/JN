@@ -238,7 +238,7 @@ class Migration_20190417123859 extends Migration implements IMigration
         $this->execute("ALTER TABLE temailvorlage MODIFY cModulId
             varchar(255) COMMENT 'constant in includes/defines_inc.php'");
         $this->execute("ALTER TABLE temailvorlage MODIFY cBeschreibung
-            text COMMENT 'for internal use'");
+            mediumtext COMMENT 'for internal use'");
         $this->execute("ALTER TABLE temailvorlage MODIFY cName
             varchar(255) COMMENT 'is displayed in the backend'");
         $this->execute("ALTER TABLE temailvorlage MODIFY nDSE

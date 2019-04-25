@@ -75,19 +75,17 @@ interface DbInterface extends \Serializable
      * @param string   $tableName - table name
      * @param object   $object - object to insert
      * @param int|bool $echo - true -> print statement
-     * @param bool     $bExecuteHook - true -> execute corresponding hook
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
-    public function insertRow(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int;
+    public function insertRow(string $tableName, $object, bool $echo = false): int;
 
     /**
      * @param string   $tableName
      * @param object   $object
      * @param int|bool $echo
-     * @param bool     $bExecuteHook
      * @return int
      */
-    public function insert(string $tableName, $object, bool $echo = false, bool $bExecuteHook = false): int;
+    public function insert(string $tableName, $object, bool $echo = false): int;
 
     /**
      * update table row
@@ -212,21 +210,19 @@ interface DbInterface extends \Serializable
      * 10 - result of querysingle
      * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
-    public function executeQuery($stmt, $return, bool $echo = false, bool $bExecuteHook = false, $fnInfo = null);
+    public function executeQuery($stmt, $return, bool $echo = false, $fnInfo = null);
 
     /**
      * @param string   $stmt
      * @param int      $return
      * @param int|bool $echo
-     * @param bool     $bExecuteHook
      * @return int|object|array
      */
-    public function query($stmt, $return, bool $echo = false, bool $bExecuteHook = false);
+    public function query($stmt, $return, bool $echo = false);
 
     /**
      * executes query and returns misc data
@@ -244,7 +240,6 @@ interface DbInterface extends \Serializable
      * 10 - result of querysingle
      * 11 - fetch both arrays
      * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
      * @param callable $fnInfo statistic callback
      * @return array|object|int|bool - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
@@ -254,7 +249,6 @@ interface DbInterface extends \Serializable
         array $params,
         $return,
         bool $echo = false,
-        bool $bExecuteHook = false,
         $fnInfo = null
     );
 
@@ -263,7 +257,6 @@ interface DbInterface extends \Serializable
      * @param array    $params
      * @param int      $return
      * @param int|bool $echo
-     * @param bool     $bExecuteHook
      * @param mixed    $fnINfo
      * @return int|object|array
      */
@@ -272,7 +265,6 @@ interface DbInterface extends \Serializable
         $params,
         $return,
         bool $echo = false,
-        bool $bExecuteHook = false,
         $fnINfo = null
     );
 

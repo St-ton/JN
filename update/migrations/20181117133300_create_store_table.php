@@ -22,7 +22,7 @@ class Migration_20181117133300 extends Migration implements IMigration
         $this->execute(
             'CREATE TABLE `tstoreauth` (
                 `auth_code` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
-                `access_token` text COLLATE utf8_unicode_ci,
+                `access_token` mediumtext COLLATE utf8_unicode_ci,
                 `created_at` datetime NOT NULL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci'
         );

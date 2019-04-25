@@ -17,7 +17,7 @@ class Migration_20181102102400 extends Migration implements IMigration
     public function up()
     {
         $this->execute('ALTER TABLE topcpage DROP INDEX cPageId');
-        $this->execute('ALTER TABLE topcpage MODIFY cPageId TEXT NOT NULL');
+        $this->execute('ALTER TABLE topcpage MODIFY cPageId MEDIUMTEXT NOT NULL');
         $this->execute('ALTER TABLE topcpage ADD UNIQUE INDEX (cPageId(255), dPublishFrom)');
     }
 

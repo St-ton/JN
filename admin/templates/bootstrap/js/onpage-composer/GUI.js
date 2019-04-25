@@ -349,7 +349,7 @@ GUI.prototype = {
 
         this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml, er => {
             this.configModal.modal('hide');
-            this.showError('Error wahile saving Portlet configuration: ' + er.error.message);
+            this.showError('Error while saving Portlet configuration: ' + er.error.message);
         });
     },
 

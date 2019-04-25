@@ -36,7 +36,7 @@ function holeExportformatCron()
     );
     foreach ($exports as $export) {
         $export->cAlleXStdToDays = rechneUmAlleXStunden($export->frequency);
-        $export->Sprache         = Sprache::getInstance()->getLanguageByID((int)$export->kSprache);
+        $export->Sprache         = Shop::Lang()->getLanguageByID((int)$export->kSprache);
         $export->Waehrung        = $db->select(
             'twaehrung',
             'kWaehrung',
@@ -132,7 +132,7 @@ function holeAlleExportformate()
         'cName, kSprache, kKundengruppe, kWaehrung'
     );
     foreach ($formats as $format) {
-        $format->Sprache      = Sprache::getInstance()->getLanguageByID((int)$format->kSprache);
+        $format->Sprache      = Shop::Lang()->getLanguageByID((int)$format->kSprache);
         $format->Waehrung     = new Currency((int)$format->kWaehrung);
         $format->Kundengruppe = new Kundengruppe((int)$format->kKundengruppe);
     }
@@ -272,7 +272,7 @@ function holeExportformatQueueBearbeitet($hours)
             return false;
         }
     }
-    $languages         = Sprache::getInstance()->getAllLanguages(1);
+    $languages         = Shop::Lang()->getAllLanguages(1);
     $exportFormatQueue = Shop::Container()->getDB()->queryPrepared(
         "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*, 
             DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE, 

@@ -68,18 +68,19 @@ function gibLetzteBildNummer($linkID)
 function parseText($text, int $linkID)
 {
     $uploadDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
+    $baseURL   = Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER;
     $images    = [];
     $sort      = [];
     if (is_dir($uploadDir . $linkID)) {
         $dirHandle = opendir($uploadDir . $linkID);
-        while (($Datei = readdir($dirHandle)) !== false) {
-            if ($Datei !== '.' && $Datei !== '..') {
+        while (($file = readdir($dirHandle)) !== false) {
+            if ($file !== '.' && $file !== '..') {
                 $imageNumber          = (int)mb_substr(
-                    str_replace('Bild', '', $Datei),
+                    str_replace('Bild', '', $file),
                     0,
-                    mb_strpos(str_replace('Bild', '', $Datei), '.')
+                    mb_strpos(str_replace('Bild', '', $file), '.')
                 );
-                $images[$imageNumber] = $Datei;
+                $images[$imageNumber] = $file;
                 $sort[]               = $imageNumber;
             }
         }
@@ -87,9 +88,11 @@ function parseText($text, int $linkID)
     usort($sort, 'cmp');
 
     foreach ($sort as $no) {
-        $text = str_replace('$#Bild' . $no . '#$', '<img src="' .
-            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $linkID . '/' . $images[$no] .
-            '" />', $text);
+        $text = str_replace(
+            '$#Bild' . $no . '#$',
+            '<img src="' . $baseURL . $linkID . '/' . $images[$no] . '" />',
+            $text
+        );
     }
 
     return $text;
@@ -158,33 +161,6 @@ function getGesetzteKundengruppen($link)
     }
 
     return $ret;
-}
-
-/**
- * @param int $linkGroupID
- * @return array
- */
-function getLinkgruppeNames(int $linkGroupID)
-{
-    $namen = [];
-    if (!$linkGroupID) {
-        return $namen;
-    }
-    $links = Shop::Container()->getDB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', $linkGroupID);
-    foreach ($links as $link) {
-        $namen[$link->cISOSprache] = $link->cName;
-    }
-
-    return $namen;
-}
-
-/**
- * @param int $linkGroupID
- * @return mixed
- */
-function holeLinkgruppe(int $linkGroupID)
-{
-    return Shop::Container()->getDB()->select('tlinkgruppe', 'kLinkgruppe', $linkGroupID);
 }
 
 /**

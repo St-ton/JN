@@ -33,9 +33,9 @@ interface LinkServiceInterface
     public function getAllLinkGroups(): LinkGroupCollection;
 
     /**
-     * @return LinkGroupCollection
+     *
      */
-    public function initLinkGroups(): LinkGroupCollection;
+    public function initLinkGroups(): void;
 
     /**
      * @param int $id

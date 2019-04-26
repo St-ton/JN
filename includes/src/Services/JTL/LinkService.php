@@ -31,11 +31,6 @@ final class LinkService implements LinkServiceInterface
     private static $instance;
 
     /**
-     * @var LinkGroupCollection
-     */
-    public $linkGroups;
-
-    /**
      * @var LinkGroupListInterface
      */
     private $linkGroupList;
@@ -71,7 +66,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getLinkGroups(): LinkGroupCollection
     {
-        return $this->linkGroupList->getVisibleLinkgroups();
+        return $this->linkGroupList->getLinkGroups();
     }
 
     /**
@@ -79,7 +74,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getVisibleLinkGroups(): LinkGroupCollection
     {
-        return $this->getLinkGroups();
+        return $this->linkGroupList->getVisibleLinkgroups();
     }
 
     /**
@@ -87,17 +82,15 @@ final class LinkService implements LinkServiceInterface
      */
     public function getAllLinkGroups(): LinkGroupCollection
     {
-        return $this->linkGroups;
+        return $this->linkGroupList->getLinkGroups();
     }
 
     /**
      * @inheritdoc
      */
-    public function initLinkGroups(): LinkGroupCollection
+    public function initLinkGroups(): void
     {
-        $this->linkGroups = $this->linkGroupList->loadAll()->getLinkGroups();
-
-        return $this->linkGroupList->getVisibleLinkgroups();
+        $this->linkGroupList->loadAll();
     }
 
     /**
@@ -105,7 +98,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getLinkByID(int $id): ?LinkInterface
     {
-        foreach ($this->linkGroups as $linkGroup) {
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), function (LinkInterface $link) use ($id) {
                 return $link->getID() === $id;
@@ -123,7 +116,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getParentForID(int $id): ?LinkInterface
     {
-        foreach ($this->linkGroups as $linkGroup) {
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), function (LinkInterface $link) use ($id) {
                 return $link->getID() === $id;
@@ -191,7 +184,7 @@ final class LinkService implements LinkServiceInterface
     public function isDirectChild(int $parentLinkID, int $linkID): bool
     {
         if ($parentLinkID > 0) {
-            foreach ($this->linkGroups as $linkGroup) {
+            foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
                 /** @var LinkGroupInterface $linkGroup */
                 foreach ($linkGroup->getLinks() as $link) {
                     /** @var LinkInterface $link */
@@ -388,7 +381,7 @@ final class LinkService implements LinkServiceInterface
         $meta->cTitle    = '';
         $meta->cDesc     = '';
         $meta->cKeywords = '';
-        foreach ($this->linkGroups as $linkGroup) {
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
                 return $link->getLinkType() === $type;
@@ -419,7 +412,8 @@ final class LinkService implements LinkServiceInterface
      */
     public function activate(int $pageType): LinkGroupCollection
     {
-        foreach ($this->linkGroups as $linkGroup) {
+        $linkGroups = $this->linkGroupList->getLinkGroups();
+        foreach ($linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             foreach ($linkGroup->getLinks() as $link) {
                 /** @var LinkInterface $link */
@@ -500,7 +494,7 @@ final class LinkService implements LinkServiceInterface
             }
         }
 
-        return $this->linkGroups;
+        return $linkGroups;
     }
 
     /**

@@ -1121,10 +1121,10 @@ final class Link extends AbstractLink
             return ($link->getPluginID() === 0
                 && $link->getLinkType() === $this->getLinkType()
                 && $link->getID() !== $this->getID()
-                && ( empty($this->getCustomerGroups())
-                    || \in_array(-1, $this->getCustomerGroups())
+                && (empty($this->getCustomerGroups())
+                    || \in_array(-1, $this->getCustomerGroups(), true)
                     || empty($link->getCustomerGroups())
-                    || array_intersect($link->getCustomerGroups(), $this->getCustomerGroups())
+                    || \array_intersect($link->getCustomerGroups(), $this->getCustomerGroups())
                 )
             );
         });

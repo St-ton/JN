@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function confirmDelete() {ldelim}
-        return confirm('{__('sureDeleteLink')|replace:"\n":''}');
+        return confirm('{__('sureDeleteLink')|replace:"\n":' '}');
     {rdelim}
 </script>
 

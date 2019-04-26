@@ -5,7 +5,6 @@
  */
 
 use Illuminate\Support\Collection;
-use JTL\DB\ReturnType;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkInterface;
@@ -61,45 +60,6 @@ function gibLetzteBildNummer($linkID)
 }
 
 /**
- * @param string $text
- * @param int    $linkID
- * @return mixed
- */
-function parseText($text, int $linkID)
-{
-    $uploadDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $baseURL   = Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER;
-    $images    = [];
-    $sort      = [];
-    if (is_dir($uploadDir . $linkID)) {
-        $dirHandle = opendir($uploadDir . $linkID);
-        while (($file = readdir($dirHandle)) !== false) {
-            if ($file !== '.' && $file !== '..') {
-                $imageNumber          = (int)mb_substr(
-                    str_replace('Bild', '', $file),
-                    0,
-                    mb_strpos(str_replace('Bild', '', $file), '.')
-                );
-                $images[$imageNumber] = $file;
-                $sort[]               = $imageNumber;
-            }
-        }
-    }
-    usort($sort, 'cmp');
-
-    foreach ($sort as $no) {
-        $text = str_replace(
-            '$#Bild' . $no . '#$',
-            '<img src="' . $baseURL . $linkID . '/' . $images[$no] . '" />',
-            $text
-        );
-    }
-
-    return $text;
-}
-
-
-/**
  * @param int $a
  * @param int $b
  * @return int
@@ -125,42 +85,6 @@ function cmp_obj($a, $b)
     }
 
     return ($a->nBild < $b->nBild) ? -1 : 1;
-}
-
-/**
- * @param object $link
- * @return array
- */
-function getGesetzteKundengruppen($link)
-{
-    $ret = [];
-    if ($link instanceof LinkInterface) {
-        $cGroups = $link->getCustomerGroups();
-        if (count($cGroups) === 0) {
-            $ret[0] = true;
-        }
-        foreach ($cGroups as $customerGroup) {
-            $ret[$customerGroup] = true;
-        }
-
-        return $ret;
-    }
-    if (!isset($link->cKundengruppen)
-        || !$link->cKundengruppen
-        || mb_convert_case($link->cKundengruppen, MB_CASE_LOWER) === 'null'
-    ) {
-        $ret[0] = true;
-
-        return $ret;
-    }
-    $kdgrp = explode(';', $link->cKundengruppen);
-    foreach ($kdgrp as $kKundengruppe) {
-        if ((int)$kKundengruppe > 0) {
-            $ret[$kKundengruppe] = true;
-        }
-    }
-
-    return $ret;
 }
 
 /**

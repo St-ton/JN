@@ -115,30 +115,29 @@
                         <span class="input-group-addon">
                             <label for="cKundengruppen">{__('restrictedToCustomerGroups')}{if isset($xPlausiVar_arr.cKundengruppen)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                         </span>
+                        {$activeGroups = $Link->getCustomerGroups()}
                         <select required name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
                             <option value="-1"
-                                    {if isset($Link->getID()) && $Link->getID() > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected
-                                    {elseif isset($xPostVar_arr.cKundengruppen)}
-                                        {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
-                                            {if (int)$cPostKndGrp === -1} selected{/if}
-                                        {/foreach}
-                                    {elseif !$Link->getID() > 0} selected{/if}
+                                {if isset($Link->getID()) && $Link->getID() > 0 && count($activeGroups) === 0} selected
+                                {elseif isset($xPostVar_arr.cKundengruppen)}
+                                    {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
+                                        {if (int)$cPostKndGrp === -1} selected{/if}
+                                    {/foreach}
+                                {elseif !$Link->getID() > 0} selected{/if}
                             >{__('all')}</option>
 
                             {foreach $kundengruppen as $kundengruppe}
-                                {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
-                                {assign var=postkndgrp value='0'}
+                                {assign var=kKundengruppe value=(int)$kundengruppe->kKundengruppe}
+                                {assign var=postkndgrp value=0}
                                 {if isset($xPostVar_arr.cKundengruppen)}
                                     {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
-                                        {if $cPostKndGrp == $kKundengruppe}{assign var=postkndgrp value='1'}{/if}
+                                        {if $cPostKndGrp == $kKundengruppe}{assign var=postkndgrp value=1}{/if}
                                     {/foreach}
                                 {/if}
-                                <option value="{$kundengruppe->kKundengruppe}" {$kundengruppe->kKundengruppe}
-                                        {if isset($xPostVar_arr)}
-                                            {if isset($postkndgrp) && $postkndgrp == 1}selected{/if}
-                                        {else}
-                                            {if isset($gesetzteKundengruppen[$kKundengruppe]) && $gesetzteKundengruppen[$kKundengruppe]}selected{/if}
-                                        {/if}
+                                <option value="{$kundengruppe->kKundengruppe}"
+                                    {if isset($xPostVar_arr) && isset($postkndgrp) && $postkndgrp == 1}selected
+                                    {elseif in_array($kKundengruppe, $activeGroups, true)}selected
+                                    {/if}
                                 >{$kundengruppe->cName}</option>
                             {/foreach}
                         </select>

@@ -335,8 +335,7 @@ if ($step === 'neuer Link') {
     $smarty->assign('Link', $link)
            ->assign('specialPages', $lgl->getLinkgroupByTemplate('specialpages', false)->getLinks())
            ->assign('sprachen', Sprache::getAllLanguages())
-           ->assign('kundengruppen', $kundengruppen)
-           ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($link));
+           ->assign('kundengruppen', $kundengruppen);
 }
 $smarty->assign('step', $step)
        ->assign('sprachen', Sprache::getAllLanguages())

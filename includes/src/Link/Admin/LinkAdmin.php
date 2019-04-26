@@ -503,7 +503,7 @@ final class LinkAdmin
                 );
             }
             if (!empty($post['cContent_' . $sprache->cISO])) {
-                $linkSprache->cContent = parseText($post['cContent_' . $sprache->cISO], $kLink);
+                $linkSprache->cContent = $this->parseText($post['cContent_' . $sprache->cISO], $kLink);
             }
             $linkSprache->cSeo = $linkSprache->cName;
             if (!empty($post['cSeo_' . $sprache->cISO])) {
@@ -552,6 +552,44 @@ final class LinkAdmin
         $linkInstance->load($kLink);
 
         return $linkInstance;
+    }
+
+    /**
+     * @param string $text
+     * @param int    $linkID
+     * @return mixed
+     */
+    private function parseText($text, int $linkID)
+    {
+        $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
+        $baseURL   = Shop::getURL() . '/' . \PFAD_BILDER . \PFAD_LINKBILDER;
+        $images    = [];
+        $sort      = [];
+        if (\is_dir($uploadDir . $linkID)) {
+            $dirHandle = \opendir($uploadDir . $linkID);
+            while (($file = \readdir($dirHandle)) !== false) {
+                if ($file !== '.' && $file !== '..') {
+                    $imageNumber          = (int)mb_substr(
+                        \str_replace('Bild', '', $file),
+                        0,
+                        \mb_strpos(\str_replace('Bild', '', $file), '.')
+                    );
+                    $images[$imageNumber] = $file;
+                    $sort[]               = $imageNumber;
+                }
+            }
+        }
+        \usort($sort, 'cmp');
+
+        foreach ($sort as $no) {
+            $text = \str_replace(
+                '$#Bild' . $no . '#$',
+                '<img src="' . $baseURL . $linkID . '/' . $images[$no] . '" />',
+                $text
+            );
+        }
+
+        return $text;
     }
 
     /**

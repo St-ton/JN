@@ -59,7 +59,7 @@
     <div id="settings">
         <form id="create_link" name="link_erstellen" method="post" action="links.php" enctype="multipart/form-data">
             {$jtl_token}
-            <input type="hidden" name="neu_link" value="1" />
+            <input type="hidden" name="action" value="create-or-update-link" />
             <input type="hidden" name="kLinkgruppe" value="{$Link->getLinkGroupID()}" />
             <input type="hidden" name="kLink" value="{if $Link->getID() > 0}{$Link->getID()}{/if}" />
             <input type="hidden" name="kPlugin" value="{if $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}" />

@@ -7,6 +7,7 @@
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Link\LinkGroup;
+use JTL\Link\LinkGroupList;
 use JTL\PlausiCMS;
 use JTL\Shop;
 use JTL\Sprache;
@@ -30,17 +31,9 @@ $db          = Shop::Container()->getDB();
 $cache       = Shop::Container()->getCache();
 $linkAdmin   = new LinkAdmin($db, $cache);
 $alertHelper = Shop::Container()->getAlertService();
-
-
 $action      = Request::verifyGPDataString('action');
 $linkID      = Request::verifyGPCDataInt('kLink');
 $linkGroupID = Request::verifyGPCDataInt('kLinkgruppe');
-Shop::dbg($action, false, 'action:');
-Shop::dbg($linkID, false, 'link id:');
-Shop::dbg($linkGroupID, false, 'link group id:');
-Shop::dbg($_POST);
-
-
 if ($action !== '' && Form::validateToken()) {
     switch ($action) {
         case 'add-link-to-linkgroup':
@@ -272,6 +265,8 @@ if ($action !== '' && Form::validateToken()) {
                        ->assign('xPostVar_arr', $checks->getPostVar());
             }
             break;
+        default:
+            break;
     }
 }
 
@@ -335,8 +330,10 @@ if ($step === 'uebersicht') {
 }
 if ($step === 'neuer Link') {
     $kundengruppen = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
+    $lgl           = new LinkGroupList($db, Shop::Container()->getCache());
+    $lgl->loadAll();
     $smarty->assign('Link', $link)
-           ->assign('oSpezialseite_arr', holeSpezialseiten())
+           ->assign('specialPages', $lgl->getLinkgroupByTemplate('specialpages', false)->getLinks())
            ->assign('sprachen', Sprache::getAllLanguages())
            ->assign('kundengruppen', $kundengruppen)
            ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($link));

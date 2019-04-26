@@ -102,8 +102,8 @@
                                 <label for="nLink3">{__('linkToSpecalPage')}</label>
                                 <select id="nLink3" name="nSpezialseite">
                                     <option value="0">{__('choose')}</option>
-                                    {foreach $oSpezialseite_arr as $oSpezialseite}
-                                        <option value="{$oSpezialseite->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $oSpezialseite->nLinkart}selected{elseif $Link->getLinkType() === (int)$oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
+                                    {foreach $specialPages as $specialPage}
+                                        <option value="{$specialPage->getLinkType()}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->getLinkType()}selected{elseif $Link->getLinkType() === $specialPage->getLinkType()}selected{/if}>{$specialPage->getName()}</option>
                                     {/foreach}
                                 </select>
                                 <span id="nLink3-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fa fa-warning error"></i></span>

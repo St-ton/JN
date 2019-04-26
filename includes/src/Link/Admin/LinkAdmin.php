@@ -6,7 +6,7 @@
 
 namespace JTL\Link\Admin;
 
-use function Functional\map;
+use Illuminate\Support\Collection;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -19,7 +19,7 @@ use JTL\Link\LinkGroupList;
 use JTL\Link\LinkInterface;
 use JTL\Sprache;
 use stdClass;
-use \Illuminate\Support\Collection;
+use function Functional\map;
 
 /**
  * Class LinkAdmin
@@ -467,16 +467,16 @@ final class LinkAdmin
     public function createOrUpdateLink(array $post): Link
     {
         $link = $this->createLinkData($post);
-        if ((int)$post['kLink'] === 0) {
+        if ($link->kLink === 0) {
             $kLink              = $this->db->insert('tlink', $link);
             $assoc              = new stdClass();
             $assoc->linkID      = $kLink;
             $assoc->linkGroupID = (int)$post['kLinkgruppe'];
             $this->db->insert('tlinkgroupassociations', $assoc);
         } else {
-            $kLink    = (int)$post['kLink'];
+            $kLink    = $link->kLink;
             $revision = new Revision($this->db);
-            $revision->addRevision('link', (int)$post['kLink'], true);
+            $revision->addRevision('link', $kLink, true);
             $this->db->update('tlink', 'kLink', $kLink, $link);
         }
         $sprachen           = Sprache::getAllLanguages();

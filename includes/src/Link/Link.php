@@ -6,6 +6,7 @@
 
 namespace JTL\Link;
 
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -13,7 +14,6 @@ use JTL\Helpers\Text;
 use JTL\Plugin\State;
 use JTL\Shop;
 use stdClass;
-use Illuminate\Support\Collection;
 
 /**
  * Class Link

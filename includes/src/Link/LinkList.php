@@ -6,9 +6,9 @@
 
 namespace JTL\Link;
 
+use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use Illuminate\Support\Collection;
 use function Functional\group;
 use function Functional\map;
 

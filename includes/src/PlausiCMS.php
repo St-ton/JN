@@ -6,7 +6,7 @@
 
 namespace JTL;
 
-use \JTL\Link\Link;
+use JTL\Link\Link;
 
 /**
  * Class PlausiCMS

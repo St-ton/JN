@@ -164,19 +164,6 @@ function getGesetzteKundengruppen($link)
 }
 
 /**
- * @return array
- */
-function holeSpezialseiten()
-{
-    return Shop::Container()->getDB()->query(
-        'SELECT *
-            FROM tspezialseite
-            ORDER BY nSort',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-}
-
-/**
  * @param int $linkType
  * @param int $linkID
  * @param array $customerGroups

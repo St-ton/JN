@@ -106,7 +106,7 @@ class QueueEntry
         $this->taskLimit     = (int)$data->taskLimit;
         $this->nLimitN       = (int)$data->tasksExecuted;
         $this->tasksExecuted = (int)$data->tasksExecuted;
-        $this->nLimitM       = (int)$data->tasksExecuted;
+        $this->nLimitM       = (int)$data->taskLimit;
         $this->lastProductID = (int)$data->lastProductID;
         $this->isRunning     = 0;
         $this->jobType       = $data->jobType;

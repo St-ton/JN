@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "systemlog_flag_name"
 msgstr "systemlog_flag"
 
@@ -1301,7 +1305,7 @@ msgid "shop_ustid_force_remote_check_desc"
 msgstr "Specify whether a registration requires a VIES confirmation. If this option is enabled, a registration will also be prevented when the respective tax authorities are unavailable."
 
 msgid "warenkorb_produktbilder_anzeigen_name"
-msgstr "Show product images in basket"
+msgstr "Show item images in basket"
 
 msgid "warenkorb_produktbilder_anzeigen_desc"
 msgstr "Specify whether to display a thumbnail for each item in the basket."
@@ -1550,7 +1554,7 @@ msgid "boxen_wunschzettel_bilder_name"
 msgstr "Show images"
 
 msgid "boxen_wunschzettel_bilder_desc"
-msgstr "Specify whether to display product images in the \"Wish list\" box."
+msgstr "Specify whether to display item images in the \"Wish list\" box."
 
 msgid "boxen_vergleichsliste_anzeigen_name"
 msgstr "Show comparison list"
@@ -1649,49 +1653,49 @@ msgid "bilder_variationen_mini_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_gross_breite_name"
-msgstr "Product images, large: width"
+msgstr "Item images, large: width"
 
 msgid "bilder_artikel_gross_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_gross_hoehe_name"
-msgstr "Product images, large: height"
+msgstr "Item images, large: height"
 
 msgid "bilder_artikel_gross_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_normal_breite_name"
-msgstr "Product images, normal: width"
+msgstr "Item images, normal: width"
 
 msgid "bilder_artikel_normal_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_normal_hoehe_name"
-msgstr "Product images, normal: width"
+msgstr "Item images, normal: width"
 
 msgid "bilder_artikel_normal_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_klein_breite_name"
-msgstr "Product images, small: width"
+msgstr "Item images, small: width"
 
 msgid "bilder_artikel_klein_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_klein_hoehe_name"
-msgstr "Product images, small: height"
+msgstr "Item images, small: height"
 
 msgid "bilder_artikel_klein_hoehe_desc"
 msgstr ""
 
 msgid "bilder_artikel_mini_breite_name"
-msgstr "Product images, mini: width"
+msgstr "Item images, mini: width"
 
 msgid "bilder_artikel_mini_breite_desc"
 msgstr ""
 
 msgid "bilder_artikel_mini_hoehe_name"
-msgstr "Product images, mini: height"
+msgstr "Item images, mini: height"
 
 msgid "bilder_artikel_mini_hoehe_desc"
 msgstr ""
@@ -1787,7 +1791,7 @@ msgid "bilder_jpg_quali_desc"
 msgstr ""
 
 msgid "bilder_artikel_namen_name"
-msgstr "Image names of product images"
+msgstr "Image names of item images"
 
 msgid "bilder_artikel_namen_desc"
 msgstr "Specify how to generate the name of image files for items."
@@ -1814,7 +1818,7 @@ msgid "container_verwenden_name"
 msgstr "Match image size to container size"
 
 msgid "container_verwenden_desc"
-msgstr "Specify whether to match the size of the product image to the corresponding container."
+msgstr "Specify whether to match the size of the item image to the corresponding container."
 
 msgid "bilder_dateiformat_name"
 msgstr "File format"
@@ -2183,16 +2187,16 @@ msgid "vergleichsliste_artikelnummer_desc"
 msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_verfuegbarkeit_name"
-msgstr "Anzeigepriorität Verfügbarkeit"
+msgstr "Displaying priority of availability"
 
 msgid "vergleichsliste_verfuegbarkeit_desc"
-msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_lieferzeit_name"
-msgstr "Anzeigepriorität Lieferzeit"
+msgstr "Displaying priority of shipping time"
 
 msgid "vergleichsliste_lieferzeit_desc"
-msgstr "Hier können Sie die Priorität der einzelnen Felder auf der Vergleichsliste einstellen. Je niedriger der Wert, desto weiter oben wird ein Feld angezeigt. Wenn Sie „0“ wählen, wird ein Feld nicht angezeigt."
+msgstr "Specify the priority of the individual fields on the comparison list. The lower the value, the higher up a field is shown. If you choose \"0\", the respective field is not shown at all."
 
 msgid "vergleichsliste_hersteller_name"
 msgstr "Displaying priority of manufacturer"
@@ -2771,10 +2775,10 @@ msgid "sitemap_livesuche_anzeigen_desc"
 msgstr "Specify whether all search queries should appear in the sitemap."
 
 msgid "sitemap_googleimage_anzeigen_name"
-msgstr "Show product images in sitemap"
+msgstr "Show item images in sitemap"
 
 msgid "sitemap_googleimage_anzeigen_desc"
-msgstr "Specify whether links to product images should appear in the sitemap."
+msgstr "Specify whether links to item images should appear in the sitemap."
 
 msgid "sitemap_images_categories_name"
 msgstr "Show category images"
@@ -2883,18 +2887,6 @@ msgstr "Default customer group"
 
 msgid "kwk_kundengruppen_desc"
 msgstr "Specify into which customer group new customers are sorted who have been newly referred."
-
-msgid "trustedshops_nutzen_name"
-msgstr "Use Trusted Shops buyer protection"
-
-msgid "trustedshops_nutzen_desc"
-msgstr "Here you can activate the Trusted Shops buyer protection for your JTL-Shop. Afterwards, you will need to have a look at a couple of other options."
-
-msgid "trustedshops_kundenbewertung_anzeigen_name"
-msgstr "Show Trusted Shops customer review"
-
-msgid "trustedshops_kundenbewertung_anzeigen_desc"
-msgstr "Specify whether to display the Trusted Shops customer review in a box."
 
 msgid "suchspecials_sortierung_bestseller_name"
 msgstr "Sorting of bestsellers"

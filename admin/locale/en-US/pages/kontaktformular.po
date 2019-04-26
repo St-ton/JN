@@ -3,52 +3,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "configureContactform"
-msgstr "Kontaktformulareinstellungen"
+msgstr "Contact form"
 
 msgid "contanctformDesc"
-msgstr "Nehmen Sie hier Einstellungen zum Kontaktformular vor. <strong>Bitte beachten Sie, dass mindestens ein Betreff notwendig ist, damit das Kontaktformular einsatzfähig ist!</strong> Um einen Kontaktformularlink im Shop anzuzeigen, legen Sie diesen unter </em>Inhalt -> CMS (Eigene Seiten)</em> an und wählen Sie als Seitentyp <em>Spezialseite Kontaktformular</em>."
+msgstr "Here you can configure the JTL-Shop contact form. In order to view the contact form, you must at least create a subject line. You can add the form to your online shop via \"Content &gt; Custom pages\"."
 
 msgid "contanctformSubjectDesc"
-msgstr "Mit Betreffs können Sie Kontaktanfragen an die richtige Abteilung leiten. Der Kunde wählt im Kontaktformular den Betreff aus, die Anfrage kommt als E-Mail an die im Betreff hinterlegte E-Mailadresse."
+msgstr "Using the subject line, you can control to which department emails are sent via the contact form. When the customer selects the subject in the contact form, the email is sent to the email address corresponding to the respective subject."
 
 msgid "mail"
-msgstr "Empfänger-E-Mail"
+msgstr "Recipient's email address"
 
 msgid "newSubject"
-msgstr "Neuer Betreff"
+msgstr "New subject"
 
 msgid "restrictedToCustomerGroups"
-msgstr "Sichtbar für"
+msgstr "Visible for"
 
 msgid "contactformSubject"
-msgstr "Kontaktformular Betreff"
+msgstr "Subject of the contact form"
 
 msgid "additionalContent"
-msgstr "Zusätzlicher Inhalt"
+msgstr "Additional contents"
 
 msgid "topContent"
-msgstr "Inhalt vor dem Formular"
+msgstr "Content before the actual form"
 
 msgid "bottomContent"
-msgstr "Inhalt nach dem Formular"
+msgstr "Content after the actual form"
 
 msgid "title"
-msgstr "Überschrift des Kontaktformulars"
+msgstr "Contact form header"
 
 msgid "cURL"
-msgstr "https://jtl-url.de/5s4el"
+msgstr "https://jtl-url.de/7iwdu"
 
 msgid "successContentSave"
-msgstr "Inhalt wurde erfolgreich gespeichert."
+msgstr "Content saved successfully."
 
 msgid "successSubjectCreate"
-msgstr "Betreff wurde erfolgreich hinzugefügt."
+msgstr "Subject added successfully."
 
 msgid "errorSubjectSave"
-msgstr "Der Betreff konnte nicht gespeichert werden"
+msgstr "Could not save subject."
 
 msgid "successSubjectSave"
-msgstr "Der Betreff %s wurde erfolgreich geändert."
+msgstr "Subject %s edited successfully."
 
 msgid "successSubjectDelete"
-msgstr "Der Betreff wurde erfolgreich gelöscht"
+msgstr "User deleted successfully."

@@ -39,8 +39,6 @@ use JTL\Boxes\Items\SpecialOffers;
 use JTL\Boxes\Items\TagCloud;
 use JTL\Boxes\Items\TopOffers;
 use JTL\Boxes\Items\TopRatedProducts;
-use JTL\Boxes\Items\TrustedShopsReviews;
-use JTL\Boxes\Items\TrustedShopsSeal;
 use JTL\Boxes\Items\UpcomingProducts;
 use JTL\Boxes\Items\Wishlist;
 
@@ -130,10 +128,6 @@ class Factory implements FactoryInterface
                 return new FilterSearch($this->config);
             case \BOX_FILTER_SUCHSPECIAL:
                 return new FilterItem($this->config);
-            case \BOX_TRUSTEDSHOPS_GUETESIEGEL:
-                return new TrustedShopsSeal($this->config);
-            case \BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN:
-                return new TrustedShopsReviews($this->config);
             case \BOX_TOP_BEWERTET:
                 return new TopRatedProducts($this->config);
             case \BOX_SUCHWOLKE:

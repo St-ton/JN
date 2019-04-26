@@ -9,10 +9,11 @@ namespace JTL\Backend;
 use ArrayIterator;
 use Countable;
 use Exception;
-use function Functional\pluck;
 use IteratorAggregate;
+use JTL\Link\Admin\LinkAdmin;
 use JTL\Shop;
 use JTL\SingletonTrait;
+use function Functional\pluck;
 
 /**
  * Class Notification
@@ -94,7 +95,7 @@ class Notification implements IteratorAggregate, Countable
         $status    = Status::getInstance();
         $db        = Shop::Container()->getDB();
         $cache     = Shop::Container()->getCache();
-        $linkAdmin = new \JTL\Link\Admin\LinkAdmin($db, $cache);
+        $linkAdmin = new LinkAdmin($db, $cache);
 
         Shop::Container()->getGetText()->loadAdminLocale('notifications');
 
@@ -274,6 +275,24 @@ class Notification implements IteratorAggregate, Countable
                 __('duplicateSpecialLinkTitle'),
                 __('duplicateSpecialLinkDesc'),
                 'links.php'
+            );
+        }
+
+        if (($exportSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                'Fehler in Exportvorlage',
+                \sprintf('%d Exportvorlage(n) enthalten Syntax-Fehler.', $exportSyntaxErrorCount),
+                'exportformate.php'
+            );
+        }
+
+        if (($emailSyntaxErrorCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                'Fehler in Emailvorlage',
+                \sprintf('%d Emailvorlage(n) enthalten Syntax-Fehler.', $emailSyntaxErrorCount),
+                'emailvorlagen.php'
             );
         }
 

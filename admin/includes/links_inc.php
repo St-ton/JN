@@ -4,23 +4,25 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
 use JTL\Link\Link;
+use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkInterface;
 use JTL\Shop;
 
 /**
- * @param \JTL\Link\LinkGroupInterface $linkGroup
- * @param int                          $parentID
- * @return \Illuminate\Support\Collection
+ * @param LinkGroupInterface $linkGroup
+ * @param int                $parentID
+ * @return Collection
  */
 function build_navigation_subs_admin($linkGroup, int $parentID = 0)
 {
-    $news = new \Illuminate\Support\Collection();
+    $news = new Collection();
     $lh   = Shop::Container()->getLinkService();
     foreach ($linkGroup->getLinks() as $link) {
         $link->setLevel(count($lh->getParentIDs($link->getID())));
-        /** @var \JTL\Link\Link $link */
+        /** @var LinkInterface $link */
         if ($link->getParent() !== $parentID) {
             continue;
         }
@@ -69,31 +71,30 @@ function parseText($text, int $linkID)
     $images    = [];
     $sort      = [];
     if (is_dir($uploadDir . $linkID)) {
-        $handle = opendir($uploadDir . $linkID);
-        while (($file = readdir($handle)) !== false) {
-            if ($file !== '.' && $file !== '..') {
-                $imageID          = (int)mb_substr(
-                    str_replace('Bild', '', $file),
+        $dirHandle = opendir($uploadDir . $linkID);
+        while (($Datei = readdir($dirHandle)) !== false) {
+            if ($Datei !== '.' && $Datei !== '..') {
+                $imageNumber          = (int)mb_substr(
+                    str_replace('Bild', '', $Datei),
                     0,
-                    mb_strpos(str_replace('Bild', '', $file), '.')
+                    mb_strpos(str_replace('Bild', '', $Datei), '.')
                 );
-                $images[$imageID] = $file;
-                $sort[]           = $imageID;
+                $images[$imageNumber] = $Datei;
+                $sort[]               = $imageNumber;
             }
         }
     }
     usort($sort, 'cmp');
-    $basePath = Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER;
-    foreach ($sort as $sortID) {
-        $text = str_replace(
-            '$#Bild' . $sortID . '#$',
-            '<img src="' . $basePath . $linkID . '/' . $images[$sortID] . '" />',
-            $text
-        );
+
+    foreach ($sort as $no) {
+        $text = str_replace('$#Bild' . $no . '#$', '<img src="' .
+            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $linkID . '/' . $images[$no] .
+            '" />', $text);
     }
 
     return $text;
 }
+
 
 /**
  * @param int $a
@@ -121,78 +122,6 @@ function cmp_obj($a, $b)
     }
 
     return ($a->nBild < $b->nBild) ? -1 : 1;
-}
-
-/**
- * Gibt eine neue Breite und Hoehe als Array zurueck
- *
- * @param string $file
- * @param int    $nMaxBreite
- * @param int    $nMaxHoehe
- * @return array
- */
-function calcRatio($file, $nMaxBreite = 0, $nMaxHoehe = 0)
-{
-    [$width, $height] = getimagesize($file);
-
-    return [$width, $height];
-}
-
-/**
- * @param int $kLink
- * @param int $linkGroupID
- * @return int
- */
-function removeLink($kLink, $linkGroupID = 0)
-{
-    return Shop::Container()->getDB()->executeQueryPrepared(
-        "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
-            FROM tlink
-            LEFT JOIN tlinkgroupassociations
-                ON tlinkgroupassociations.linkID = tlink.kLink
-            LEFT JOIN tlinksprache
-                ON tlink.kLink = tlinksprache.kLink
-            LEFT JOIN tseo
-                ON tseo.cKey = 'kLink'
-                AND tseo.kKey = :lid
-            WHERE tlink.kLink = :lid",
-        ['lid' => $kLink],
-        ReturnType::AFFECTED_ROWS
-    );
-}
-
-/**
- * @param int    $linkID
- * @param string $var
- * @return array
- */
-function getLinkVar(int $linkID, $var)
-{
-    $namen = [];
-    if (!$linkID) {
-        return $namen;
-    }
-    if ($var === 'cSeo') {
-        $links = Shop::Container()->getDB()->query(
-            "SELECT tlinksprache.cISOSprache, tseo.cSeo
-                FROM tlinksprache
-                JOIN tsprache 
-                    ON tsprache.cISO = tlinksprache.cISOSprache
-                LEFT JOIN tseo 
-                    ON tseo.cKey = 'kLink'
-                    AND tseo.kKey = tlinksprache.kLink
-                    AND tseo.kSprache = tsprache.kSprache
-                WHERE tlinksprache.kLink = " . $linkID,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-    } else {
-        $links = Shop::Container()->getDB()->selectAll('tlinksprache', 'kLink', $linkID);
-    }
-    foreach ($links as $link) {
-        $namen[$link->cISOSprache] = $link->$var;
-    }
-
-    return $namen;
 }
 
 /**

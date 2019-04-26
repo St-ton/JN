@@ -24,55 +24,55 @@
 </template>
 
 <script>
-    import axios from 'axios';
-    import qs from 'qs';
-    export default {
-        name: 'schema',
-        data() {
-            let finished = false,
-                error    = null,
-                msg      = null,
-                postData = qs.stringify({
-                    admin: this.$store.state.adminUser,
-                    wawi:  this.$store.state.wawiUser,
-                    db:    this.$store.state.database
-                });
-            axios.post(this.$getApiUrl('doinstall'), postData)
-                .then(response => {
-                    this.$store.commit('setSecretKey', response.data.payload.secretKey);
-                    if (this.$store.state.installDemoData === true) {
-                        this.finished = false;
-                        axios.post(this.$getApiUrl('installdemodata'), postData)
-                            .then(r2 => {
-                                this.error = !r2.data.ok;
-                                this.msg = r2.data.msg;
-                                this.finished = true;
-                            })
-                            .catch(e2 => {
-                                this.error = true;
-                                this.msg   = e2.response
-                                    ? e2.response
-                                    : `URL ${this.$getApiUrl('installdemodata')} nicht erreichbar.`;
-                            });
-                    } else {
-                        this.error = !response.data.ok;
-                        this.msg = response.data.msg;
-                        this.finished = true;
-                    }
-                })
-                .catch(err => {
-                    this.error = true;
-                    this.msg   = err.response
-                        ? err.response
-                        : `URL ${this.$getApiUrl('doinstall')} nicht erreichbar.`;
-                });
-            return {
-                finished,
-                error,
-                msg
-            };
-        }
-    };
+import axios from 'axios';
+import qs from 'qs';
+export default {
+    name: 'schema',
+    data() {
+        let finished = false,
+            error    = null,
+            msg      = null,
+            postData = qs.stringify({
+                admin: this.$store.state.adminUser,
+                wawi:  this.$store.state.wawiUser,
+                db:    this.$store.state.database
+            });
+        axios.post(this.$getApiUrl('doinstall'), postData)
+            .then(response => {
+                this.$store.commit('setSecretKey', response.data.payload.secretKey);
+                if (this.$store.state.installDemoData === true) {
+                    this.finished = false;
+                    axios.post(this.$getApiUrl('installdemodata'), postData)
+                        .then(r2 => {
+                            this.error = !r2.data.ok;
+                            this.msg = r2.data.msg;
+                            this.finished = true;
+                        })
+                        .catch(e2 => {
+                            this.error = true;
+                            this.msg = e2.response
+                                ? e2.response
+                                : `URL ${this.$getApiUrl('installdemodata')} nicht erreichbar.`;
+                        });
+                } else {
+                    this.error = !response.data.ok;
+                    this.msg = response.data.msg;
+                    this.finished = true;
+                }
+            })
+            .catch(err => {
+                this.error = true;
+                this.msg = err.response
+                    ? err.response
+                    : `URL ${this.$getApiUrl('doinstall')} nicht erreichbar.`;
+            });
+        return {
+            finished,
+            error,
+            msg
+        };
+    }
+};
 </script>
 <style scoped>
     .input-group-addon.fixed-addon {

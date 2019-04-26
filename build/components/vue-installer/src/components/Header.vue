@@ -7,10 +7,10 @@
 </template>
 
 <script>
-    export default {
-        name:  'pageHeader',
-        props: ['header', 'lead', 'content', 'btn0', 'btn1', 'btn2']
-    };
+export default {
+    name:  'pageHeader',
+    props: ['header', 'lead', 'content', 'btn0', 'btn1', 'btn2']
+};
 </script>
 
 <style scoped>

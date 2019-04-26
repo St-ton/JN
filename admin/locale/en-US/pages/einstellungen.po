@@ -3,55 +3,55 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "preferencesURL"
-msgstr "https://jtl-url.de/u56j2"
+msgstr "https://jtl-url.de/b1-ot"
 
 msgid "preferencesDesc"
-msgstr "Klicken Sie den Bereich an, den Sie einstellen möchten."
+msgstr "Click on the settings you want to change."
 
 msgid "savePreferences"
-msgstr "Einstellungen speichern"
+msgstr "Save settings"
 
 msgid "backToOverview"
-msgstr "zurück zur Übersicht"
+msgstr "Back to overview"
 
 msgid "settingsSaved"
-msgstr "Die Einstellungen wurden erfolgreich gespeichert."
+msgstr "Settings saved successfully."
 
 msgid "prefDesc5"
 msgstr ""
 
 msgid "prefURL5"
-msgstr "https://jtl-url.de/c1wy5"
+msgstr "https://jtl-url.de/nlb2u"
 
 msgid "prefDesc4"
 msgstr ""
 
 msgid "prefURL4"
-msgstr "https://jtl-url.de/hrlop"
+msgstr "https://jtl-url.de/451tr"
 
 msgid "prefDesc9"
 msgstr ""
 
 msgid "prefURL9"
-msgstr "https://jtl-url.de/kgce4"
+msgstr "https://jtl-url.de/6jdo7"
 
 msgid "prefDesc8"
 msgstr ""
 
 msgid "prefURL8"
-msgstr "https://jtl-url.de/d109m"
+msgstr "https://jtl-url.de/fubg2"
 
 msgid "prefDesc3"
 msgstr ""
 
 msgid "prefURL3"
-msgstr "https://jtl-url.de/jnw83"
+msgstr "https://jtl-url.de/hj1pz"
 
 msgid "prefDesc1"
 msgstr ""
 
 msgid "prefURL1"
-msgstr "https://jtl-url.de/l30th"
+msgstr "https://jtl-url.de/y0dq-"
 
 msgid "prefDesc6"
 msgstr ""
@@ -63,10 +63,10 @@ msgid "prefDesc7"
 msgstr ""
 
 msgid "prefURL7"
-msgstr "https://jtl-url.de/kxqgt"
+msgstr "https://jtl-url.de/z6bih"
 
 msgid "prefDesc2"
 msgstr ""
 
 msgid "prefURL2"
-msgstr "https://jtl-url.de/sdka5"
+msgstr "https://jtl-url.de/8qj9i"

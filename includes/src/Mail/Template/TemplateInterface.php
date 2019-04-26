@@ -131,4 +131,14 @@ interface TemplateInterface
      * @param string|null $overrideSubject
      */
     public function setSubject(?string $overrideSubject): void;
+
+    /**
+     * @return int
+     */
+    public function getLanguageID(): int;
+
+    /**
+     * @param int $languageID
+     */
+    public function setLanguageID(int $languageID): void;
 }

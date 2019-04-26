@@ -53,9 +53,6 @@ msgstr "Erstellt am"
 msgid "freischaltenNewsletterReceiver"
 msgstr "Newsletter-Empfänger"
 
-msgid "freischaltenSearch"
-msgstr "Suche"
-
 msgid "freischaltenSearchItem"
 msgstr "Suchbegriff"
 
@@ -72,13 +69,13 @@ msgid "freischaltenMappingDesc"
 msgstr "* Achtung: * Bei einer Verknüpfung werden die Live-Suchen direkt freigeschaltet."
 
 msgid "errorSearchTermMissing"
-msgstr "Fehler: Bitte geben Sie einen Suchbegriff ein."
+msgstr "Bitte geben Sie einen Suchbegriff ein."
 
 msgid "successRatingUnlock"
 msgstr "Ihre markierten Bewertungen wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneRating"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Bewertung."
+msgstr "Bitte markieren Sie mindestens eine Bewertung."
 
 msgid "successRatingDelete"
 msgstr "Die markierten Bewertungen wurden erfolgreich gelöscht."
@@ -87,34 +84,34 @@ msgid "successLiveSearchMap"
 msgstr "Die markierten Live-Suchen wurden erfolgreich mit %s verknüpft."
 
 msgid "errorLiveSearchMapNotUnlock"
-msgstr "Fehler: Die Live-Suche wurde zwar erfolgreich verknüpft, konnte jedoch aufgrund eines unbekannten Fehlers nicht freigeschaltet werden."
+msgstr "Die Live-Suche wurde zwar erfolgreich verknüpft, konnte jedoch aufgrund eines unbekannten Fehlers nicht freigeschaltet werden."
 
 msgid "errorMapUnknown"
-msgstr "Fehler: Verknüpfung konnte aufgrund eines unbekannten Fehlers nicht durchgeführt werden."
+msgstr "Verknüpfung konnte aufgrund eines unbekannten Fehlers nicht durchgeführt werden."
 
 msgid "errorSearchNotFoundDB"
-msgstr "Fehler: Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden."
+msgstr "Mindestens eine Suchanfrage wurde nicht in der Datenbank gefunden."
 
 msgid "errorMapDB"
-msgstr "Fehler: Mindestens eine Suchanfrage konnte nicht als Verknüpfung in die Datenbank gespeichert werden."
+msgstr "Mindestens eine Suchanfrage konnte nicht als Verknüpfung in die Datenbank gespeichert werden."
 
 msgid "errorMapToNotExisting"
-msgstr "Fehler: Sie haben versucht mit einer nicht existierenden Suchanfrage zu verknüpfen."
+msgstr "Die zu verknüpfende Suchanfrage existiert nicht."
 
 msgid "errorMapSelf"
-msgstr "Fehler: Eine Live-Suche kann nicht mit sich selbst verknüpft werden."
+msgstr "Eine Live-Suche kann nicht mit sich selbst verknüpft werden."
 
 msgid "errorAtLeastOneLiveSearch"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Live-Suche."
+msgstr "Bitte markieren Sie mindestens eine Live-Suche."
 
 msgid "errorMapNameMissing"
-msgstr "Fehler: Bitte geben Sie einen Namen für die Verknüpfung an."
+msgstr "Bitte geben Sie einen Namen für die Verknüpfung an."
 
 msgid "successSearchUnlock"
 msgstr "Ihre markierten Suchanfragen wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneSearch"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Suchanfrage."
+msgstr "Bitte markieren Sie mindestens eine Suchanfrage."
 
 msgid "successSearchDelete"
 msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
@@ -123,7 +120,7 @@ msgid "successTagUnlock"
 msgstr "Ihre markierten Tags wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneTag"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Tag."
+msgstr "Bitte markieren Sie mindestens einen Tag."
 
 msgid "successTagDelete"
 msgstr "Ihre markierten Tags wurden erfolgreich gelöscht."
@@ -132,7 +129,7 @@ msgid "successNewsCommentUnlock"
 msgstr "Ihre markierten News-Kommentare wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Fehler: Bitte markieren Sie mindestens einen News-Kommentar."
+msgstr "Bitte markieren Sie mindestens einen News-Kommentar."
 
 msgid "successNewsCommentDelete"
 msgstr "Ihre markierten News-Kommentare wurden erfolgreich gelöscht."
@@ -141,7 +138,7 @@ msgid "successNewsletterUnlock"
 msgstr "Ihre markierten Newsletter-Empfänger wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsletter"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter-Empfänger."
+msgstr "Bitte markieren Sie mindestens einen Newsletter-Empfänger."
 
 msgid "successNewsletterDelete"
 msgstr "Ihre markierten Newsletter-Empfänger wurden erfolgreich gelöscht."

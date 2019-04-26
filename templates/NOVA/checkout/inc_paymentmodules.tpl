@@ -3,11 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='checkout-inc-paymentmodules'}
-    {if isset($abschlussseite) && $abschlussseite == 1}
-        {block name='checkout-inc-paymentmodules-include-inc-trustedshops-excellence'}
-            {include file='checkout/inc_trustedshops_excellence.tpl'}
-        {/block}
-    {else}
+    {if !isset($abschlussseite) || $abschlussseite !== 1}
         {assign var=cModulId value=$Bestellung->Zahlungsart->cModulId}
         {if (empty($oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId)
                 || $Bestellung->Zahlungsart->cModulId != $oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId)
@@ -54,9 +50,6 @@
                     {/block}
                 {/if}
                 <br />
-                {block name='checkout-inc-paymentmodules-include-inc-trustedshops-excellence-method-inner'}
-                    {include file='checkout/inc_trustedshops_excellence.tpl'}
-                {/block}
             </div>
         {/block}
     {/if}

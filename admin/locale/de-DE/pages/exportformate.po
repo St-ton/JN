@@ -18,7 +18,7 @@ msgid "campaigns"
 msgstr "Kampagne"
 
 msgid "lastModified"
-msgstr "zuletzt erstellt"
+msgstr "Zuletzt erstellt"
 
 msgid "markedElement"
 msgstr "Markiertes Element"
@@ -28,9 +28,6 @@ msgstr "Exportdatei erstellen"
 
 msgid "createExportFileAsync"
 msgstr "Exportdatei asynchron erstellen"
-
-msgid "createExportFileAsyncShort"
-msgstr "Asynchron erstellen"
 
 msgid "newExportformat"
 msgstr "Neues Exportformat erstellen"
@@ -45,10 +42,10 @@ msgid "modifyExportformatSave"
 msgstr "Überarbeitetes Exportformat speichern"
 
 msgid "onlyIfNeeded"
-msgstr "Nur angeben, wenn Exportdatei die Kopfzeile enthalten soll"
+msgstr "Nur ausfüllen, wenn Exportdatei die Kopfzeile enthalten soll"
 
 msgid "template"
-msgstr "Vorlage des Inhalts"
+msgstr "Exportvorlage"
 
 msgid "smartyRules"
 msgstr "Smarty wird genutzt Achtung: PHP-Tags und Inhalte sind nicht erlaubt."
@@ -99,7 +96,7 @@ msgid "errorFormatCreate"
 msgstr "Das Exportformat %s konnte nicht erstellt werden. Überprüfen Sie die Schreibrechte."
 
 msgid "errorExport"
-msgstr "Es ist ein Fehler beim Erstellen der Exportdatei aufgetreten."
+msgstr "Die Exportdatei konnte nicht erstellt werden."
 
 msgid "availableFormats"
 msgstr "Vorhandene Exportformate"
@@ -109,3 +106,6 @@ msgstr "Alle exportieren"
 
 msgid "sureDeleteFormat"
 msgstr "Möchten Sie das Exportformat wirklich löschen?"
+
+msgid "useCache"
+msgstr "Cache nutzen?"

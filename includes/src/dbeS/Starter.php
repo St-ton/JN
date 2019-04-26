@@ -262,7 +262,6 @@ class Starter
         if ($mapping === null) {
             return;
         }
-        require_once \PFAD_ROOT . \PFAD_DBES . 'NetSync_inc.php';
         NetSyncHandler::create($mapping, $this->db, $this->logger);
         exit();
     }

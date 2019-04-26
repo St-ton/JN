@@ -23,13 +23,11 @@
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
                     {strip}
-                        {if !isset($smallView) || !$smallView}
                         <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
-                        {/if}
-                        <dd class="form-group">
+                        <dd class="form-group text-left">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
-                                {select title="{if isset($smallView) && $smallView}{$Variation->cName} - {/if}{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
+                                {select title="{lang key='pleaseChooseVariation' section='productDetails'}" name="eigenschaftwert[{$Variation->kEigenschaft}]" required=!$showMatrix}
                                     {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                         {assign var=bSelected value=false}
                                         {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}

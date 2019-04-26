@@ -20,7 +20,7 @@
         </tbody>
     </table>
     <div id="version_data_wrapper">
-        <p class="text-center ajax_preloader update">{__('loading')}</p>
+        <p class="text-center ajax_preloader update"><i class="fa fas fa-spinner fa-spin"></i> {__('loading')}</p>
     </div>
 </div>
 <script type="text/javascript">

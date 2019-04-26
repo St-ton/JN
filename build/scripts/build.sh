@@ -135,10 +135,12 @@ build_add_old_files()
     while read line; do
         echo "<?php // moved to /includes/src" > ${REPOSITORY_DIR}/${line};
     done < ${REPOSITORY_DIR}/oldfiles.txt;
+
+    rm ${REPOSITORY_DIR}/oldfiles.txt;
 }
 
 build_create_shop_installer() {
-    composer install --no-dev -a -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
+    composer install --no-dev -o -q -d ${REPOSITORY_DIR}/build/components/vue-installer;
 }
 
 build_create_md5_hashfile()
@@ -149,7 +151,7 @@ build_create_md5_hashfile()
     local MD5_HASH_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/${VERSION}.csv";
 
     cd ${REPOSITORY_DIR};
-    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
+    find -type f ! \( -name ".asset_cs" -or -name ".git*" -or -name ".idea*" -or -name ".htaccess" -or -name ".php_cs" -or -name ".travis.yml" -or -name "composer.lock" -or -name "config.JTL-Shop.ini.initial.php" -or -name "phpunit.xml" -or -name "robots.txt" -or -name "rss.xml" -or -name "shopinfo.xml" -or -name "sitemap_index.xml" -or -name "*.md" \) -printf "'%P'\n" | grep -vE ".git/|admin/gfx/|admin/includes/emailpdfs/|admin/includes/shopmd5files/|admin/templates_c/|bilder/|build/|docs/|downloads/|export/|gfx/|includes/plugins/|includes/vendor/|install/|jtllogs/|mediafiles/|templates/NOVA/|templates_c/|tests/|uploads/" | xargs md5sum | awk '{ print $1";"$2; }' | sort --field-separator=';' -k2 -k1 > ${MD5_HASH_FILENAME};
     cd ${CUR_PWD};
 
     echo "  File checksums admin/includes/shopmd5files/${VERSION}.csv";
@@ -307,6 +309,8 @@ build_add_files_to_patch_dir()
 {
     local PATCH_VERSION=$1;
     local PATCH_DIR=$2;
+    local VERSION="${APPLICATION_VERSION_STR//[\/\.]/-}";
+    local VERSION="${VERSION//[v]/}";
 
     echo "  Patch ${PATCH_VERSION} to ${APPLICATION_VERSION}";
 
@@ -323,25 +327,29 @@ build_add_files_to_patch_dir()
         fi
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
 
-    # Rsync shopmd5files
-    rsync -R admin/includes/shopmd5files/dbstruct_${APPLICATION_VERSION_STR}.json ${PATCH_DIR};
-    rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/${VERSION}.csv ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/dbstruct_${VERSION}.json ${PATCH_DIR};
+    rsync -R admin/includes/shopmd5files/deleted_files_${VERSION}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
+    rsync -rR admin/classes/ ${PATCH_DIR};
+    rsync -rR classes/ ${PATCH_DIR};
+    rsync -rR includes/ext/ ${PATCH_DIR};
 
     if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp_composer;
         mkdir /tmp_composer/includes;
         touch /tmp_composer/includes/composer.json;
         git show ${PATCH_VERSION}:includes/composer.json > /tmp_composer/includes/composer.json;
-        composer install --no-dev -a -o -q -d /tmp_composer/includes;
+        git show ${PATCH_VERSION}:includes/composer.lock > /tmp_composer/includes/composer.lock;
+        composer install --no-dev -o -q -d /tmp_composer/includes;
 
         while read -r line;
         do
             path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
             if [[ -z "${path}" ]]; then
-                filename=$(echo "${line}" | grep "^Only in includes\/vendor: .*$" | sed 's/^Only in includes\/vendor: \(.*\)$/\1/');
+                filename=$(echo "${line}" | grep "^Only in includes\/vendor.*: .*$" | sed 's/^Only in \(includes\/vendor[\/]*.*\): \(.*\)$/\1\/\2/');
                 if [[ ! -z "${filename}" ]]; then
-                    path="includes/vendor/${filename}";
+                    path="${filename}";
                     rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
                 fi
             else

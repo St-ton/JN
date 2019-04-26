@@ -3,88 +3,88 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "kundenfeld"
-msgstr "Selbstdefinierbare Kundenfelder"
+msgstr "Custom form fields"
 
 msgid "kundenfeldURL"
-msgstr "https://jtl-url.de/nsmuy"
+msgstr "https://jtl-url.de/xnm6c"
 
 msgid "kundenfeldDesc"
-msgstr "Diese Kundenfelder werden zusätzlich bei der Erstellung eines Kundenkontos bzw. im Bestellvorgang abgefragt."
+msgstr "Here you can define custom form fields for the creation of customer accounts and the order process."
 
 msgid "kundenfeldExistingDesc"
-msgstr "Ihre angelegten Kundenfelder:"
+msgstr "Custom form fields:"
 
 msgid "kundenfeldName"
-msgstr "Kundenattribut Feldname"
+msgstr "Name of field in JTL-Shop"
 
 msgid "kundenfeldNameShort"
-msgstr "Attributname"
+msgstr "Attribute name"
 
 msgid "kundenfeldPflicht"
-msgstr "Pflichtfeld?"
+msgstr "Mandatory field"
 
 msgid "kundenfeldTyp"
-msgstr "Feldtyp"
+msgstr "Field type"
 
 msgid "kundenfeldSortDesc"
-msgstr "Ganzzahl, z.B. 10 (leer oder 0 keine, Sortierung willkürlich)"
+msgstr "Integer, e.g. 10 (if 0 or nothing is entered into several fields, these fields will be displayed in random sorting order)"
 
 msgid "kundenfeldPflichtDesc"
-msgstr "(*) = Pflichtfeld"
+msgstr "(*) = mandatory field"
 
 msgid "kundenfeldWawi"
-msgstr "JTL-WaWi Feldname"
+msgstr "Name of field in JTL-Wawi"
 
 msgid "kundenfeldWawiShort"
-msgstr "WaWi Feldname"
+msgstr "Name of field in JTL-Wawi"
 
 msgid "kundenfeldEditable"
-msgstr "Nachträglich editierbar?"
+msgstr "Allow editing"
 
-msgid "kundenfeldEdit"
-msgstr "Kundenfeld bearbeiten"
+msgid "headingKundenfeldEdit"
+msgstr "Editing form fields"
 
-msgid "kundenfeldCreate"
-msgstr "Neues Kundenfeld erstellen"
+msgid "headingKundenfeldCreate"
+msgstr "Creating new form fields"
 
 msgid "successCustomerFieldDelete"
-msgstr "Die ausgewählten Kundenfelder wurden erfolgreich gelöscht."
+msgstr "Selected form fields deleted successfully."
 
 msgid "errorCustomerFieldDelete"
-msgstr "Die ausgewählten Kundenfelder konnten nicht gelöscht werden."
+msgstr "Could not delete the selected form fields."
 
 msgid "errorAtLeastOneCustomerField"
-msgstr "Fehler: Bitte wählen Sie mindestens ein Kundenfeld aus."
+msgstr "Please select at least one form field."
 
-msgid "successCustomerFieldRefresh"
-msgstr "Ihre Kundenfelder wurden erfolgreich aktualisiert."
+msgid "successCustomerFieldUpdate"
+msgstr "Form fields updated successfully."
 
-msgid "errorCustomerFieldRefresh"
-msgstr "Ihre Kundenfelder konnten nicht aktualisiert werden."
+msgid "errorCustomerFieldUpdate"
+msgstr "Could not update form fields."
 
 msgid "successCustomerFieldSave"
-msgstr "Ihr Kundenfeld wurde erfolgreich gespeichert."
+msgstr "Form field saved successfully."
 
 msgid "errorCustomerFieldSave"
-msgstr "Ihr Kundenfeld konnte nicht gespeichert werden."
+msgstr "Could not save form field."
 
 msgid "errorCustomerFieldNameExists"
-msgstr "Ein Feld mit diesen Namen existiert bereits!"
+msgstr "A field with this name already exists."
 
 msgid "errorLoginTemporaryNotPossible"
-msgstr "Anmeldung zur Zeit nicht möglich."
+msgstr "Login temporarily unavailable."
 
 msgid "errorLoginDataExpired"
-msgstr "Anmeldedaten nicht mehr gültig."
+msgstr "Login data expired."
 
 msgid "errorFieldNeedsAtLeastOneValue"
-msgstr "Das Feld muss mindestens einen Wert haben!"
+msgstr "Please enter at least one value into the field."
 
 msgid "errorChooseField"
-msgstr "Bitte wählen Sie zuerst ein Feld aus!"
+msgstr "Please select a field first."
 
 msgid "sureDeleteSelected"
-msgstr "Wollen Sie wirklich die ausgewählten Felder löschen? Alle zugeordneten Kundenwerte gehen dabei verloren!"
+msgstr "Delete selected fields? All customer values entered via this field will be deleted as well."
 
 msgid "infoChangeFieldType"
-msgstr "Wenn Sie den Feldtyp ändern, werden alle Kundenwerte - soweit möglich - automatisch an den neuen Typ angepasst!"
+msgstr "When you change the field type, all customer values will be changed to match the new type (if possible)."

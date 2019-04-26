@@ -15,7 +15,7 @@
                         {if $Artikel->oVariBoxMatrixBild_arr|@count > 0 && (($Artikel->nIstVater == 1 && $Artikel->oVariBoxMatrixBild_arr[0]->nRichtung == 0) || $Artikel->nIstVater == 0)}
                             {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                 {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                    <img src="{$oVariBoxMatrixBild->cBild}" class="img-responsive" alt=""><br>
+                                    <img src="{$oVariBoxMatrixBild->cBild}" class="img-responsive" alt="{$oVariationWertHead->cName}"><br>
                                 {/if}
                             {/foreach}
                         {/if}
@@ -34,7 +34,7 @@
                             {if $Artikel->oVariBoxMatrixBild_arr|@count > 0 && (($Artikel->nIstVater == 1 && $Artikel->oVariBoxMatrixBild_arr[0]->nRichtung == 1) || $Artikel->nIstVater == 0)}
                                 {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                     {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWert1->kEigenschaftWert}
-                                        <img src="{$oVariBoxMatrixBild->cBild}" alt=""><br>
+                                        <img src="{$oVariBoxMatrixBild->cBild}" alt="{$oVariationWert1->cName}"><br>
                                     {/if}
                                 {/foreach}
                             {/if}
@@ -42,18 +42,13 @@
                         </td>
                         {foreach $Artikel->VariationenOhneFreifeld[0]->Werte as $oVariationWert0}
                             {assign var=bAusblenden value=false}
-                            {if $Artikel->nVariationKombiNichtMoeglich_arr|@count > 0}
-                                {foreach $Artikel->nVariationKombiNichtMoeglich_arr[$kEigenschaftWert1] as $kEigenschaftWertNichtMoeglich}
-                                    {if $kEigenschaftWertNichtMoeglich == $oVariationWert0->kEigenschaftWert && $Einstellungen.artikeldetails.artikeldetails_warenkorbmatrix_lagerbeachten !== 'N'}
-                                        {assign var=bAusblenden value=true}
-                                    {/if}
-                                {/foreach}
+                            {assign var=cVariBox value=$oVariationWert0->kEigenschaft|cat:':'|cat:$oVariationWert0->kEigenschaftWert|cat:'_'|cat:$oVariationWert1->kEigenschaft|cat:':'|cat:$oVariationWert1->kEigenschaftWert}
+                            {if isset($Artikel->oVariationKombiKinderAssoc_arr[$cVariBox])}
+                                {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
+                            {elseif $Artikel->nIstVater}
+                                {assign var=bAusblenden value=true}
                             {/if}
                             {if !$bAusblenden}
-                                {assign var=cVariBox value=$oVariationWert0->kEigenschaft|cat:':'|cat:$oVariationWert0->kEigenschaftWert|cat:'_'|cat:$oVariationWert1->kEigenschaft|cat:':'|cat:$oVariationWert1->kEigenschaftWert}
-                                {if isset($Artikel->oVariationKombiKinderAssoc_arr[$cVariBox])}
-                                    {assign var=child value=$Artikel->oVariationKombiKinderAssoc_arr[$cVariBox]}
-                                {/if}
                                 <td class="form-inline vcenter">
                                     {if $Einstellungen.global.global_erscheinende_kaeuflich === 'N' && isset($child->nErscheinendesProdukt) && $child->nErscheinendesProdukt == 1}
                                         <small>
@@ -221,7 +216,7 @@
                                 {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                     {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                         {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                            <img src="{$oVariBoxMatrixBild->cBild}" alt=""><br>
+                                            <img src="{$oVariBoxMatrixBild->cBild}" alt="{$oVariationWertHead->cName}"><br>
                                         {/if}
                                     {/foreach}
                                 {/if}
@@ -361,7 +356,7 @@
                                 {if $Artikel->oVariBoxMatrixBild_arr|@count > 0}
                                     {foreach $Artikel->oVariBoxMatrixBild_arr as $oVariBoxMatrixBild}
                                         {if $oVariBoxMatrixBild->kEigenschaftWert == $oVariationWertHead->kEigenschaftWert}
-                                            <img src="{$oVariBoxMatrixBild->cBild}" alt="">
+                                            <img src="{$oVariBoxMatrixBild->cBild}" alt="{$oVariationWertHead->cName}">
                                         {/if}
                                     {/foreach}
                                 {/if}

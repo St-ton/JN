@@ -6,7 +6,6 @@
 
 namespace JTL\OPC;
 
-use Intervention\Image\Constraint;
 use JTL\Media\Image;
 use Intervention\Image\ImageManager;
 use JTL\Shop;
@@ -25,7 +24,7 @@ class PortletInstance implements \JsonSerializable
         '.lg/' => \WIDTH_OPC_IMAGE_LG,
         '.md/' => \WIDTH_OPC_IMAGE_MD,
         '.sm/' => \WIDTH_OPC_IMAGE_SM,
-        '.xs/' => \WIDTH_OPC_IMAGE_XS
+        '.xs/' => \WIDTH_OPC_IMAGE_XS,
     ];
 
     /**
@@ -62,6 +61,11 @@ class PortletInstance implements \JsonSerializable
         'md' => 1,
         'lg' => 1,
     ];
+
+    /**
+     * @var null|string
+     */
+    protected $uid;
 
     /**
      * @var null|AreaList mapping area ids to subareas
@@ -213,6 +217,18 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @return string|null
+     */
+    public function getUid(): string
+    {
+        if ($this->uid === null) {
+            $this->uid = 'uid_' . \uniqid('', false);
+        }
+
+        return $this->uid;
+    }
+
+    /**
      * @param string $name
      * @param string $value
      * @return $this
@@ -302,9 +318,7 @@ class PortletInstance implements \JsonSerializable
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (\mb_strpos($styleName, 'hidden-') !== false && !empty($styleValue)) {
-                    $this->addClass($styleName);
-                } elseif (\mb_stripos($styleName, 'margin-') !== false
+                if (\mb_stripos($styleName, 'margin-') !== false
                     || \mb_stripos($styleName, 'padding-') !== false
                     || \mb_stripos($styleName, 'border-width') !== false
                     || \mb_stripos($styleName, '-width') !== false
@@ -318,6 +332,48 @@ class PortletInstance implements \JsonSerializable
         }
 
         return $styleString;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnimationClass(): string
+    {
+        $style = $this->getProperty('animation-style');
+
+        return $style !== '' ? 'wow ' . $style : '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getAnimationData(): array
+    {
+        $data = [];
+
+        foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
+            if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
+                !empty($this->getProperty($propname))
+            ) {
+                $data[$propname] = $this->getProperty($propname);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnimationDataAttributeString(): string
+    {
+        $res = '';
+
+        foreach ($this->getAnimationData() as $key => $val) {
+            $res .= ' data-' . $key . '="' . $val . '"';
+        }
+
+        return $res;
     }
 
     /**
@@ -356,7 +412,7 @@ class PortletInstance implements \JsonSerializable
         $result = '';
 
         foreach ($this->getAttributes() as $name => $value) {
-            $result .= "$name='$value'";
+            $result .= ' ' . $name . '="' . $value . '"';
         }
 
         return $result;
@@ -414,64 +470,69 @@ class PortletInstance implements \JsonSerializable
             ];
         }
 
-        $settings = Shop::getSettings([\CONF_BILDER]);
-        $name     = \basename($src);
-        $path     = \realpath(\PFAD_ROOT . \ltrim($src, '/'));
-        if ($path !== false && \file_exists($path) && \mb_strpos($path, \PFAD_ROOT . \PFAD_MEDIAFILES) === 0) {
-            $manager = new ImageManager(['driver' => Image::getImageDriver()]);
-            $img     = $manager->make($path);
-            foreach (static::$dirSizes as $size => $width) {
-                $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
-                if (!\file_exists($sizedImgPath)) {
-                    // to finally create image instances
-                    $factor = $width / $img->getWidth();
-                    $img->resize((int)$width, (int)($img->getHeight() * $factor), function (Constraint $constraint) {
-                        $constraint->aspectRatio();
-                    });
-                    $img->save(
-                        \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
-                        $settings['bilder']['bilder_jpg_quali']
-                    );
-                }
-                $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
+        $settings        = Shop::getSettings([\CONF_BILDER]);
+        $name            = \basename($src);
+        $decodedName     = \rawurldecode($name);
+        $widthHeuristics = $this->widthHeuristics;
+        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
+
+        foreach (static::$dirSizes as $size => $width) {
+            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $decodedName;
+
+            if (!\file_exists($sizedImgPath)) {
+                $manager = new ImageManager(['driver' => Image::getImageDriver()]);
+                $img     = $manager->make($srcImgPath);
+                $factor  = $width / $img->getWidth();
+
+                $img->resize((int)$width, (int)($img->getHeight() * $factor), function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+
+                $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
             }
+
+            $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';
         }
 
         $srcset = \mb_substr($srcset, 0, -1); // remove trailing comma
-        foreach ($this->widthHeuristics as $breakpoint => $col) {
-            if (!empty($col)) {
-                $factor = 1;
 
-                if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
-                    $factor = (float)($divisor[$breakpoint] / 12);
-                }
+        if (\is_array($widthHeuristics)) {
+            foreach ($widthHeuristics as $breakpoint => $col) {
+                if (!empty($col)) {
+                    $factor = 1;
 
-                switch ($breakpoint) {
-                    case 'xs':
-                        $breakpoint = 767;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * 100 * $factor) . 'vw, ';
-                        break;
-                    case 'sm':
-                        $breakpoint = 991;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
-                        break;
-                    case 'md':
-                        $breakpoint = 1199;
-                        $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
-                        break;
-                    case 'lg':
-                        $breakpoint = 1200;
-                        $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
-                            . (int)($col * $breakpoint * $factor) . 'px, ';
-                        break;
-                    default:
-                        break;
+                    if (\is_array($divisor) && !empty($divisor[$breakpoint])) {
+                        $factor = (float)($divisor[$breakpoint] / 12);
+                    }
+
+                    switch ($breakpoint) {
+                        case 'xs':
+                            $breakpoint = 767;
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                                . (int)($col * 100 * $factor) . 'vw, ';
+                            break;
+                        case 'sm':
+                            $breakpoint = 991;
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                                . (int)($col * $breakpoint * $factor) . 'px, ';
+                            break;
+                        case 'md':
+                            $breakpoint = 1199;
+                            $srcsizes  .= '(max-width: ' . $breakpoint . 'px) '
+                                . (int)($col * $breakpoint * $factor) . 'px, ';
+                            break;
+                        case 'lg':
+                            $breakpoint = 1200;
+                            $srcsizes  .= '(min-width: ' . $breakpoint . 'px) '
+                                . (int)($col * $breakpoint * $factor) . 'px, ';
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
+
         $srcsizes .= '100vw';
 
         return [

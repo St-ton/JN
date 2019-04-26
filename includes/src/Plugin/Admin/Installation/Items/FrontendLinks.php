@@ -85,7 +85,9 @@ class FrontendLinks extends AbstractItem
                         $defaultLang   = $linkLang;
                         $bLinkStandard = true;
                     }
-                    if ($allLanguages[$linkLang->cISOSprache]->kSprache > 0) {
+                    if (isset($allLanguages[$linkLang->cISOSprache])
+                        && $allLanguages[$linkLang->cISOSprache]->kSprache > 0
+                    ) {
                         $or = isset($oldLinkID->kLink) ? (' OR kKey = ' . (int)$oldLinkID->kLink) : '';
                         $this->db->query(
                             "DELETE FROM tseo

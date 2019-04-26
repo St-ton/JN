@@ -1,37 +1,46 @@
 {if $isPreview}
     <div {$instance->getAttributeString()} {$instance->getDataAttributeString()}>
-        {if $instance->getProperty('video-vendor') === 'youtube'}
-            <img src="https://img.youtube.com/vi/{$instance->getProperty('video-yt-id')}/maxresdefault.jpg"
-                 alt="YouTube Video" class="img-responsive"
-                 {if !empty($instance->getProperty('video-responsive'))}
-                     style="width:100%;"
-                 {else}
-                     style="width: {$instance->getProperty('video-width')}px;
-                             height: {$instance->getProperty('video-height')}px"
-                 {/if}>
-        {elseif $instance->getProperty('video-vendor') === 'vimeo'}
-            {assign var=imgid value=$instance->getProperty('video-vim-id')}
-            {assign var=hash value=unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"))}
-            <img src="{$hash[0].thumbnail_large}" alt="Vimeo Video" class="img-responsive"
-                 {if !empty($instance->getProperty('video-responsive'))}
-                    style="width: 100%;"
-                 {else}
-                    style="width: {$instance->getProperty('video-width')}px;
-                            height: {$instance->getProperty('video-height')}px"
-                 {/if}>
+        {if !empty($instance->getProperty('video-responsive'))}
+            {$style = 'width:100%;'}
         {else}
-            <div class="text-center" style="width:
-                {if !empty($instance->getProperty('video-responsive'))}100%;">
-                    <img src="gfx/keinBild.gif"><br>
-                {else}
-                    {$instance->getProperty('video-width')}px; height: {$instance->getProperty('video-height')}px">
-                {/if}
-                <i class="fa fa-film"></i><br> Video
-            </div>
+            {$style = 'width:'}
+            {$style = $style|cat:$instance->getProperty('video-width')}
+            {$style = $style|cat:'px;height:'}
+            {$style = $style|cat:$instance->getProperty('video-height')}
+            {$style = $style|cat:'px'}
+        {/if}
+
+        {if $instance->getProperty('video-vendor') === 'youtube'}
+            {image
+                src='https://img.youtube.com/vi/'|cat:$instance->getProperty('video-yt-id')|cat:'/maxresdefault.jpg'
+                alt='YouTube Video'
+                fluid=true
+                style=$style}
+        {elseif $instance->getProperty('video-vendor') === 'vimeo'}
+            {$imgid = $instance->getProperty('video-vim-id')}
+            {$hash  = unserialize(file_get_contents("http://vimeo.com/api/v2/video/$imgid.php"))}
+
+            {image
+                src=$hash[0].thumbnail_large
+                alt='Vimeo Video'
+                fluid=true
+                style=$style}
+        {else}
+            {if !empty($instance->getProperty('video-responsive'))}
+                <div style="text-align:center;width:100%">
+                    <img src="gfx/keinBild.gif" alt="Kein Bild"><br>
+                </div>
+            {else}
+                <div style="text-align:center;
+                            width:{$instance->getProperty('video-width')}px;
+                            height: {$instance->getProperty('video-height')}px">
+                    <i class="fa fa-film"></i><br> Video
+                </div>
+            {/if}
         {/if}
     </div>
 {else}
-    <div id="{$instance->getProperty('uid')}" {$instance->getAttributeString()}>
+    <div id="{$instance->getUid()}" {$instance->getAttributeString()}>
         {if !empty($instance->getProperty('video-title'))}
             <label>{$instance->getProperty('video-title')}</label>
         {/if}
@@ -63,7 +72,7 @@
                     &title={$instance->getProperty('video-vim-title')}
                     &byline={$instance->getProperty('video-vim-byline')}
                     &loop={$instance->getProperty('video-vim-loop')}"{/strip}
-                        frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen
+                        frameborder="0" allowfullscreen
                         {if $instance->getProperty('video-responsive')}
                             class="embed-responsive-item"
                         {else}
@@ -72,7 +81,9 @@
             </div>
         {else}
             <div{if $instance->getProperty('video-responsive')} class="embed-responsive embed-responsive-16by9"{/if}>
-                <video width="{$instance->getProperty('video-width')}" height="{$instance->getProperty('video-height')}" controls controlsList="nodownload" style="">
+                <video width="{$instance->getProperty('video-width')}"
+                       height="{$instance->getProperty('video-height')}"
+                       controls style="">
                     <source src="{$instance->getProperty('video-local-url')}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>

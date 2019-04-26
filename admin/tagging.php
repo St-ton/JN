@@ -16,8 +16,6 @@ use JTL\Alert\Alert;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
-
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 setzeSprache();

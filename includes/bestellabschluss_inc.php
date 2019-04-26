@@ -31,7 +31,6 @@ use JTL\Plugin\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\TrustedShops;
 
 /**
  * @return int
@@ -163,7 +162,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
         $cart->kLieferadresse = $_SESSION['Bestellung']->kLieferadresse;
     }
-    $conf = Shop::getSettings([CONF_GLOBAL, CONF_TRUSTEDSHOPS]);
+    $conf = Shop::getSettings([CONF_GLOBAL]);
     //füge Warenkorb ein
     executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart]);
     $cart->kWarenkorb = $cart->insertInDB();
@@ -334,35 +333,6 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->withName('kBestellung')->debug('Bestellung gespeichert: ' . print_r($order, true), [$kBestellung]);
-    }
-    // TrustedShops buchen
-    if (isset($_SESSION['TrustedShops']->cKaeuferschutzProdukt)
-        && $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
-        && $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-        && mb_strlen($_SESSION['TrustedShops']->cKaeuferschutzProdukt) > 0
-    ) {
-        $ts                    = new TrustedShops(-1, Text::convertISO2ISO639($_SESSION['cISOSprache']));
-        $ts->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $ts->amount            = Frontend::getCurrency()->getConversionFactor() *
-            Frontend::getCart()->gibGesamtsummeWaren(true);
-        $ts->currency          = Frontend::getCurrency()->getCode();
-        $ts->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
-        $ts->buyerEmail        = $customer->cMail;
-        $ts->shopCustomerID    = $customer->kKunde;
-        $ts->shopOrderID       = $order->cBestellNr;
-        $ts->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
-        $ts->shopSystemVersion = 'JTL-Shop ' . APPLICATION_VERSION;
-
-        if (mb_strlen($ts->tsProductId) > 0
-            && mb_strlen($ts->amount) > 0
-            && mb_strlen($ts->currency) > 0
-            && mb_strlen($ts->paymentType) > 0
-            && mb_strlen($ts->buyerEmail) > 0
-            && mb_strlen($ts->shopCustomerID) > 0
-            && mb_strlen($ts->shopOrderID) > 0
-        ) {
-            $ts->sendeBuchung();
-        }
     }
     //BestellID füllen
     $bestellid              = new stdClass();

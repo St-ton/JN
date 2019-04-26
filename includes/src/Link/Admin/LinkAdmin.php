@@ -6,6 +6,7 @@
 
 namespace JTL\Link\Admin;
 
+use function Functional\map;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -163,18 +164,16 @@ final class LinkAdmin
      */
     public function updateParentID(int $linkID, int $parentLinkID)
     {
-        $oLink      = $this->db->select('tlink', 'kLink', $linkID);
-        $oVaterLink = $this->db->select('tlink', 'kLink', $parentLinkID);
+        $link       = $this->db->select('tlink', 'kLink', $linkID);
+        $parentLink = $this->db->select('tlink', 'kLink', $parentLinkID);
 
-        if (isset($oLink->kLink)
-            && $oLink->kLink > 0
-            && ((isset($oVaterLink->kLink) && $oVaterLink->kLink > 0) || $parentLinkID === 0)
+        if (isset($link->kLink)
+            && $link->kLink > 0
+            && ((isset($parentLink->kLink) && $parentLink->kLink > 0) || $parentLinkID === 0)
         ) {
-            $upd             = new stdClass();
-            $upd->kVaterLink = $parentLinkID;
-            $this->db->update('tlink', 'kLink', $linkID, $upd);
+            $this->db->update('tlink', 'kLink', $linkID, (object)['kVaterLink' => $parentLinkID]);
 
-            return $oLink;
+            return $link;
         }
 
         return false;
@@ -224,7 +223,7 @@ final class LinkAdmin
         );
 
         return $names === true
-            ? \Functional\map($links, function ($l) {
+            ? map($links, function ($l) {
                 return $l->cName;
             })
             : $links;
@@ -533,7 +532,7 @@ final class LinkAdmin
                 ? $linkSprache->cSeo
                 : Seo::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);
-            $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
+            $oSpracheTMP = $this->db->select('tsprache', 'cISO', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
                 $this->db->delete(
                     'tseo',

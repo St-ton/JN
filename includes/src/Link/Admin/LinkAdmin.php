@@ -17,6 +17,7 @@ use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkInterface;
+use JTL\Shop;
 use JTL\Sprache;
 use stdClass;
 use function Functional\map;
@@ -569,12 +570,12 @@ final class LinkAdmin
      */
     public function getDuplicateSpecialLinks(): Collection
     {
-        $links = \Shop::Container()->getLinkService()->getAllLinkGroups()->getLinkgroupByTemplate('specialpages');
-        if ($links === null) {
+        $group = Shop::Container()->getLinkService()->getAllLinkGroups()->getLinkgroupByTemplate('specialpages');
+        if ($group === null) {
             return new Collection();
         }
 
-        return $links->filterLinks(function (Link $link) {
+        return $group->getLinks()->filter(function (Link $link) {
             return $link->hasDuplicateSpecialLink();
         });
     }

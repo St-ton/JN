@@ -180,7 +180,7 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $groups         = [];
         $groupLanguages = $this->db->query(
-            'SELECT loc.*, g.cTemplatename AS template, IFNULL(tsprache.kSprache, 0) AS kSprache 
+            'SELECT loc.*, g.cTemplatename AS template, g.cName AS groupName, IFNULL(tsprache.kSprache, 0) AS kSprache 
                 FROM tlinkgruppe AS g
                 LEFT JOIN tlinkgruppesprache AS loc
                     ON g.kLinkgruppe = loc.kLinkgruppe

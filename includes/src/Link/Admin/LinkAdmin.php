@@ -565,13 +565,13 @@ final class LinkAdmin
     }
 
     /**
-     * @return null|Collection
+     * @return Collection
      */
-    public function getDuplicateSpecialLinks(): ?Collection
+    public function getDuplicateSpecialLinks(): Collection
     {
         $links = \Shop::Container()->getLinkService()->getAllLinkGroups()->getLinkgroupByTemplate('specialpages');
         if ($links === null) {
-            return null;
+            return new Collection();
         }
 
         return $links->filterLinks(function (Link $link) {

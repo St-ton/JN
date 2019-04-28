@@ -257,7 +257,7 @@ build_add_files_to_patch_dir()
     rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
 
-    if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
+    if [[ -f "${PATCH_DIR}/includes/composer.lock" ]]; then
         mkdir /tmp/composer_${PATCH_VERSION};
         mkdir /tmp/composer_${PATCH_VERSION}/includes;
         touch /tmp/composer_${PATCH_VERSION}/includes/composer.json;
@@ -268,7 +268,7 @@ build_add_files_to_patch_dir()
         do
             path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
             if [[ -z "${path}" ]]; then
-                filename=$(echo "${line}" | grep "^Only in includes\/vendor: .*$" | sed 's/^Only in includes\/vendor: \(.*\)$/\1/');
+                filename=$(echo "${line}" | grep "^Only in includes\/vendor.*: .*$" | sed 's/^Only in \(includes\/vendor[\/]*.*\): \(.*\)$/\1\/\2/');
                 if [[ ! -z "${filename}" ]]; then
                     path="includes/vendor/${filename}";
                     rsync -Ra -f"+ *" ${path} ${PATCH_DIR};

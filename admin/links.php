@@ -20,7 +20,6 @@ use JTL\Alert\Alert;
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('CONTENT_PAGE_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'uebersicht';
 $link        = null;

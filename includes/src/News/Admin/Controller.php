@@ -588,7 +588,7 @@ class Controller
         if (empty($_FILES['Bilder']['name']) || \count($_FILES['Bilder']['name']) === 0) {
             return 0;
         }
-        $lastImage = \gibLetzteBildNummer($newsItemID);
+        $lastImage = $this->getLastImageNumber($newsItemID);
         $counter   = 0;
         if ($lastImage > 0) {
             $counter = $lastImage;
@@ -905,7 +905,9 @@ class Controller
 
             \closedir($handle);
         }
-        \usort($images, 'cmp');
+        \usort($images, function ($a, $b) {
+            return \strcmp($a, $b);
+        });
 
         $shopURL = Shop::getURL() . '/';
         $count   = \count($images);
@@ -925,6 +927,33 @@ class Controller
         }
 
         return $text;
+    }
+
+    /**
+     * @param int $kNews
+     * @return int|string
+     */
+    private function getLastImageNumber(int $kNews)
+    {
+        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER;
+        $images    = [];
+        if (\is_dir($uploadDir . $kNews)) {
+            $handle = \opendir($uploadDir . $kNews);
+            while (($file = \readdir($handle)) !== false) {
+                if ($file !== '.' && $file !== '..') {
+                    $images[] = $file;
+                }
+            }
+        }
+        $max = 0;
+        foreach ($images as $image) {
+            $num = \mb_substr($image, 4, (\mb_strlen($image) - \mb_strpos($image, '.')) - 3);
+            if ($num > $max) {
+                $max = $num;
+            }
+        }
+
+        return $max;
     }
 
     /**

@@ -17,6 +17,8 @@ use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkInterface;
+use JTL\Services\JTL\LinkService;
+use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Shop;
 use JTL\Sprache;
 use stdClass;
@@ -60,6 +62,7 @@ final class LinkAdmin
      */
     public function getLinkGroups(): LinkGroupCollection
     {
+        $ls  = Shop::Container()->getLinkService();
         $lgl = new LinkGroupList($this->db, $this->cache);
         $lgl->loadAll();
         $linkGroups = $lgl->getLinkGroups()->filter(function (LinkGroupInterface $e) {
@@ -67,11 +70,34 @@ final class LinkAdmin
         });
         foreach ($linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $filtered = \build_navigation_subs_admin($linkGroup);
+            $filtered = $this->buildNavigation($linkGroup, $ls);
             $linkGroup->setLinks($filtered);
         }
 
         return $linkGroups;
+    }
+
+    /**
+     * @param LinkGroupInterface   $linkGroup
+     * @param LinkServiceInterface $service
+     * @param int                  $parentID
+     * @return Collection
+     * @former build_navigation_subs_admin()
+     */
+    private function buildNavigation(LinkGroupInterface $linkGroup, $service, int $parentID = 0): Collection
+    {
+        $news = new Collection();
+        foreach ($linkGroup->getLinks() as $link) {
+            $link->setLevel(\count($service->getParentIDs($link->getID())));
+            /** @var LinkInterface $link */
+            if ($link->getParent() !== $parentID) {
+                continue;
+            }
+            $link->setChildLinks($this->buildNavigation($linkGroup, $service, $link->getID()));
+            $news->push($link);
+        }
+
+        return $news;
     }
 
     /**
@@ -579,7 +605,9 @@ final class LinkAdmin
                 }
             }
         }
-        \usort($sort, 'cmp');
+        \usort($sort, function ($a, $b) {
+            return $a <=> $b;
+        });
 
         foreach ($sort as $no) {
             $text = \str_replace(
@@ -616,5 +644,32 @@ final class LinkAdmin
         return $group->getLinks()->filter(function (Link $link) {
             return $link->hasDuplicateSpecialLink();
         });
+    }
+
+    /**
+     * @param int $linkID
+     * @return int|string
+     */
+    public function getLastImageNumber(int $linkID)
+    {
+        $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
+        $images    = [];
+        if (\is_dir($uploadDir . $linkID)) {
+            $handle = \opendir($uploadDir . $linkID);
+            while (($file = \readdir($handle)) !== false) {
+                if ($file !== '.' && $file !== '..') {
+                    $images[] = $file;
+                }
+            }
+        }
+        $max = 0;
+        foreach ($images as $image) {
+            $num = \mb_substr($image, 4, (\mb_strlen($image) - \mb_strpos($image, '.')) - 3);
+            if ($num > $max) {
+                $max = $num;
+            }
+        }
+
+        return $max;
     }
 }

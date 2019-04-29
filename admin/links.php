@@ -39,8 +39,8 @@ if ($action !== '' && Form::validateToken()) {
         case 'add-link-to-linkgroup':
             $step = 'neuer Link';
             $link = new Link($db);
-            $link->setLinkGroupID($linkID);
-            $link->setLinkGroups([$linkID]);
+            $link->setLinkGroupID($linkGroupID);
+            $link->setLinkGroups([$linkGroupID]);
             break;
         case 'remove-link-from-linkgroup':
             $res = $linkAdmin->removeLinkFromLinkGroup($linkID, $linkGroupID);
@@ -208,7 +208,7 @@ if ($action !== '' && Form::validateToken()) {
             if (count($checks->getPlausiVar()) === 0) {
                 $link = $linkAdmin->createOrUpdateLink($_POST);
                 if ((int)$_POST['kLink'] === 0) {
-                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('succesneuelinkgruppesLinkCreate'), 'successLinkCreate');
+                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkCreate'), 'successLinkCreate');
                 } else {
                     $alertHelper->addAlert(
                         Alert::TYPE_SUCCESS,
@@ -229,7 +229,7 @@ if ($action !== '' && Form::validateToken()) {
                     mkdir($uploadDir . $kLink);
                 }
                 if (is_array($_FILES['Bilder']['name']) && count($_FILES['Bilder']['name']) > 0) {
-                    $lastImage = gibLetzteBildNummer($kLink);
+                    $lastImage = $linkAdmin->getLastImageNumber($kLink);
                     $counter   = 0;
                     if ($lastImage > 0) {
                         $counter = $lastImage;
@@ -306,7 +306,9 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
                 $files[]            = $newFile;
             }
         }
-        usort($files, 'cmp_obj');
+        usort($files, function ($a, $b) {
+            return $a->nBild <=> $b->nBild;
+        });
         $smarty->assign('cDatei_arr', $files);
     }
 }

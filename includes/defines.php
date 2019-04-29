@@ -217,6 +217,8 @@ ifndef('MAX_REVISIONS', 5);
 
 ifndef('SHOW_DEBUG_BAR', false);
 
+ifndef('ART_MATRIX_MAX', 250);
+
 // security
 ifndef('EXPORTFORMAT_ALLOW_PHP', false);
 ifndef('NEWSLETTER_USE_SECURITY', true);

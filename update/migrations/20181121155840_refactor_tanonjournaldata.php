@@ -26,14 +26,15 @@ class Migration_20181121155840 extends Migration implements IMigration
                 cIssuer VARCHAR(255) DEFAULT '' COMMENT 'application(cron), user, admin, plugin',
                 iIssuerId INT(11) DEFAULT NULL COMMENT 'id of the issuer (e.g Kkunde, kPlugin)',
                 cAction VARCHAR(255) DEFAULT '',
-                cDetail TEXT DEFAULT '' COMMENT 'json with important data',
-                cMessage TEXT DEFAULT '' COMMENT 'more detailed description of the action',
+                cDetail MEDIUMTEXT DEFAULT '' COMMENT 'json with important data',
+                cMessage MEDIUMTEXT DEFAULT '' COMMENT 'more detailed description of the action',
                 dEventTime DATETIME DEFAULT NULL,
                 PRIMARY KEY kAnondatajournal(kAnondatajournal),
                 KEY kIssuer(iIssuerId)
             )
             ENGINE=InnoDB
             DEFAULT CHARSET=utf8
+            COLLATE = utf8_unicode_ci
         ");
 
         $this->setLocalization(
@@ -83,6 +84,7 @@ class Migration_20181121155840 extends Migration implements IMigration
             )
             ENGINE=InnoDB
             DEFAULT CHARSET=utf8
+            COLLATE = utf8_unicode_ci
         ");
 
         $this->removeLocalization('customerOpenOrders');

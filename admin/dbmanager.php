@@ -144,7 +144,6 @@ switch (true) {
             $queryParams,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS,
             false,
-            false,
             function ($o) use (&$info) {
                 $info = $o;
             }

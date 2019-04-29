@@ -1,4 +1,5 @@
 FROM alpine:latest
+WORKDIR /tmp
 RUN apk --no-cache add \
     bash \
     ca-certificates \
@@ -12,8 +13,8 @@ RUN apk --no-cache add \
     php7-phar \
     php7-xdebug \
     php7-xml \
+    php7-xmlwriter \
     php7-zlib
-WORKDIR /tmp
 RUN curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar && \
     cp /tmp/phpcs.phar /usr/local/bin/phpcs && \
     chmod +x /usr/local/bin/phpcs

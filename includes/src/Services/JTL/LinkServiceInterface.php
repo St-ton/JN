@@ -6,10 +6,11 @@
 
 namespace JTL\Services\JTL;
 
+use Illuminate\Support\Collection;
 use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkInterface;
-use Illuminate\Support\Collection;
+use stdClass;
 
 /**
  * Interface LinkServiceInterface
@@ -203,9 +204,9 @@ interface LinkServiceInterface
 
     /**
      * @param int $type
-     * @return \stdClass
+     * @return stdClass
      */
-    public function buildSpecialPageMeta(int $type): \stdClass;
+    public function buildSpecialPageMeta(int $type): stdClass;
 
     /**
      * @return bool

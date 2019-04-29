@@ -39,13 +39,12 @@ function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_a
 }
 
 /**
- * @param string $cName
- * @param int    $nNewskategorieEditSpeichern
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
+function pruefeNewsKategorie()
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
@@ -57,13 +56,9 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 function convertDate($string)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    list($dDatum, $dZeit) = explode(' ', $string);
-    if (mb_substr_count(':', $dZeit) === 2) {
-        list($nStunde, $nMinute) = explode(':', $dZeit);
-    } else {
-        list($nStunde, $nMinute, $nSekunde) = explode(':', $dZeit);
-    }
-    list($nTag, $nMonat, $nJahr) = explode('.', $dDatum);
+    [$dDatum, $dZeit]        = explode(' ', $string);
+    [$nStunde, $nMinute]     = explode(':', $dZeit);
+    [$nTag, $nMonat, $nJahr] = explode('.', $dDatum);
 
     return $nJahr . '-' . $nMonat . '-' . $nTag . ' ' . $nStunde . ':' . $nMinute . ':00';
 }
@@ -157,12 +152,12 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 function gibJahrMonatVonDateTime($cDateTimeStr)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    list($dDatum, $dUhrzeit)     = explode(' ', $cDateTimeStr);
-    list($dJahr, $dMonat, $dTag) = explode('-', $dDatum);
-    $oDatum                      = new stdClass();
-    $oDatum->Jahr                = (int)$dJahr;
-    $oDatum->Monat               = (int)$dMonat;
-    $oDatum->Tag                 = (int)$dTag;
+    [$dDatum, $dUhrzeit]     = explode(' ', $cDateTimeStr);
+    [$dJahr, $dMonat, $dTag] = explode('-', $dDatum);
+    $oDatum                  = new stdClass();
+    $oDatum->Jahr            = (int)$dJahr;
+    $oDatum->Monat           = (int)$dMonat;
+    $oDatum->Tag             = (int)$dTag;
 
     return $oDatum;
 }
@@ -214,19 +209,18 @@ function holeNewsKategorieBilder()
  */
 function loescheNewsBilderDir($kNews, $uploadDir)
 {
-    if (is_dir($uploadDir . $kNews)) {
-        $handle = opendir($uploadDir . $kNews);
-        while (($Datei = readdir($handle)) !== false) {
-            if ($Datei !== '.' && $Datei !== '..') {
-                unlink($uploadDir . $kNews . '/' . $Datei);
-            }
-        }
-        rmdir($uploadDir . $kNews);
-
-        return true;
+    if (!is_dir($uploadDir . $kNews)) {
+        return false;
     }
+    $handle = opendir($uploadDir . $kNews);
+    while (($file = readdir($handle)) !== false) {
+        if ($file !== '.' && $file !== '..') {
+            unlink($uploadDir . $kNews . '/' . $file);
+        }
+    }
+    rmdir($uploadDir . $kNews);
 
-    return false;
+    return true;
 }
 
 /**

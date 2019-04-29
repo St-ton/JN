@@ -63,7 +63,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
      * former "newsletterAnmeldungPlausi()"
      * @return array
      */
-    public function checkCaptcha(): array
+    protected function checkCaptcha(): array
     {
         $res = [];
         if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
@@ -294,6 +294,9 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         );
     }
 
+    /**
+     * @throws \Exception
+     */
     public function activateOptin(): void
     {
         parent::activateOptin();
@@ -449,6 +452,29 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                     'newsletterNoexists'
                 );
             }
+        }
+    }
+
+    /**
+     * @param array $optins
+     * @throws \Exception
+     */
+    public function bulkActivateOptins(array $optins): void
+    {
+        foreach ($optins as $singleOptin) {
+            $this->setCode($singleOptin->cOptCode);
+            $this->refData = (new OptinRefData())
+                ->setSalutation($singleOptin->cAnrede)
+                ->setFirstName($singleOptin->cVorname)
+                ->setLastName($singleOptin->cNachname)
+                ->setEmail($singleOptin->cEmail)
+                ->setCustomerID($singleOptin->kKunde)
+                ->setLanguageID(Shop::getLanguageID())
+                ->setRealIP(Request::getRealIP());
+            $this->saveOptin($this->optCode);
+
+            $this->loadOptin();
+            parent::activateOptin();
         }
     }
 }

@@ -11,6 +11,10 @@ use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Exceptions\EmptyResultSetException;
+use JTL\Exceptions\InvalidInputException;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinNewsletter;
 use JTL\Shop;
 use stdClass;
 
@@ -187,7 +191,7 @@ final class Admin
      * @param int $templateID
      * @return stdClass|null
      */
-    public function getDefaultTemplate(int $defaultTemplateID, int $templateID = 0)
+    public function getDefaultTemplate(int $defaultTemplateID, int $templateID = 0): ?stdClass
     {
         if ($defaultTemplateID === 0 && $templateID === 0) {
             return null;
@@ -273,6 +277,7 @@ final class Admin
      * @param array  $post
      * @param int    $templateID
      * @return array
+     * @throws \Exception
      */
     public function saveDefaultTemplate($defaultTpl, int $kNewslettervorlageStd, $post, int $templateID): array
     {
@@ -472,6 +477,7 @@ final class Admin
     /**
      * @param array $post
      * @return array|null|stdClass
+     * @throws \Exception
      */
     public function saveTemplate($post)
     {
@@ -685,6 +691,9 @@ final class Admin
             WHERE kNewsletterEmpfaenger' . $where,
             ReturnType::AFFECTED_ROWS
         );
+        (new Optin(OptinNewsletter::class))
+            ->getOptinInstance()
+            ->bulkActivateOptins($recipients);
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
             $hist->kSprache     = $recipient->kSprache;
@@ -709,6 +718,7 @@ final class Admin
     /**
      * @param array $recipientIDs
      * @return bool
+     * @throws EmptyResultSetException
      */
     public function deleteSubscribers($recipientIDs): bool
     {
@@ -732,6 +742,9 @@ final class Admin
             WHERE kNewsletterEmpfaenger' . $where,
             ReturnType::AFFECTED_ROWS
         );
+        $this->oLogger->debug('recipients: '.print_r($recipients, true)); // --DEBUG--
+        (new Optin())
+            ->bulkDeleteOptins($recipients, 'cOptCode');
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
             $hist->kSprache     = $recipient->kSprache;
@@ -775,15 +788,15 @@ final class Admin
     public function getSubscribers($cSQL, $cAktiveSucheSQL): array
     {
         return $this->db->query(
-            "SELECT tnewsletterempfaenger.*, 
+            "SELECT tnewsletterempfaenger.*,
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
-                DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de, 
-                tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp, 
+                DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
+                tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp,
                 DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
                 FROM tnewsletterempfaenger
-                LEFT JOIN tkunde 
+                LEFT JOIN tkunde
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                LEFT JOIN tkundengruppe 
+                LEFT JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
                 LEFT JOIN tnewsletterempfaengerhistory
                     ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail

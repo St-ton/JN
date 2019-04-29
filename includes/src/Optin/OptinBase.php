@@ -7,6 +7,7 @@
 namespace JTL\Optin;
 
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 
 /**
  * Class OptinBase
@@ -71,13 +72,13 @@ abstract class OptinBase extends OptinFactory
     }
 
     /**
-     * @param $optinCode
+     * @param $optinCodeWithPrefix
      * @return Optin
      */
-    public function setCode(string $optinCode): self
+    public function setCode(string $optinCodeWithPrefix): self
     {
-        $this->actionPrefix = \substr($optinCode, 0, 2);
-        $this->optCode      = \substr($optinCode, 2);
+        $this->actionPrefix = \substr($optinCodeWithPrefix, 0, 2);
+        $this->optCode      = \substr($optinCodeWithPrefix, 2);
 
         return $this;
     }
@@ -155,9 +156,8 @@ abstract class OptinBase extends OptinFactory
 
     /**
      * only move the optin-tupel to history
-     * (e.g. used for "one shot opt-in" actions)
      */
-    public function finishOptin(): void
+    protected function finishOptin(): void
     {
         $newRow               = new \stdClass();
         $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
@@ -169,5 +169,19 @@ abstract class OptinBase extends OptinFactory
         $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');
         $this->dbHandler->insert('toptinhistory', $newRow);
         $this->dbHandler->delete('toptin', 'kOptinCode', $this->foundOptinTupel->kOptinCode);
+    }
+
+    /**
+     * (note: "bulkActivateOptins()" is dependent on the specified optin-implementation)
+     * @param array  $optins
+     * @param string $optCodeField
+     */
+    public function bulkDeleteOptins(array $optins, string $optCodeField): void
+    {
+        foreach ($optins as $singleOptin) {
+            $this->setCode($singleOptin->$optCodeField);
+            $this->loadOptin();
+            $this->deactivateOptin(); // "shift" to history
+        }
     }
 }

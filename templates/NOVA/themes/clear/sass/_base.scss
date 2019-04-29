@@ -1333,6 +1333,18 @@ $jqcloud-classes: 7;
       font-weight: $font-weight-semibold;
     }
   }
+  .breadcrumb-item + .breadcrumb-item::before,
+  .breadcrumb-item.back::before {
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    font-weight: 900;
+  }
+  .breadcrumb-item + .breadcrumb-item::before {
+    content: $breadcrumb-divider;
+  }
+  .breadcrumb-item.back::before {
+    content: $breadcrumb-divider-back;
+  }
 }
 
 #navbar-filter {

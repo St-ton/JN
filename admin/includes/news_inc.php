@@ -16,25 +16,26 @@ use JTL\Shop;
  */
 function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr)
 {
-    $cPlausiValue_arr = [];
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
+    $checks = [];
     // Betreff prüfen
     if (mb_strlen($cBetreff) === 0) {
-        $cPlausiValue_arr['cBetreff'] = 1;
+        $checks['cBetreff'] = 1;
     }
     // Text prüfen
     if (mb_strlen($cText) === 0) {
-        $cPlausiValue_arr['cText'] = 1;
+        $checks['cText'] = 1;
     }
     // Kundengruppe prüfen
     if (!is_array($kKundengruppe_arr) || count($kKundengruppe_arr) === 0) {
-        $cPlausiValue_arr['kKundengruppe_arr'] = 1;
+        $checks['kKundengruppe_arr'] = 1;
     }
     // Newskategorie prüfen
     if (!is_array($kNewsKategorie_arr) || count($kNewsKategorie_arr) === 0) {
-        $cPlausiValue_arr['kNewsKategorie_arr'] = 1;
+        $checks['kNewsKategorie_arr'] = 1;
     }
 
-    return $cPlausiValue_arr;
+    return $checks;
 }
 
 /**
@@ -49,13 +50,13 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
 }
 
 /**
- * @deprecated since 4.06
- *
  * @param string $string
  * @return string
+ * @deprecated since 4.06
  */
 function convertDate($string)
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     list($dDatum, $dZeit) = explode(' ', $string);
     if (mb_substr_count(':', $dZeit) === 2) {
         list($nStunde, $nMinute) = explode(':', $dZeit);
@@ -68,43 +69,14 @@ function convertDate($string)
 }
 
 /**
- * @param int $kNews
- * @return int|string
- */
-function gibLetzteBildNummer($kNews)
-{
-    $uploadDir = PFAD_ROOT . PFAD_NEWSBILDER;
-    $images    = [];
-    if (is_dir($uploadDir . $kNews)) {
-        $handle = opendir($uploadDir . $kNews);
-        while (($file = readdir($handle)) !== false) {
-            if ($file !== '.' && $file !== '..') {
-                $images[] = $file;
-            }
-        }
-    }
-    $nMax       = 0;
-    $imageCount = count($images);
-    if ($imageCount > 0) {
-        for ($i = 0; $i < $imageCount; $i++) {
-            $cNummer = mb_substr($images[$i], 4, (mb_strlen($images[$i]) - mb_strpos($images[$i], '.')) - 3);
-
-            if ($cNummer > $nMax) {
-                $nMax = $cNummer;
-            }
-        }
-    }
-
-    return $nMax;
-}
-
-/**
  * @param string $a
  * @param string $b
  * @return int
+ * @deprecated since 5.0.0
  */
 function cmp($a, $b)
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return strcmp($a, $b);
 }
 
@@ -115,6 +87,7 @@ function cmp($a, $b)
  */
 function cmp_obj($a, $b)
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return strcmp($a->cName, $b->cName);
 }
 
@@ -123,9 +96,11 @@ function cmp_obj($a, $b)
  * @param int    $nJahr
  * @param string $cISOSprache
  * @return string
+ * @deprecated since 5.0.0
  */
 function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 {
+    trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     $cName = '';
 
     if ($cISOSprache === 'ger') {
@@ -193,48 +168,40 @@ function gibJahrMonatVonDateTime($cDateTimeStr)
 }
 
 /**
- * @param int   $kNewsKommentar
- * @param array $cPost_arr
  * @return bool
  * @deprecated since 5.0.0
  */
-function speicherNewsKommentar(int $kNewsKommentar, array $cPost_arr)
+function speicherNewsKommentar()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
 /**
- * @param  int    $kSprache
- * @param  string $cLimitSQL
  * @return array
  * @deprecated since 5.0.0
  */
-function holeNewskategorie($kSprache = null, $cLimitSQL = '')
+function holeNewskategorie()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param int    $kNews
- * @param string $cUploadVerzeichnis
  * @return array
  * @deprecated since 5.0.0
  */
-function holeNewsBilder($kNews, $cUploadVerzeichnis)
+function holeNewsBilder()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param int    $kNewsKategorie
- * @param string $cUploadVerzeichnis
  * @return array
  * @deprecated since 5.0.0
  */
-function holeNewsKategorieBilder($kNewsKategorie, $cUploadVerzeichnis)
+function holeNewsKategorieBilder()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
@@ -263,60 +230,49 @@ function loescheNewsBilderDir($kNews, $uploadDir)
 }
 
 /**
- * @param array $newsCats
  * @return bool
  * @deprecated since 5.0.0
  */
-function loescheNewsKategorie(array $newsCats): bool
+function loescheNewsKategorie(): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
 /**
- * @param int $kNewsKategorie
- * @param int $kSprache
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function editiereNewskategorie(int $kNewsKategorie, int $kSprache)
+function editiereNewskategorie()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return new stdClass();
 }
 
 /**
- * @param string $cText
- * @param int    $kNews
  * @return string
  * @deprecated since 5.0.0
  */
-function parseText($cText, $kNews)
+function parseText()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return '';
 }
 
 /**
- * @param string $cBildname
- * @param int    $kNews
- * @param string $cUploadVerzeichnis
  * @return bool
  * @deprecated since 5.0.0
  */
-function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
+function loescheNewsBild()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
 /**
- * @param string $cTab
- * @param string $cHinweis
- * @param array  $urlParams
  * @deprecated since 5.0.0
  */
-function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
+function newsRedirect()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
 }

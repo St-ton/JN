@@ -25,7 +25,7 @@
     && !empty($Artikel->Attribute))}
 {$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
-    && !empty($Artikel->cMedienTyp_arr))}
+    && !empty($Artikel->getMediaTypes()))}
 {$useDescription = (($Artikel->cBeschreibung|strlen > 0) || $useDescriptionWithMediaGroup || $showAttributesTable)}
 {$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
@@ -34,7 +34,7 @@
 {$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung === 1)}
 {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
     && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
-    && !empty($Artikel->cMedienTyp_arr))}
+    && !empty($Artikel->getMediaTypes()))}
 {$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
     || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
 {$hasVotesHash = isset($smarty.get.ratings_nPage)
@@ -131,12 +131,12 @@
                 </li>
             {/if}
             {if $useMediaGroup}
-                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
                     {$cMedienTypId = $cMedienTyp|@seofy}
                     <li role="presentation"
                         {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
-                            {$cMedienTyp}
+                            {$cMedienTyp} ({$mediaType->count})
                         </a>
                     </li>
                 {/foreach}
@@ -172,7 +172,7 @@
                                 {if $Artikel->cBeschreibung|strlen > 0}
                                     <hr>
                                 {/if}
-                                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
                                     <div class="media">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
@@ -314,7 +314,7 @@
             {/if}
         {/if}
         {if $useMediaGroup}
-            {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+            {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
                 {$cMedienTypId = $cMedienTyp|@seofy}
                 {if $tabanzeige}
                     <div role="tabpanel"

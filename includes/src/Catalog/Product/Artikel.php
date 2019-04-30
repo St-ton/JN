@@ -39,6 +39,7 @@ use JTL\Catalog\Warenlager;
 use stdClass;
 use function Functional\select;
 use JTL\Country\Country;
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Artikel
@@ -46,6 +47,15 @@ use JTL\Country\Country;
  */
 class Artikel
 {
+    use MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected static $mapping = [
+        'cMedienTyp_arr' => 'MediaTypeArr'
+    ];
+
     /**
      * @var int
      */
@@ -394,7 +404,7 @@ class Artikel
     /**
      * @var array
      */
-    public $cMedienTyp_arr = [];
+    public $mediaTypes = [];
 
     /**
      * @var int
@@ -1758,7 +1768,6 @@ class Artikel
                     ORDER BY tmediendatei.nSort ASC';
 
         $this->oMedienDatei_arr = $db->query($cSQL, ReturnType::ARRAY_OF_OBJECTS);
-        $cMedienTyp_arr         = []; // Wird im Template gebraucht um Tabs aufzubauen
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
@@ -1791,32 +1800,39 @@ class Artikel
                     }
                 }
             }
-            // Pruefen, ob Reiter bereits vorhanden
-            $tabExists = false;
-            foreach ($cMedienTyp_arr as $cMedienTyp) {
-                if (\mb_strlen($mediaFile->cAttributTab) > 0) {
-                    if ($this->getSeoString($cMedienTyp) === $this->getSeoString($mediaFile->cAttributTab)) {
-                        $tabExists = true;
-                        break;
-                    }
-                } elseif ($cMedienTyp === $mediaFile->cMedienTyp) {
-                    $tabExists = true;
-                    break;
-                }
-            }
-            // Falls nicht enthalten => eintragen
-            if (!$tabExists) {
-                $cMedienTyp_arr[] = \mb_strlen($mediaFile->cAttributTab) > 0
-                    ? $mediaFile->cAttributTab
-                    : $mediaFile->cMedienTyp;
-            }
             if ($mediaFile->nMedienTyp === 4) {
                 $this->buildYoutubeEmbed($mediaFile);
             }
         }
-        $this->cMedienTyp_arr = $cMedienTyp_arr;
+        $this->mediaTypes = [];
+        foreach ($this->oMedienDatei_arr as $mediaFileTMP) {
+            $mediaFileName = \mb_strlen($mediaFileTMP->cAttributTab) > 0
+                ? $mediaFileTMP->cAttributTab
+                : $mediaFileTMP->cMedienTyp;
+            if (isset($this->mediaTypes[$mediaFileName])) {
+                ++$this->mediaTypes[$mediaFileName]->count;
+            } else {
+                $this->mediaTypes[$mediaFileName] = (object)['count' => 1];
+            }
+        }
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypeArr(): array
+    {
+        return array_keys($this->mediaTypes);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypes(): array
+    {
+        return $this->mediaTypes;
     }
 
     /**

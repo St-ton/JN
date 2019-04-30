@@ -27,7 +27,7 @@
         && !empty($Artikel->Attribute))}
         {$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
         && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
-        && !empty($Artikel->cMedienTyp_arr))}
+        && !empty($Artikel->getMediaTypes()))}
         {$useDescription = (($Artikel->cBeschreibung|strlen > 0) || $useDescriptionWithMediaGroup || $showAttributesTable)}
         {$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
         {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
@@ -36,7 +36,7 @@
         {$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung !== 0)}
         {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
         && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
-        && !empty($Artikel->cMedienTyp_arr))}
+        && !empty($Artikel->getMediaTypes()))}
         {$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
         || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
         {$hasVotesHash = isset($smarty.get.ratings_nPage)
@@ -88,7 +88,7 @@
                                             <div class="desc">
                                                 {$Artikel->cBeschreibung}
                                                 {if $useDescriptionWithMediaGroup}
-                                                    {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                                    {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
                                                         <div class="media mt-3">
                                                             {include file='productdetails/mediafile.tpl'}
                                                         </div>
@@ -171,9 +171,9 @@
 
                     {if $useMediaGroup}
                         {block name='productdetails-tabs-tab-mediagroup'}
-                            {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                            {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
                                 {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
-                                {tab title=$cMedienTyp active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
+                                {tab title="$cMedienTyp ({$mediaType->count})" active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
                                     <div id="tab-{$cMedienTypId}">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
@@ -223,7 +223,7 @@
                                                             {if $Artikel->cBeschreibung|strlen > 0}
                                                                 <hr>
                                                             {/if}
-                                                            {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                                            {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
                                                                 <div class="media">
                                                                     {block name='productdetails-tabs-description-include-mediafile'}
                                                                         {include file='productdetails/mediafile.tpl'}
@@ -420,7 +420,7 @@
 
                         {if $useMediaGroup}
                             {block name='productdetails-tabs-media-gorup'}
-                                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
                                     {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
                                     {card no-body=true class="mb-3"}
                                         {cardheader id="tab-{$cMedienTypId}-head"

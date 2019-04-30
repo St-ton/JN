@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Illuminate\Support\Collection;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Link\LinkGroup;
@@ -315,15 +316,20 @@ if ($clearCache === true) {
     $linkAdmin->clearCache();
 }
 if ($step === 'uebersicht') {
-    $errorDuplicateSpecialLink = '';
-    foreach ($linkAdmin->getDuplicateSpecialLinks() as $specialLink) {
-        $errorDuplicateSpecialLink .= sprintf(
-            __('hasDuplicateSpecialLink') . '<br />',
-            ' "' . $specialLink->getName() . '"'
+    foreach ($linkAdmin->getDuplicateSpecialLinks()->groupBy(function (LinkInterface $l) {
+        return $l->getLinkType();
+    }) as $specialLinks) {
+        /** @var Collection $specialLinks */
+        $alertHelper->addAlert(
+            Alert::TYPE_ERROR,
+            sprintf(
+                __('hasDuplicateSpecialLink'),
+                ' ' . $specialLinks->map(function (LinkInterface $l) {
+                    return $l->getName();
+                })->implode('/')
+            ),
+            'hasDuplicateSpecialLink-' . $specialLinks->first()->getLinkType()
         );
-    }
-    if ($errorDuplicateSpecialLink !== '') {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $errorDuplicateSpecialLink, 'hasDuplicateSpecialLink');
     }
     $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
            ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())

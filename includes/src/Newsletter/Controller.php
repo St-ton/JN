@@ -238,7 +238,10 @@ final class Controller
      */
     public function activateSubscriber(stdClass $recipient, string $optCode): int
     {
-        \executeHook(\HOOK_NEWSLETTER_PAGE_EMPFAENGERFREISCHALTEN, ['oNewsletterEmpfaenger' => $recipient]);
+        \executeHook(
+            \HOOK_NEWSLETTER_PAGE_EMPFAENGERFREISCHALTEN,
+            ['oNewsletterEmpfaenger' => $recipient]
+        );
         $res = $this->db->update(
             'tnewsletterempfaenger',
             'kNewsletterEmpfaenger',

@@ -691,9 +691,6 @@ final class Admin
             WHERE kNewsletterEmpfaenger' . $where,
             ReturnType::AFFECTED_ROWS
         );
-        (new Optin(OptinNewsletter::class))
-            ->getOptinInstance()
-            ->bulkActivateOptins($recipients);
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
             $hist->kSprache     = $recipient->kSprache;
@@ -711,6 +708,9 @@ final class Admin
 
             $this->db->insert('tnewsletterempfaengerhistory', $hist);
         }
+        (new Optin(OptinNewsletter::class))
+            ->getOptinInstance()
+            ->bulkActivateOptins($recipients);
 
         return true;
     }
@@ -718,7 +718,6 @@ final class Admin
     /**
      * @param array $recipientIDs
      * @return bool
-     * @throws EmptyResultSetException
      */
     public function deleteSubscribers($recipientIDs): bool
     {
@@ -742,9 +741,6 @@ final class Admin
             WHERE kNewsletterEmpfaenger' . $where,
             ReturnType::AFFECTED_ROWS
         );
-        $this->oLogger->debug('recipients: '.print_r($recipients, true)); // --DEBUG--
-        (new Optin())
-            ->bulkDeleteOptins($recipients, 'cOptCode');
         foreach ($recipients as $recipient) {
             $hist               = new stdClass();
             $hist->kSprache     = $recipient->kSprache;
@@ -761,6 +757,12 @@ final class Admin
             $hist->dOptCode     = '_DBNULL_';
 
             $this->db->insert('tnewsletterempfaengerhistory', $hist);
+        }
+        try {
+            (new Optin())
+                ->bulkDeleteOptins($recipients, 'cOptCode');
+        } catch (EmptyResultSetException $e) {
+            // suppress exception, because a optin implementation class is not needed here
         }
 
         return true;

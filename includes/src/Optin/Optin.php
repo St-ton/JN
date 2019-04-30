@@ -28,6 +28,7 @@ class Optin extends OptinBase
 
     /**
      * Optin constructor.
+     *
      * @param string|null $optinClass
      * @throws EmptyResultSetException
      */
@@ -62,8 +63,8 @@ class Optin extends OptinBase
 
     /**
      * return message meanings:
-     * 'optinCanceled'      = cancel (a previously active) subscription
-     * 'optinRemoved'       = cancel optin without the existence of a subscription
+     * 'optinCanceled'       = cancel (a previously active) subscription
+     * 'optinRemoved'        = cancel optin without the existence of a subscription
      * 'optinSucceeded'      = subscription successfully
      * 'optinSucceededAgain' = user clicked again
      *

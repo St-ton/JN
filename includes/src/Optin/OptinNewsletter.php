@@ -43,6 +43,10 @@ class OptinNewsletter extends OptinBase implements OptinInterface
      */
     private $conf;
 
+    /**
+     * OptinNewsletter constructor.
+     * @param $inheritData
+     */
     public function __construct($inheritData)
     {
         [
@@ -57,10 +61,9 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $this->conf        = Shop::getSettings([CONF_NEWSLETTER]);
     }
 
-
-
     /**
      * former "newsletterAnmeldungPlausi()"
+     *
      * @return array
      */
     protected function checkCaptcha(): array
@@ -73,7 +76,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
         return $res;
     }
-
 
     /**
      * @param OptinRefData $refData
@@ -330,15 +332,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 [$optinCode, 'Eingetragen'],
                 $upd
             );
-            /* --OBSOLETE--   no more needed, because this message comes from Shop::Optin::...
-            former "Ihre E-Mail-Adresse wurde erfolgreich für unseren Newsletter freigeschaltet."
-
-            $this->alertHelper->addAlert(
-                Alert::TYPE_NOTE,
-                Shop::Lang()->get('newsletterActive', 'messages'),
-                'newsletterActive'
-            );
-            */
         }
     }
 
@@ -456,6 +449,8 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     }
 
     /**
+     * NOTE: the table `tnewsletterempfaengerhistory` has to be written before this method is called
+     *
      * @param array $optins
      * @throws \Exception
      */
@@ -475,6 +470,17 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
             $this->loadOptin();
             parent::activateOptin();
+
+            // update the history, because some values, displayed in the backend NL overview, are depends on it
+            $upd           = new \stdClass();
+            $upd->dOptCode = 'NOW()';
+            $upd->cOptIp   = Request::getRealIP();
+            $this->dbHandler->update(
+                'tnewsletterempfaengerhistory',
+                ['cOptCode', 'cAktion'],
+                ['ac' . $this->optCode, 'Aktiviert'],
+                $upd
+            );
         }
     }
 }

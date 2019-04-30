@@ -7,7 +7,6 @@
 namespace JTL\Optin;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 
 /**
  * Class OptinBase
@@ -100,6 +99,17 @@ abstract class OptinBase extends OptinFactory
     }
 
     /**
+     * @param string $implementationClass
+     * @return array
+     */
+    protected function loadOptinsByImplementation(string $implementationClass): array
+    {
+        $optins = $this->dbHandler->selectArray('toptin', 'kOptinClass', $implementationClass);
+
+        return $optins;
+    }
+
+    /**
      * @return string
      */
     protected function generateUniqOptinCode(): string
@@ -147,7 +157,6 @@ abstract class OptinBase extends OptinFactory
 
     /**
      * deactivate and cleanup this optin
-     * (class specific deactivations AND finishing here)
      */
     public function deactivateOptin(): void
     {
@@ -155,7 +164,7 @@ abstract class OptinBase extends OptinFactory
     }
 
     /**
-     * only move the optin-tupel to history
+     * only move the optin-tupel to the history
      */
     protected function finishOptin(): void
     {
@@ -172,7 +181,9 @@ abstract class OptinBase extends OptinFactory
     }
 
     /**
+     * '$optins' is a array of objects, where each object must contain at least one field with a opt-in code
      * (note: "bulkActivateOptins()" is dependent on the specified optin-implementation)
+     *
      * @param array  $optins
      * @param string $optCodeField
      */

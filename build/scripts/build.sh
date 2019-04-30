@@ -260,8 +260,8 @@ build_add_files_to_patch_dir()
     if [[ -f "${PATCH_DIR}/includes/composer.lock" ]]; then
         mkdir /tmp/composer_${PATCH_VERSION};
         mkdir /tmp/composer_${PATCH_VERSION}/includes;
-        touch /tmp/composer_${PATCH_VERSION}/includes/composer.json;
         git show ${PATCH_VERSION}:includes/composer.json > /tmp/composer_${PATCH_VERSION}/includes/composer.json;
+        git show ${PATCH_VERSION}:includes/composer.lock > /tmp/composer_${PATCH_VERSION}/includes/composer.lock;
         composer install --no-dev -q -d /tmp/composer_${PATCH_VERSION}/includes;
 
         while read -r line;
@@ -269,8 +269,8 @@ build_add_files_to_patch_dir()
             path=$(echo "${line}" | grep "^Files.*differ$" | sed 's/^Files .* and \(.*\) differ$/\1/');
             if [[ -z "${path}" ]]; then
                 filename=$(echo "${line}" | grep "^Only in includes\/vendor.*: .*$" | sed 's/^Only in \(includes\/vendor[\/]*.*\): \(.*\)$/\1\/\2/');
-                if [[ ! -z "${filename}" ]]; then
-                    path="includes/vendor/${filename}";
+                if [[ ! -z "${filename}" ]] && [[ -f ${filename} ]]; then
+                    path="${filename}";
                     rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
                 fi
             else

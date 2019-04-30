@@ -110,6 +110,26 @@ interface DbInterface extends \Serializable
     public function update(string $tableName, $keyname, $keyvalue, $object, bool $echo = false): int;
 
     /**
+     * insert row into table - on constraint violation update table row
+     *
+     * @param string $tableName
+     * @param object $object
+     * @param array  $excludeUpdate
+     * @param bool   $echo
+     * @return int - -1 if fails, 0 if update, PrimaryKeyValue if successful inserted
+     */
+    public function insertOrUpdateRow(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int;
+
+    /**
+     * @param string $tableName
+     * @param object $object
+     * @param array  $excludeUpdate
+     * @param bool   $echo
+     * @return int - -1 if fails, 0 if update, PrimaryKeyValue if successful inserted
+     */
+    public function insertOrUpdate(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int;
+
+    /**
      * selects all (*) values in a single row from a table - gives just one row back!
      *
      * @param string           $tableName - Tabellenname

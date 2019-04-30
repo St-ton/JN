@@ -1806,13 +1806,18 @@ class Artikel
         }
         $this->mediaTypes = [];
         foreach ($this->oMedienDatei_arr as $mediaFileTMP) {
-            $mediaFileName = \mb_strlen($mediaFileTMP->cAttributTab) > 0
+            $mediaTypeName = \mb_strlen($mediaFileTMP->cAttributTab) > 0
                 ? $mediaFileTMP->cAttributTab
                 : $mediaFileTMP->cMedienTyp;
-            if (isset($this->mediaTypes[$mediaFileName])) {
-                ++$this->mediaTypes[$mediaFileName]->count;
+            // group all tab names by corresponding seo tab name, use first found tab name
+            $mediaTypeNameSeo = $this->getSeoString($mediaTypeName);
+            if (isset($this->mediaTypes[$mediaTypeNameSeo])) {
+                ++$this->mediaTypes[$mediaTypeNameSeo]->count;
             } else {
-                $this->mediaTypes[$mediaFileName] = (object)['count' => 1];
+                $this->mediaTypes[$mediaTypeNameSeo] = (object)[
+                    'count' => 1,
+                    'name'  => $mediaTypeName
+                ];
             }
         }
 

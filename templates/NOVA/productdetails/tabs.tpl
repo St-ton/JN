@@ -88,7 +88,7 @@
                                             <div class="desc">
                                                 {$Artikel->cBeschreibung}
                                                 {if $useDescriptionWithMediaGroup}
-                                                    {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
+                                                    {foreach $Artikel->getMediaTypes() as $mediaType}
                                                         <div class="media mt-3">
                                                             {include file='productdetails/mediafile.tpl'}
                                                         </div>
@@ -171,9 +171,9 @@
 
                     {if $useMediaGroup}
                         {block name='productdetails-tabs-tab-mediagroup'}
-                            {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
-                                {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
-                                {tab title="$cMedienTyp ({$mediaType->count})" active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
+                            {foreach $Artikel->getMediaTypes() as $mediaType}
+                                {$cMedienTypId = $mediaType->name|regex_replace:"/[\'\"\/ ]/":""}
+                                {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
                                     <div id="tab-{$cMedienTypId}">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
@@ -223,7 +223,7 @@
                                                             {if $Artikel->cBeschreibung|strlen > 0}
                                                                 <hr>
                                                             {/if}
-                                                            {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
+                                                            {foreach $Artikel->getMediaTypes() as $mediaType}
                                                                 <div class="media">
                                                                     {block name='productdetails-tabs-description-include-mediafile'}
                                                                         {include file='productdetails/mediafile.tpl'}
@@ -420,21 +420,21 @@
 
                         {if $useMediaGroup}
                             {block name='productdetails-tabs-media-gorup'}
-                                {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
-                                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                                {foreach $Artikel->getMediaTypes() as $mediaType}
+                                    {$cMedienTypId = $mediaType->name|regex_replace:"/[\'\"\/ ]/":""}
                                     {card no-body=true class="mb-3"}
                                         {cardheader id="tab-{$cMedienTypId}-head"
                                             class="h6 mb-0"
                                             data=["toggle" => "collapse",
                                                 "target"=>"#tab-{$cMedienTypId}"
                                             ]
-                                            aria=["expanded" => $setActiveClass.mediaGroup && $cMedienTyp@first,
+                                            aria=["expanded" => $setActiveClass.mediaGroup && $mediaType@first,
                                                 "controls" => "tab-{$cMedienTypId}"
                                             ]
                                         }
-                                            {$cMedienTyp} <i class="fa fa-chevron-down float-right"></i>
+                                            {$mediaType->name} <i class="fa fa-chevron-down float-right"></i>
                                         {/cardheader}
-                                        {collapse id="tab-{$cMedienTypId}" class="mb-5" visible=($setActiveClass.mediaGroup && $cMedienTyp@first)
+                                        {collapse id="tab-{$cMedienTypId}" class="mb-5" visible=($setActiveClass.mediaGroup && $mediaType@first)
                                             data=["parent"=>"#tabAccordion"]
                                             aria=["labelledby"=>"tab-{$cMedienTypId}-head"]
                                         }

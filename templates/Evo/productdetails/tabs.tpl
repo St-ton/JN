@@ -131,12 +131,12 @@
                 </li>
             {/if}
             {if $useMediaGroup}
-                {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
-                    {$cMedienTypId = $cMedienTyp|@seofy}
+                {foreach $Artikel->getMediaTypes() as $mediaType}
+                    {$cMedienTypId = $mediaType->name|@seofy}
                     <li role="presentation"
-                        {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
+                        {if $setActiveClass.mediaGroup && $mediaType@first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
-                            {$cMedienTyp} ({$mediaType->count})
+                            {$mediaType->name} ({$mediaType->count})
                         </a>
                     </li>
                 {/foreach}
@@ -172,7 +172,7 @@
                                 {if $Artikel->cBeschreibung|strlen > 0}
                                     <hr>
                                 {/if}
-                                {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
+                                {foreach $Artikel->getMediaTypes() as $mediaType}
                                     <div class="media">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
@@ -314,16 +314,16 @@
             {/if}
         {/if}
         {if $useMediaGroup}
-            {foreach $Artikel->getMediaTypes() as $cMedienTyp => $mediaType}
-                {$cMedienTypId = $cMedienTyp|@seofy}
+            {foreach $Artikel->getMediaTypes() as $mediaType}
+                {$cMedienTypId = $mediaType->name|@seofy}
                 {if $tabanzeige}
                     <div role="tabpanel"
-                        class="tab-pane fade{if $setActiveClass.mediaGroup && $cMedienTyp@first} in active{/if}"
+                        class="tab-pane fade{if $setActiveClass.mediaGroup && $mediaType@first} in active{/if}"
                         id="tab-{$cMedienTypId}">
                 {else}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{$cMedienTyp}</h3>
+                            <h3 class="panel-title">{$mediaType->name}</h3>
                         </div>
                         <div class="panel-body" id="tab-{$cMedienTypId}">
                 {/if}

@@ -4205,7 +4205,6 @@ class Artikel
         if ($this->getOption('nWarenlager', 0) === 1) {
             $this->holWarenlager($kSprache);
         }
-
         if ($this->getOption('nMerkmale', 0) === 1) {
             $this->holeMerkmale();
         }
@@ -4742,7 +4741,6 @@ class Artikel
             $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
                 ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
                 : Shop::Lang()->get('ampelRot');
-
         }
 
         return $this;

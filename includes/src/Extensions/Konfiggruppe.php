@@ -366,4 +366,19 @@ class Konfiggruppe implements JsonSerializable
 
         return $fQuantity;
     }
+
+    /**
+     * @return bool
+     */
+    public function allItemsOutOfStock(): bool
+    {
+        $itemsOutOfStock = 0;
+        foreach ($this->oItem_arr as $item) {
+            if (!$item->isInStock()) {
+                ++$itemsOutOfStock;
+            }
+        }
+
+        return count($this->oItem_arr) === $itemsOutOfStock;
+    }
 }

@@ -40,13 +40,13 @@
     {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $Variationswert->fAufpreisNetto!=0}
         <span class="label label-info label-surcharge">{$Variationswert->cAufpreisLocalized[$NettoPreise]}
         {if !empty($Variationswert->cPreisVPEWertAufpreis[$NettoPreise]) && $Artikel->nVariationOhneFreifeldAnzahl == 1}
-            ({$Variationswert->cPreisVPEWertAufpreis[$NettoPreise]})
+            &nbsp;({$Variationswert->cPreisVPEWertAufpreis[$NettoPreise]})
         {/if}
         </span>
     {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $Variationswert->fAufpreisNetto!=0}
         <span class="label label-info label-surcharge">{$Variationswert->cPreisInklAufpreis[$NettoPreise]}
         {if !empty($Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]) && $Artikel->nVariationOhneFreifeldAnzahl == 1}
-            ({$Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]})
+            &nbsp;({$Variationswert->cPreisVPEWertInklAufpreis[$NettoPreise]})
         {/if}
         </span>
     {/if}

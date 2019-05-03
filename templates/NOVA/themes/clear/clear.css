@@ -14345,6 +14345,9 @@ input.form-control[name=wishlist-url] {
   background: #fff;
   z-index: 1000;
 }
+.comparelist .table {
+  width: 98%;
+}
 .comparelist .table thead th {
   background: #fff;
   vertical-align: top;

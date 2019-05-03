@@ -13,12 +13,9 @@ stages:
   function codeQualityCheck() {
     export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-code-quality-$CI_COMMIT_SHA
 
-    if [[ -n "$CI_USER_VAR" ]]; then
-      echo "Logging to GitLab Container Registry with CI credentials..."
-      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
-      echo ""
-    fi
-
+    echo "Logging to GitLab Container Registry with CI credentials..."
+    docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    echo ""
     echo "Code quality check of projekt in docker image codesniffer..."
 
     docker run \
@@ -38,12 +35,9 @@ stages:
   export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-testing-$CI_COMMIT_SHA-php$PHP_VERSION_TEST_STEP
 
   function testing() {
-    if [[ -n "$CI_USER_VAR" ]]; then
-      echo "Logging to GitLab Container Registry with CI credentials..."
-      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
-      echo ""
-    fi
-
+    echo "Logging to GitLab Container Registry with CI credentials..."
+    docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    echo ""
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
@@ -83,11 +77,9 @@ stages:
   export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
 
   function dockerLogin() {
-    if [[ -n "$CI_USER_VAR" ]]; then
-      echo "Logging to GitLab Container Registry with CI credentials..."
-      docker login -u "$CI_USER_VAR" -p "$CI_USER_PW_VAR" "$CI_REGISTRY"
-      echo ""
-    fi
+    echo "Logging to GitLab Container Registry with CI credentials..."
+    docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    echo ""
   }
   function buildProcess() {
     RAND_CHAR=$(date +%s|sha256sum|head -c 6)
@@ -122,11 +114,9 @@ stages:
 
 .postBuildDeployScripts: &postBuildDeployScripts |
   function dockerLogout() {
-    if [[ -n "$CI_USER_VAR" ]]; then
-      echo "Logout from GitLab Container Registry with CI credentials..."
-      docker logout "$CI_REGISTRY"
-      echo ""
-    fi
+    echo "Logout from GitLab Container Registry with CI credentials..."
+    docker logout "$CI_REGISTRY"
+    echo ""
   }
 
 .cleanUpScript: &cleanUpScript |

@@ -6587,8 +6587,7 @@ class Artikel
             && $this->nVariationOhneFreifeldAnzahl === count($this->Variationen)
             && (count($this->Variationen) <= 2
                 || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
-                    && $this->nIstVater === 1
-                )
+                    && $this->nIstVater === 1)
             )
             && ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y'
                 || (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX])
@@ -6596,12 +6595,12 @@ class Artikel
         ) {
             //the cart matrix cannot deal with those different kinds of variations..
             //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
-            $gesamt_anz = 1;
-            foreach ($this->Variationen as $_variation) {
-                if ($_variation->cTyp === 'FREIFELD' || $_variation->cTyp === 'PFLICHT-FREIFELD') {
+            $total = 1;
+            foreach ($this->Variationen as $variation) {
+                if ($variation->cTyp === 'FREIFELD' || $variation->cTyp === 'PFLICHT-FREIFELD') {
                     return false;
                 }
-                $gesamt_anz *= $_variation->nLieferbareVariationswerte;
+                $total *= $variation->nLieferbareVariationswerte;
             }
             foreach ($this->oKonfig_arr as $_oKonfig) {
                 if (isset($_oKonfig)) {
@@ -6609,9 +6608,7 @@ class Artikel
                 }
             }
 
-            return !($gesamt_anz > \ART_MATRIX_MAX
-                && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
-            );
+            return $total <= \ART_MATRIX_MAX;
         }
 
         return false;

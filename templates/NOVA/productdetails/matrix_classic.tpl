@@ -10,7 +10,7 @@
     <div class="table-responsive">
         <table class="table table-striped table-hover variation-matrix">
             {* ****** 2-dimensional ****** *}
-            {if $Artikel->VariationenOhneFreifeld|@count == 2}
+            {if $Artikel->VariationenOhneFreifeld|@count === 2}
                 {block name='matrix-classic-2-dimensional'}
                     <thead>
                     <tr>
@@ -33,7 +33,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {assign var=pushed value=0}
                     {if isset($Artikel->VariationenOhneFreifeld[1]->Werte)}
                         {foreach $Artikel->VariationenOhneFreifeld[1]->Werte as $oVariationWert1}
                             {assign var=kEigenschaftWert1 value=$oVariationWert1->kEigenschaftWert}

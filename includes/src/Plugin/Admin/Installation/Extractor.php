@@ -69,6 +69,9 @@ class Extractor
             $response->status     = 'FAILED';
             $response->messages[] = 'Cannot open archive';
         } else {
+            $installPath = preg_match('/\.plugin\./', $_FILES['file_data']['name'])
+                ? \PFAD_ROOT . 'plugins/'
+                : self::UNZIP_PATH;
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 if ($i === 0 && \mb_strpos($zip->getNameIndex($i), '.') !== false) {
                     $response->status     = 'FAILED';
@@ -82,7 +85,7 @@ class Extractor
                     $zip->renameIndex($i, \str_replace('-master-' . $hits[2], '', $filename));
                 }
                 $filename = $zip->getNameIndex($i);
-                if ($zip->extractTo(self::UNZIP_PATH, $filename)) {
+                if ($zip->extractTo($installPath, $filename)) {
                     $response->files_unpacked[] = $filename;
                 } else {
                     $response->files_failed = $filename;
@@ -107,9 +110,12 @@ class Extractor
             $response->status     = 'FAILED';
             $response->messages[] = 'Invalid archive';
         } else {
-            $res = $zip->extract(
+            $installPath = preg_match('/\.plugin\./', $_FILES['file_data']['name'])
+                ? \PFAD_ROOT . 'plugins/'
+                : self::UNZIP_PATH;
+            $res         = $zip->extract(
                 \PCLZIP_OPT_PATH,
-                self::UNZIP_PATH,
+                $installPath,
                 \PCLZIP_CB_PRE_EXTRACT,
                 [$this, 'pluginPreExtractCallBack']
             );

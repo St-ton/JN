@@ -310,7 +310,7 @@ abstract class AbstractSync
                     fVKNetto = :nettoPrice',
             [
                 'productID'  => $productID,
-                'nettoPrice' => (int)$xml['fStandardpreisNetto'],
+                'nettoPrice' => (float)$xml['fStandardpreisNetto'],
             ],
             ReturnType::DEFAULT
         );

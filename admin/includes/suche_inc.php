@@ -18,6 +18,7 @@ function adminSearch($query)
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 
+    $adminMenuItems = adminMenuSearch($query);
     $settings       = bearbeiteEinstellungsSuche($query);
     $shippings      = getShippingByName($query);
     $paymentMethods = getPaymentMethodsByName($query);
@@ -35,9 +36,49 @@ function adminSearch($query)
         }
     }
 
-    Shop::Smarty()->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)
-           ->assign('shippings', count($shippings) > 0 ? $shippings : null)
-           ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null);
+    Shop::Smarty()
+        ->assign('adminMenuItems', $adminMenuItems)
+        ->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)
+        ->assign('shippings', count($shippings) > 0 ? $shippings : null)
+        ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null);
 
     return Shop::Smarty()->fetch('suche.tpl');
+}
+
+/**
+ * @param string $query
+ * @return array
+ */
+function adminMenuSearch($query)
+{
+    require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
+
+    global $adminMenu;
+
+    $results = [];
+
+    foreach ($adminMenu as $menuName => $menu) {
+        foreach ($menu as $subMenuName => $subMenu) {
+            if (is_array($subMenu)) {
+                foreach ($subMenu as $itemName => $item) {
+                    if (strpos($itemName, $query) !== false) {
+                        $name      = $itemName;
+                        $name      = preg_replace(
+                            '/\p{L}*?' . preg_quote($query, '/'). '\p{L}*/ui',
+                            '<mark>$0</mark>',
+                            $name
+                        );
+                        $path      = $menuName . ' > ' . $subMenuName . ' > ' . $name;
+                        $results[] = (object)[
+                            'title' => $itemName,
+                            'path'  => $path,
+                            'link'  => $item->link,
+                        ];
+                    }
+                }
+            }
+        }
+    }
+
+    return $results;
 }

@@ -1,3 +1,17 @@
+{if $adminMenuItems|count}
+    <li>
+        <h4>Seiten / Menüpunkte</h4>
+    </li>
+    <ul class="backend-search-section">
+        {foreach $adminMenuItems as $item}
+            <li class="backend-search-item" tabindex="-1">
+                <a href="{$item->link}">
+                    {$item->path}
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+{/if}
 {if isset($settings)}
     {foreach $settings as $setting}
         <li>

@@ -160,7 +160,7 @@ if ($action !== '' && Form::validateToken()) {
             $step = 'uebersicht';
             break;
         case 'copy-to-linkgroup':
-            $res = $linkAdmin->copyLinkToLinkGroup($linkID, $linkGroupID);
+            $res = $linkAdmin->createReference($linkID, $linkGroupID);
             if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLinkCopyDuplicate'), 'errorLinkCopyDuplicate');
             } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
@@ -281,30 +281,31 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     }
     $_POST = [];
 } elseif ($step === 'edit-link') {
-    $step = 'neuer Link';
-    $link = (new Link($db))->load($linkID);
-    $smarty->assign('Link', $link);
+    $dirName = $uploadDir . $link->getID();
+    $step    = 'neuer Link';
+    $link    = (new Link($db))->load($linkID);
+    $files   = [];
     if (Request::verifyGPCDataInt('delpic') === 1) {
-        @unlink($uploadDir . $link->getID() . '/' . Request::verifyGPDataString('cName'));
+        @unlink($dirName . '/' . Request::verifyGPDataString('cName'));
     }
-    $files = [];
-    if (is_dir($uploadDir . $link->getID())) {
-        $dirHandle = opendir($uploadDir . $link->getID());
+    if (is_dir($dirName)) {
+        $dirHandle = opendir($dirName);
         $shopURL   = Shop::getURL() . '/';
         while (($file = readdir($dirHandle)) !== false) {
-            if ($file !== '.' && $file !== '..') {
-                $newFile            = new stdClass();
-                $newFile->cName     = mb_substr($file, 0, mb_strpos($file, '.'));
-                $newFile->cNameFull = $file;
-                $newFile->cURL      = '<img class="link_image" src="' .
-                    $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
-                $newFile->nBild     = (int)mb_substr(
-                    str_replace('Bild', '', $file),
-                    0,
-                    mb_strpos(str_replace('Bild', '', $file), '.')
-                );
-                $files[]            = $newFile;
+            if ($file === '.' || $file === '..') {
+                continue;
             }
+            $newFile            = new stdClass();
+            $newFile->cName     = mb_substr($file, 0, mb_strpos($file, '.'));
+            $newFile->cNameFull = $file;
+            $newFile->cURL      = '<img class="link_image" src="' .
+                $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
+            $newFile->nBild     = (int)mb_substr(
+                str_replace('Bild', '', $file),
+                0,
+                mb_strpos(str_replace('Bild', '', $file), '.')
+            );
+            $files[]            = $newFile;
         }
         usort($files, function ($a, $b) {
             return $a->nBild <=> $b->nBild;
@@ -331,20 +332,19 @@ if ($step === 'uebersicht') {
             'hasDuplicateSpecialLink-' . $specialLinks->first()->getLinkType()
         );
     }
-    $smarty->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
-           ->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
+    $smarty->assign('linkGroupCountByLinkID', $linkAdmin->getLinkGroupCountForLinkIDs())
            ->assign('linkgruppen', $linkAdmin->getLinkGroups());
 }
 if ($step === 'neuer Link') {
-    $kundengruppen = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
-    $lgl           = new LinkGroupList($db, Shop::Container()->getCache());
+    $cgroups = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
+    $lgl     = new LinkGroupList($db, Shop::Container()->getCache());
     $lgl->loadAll();
-    $smarty->assign('Link', $link)
-           ->assign('specialPages', $lgl->getLinkgroupByTemplate('specialpages', false)->getLinks())
-           ->assign('sprachen', Sprache::getAllLanguages())
-           ->assign('kundengruppen', $kundengruppen);
+    $smarty->assign('specialPages', $lgl->getLinkgroupByTemplate('specialpages', false)->getLinks())
+           ->assign('kundengruppen', $cgroups);
 }
 $smarty->assign('step', $step)
+       ->assign('Link', $link)
+       ->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
        ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('linkAdmin', $linkAdmin)
        ->display('links.tpl');

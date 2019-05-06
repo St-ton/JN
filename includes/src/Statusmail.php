@@ -170,8 +170,6 @@ class Statusmail
             'Anzahl Bewertungen'                          => 8,
             'Anzahl Bewertungen nicht freigeschaltet'     => 9,
             'Anzahl Bewertungsguthaben gezahlt'           => 10,
-            'Anzahl Tags'                                 => 11,
-            'Anzahl Tags nicht freigeschaltet'            => 12,
             'Anzahl geworbener Kunden'                    => 13,
             'Anzahl geworbener Kunden, die gekauft haben' => 14,
             'Anzahl versendeter Wunschlisten'             => 15,
@@ -456,52 +454,6 @@ class Statusmail
         $res->fSummeGuthaben = $rating->fSummeGuthaben;
 
         return $res;
-    }
-
-    /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum
-     *
-     * @return int
-     */
-    private function getTagCount(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 1
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum die nicht freigeschaltet wurden
-     *
-     * @return int
-     */
-    private function getNonApprovedTagsCounts(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 0
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
     }
 
     /**
@@ -831,12 +783,6 @@ class Statusmail
                     break;
                 case 10:
                     $mail->oAnzahlGezahltesGuthaben = $this->getRatingCreditsCount();
-                    break;
-                case 11:
-                    $mail->nAnzahlTags = $this->getTagCount();
-                    break;
-                case 12:
-                    $mail->nAnzahlTagsNichtFreigeschaltet = $this->getNonApprovedTagsCounts();
                     break;
                 case 13:
                     $mail->nAnzahlGeworbenerKunden = $this->getNewCustomerPromotionsCount();

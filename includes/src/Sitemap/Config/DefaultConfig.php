@@ -16,7 +16,6 @@ use JTL\Sitemap\Factories\NewsCategory;
 use JTL\Sitemap\Factories\NewsItem;
 use JTL\Sitemap\Factories\Page;
 use JTL\Sitemap\Factories\Product;
-use JTL\Sitemap\Factories\Tag;
 
 /**
  * Class DefaultConfig
@@ -76,9 +75,6 @@ final class DefaultConfig implements ConfigInterface
         }
         if ($this->config['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
             $res[] = new Attribute($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        }
-        if ($this->config['sitemap']['sitemap_tags_anzeigen'] === 'Y') {
-            $res[] = new Tag($this->db, $this->config, $this->baseURL, $this->baseImageURL);
         }
         if ($this->config['sitemap']['sitemap_livesuche_anzeigen'] === 'Y') {
             $res[] = new LiveSearch($this->db, $this->config, $this->baseURL, $this->baseImageURL);

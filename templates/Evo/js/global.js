@@ -173,6 +173,7 @@ function navigation()
 function addValidationListener() {
     var forms  = $('form.evo-validate'),
         inputs = $('form.evo-validate input,form.evo-validate select,form.evo-validate textarea'),
+        selects = $('form.evo-validate select'),
         $body  = $('body');
 
     for (var i = 0; i < forms.length; i++) {
@@ -208,29 +209,41 @@ function addValidationListener() {
 
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('blur', function (event) {
-            var $target = $(event.target);
-            $target.closest('.form-group').find('div.form-error-msg').remove();
-
-            if ($target.data('must-equal-to') !== undefined) {
-                var $equalsTo = $($target.data('must-equal-to'));
-                if ($equalsTo.length === 1) {
-                    var theOther = $equalsTo[0];
-                    if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
-                        event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
-                    } else {
-                        event.target.setCustomValidity('');
-                    }
-                }
-            }
-
-            if (event.target.validity.valid) {
-                $(event.target).closest('.form-group').removeClass('has-error');
-            } else {
-                $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-warning"></i> ' + event.target.validationMessage + '</div>');
-            }
+            checkInputError(event);
         }, true);
     }
+    for (var i = 0; i < selects.length; i++) {
+        selects[i].addEventListener('change', function (event) {
+            checkInputError(event);
+        }, true);
+    }
+
 }
+
+function checkInputError(event)
+{
+    var $target = $(event.target);
+    $target.closest('.form-group').find('div.form-error-msg').remove();
+
+    if ($target.data('must-equal-to') !== undefined) {
+        var $equalsTo = $($target.data('must-equal-to'));
+        if ($equalsTo.length === 1) {
+            var theOther = $equalsTo[0];
+            if (theOther.value !== '' && theOther.value !== event.target.value && event.target.value !== '') {
+                event.target.setCustomValidity($target.data('custom-message') !== undefined ? $target.data('custom-message') : event.target.validationMessage);
+            } else {
+                event.target.setCustomValidity('');
+            }
+        }
+    }
+
+    if (event.target.validity.valid) {
+        $target.closest('.form-group').removeClass('has-error');
+    } else {
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
+    }
+}
+
 
 function captcha_filled() {
     $('.g-recaptcha').closest('.form-group').find('div.form-error-msg').remove();

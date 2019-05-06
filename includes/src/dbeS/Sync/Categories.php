@@ -95,7 +95,7 @@ final class Categories extends AbstractSync
                 FROM tkategorie
                 WHERE kKategorie = :categoryID',
             [
-                '' => $category->kKategorie,
+                'categoryID' => $category->kKategorie,
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -115,13 +115,22 @@ final class Categories extends AbstractSync
             if (isset($oldData->cSeo)) {
                 $this->checkDbeSXmlRedirect($oldData->cSeo, $categories[0]->cSeo);
             }
-            $this->db->query(
-                "INSERT INTO tseo
-                SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
-                    FROM tkategorie, tsprache
-                    WHERE tkategorie.kKategorie = " . (int)$categories[0]->kKategorie . "
-                        AND tsprache.cStandard = 'Y'
-                        AND tkategorie.cSeo != ''",
+            $this->db->queryPrepared(
+                "INSERT IGNORE INTO tseo
+                    SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
+                        FROM tkategorie, tsprache
+                        WHERE tkategorie.kKategorie = :categoryID
+                            AND tsprache.cStandard = 'Y'
+                            AND tkategorie.cSeo != ''
+                ON DUPLICATE KEY UPDATE
+                    cSeo = (SELECT tkategorie.cSeo
+                            FROM tkategorie, tsprache
+                            WHERE tkategorie.kKategorie = :categoryID
+                                    AND tsprache.cStandard = 'Y'
+                                    AND tkategorie.cSeo != '')",
+                [
+                    'categoryID' => (int)$categories[0]->kKategorie
+                ],
                 ReturnType::DEFAULT
             );
 

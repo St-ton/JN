@@ -1,3 +1,10 @@
+{if $standalonePage}
+    {include file='tpl_inc/header.tpl'}
+    {$cTitel = 'Suchergebnisse für: '|cat:$query}
+    {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
+    <ul>
+{/if}
+
 {if $adminMenuItems|count}
     <li>
         <h4>Seiten / Menüpunkte</h4>
@@ -68,4 +75,9 @@
             {/foreach}
         </ul>
     </li>
+{/if}
+
+{if $standalonePage}
+    </ul>
+    {include file='tpl_inc/footer.tpl'}
 {/if}

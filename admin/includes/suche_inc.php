@@ -10,9 +10,10 @@ use JTL\Shop;
  * Search for backend settings
  *
  * @param string $query - search string
- * @return string
+ * @param bool   $standalonePage - render as standalone page
+ * @return string|null
  */
-function adminSearch($query)
+function adminSearch($query, $standalonePage = false): ?string
 {
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
@@ -37,10 +38,17 @@ function adminSearch($query)
     }
 
     Shop::Smarty()
+        ->assign('standalonePage', $standalonePage)
+        ->assign('query', $query)
         ->assign('adminMenuItems', $adminMenuItems)
         ->assign('settings', !empty($settings->oEinstellung_arr) ? $groupedSettings : null)
         ->assign('shippings', count($shippings) > 0 ? $shippings : null)
         ->assign('paymentMethods', count($paymentMethods) > 0 ? $paymentMethods : null);
+
+    if ($standalonePage) {
+        Shop::Smarty()->display('suche.tpl');
+        return null;
+    }
 
     return Shop::Smarty()->fetch('suche.tpl');
 }

@@ -40,7 +40,8 @@
                 if(e.key === 'Enter') {
                     if(selectedSearchItem === null) {
                         var searchString = $('#backend-search-input').val();
-                        window.location.href = 'einstellungen.php?cSuche=' + searchString + '&einstellungen_suchen=1';
+                        // window.location.href = 'einstellungen.php?cSuche=' + searchString + '&einstellungen_suchen=1';
+                        window.location.href = 'searchresults.php?cSuche=' + searchString + '&einstellungen_suchen=1';
                     } else {
                         window.location.href = selectedSearchItem.find('a').attr('href');
                     }

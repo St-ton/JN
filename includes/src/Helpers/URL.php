@@ -317,11 +317,6 @@ class URL
                         ? $prefix . $obj->cSeo
                         : $prefix . '?l=' . $obj->kSuchanfrage . $lang;
 
-                case \URLART_TAG:
-                    return !empty($obj->cSeo)
-                        ? $prefix . $obj->cSeo
-                        : $prefix . '?t=' . $obj->kTag . $lang;
-
                 case \URLART_MERKMAL:
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo

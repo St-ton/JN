@@ -72,7 +72,7 @@ function gibLivesucheLast($conf)
 function gibTagging($conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return CMS::getTagging($conf);
+    return [];
 }
 
 /**

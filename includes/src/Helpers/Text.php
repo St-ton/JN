@@ -659,7 +659,6 @@ class Text
             'h' => \URLART_HERSTELLER,
             'm' => \URLART_MERKMAL,
             'n' => \URLART_NEWS,
-            't' => \URLART_TAG,
             'l' => \URLART_LIVESUCHE
         ];
         foreach ($hits[0] as $hit) {
@@ -818,27 +817,6 @@ class Text
                         $exists         = true;
                         $oObjekt->cSeo  = $oUmfrage->cSeo;
                         $oObjekt->cName = !empty($oUmfrage->cName) ? $oUmfrage->cName : 'Link';
-                    }
-                    break;
-
-                case \URLART_TAG:
-                    $oObjekt->kNews = (int)$cKey;
-                    $oObjekt->cKey  = 'kTag';
-                    $oTag           = Shop::Container()->getDB()->query(
-                        "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-                            FROM ttag
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kTag'
-                                AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . $kSprache . '
-                            WHERE ttag.kTag = ' . (int)$cKey,
-                        ReturnType::SINGLE_OBJECT
-                    );
-
-                    if (isset($oTag->kTag) && $oTag->kTag > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oTag->cSeo;
-                        $oObjekt->cName = !empty($oTag->cName) ? $oTag->cName : 'Link';
                     }
                     break;
 

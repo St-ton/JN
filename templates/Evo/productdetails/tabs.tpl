@@ -35,8 +35,6 @@
 {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
     && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
     && !empty($Artikel->cMedienTyp_arr))}
-{$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
-    || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
 {$hasVotesHash = isset($smarty.get.ratings_nPage)
     || isset($smarty.get.bewertung_anzeigen)
     || isset($smarty.get.ratings_nItemsPerPage)
@@ -66,13 +64,11 @@
     'availabilityNotification' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads
         && empty($separatedTabs) && !$useQuestionOnItem && !$usePriceFlow),
     'mediaGroup' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification),
-    'tags' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification && !$useMediaGroup)
+        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification)
 ]}
 
 {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
-    || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
+    || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
     {if $tabanzeige}
         <ul class="nav nav-tabs bottom15" role="tablist">
             {if $useDescription}
@@ -140,13 +136,6 @@
                         </a>
                     </li>
                 {/foreach}
-            {/if}
-            {if $useTags}
-                <li role="presentation" {if $setActiveClass.tags} class="active"{/if}>
-                    <a href="#tab-tags" aria-controls="tab-tags" role="tab" data-toggle="tab">
-                        {lang key='productTags' section='productDetails'}
-                    </a>
-                </li>
             {/if}
         </ul>
     {/if}
@@ -335,24 +324,6 @@
                     </div>
                 {/if}
             {/foreach}
-        {/if}
-        {if $useTags}
-            {if $tabanzeige}
-                <div role="tabpanel" class="tab-pane fade {if $setActiveClass.tags} in active{/if}" id="tab-tags">
-            {else}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{lang key='productTags' section='productDetails'}</h3>
-                    </div>
-                    <div class="panel-body" id="tab-tags">
-            {/if}
-            {include file='productdetails/tags.tpl'}
-            {if $tabanzeige}
-                </div>
-            {else}
-                    </div>
-                </div>
-            {/if}
         {/if}
     </div>
 {/if}

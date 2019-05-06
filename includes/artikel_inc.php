@@ -155,7 +155,7 @@ function baueArtikelhinweise($redirectParam = null, $renew = false, $oArtikel = 
 function bearbeiteProdukttags($product)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::editProductTags($product, Shop::getSettings([CONF_ARTIKELDETAILS]));
+    return null;
 }
 
 /**

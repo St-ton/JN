@@ -37,8 +37,6 @@
         {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
         && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
         && !empty($Artikel->cMedienTyp_arr))}
-        {$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
-        || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
         {$hasVotesHash = isset($smarty.get.ratings_nPage)
         || isset($smarty.get.bewertung_anzeigen)
         || isset($smarty.get.ratings_nItemsPerPage)
@@ -68,14 +66,12 @@
         'availabilityNotification' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads
         && empty($separatedTabs) && !$useQuestionOnItem && !$usePriceFlow),
         'mediaGroup' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification),
-        'tags' => (!$useVotes && !$hasVotesHash && !$useDescription && !$useDownloads && empty($separatedTabs)
-        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification && !$useMediaGroup)
+        && !$useQuestionOnItem && !$usePriceFlow && !$useAvailabilityNotification)
         ]}
     {/block}
     {block name='productdetails-tabs-content'}
         {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
-        || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
+        || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
             {if $tabanzeige}
                 {block name='productdetails-tabs-tabs'}
                     {tabs id="product-tabs" swipeable=true}
@@ -182,15 +178,6 @@
                         {/block}
                     {/if}
 
-                    {if $useTags}
-                        {block name='productdetails-tabs-tab-tags'}
-                            {tab title="{lang key='productTags' section='productDetails'}" active=$setActiveClass.tags id="tb-tgs" class="nav-item" swipeable=true}
-                                <div id="tab-tags">
-                                    {include file='productdetails/tags.tpl'}
-                                </div>
-                            {/tab}
-                        {/block}
-                    {/if}
                     {/tabs}
                 {/block}
             {else}
@@ -449,33 +436,6 @@
                             {/block}
                         {/if}
 
-                        {if $useTags}
-                            {block name='productdetails-tabs-tags'}
-                                {card no-body=true class="mb-3"}
-                                    {cardheader id="tab-tags-head"
-                                        class="h6 mb-0"
-                                        data=["toggle" => "collapse",
-                                            "target"=>"#tab-tags"
-                                        ]
-                                        aria=["expanded" => $setActiveClass.tags,
-                                            "controls" => "tab-tags"
-                                        ]
-                                    }
-                                        {lang key='productTags' section='productDetails'} <i class="fa fa-chevron-down float-right"></i>
-                                    {/cardheader}
-                                    {collapse id="tab-tags" class="mb-5" visible=$setActiveClass.tags
-                                        data=["parent"=>"#tabAccordion"]
-                                        aria=["labelledby"=>"tab-tags-head"]
-                                    }
-                                        {cardbody}
-                                            {block name='productdetails-tabs-include-tags'}
-                                                {include file='productdetails/tags.tpl'}
-                                            {/block}
-                                        {/cardbody}
-                                    {/collapse}
-                                {/card}
-                            {/block}
-                        {/if}
                     </div>
                 {/block}
             {/if}

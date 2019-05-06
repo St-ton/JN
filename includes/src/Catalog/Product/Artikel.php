@@ -978,6 +978,7 @@ class Artikel
 
     /**
      * @var array
+     * @deprecated since 5.0.0
      */
     public $tags = [];
 
@@ -4363,7 +4364,6 @@ class Artikel
         $this->metaKeywords    = $this->getMetaKeywords();
         $this->metaTitle       = $this->getMetaTitle();
         $this->metaDescription = $this->setMetaDescription();
-        $this->tags            = $this->getTags($kSprache);
         $this->taxData         = $this->getShippingAndTaxData();
         if ($this->conf['bewertung']['bewertung_anzeigen'] === 'Y' && $this->getOption('nRatings', 0) === 1) {
             $this->holehilfreichsteBewertung($kSprache)
@@ -5902,7 +5902,7 @@ class Artikel
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
-                // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
+                // Falls es keine Merkmale gibt, in tsuchcachetreffer suchen
                 $return['oArtikelArr'] = Shop::Container()->getDB()->query(
                     'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                         FROM
@@ -5925,33 +5925,6 @@ class Artikel
                             ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                             ' . $cSQLXSeller . '
                         GROUP BY tsuchcachetreffer.kArtikel
-                        ORDER BY COUNT(*) DESC ' .
-                        $cLimit,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-            }
-            if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
-                $return['oArtikelArr'] = Shop::Container()->getDB()->query(
-                    'SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
-                        FROM
-                        (
-                            SELECT kTag
-                            FROM ttagartikel
-                            WHERE kArtikel = ' . $kArtikel . '
-                        ) AS ssTag
-                        JOIN ttagartikel 
-                            ON ttagartikel.kTag = ssTag.kTag
-                            AND ttagartikel.kArtikel != ' . $kArtikel . '
-                        LEFT JOIN tartikelsichtbarkeit 
-                            ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        JOIN tartikel 
-                            ON tartikel.kArtikel = ttagartikel.kArtikel
-                            AND tartikel.kVaterArtikel != ' . $kArtikel . '
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                            ' . $cSQLXSeller . '
-                        GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC ' .
                         $cLimit,
                     ReturnType::ARRAY_OF_OBJECTS
@@ -6466,55 +6439,11 @@ class Artikel
      *
      * @param int $kSprache
      * @return array
+     * @deprecated since 5.0.0
      */
     public function getTags(int $kSprache = 0): array
     {
-        $nLimit   = (int)$this->conf['artikeldetails']['tagging_max_count'];
-        $tagLimit = ($nLimit > 0) ? ' LIMIT ' . $nLimit : '';
-        if ($kSprache === 0) {
-            if (Shop::getLanguageID() > 0) {
-                $kSprache = Shop::getLanguageID();
-            } elseif (isset($_SESSION['kSprache'])) {
-                $kSprache = $_SESSION['kSprache'];
-            }
-            if (!$kSprache) {
-                $oSprache = Sprache::getDefaultLanguage();
-                $kSprache = $oSprache->kSprache;
-            }
-        }
-        $tags = Shop::Container()->getDB()->query(
-            'SELECT ttag.kTag, ttag.cName, tseo.cSeo, (SELECT COUNT(*)
-                                                        FROM ttagartikel
-                                                          WHERE kTag = ttag.kTag) AS Anzahl
-                FROM ttag
-                JOIN ttagartikel 
-                    ON ttagartikel.kTag = ttag.kTag
-                LEFT JOIN tseo 
-                    ON tseo.cKey = \'kTag\'
-                    AND tseo.kKey = ttag.kTag
-                    AND tseo.kSprache = ' . $kSprache . '
-                WHERE ttag.nAktiv = 1
-                    AND ttag.kSprache = ' . $kSprache . '
-                    AND ttagartikel.kArtikel = ' . (int)$this->kArtikel . '
-                GROUP BY ttag.kTag 
-                ORDER BY ttagartikel.nAnzahlTagging DESC ' . $tagLimit,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($tags as $tag) {
-            $tag->kTag     = (int)$tag->kTag;
-            $tag->Anzahl   = (int)$tag->Anzahl;
-            $tag->cURL     = URL::buildURL($tag, \URLART_TAG);
-            $tag->cURLFull = URL::buildURL($tag, \URLART_TAG, true);
-        }
-        \executeHook(
-            \HOOK_ARTIKEL_INC_PRODUKTTAGGING,
-            [
-                'kArtikel' => $this->kArtikel,
-                'tags'     => &$tags
-            ]
-        );
-
-        return $tags;
+        return [];
     }
 
     /**

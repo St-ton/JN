@@ -79,8 +79,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     }
     $smarty->assign('LivesucheTop', $liveSearchTop)
            ->assign('LivesucheLast', $liveSearchLast);
-} elseif ($link->getLinkType() === LINKTYP_TAGGING) {
-    $smarty->assign('Tagging', CMS::getTagging($conf));
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
 } elseif ($link->getLinkType() === LINKTYP_NEWSLETTERARCHIV) {

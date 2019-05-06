@@ -201,11 +201,6 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
-//alerts
-if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
-}
-
 $maxSize = Upload::uploadMax();
 $smarty->assign('nMaxUploadSize', $maxSize)
        ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
@@ -227,7 +222,7 @@ $smarty->assign('nMaxUploadSize', $maxSize)
                $conf['artikeldetails']['benachrichtigung_nutzen']
            )
        )
-       ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel, $conf))
+       ->assign('ProdukttagHinweis', null)
        ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)

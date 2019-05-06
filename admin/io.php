@@ -10,6 +10,7 @@ use JTL\Backend\TwoFA;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
 use JTL\Jtllog;
+use JTL\Link\Admin\LinkAdmin;
 use JTL\Shop;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
@@ -25,11 +26,9 @@ if (!Form::validateToken()) {
 
 $jsonApi     = JSONAPI::getInstance();
 $io          = AdminIO::getInstance()->setAccount($oAccount);
-$linkService = Shop::Container()->getLinkService();
 
 Shop::Container()->getOPC()->registerAdminIOFunctions($io);
 Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
-
 
 $dashboardInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
 $accountInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
@@ -50,7 +49,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getSeos', [$jsonApi, 'getSeos'])
    ->register('getTags', [$jsonApi, 'getTags'])
    ->register('getAttributes', [$jsonApi, 'getAttributes'])
-   ->register('isDuplicateSpecialLink', [$linkService, 'isDuplicateSpecialLink'])
+   ->register('isDuplicateSpecialLink', [LinkAdmin::class, 'isDuplicateSpecialLink'])
    ->register('getCurrencyConversion', 'getCurrencyConversionIO')
    ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
    ->register('getNotifyDropIO')

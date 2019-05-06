@@ -82,7 +82,6 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cValue    = $_POST[$cKeyValue] ?? null;
         } elseif ($nSeite === PAGE_ARTIKELLISTE) {
             $aFilter_arr = [
-                'kTag'         => 'tag_key',
                 'kMerkmalWert' => 'attribute_key',
                 'kKategorie'   => 'categories_key',
                 'kHersteller'  => 'manufacturer_key',

@@ -687,7 +687,6 @@ class Frontend extends AbstractSession
         $kHersteller           = Request::verifyGPCDataInt('h');
         $kSuchanfrage          = Request::verifyGPCDataInt('l');
         $kMerkmalWert          = Request::verifyGPCDataInt('m');
-        $kTag                  = Request::verifyGPCDataInt('t');
         $kSuchspecial          = Request::verifyGPCDataInt('q');
         $kNews                 = Request::verifyGPCDataInt('n');
         $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
@@ -717,9 +716,6 @@ class Frontend extends AbstractSession
         } elseif ($kMerkmalWert > 0) {
             $key = 'kMerkmalWert';
             $val = $kMerkmalWert;
-        } elseif ($kTag > 0) {
-            $key = 'kTag';
-            $val = $kTag;
         } elseif ($kSuchspecial > 0) {
             $key = 'kSuchspecial';
             $val = $kSuchspecial;

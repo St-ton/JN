@@ -545,9 +545,6 @@ function mappeSeitentyp(int $pageType)
         case PAGE_DATENSCHUTZ:
             return 'Datenschutz';
 
-        case PAGE_TAGGING:
-            return 'Tagging';
-
         case PAGE_LIVESUCHE:
             return 'Livesuche';
 

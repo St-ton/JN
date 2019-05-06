@@ -1126,11 +1126,6 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
             $naviFilter->initStates($params);
             break;
 
-        case 'kTag':
-            $params['kTag'] = $kKey;
-            $naviFilter->initStates($params);
-            break;
-
         case 'kSuchspecial':
             $params['kSuchspecial'] = $kKey;
             $naviFilter->initStates($params);

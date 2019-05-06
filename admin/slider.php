@@ -75,7 +75,6 @@ switch ($action) {
                 $cValue    = $_POST[$cKeyValue];
             } elseif ($nSeite === PAGE_ARTIKELLISTE) {
                 $aFilter_arr = [
-                    'kTag'         => 'tag_key',
                     'kMerkmalWert' => 'attribute_key',
                     'kKategorie'   => 'categories_key',
                     'kHersteller'  => 'manufacturer_key',

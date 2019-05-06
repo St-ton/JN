@@ -1533,8 +1533,6 @@ final class Shop
                     self::setPageType(\PAGE_VERSAND);
                 } elseif ($linkType === \LINKTYP_LIVESUCHE) {
                     self::setPageType(\PAGE_LIVESUCHE);
-                } elseif ($linkType === \LINKTYP_TAGGING) {
-                    self::setPageType(\PAGE_TAGGING);
                 } elseif ($linkType === \LINKTYP_HERSTELLER) {
                     self::setPageType(\PAGE_HERSTELLER);
                 } elseif ($linkType === \LINKTYP_NEWSLETTERARCHIV) {

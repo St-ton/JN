@@ -70,8 +70,6 @@
                         {include file='page/index.tpl'}
                     {elseif $Link->getLinkType() === $smarty.const.LINKTYP_VERSAND}
                         {include file='page/shipping.tpl'}
-                    {elseif $Link->getLinkType() === $smarty.const.LINKTYP_TAGGING}
-                        {include file='page/tagging.tpl'}
                     {elseif $Link->getLinkType() === $smarty.const.LINKTYP_LIVESUCHE}
                         {include file='page/livesearch.tpl'}
                     {elseif $Link->getLinkType() === $smarty.const.LINKTYP_HERSTELLER}

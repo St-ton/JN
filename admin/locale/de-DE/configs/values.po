@@ -2006,12 +2006,6 @@ msgstr "Ja"
 msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
 msgstr "Nein"
 
-msgid "sitemap_tags_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_tags_anzeigen_value(N)"
-msgstr "Nein"
-
 msgid "sitemap_livesuche_anzeigen_value(Y)"
 msgstr "Ja"
 

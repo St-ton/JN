@@ -2726,12 +2726,6 @@ msgstr "Seiten der Artikelübersichten in Sitemap aufnehmen"
 msgid "sitemap_weitereseiten_artikeluebersicht_desc"
 msgstr "Hier legen Sie fest, ob die Seiten der Artikelübersichten, z. B. Hersteller, Kategorien usw. in die Sitemap aufgenommen werden sollen."
 
-msgid "sitemap_tags_anzeigen_name"
-msgstr "Tags anzeigen"
-
-msgid "sitemap_tags_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob alle Tag-Seiten in der Sitemap erscheinen sollen."
-
 msgid "sitemap_livesuche_anzeigen_name"
 msgstr "Suchanfragen anzeigen"
 

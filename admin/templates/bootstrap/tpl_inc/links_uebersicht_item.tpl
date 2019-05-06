@@ -3,11 +3,14 @@
 {/if}
 {foreach $list as $link}
     {assign var=missingLinkTranslations value=$linkAdmin->getMissingLinkTranslations($link->getID())}
+    {assign var=isReference value=$link->getReference() > 0}
     <tr class="link-item{if $kPlugin > 0 && $kPlugin == $link->getPluginID()} highlight{/if}{if $link->getLevel() == 0} main{/if}">
         {math equation="a * b" a=$link->getLevel()-1 b=20 assign=fac}
         <td style="width: 40%">
             <div style="margin-left:{if $fac > 0}{$fac}px{else}0{/if}; padding-top: 7px" {if $link->getLevel() > 0 && $link->getParent() > 0}class="sub"{/if}>
+                {if $isReference === true}<i>{/if}
                 {$link->getDisplayName()}
+                {if $isReference === true} ({__('Referenz')})</i>{/if}
                 {if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
                 {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fa fa-warning error"></i>{/if}
             </div>

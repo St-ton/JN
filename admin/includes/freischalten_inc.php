@@ -59,26 +59,11 @@ function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true
  * @param object $cSuchSQL
  * @param bool   $checkLanguage
  * @return array
+ * @deprecated since 5.0.0
  */
 function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {
-    $cond = $checkLanguage === true
-        ? 'AND ttag.kSprache = ' . (int)$_SESSION['kSprache'] . ' '
-        : '';
-
-    return Shop::Container()->getDB()->query(
-        'SELECT ttag.*, sum(ttagartikel.nAnzahlTagging) AS Anzahl, ttagartikel.kArtikel, 
-            tartikel.cName AS cArtikelName, tartikel.cSeo AS cArtikelSeo
-            FROM ttag
-            LEFT JOIN ttagartikel 
-                ON ttagartikel.kTag = ttag.kTag
-            LEFT JOIN tartikel 
-                ON tartikel.kArtikel = ttagartikel.kArtikel
-            WHERE ttag.nAktiv = 0 ' . $cond . $cSuchSQL->cWhere . '
-            GROUP BY ttag.kTag
-            ORDER BY Anzahl DESC' . $cSQL,
-        ReturnType::ARRAY_OF_OBJECTS
-    );
+    return [];
 }
 
 /**
@@ -221,55 +206,6 @@ function schalteSuchanfragenFrei($searchQueries): bool
 }
 
 /**
- * @param array $kTag_arr
- * @return bool
- */
-function schalteTagsFrei($kTag_arr): bool
-{
-    if (!is_array($kTag_arr) || count($kTag_arr) === 0) {
-        return false;
-    }
-    $kTag_arr = array_map('\intval', $kTag_arr);
-    $tags     = [];
-    $articles = Shop::Container()->getDB()->query(
-        'SELECT DISTINCT kArtikel
-            FROM ttagartikel
-            WHERE kTag IN (' . implode(',', $kTag_arr) . ')',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($articles as $_article) {
-        $tags[] = CACHING_GROUP_ARTICLE . '_' . $_article->kArtikel;
-    }
-    foreach ($kTag_arr as $kTag) {
-        $kTag = (int)$kTag;
-        $oTag = Shop::Container()->getDB()->select('ttag', 'kTag', $kTag);
-        if (isset($oTag->kTag) && $oTag->kTag > 0) {
-            // Aktivierte Suchanfragen in tseo eintragen
-            Shop::Container()->getDB()->delete(
-                'tseo',
-                ['cKey', 'kKey', 'kSprache'],
-                ['kTag', $kTag, (int)$oTag->kSprache]
-            );
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($oTag->cName));
-            $oSeo->cKey     = 'kTag';
-            $oSeo->kKey     = $kTag;
-            $oSeo->kSprache = (int)$oTag->kSprache;
-            Shop::Container()->getDB()->insert('tseo', $oSeo);
-            Shop::Container()->getDB()->update(
-                'ttag',
-                'kTag',
-                $kTag,
-                (object)['nAktiv' => 1, 'cSeo' => $oSeo->cSeo]
-            );
-        }
-    }
-    Shop::Container()->getCache()->flushTags($tags);
-
-    return true;
-}
-
-/**
  * @param array $kNewsKommentar_arr
  * @return bool
  */
@@ -351,29 +287,6 @@ function loescheSuchanfragen($kSuchanfrage_arr): bool
         "DELETE FROM tseo
             WHERE cKey = 'kSuchanfrage'
                 AND kKey IN (" . implode(',', $kSuchanfrage_arr) . ')',
-        ReturnType::AFFECTED_ROWS
-    );
-
-    return true;
-}
-
-/**
- * @param array $kTag_arr
- * @return bool
- */
-function loescheTags($kTag_arr): bool
-{
-    if (!is_array($kTag_arr) || count($kTag_arr) === 0) {
-        return false;
-    }
-    $kTag_arr = array_map('\intval', $kTag_arr);
-
-    Shop::Container()->getDB()->query(
-        'DELETE ttag, ttagartikel 
-            FROM ttag
-            LEFT JOIN ttagartikel 
-                ON ttagartikel.kTag = ttag.kTag
-            WHERE ttag.kTag IN (' . implode(',', $kTag_arr) . ')',
         ReturnType::AFFECTED_ROWS
     );
 
@@ -502,20 +415,6 @@ function gibMaxSuchanfragen(): int
     return (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tsuchanfrage
-            WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['kSprache'],
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
-}
-
-/**
- * @return int
- */
-function gibMaxTags(): int
-{
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
-            FROM ttag
             WHERE nAktiv = 0
                 AND kSprache = ' . (int)$_SESSION['kSprache'],
         ReturnType::SINGLE_OBJECT

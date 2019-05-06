@@ -24,13 +24,11 @@ setzeSprache();
 $step                  = 'freischalten_uebersicht';
 $ratingsSQL            = new stdClass();
 $liveSearchSQL         = new stdClass();
-$tagsSQL               = new stdClass();
 $commentsSQL           = new stdClass();
 $recipientsSQL         = new stdClass();
 $ratingsSQL->cWhere    = '';
 $liveSearchSQL->cWhere = '';
 $liveSearchSQL->cOrder = ' dZuletztGesucht DESC ';
-$tagsSQL->cWhere       = '';
 $commentsSQL->cWhere   = '';
 $recipientsSQL->cWhere = '';
 $recipientsSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
@@ -51,11 +49,6 @@ if (Request::verifyGPCDataInt('Suche') === 1) {
             case 'Livesuche':
                 $tab                   = 'livesearch';
                 $liveSearchSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $search . "%'";
-                break;
-            case 'Tag':
-                $tab             = 'tags';
-                $tagsSQL->cWhere = " AND (ttag.cName LIKE '%" . $search . "%'
-                                        OR tartikel.cName LIKE '%" . $search . "%')";
                 break;
             case 'Newskommentar':
                 $tab                 = 'newscomments';
@@ -203,20 +196,6 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         }
-    } elseif (Request::verifyGPCDataInt('tags') === 1 && Form::validateToken()) { // Tags
-        if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagUnlock'), 'successTagUnlock');
-            } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
-            }
-        } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagDelete'), 'successTagDelete');
-            } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
-            }
-        }
     } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
             if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
@@ -267,9 +246,6 @@ if ($step === 'freischalten_uebersicht') {
     $pagiQueries    = (new Pagination('suchanfragen'))
         ->setItemCount(gibMaxSuchanfragen())
         ->assemble();
-    $pagiTags       = (new Pagination('tags'))
-        ->setItemCount(gibMaxTags())
-        ->assemble();
     $pagiComments   = (new Pagination('newskommentare'))
         ->setItemCount(gibMaxNewskommentare())
         ->assemble();
@@ -279,17 +255,14 @@ if ($step === 'freischalten_uebersicht') {
 
     $ratings      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
     $queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
-    $tags         = gibTagFreischalten(' LIMIT ' . $pagiTags->getLimitSQL(), $tagsSQL);
     $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
     $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
     $smarty->assign('oBewertung_arr', $ratings)
            ->assign('oSuchanfrage_arr', $queries)
-           ->assign('oTag_arr', $tags)
            ->assign('oNewsKommentar_arr', $newsComments)
            ->assign('oNewsletterEmpfaenger_arr', $recipients)
            ->assign('oPagiBewertungen', $pagiRatings)
            ->assign('oPagiSuchanfragen', $pagiQueries)
-           ->assign('oPagiTags', $pagiTags)
            ->assign('oPagiNewskommentare', $pagiComments)
            ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients);
 }

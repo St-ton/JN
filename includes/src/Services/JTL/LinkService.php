@@ -54,22 +54,6 @@ final class LinkService implements LinkServiceInterface
     }
 
     /**
-     * @param int $linkType
-     * @param int $linkID
-     * @param array $customerGroups
-     * @return bool
-     */
-    public function isDuplicateSpecialLink(int $linkType, int $linkID, array $customerGroups): bool
-    {
-        $link = new Link($this->db);
-        $link->setCustomerGroups($customerGroups);
-        $link->setLinkType($linkType);
-        $link->setID($linkID);
-
-        return $link->hasDuplicateSpecialLink();
-    }
-
-    /**
      * @inheritdoc
      */
     public static function getInstance(): LinkServiceInterface

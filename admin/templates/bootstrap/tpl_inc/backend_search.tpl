@@ -46,7 +46,7 @@
                     if(selectedSearchItem === null) {
                         var searchString = $('#backend-search-input').val();
                         if (searchString.length >= 3) {
-                            window.location.href = 'searchresults.php?cSuche=' + searchString + '&einstellungen_suchen=1';
+                            window.location.href = 'searchresults.php?cSuche=' + searchString;
                         }
                     } else {
                         window.location.href = selectedSearchItem.find('a').attr('href');

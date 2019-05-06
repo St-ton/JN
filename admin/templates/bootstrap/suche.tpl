@@ -71,7 +71,7 @@
             {foreach $paymentMethods as $paymentMethod}
                 <li class="backend-search-item" tabindex="-1">
                     <a href="zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="value">
-                        <p>{$paymentMethod->cName}</p>
+                        {$paymentMethod->cName}
                     </a>
                 </li>
             {/foreach}

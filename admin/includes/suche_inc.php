@@ -33,14 +33,17 @@ function adminSearch($query, $standalonePage = false): ?string
             $currentGroup->oEinstellung_arr = [];
             $groupedSettings[]              = $currentGroup;
         } elseif ($currentGroup !== null) {
-            $setting->cName = preg_replace(
-                '/\p{L}*?' . preg_quote($query, '/'). '\p{L}*/ui',
-                '<mark>$0</mark>',
-                $setting->cName
-            );
-
+            $setting->cName                   = highlightSearchTerm($setting->cName, $query);
             $currentGroup->oEinstellung_arr[] = $setting;
         }
+    }
+
+    foreach ($shippings as $shipping) {
+        $shipping->cName = highlightSearchTerm($shipping->cName, $query);
+    }
+
+    foreach ($paymentMethods as $paymentMethod) {
+        $paymentMethod->cName = highlightSearchTerm($paymentMethod->cName, $query);
     }
 
     Shop::Smarty()
@@ -77,11 +80,7 @@ function adminMenuSearch($query)
                 foreach ($subMenu as $itemName => $item) {
                     if (stripos($itemName, $query) !== false) {
                         $name      = $itemName;
-                        $name      = preg_replace(
-                            '/\p{L}*?' . preg_quote($query, '/'). '\p{L}*/ui',
-                            '<mark>$0</mark>',
-                            $name
-                        );
+                        $name      = highlightSearchTerm($name, $query);
                         $path      = $menuName . ' > ' . $subMenuName . ' > ' . $name;
                         $results[] = (object)[
                             'title' => $itemName,
@@ -95,4 +94,18 @@ function adminMenuSearch($query)
     }
 
     return $results;
+}
+
+/**
+ * @param $haystack
+ * @param $needle
+ * @return string
+ */
+function highlightSearchTerm($haystack, $needle)
+{
+    return preg_replace(
+        '/\p{L}*?' . preg_quote($needle, '/'). '\p{L}*/ui',
+        '<mark>$0</mark>',
+        $haystack
+    );
 }

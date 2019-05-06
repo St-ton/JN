@@ -61,7 +61,8 @@
             {/foreach}
         </ul>
     </li>
-{elseif isset($paymentMethods)}
+{/if}
+{if isset($paymentMethods)}
     <li>
         <h4><a href="zahlungsarten.php" class="value">{__('paymentTypesOverview')}</a></h4>
     </li>

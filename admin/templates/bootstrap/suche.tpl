@@ -43,7 +43,8 @@
             </ul>
         </li>
     {/foreach}
-{elseif isset($shippings)}
+{/if}
+{if isset($shippings)}
     <li>
         <h4><a href="versandarten.php" class="value">{__('shippingTypesOverview')}</a></h4>
     </li>

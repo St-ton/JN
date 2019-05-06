@@ -33,6 +33,12 @@ function adminSearch($query, $standalonePage = false): ?string
             $currentGroup->oEinstellung_arr = [];
             $groupedSettings[]              = $currentGroup;
         } elseif ($currentGroup !== null) {
+            $setting->cName = preg_replace(
+                '/\p{L}*?' . preg_quote($query, '/'). '\p{L}*/ui',
+                '<mark>$0</mark>',
+                $setting->cName
+            );
+
             $currentGroup->oEinstellung_arr[] = $setting;
         }
     }
@@ -69,7 +75,7 @@ function adminMenuSearch($query)
         foreach ($menu as $subMenuName => $subMenu) {
             if (is_array($subMenu)) {
                 foreach ($subMenu as $itemName => $item) {
-                    if (strpos($itemName, $query) !== false) {
+                    if (stripos($itemName, $query) !== false) {
                         $name      = $itemName;
                         $name      = preg_replace(
                             '/\p{L}*?' . preg_quote($query, '/'). '\p{L}*/ui',

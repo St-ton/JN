@@ -241,3 +241,6 @@ msgstr "The special page already exists for the selected customer group(s)."
 
 msgid "hasDuplicateSpecialLink"
 msgstr "Special page %s exists more than once for the same customer group(s)."
+
+msgid "Referenz"
+msgstr "Reference"

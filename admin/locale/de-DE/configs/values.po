@@ -812,21 +812,6 @@ msgstr "Ja"
 msgid "artikeldetails_vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "tagging_freischaltung_value(Y)"
-msgstr "Ja, nur für angemeldete Kunden"
-
-msgid "tagging_freischaltung_value(O)"
-msgstr "Ja, für alle Besucher"
-
-msgid "tagging_freischaltung_value(N)"
-msgstr "Nein"
-
-msgid "tagging_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "tagging_anzeigen_value(N)"
-msgstr "Nein"
-
 msgid "mediendatei_anzeigen_value(YM)"
 msgstr "Ja, als neue Registerkarten pro Mediengruppe"
 
@@ -1293,12 +1278,6 @@ msgid "boxen_livesuche_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "boxen_livesuche_anzeigen_value(N)"
-msgstr "Nein"
-
-msgid "boxen_tagging_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "boxen_tagging_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "boxen_wunschzettel_bilder_value(Y)"

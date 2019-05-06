@@ -1016,30 +1016,6 @@ msgstr "„Zur Vergleichsliste hinzufügen“ anzeigen"
 msgid "artikeldetails_vergleichsliste_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob auf der Artikeldetailseite die Schaltfläche „Zur Vergleichsliste hinzufügen“ angezeigt werden soll."
 
-msgid "tagging_freischaltung_name"
-msgstr "Eingabe von Artikel-Tags ermöglichen"
-
-msgid "tagging_freischaltung_desc"
-msgstr "Hier legen Sie fest, ob in den Artikeldetails Tags eingegeben werden können und ob Kunden dafür angemeldet sein müssen."
-
-msgid "tagging_anzeigen_name"
-msgstr "Artikel-Tags bei Artikel anzeigen"
-
-msgid "tagging_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob Tags beim Artikel angezeigt werden sollen."
-
-msgid "tagging_max_count_name"
-msgstr "Anzahl angezeigter Artikel-Tags"
-
-msgid "tagging_max_count_desc"
-msgstr "Hier legen Sie fest, wie viele Tags auf der Artikeldetailseite angezeigt werden sollen."
-
-msgid "tagging_max_ip_count_name"
-msgstr "Maximale Einträge pro Besucher pro Tag"
-
-msgid "tagging_max_ip_count_desc"
-msgstr "Hier legen Sie fest, wie viele Einträge maximal pro Besucher pro Tag gespeichert werden. So können Sie die Manipulation verhindern."
-
 msgid "mediendatei_anzeigen_name"
 msgstr "Mediendateien anzeigen"
 
@@ -1532,18 +1508,6 @@ msgstr "Anzahl angezeigte Suchbegriffe"
 msgid "boxen_livesuche_count_desc"
 msgstr "Hier legen Sie die Anzahl von Begriffen fest, die in der Suchwolke angezeigt werden. Die Suchwolke können Sie in einer Box über die Boxenverwaltung anzeigen lassen."
 
-msgid "boxen_tagging_anzeigen_name"
-msgstr "Box anzeigen"
-
-msgid "boxen_tagging_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob die Tag-Wolke in einer Box angezeigt werden soll."
-
-msgid "boxen_tagging_count_name"
-msgstr "Anzahl angezeigte Tags"
-
-msgid "boxen_tagging_count_desc"
-msgstr "Hier legen Sie die Anzahl von Begriffen fest, die in der Tag-Wolke angezeigt werden. Die Tag-Wolke können Sie in einer Box über die Boxenverwaltung anzeigen lassen."
-
 msgid "boxen_wunschzettel_anzahl_name"
 msgstr "Anzahl Artikel in Box"
 
@@ -1837,12 +1801,6 @@ msgstr "Hintergrundfarbe"
 
 msgid "bilder_hintergrundfarbe_desc"
 msgstr ""
-
-msgid "sonstiges_tagging_all_count_name"
-msgstr "Anzahl Tags in der Übersicht"
-
-msgid "sonstiges_tagging_all_count_desc"
-msgstr "Hier legen Sie fest, wie viele Begriffe in der Komplettübersicht der Tags angezeigt werden."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Anzahl anzuzeigender TOP-Suchanfragen"

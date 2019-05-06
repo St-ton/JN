@@ -106,6 +106,7 @@ class Notification implements IteratorAggregate, Countable
                 'Ein Datenbank-Update ist zwingend notwendig',
                 'dbupdater.php'
             );
+            return $this;
         }
 
         if (!$status->validFolderPermissions()) {

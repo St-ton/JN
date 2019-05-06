@@ -115,8 +115,6 @@ class Factory implements FactoryInterface
                 return new FilterCategory($this->config);
             case \BOX_FILTER_HERSTELLER:
                 return new FilterManufacturer($this->config);
-            case \BOX_FILTER_TAG:
-                return new FilterTag($this->config);
             case \BOX_FILTER_PREISSPANNE:
                 return new FilterPricerange($this->config);
             case \BOX_FILTER_BEWERTUNG:

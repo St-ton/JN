@@ -167,17 +167,6 @@ interface SearchResultsInterface
     /**
      * @return Option[]
      */
-    public function getTagFilterOptions(): array;
-
-    /**
-     * @param Option[] $options
-     * @return $this
-     */
-    public function setTagFilterOptions($options): SearchResultsInterface;
-
-    /**
-     * @return Option[]
-     */
     public function getAttributeFilterOptions(): array;
 
     /**
@@ -240,17 +229,6 @@ interface SearchResultsInterface
      * @return $this
      */
     public function setCustomFilterOptions($options): SearchResultsInterface;
-
-    /**
-     * @return string|null
-     */
-    public function getTagFilterJSON(): ?string;
-
-    /**
-     * @param string $json
-     * @return $this
-     */
-    public function setTagFilterJSON($json): SearchResultsInterface;
 
     /**
      * @return string|null

@@ -141,10 +141,6 @@ class ExtensionPoint
                     // Hersteller
                     $key->cKey   = 'kHersteller';
                     $key->cValue = $productFilter->getManufacturer()->getValue();
-                } elseif ($productFilter->hasTag()) {
-                    // Tag
-                    $key->cKey   = 'kTag';
-                    $key->cValue = $productFilter->getTag()->getValue();
                 } elseif ($productFilter->hasSearch()) {
                     // Suchbegriff
                     $key->cKey   = 'cSuche';

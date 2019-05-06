@@ -163,6 +163,7 @@ final class Shop
 
     /**
      * @var int
+     * @deprecated since 5.0.0
      */
     public static $kTag;
 
@@ -880,7 +881,6 @@ final class Shop
         self::$kHersteller            = Request::verifyGPCDataInt('h');
         self::$kSuchanfrage           = Request::verifyGPCDataInt('l');
         self::$kMerkmalWert           = Request::verifyGPCDataInt('m');
-        self::$kTag                   = Request::verifyGPCDataInt('t');
         self::$kSuchspecial           = Request::verifyGPCDataInt('q');
         self::$kNews                  = Request::verifyGPCDataInt('n');
         self::$kNewsMonatsUebersicht  = Request::verifyGPCDataInt('nm');
@@ -1366,10 +1366,6 @@ final class Shop
                         self::$kMerkmalWert = $oSeo->kKey;
                         break;
 
-                    case 'kTag':
-                        self::$kTag = $oSeo->kKey;
-                        break;
-
                     case 'suchspecial':
                         self::$kSuchspecial = $oSeo->kKey;
                         break;
@@ -1397,7 +1393,6 @@ final class Shop
         }
         self::$MerkmalFilter = ProductFilter::initAttributeFilter();
         self::$SuchFilter    = ProductFilter::initSearchFilter();
-        self::$TagFilter     = ProductFilter::initTagFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }
@@ -1454,7 +1449,6 @@ final class Shop
             && ((self::$kHersteller > 0
                     || self::$kSuchanfrage > 0
                     || self::$kMerkmalWert > 0
-                    || self::$kTag > 0
                     || self::$kKategorie > 0
                     || self::$nBewertungSterneFilter > 0
                     || self::$kHerstellerFilter > 0

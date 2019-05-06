@@ -680,8 +680,6 @@ class Metadata implements MetadataInterface
             $parts->push($this->productFilter->getCategory()->getName());
         } elseif ($this->productFilter->hasManufacturer()) { // Hersteller
             $parts->push($this->productFilter->getManufacturer()->getName());
-        } elseif ($this->productFilter->hasTag()) { // Tag
-            $parts->push($this->productFilter->getTag()->getName());
         } elseif ($this->productFilter->hasSearch()) { // Suchbegriff
             $parts->push($this->productFilter->getSearch()->getName());
         } elseif ($this->productFilter->hasSearchQuery()) { // Suchbegriff
@@ -696,12 +694,6 @@ class Metadata implements MetadataInterface
         // Herstellerfilter
         if ($this->productFilter->hasManufacturerFilter()) {
             $parts->push($this->productFilter->getManufacturerFilter()->getName());
-        }
-        // Tagfilter
-        if ($this->productFilter->hasTagFilter()
-            && ($name = $this->productFilter->getTagFilter(0)->getName()) !== null
-        ) {
-            $parts->push($name);
         }
         // Suchbegrifffilter
         $parts = $parts->merge(
@@ -787,11 +779,6 @@ class Metadata implements MetadataInterface
             $this->breadCrumb = $this->productFilter->getAttributeValue()->getName();
 
             return Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
-        }
-        if ($this->productFilter->hasTag()) {
-            $this->breadCrumb = $this->productFilter->getTag()->getName();
-
-            return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasSearchSpecial()) {
             $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();

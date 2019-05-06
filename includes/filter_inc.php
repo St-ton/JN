@@ -87,9 +87,6 @@ function extractParameters($NaviFilter)
     if (!empty($NaviFilter->MerkmalWert->kMerkmalWert)) {
         $params['kMerkmalWert'] = (int)$NaviFilter->MerkmalWert->kMerkmalWert;
     }
-    if (!empty($NaviFilter->Tag->kTag)) {
-        $params['kTag'] = (int)$NaviFilter->Tag->kTag;
-    }
     if (!empty($NaviFilter->PreisspannenFilter->fVon) && !empty($NaviFilter->PreisspannenFilter->fBis)) {
         $params['cPreisspannenFilter'] = $NaviFilter->PreisspannenFilter->fVon .
             '_' . $NaviFilter->PreisspannenFilter->fBis;
@@ -106,11 +103,6 @@ function extractParameters($NaviFilter)
     if (!empty($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)) {
         foreach ($NaviFilter->MerkmalFilter as $mf) {
             $params['MerkmalFilter_arr'] = (int)$mf->kMerkmalWert;
-        }
-    }
-    if (!empty($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter)) {
-        foreach ($NaviFilter->TagFilter as $tf) {
-            $params['TagFilter_arr'] = (int)$tf->kTag;
         }
     }
     if (!empty($NaviFilter->SuchFilter) && is_array($NaviFilter->SuchFilter)) {
@@ -208,7 +200,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter)
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->tagFilterCompat->getOptions();
+    return [];
 }
 
 /**

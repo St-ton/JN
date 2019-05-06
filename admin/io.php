@@ -24,8 +24,8 @@ if (!Form::validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$jsonApi     = JSONAPI::getInstance();
-$io          = AdminIO::getInstance()->setAccount($oAccount);
+$jsonApi = JSONAPI::getInstance();
+$io      = AdminIO::getInstance()->setAccount($oAccount);
 
 Shop::Container()->getOPC()->registerAdminIOFunctions($io);
 Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);

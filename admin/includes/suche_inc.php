@@ -78,7 +78,7 @@ function adminMenuSearch($query)
         foreach ($menu as $subMenuName => $subMenu) {
             if (is_array($subMenu)) {
                 foreach ($subMenu as $itemName => $item) {
-                    if (stripos($itemName, $query) !== false) {
+                    if (is_object($item) && stripos($itemName, $query) !== false) {
                         $name      = $itemName;
                         $name      = highlightSearchTerm($name, $query);
                         $path      = $menuName . ' > ' . $subMenuName . ' > ' . $name;

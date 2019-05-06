@@ -109,6 +109,11 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
+    protected $reference = 0;
+
+    /**
+     * @var int
+     */
     protected $sort = 0;
 
     /**
@@ -214,18 +219,12 @@ final class Link extends AbstractLink
         $this->currentLanguageID = Shop::getLanguageID();
         $this->id                = $id;
         $link                    = $this->db->queryPrepared(
-            "SELECT tlink.*, tlinksprache.cISOSprache, 
-                tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName, 
-                tlinksprache.cTitle AS localizedTitle, 
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tseo.kSprache AS languageID,
-                tseo.cSeo AS localizedUrl,
-                tplugin.nStatus AS pluginState,
-                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
+            "SELECT tlink.*, tlinksprache.cISOSprache, tlink.cName AS displayName,
+                tlinksprache.cName AS localizedName,  tlinksprache.cTitle AS localizedTitle, 
+                tlinksprache.cContent AS content, tlinksprache.cMetaDescription AS metaDescription,
+                tlinksprache.cMetaKeywords AS metaKeywords, tlinksprache.cMetaTitle AS metaTitle,
+                tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
+                tplugin.nStatus AS pluginState, GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
             FROM tlink
                 JOIN tlinksprache
                     ON tlink.kLink = tlinksprache.kLink
@@ -241,7 +240,7 @@ final class Link extends AbstractLink
                     ON tplugin.kPlugin = tlink.kPlugin
                 WHERE tlink.kLink = :lid
                 GROUP BY tseo.kSprache",
-            ['lid' => $this->id],
+            ['lid' => $this->getRealID($id)],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($link) === 0) {
@@ -249,6 +248,23 @@ final class Link extends AbstractLink
         }
 
         return $this->map($link);
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    private function getRealID(int $id): int
+    {
+        $reference = $this->db->queryPrepared(
+            'SELECT `reference` FROM `tlink` WHERE kLink = :lid',
+            ['lid' => $id],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        return (int)$reference->reference > 0
+            ? (int)$reference->reference
+            : $id;
     }
 
     /**
@@ -296,6 +312,7 @@ final class Link extends AbstractLink
             $this->setVisibleLoggedInOnly($link->cSichtbarNachLogin === 'Y');
             $this->setPrintButton($link->cDruckButton === 'Y');
             $this->setSort($link->nSort);
+            $this->setReference($link->reference);
             $this->setSSL((bool)$link->bSSL);
             $this->setIsFluid((bool)$link->bIsFluid);
             $this->setIsEnabled((bool)$link->bIsActive);
@@ -632,6 +649,22 @@ final class Link extends AbstractLink
     public function setLanguageCodes(array $languageCodes): void
     {
         $this->languageCodes = $languageCodes;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getReference(): int
+    {
+        return $this->reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setReference(int $reference): void
+    {
+        $this->reference = $reference;
     }
 
     /**

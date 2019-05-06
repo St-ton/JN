@@ -10,4 +10,5 @@ if (file_exists(__DIR__.'/install/vendor/autoload.php')) {
 }
 
 $application = new \JTL\Console\Application();
+$application->initPluginCommands();
 $application->run();

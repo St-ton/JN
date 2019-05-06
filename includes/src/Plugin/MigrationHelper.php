@@ -234,13 +234,6 @@ final class MigrationHelper
         $datetime  = new \DateTime('NOW');
         $timestamp = $datetime->format('YmdHis');
 
-        $asFilePath = function ($text) {
-            $text = preg_replace('/\W/', '_', $text);
-            $text = preg_replace('/_+/', '_', $text);
-
-            return strtolower($text);
-        };
-
         $filePath = 'Migration'.$timestamp;
 
         $relPath       = 'plugins/'.$pluginDir.'/Migrations';

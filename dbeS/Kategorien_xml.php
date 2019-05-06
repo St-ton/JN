@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
 require_once __DIR__ . '/syncinclude.php';
 //smarty lib
 global $smarty;
@@ -132,13 +133,23 @@ function bearbeiteInsert($xml)
                 checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
             }
             //insert in tseo
-            $db->query(
-                "INSERT INTO tseo
+            $this->db->queryPrepared(
+                "INSERT IGNORE INTO tseo
                     SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
                         FROM tkategorie, tsprache
-                        WHERE tkategorie.kKategorie = " . $Kategorie->kKategorie . "
+                        WHERE tkategorie.kKategorie = :categoryID
                             AND tsprache.cStandard = 'Y'
-                            AND tkategorie.cSeo != ''", 4
+                            AND tkategorie.cSeo != ''
+                ON DUPLICATE KEY UPDATE
+                    cSeo = (SELECT tkategorie.cSeo
+                            FROM tkategorie, tsprache
+                            WHERE tkategorie.kKategorie = :categoryID
+                                    AND tsprache.cStandard = 'Y'
+                                    AND tkategorie.cSeo != '')",
+                [
+                    'categoryID' => (int)$kategorie_arr[0]->kKategorie
+                ],
+                4
             );
 
             executeHook(HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $kategorie_arr[0]]);
@@ -194,15 +205,16 @@ function bearbeiteInsert($xml)
         DBDeleteByKey('tkategoriesprache', ['kKategorie' => $Kategorie->kKategorie], 'kSprache', $langIDs);
 
         $pkValues = insertOnExistsUpdateXMLinDB(
-            $xml['tkategorie'], 'tkategoriekundengruppe',
+            $xml['tkategorie'],
+            'tkategoriekundengruppe',
             $GLOBALS['mKategorieKundengruppe'],
-            ['kKategorie',
-             'kKundengruppe']
+            ['kKategorie', 'kKundengruppe']
         );
         DBDeleteByKey(
             'tkategoriekundengruppe',
             ['kKategorie' => $Kategorie->kKategorie],
-            'kKundengruppe', $pkValues['kKundengruppe']
+            'kKundengruppe',
+            $pkValues['kKundengruppe']
         );
         fuelleKategorieRabatt($kategorie_arr[0]->kKategorie);
 

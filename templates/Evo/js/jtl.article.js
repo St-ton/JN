@@ -390,7 +390,7 @@
         registerProductActions: function($wrapper) {
             var that = this;
 
-            $('*[data-toggle="product-actions"] button', $wrapper)
+            $('.product-actions button', $wrapper)
                 .on('click', function(event) {
                     var data = $(this.form).serializeObject();
 
@@ -593,7 +593,7 @@
             for (var ind in data.cBoxContainer) {
                 var $list = $(this.options.selector.boxContainer+ind);
 
-                if ($list.size() > 0) {
+                if ($list.length > 0) {
                     if (data.cBoxContainer[ind].length) {
                         var $boxContent = $(data.cBoxContainer[ind]);
                         this.registerProductActions($boxContent);
@@ -711,7 +711,7 @@
             for (var ind in data.cBoxContainer) {
                 var $list = $(this.options.selector.boxContainerWish+ind);
 
-                if ($list.size() > 0) {
+                if ($list.length > 0) {
                     if (data.cBoxContainer[ind].length) {
                         var $boxContent = $(data.cBoxContainer[ind]);
                         this.registerProductActions($boxContent);

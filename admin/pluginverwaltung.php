@@ -67,11 +67,11 @@ if (isset($_SESSION['plugin_msg'])) {
 
 
 if (!empty($_FILES['file_data'])) {
-    $response = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
+    $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
     $pluginUploaded = true;
 }
-$pluginsInstalled = $listing->getInstalled();
-$pluginsAll       = $listing->getAll($pluginsInstalled);
+$pluginsInstalled        = $listing->getInstalled();
+$pluginsAll              = $listing->getAll($pluginsInstalled);
 $pluginsInstalledByState = [
     'status_1' => [],
     'status_2' => [],
@@ -89,7 +89,7 @@ $pluginsAvailable = $pluginsAll->filter(function (ListingItem $item) {
 $pluginsErroneous = $pluginsAll->filter(function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
-$errorCount = count($pluginsInstalledByState['status_3'])
+$errorCount       = count($pluginsInstalledByState['status_3'])
     + count($pluginsInstalledByState['status_4'])
     + count($pluginsInstalledByState['status_5'])
     + count($pluginsInstalledByState['status_6']);

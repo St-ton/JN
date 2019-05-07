@@ -93,7 +93,7 @@ class Widget
      */
     public function addWidget(stdClass $widget): Collection
     {
-        $this->widgets[] = $widget;
+        $this->widgets->push($widget);
 
         return $this->widgets;
     }

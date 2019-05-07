@@ -6,12 +6,10 @@
  * @created Thu, 16 Nov 2017 11:47:00 +0200
  */
 
+use JTL\Helpers\Seo;
+use JTL\Sprache;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shop;
-use JTL\Sprache;
-
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 /**
  * Class Migration_20171116114700
@@ -43,12 +41,12 @@ class Migration_20171116114700 extends Migration implements IMigration
      */
     public function up()
     {
-        $hiddenLinkGroup = Shop::Container()->getDB()->select('tlinkgruppe', 'cName', 'hidden');
+        $hiddenLinkGroup = $this->getDB()->select('tlinkgruppe', 'cName', 'hidden');
         if ($hiddenLinkGroup === null) {
             $hiddenLinkGroup                = new stdClass();
             $hiddenLinkGroup->cName         = 'hidden';
             $hiddenLinkGroup->cTemplatename = 'hidden';
-            $this->hiddenLinkGroupID        = Shop::Container()->getDB()->insert('tlinkgruppe', $hiddenLinkGroup);
+            $this->hiddenLinkGroupID        = $this->getDB()->insert('tlinkgruppe', $hiddenLinkGroup);
         } else {
             $this->hiddenLinkGroupID = (int)$hiddenLinkGroup->kLinkgruppe;
         }
@@ -93,7 +91,7 @@ class Migration_20171116114700 extends Migration implements IMigration
                 $link->bIsActive      = 1;
                 $link->kLinkgruppe    = $this->hiddenLinkGroupID;
                 $link->cKundengruppen = 'NULL';
-                $link->kLink          = Shop::Container()->getDB()->insert('tlink', $link);
+                $link->kLink          = $this->getDB()->insert('tlink', $link);
             } else {
                 $link->kLink = (int)$links->kLink;
             }
@@ -115,22 +113,22 @@ class Migration_20171116114700 extends Migration implements IMigration
                 foreach ($this->languages as $language) {
                     $seo->kSprache = $language->kSprache;
                     if ($language->cISO === 'ger') {
-                        $seo->cSeo = \JTL\Helpers\Seo::checkSeo(\JTL\Helpers\Seo::getSeo($seoGER));
-                        Shop::Container()->getDB()->insert('tseo', $seo);
+                        $seo->cSeo = Seo::checkSeo(Seo::getSeo($seoGER));
+                        $this->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
-                            Shop::Container()->getDB()->insert('tlinksprache', $langObj);
+                            $this->getDB()->insert('tlinksprache', $langObj);
                         }
                     } elseif ($language->cISO === 'eng') {
-                        $seo->cSeo = \JTL\Helpers\Seo::checkSeo(\JTL\Helpers\Seo::getSeo($seoENG));
-                        Shop::Container()->getDB()->insert('tseo', $seo);
+                        $seo->cSeo = Seo::checkSeo(Seo::getSeo($seoENG));
+                        $this->getDB()->insert('tseo', $seo);
                         if (empty($linkLanguage)) {
                             $langObj->kSprache    = $language->kSprache;
                             $langObj->cISOSprache = $language->cISO;
                             $langObj->cSeo        = $seo->cSeo;
-                            Shop::Container()->getDB()->insert('tlinksprache', $langObj);
+                            $this->getDB()->insert('tlinksprache', $langObj);
                         }
                     }
                 }

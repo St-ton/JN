@@ -24,16 +24,13 @@ msgid "restrictions"
 msgstr "Einschränkungen"
 
 msgid "codeHint"
-msgstr "Geben Sie hier einen Code ein. Wird kein Code eingegeben, wird ein Code automatisch erstellt."
+msgstr "Geben Sie hier einen Code ein. Wird kein Code eingegeben, wird automatisch ein Code erstellt."
 
 msgid "mbw"
 msgstr "Mindestbestellwert"
 
 msgid "curmaxusage"
-msgstr "Verwendungen"
-
-msgid "manageArticlesHint"
-msgstr "Artikel verwalten"
+msgstr "Anzahl der Verwendungen"
 
 msgid "validFrom"
 msgstr "Gültig ab"
@@ -41,23 +38,23 @@ msgstr "Gültig ab"
 msgid "validUntil"
 msgstr "Gültig bis"
 
-msgid "newCoupon"
+msgid "buttonNewCoupon"
 msgstr "Neuen Coupon erstellen"
 
 msgid "newCouponDesc"
 msgstr "Bitte füllen Sie alle Felder aus, um einen neuen Coupon zu erstellen.<br/>Wird kein Code eingegeben, wird ein Code automatisch erstellt.<br/>Wenn Sie den Coupon auf wenige Artikel beschränken möchten, geben Sie die Artikelnummern semikolongetrennt an.<br/>Soll der Coupon für alle Artikel im Onlineshop gelten, so lassen Sie dieses Feld frei."
 
-msgid "modifyCoupon"
+msgid "buttonModifyCoupon"
 msgstr "Coupon ändern"
 
 msgid "minOrderValue"
 msgstr "Mindestbestellwert"
 
 msgid "uses"
-msgstr "Maximale Verwendungen"
+msgstr "Maximal mögliche Verwendungen"
 
 msgid "usesPerCustomer"
-msgstr "Maximale Verwendungen pro Kunde"
+msgstr "Maximal mögliche Verwendungen pro Kunde"
 
 msgid "productRestrictions"
 msgstr "Beschränken auf Artikelnummern"
@@ -117,7 +114,7 @@ msgid "wholeWKDiscount"
 msgstr "Ganzen Warenwert rabattieren"
 
 msgid "wholeWKDiscountHint"
-msgstr "Die Einstellung \"Ganzen Warenwert rabattieren\" greift nur bei prozentualen Rabatten. Steht die Einstellung auf \"Ja\", so wird der Rabatt vom gesamten Warenwert abgezogen.<br/>Ist diese Einstellung auf \"Nein\" gestellt, so wird der Rabatt bereits von jeder gültigen einzelnen Position abgezogen."
+msgstr "Die Einstellung „Ganzen Warenwert rabattieren“ greift nur bei prozentualen Rabatten. Steht die Einstellung auf „Ja“, so wird der Rabatt vom gesamten Warenwert abgezogen.<br/>Ist diese Einstellung auf „Nein“ gestellt, so wird der Rabatt bereits von jeder gültigen einzelnen Position abgezogen."
 
 msgid "gross"
 msgstr "Brutto"
@@ -129,13 +126,13 @@ msgid "numberCouponsDesc"
 msgstr "Anzahl Coupons"
 
 msgid "lowerCaseDesc"
-msgstr "Zufallscode mit Kleinbuchstaben a - z"
+msgstr "Zufallscode mit Kleinbuchstaben a–z"
 
 msgid "upperCaseDesc"
-msgstr "Zufallscode mit Großbuchstaben A - Z"
+msgstr "Zufallscode mit Großbuchstaben A–Z"
 
 msgid "numbersHashDesc"
-msgstr "Zufallscode mit Zahlen 0 - 9"
+msgstr "Zufallscode mit Zahlen 0–9"
 
 msgid "hashLengthDesc"
 msgstr "Länge des Zufallscodes"
@@ -156,13 +153,13 @@ msgid "validFromHelp"
 msgstr "Hier legen Sie fest, ab wann der Coupon gültig sein soll. Voreingestellt ist immer der aktuelle Zeitpunkt."
 
 msgid "validUntilHelp"
-msgstr "Hier legen Sie fest, bis zu welchem Zeitpunkt der Coupon gültig sein soll. Wenn Sie das Feld leer lassen, ist der Coupon entweder unbegrenzt gültig oder es wird die Einstellung \"Gültigkeitsdauer (Tage)\" berücksichtigt."
+msgstr "Hier legen Sie fest, bis zu welchem Zeitpunkt der Coupon gültig sein soll. Wenn Sie das Feld leer lassen, ist der Coupon entweder unbegrenzt gültig oder es wird die Einstellung „Gültigkeitsdauer (Tage)“ berücksichtigt."
 
 msgid "periodOfValidityHelp"
-msgstr "Hier legen Sie fest, wie lange der Coupon in Tagen gültig ist. Diese Option ist alternativ zur Option \"Gültig bis\". Sind beide Felder leer, ist der Coupon unbegrenzt gültig."
+msgstr "Hier legen Sie fest, wie lange der Coupon in Tagen gültig ist. Diese Option ist alternativ zur Option „Gültig bis“. Sind beide Felder leer, ist der Coupon unbegrenzt gültig."
 
 msgid "errorImportCSV"
-msgstr "Konnte CSV-Datei nicht vollständig importieren."
+msgstr "Die CSV-Datei konnte nicht vollständig importiert werden."
 
 msgid "successImportCSV"
 msgstr "CSV-Datei wurde erfolgreich importiert."
@@ -195,16 +192,16 @@ msgid "errorCouponMinOrderValueNegative"
 msgstr "Bitte geben Sie einen Mindestbestellwert größer oder gleich 0 an."
 
 msgid "errorCouponISOMissing"
-msgstr "Bitte geben Sie die Länderkürzel (ISO-Codes) unter 'Lieferländer' an, für die dieser Versandkostenfrei-Coupon gelten soll."
+msgstr "Bitte geben Sie die Länderkürzel (ISO-Codes) unter „Lieferländer“ an, für die dieser Versandkostenfrei-Coupon gelten soll."
 
 msgid "errorCouponCodeLong"
-msgstr "Der zu generierende Code ist länger als 32 Zeichen. Bitte verringern Sie die Anzahl an Zeichen in Präfix/Suffix oder geben Sie eine kleinere Zahl bei der Länge des Zufallcodes an."
+msgstr "Der zu generierende Code ist länger als 32 Zeichen. Bitte verringern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine kleinere Zahl bei der Länge des Zufallcodes an."
 
 msgid "errorCouponCodeShort"
-msgstr "Der zu generierende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Anzahl an Zeichen in Präfix/Suffix oder geben Sie eine größere Zahl bei der Länge des Zufallcodes an."
+msgstr "Der zu generierende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine größere Zahl bei der Länge des Zufallcodes an."
 
 msgid "errorCouponCodeOptionSelect"
-msgstr "Bitte wählen Sie für \"Zufallscode mit ...\" mindestens eine Option aus."
+msgstr "Bitte wählen Sie für „Zufallscode mit …“ mindestens eine Option aus."
 
 msgid "errorCouponCodeDuplicate"
 msgstr "Der angegeben Code wird bereits von einem anderen Coupon verwendet. Bitte wählen Sie einen anderen Code."
@@ -216,10 +213,10 @@ msgid "errorISOInvalid"
 msgstr "Der ISO-Code %s gehört zu keinem gültigen Land."
 
 msgid "errorPeriodBeginFormat"
-msgstr "Bitte geben Sie den Beginn des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an."
+msgstr "Bitte geben Sie den Beginn des Gültigkeitszeitraumes im Format <strong>tt.MM.jjjj HH:mm</strong> an."
 
 msgid "errorPeriodEndFormat"
-msgstr "Bitte geben Sie das Ende des Gültigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an."
+msgstr "Bitte geben Sie das Ende des Gültigkeitszeitraumes im Format <strong>tt.MM.jjjj HH:mm</strong> an."
 
 msgid "errorPeriodEndAfterBegin"
 msgstr "Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des Gültigkeitszeitraumes liegen."

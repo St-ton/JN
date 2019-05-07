@@ -14,7 +14,6 @@ use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_KONTAKT);
 $smarty         = Shop::Smarty();

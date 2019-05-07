@@ -40,21 +40,6 @@ class LegacyPlugin extends PluginBC
     public $oPluginEinstellungAssoc_arr = [];
 
     /**
-     * @var array
-     */
-    public $oPluginZahlungsmethode_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginZahlungsmethodeAssoc_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oPluginZahlungsKlasseAssoc_arr = [];
-
-    /**
      * @var \stdClass
      */
     public $oPluginUninstall;
@@ -130,7 +115,10 @@ class LegacyPlugin extends PluginBC
     {
         $loader = new LegacyPluginLoader($db, $cache);
         try {
-            $loader->setPlugin($this)->init($id, $invalidate);
+            $res = $loader->setPlugin($this)->init($id, $invalidate);
+            foreach (\get_object_vars($res) as $k => $v) {
+                $this->$k = $v;
+            }
         } catch (\InvalidArgumentException $e) {
             return null;
         }

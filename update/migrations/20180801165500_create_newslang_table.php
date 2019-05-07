@@ -3,11 +3,11 @@
  * Create news lang table
  */
 
+use JTL\DB\ReturnType;
+use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shop;
-use JTL\DB\ReturnType;
 
 /**
  * Class Migration_20180801165500
@@ -19,7 +19,7 @@ class Migration_20180801165500 extends Migration implements IMigration
 
     public function up()
     {
-        $db = Shop::Container()->getDB();
+        $db = $this->getDB();
         DBMigrationHelper::migrateToInnoDButf8('tnews');
         DBMigrationHelper::migrateToInnoDButf8('tnewskategorie');
 
@@ -127,7 +127,7 @@ class Migration_20180801165500 extends Migration implements IMigration
             ADD COLUMN `kSprache` int(10) unsigned NOT NULL,
             ADD COLUMN `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
             ADD COLUMN `cName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-            ADD COLUMN `cBeschreibung` text COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cBeschreibung` mediumtext COLLATE utf8_unicode_ci NOT NULL,
             ADD COLUMN `cMetaTitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
             ADD COLUMN `cMetaDescription` varchar(255) COLLATE utf8_unicode_ci NOT NULL'
         );
@@ -136,8 +136,8 @@ class Migration_20180801165500 extends Migration implements IMigration
             ADD COLUMN `kSprache` int(10) unsigned NOT NULL,
             ADD COLUMN `cSeo` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
             ADD COLUMN `cBetreff` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-            ADD COLUMN `cText` text COLLATE utf8_unicode_ci NOT NULL,
-            ADD COLUMN `cVorschauText` text COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cText` mediumtext COLLATE utf8_unicode_ci NOT NULL,
+            ADD COLUMN `cVorschauText` mediumtext COLLATE utf8_unicode_ci NOT NULL,
             ADD COLUMN `cMetaTitle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
             ADD COLUMN `cMetaDescription` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
             ADD COLUMN `cMetaKeywords` varchar(255) COLLATE utf8_unicode_ci NOT NULL'

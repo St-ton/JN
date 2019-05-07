@@ -7,6 +7,7 @@
 namespace JTL\Backend;
 
 use JTL\Cache\JTLCacheInterface;
+use JTL\Checkout\ZahlungsLog;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\Media\Image;
@@ -17,7 +18,6 @@ use JTL\Shop;
 use JTL\SingletonTrait;
 use JTL\Template;
 use JTL\Update\Updater;
-use JTL\Checkout\ZahlungsLog;
 use stdClass;
 use function Functional\some;
 
@@ -183,7 +183,7 @@ class Status
      */
     protected function hasPendingUpdates(): bool
     {
-        return (new Updater())->hasPendingUpdates();
+        return (new Updater(Shop::Container()->getDB()))->hasPendingUpdates();
     }
 
     /**
@@ -453,9 +453,9 @@ class Status
      */
     public function hasInsecureMailConfig(): bool
     {
-        $emailConf = Shop::getConfig([\CONF_EMAILS])['emails'];
+        $conf = Shop::getConfig([\CONF_EMAILS])['emails'];
 
-        return $emailConf['email_methode'] === 'smtp' && empty(\trim($emailConf['email_smtp_verschluesselung']));
+        return $conf['email_methode'] === 'smtp' && empty(\trim($conf['email_smtp_verschluesselung']));
     }
 
     /**
@@ -488,5 +488,35 @@ class Status
                 HAVING COUNT(*) > 1',
             ReturnType::ARRAY_OF_OBJECTS
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function getExportFormatErrorCount(): int
+    {
+        if (!isset($_SESSION['exportSyntaxErrorCount'])) {
+            $_SESSION['exportSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
+                'SELECT COUNT(*) AS cnt FROM texportformat WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt;
+        }
+
+        return $_SESSION['exportSyntaxErrorCount'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getEmailTemplateSyntaxErrorCount(): int
+    {
+        if (!isset($_SESSION['emailSyntaxErrorCount'])) {
+            $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
+                'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
+                ReturnType::SINGLE_OBJECT
+            )->cnt;
+        }
+
+        return $_SESSION['emailSyntaxErrorCount'];
     }
 }

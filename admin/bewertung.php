@@ -19,7 +19,6 @@ $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $conf        = Shop::getSettings([CONF_BEWERTUNG]);
 $step        = 'bewertung_uebersicht';

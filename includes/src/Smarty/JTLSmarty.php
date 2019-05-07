@@ -7,7 +7,6 @@
 namespace JTL\Smarty;
 
 use JTL\Backend\AdminTemplate;
-use JTL\Cache\JTLCacheInterface;
 use JTL\Events\Dispatcher;
 use JTL\Plugin\Helper;
 use JTL\Shop;
@@ -21,11 +20,6 @@ use JTL\Template;
  */
 class JTLSmarty extends \SmartyBC
 {
-    /**
-     * @var JTLCacheInterface
-     */
-    public $jtlCache;
-
     /**
      * @var array
      */
@@ -372,7 +366,7 @@ class JTLSmarty extends \SmartyBC
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null)
     {
-        if ($this->context === 'frontend') {
+        if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
 
@@ -409,38 +403,38 @@ class JTLSmarty extends \SmartyBC
         $resource_custom_name = $this->getCustomFile($resourceName);
         $resource_cfb_name    = $resource_custom_name;
 
-        \executeHook(\HOOK_SMARTY_FETCH_TEMPLATE, [
-            'original'  => &$resourceName,
-            'custom'    => &$resource_custom_name,
-            'fallback'  => &$resource_custom_name,
-            'out'       => &$resource_cfb_name,
-            'transform' => $transform
-        ]);
-
-        if ($this->context === ContextType::FRONTEND
-            && $resourceName === $resource_cfb_name
-            && \file_exists($this->getTemplateDir(ContextType::FRONTEND) . $resource_cfb_name)
-        ) {
-            $pluginTemplateExtends = [];
-            foreach (Helper::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
-                $templateKey = 'plugin_' . $moduleId;
-                $templateVar = 'oPlugin_' . $moduleId;
-                if ($this->getTemplateVars($templateVar) === null) {
-                    $oPlugin = Helper::getPluginById($moduleId);
-                    $this->assign($templateVar, $oPlugin);
+        if ($this->context === ContextType::FRONTEND) {
+            \executeHook(\HOOK_SMARTY_FETCH_TEMPLATE, [
+                'original'  => &$resourceName,
+                'custom'    => &$resource_custom_name,
+                'fallback'  => &$resource_custom_name,
+                'out'       => &$resource_cfb_name,
+                'transform' => $transform
+            ]);
+            if ($resourceName === $resource_cfb_name
+                && \file_exists($this->getTemplateDir(ContextType::FRONTEND) . $resource_cfb_name)
+            ) {
+                $pluginTemplateExtends = [];
+                foreach (Helper::getTemplatePaths() as $moduleId => $pluginTemplatePath) {
+                    $templateKey = 'plugin_' . $moduleId;
+                    $templateVar = 'oPlugin_' . $moduleId;
+                    if ($this->getTemplateVars($templateVar) === null) {
+                        $oPlugin = Helper::getPluginById($moduleId);
+                        $this->assign($templateVar, $oPlugin);
+                    }
+                    if (\file_exists($this->_realpath($pluginTemplatePath . $resource_cfb_name, true))) {
+                        $pluginTemplateExtends[] = \sprintf('[%s]%s', $templateKey, $resource_cfb_name);
+                    }
                 }
-                if (\file_exists($this->_realpath($pluginTemplatePath . $resource_cfb_name, true))) {
-                    $pluginTemplateExtends[] = \sprintf('[%s]%s', $templateKey, $resource_cfb_name);
-                }
-            }
 
-            if (\count($pluginTemplateExtends) > 0) {
-                $transform         = false;
-                $resource_cfb_name = \sprintf(
-                    'extends:[frontend]%s|%s',
-                    $resource_cfb_name,
-                    \implode('|', $pluginTemplateExtends)
-                );
+                if (\count($pluginTemplateExtends) > 0) {
+                    $transform         = false;
+                    $resource_cfb_name = \sprintf(
+                        'extends:[frontend]%s|%s',
+                        $resource_cfb_name,
+                        \implode('|', $pluginTemplateExtends)
+                    );
+                }
             }
         }
 

@@ -14,7 +14,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('MODULE_GIFT_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'gratisgeschenk_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $settingsIDs = [1143, 1144, 1145, 1146];
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {

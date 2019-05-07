@@ -6,9 +6,9 @@
  * @created Thu, 30 Jan 2018 09:42:00 +0100
  */
 
+use JTL\Shopsetting;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shopsetting;
 
 /**
  * Class Migration_20180130094200

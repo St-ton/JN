@@ -1,7 +1,7 @@
 {if $oKupon->kKupon === 0}
-    {assign var=cTitel value=__('newCoupon')}
+    {assign var=cTitel value=__('buttonNewCoupon')}
 {else}
-    {assign var=cTitel value=__('modifyCoupon')}
+    {assign var=cTitel value=__('buttonModifyCoupon')}
 {/if}
 
 {if $oKupon->cKuponTyp === $couponTypes.standard}
@@ -299,8 +299,8 @@
             <div class="panel-body">
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
-                    modalTitle="{__('chooseProduct')}"
-                    searchInputLabel="{__('searchProductName')}"
+                    modalTitle="{__('titleChooseProducts')}"
+                    searchInputLabel="{__('labelSearchProduct')}"
                 }
                 <script>
                     $(function () {

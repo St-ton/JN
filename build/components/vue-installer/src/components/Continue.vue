@@ -1,31 +1,33 @@
 <template>
-    <div class="row d-print-none">
-        <div class="col">
-            <hr>
-            <b-btn size="lg" variant="warning" @click="setStep(step - 1)" v-if="step > 0 && disableBack === false">
-                <icon name="arrow-left"></icon> Zurück
-            </b-btn>
-            <b-btn size="lg" variant="primary" @click="continueInstallation(step + 1)" :class="{'pulse-button': disable !== true, disabled: disable === true}" v-if="step + 1 < steps.length">
-                <icon name="share"></icon> Weiter zu Schritt {{ step + 1}} - {{ steps[step + 1] }}
-            </b-btn>
+    <div class="d-print-none">
+        <hr>
+        <div class="row">
+            <div class="col btn-group">
+                <b-btn size="lg" variant="warning" @click="setStep(step - 1)" v-if="step > 0 && disableBack === false">
+                    <icon name="arrow-left"></icon> Zurück
+                </b-btn>
+                <b-btn size="lg" variant="primary" @click="continueInstallation(step + 1)" :class="{'pulse-button': disable !== true, disabled: disable === true}" v-if="step + 1 < steps.length">
+                    <icon name="share"></icon> Weiter zu Schritt {{ step + 1}} - {{ steps[step + 1] }}
+                </b-btn>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-    export default {
-        name:    'continueinstallation',
-        props:   ['disable', 'disableBack', 'cb'],
-        methods: {
-            continueInstallation(step) {
-                if (typeof this.disable === 'undefined' || this.disable === false) {
-                    if (typeof this.cb === 'undefined' || (typeof this.cb === 'function' && this.cb() === true)) {
-                        this.setStep(step);
-                    }
+export default {
+    name:    'continueinstallation',
+    props:   ['disable', 'disableBack', 'cb'],
+    methods: {
+        continueInstallation(step) {
+            if (typeof this.disable === 'undefined' || this.disable === false) {
+                if (typeof this.cb === 'undefined' || (typeof this.cb === 'function' && this.cb() === true)) {
+                    this.setStep(step);
                 }
             }
         }
-    };
+    }
+};
 </script>
 <style>
     .btn.pulse-button {

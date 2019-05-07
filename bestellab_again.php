@@ -14,10 +14,10 @@ use JTL\Session\Frontend;
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $kBestellung = (int)$_REQUEST['kBestellung'];
+$db          = Shop::Container()->getDB();
 $linkHelper  = Shop::Container()->getLinkService();
 $bestellung  = new Bestellung($kBestellung, true);
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
@@ -30,7 +30,7 @@ if ($bestellung->oKunde !== null
     exit;
 }
 
-$bestellid         = Shop::Container()->getDB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
+$bestellid         = $db->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
 $successPaymentURL = Shop::getURL();
 if ($bestellid->cId) {
     $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
@@ -96,7 +96,7 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
 
     if ($bZusatzangabenDa) {
         if (saveZahlungsInfo($bestellung->kKunde, $bestellung->kBestellung)) {
-            Shop::Container()->getDB()->update(
+            $db->update(
                 'tbestellung',
                 'kBestellung',
                 (int)$bestellung->kBestellung,
@@ -113,7 +113,7 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
 // Zahlungsart als Plugin
 $kPlugin = Helper::getIDByModuleID($moduleID);
 if ($kPlugin > 0) {
-    $loader  = Helper::getLoaderByPluginID($kPlugin);
+    $loader  = Helper::getLoaderByPluginID($kPlugin, $db);
     $oPlugin = $loader->init($kPlugin);
     if ($oPlugin !== null) {
         require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
@@ -130,11 +130,6 @@ if ($kPlugin > 0) {
     if ($oKundenKontodaten->kKunde > 0) {
         Shop::Smarty()->assign('oKundenKontodaten', $oKundenKontodaten);
     }
-} elseif ($moduleID === 'za_sofortueberweisung_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
-    $paymentMethod           = new SofortUeberweisung($moduleID);
-    $paymentMethod->cModulId = $moduleID;
-    $paymentMethod->preparePaymentProcess($bestellung);
 }
 
 Shop::Smarty()->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())

@@ -6,10 +6,9 @@
  * @created Mon, 15 Jan 2018 15:08:00 +0100
  */
 
+use JTL\DB\ReturnType;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Shop;
-use JTL\DB\ReturnType;
 
 /**
  * Class Migration_20180115150800
@@ -21,7 +20,7 @@ class Migration_20180115150800 extends Migration implements IMigration
 
     public function up()
     {
-        $values = Shop::Container()->getDB()->select('tsynclogin', [], []);
+        $values = $this->getDB()->select('tsynclogin', [], []);
 
         $this->execute('DELETE FROM `tsynclogin`');
         $this->execute(
@@ -42,12 +41,12 @@ class Migration_20180115150800 extends Migration implements IMigration
             $values->cPass = password_hash($values->cPass, PASSWORD_DEFAULT);
         }
 
-        Shop::Container()->getDB()->insert('tsynclogin', $values);
+        $this->getDB()->insert('tsynclogin', $values);
     }
 
     public function down()
     {
-        $columns = Shop::Container()->getDB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", ReturnType::SINGLE_OBJECT);
+        $columns = $this->getDB()->query("SHOW COLUMNS FROM tsynclogin LIKE 'kSynclogin'", ReturnType::SINGLE_OBJECT);
 
         if ($columns && $columns->Field === 'kSynclogin') {
             $this->execute(

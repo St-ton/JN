@@ -27,13 +27,13 @@ msgid "date"
 msgstr "Versendet am"
 
 msgid "errorHistoryDelete"
-msgstr "Fehler: E-Mail-Logbuch konnte nicht gelöscht werden."
+msgstr "E-Mail-Logbuch konnte nicht gelöscht werden."
 
 msgid "successHistoryDelete"
 msgstr "Die markierten Logbucheinträge wurden erfolgreich gelöscht."
 
 msgid "errorSelectEntry"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Logbucheintrag."
+msgstr "Bitte markieren Sie mindestens einen Logbucheintrag."
 
 msgid "sureEmailDelete"
 msgstr "Möchten Sie das komplette E-Mail-Logbuch wirklich löschen?"

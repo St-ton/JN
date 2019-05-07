@@ -508,7 +508,7 @@ class ShippingMethod
                     // 1D
                     $cVariation0                         = \mb_substr($product['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
-                    $kKindArtikel                        = Product::getChildProdctIDByAttribute(
+                    $kKindArtikel                        = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
                         $kEigenschaft0,
                         $kEigenschaftWert0
@@ -539,7 +539,7 @@ class ShippingMethod
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                     [$kEigenschaft1, $kEigenschaftWert1] = \explode(':', $cVariation1);
 
-                    $kKindArtikel = Product::getChildProdctIDByAttribute(
+                    $kKindArtikel = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
                         $kEigenschaft0,
                         $kEigenschaftWert0,
@@ -677,7 +677,8 @@ class ShippingMethod
         $shippingMethods = Shop::Container()->getDB()->queryPrepared(
             "SELECT *
             FROM tversandart
-            WHERE cNurAbhaengigeVersandart = :depOnly
+            WHERE cIgnoreShippingProposal != 'Y'
+                AND cNurAbhaengigeVersandart = :depOnly
                 AND cLaender LIKE :iso
                 AND (cVersandklassen = '-1' 
                     OR cVersandklassen RLIKE :sClasses)

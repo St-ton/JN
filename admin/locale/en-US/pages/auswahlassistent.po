@@ -3,103 +3,103 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "auswahlassistent"
-msgstr "Auswahlassistent"
+msgstr "Selection wizard"
 
 msgid "auswahlassistentDesc"
 msgstr " "
 
 msgid "auswahlassistentURL"
-msgstr "https://jtl-url.de/usgio"
+msgstr "https://jtl-url.de/6pvid"
 
 msgid "aaOverview"
-msgstr "Fragengruppen"
+msgstr "Question groups"
 
 msgid "aaQuestion"
-msgstr "Frage erstellen"
+msgstr "Creating questions"
 
 msgid "aaQuestionEdit"
-msgstr "Frage bearbeiten"
+msgstr "Editing questions"
 
 msgid "aaGroup"
-msgstr "Fragengruppe erstellen"
+msgstr "Creating question groups"
 
 msgid "aaGroupEdit"
-msgstr "Fragengruppe bearbeiten"
+msgstr "Editing question groups"
 
 msgid "aaSpecialSite"
-msgstr "CMS (Eigene Seite)"
+msgstr "CMS (custom page)"
 
 msgid "aaLocation"
-msgstr "Anzeigeorte"
+msgstr "Display location"
 
 msgid "aaChoose"
-msgstr "bitte auswählen"
+msgstr "Please select"
 
 msgid "aaStartseiteTaken"
-msgstr "Eine andere Gruppe wird bereits auf der Startseite angezeigt"
+msgstr "Another group is already displayed on the start page."
 
 msgid "aaKatSyntax"
-msgstr "Bitte achten Sie auf korrekte Syntax (z.b. 57;58)"
+msgstr "Be careful to use the right syntax (e.g.: 57;58)."
 
 msgid "aaKatTaken"
-msgstr "Eine andere Gruppe wird bereits auf einer ausgewählten Kategorie angezeigt"
+msgstr "Another group is already displayed for a selected category."
 
 msgid "aaLinkTaken"
-msgstr "Eine andere Gruppe wird bereits auf einer ausgewählten Spezialseite angezeigt"
+msgstr "Another group is already displayed on a selected special page."
 
 msgid "aaMerkmalTaken"
-msgstr "Eine andere Frage hat bereits in dieser Gruppe das ausgewählte Merkmal gewählt"
+msgstr "The selected characteristic has already been selected for a different question in this group."
 
 msgid "successGroupSaved"
-msgstr "Ihre Gruppe wurde erfolgreich gespeichert."
+msgstr "Group saved successfully."
 
 msgid "successGroupDeleted"
-msgstr "Ihre ausgewählten Gruppen wurden erfolgreich gelöscht."
+msgstr "Selected groups deleted successfully."
 
 msgid "errorGroupDeleted"
-msgstr "Fehler: Ihre ausgewählten Gruppen konnten nicht gelöscht werden."
+msgstr "Error: Could not delete the selected groups."
 
 msgid "successQuestionSaved"
-msgstr "Ihre Frage wurde erfolgreich gespeichert."
+msgstr "Question saved successfully."
 
 msgid "successQuestionDeleted"
-msgstr "Ihre ausgewählte Frage wurden erfolgreich gelöscht."
+msgstr "Question deleted successfully."
 
 msgid "errorQuestionDeleted"
-msgstr "Fehler: Ihre ausgewählte Frage konnten nicht gelöscht werden."
+msgstr "Error: Could not delete the selected question."
 
 msgid "hintName"
-msgstr "Welchen Namen soll die Gruppe erhalten?"
+msgstr "Please enter the name of the questions group. This is only for internal usage."
 
 msgid "hintDesc"
-msgstr "Wie soll die Beschreibung lauten?"
+msgstr "Here you can enter a description for a question group, which will be shown above the group."
 
 msgid "questionCatInGroup"
-msgstr "In welcher Kategorie soll die Gruppe angezeigt werden?"
+msgstr "Specify for which categories the questions group will be displayed."
 
 msgid "noSpecialPageAvailable"
-msgstr "Keine Spezialseite &quot;Auswahlassistent&quot; vorhanden."
+msgstr "Special page \"Selection wizard\" does not exist."
 
 msgid "hintSpecialPage"
-msgstr "Auf welcher Spezialseite soll die Gruppe angezeigt werden? (Mehrfachauswahl und Abwahl mit STRG möglich)"
+msgstr "Specify on which special page the group will be displayed. By holding Ctrl, you can select several pages at once."
 
 msgid "hintGroupOnHome"
-msgstr "Soll die Gruppe auf der Startseite angezeigt werden? (Es darf immer nur eine Gruppe auf der Startseite aktiv sein)"
+msgstr "Specify whether the group will be active on the start page of your JTL-Shop. Only one question group can be displayed on the start page."
 
 msgid "hintShowCheckbox"
-msgstr "Soll die Checkbox im Frontend aktiv und somit sichtbar sein?"
+msgstr "Define whether the questions group is active or not. Only active question groups are displayed."
 
 msgid "hintQuestionName"
-msgstr "Wie soll die Frage lauten?"
+msgstr "Enter the question to your customers."
 
 msgid "hintQuestionGroup"
-msgstr "In welche Gruppe soll die Frage hinzugefügt werden?"
+msgstr "Assign the question to a question group."
 
 msgid "hintQuestionAttribute"
-msgstr "Welches Merkmal soll die Frage erhalten?"
+msgstr "Define which characteristic will be the subject of this question."
 
 msgid "hintQuestionPosition"
-msgstr "An welcher Position soll die Frage stehen? (Umso höher desto weiter unten, z.b. 3)"
+msgstr "Specify in which position the question will be displayed. The smaller the number, the higher up the question will be displayed."
 
 msgid "hintQuestionActive"
-msgstr "Soll die Frage aktiviert sein? (Aktivierte Fragen werden angezeigt)"
+msgstr "Specify whether the question is active and will thus be displayed."

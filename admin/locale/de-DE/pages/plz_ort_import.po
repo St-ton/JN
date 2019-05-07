@@ -42,7 +42,7 @@ msgid "plz_ort_import_reset_desc"
 msgstr "Rückgängig - Backup wieder einspielen..."
 
 msgid "plz_ort_import_help"
-msgstr "Über \"Neue Daten importieren\" können Sie direkt von <i>%s</i> eine Datendatei herunterladen und automatisch installieren.<br/>Sollte der direkte Download nicht möglich sein oder wg. Zeitüberschreitung abbrechen, laden Sie die gewünschte Datei bitte per FTP in das Verzeichnis <i>/uploads</i> Ihres Webservers. Die Datei kann dann über das &lt;i class=\"fa fa-download\"&gt;</i>-Symbol in der Übersicht importiert werden.<br/>Vor dem Import wird ein Backup der aktuellen Daten erstellt, welches bei Bedarf zurückgespielt werden kann."
+msgstr "Über \"Neue Daten importieren\" können Sie direkt von <i>%s</i> eine Datendatei herunterladen und automatisch installieren.<br/>Sollte der direkte Download nicht möglich sein oder wg. Zeitüberschreitung abbrechen, laden Sie die gewünschte Datei bitte per FTP in das Verzeichnis <i>/uploads</i> Ihres Webservers. Die Datei kann dann über das <i class=\"fa fa-download\"></i>-Symbol in der Übersicht importiert werden.<br/>Vor dem Import wird ein Backup der aktuellen Daten erstellt, welches bei Bedarf zurückgespielt werden kann."
 
 msgid "errorImportInvalid"
 msgstr "Importdatei für %s kann nicht gelesen werden!"

@@ -3,31 +3,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "globalemetaangaben"
-msgstr "Globale Meta-Angaben"
+msgstr "Global meta data"
 
 msgid "globalemetaangabenDesc"
-msgstr "Hier können Sie globale Meta-Angaben (Title, Meta Description, Meta Keywords) pro Sprache definieren."
+msgstr "Here you can define the global meta data (title, meta description, meta keywords) for each language."
 
 msgid "globalemetaangabenMetaDesc"
-msgstr "Meta Description"
+msgstr "Meta description"
 
 msgid "globalemetaangabenKeywords"
-msgstr "Meta Keywords"
+msgstr "Meta keywords"
 
 msgid "globalemetaangabenMetaDescPraefix"
-msgstr "Meta Description Präfix"
+msgstr "Prefix for meta description"
 
 msgid "globalemetaangabenUrl"
-msgstr "https://jtl-url.de/v6sdm"
+msgstr "https://jtl-url.de/u8y4z"
 
 msgid "keywordingDesc"
-msgstr "Ihre Meta Keywords von Produktdetailseiten werden automatisch aus den jeweiligen Produktdaten generiert, sofern das Produkt keine explizite Meta Keywords über Funktionsattribute zugewiesen hat. Hier können Sie nun irrelevante Wörter ausschliessen, die nicht als Keywords genutzt werden sollen."
+msgstr "If no meta keywords have been explicitly assigned to an item in JTL-Wawi, the meta keywords will be automatically generated from the data on the item detail page. Here you can specify which words are not to be used as keywords. "
 
 msgid "keywordingURL"
-msgstr "https://jtl-url.de/54hk7"
+msgstr "https://jtl-url.de/fg041"
 
 msgid "excludeKeywords"
-msgstr "Auszuschliessende Wörter"
+msgstr "Words exempt from meta keywords"
 
 msgid "spaceSeparated"
-msgstr "getrennt durch Leerzeichen"
+msgstr "separated by blank spaces"

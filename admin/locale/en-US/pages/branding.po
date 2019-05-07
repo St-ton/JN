@@ -3,46 +3,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "branding"
-msgstr "Wasserzeichen (Bild-Branding)"
+msgstr "Watermark (image branding)"
 
 msgid "brandingDesc"
-msgstr "Hier können Sie Wasserzeichen für Bilder in verschiedenen Kategorien einstellen. Bitte beachten Sie, dass Sie bei Änderungen der Einstellungen Ihre Bilder von der Wawi zum Shop neu übertragen müssen, damit die Bilder mit dem neuen Wasserzeichen versehen werden. Testen Sie Ihre Einstellungen, indem Sie ein Bild aus JTL-Wawi erneut versenden und wenn Sie zufrieden mit den Einstellungen sind, machen Sie eine Bildkomplettübertragung aus JTL-Wawi heraus. Bitte beachten Sie weiterhin, dass Bilder im Browsercache zwischengespeichert werden - leeren Sie daher nach Änderung der Einstellungen und Abgleich mit der Wawi Ihren Browsercache, um die Resultate im Shop zu sehen."
+msgstr "Here you can add watermarks to images in different categories. Images of items are updated directly after saving. Images of all other categories must be transferred form JTL-Wawi via a complete synchronisation in order to display the watermarks."
 
 msgid "brandingUrl"
-msgstr "https://jtl-url.de/s5u8z"
+msgstr "https://jtl-url.de/5nd2e"
 
 msgid "brandingPictureKat"
-msgstr "Bildkategorie"
+msgstr "Image category"
 
 msgid "brandingActive"
-msgstr "Wasserzeichenfunktion aktivieren"
+msgstr "Activate watermark"
 
 msgid "brandingActiveDesc"
-msgstr "Wenn diese option aktiviert ist, werden alle Bilder beim Übertragen von der Wawi in den Shop automatisch mit einem Wasserzeichen versehen"
+msgstr "Here you can specify whether the images of the selected image category receive a watermark. For all categories except \"Item\", a complete synchronisation with JTL-Wawi is required."
 
 msgid "brandingPositionDesc"
-msgstr "Wählen Sie eine Position im Bild, wo das Wasserzeichen angezeigt werden soll\" title=\"Wählen Sie die Position des Wasserzeichens innerhalb des Bildes"
+msgstr "Here you can define in which part of the image the watermark will be displayed."
 
 msgid "brandingTransparencyDesc"
-msgstr "Geben Sie die Transparenz des Wasserzeichens in Prozent ein. Empfohlen wird ein Wert um 50"
+msgstr "Here you can adjust the transparency of the watermark. We recommend a value of 50."
 
 msgid "brandingSizeDesc"
-msgstr "Geben Sie die Größe des Wasserzeichens in Prozent vom Gesamtbild ein. Empfohlen wird ein Wert um 30. Bei 0 wird das Brandingbild nicht skaliert."
-
-msgid "brandingTransparencyColor"
-msgstr "Transparenzfarbe des Wasserzeichen"
-
-msgid "brandingTransparencyColorDesc"
-msgstr "Diese Farbe wird beim Wasserzeichen nicht berücksichtigt, dadurch werden transparente Bereiche ermöglicht. Wenn diese Einstellung genutzt wird, so wird das Wasserzeichen nicht skaliert und immer in der Originalgröße genutzt."
-
-msgid "brandingEdgeDistance"
-msgstr "Randabstand"
-
-msgid "brandingEdgeDistanceDesc"
-msgstr "Geben Sie den Abstand des Wasserzeichen in Prozent vom Rand ein. Empfohlen wird ein Wert zwischen 1-10"
+msgstr "Enter the size of the watermark in proportion to the image size (in %). We recommend setting a value of 30. If you enter 0, the watermark will not be scaled at all and will be inserted in the original image size."
 
 msgid "brandingFileName"
-msgstr "Brandingbild"
+msgstr "Watermark file"
 
 msgid "brandingFileNameDesc"
-msgstr "Geben Sie ein Brandingbild an."
+msgstr "Here you can specify which file to use for the watermark. We recommend using a .png file with a transparent background."

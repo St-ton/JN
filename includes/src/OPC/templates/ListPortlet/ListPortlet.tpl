@@ -1,4 +1,4 @@
-{assign var='tag' value=$portlet->getListTag($instance)}
+{$tag = $portlet->getListTag($instance)}
 
 <{$tag} {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
     {for $i = 1 to $instance->getProperty('count')}

@@ -9,10 +9,10 @@ msgid "contanctformDesc"
 msgstr "Hier können Sie das Kontaktformular von JTL-Shop konfigurieren. Um das Kontaktformular anzeigen zu können, müssen Sie mindestens einen Betreff anlegen. Sie können das Formular über „Inhalte &gt; Eigene Seiten“ einbinden."
 
 msgid "contanctformSubjectDesc"
-msgstr "Mit Betreffen können Sie Kontaktanfragen an die richtige Abteilung leiten. Der Kunde wählt im Kontaktformular den Betreff aus, die Anfrage kommt als E-Mail an die im Betreff hinterlegte E-Mail-Adresse."
+msgstr "Mit Betreffen können Sie Kontaktanfragen an die richtige Abteilung leiten. Der Kunde wählt im Kontaktformular den Betreff aus. Die Anfrage wird als E-Mail an die im Betreff hinterlegte E-Mail-Adresse gesendet."
 
 msgid "mail"
-msgstr "Empfänger-E-Mail"
+msgstr "Empfänger-E-Mail-Adresse"
 
 msgid "newSubject"
 msgstr "Neuer Betreff"
@@ -21,7 +21,7 @@ msgid "restrictedToCustomerGroups"
 msgstr "Sichtbar für"
 
 msgid "contactformSubject"
-msgstr "Kontaktformular Betreff"
+msgstr "Betreff des Kontaktformulars"
 
 msgid "additionalContent"
 msgstr "Zusätzlicher Inhalt"
@@ -45,10 +45,10 @@ msgid "successSubjectCreate"
 msgstr "Betreff wurde erfolgreich hinzugefügt."
 
 msgid "errorSubjectSave"
-msgstr "Der Betreff konnte nicht gespeichert werden"
+msgstr "Der Betreff konnte nicht gespeichert werden."
 
 msgid "successSubjectSave"
 msgstr "Der Betreff %s wurde erfolgreich geändert."
 
 msgid "successSubjectDelete"
-msgstr "Der Betreff wurde erfolgreich gelöscht"
+msgstr "Der Betreff wurde erfolgreich gelöscht."

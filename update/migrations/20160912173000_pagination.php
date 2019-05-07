@@ -10,16 +10,7 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
+ * Class Migration_20160912173000
  */
 class Migration_20160912173000 extends Migration implements IMigration
 {
@@ -54,6 +45,12 @@ class Migration_20160912173000 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName IN ('asc', 'desc', 'paginationTotalEntries', 'paginationEntriesPerPage', 'paginationEntryPagination', 'paginationOrderByDate', 'paginationOrderByRating', 'paginationOrderUsefulness') AND kSprachsektion = 1");
+        $this->execute(
+            "DELETE FROM `tsprachwerte` 
+                WHERE cName IN ('asc', 'desc', 'paginationTotalEntries', 'paginationEntriesPerPage',
+                                'paginationEntryPagination', 'paginationOrderByDate', 'paginationOrderByRating',
+                                'paginationOrderUsefulness')
+                  AND kSprachsektion = 1"
+        );
     }
 }

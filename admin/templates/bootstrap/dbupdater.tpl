@@ -9,12 +9,12 @@
             <h4>{__('eventProtocol')}</h4>
             <pre id="debug">
 {__('currentShopVersion')}
-     {__('system')}: {$currentFileVersion}
+    {__('system')}: {$currentFileVersion}
     {__('database')}: {$currentDatabaseVersion}
 {if $currentTemplateFileVersion != $currentTemplateDatabaseVersion}
     {__('currentTemplateVersion')}
-    {__('system')}: {$currentTemplateFileVersion}
-    {__('database')}: {$currentTemplateDatabaseVersion}
+        {__('system')}: {$currentTemplateFileVersion}
+        {__('database')}: {$currentTemplateDatabaseVersion}
 {/if}</pre>
             <br /><br />
         </div>

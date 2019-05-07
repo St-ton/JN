@@ -7,6 +7,7 @@
 namespace JTL;
 
 use Exception;
+use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginConfig;
 use JTL\Boxes\Factory as BoxFactory;
@@ -29,6 +30,7 @@ use JTL\Events\Event;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
+use JTL\Optin\Optin;
 use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -79,6 +81,7 @@ use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\MailSmarty;
 use JTLShop\SemVer\Version;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -418,6 +421,11 @@ final class Shop
      * @var string
      */
     private static $imageBaseURL;
+
+    /**
+     * @var string
+     */
+    private static $optinCode;
 
     /**
      * @var array
@@ -837,10 +845,10 @@ final class Shop
         $cacheID = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = $db->queryPrepared(
-                'SELECT kPlugin, bBootstrap, bExtension 
-                    FROM tplugin 
+                'SELECT kPlugin, bBootstrap, bExtension
+                    FROM tplugin
                     WHERE nStatus = :state
-                      AND bBootstrap = 1 
+                      AND bBootstrap = 1
                     ORDER BY nPrio ASC',
                 ['state' => State::ACTIVATED],
                 ReturnType::ARRAY_OF_OBJECTS
@@ -905,6 +913,8 @@ final class Shop
         self::$nNewsKat = Request::verifyGPCDataInt('nNewsKat');
         self::$cDatum   = Request::verifyGPDataString('cDatum');
         self::$nAnzahl  = Request::verifyGPCDataInt('nAnzahl');
+
+        self::$optinCode = Request::verifyGPDataString('oc');
 
         if (Request::verifyGPDataString('qs') !== '') {
             self::$cSuche = Text::xssClean(Request::verifyGPDataString('qs'));
@@ -1264,9 +1274,9 @@ final class Shop
                         $bindValues[$i + 1] = $t;
                     }
                     $oSeo = self::Container()->getDB()->queryPrepared(
-                        "SELECT kKey 
-                            FROM tseo 
-                            WHERE cKey = 'kHersteller' 
+                        "SELECT kKey
+                            FROM tseo
+                            WHERE cKey = 'kHersteller'
                             AND cSeo IN (" . \implode(',', \array_fill(0, $seoCount, '?')) . ')',
                         $bindValues,
                         ReturnType::ARRAY_OF_OBJECTS
@@ -1488,11 +1498,11 @@ final class Shop
                 if (Frontend::getCustomerGroup()->getID() > 0) {
                     $cKundengruppenSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                        OR cKundengruppen IS NULL 
-                        OR cKundengruppen = 'NULL' 
+                        OR cKundengruppen IS NULL
+                        OR cKundengruppen = 'NULL'
                         OR tlink.cKundengruppen = '')";
                     $link              = self::Container()->getDB()->query(
-                        'SELECT kLink 
+                        'SELECT kLink
                             FROM tlink
                             WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $cKundengruppenSQL,
                         ReturnType::SINGLE_OBJECT
@@ -1584,6 +1594,32 @@ final class Shop
             self::setPageType(\PAGE_EIGENE);
         }
         self::check404();
+
+        if (\mb_strlen(self::$optinCode) > 8) {
+            try {
+                $successMsg = (new Optin())
+                    ->setCode(self::$optinCode)
+                    ->handleOptin();
+                self::Container()->getAlertService()->addAlert(
+                    Alert::TYPE_INFO,
+                    self::Lang()->get($successMsg, 'messages'),
+                    'optinSucceeded'
+                );
+            } catch (Exceptions\EmptyResultSetException $e) {
+                self::Container()->getLogService()->notice($e->getMessage());
+                self::Container()->getAlertService()->addAlert(
+                    Alert::TYPE_ERROR,
+                    self::Lang()->get('optinCodeUnknown', 'errorMessages'),
+                    'optinUnknown'
+                );
+            } catch (Exceptions\InvalidInputException $e) {
+                self::Container()->getAlertService()->addAlert(
+                    Alert::TYPE_ERROR,
+                    self::Lang()->get('optinActionUnknown', 'errorMessages'),
+                    'optinUnknownAction'
+                );
+            }
+        }
 
         return self::$fileName;
     }
@@ -1971,10 +2007,10 @@ final class Shop
             foreach ($loggingConf as $value) {
                 if ($value === AdminLoginConfig::CONFIG_DB) {
                     $handlers[] = (new NiceDBHandler($container->getDB(), Logger::INFO))
-                        ->setFormatter(new LineFormatter('%message%', null, false, true));
+                        ->setFormatter(new LineFormatter('%message%', null, true, true));
                 } elseif ($value === AdminLoginConfig::CONFIG_FILE) {
                     $handlers[] = (new StreamHandler(\PFAD_LOGFILES . 'auth.log', Logger::INFO))
-                        ->setFormatter(new LineFormatter(null, null, false, true));
+                        ->setFormatter(new LineFormatter(null, null, true, true));
                 }
             }
 
@@ -1983,7 +2019,7 @@ final class Shop
 
         $container->singleton(LoggerInterface::class, function (Container $container) {
             $handler = (new NiceDBHandler($container->getDB(), self::getConfigValue(\CONF_GLOBAL, 'systemlog_flag')))
-                ->setFormatter(new LineFormatter('%message%', null, false, true));
+                ->setFormatter(new LineFormatter('%message%', null, true, true));
 
             return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
         });
@@ -2052,7 +2088,7 @@ final class Shop
         $container->bind(Mailer::class, function (Container $container) {
             $db        = $container->getDB();
             $settings  = Shopsetting::getInstance();
-            $smarty    = new SmartyRenderer($db);
+            $smarty    = new SmartyRenderer(new MailSmarty($db));
             $hydrator  = new DefaultsHydrator($smarty->getSmarty(), $db, $settings);
             $validator = new MailValidator($db, $settings->getAll());
 

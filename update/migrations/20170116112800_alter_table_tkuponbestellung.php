@@ -10,18 +10,7 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
- *
- * Available methods:
- * execute            - returns affected rows
- * fetchOne           - single fetched object
- * fetchAll           - array of fetched objects
- * fetchArray         - array of fetched assoc arrays
- * dropColumn         - drops a column if exists
- * addLocalization    - add localization
- * removeLocalization - remove localization
- * setConfig          - add / update config property
- * removeConfig       - remove config property
+ * Class Migration_20170116112800
  */
 class Migration_20170116112800 extends Migration implements IMigration
 {
@@ -30,7 +19,14 @@ class Migration_20170116112800 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tkuponbestellung` ADD `kKunde` INT, ADD `cBestellNr` VARCHAR(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci, ADD `fGesamtsummeBrutto` DOUBLE NOT NULL DEFAULT 0, ADD `fKuponwertBrutto` DOUBLE NOT NULL DEFAULT 0, ADD `cKuponTyp` ENUM('prozent','festpreis','versand','neukunden') CHARACTER SET latin1 COLLATE latin1_swedish_ci, ADD `dErstellt` DATETIME, ADD INDEX (`cKuponTyp`, `dErstellt`)");
+        $this->execute(
+            "ALTER TABLE `tkuponbestellung`
+                ADD `kKunde` INT, 
+                ADD `cBestellNr` VARCHAR(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+                ADD `fGesamtsummeBrutto` DOUBLE NOT NULL DEFAULT 0,
+                ADD `fKuponwertBrutto` DOUBLE NOT NULL DEFAULT 0,
+                ADD `cKuponTyp` ENUM('prozent','festpreis','versand','neukunden') CHARACTER SET latin1 COLLATE latin1_swedish_ci,
+                ADD `dErstellt` DATETIME, ADD INDEX (`cKuponTyp`, `dErstellt`)");
         // Standard- und Versandkupons
         $this->execute("UPDATE `tkuponbestellung` AS `kbg`
                         INNER JOIN (SELECT `kpb`.`kKupon`, `bsk`.`kBestellung`, `bsk`.`kKunde`, `bsk`.`cBestellNr`, ROUND(`bsk`.`fGesamtsumme`, 2) AS `fGesamtsummeBrutto`,

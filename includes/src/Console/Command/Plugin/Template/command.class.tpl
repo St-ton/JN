@@ -6,7 +6,7 @@
  * @created {$created}
  */
 
-namespace Plugin\{$pluginDir}\Commands;
+namespace Plugin\{$pluginId}\Commands;
 
 use JTL\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,7 +18,7 @@ class {$commandName} extends Command
     protected function configure()
     {
         $this
-            ->setName('plugin:{$pluginDir}:test')
+            ->setName('plugin:test')
             ->setDescription('Test description')
             ->addArgument('arg1', InputArgument::REQUIRED, 'Argument one');
     }

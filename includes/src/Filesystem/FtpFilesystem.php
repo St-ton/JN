@@ -296,7 +296,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function zip(string $fileName, callable $callback = null): bool
+    public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
     {
         throw new RuntimeException();
     }

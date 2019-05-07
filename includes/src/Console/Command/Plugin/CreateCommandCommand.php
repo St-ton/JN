@@ -22,7 +22,7 @@ class CreateCommandCommand extends Command
         $this
             ->setName('plugin:command:create')
             ->setDescription('Create new plugin command')
-            ->addArgument('plugin-dir', InputArgument::REQUIRED, 'Plugin id/dir name')
+            ->addArgument('plugin-id', InputArgument::REQUIRED, 'Plugin id')
             ->addArgument('command-name', InputArgument::REQUIRED, 'Command name, like \'CronCommand\'')
             ->addArgument('author', InputArgument::REQUIRED, 'Author');
     }
@@ -34,12 +34,12 @@ class CreateCommandCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $pluginDir   = trim($input->getArgument('plugin-dir'));
+        $pluginId    = trim($input->getArgument('plugin-id'));
         $commandName = trim($input->getArgument('command-name'));
         $author      = trim($input->getArgument('author'));
 
         try {
-            $commandPath = $this->createFile($pluginDir, $commandName, $author);
+            $commandPath = $this->createFile($pluginId, $commandName, $author);
 
             $output->writeln("<info>Created command:</info> <comment>'".$commandPath."'</comment>");
         } catch (\Exception $e) {
@@ -50,21 +50,21 @@ class CreateCommandCommand extends Command
     }
 
     /**
-     * @param string $pluginDir
+     * @param string $pluginId
      * @param string $commandName
      * @param string $author
      * @return string
      * @throws \SmartyException
      * @throws \Exception
      */
-    protected function createFile(string $pluginDir, string $commandName, string $author): string
+    protected function createFile(string $pluginId, string $commandName, string $author): string
     {
-        if (empty(Helper::getIDByPluginID($pluginDir))) {
+        if (empty(Helper::getIDByPluginID($pluginId))) {
             throw new \Exception('There is no plugin for the given dir name.');
         }
 
         $datetime      = new \DateTime('NOW');
-        $relPath       = 'plugins/'.$pluginDir.'/Commands';
+        $relPath       = 'plugins/'.$pluginId.'/Commands';
         $migrationPath = $relPath.'/'.$commandName.'.php';
         $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
 
@@ -76,7 +76,7 @@ class CreateCommandCommand extends Command
             ->assign('commandName', $commandName)
             ->assign('author', $author)
             ->assign('created', $datetime->format(\DateTime::RSS))
-            ->assign('pluginDir', $pluginDir)
+            ->assign('pluginId', $pluginId)
             ->fetch(PFAD_ROOT.'includes/src/Console/Command/Plugin/Template/command.class.tpl');
 
         $fileSystem->put($migrationPath, $content);

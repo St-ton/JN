@@ -78,7 +78,7 @@ class Application extends BaseApplication
             });
 
             foreach ($filteredPlugins as $plugin) {
-                if (file_exists($plugin->getPath().'/Commands')) {
+                if (is_dir($plugin->getPath().'/Commands')) {
                     $finder = Finder::create()
                         ->ignoreVCS(false)
                         ->ignoreDotFiles(false)
@@ -95,6 +95,7 @@ class Application extends BaseApplication
                         }
 
                         $command = new $class();
+                        $command->setName($plugin->getId().':'.$command->getName());
                         $this->add($command);
                     }
                 }

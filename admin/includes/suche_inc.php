@@ -78,10 +78,15 @@ function adminMenuSearch($query)
         foreach ($menu as $subMenuName => $subMenu) {
             if (is_array($subMenu)) {
                 foreach ($subMenu as $itemName => $item) {
-                    if (is_object($item) && stripos($itemName, $query) !== false) {
+                    if (is_object($item) && (
+                            stripos($itemName, $query) !== false
+                            || stripos($subMenuName, $query) !== false
+                            || stripos($menuName, $query) !== false
+                        )
+                    ) {
                         $name      = $itemName;
-                        $name      = highlightSearchTerm($name, $query);
                         $path      = $menuName . ' > ' . $subMenuName . ' > ' . $name;
+                        $path      = highlightSearchTerm($path, $query);
                         $results[] = (object)[
                             'title' => $itemName,
                             'path'  => $path,

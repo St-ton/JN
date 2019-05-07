@@ -161,13 +161,19 @@
                         <tr>
                             <th>{lang key="partialShippedPosition" section="order"}</th>
                             <th>{lang key="partialShippedCount" section="order"}</th>
+                            <th>{lang key='productNo' section='global'}</th>
+                            <th>{lang key='product' section='global'}</th>
+                            <th>{lang key="order" section="global"}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach from=$oLieferschein->oLieferscheinPos_arr item=oLieferscheinpos}
                             <tr>
-                                <td>{include file="account/order_item.tpl" Position=$oLieferscheinpos->oPosition bPreis=false bKonfig=false}</td>
+                                <td>{$oLieferscheinpos@iteration}</td>
                                 <td>{$oLieferscheinpos->getAnzahl()}</td>
+                                <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
+                                <td>{$oLieferscheinpos->oPosition->cName}</td>
+                                <td>{$Bestellung->cBestellNr}</td>
                             </tr>
                         {/foreach}
                     </tbody>

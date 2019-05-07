@@ -6443,6 +6443,10 @@ class Artikel
      */
     public function getTags(int $kSprache = 0): array
     {
+        trigger_error(
+            __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+            E_USER_DEPRECATED
+        );
         return [];
     }
 

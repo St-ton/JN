@@ -38,7 +38,6 @@ define('CONF_NEWS', 113);
 define('CONF_SITEMAP', 114);
 define('CONF_UMFRAGE', 115);
 define('CONF_KUNDENWERBENKUNDEN', 116);
-define('CONF_TRUSTEDSHOPS', 117);
 define('CONF_SUCHSPECIAL', 119);
 define('CONF_CHECKBOX', 120);
 define('CONF_AUSWAHLASSISTENT', 121);
@@ -59,7 +58,6 @@ define('C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR', 8);
 define('C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG', 9);
 define('C_WARENKORBPOS_TYP_VERPACKUNG', 10);
 define('C_WARENKORBPOS_TYP_GRATISGESCHENK', 11);
-define('C_WARENKORBPOS_TYP_TRUSTEDSHOPS', 12);
 //
 define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', 13);
 define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', 14);
@@ -127,6 +125,10 @@ define('MAILTEMPLATE_CHECKBOX_SHOPBETREIBER', 'core_jtl_checkbox_shopbetreiber')
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
+define('MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN', 'core_jtl_verfuegbarkeitsbenachrichtigung_optin');
+define('MAILTEMPLATE_FOOTER', 'core_jtl_footer');
+define('MAILTEMPLATE_HEADER', 'core_jtl_header');
+define('MAILTEMPLATE_AKZ', 'core_jtl_anbieterkennzeichnung');
 // Suche
 define('SEARCH_SORT_NONE', -1);
 define('SEARCH_SORT_STANDARD', 100);
@@ -394,8 +396,6 @@ define('BOX_SUCHWOLKE', 13);
 define('BOX_SONDERANGEBOT', 14);
 define('BOX_TOP_ANGEBOT', 15);
 define('BOX_TOP_BEWERTET', 16);
-define('BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN', 17);
-define('BOX_TRUSTEDSHOPS_GUETESIEGEL', 18);
 define('BOX_IN_KUERZE_VERFUEGBAR', 19);
 define('BOX_GLOBALE_MERKMALE', 20);
 define('BOX_WARENKORB', 21);
@@ -436,9 +436,6 @@ define('STATS_ADMIN_TYPE_UMSATZ', 4);
 define('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', 5);
 // Newsletter URL_SHOP Parsevariable für Bilder in der Standardvorlage
 define('NEWSLETTER_STD_VORLAGE_URLSHOP', '$#URL_SHOP#$');
-// Trusted Shops Käuferschutz Varianten
-define('TS_BUYERPROT_CLASSIC', 'CLASSIC');
-define('TS_BUYERPROT_EXCELLENCE', 'EXCELLENCE');
 // CheckBox
 define('CHECKBOX_ORT_REGISTRIERUNG', 1);
 define('CHECKBOX_ORT_BESTELLABSCHLUSS', 2);
@@ -494,7 +491,6 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 // Max Anzahl an Variationswerten für Warenkorbmatrix
-define('ART_MATRIX_MAX', 250);
 
 define('BROWSER_UNKNOWN', 0);
 define('BROWSER_MSIE', 1);

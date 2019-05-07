@@ -164,7 +164,10 @@ GUI.prototype = {
 
     onBtnImport: function()
     {
-        this.page.loadFromImport(this.iframe.onPageLoad);
+        this.page.loadFromImport(
+            this.iframe.onPageLoad,
+            er => this.showError('Could not import OPC page JSON: ' + er.error.message)
+        );
     },
 
     onBtnExport: function()
@@ -197,7 +200,7 @@ GUI.prototype = {
 
     onSavePageError: function(error)
     {
-        this.showError('Page could not be saved: ' + error);
+        this.showError('Page could not be saved: ' + error.error.message);
     },
 
     setUnsaved: function(enable, record)
@@ -272,7 +275,11 @@ GUI.prototype = {
         var revId = elm.data('revision-id');
 
         this.showLoader();
-        this.page.loadRev(revId, this.iframe.onPageLoad);
+        this.page.loadRev(
+            revId,
+            this.iframe.onPageLoad,
+            er => this.showError('Error while loading draft preview: ' + er.error.message),
+        );
         this.setUnsaved(revId !== 0);
     },
 
@@ -321,15 +328,15 @@ GUI.prototype = {
 
         for(var propname in configObject) {
             var propval   = configObject[propname];
-            var propInput = $('[name="' + propname + '"]');
+            var propInput = $('#config-' + propname);
 
             if (propInput.length > 0) {
                 var propType = propInput.data('prop-type');
 
-                if (propType === 'filter') {
+                if (propType === 'json') {
                     propval = JSON.parse(propval);
-                } else if (propInput[0].type === 'radio') {
-                    propval = Boolean(propval);
+                } else if (propInput[0].type === 'checkbox') {
+                    propval = propval === '1';
                 } else if (propInput[0].type === 'number') {
                     propval = parseInt(propval);
                 }
@@ -340,13 +347,17 @@ GUI.prototype = {
 
         portletData.properties = configObject;
 
-        this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml);
+        this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml, er => {
+            this.configModal.modal('hide');
+            this.showError('Error while saving Portlet configuration: ' + er.error.message);
+        });
     },
 
     onPortletPreviewHtml: function(preview)
     {
         this.iframe.replaceSelectedPortletHtml(preview);
         this.configModal.modal('hide');
+        this.page.updateFlipcards();
     },
 
     onBlueprintForm: function(e)
@@ -456,7 +467,7 @@ GUI.prototype = {
         this.page.publishFrom = this.publishFromEnabled.prop('checked') ? this.publishFrom.val() : null;
         this.page.publishTo   = this.publishToEnabled.prop('checked') ? this.publishTo.val() : null;
 
-        this.page.publicate();
+        this.page.publicate(noop, er => this.showError(er.error.message));
 
         this.publishModal.modal('hide');
     },
@@ -503,7 +514,7 @@ GUI.prototype = {
          this.openElFinder(function(url) {
              this.configForm.find('[name="' + propName + '"]').val(url);
              this.configForm.find('#preview-vid-' + propName).attr('src', url);
-             this.configForm.find('#cont-preview-vid-' + propName).load();
+             this.configForm.find('#cont-preview-vid-' + propName)[0].load();
          }.bind(this),'video');
     },
 

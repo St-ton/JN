@@ -35,6 +35,13 @@ Page.prototype = {
         this.io.unlockDraft(this.key, unlockedCB);
     },
 
+    updateFlipcards: function()
+    {
+        this.rootAreas.find('.flipcard').each(function(i, elm) {
+            elm.updateFlipcardHeight();
+        });
+    },
+
     onTimeToLockAgain: function()
     {
         this.lock();
@@ -45,13 +52,13 @@ Page.prototype = {
         this.io.getRevisionList(this.key, revisionsCB);
     },
 
-    initIframe: function(jq, loadCB)
+    initIframe: function(jq, loadCB, errorCB)
     {
         debuglog('Page initIframe');
 
         this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
-        this.loadDraftPreview(loadCB);
+        this.loadDraftPreview(loadCB, errorCB);
     },
 
     loadDraft: function(loadCB)
@@ -61,49 +68,59 @@ Page.prototype = {
         this.io.getDraft(this.key, this.onLoadDraft.bind(this, loadCB || noop));
     },
 
-    loadDraftPreview: function(loadCB)
+    loadDraftPreview: function(loadCB, errorCB)
     {
         debuglog('Page loadDraftPreview');
 
-        this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
+        this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
     },
 
-    loadRev: function(revId, loadCB)
+    loadRev: function(revId, loadCB, errorCB)
     {
         if(revId === -1) {
-            this.loadPageFromWebStorage(loadCB || noop);
+            this.loadPageFromWebStorage(loadCB || noop, errorCB || noop);
         } else if(revId === 0) {
-            this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop));
+            this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
         } else {
-            this.io.getRevisionPreview(revId, this.onLoad.bind(this, loadCB || noop));
+            this.io.getRevisionPreview(revId, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
         }
     },
 
-    loadFromData: function(data, loadCB)
+    loadFromData: function(data, loadCB, errorCB)
     {
         this.io.createPagePreview(
             {areas: data.areas},
-            this.onLoad.bind(this, loadCB || noop)
+            this.onLoad.bind(this, loadCB || noop),
+            errorCB || noop,
         );
     },
 
-    loadFromJSON: function(json, loadCB)
+    loadFromJSON: function(json, loadCB, errorCB)
     {
-        this.loadFromData(JSON.parse(json), loadCB);
+        try {
+            var data = JSON.parse(json);
+        } catch (e) {
+            errorCB({error:{message:'JSON data could not be loaded'}});
+        }
+
+        this.loadFromData(data, loadCB, errorCB);
     },
 
-    loadFromImport: function(loadCB)
+    loadFromImport: function(loadCB, errorCB)
     {
-        this.jq('<input type="file" accept=".json">').on('change', this.onImportChosen.bind(this, loadCB)).click();
+        this.jq('<input type="file" accept=".json">')
+            .on('change', this.onImportChosen.bind(this, loadCB, errorCB)).click();
     },
 
-    loadPageFromWebStorage: function(loadCB)
+    loadPageFromWebStorage: function(loadCB, errorCB)
     {
         var pageJson = window.localStorage.getItem(this.getStorageId());
 
         if(pageJson !== null) {
             this.clear();
-            this.loadFromJSON(pageJson, loadCB);
+            this.loadFromJSON(pageJson, loadCB, errorCB);
+        } else {
+            errorCB({error:{message:'could not find locally stored draft data'}})
         }
     },
 
@@ -150,16 +167,16 @@ Page.prototype = {
         return 'opcpage.' + this.key;
     },
 
-    onImportChosen: function(loadCB, e)
+    onImportChosen: function(loadCB, errorCB, e)
     {
         this.importReader = new FileReader();
-        this.importReader.onload = this.onReaderLoad.bind(this, loadCB);
+        this.importReader.onload = this.onReaderLoad.bind(this, loadCB, errorCB);
         this.importReader.readAsText(e.target.files[0]);
     },
 
-    onReaderLoad: function(loadCB)
+    onReaderLoad: function(loadCB, errorCB)
     {
-        this.loadFromJSON(this.importReader.result, loadCB);
+        this.loadFromJSON(this.importReader.result, loadCB, errorCB);
     },
 
     onLoadDraft: function(loadCB, pageData)

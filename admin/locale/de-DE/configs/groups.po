@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "configgroup_108"
 msgstr "Artikel"
 
@@ -163,9 +167,6 @@ msgstr "Lastschrift"
 msgid "configgroup_44"
 msgstr "Barzahlung"
 
-msgid "configgroup_250"
-msgstr "Sofortüberweisung"
-
 msgid "configgroup_288"
 msgstr "Einstellungen"
 
@@ -237,9 +238,6 @@ msgstr "Einstellungen für Umfragesystem"
 
 msgid "configgroup_593"
 msgstr "Einstellungen für Kunden werben Kunden"
-
-msgid "configgroup_1291"
-msgstr "Einstellungen für Trusted Shops Käuferschutz"
 
 msgid "configgroup_1392"
 msgstr "Standardsortierung für Besondere Artikel"

@@ -137,19 +137,18 @@ if (isset($_GET['fc']) && mb_strlen($_GET['fc']) > 0) {
         );
     }
 }
-if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+if (Request::verifyGPCDataInt('abonnieren') > 0) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
     $customer            = new stdClass();
     $customer->cAnrede   = isset($_POST['cAnrede'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cAnrede'])))
-        : null;
+        : Frontend::getCustomer()->cAnrede;
     $customer->cVorname  = isset($_POST['cVorname'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cVorname'])))
-        : null;
+        : Frontend::getCustomer()->cVorname;
     $customer->cNachname = isset($_POST['cNachname'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cNachname'])))
-        : null;
+        : Frontend::getCustomer()->cNachname;
     $customer->cEmail    = isset($_POST['cEmail'])
         ? Text::filterXSS($db->escape(strip_tags($_POST['cEmail'])))
         : null;
@@ -167,12 +166,6 @@ if (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 1) {
         );
     }
     $smarty->assign('cPost_arr', Text::filterXSS($_POST));
-} elseif (isset($_POST['abonnieren']) && (int)$_POST['abonnieren'] === 2) {
-    $oPlausi                      = new stdClass();
-    $oPlausi->cPost_arr['cEmail'] = isset($_POST['cEmail'])
-        ? Text::filterXSS($db->escape(strip_tags($_POST['cEmail'])))
-        : null;
-    $smarty->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && (int)$_POST['abmelden'] === 1) {
     if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
         $recicpient = $db->select(

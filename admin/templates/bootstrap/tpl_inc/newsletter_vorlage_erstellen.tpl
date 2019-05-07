@@ -174,8 +174,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='articlePicker'
-                        modalTitle="{__('chooseProduct')}"
-                        searchInputLabel="{__('searchProductName')}"
+                        modalTitle="{__('titleChooseProducts')}"
+                        searchInputLabel="{__('labelSearchProduct')}"
                     }
                     <script>
                         $(function () {
@@ -215,8 +215,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='manufacturerPicker'
-                        modalTitle="{__('chooseManufacturer')}"
-                        searchInputLabel="{__('searchManufacturerName')}"
+                        modalTitle="{__('titleChooseManufacturer')}"
+                        searchInputLabel="{__('labelSearchManufacturer')}"
                     }
                     <script>
                         $(function () {
@@ -256,8 +256,8 @@ function checkNewsletterSend() {ldelim}
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
                         searchPickerName='categoryPicker'
-                        modalTitle="{__('chooseCatgeory')}"
-                        searchInputLabel="{__('searchCatgeoryName')}"
+                        modalTitle="{__('titleChooseCategory')}"
+                        searchInputLabel="{__('labelSearchCategory')}"
                     }
                     <script>
                         $(function () {

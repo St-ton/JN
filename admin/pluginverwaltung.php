@@ -388,12 +388,12 @@ if ($step === 'pluginverwaltung_uebersicht') {
         + count($pluginsInstalledByState['status_6']);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
     $kPlugin   = Request::verifyGPCDataInt('kPlugin');
-    $loader    = Helper::getLoaderByPluginID($kPlugin);
+    $loader    = Helper::getLoaderByPluginID($kPlugin, $db);
     $languages = $db->query(
         'SELECT * FROM tsprache',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $smarty->assign('languages', $languages)
+    $smarty->assign('pluginLanguages', $languages)
            ->assign('plugin', $loader->init($kPlugin))
            ->assign('kPlugin', $kPlugin);
 }

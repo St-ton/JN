@@ -1,9 +1,12 @@
+{$data = $instance->getAnimationData()}
+
 {if $isPreview}
-    {assign var=data value=['portlet' => $instance->getDataAttribute()]}
-    {assign var=areaClass value='opc-area'}
+    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
+    {$areaClass = 'opc-area'}
 {/if}
+
 {row data=$data|default:[]
-     class=$instance->getAttribute('class')
+     class=$instance->getAnimationClass()
      style=$instance->getStyleString()|default:null}
     {foreach $portlet->getLayouts($instance) as $i => $colLayout}
         {assign var=areaId value="col-$i"}
@@ -19,6 +22,10 @@
                 {$instance->getSubareaFinalHtml($areaId)}
             {/if}
         {/col}
-        {$portlet->getDividers($colLayout)}
+        {foreach $colLayout.divider as $size => $value}
+            {if !empty($value)}
+                {clearfix visible-size=$size}
+            {/if}
+        {/foreach}
     {/foreach}
 {/row}

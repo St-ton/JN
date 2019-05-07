@@ -364,6 +364,11 @@
             });
         },
 
+        setCompareListHeight: function() {
+            var h = parseInt($('.comparelist .equal-height').outerHeight());
+            $('.comparelist .equal-height').outerHeight(h);
+        },
+
         loadContent: function(url, callback, error, animation, wrapper) {
             var that        = this;
             var $wrapper    = (typeof wrapper === 'undefined' || wrapper.length === 0) ? $('#result-wrapper') : $(wrapper);
@@ -463,6 +468,7 @@
             this.preventDropdownToggle();
             this.smoothScroll();
             this.checkout();
+            this.setCompareListHeight();
         }
     };
 

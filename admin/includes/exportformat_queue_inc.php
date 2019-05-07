@@ -376,7 +376,7 @@ function exportformatQueueActionTriggern(array &$messages)
         } elseif ($cronCount === 1) {
             $messages['notice'] .= __('successCronStart') . '<br />';
         } elseif ($cronCount > 1) {
-            $messages['notice'] .= sprintf(__('errorCronsStart'), $cronCount) . '<br />';
+            $messages['notice'] .= sprintf(__('successCronsStart'), $cronCount) . '<br />';
         }
 
         if ($jobCount === 1) {

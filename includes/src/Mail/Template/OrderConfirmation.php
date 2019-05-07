@@ -26,8 +26,7 @@ class OrderConfirmation extends OrderShipped
         if ($data === null) {
             return;
         }
-        $smarty->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null)
-               ->assign('oTrustedShopsBewertenButton', null);
+        $smarty->assign('Verfuegbarkeit_arr', $data->cVerfuegbarkeit_arr ?? null);
         $moduleID = $data->tbestellung->Zahlungsart->cModulId ?? null;
         if (!empty($moduleID)) {
             $paymentConf = $this->db->queryPrepared(

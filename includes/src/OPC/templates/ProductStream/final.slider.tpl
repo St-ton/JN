@@ -4,7 +4,8 @@
     <section class="panel{if $title|strlen > 0} panel-default{/if}
                     panel-slider
                     {if isset($class) && $class|strlen > 0} {$class}{/if}"
-            {if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
+            {if isset($id) && $id|strlen > 0} id="{$id}"{/if}
+            style="{$instance->getStyleString()}">
         <div class="panel-heading">
             {if $title|strlen > 0}
                 <h5 class="panel-title">

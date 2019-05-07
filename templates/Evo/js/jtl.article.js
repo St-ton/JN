@@ -167,9 +167,10 @@
 
         registerBulkPrices: function($wrapper) {
             var $bulkPrice = $('.bulk-price', $wrapper),
-                that       = this;
+                that       = this,
+                $config    = $('#product-configurator');
 
-            if ($bulkPrice.length > 0) {
+            if ($bulkPrice.length > 0 && $config.length === 0) {
                 $('#quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),
@@ -388,7 +389,7 @@
         registerProductActions: function($wrapper) {
             var that = this;
 
-            $('*[data-toggle="product-actions"] button', $wrapper)
+            $('.product-actions button', $wrapper)
                 .on('click', function(event) {
                     var data = $(this.form).serializeObject();
 
@@ -591,7 +592,7 @@
             for (var ind in data.cBoxContainer) {
                 var $list = $(this.options.selector.boxContainer+ind);
 
-                if ($list.size() > 0) {
+                if ($list.length > 0) {
                     if (data.cBoxContainer[ind].length) {
                         var $boxContent = $(data.cBoxContainer[ind]);
                         this.registerProductActions($boxContent);
@@ -709,7 +710,7 @@
             for (var ind in data.cBoxContainer) {
                 var $list = $(this.options.selector.boxContainerWish+ind);
 
-                if ($list.size() > 0) {
+                if ($list.length > 0) {
                     if (data.cBoxContainer[ind].length) {
                         var $boxContent = $(data.cBoxContainer[ind]);
                         this.registerProductActions($boxContent);

@@ -3,37 +3,37 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "filecheck"
-msgstr "Shopdateien-Check"
+msgstr "Shop file check"
 
 msgid "filecheckDesc"
-msgstr "Mit diesem Tool können Sie prüfen, ob alle Shop-Dateien korrekt und vollständig hochgeladen wurden. Es wird pro Shopdatei geprüft, ob die Prüfsumme der Datei mit der Prüfsumme der Originaldatei übereinstimmt. Ist dies der Fall, so steht neben dem Dateinamen ein grün hinterlegtes \"OK\". Wurde eine Shopdatei geändert, fehlerhaft übertragen oder gelöscht, dann wird dies mit \"modifiziert\" kenntlich gemacht."
+msgstr "Here you can review all shop files to check whether they have been uploaded correctly. The files are checked for discrepancies between the checksum of the original files and the checksum of the current file. If no discrepancies are found, the status is \"OK\". If a shop file has been changed, transferred with errors or deleted, the status is \"modified\"."
 
 msgid "filecheckURL"
-msgstr "https://jtl-url.de/o9a4l"
+msgstr "https://jtl-url.de/bhzcm"
 
 msgid "fileCheckNoneModifiedOrphanedFiles"
-msgstr "Derzeit gibt es keine modifizierten oder verwaisten Dateien"
+msgstr "There are currently no modified or orphaned files."
 
 msgid "fileCheckModifiedFilesHeadline"
-msgstr "Modifizierte Dateien"
+msgstr "Modified files"
 
 msgid "fileCheckModifiedFilesNote"
-msgstr "Die folgenden Dateien sind nicht identisch mit den Dateien aus dem Release."
+msgstr "The following files are not identical to the files of the current online shop version."
 
 msgid "fileCheckOrphanedFilesHeadline"
-msgstr "Verwaiste Dateien"
+msgstr "Orphaned data"
 
 msgid "fileCheckOrphanedFilesNote"
-msgstr "Die folgenden Dateien sind in früheren Versionen von JTL-Shop gelöscht worden und jetzt nicht mehr in Gebrauch. Daher können diese Dateien entfernt werden."
+msgstr "The following files were deleted in earlier versions of JTL-Shop and are not used anymore. The files can therefore be removed."
 
 msgid "fileCheckNumberModifiedFiles"
-msgstr "Anzahl modifizierter Dateien"
+msgstr "Number of modified files"
 
 msgid "fileCheckNumberOrphanedFiles"
-msgstr "Anzahl verwaister Dateien"
+msgstr "Number of orphaned files"
 
 msgid "errorFileNotFound"
-msgstr "Fehler: Die Datei mit der aktuellen Dateiliste existiert nicht."
+msgstr "The file with the current file list does not exist."
 
 msgid "errorFileListEmpty"
-msgstr "Fehler: Die Datei mit der aktuellen Dateiliste ist leer."
+msgstr "The file with the current file list is empty."

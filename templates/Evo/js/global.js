@@ -269,10 +269,11 @@ function navigation()
 }
 
 function addValidationListener() {
-    var forms   = $('form.evo-validate'),
-        inputs  = $('form.evo-validate input,form.evo-validate select,form.evo-validate textarea'),
-        selects = $('form.evo-validate select'),
-        $body   = $('body');
+    var forms      = $('form.evo-validate'),
+        inputs     = $('form.evo-validate input, form.evo-validate textarea').not('[type="radio"],[type="checkbox"]'),
+        selects    = $('form.evo-validate select'),
+        checkables = $('form.evo-validate input[type="radio"], form.evo-validate input[type="checkbox"]'),
+        $body      = $('body');
 
     for (var i = 0; i < forms.length; i++) {
         forms[i].addEventListener('invalid', function (event) {
@@ -304,10 +305,15 @@ function addValidationListener() {
             }
         }, true);
     }
+
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].addEventListener('blur', function (event) {
             checkInputError(event);
-
+        }, true);
+    }
+    for (var i = 0; i < checkables.length; i++) {
+        checkables[i].addEventListener('click', function (event) {
+            checkInputError(event);
         }, true);
     }
     for (var i = 0; i < selects.length; i++) {
@@ -320,7 +326,14 @@ function addValidationListener() {
 function checkInputError(event)
 {
     var $target = $(event.target);
-    $target.closest('.form-group').find('div.form-error-msg').remove();
+    if ($target.parents('.cfg-group') != undefined) {
+        $target.parents('.cfg-group').find('div.form-error-msg').slideUp(function () {
+            $(this).remove();
+        });
+    }
+    $target.parents('.form-group').find('div.form-error-msg').slideUp(function () {
+        $(this).remove();
+    });
 
     if ($target.data('must-equal-to') !== undefined) {
         var $equalsTo = $($target.data('must-equal-to'));

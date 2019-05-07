@@ -1130,29 +1130,22 @@ function holeAehnlicheArtikel($kArtikel)
         $lagerFilter         = gibLagerfilter();
         $kundenGruppe        = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $oArtikelMerkmal_arr = Shop::DB()->query(
-            "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
-                FROM (
-                    SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, 
-                    tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
-	                FROM tartikelmerkmal
-	                JOIN tartikel 
-	                    ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                        AND tartikel.kVaterArtikel != {$kArtikel}
-                        AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-	                LEFT JOIN tartikelsichtbarkeit 
-	                    ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
-	                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tartikelmerkmal.kArtikel != {$kArtikel}
-                        {$lagerFilter}
-                        {$cSQLXSeller}
-                ) AS merkmalartikel
-                JOIN tartikelmerkmal similarMerkmal 
-                    ON similarMerkmal.kArtikel = {$kArtikel}
-                    AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
-                    AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
-                GROUP BY merkmalartikel.kArtikel
-                ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
+            "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
+                 FROM tartikelmerkmal
+                 JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                    AND tartikel.kVaterArtikel != {$kArtikel}
+                    AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
+                 JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = {$kArtikel}
+                    AND similarMerkmal.kMerkmal = tartikelmerkmal.kMerkmal
+                    AND similarMerkmal.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                 LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
+                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    AND tartikelmerkmal.kArtikel != {$kArtikel}
+                    {$lagerFilter}
+                    {$cSQLXSeller}
+                 GROUP BY tartikelmerkmal.kArtikel
+                 ORDER BY COUNT(tartikelmerkmal.kMerkmal) DESC
                 " . $cLimit, 2
         );
         if (is_array($oArtikelMerkmal_arr) && count($oArtikelMerkmal_arr) > 0) {

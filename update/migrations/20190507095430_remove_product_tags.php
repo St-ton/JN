@@ -31,6 +31,31 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->removeConfig('boxen_tagging_count');
         $this->removeConfig('sonstiges_tagging_all_count');
         $this->removeConfig('sitemap_tags_anzeigen');
+
+        //remove LINKTYP_TAGGING
+        $this->execute('DELETE FROM `tspezialseite` WHERE `nLinkart` = 14');
+        $this->execute("DELETE `tlink`, `tlinkgroupassociations`, `tseo`
+                          FROM `tlink`
+                          JOIN `tlinkgroupassociations`
+                            ON tlink.kLink = tlinkgroupassociations.linkID 
+                          JOIN `tseo`
+                            ON tlink.kLink = tseo.kKey AND tseo.cKey = 'kLink'
+                          WHERE tlink.nLinkart = 14"
+        );
+        //remove PAGE_TAGGING
+        $this->execute('DELETE FROM `tboxensichtbar` WHERE `kSeite` = 22');
+        $this->execute('DELETE FROM `tboxenanzeige` WHERE `nSeite` = 22');
+        $this->execute('DELETE FROM `textensionpoint` WHERE `nSeite` = 22');
+        //remove BOX_TAGWOLKE, BOX_FILTER_TAG
+        $this->execute('DELETE FROM `tboxvorlage` WHERE `kBoxvorlage` = 24 OR `kBoxvorlage` = 32');
+        $this->execute('DELETE `tboxen`, `tboxensichtbar`
+                          FROM `tboxen`
+                          JOIN `tboxensichtbar`
+                            ON tboxen.kBox = tboxensichtbar.kBox
+                          WHERE tboxen.kBoxvorlage = 24 OR tboxen.kBoxvorlage = 32'
+        );
+
+        $this->execute("DELETE FROM `tseo` WHERE `cKey` = 'kTag'");
     }
 
     public function down()

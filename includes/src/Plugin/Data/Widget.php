@@ -6,8 +6,8 @@
 
 namespace JTL\Plugin\Data;
 
-use stdClass;
 use Illuminate\Support\Collection;
+use stdClass;
 use function Functional\reindex;
 
 /**

@@ -6,9 +6,9 @@
 
 namespace JTL\Plugin\Data;
 
+use Illuminate\Support\Collection;
 use JTL\Link\LinkList;
 use JTL\Shop;
-use Illuminate\Support\Collection;
 use function Functional\map;
 
 /**

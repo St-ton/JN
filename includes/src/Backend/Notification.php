@@ -270,7 +270,7 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        if ($linkAdmin->getDuplicateSpecialLinks()) {
+        if ($linkAdmin->getDuplicateSpecialLinks()->count() > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 __('duplicateSpecialLinkTitle'),

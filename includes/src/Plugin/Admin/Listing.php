@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin;
 
+use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -18,7 +19,6 @@ use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\XMLParser;
-use Illuminate\Support\Collection;
 use function Functional\map;
 
 /**

@@ -6,9 +6,9 @@
 
 namespace JTL\Plugin;
 
+use DirectoryIterator;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use DirectoryIterator;
 
 /**
  * Class MigrationHelper

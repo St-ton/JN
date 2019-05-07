@@ -1757,24 +1757,6 @@ msgstr "Yes, in content area and in navigation box"
 msgid "bewertungsfilter_benutzen_value(N)"
 msgstr "No"
 
-msgid "allgemein_tagfilter_benutzen_value(content)"
-msgstr "Yes, in content area"
-
-msgid "allgemein_tagfilter_benutzen_value(box)"
-msgstr "Yes, in navigation box"
-
-msgid "allgemein_tagfilter_benutzen_value(Y)"
-msgstr "Yes, in content area and in navigation box"
-
-msgid "allgemein_tagfilter_benutzen_value(N)"
-msgstr "No"
-
-msgid "tag_filter_type_value(A)"
-msgstr "No multiple selection (only restriction of results)"
-
-msgid "tag_filter_type_value(O)"
-msgstr "Multiple selection"
-
 msgid "suchtrefferfilter_nutzen_value(Y)"
 msgstr "Yes"
 

@@ -199,7 +199,10 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+        E_USER_DEPRECATED
+    );
     return [];
 }
 
@@ -228,12 +231,11 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
  */
 function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $tags = gibTagFilterOptionen($FilterSQL, $NaviFilter);
-    foreach ($tags as $key => $oTags) {
-        $tags[$key]->cURL = Text::htmlentitydecode($oTags->cURL);
-    }
-    return AbstractBox::getJSONString($tags);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+        E_USER_DEPRECATED
+    );
+    return '';
 }
 
 /**
@@ -941,7 +943,6 @@ function bauFilterSQL($NaviFilter)
     $FilterSQL->oHerstellerFilterSQL      = new stdClass();
     $FilterSQL->oKategorieFilterSQL       = new stdClass();
     $FilterSQL->oMerkmalFilterSQL         = new stdClass();
-    $FilterSQL->oTagFilterSQL             = new stdClass();
     $FilterSQL->oBewertungSterneFilterSQL = new stdClass();
     $FilterSQL->oPreisspannenFilterSQL    = new stdClass();
     $FilterSQL->oSuchFilterSQL            = new stdClass();
@@ -982,7 +983,6 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
                 ($FilterSQL->oKategorieFilterSQL->cJoin ?? '') . ' ' .
                 ($FilterSQL->oSuchFilterSQL->cJoin ?? '') . ' ' .
                 ($FilterSQL->oMerkmalFilterSQL->cJoin ?? '') . ' ' .
-                ($FilterSQL->oTagFilterSQL->cJoin ?? '') . ' ' .
                 ($FilterSQL->oBewertungSterneFilterSQL->cJoin ?? '') . ' ' .
                 ($FilterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
             ' LEFT JOIN tartikelsichtbarkeit 
@@ -996,7 +996,6 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
                 ($FilterSQL->oHerstellerFilterSQL->cWhere ?? '') . ' ' .
                 ($FilterSQL->oKategorieFilterSQL->cWhere ?? '') . ' ' .
                 ($FilterSQL->oMerkmalFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oTagFilterSQL->cWhere ?? '') . ' ' .
                 ($FilterSQL->oBewertungSterneFilterSQL->cWhere ?? '') . ' ' .
                 ($FilterSQL->oPreisspannenFilterSQL->cWhere ?? '') .
                 ' GROUP BY tartikel.kArtikel ' .

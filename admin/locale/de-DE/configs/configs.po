@@ -828,7 +828,7 @@ msgid "artikeldetails_tabs_nutzen_name"
 msgstr "Registerkarten nutzen"
 
 msgid "artikeldetails_tabs_nutzen_desc"
-msgstr "Hier legen Sie fest, ob auf der Artikeldetailseite Registerkarten verwendet werden sollen. Diese beinhalten beispielsweise die Bewertungen, Artikel-Tags oder Fragen zum Artikel. Wenn Sie die Option deaktivieren, werden alle Informationen untereinander angezeigt."
+msgstr "Hier legen Sie fest, ob auf der Artikeldetailseite Registerkarten verwendet werden sollen. Diese beinhalten beispielsweise die Bewertungen oder Fragen zum Artikel. Wenn Sie die Option deaktivieren, werden alle Informationen untereinander angezeigt."
 
 msgid "artikeldetails_navi_blaettern_name"
 msgstr "Navigation zum nächste / vorherigen Artikel anzeigen"
@@ -2431,24 +2431,6 @@ msgstr "Bewertungsfilter benutzen"
 
 msgid "bewertungsfilter_benutzen_desc"
 msgstr "Hier legen Sie fest, ob bei vorhandenen Bewertungen nach diesen gefiltert werden kann."
-
-msgid "allgemein_tagfilter_benutzen_name"
-msgstr "Tag-Filter benutzen"
-
-msgid "allgemein_tagfilter_benutzen_desc"
-msgstr "Fügt eine Box mit allen Tags hinzu, die für die angezeigten Treffer eingegeben und aktiviert wurden."
-
-msgid "tagfilter_max_anzeige_name"
-msgstr "Maximale Anzahl an Tags in der Filterung"
-
-msgid "tagfilter_max_anzeige_desc"
-msgstr "Hier legen Sie fest, wie viele Tags maximal angezeigt werden."
-
-msgid "tag_filter_type_name"
-msgstr "Tag-Filter-Typ"
-
-msgid "tag_filter_type_desc"
-msgstr "Hier legen Sie fest, ob eine Mehrfachauswahl von Filterwerten möglich ist, oder diese jeweils die Auswahl einschränken."
 
 msgid "suchtrefferfilter_nutzen_name"
 msgstr "Suchtrefferfilter benutzen"

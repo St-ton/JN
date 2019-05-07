@@ -532,7 +532,7 @@ final class LinkAdmin
                 ? $linkSprache->cSeo
                 : Seo::getSeo($linkSprache->cSeo);
             $this->db->insert('tlinksprache', $linkSprache);
-            $oSpracheTMP = $this->db->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
+            $oSpracheTMP = $this->db->select('tsprache', 'cISO', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
                 $this->db->delete(
                     'tseo',

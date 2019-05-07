@@ -1846,7 +1846,10 @@ function setzeSuchFilter($filter = [])
  */
 function setzeTagFilter($filter = [])
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initTagFilter() instead.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+        E_USER_DEPRECATED
+    );
     return [];
 }
 

@@ -65,9 +65,6 @@ msgstr "E-Mail-Benachrichtigung, wenn Artikel wieder verfügbar"
 msgid "configgroup_516"
 msgstr "Vergleichsliste"
 
-msgid "configgroup_626"
-msgstr "Artikel-Tagging"
-
 msgid "configgroup_638"
 msgstr "Mediendateien"
 
@@ -119,9 +116,6 @@ msgstr "Box: Bald erscheinende Produkte"
 msgid "configgroup_424"
 msgstr "Suchwolke"
 
-msgid "configgroup_426"
-msgstr "Tag-Wolke"
-
 msgid "configgroup_441"
 msgstr "Wunschzettel"
 
@@ -136,9 +130,6 @@ msgstr "Box: Top Bewertet"
 
 msgid "configgroup_161"
 msgstr "Bildeinstellungen"
-
-msgid "configgroup_432"
-msgstr "Tagging-Übersicht"
 
 msgid "configgroup_436"
 msgstr "Livesuche-Übersicht"
@@ -199,9 +190,6 @@ msgstr "Kategoriefilter"
 
 msgid "configgroup_535"
 msgstr "Bewertungsfilter"
-
-msgid "configgroup_529"
-msgstr "Tag-Filter"
 
 msgid "configgroup_635"
 msgstr "Suchtrefferfilter"

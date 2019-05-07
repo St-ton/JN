@@ -1757,24 +1757,6 @@ msgstr "Ja, im Content-Bereich und der Navigationsbox"
 msgid "bewertungsfilter_benutzen_value(N)"
 msgstr "Nein"
 
-msgid "allgemein_tagfilter_benutzen_value(content)"
-msgstr "Ja, im Content-Bereich"
-
-msgid "allgemein_tagfilter_benutzen_value(box)"
-msgstr "Ja, in Navigationsbox"
-
-msgid "allgemein_tagfilter_benutzen_value(Y)"
-msgstr "Ja, im Content-Bereich und der Navigationsbox"
-
-msgid "allgemein_tagfilter_benutzen_value(N)"
-msgstr "Nein"
-
-msgid "tag_filter_type_value(A)"
-msgstr "Keine Mehrfachauswahl (nur Einschränkung der Ergebnisse)"
-
-msgid "tag_filter_type_value(O)"
-msgstr "Mehrfachauswahl"
-
 msgid "suchtrefferfilter_nutzen_value(Y)"
 msgstr "Ja"
 

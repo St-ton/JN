@@ -471,7 +471,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
             $this->loadOptin();
             parent::activateOptin();
 
-            // update the history, because some values, displayed in the backend NL overview, are depends on it
+            // update the history too, because some values, displayed in the backend NL overview, are depends on it
             $upd           = new \stdClass();
             $upd->dOptCode = 'NOW()';
             $upd->cOptIp   = Request::getRealIP();

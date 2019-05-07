@@ -107,7 +107,6 @@
                     }
                 }
 
-                console.log(selectedSearchIndex, selectedSearchItem);
                 searchInput.focus();
             }
         }

@@ -360,17 +360,15 @@ class LocalFilesystem extends AbstractFilesystem
         $zipArchive = new \ZipArchive();
         $count      = $finder->count();
         $index      = 0;
+        $basePath   = rtrim($finder->getIterator()->getPath(), '/').'/';
 
         if (($code = $zipArchive->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
             throw new Exception('Archive file could not be created.', $code);
         }
 
         foreach ($finder->files() as $file) {
-            /**
-             * exclude dir check
-             */
             if (!$file->isDir()) {
-                /*$zipArchive->addFile($path.$file->getPath(), $file->getPath());*/
+                $zipArchive->addFile($file->getRealpath(), str_replace($basePath, '', $file->getRealpath()));
                 if (is_callable($callback)) {
                     $callback($count, $index);
                     ++$index;

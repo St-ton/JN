@@ -4,11 +4,17 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+set_error_handler(function($code, $description, $file = null, $line = null, $context = null) {
+    if ($code === E_ERROR) {
+        echo $error . ' (' . $code . '): ' . $description . ' in [' . $file . ', line ' . $line . ']' . PHP_EOL;
+        exit;
+    }
+});
+
 require_once __DIR__.'/includes/globalinclude.php';
 if (file_exists(__DIR__.'/install/vendor/autoload.php')) {
     require_once __DIR__.'/install/vendor/autoload.php';
 }
-
 $application = new \JTL\Console\Application();
 $application->initPluginCommands();
 $application->run();

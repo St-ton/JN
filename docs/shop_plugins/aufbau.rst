@@ -144,7 +144,7 @@ Ein Beispiel könnte wie folgt lauten:
 	    {
 	        $this->execute("CREATE TABLE IF NOT EXISTS `xplugin_jtl_test_table` (
 	                      `id` int(10) NOT NULL AUTO_INCREMENT,
-	                      `test` int(10) unsigned NOT NULL
+	                      `test` int(10) unsigned NOT NULL,
 	                      PRIMARY KEY (`id`)
 	                    ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
 	    }

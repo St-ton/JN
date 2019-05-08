@@ -6,9 +6,9 @@
 
 namespace JTL\dbeS\Push;
 
-use JTL\DB\ReturnType;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**

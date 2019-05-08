@@ -7,14 +7,14 @@
 namespace JTL\dbeS\Sync;
 
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
-use JTL\dbeS\Starter;
-use JTL\Emailvorlage;
-use JTL\Customer\Kunde;
-use JTL\Customer\KundenwerbenKunden;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\Customer\Kunde;
+use JTL\Customer\KundenwerbenKunden;
+use JTL\DB\ReturnType;
+use JTL\dbeS\Starter;
+use JTL\Emailvorlage;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;

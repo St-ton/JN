@@ -8,8 +8,8 @@ namespace JTL\dbeS\Sync;
 
 use DateTime;
 use Exception;
-use JTL\Catalog\Product\Artikel;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;

@@ -7,6 +7,7 @@
 namespace JTL\Filter\Items;
 
 use JTL\Catalog\Currency;
+use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
@@ -17,7 +18,6 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
 use JTL\Filter\StateSQLInterface;
 use JTL\MagicCompatibilityTrait;
-use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;

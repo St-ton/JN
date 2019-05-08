@@ -99,7 +99,7 @@ final class QuickSync extends AbstractSync
                 $clearTags[] = (int)$oarentProduct->kVaterArtikel;
             }
             $clearTags[] = (int)$product->kArtikel;
-            $this->versendeVerfuegbarkeitsbenachrichtigung($product, $conf);
+            $this->sendAvailabilityMails($product, $conf);
         }
         $this->handlePriceRange($clearTags);
         $this->cache->flushTags(map(\array_unique($clearTags), function ($e) {

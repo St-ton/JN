@@ -15,7 +15,7 @@ class PreviewFrame
         ]);
     }
 
-    showPreview(pageFullUrl, draftData, onload)
+    showPreview(pageFullUrl, draftData)
     {
         this.previewPageDataInput
             .val(draftData);
@@ -25,14 +25,8 @@ class PreviewFrame
             .submit();
 
         this.previewFrame
-            .off('load')
-            .on('load', () => {
-                onload();
-            });
-    }
+            .contents().find('body').html('');
 
-    onFrameLoad()
-    {
-        console.log('preview frame has loaded');
+        this.previewPanel.show();
     }
 }

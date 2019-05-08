@@ -190,14 +190,8 @@ GUI.prototype = {
             this.previewFrame.previewPanel.hide();
             this.inPreviewMode = false;
         } else {
-            this.previewFrame.showPreview(
-                this.page.fullUrl,
-                JSON.stringify(this.page.toJSON()),
-                () => {
-                    this.iframePanel.hide();
-                    this.previewFrame.previewPanel.show();
-                }
-            );
+            this.iframePanel.hide();
+            this.previewFrame.showPreview(this.page.fullUrl, JSON.stringify(this.page.toJSON()));
             this.inPreviewMode = true;
         }
     },

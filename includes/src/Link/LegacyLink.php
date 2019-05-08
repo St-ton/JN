@@ -7,11 +7,11 @@
 namespace JTL\Link;
 
 use Exception;
+use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
 use JTL\MainModel;
 use JTL\Shop;
 use stdClass;
-use JTL\DB\ReturnType;
 
 /**
  * Class LegacyLink

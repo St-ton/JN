@@ -176,7 +176,7 @@
                         {block name='account-order-details-delivery-notes'}
                             {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
                                 <tr>
-                                    <td>{link class="popup-dep" id=$oLieferschein->getLieferschein() href="#" title=$oLieferschein->getLieferscheinNr()}{$oLieferschein->getLieferscheinNr()}{/link}</td>
+                                    <td>{link data=["toggle"=>"modal", "target"=>"#shipping-order-{$oLieferschein->getLieferschein()}"] id=$oLieferschein->getLieferschein() href="#" title=$oLieferschein->getLieferscheinNr()}{$oLieferschein->getLieferscheinNr()}{/link}</td>
                                     <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
                                     <td class="text-right">
                                         {foreach $oLieferschein->oVersand_arr as $oVersand}
@@ -195,45 +195,80 @@
             {* Lieferschein Popups *}
             {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
                 {block name='account-order-details-delivery-note-popup'}
-                    <div id="popup{$oLieferschein->getLieferschein()}" class="d-none">
-                        <h1>{if $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}{lang key='partialShipped' section='order'}{else}{lang key='shipped' section='order'}{/if}</h1>
-                        {card}
+                    {modal id="shipping-order-{$oLieferschein->getLieferschein()}"
+                        title=(($Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT) ? {lang key='partialShipped' section='order'} : {lang key='shipped' section='order'})
+                        class="fade"
+                        size="lg"}
+                        <div class="mb-3">
                             <strong>{lang key='shippingOrder' section='order'}</strong>: {$oLieferschein->getLieferscheinNr()}<br />
                             <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />
-                        {/card}
+                        </div>
 
                         {if $oLieferschein->getHinweis()|@count_characters > 0}
-                            {alert variant="info"}{$oLieferschein->getHinweis()}{/alert}
+                            {alert variant="info" class="mb-3"}{$oLieferschein->getHinweis()}{/alert}
                         {/if}
-                        {card}
+                        <div class="mb-3">
                             {foreach $oLieferschein->oVersand_arr as $oVersand}
                                 {if $oVersand->getIdentCode()}
                                     <p>{link href=$oVersand->getLogistikVarUrl() target="_blank" class="shipment" title=$oVersand->getIdentCode()}{lang key='packageTracking' section='order'}{/link}</p>
                                 {/if}
                             {/foreach}
-                        {/card}
+                        </div>
 
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped">
                             <thead>
-                                <tr>
-                                    <th>{lang key='partialShippedPosition' section='order'}</th>
-                                    <th>{lang key='partialShippedCount' section='order'}</th>
-                                </tr>
+                            <tr>
+                                <th>{lang key="partialShippedPosition" section="order"}</th>
+                                <th>{lang key="partialShippedCount" section="order"}</th>
+                                <th>{lang key='productNo' section='global'}</th>
+                                <th>{lang key='product' section='global'}</th>
+                                <th>{lang key="order" section="global"}</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {foreach $oLieferschein->oLieferscheinPos_arr as $oLieferscheinpos}
-                                    <tr>
-                                        <td>
-                                            {block name='account-order-details-include-order-item-delivery-note'}
-                                                {include file='account/order_item.tpl' Position=$oLieferscheinpos->oPosition bPreis=false bKonfig=false}
-                                            {/block}
-                                        </td>
-                                        <td>{$oLieferscheinpos->getAnzahl()}</td>
-                                    </tr>
-                                {/foreach}
+                            {foreach $oLieferschein->oLieferscheinPos_arr as $oLieferscheinpos}
+                                <tr>
+                                    <td>{$oLieferscheinpos@iteration}</td>
+                                    <td>{$oLieferscheinpos->getAnzahl()}</td>
+                                    <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
+                                    <td>
+                                        {$oLieferscheinpos->oPosition->cName}
+                                        <ul class="list-unstyled text-muted small">
+                                            {if !empty($oLieferscheinpos->oPosition->cHinweis)}
+                                                <li class="text-info notice">{$oLieferscheinpos->oPosition->cHinweis}</li>
+                                            {/if}
+
+                                            {* eindeutige Merkmale *}
+                                            {if $oLieferscheinpos->oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
+                                                <li class="manufacturer">
+                                                    <strong>{lang key='manufacturer' section='productDetails'}</strong>:
+                                                    <span class="values">
+                                                       {$oLieferscheinpos->oPosition->Artikel->cHersteller}
+                                                    </span>
+                                                </li>
+                                            {/if}
+
+                                            {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oLieferscheinpos->oPosition->Artikel->oMerkmale_arr)}
+                                                {foreach $oLieferscheinpos->oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                    <li class="characteristic">
+                                                        <strong>{$oMerkmale_arr->cName}</strong>:
+                                                        <span class="values">
+                                                            {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
+                                                                {if !$oWert@first}, {/if}
+                                                                {$oWert->cWert}
+                                                            {/foreach}
+                                                        </span>
+                                                    </li>
+                                                {/foreach}
+                                            {/if}
+                                        </ul>
+                                    </td>
+                                    <td>{$Bestellung->cBestellNr}</td>
+                                </tr>
+                            {/foreach}
                             </tbody>
                         </table>
-                    </div>
+                    {/modal}
                 {/block}
             {/foreach}
         {/block}

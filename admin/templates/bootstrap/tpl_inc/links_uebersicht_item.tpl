@@ -3,17 +3,22 @@
 {/if}
 {foreach $list as $link}
     {assign var=missingLinkTranslations value=$linkAdmin->getMissingLinkTranslations($link->getID())}
+    {assign var=isReference value=$link->getReference() > 0}
     <tr class="link-item{if $kPlugin > 0 && $kPlugin == $link->getPluginID()} highlight{/if}{if $link->getLevel() == 0} main{/if}">
         {math equation="a * b" a=$link->getLevel()-1 b=20 assign=fac}
         <td style="width: 40%">
             <div style="margin-left:{if $fac > 0}{$fac}px{else}0{/if}; padding-top: 7px" {if $link->getLevel() > 0 && $link->getParent() > 0}class="sub"{/if}>
-                {$link->getDisplayName()}{if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
+                {if $isReference === true}<i>{/if}
+                {$link->getDisplayName()}
+                {if $isReference === true} ({__('Referenz')})</i>{/if}
+                {if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fa fa-warning"></i>{/if}
+                {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fa fa-warning error"></i>{/if}
             </div>
         </td>
         <td class="tcenter floatforms" style="width: 50%">
             <form class="navbar-form2 p33 left" method="post" action="links.php" name="aenderlinkgruppe_{$link->getID()}_{$id}">
                 {$jtl_token}
-                <input type="hidden" name="aender_linkgruppe" value="1" />
+                <input type="hidden" name="action" value="move-to-linkgroup" />
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
                 <input type="hidden" name="kLinkgruppeAlt" value="{$id}" />
                 {if $kPlugin > 0}
@@ -30,7 +35,7 @@
             </form>
             <form class="navbar-form2 p33 left" method="post" action="links.php" name="kopiereinlinkgruppe_{$link->getID()}_{$id}">
                 {$jtl_token}
-                <input type="hidden" name="kopiere_in_linkgruppe" value="1" />
+                <input type="hidden" name="action" value="copy-to-linkgroup" />
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
                 {if $kPlugin > 0}
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
@@ -39,7 +44,7 @@
                     <select title="{__('linkGroupCopy')}" class="form-control" name="kLinkgruppe" onchange="document.forms['kopiereinlinkgruppe_{$link->getID()}_{$id}'].submit();">
                         <option value="-1">{__('linkGroupCopy')}</option>
                         {foreach $linkgruppen as $linkgruppeTMP}
-                            {if $linkgruppeTMP->getID() != $id && $linkgruppeTMP->getID() > 0}
+                            {if $linkgruppeTMP->getID() !== $id && $linkgruppeTMP->getID() > 0}
                                 <option value="{$linkgruppeTMP->getID()}">{$linkgruppeTMP->getName()}</option>
                             {/if}
                         {/foreach}
@@ -48,7 +53,7 @@
             </form>
             <form class="navbar-form2 p33 left" method="post" action="links.php" name="aenderlinkvater_{$link->getID()}_{$id}">
                 {$jtl_token}
-                <input type="hidden" name="aender_linkvater" value="1" />
+                <input type="hidden" name="action" value="change-parent" />
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
                 <input type="hidden" name="kLinkgruppe" value="{$id}" />
                 {if $kPlugin > 0}
@@ -74,14 +79,19 @@
                     <input type="hidden" name="kPlugin" value="{$kPlugin}" />
                 {/if}
                 <input type="hidden" name="kLinkgruppe" value="{$id}" />
+                <input type="hidden" name="kLink" value="{$link->getID()}" />
                 <div class="btn-group">
                     {if $id > 0}
-                        <button name="kLink" value="{$link->getID()}" class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i></button>
-                        <button name="removefromlinkgroup" value="{$link->getID()}" class="btn btn-warning" title="{__('linkGroupRemove')}"><i class="fa fa-unlink"></i></button>
+                        <button name="action" value="edit-link" class="btn btn-default" title="{__('modify')}">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button name="action" value="remove-linklfrom-linkgroup" class="btn btn-warning" title="{__('linkGroupRemove')}">
+                            <i class="fa fa-unlink"></i>
+                        </button>
                     {/if}
                     {assign var=deleteCount value=$linkGroupCountByLinkID[$link->getID()]|default:1}
-                    <button name="dellink"
-                            value="{$link->getID()}"
+                    <button name="action"
+                            value="delete-link"
                             class="btn btn-danger{if $link->getPluginID() > 0} disabled{/if}"
                             {if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if}
                             title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}">

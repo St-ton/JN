@@ -9,10 +9,11 @@ namespace JTL\Backend;
 use ArrayIterator;
 use Countable;
 use Exception;
-use function Functional\pluck;
 use IteratorAggregate;
+use JTL\Link\Admin\LinkAdmin;
 use JTL\Shop;
 use JTL\SingletonTrait;
+use function Functional\pluck;
 
 /**
  * Class Notification
@@ -91,7 +92,12 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault(): self
     {
-        $status = Status::getInstance();
+        $status    = Status::getInstance();
+        $db        = Shop::Container()->getDB();
+        $cache     = Shop::Container()->getCache();
+        $linkAdmin = new LinkAdmin($db, $cache);
+
+        Shop::Container()->getGetText()->loadAdminLocale('notifications');
 
         if ($status->hasPendingUpdates()) {
             $this->add(
@@ -100,6 +106,7 @@ class Notification implements IteratorAggregate, Countable
                 'Ein Datenbank-Update ist zwingend notwendig',
                 'dbupdater.php'
             );
+            return $this;
         }
 
         if (!$status->validFolderPermissions()) {
@@ -259,6 +266,15 @@ class Notification implements IteratorAggregate, Countable
                 'Ungültige Linkgruppen',
                 'Eine oder mehrere Linkgruppen nutzen nicht-eindeutige Template-Namen: ' .
                 \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName')),
+                'links.php'
+            );
+        }
+
+        if ($linkAdmin->getDuplicateSpecialLinks()->count() > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                __('duplicateSpecialLinkTitle'),
+                __('duplicateSpecialLinkDesc'),
                 'links.php'
             );
         }

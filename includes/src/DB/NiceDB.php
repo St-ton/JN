@@ -7,9 +7,7 @@
 namespace JTL\DB;
 
 use InvalidArgumentException;
-use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\InvalidEntityNameException;
-use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Profiler;
 use JTL\Shop;
 use PDO;
@@ -662,7 +660,7 @@ class NiceDB implements DbInterface
      * @inheritdoc
      * @throws InvalidEntityNameException
      */
-    public function insertOrUpdateRow(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int
+    public function upsert(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int
     {
         $this->validateEntityName($tableName);
         $this->validateDbObject($object);
@@ -680,28 +678,28 @@ class NiceDB implements DbInterface
 
             if (\mb_convert_case($value, \MB_CASE_LOWER) === 'now()') {
                 $insData['`' . $column . '`'] = $value;
-                if (!in_array($column, $excludeUpdate)) {
+                if (!\in_array($column, $excludeUpdate)) {
                     $updData[] = '`' . $column . '` = ' . $value;
                 }
             } else {
                 $insData['`' . $column . '`'] = ':' . $column;
                 $assigns[':' . $column]       = $value;
-                if (!in_array($column, $excludeUpdate)) {
+                if (!\in_array($column, $excludeUpdate)) {
                     $updData[] = '`' . $column . '` = :' . $column;
                 }
             }
         }
 
-        $sql = 'INSERT' . (count($updData) > 0 ? ' ' : ' IGNORE ') . 'INTO ' . $tableName
-            . '(' . implode(', ', array_keys($insData)) . ')
-                    VALUES (' . implode(', ', $insData) . ')' . (count($updData) > 0 ? ' ON DUPLICATE KEY
-                    UPDATE ' . implode(', ', $updData) : '');
+        $sql = 'INSERT' . (\count($updData) > 0 ? ' ' : ' IGNORE ') . 'INTO ' . $tableName
+            . '(' . \implode(', ', \array_keys($insData)) . ')
+                    VALUES (' . \implode(', ', $insData) . ')' . (\count($updData) > 0 ? ' ON DUPLICATE KEY
+                    UPDATE ' . \implode(', ', $updData) : '');
         if ($echo) {
             echo $sql;
         }
+        $stmt = $this->pdo->prepare($sql);
         try {
-            $stmt = $this->pdo->prepare($sql);
-            $res  = $stmt->execute($assigns);
+            $res = $stmt->execute($assigns);
         } catch (PDOException $e) {
             if (\NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'NiceDB exception when insert or updating row: ');
@@ -723,7 +721,7 @@ class NiceDB implements DbInterface
                 try {
                     Shop::Container()->getLogService()->error($errMsg);
                 } catch (\Exception $e) {
-                    user_error($errMsg);
+                    \user_error($errMsg);
                 }
             }
 
@@ -736,22 +734,13 @@ class NiceDB implements DbInterface
             $end    = \microtime(true);
             $dbt    = $this->debugLevel > 2 ? \debug_backtrace() : null;
             foreach ($assigns as $name => $value) {
-                $parsed = str_replace($name, $this->pdo->quote($value), $parsed);
+                $parsed = \str_replace($name, $this->pdo->quote($value), $parsed);
             }
 
             $this->analyzeQuery('insert', $parsed, $end - $start, $dbt);
         }
 
         return $lastID;
-    }
-
-    /**
-     * @inheritdoc
-     * @throws InvalidEntityNameException
-     */
-    public function insertOrUpdate(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int
-    {
-        return $this->insertOrUpdateRow($tableName, $object, $excludeUpdate, $echo);
     }
 
     /**
@@ -1040,7 +1029,7 @@ class NiceDB implements DbInterface
     protected function _execute(int $type, $stmt, $params, int $return, bool $echo = false, $fnInfo = null)
     {
         $params = \is_array($params) ? $params : [];
-        if (!\in_array($type, [0, 1], true)) {
+        if (!in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('$type parameter must be 0 or 1, "' . $type . '" given');
         }
         if ($return <= 0 || $return > 12) {

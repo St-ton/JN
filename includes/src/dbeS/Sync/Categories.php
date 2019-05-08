@@ -12,8 +12,6 @@ use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
 use JTL\Sprache;
 use stdClass;
-use function Functional\flatten;
-use function Functional\map;
 
 /**
  * Class Categories
@@ -163,7 +161,7 @@ final class Categories extends AbstractSync
             $ins->cKey     = 'kKategorie';
             $ins->kKey     = $catLanguages[$i]->kKategorie;
             $ins->kSprache = $catLanguages[$i]->kSprache;
-            $this->db->insertOrUpdate('tseo', $ins);
+            $this->db->upsert('tseo', $ins);
             if (isset($seoData[$catLanguages[$i]->kSprache])) {
                 $this->checkDbeSXmlRedirect(
                     $seoData[$catLanguages[$i]->kSprache]->cSeo,
@@ -301,18 +299,18 @@ final class Categories extends AbstractSync
         $this->db->delete('tartikelkategorierabatt', 'kKategorie', $categoryID);
         $this->db->queryPrepared(
             'INSERT INTO tartikelkategorierabatt (
-            SELECT tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie,
-                   MAX(tkategoriekundengruppe.fRabatt) fRabatt
-            FROM tkategoriekundengruppe
-            INNER JOIN tkategorieartikel 
-                ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
-            LEFT JOIN tkategoriesichtbarkeit 
-                ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
-                AND tkategoriesichtbarkeit.kKundengruppe = tkategoriekundengruppe.kKundengruppe
-            WHERE tkategoriekundengruppe.kKategorie = :categoryID
-                AND tkategoriesichtbarkeit.kKategorie IS NULL
-            GROUP BY tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie
-            HAVING MAX(tkategoriekundengruppe.fRabatt) > 0)',
+                SELECT tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie,
+                       MAX(tkategoriekundengruppe.fRabatt) fRabatt
+                FROM tkategoriekundengruppe
+                INNER JOIN tkategorieartikel
+                    ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
+                LEFT JOIN tkategoriesichtbarkeit
+                    ON tkategoriesichtbarkeit.kKategorie = tkategoriekundengruppe.kKategorie
+                    AND tkategoriesichtbarkeit.kKundengruppe = tkategoriekundengruppe.kKundengruppe
+                WHERE tkategoriekundengruppe.kKategorie = :categoryID
+                    AND tkategoriesichtbarkeit.kKategorie IS NULL
+                GROUP BY tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie
+                HAVING MAX(tkategoriekundengruppe.fRabatt) > 0)',
             ['categoryID' => $categoryID],
             ReturnType::DEFAULT
         );

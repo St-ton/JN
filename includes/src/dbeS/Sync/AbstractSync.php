@@ -95,14 +95,14 @@ abstract class AbstractSync
      * @param array  $pks
      * @return array
      */
-    protected function insertOnExistsUpdateXMLinDB(array $xml, string $table, string $toMap, array $pks)
+    protected function insertOnExistsUpdateXMLinDB(array $xml, string $table, string $toMap, array $pks): array
     {
         $idx = $table . ' attr';
         if ((isset($xml[$table]) && \is_array($xml[$table])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
             return $this->insertOnExistUpdate($table, $this->mapper->mapArray($xml, $table, $toMap), $pks);
         }
 
-        return array_fill_keys($pks, []);
+        return \array_fill_keys($pks, []);
     }
 
     /**
@@ -135,11 +135,11 @@ abstract class AbstractSync
      */
     protected function insertOnExistUpdate(string $tableName, array $objects, array $pks): array
     {
-        $result = array_fill_keys($pks, []);
-        if (!is_array($objects)) {
+        $result = \array_fill_keys($pks, []);
+        if (!\is_array($objects)) {
             return $result;
         }
-        if (!is_array($pks)) {
+        if (!\is_array($pks)) {
             $pks = [(string)$pks];
         }
 
@@ -147,7 +147,7 @@ abstract class AbstractSync
             foreach ($pks as $pk) {
                 if (!isset($object->$pk)) {
                     $this->logger->error(
-                        'PK not set on insertOnExistUpdate@' . $tableName . ' with data: ' . print_r($object, true)
+                        'PK not set on insertOnExistUpdate@' . $tableName . ' with data: ' . \print_r($object, true)
                     );
 
                     continue 2;
@@ -155,9 +155,9 @@ abstract class AbstractSync
                 $result[$pk][] = $object->$pk;
             }
 
-            if ($this->db->insertOrUpdate($tableName, $object, $pks)) {
+            if ($this->db->upsert($tableName, $object, $pks)) {
                 $this->logger->error(
-                    'Failed insertOnExistUpdate@' . $tableName . ' with data: ' . print_r($object, true)
+                    'Failed insertOnExistUpdate@' . $tableName . ' with data: ' . \print_r($object, true)
                 );
             }
         }
@@ -170,21 +170,26 @@ abstract class AbstractSync
      * @param array  $pks
      * @param string $excludeKey
      * @param array  $excludeValues
+     * @return void
      */
-    protected function deleteByKey(string $tableName, array $pks, string $excludeKey = '', array $excludeValues = [])
-    {
+    protected function deleteByKey(
+        string $tableName,
+        array $pks,
+        string $excludeKey = '',
+        array $excludeValues = []
+    ): void {
         $whereKeys = [];
         $params    = [];
         foreach ($pks as $name => $value) {
             $whereKeys[]   = $name . ' = :' . $name;
             $params[$name] = $value;
         }
-        if (empty($excludeKey) || !is_array($excludeValues)) {
+        if (empty($excludeKey) || !\is_array($excludeValues)) {
             $excludeValues = [];
         }
         $stmt = 'DELETE FROM ' . $tableName . '
-                WHERE ' . implode(' AND ', $whereKeys) . (count($excludeValues) > 0 ? '
-                    AND ' . $excludeKey . ' NOT IN (' . implode(', ', $excludeValues) . ')' : '');
+                WHERE ' . \implode(' AND ', $whereKeys) . (\count($excludeValues) > 0 ? '
+                    AND ' . $excludeKey . ' NOT IN (' . \implode(', ', $excludeValues) . ')' : '');
         if (!$this->db->queryPrepared($stmt, $params, ReturnType::DEFAULT)) {
             $this->logger->error(
                 'DBDeleteByKey fehlgeschlagen! Tabelle: ' . $tableName . ', PK: ' . print_r($pks, true)

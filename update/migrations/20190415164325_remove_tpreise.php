@@ -72,11 +72,17 @@ class Migration_20190415164325 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute('DROP INDEX kPreis_nAnzahlAb ON tpreisdetail');
+        if ($this->fetchOne("SHOW INDEX FROM tpreisdetail WHERE KEY_NAME = 'kPreis_nAnzahlAb'")) {
+            $this->execute('DROP INDEX kPreis_nAnzahlAb ON tpreisdetail');
+        }
         $this->execute('UPDATE tpreis SET kKunde = NULL WHERE kKunde = 0');
-        $this->execute('DROP INDEX kArtikel ON tpreisverlauf');
+        if ($this->fetchOne("SHOW INDEX FROM tpreisverlauf WHERE KEY_NAME = 'kArtikel'")) {
+            $this->execute('DROP INDEX kArtikel ON tpreisverlauf');
+        }
         $this->execute('CREATE INDEX kArtikel on tpreisverlauf(kArtikel, kKundengruppe, dDate)');
-        $this->execute('DROP INDEX kArtikel ON tpreis');
+        if ($this->fetchOne("SHOW INDEX FROM tpreis WHERE KEY_NAME = 'kArtikel'")) {
+            $this->execute('DROP INDEX kArtikel ON tpreis');
+        }
         $this->execute('CREATE INDEX kArtikel on tpreis(kArtikel, kKundengruppe, kKunde)');
         $this->execute(
             'CREATE TABLE tpreise (

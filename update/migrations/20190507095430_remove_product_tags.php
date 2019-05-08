@@ -19,7 +19,10 @@ class Migration_20190507095430 extends Migration implements IMigration
 
     public function up()
     {
-        $this->removeConfig('Tagfilter');
+        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 529');
+        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 626');
+        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 426');
+        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 432');
         $this->removeConfig('allgemein_tagfilter_benutzen');
         $this->removeConfig('tagfilter_max_anzeige');
         $this->removeConfig('tag_filter_type');
@@ -63,6 +66,18 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->execute(
             "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
             VALUES (529," . \CONF_NAVIGATIONSFILTER . ",'Tagfilter','',NULL,NULL,NULL,170,1,0,'N')"
+        );
+        $this->execute(
+            "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
+            VALUES (626," . \CONF_ARTIKELDETAILS . ",'Produkttagging','',NULL,NULL,NULL,1000,1,0,'N')"
+        );
+        $this->execute(
+            "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
+            VALUES (426," . \CONF_BOXEN . ",'Tagwolke','',NULL,NULL,NULL,1000,1,0,'N')"
+        );
+        $this->execute(
+            "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
+            VALUES (432," . \CONF_SONSTIGES . ",'Tagging Übersicht','',NULL,NULL,NULL,100,1,0,'N')"
         );
         $this->setConfig(
             'allgemein_tagfilter_benutzen',

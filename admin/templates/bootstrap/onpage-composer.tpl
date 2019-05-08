@@ -39,6 +39,7 @@
     <script src="{$templateUrl}js/onpage-composer/IO.js"></script>
     <script src="{$templateUrl}js/onpage-composer/Tutorial.js"></script>
     <script src="{$templateUrl}js/onpage-composer/PageTree.js"></script>
+    <script src="{$templateUrl}js/onpage-composer/PreviewFrame.js"></script>
 
     <script>
         var opc = new OPC({
@@ -205,6 +206,14 @@
 
     <div id="iframePanel">
         <iframe id="iframe"></iframe>
+    </div>
+
+    <div id="previewPanel" style="display: none">
+        <iframe id="previewFrame" name="previewFrame"></iframe>
+        <form action="" target="previewFrame" method="post" id="previewForm">
+            <input type="hidden" name="opcPreviewMode" value="yes">
+            <input type="hidden" name="pageData" value="" id="previewPageDataInput">
+        </form>
     </div>
 
     <div id="loaderModal" class="modal fade" tabindex="-1" style="padding-top:25%">

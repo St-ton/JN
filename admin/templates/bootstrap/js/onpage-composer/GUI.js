@@ -8,23 +8,26 @@ function GUI(io, page)
     this.page          = page;
     this.configSaveCb  = noop;
     this.imageSelectCB = noop;
+    this.inPreviewMode = false;
 }
 
 GUI.prototype = {
 
     constructor: GUI,
 
-    init: function(iframe, tutorial, error)
+    init: function(iframe, previewFrame, tutorial, error)
     {
         debuglog('GUI init');
 
-        this.iframe   = iframe;
-        this.tutorial = tutorial;
+        this.iframe       = iframe;
+        this.previewFrame = previewFrame;
+        this.tutorial     = tutorial;
 
         installGuiElements(this, [
             'sidebarPanel',
             'topNav',
             'iframePanel',
+            'previewPanel',
             'loaderModal',
             'errorModal',
             'errorAlert',
@@ -182,7 +185,21 @@ GUI.prototype = {
 
     onBtnPreview: function(e)
     {
-        this.iframe.togglePreview()
+        if (this.inPreviewMode) {
+            this.iframePanel.show();
+            this.previewFrame.previewPanel.hide();
+            this.inPreviewMode = false;
+        } else {
+            this.previewFrame.showPreview(
+                this.page.fullUrl,
+                JSON.stringify(this.page.toJSON()),
+                () => {
+                    this.iframePanel.hide();
+                    this.previewFrame.previewPanel.show();
+                }
+            );
+            this.inPreviewMode = true;
+        }
     },
 
     onBtnSave: function(e)

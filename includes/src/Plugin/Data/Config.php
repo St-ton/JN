@@ -6,10 +6,9 @@
 
 namespace JTL\Plugin\Data;
 
-use JTL\Plugin\Admin\InputType;
-use JTL\Shop;
-use stdClass;
 use Illuminate\Support\Collection;
+use JTL\Plugin\Admin\InputType;
+use stdClass;
 use function Functional\first;
 use function Functional\group;
 

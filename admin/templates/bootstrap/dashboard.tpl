@@ -22,7 +22,7 @@
     });
     </script>
 
-    <div id="content" class="nomargin">
+    <div id="content">
         <div class="row">
             {include file='tpl_inc/widget_container.tpl' eContainer='left'}
             {include file='tpl_inc/widget_container.tpl' eContainer='center'}

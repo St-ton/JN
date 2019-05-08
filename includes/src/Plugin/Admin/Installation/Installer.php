@@ -466,208 +466,207 @@ final class Installer
     {
         $oldPluginID = $this->plugin->getID();
         $res         = $this->uninstaller->uninstall($oldPluginID, true, $pluginID);
+        if ($res !== InstallCode::OK) {
+            $this->uninstaller->uninstall($pluginID);
 
-        if ($res === InstallCode::OK) {
-            $upd = (object)['kPlugin' => $oldPluginID];
-            $this->db->update('tplugin', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tpluginhook', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tpluginadminmenu', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tpluginsprachvariable', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tadminwidgets', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tpluginsprachvariablecustomsprache', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tplugin_resources', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tplugincustomtabelle', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tplugintemplate', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tpluginlinkdatei', 'kPlugin', $pluginID, $upd);
-            $this->db->update('temailvorlage', 'kPlugin', $pluginID, $upd);
-            $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
-            $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
-            $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
-            $customLangVars = $this->db->queryPrepared(
-                'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
-                    tpluginsprachvariablecustomsprache.kPluginSprachvariable AS oldID, tpluginsprachvariable.cName
-                    FROM tpluginsprachvariablecustomsprache
-                    JOIN tpluginsprachvariable
-                        ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
-                    WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
-                ['pid' => $oldPluginID],
-                ReturnType::ARRAY_OF_OBJECTS,
-                true
+            return InstallCode::SQL_ERROR;
+        }
+        $upd = (object)['kPlugin' => $oldPluginID];
+        $this->db->update('tplugin', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tpluginhook', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tpluginadminmenu', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tpluginsprachvariable', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tadminwidgets', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tpluginsprachvariablecustomsprache', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tplugin_resources', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tplugincustomtabelle', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tplugintemplate', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tpluginlinkdatei', 'kPlugin', $pluginID, $upd);
+        $this->db->update('temailvorlage', 'kPlugin', $pluginID, $upd);
+        $this->db->update('texportformat', 'kPlugin', $pluginID, $upd);
+        $this->db->update('topcportlet', 'kPlugin', $pluginID, $upd);
+        $this->db->update('topcblueprint', 'kPlugin', $pluginID, $upd);
+        $customLangVars = $this->db->queryPrepared(
+            'SELECT DISTINCT tpluginsprachvariable.kPluginSprachvariable AS newID,
+                tpluginsprachvariablecustomsprache.kPluginSprachvariable AS oldID, tpluginsprachvariable.cName
+                FROM tpluginsprachvariablecustomsprache
+                JOIN tpluginsprachvariable
+                    ON tpluginsprachvariable.cName =  tpluginsprachvariablecustomsprache.cSprachvariable
+                WHERE tpluginsprachvariablecustomsprache.kPlugin = :pid',
+            ['pid' => $oldPluginID],
+            ReturnType::ARRAY_OF_OBJECTS,
+            true
+        );
+        foreach ($customLangVars as $langVar) {
+            $this->db->update(
+                'tpluginsprachvariablecustomsprache',
+                ['kPlugin', 'kPluginSprachvariable'],
+                [$oldPluginID, $langVar->oldID],
+                (object)['kPluginSprachvariable' => $langVar->newID]
             );
-            foreach ($customLangVars as $langVar) {
-                $this->db->update(
-                    'tpluginsprachvariablecustomsprache',
-                    ['kPlugin', 'kPluginSprachvariable'],
-                    [$oldPluginID, $langVar->oldID],
-                    (object)['kPluginSprachvariable' => $langVar->newID]
+        }
+        $pluginConf = $this->db->query(
+            'SELECT *
+                FROM tplugineinstellungen
+                WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
+                ORDER BY kPlugin',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (\count($pluginConf) > 0) {
+            $confData = [];
+            foreach ($pluginConf as $conf) {
+                $name = \str_replace(
+                    ['kPlugin_' . $oldPluginID . '_', 'kPlugin_' . $pluginID . '_'],
+                    '',
+                    $conf->cName
                 );
-            }
-            $pluginConf = $this->db->query(
-                'SELECT *
-                    FROM tplugineinstellungen
-                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')
-                    ORDER BY kPlugin',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            if (\count($pluginConf) > 0) {
-                $confData = [];
-                foreach ($pluginConf as $conf) {
-                    $name = \str_replace(
-                        ['kPlugin_' . $oldPluginID . '_', 'kPlugin_' . $pluginID . '_'],
-                        '',
+                if (!isset($confData[$name])) {
+                    $confData[$name]          = new stdClass();
+                    $confData[$name]->kPlugin = $oldPluginID;
+                    $confData[$name]->cName   = \str_replace(
+                        'kPlugin_' . $pluginID . '_',
+                        'kPlugin_' . $oldPluginID . '_',
                         $conf->cName
                     );
-                    if (!isset($confData[$name])) {
-                        $confData[$name]          = new stdClass();
-                        $confData[$name]->kPlugin = $oldPluginID;
-                        $confData[$name]->cName   = \str_replace(
-                            'kPlugin_' . $pluginID . '_',
-                            'kPlugin_' . $oldPluginID . '_',
-                            $conf->cName
-                        );
-                        $confData[$name]->cWert   = $conf->cWert;
-                    }
-                }
-                $this->db->query(
-                    'DELETE FROM tplugineinstellungen
-                        WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')',
-                    ReturnType::AFFECTED_ROWS
-                );
-
-                foreach ($confData as $value) {
-                    $this->db->insert('tplugineinstellungen', $value);
+                    $confData[$name]->cWert   = $conf->cWert;
                 }
             }
             $this->db->query(
-                'UPDATE tplugineinstellungen
-                    SET kPlugin = ' . $oldPluginID . ",
-                        cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                    WHERE kPlugin = " . $pluginID,
+                'DELETE FROM tplugineinstellungen
+                    WHERE kPlugin IN (' . $oldPluginID . ', ' . $pluginID . ')',
                 ReturnType::AFFECTED_ROWS
             );
-            $this->db->query(
-                'UPDATE tplugineinstellungenconf
-                    SET kPlugin = ' . $oldPluginID . ",
-                        cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                    WHERE kPlugin = " . $pluginID,
-                ReturnType::AFFECTED_ROWS
-            );
+
+            foreach ($confData as $value) {
+                $this->db->insert('tplugineinstellungen', $value);
+            }
+        }
+        $this->db->query(
+            'UPDATE tplugineinstellungen
+                SET kPlugin = ' . $oldPluginID . ",
+                    cName = REPLACE(cName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
+                WHERE kPlugin = " . $pluginID,
+            ReturnType::AFFECTED_ROWS
+        );
+        $this->db->query(
+            'UPDATE tplugineinstellungenconf
+                SET kPlugin = ' . $oldPluginID . ",
+                    cWertName = REPLACE(cWertName, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
+                WHERE kPlugin = " . $pluginID,
+            ReturnType::AFFECTED_ROWS
+        );
+        $this->db->update(
+            'tboxvorlage',
+            ['kCustomID', 'eTyp'],
+            [$pluginID, 'plugin'],
+            (object)['kCustomID' => $oldPluginID]
+        );
+        $this->db->query(
+            'UPDATE tpluginzahlungsartklasse
+                SET kPlugin = ' . $oldPluginID . ",
+                    cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
+                WHERE kPlugin = " . $pluginID,
+            ReturnType::AFFECTED_ROWS
+        );
+        $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
+        $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
+        if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
             $this->db->update(
-                'tboxvorlage',
-                ['kCustomID', 'eTyp'],
-                [$pluginID, 'plugin'],
-                (object)['kCustomID' => $oldPluginID]
+                'tpluginemailvorlageeinstellungen',
+                'kEmailvorlage',
+                $oldMailTpl->kEmailvorlage,
+                (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]
             );
-            $this->db->query(
-                'UPDATE tpluginzahlungsartklasse
-                    SET kPlugin = ' . $oldPluginID . ",
-                        cModulId = REPLACE(cModulId, 'kPlugin_" . $pluginID . "_', 'kPlugin_" . $oldPluginID . "_')
-                    WHERE kPlugin = " . $pluginID,
-                ReturnType::AFFECTED_ROWS
+        }
+        $kEmailvorlageNeu = 0;
+        $kEmailvorlageAlt = 0;
+        foreach ($this->plugin->getMailTemplates()->getTemplatesAssoc() as $cModulId => $oldMailTpl) {
+            $newMailTpl = $this->db->select(
+                'temailvorlage',
+                'kPlugin',
+                $oldPluginID,
+                'cModulId',
+                $cModulId,
+                null,
+                null,
+                false,
+                'kEmailvorlage'
             );
-            $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
-            $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
-            if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
+            if (isset($newMailTpl->kEmailvorlage) && $newMailTpl->kEmailvorlage > 0) {
+                if ($kEmailvorlageNeu === 0 || $kEmailvorlageAlt === 0) {
+                    $kEmailvorlageNeu = (int)$newMailTpl->kEmailvorlage;
+                    $kEmailvorlageAlt = (int)$oldMailTpl->kEmailvorlage;
+                }
                 $this->db->update(
-                    'tpluginemailvorlageeinstellungen',
+                    'temailvorlagesprache',
                     'kEmailvorlage',
                     $oldMailTpl->kEmailvorlage,
                     (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]
                 );
             }
-            $kEmailvorlageNeu = 0;
-            $kEmailvorlageAlt = 0;
-            foreach ($this->plugin->getMailTemplates()->getTemplatesAssoc() as $cModulId => $oldMailTpl) {
-                $newMailTpl = $this->db->select(
-                    'temailvorlage',
-                    'kPlugin',
-                    $oldPluginID,
-                    'cModulId',
-                    $cModulId,
-                    null,
-                    null,
-                    false,
-                    'kEmailvorlage'
-                );
-                if (isset($newMailTpl->kEmailvorlage) && $newMailTpl->kEmailvorlage > 0) {
-                    if ($kEmailvorlageNeu === 0 || $kEmailvorlageAlt === 0) {
-                        $kEmailvorlageNeu = (int)$newMailTpl->kEmailvorlage;
-                        $kEmailvorlageAlt = (int)$oldMailTpl->kEmailvorlage;
-                    }
-                    $this->db->update(
-                        'temailvorlagesprache',
-                        'kEmailvorlage',
-                        $oldMailTpl->kEmailvorlage,
-                        (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]
-                    );
-                }
-            }
-            $upd = (object)['kEmailvorlage' => $kEmailvorlageNeu];
-            $this->db->update('tpluginemailvorlageeinstellungen', 'kEmailvorlage', $kEmailvorlageAlt, $upd);
-            $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
-            // tboxen
-            // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
-            // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
-            $oObj = $this->db->select('tboxvorlage', 'kCustomID', $oldPluginID, 'eTyp', 'plugin');
-            if (isset($oObj->kBoxvorlage) && (int)$oObj->kBoxvorlage > 0) {
-                $upd              = new stdClass();
-                $upd->kBoxvorlage = $oObj->kBoxvorlage;
-                $this->db->update('tboxen', 'kCustomID', $oldPluginID, $upd);
-            } else {
-                $this->db->delete('tboxen', 'kCustomID', $oldPluginID);
-            }
-            $upd = (object)['kPlugin' => $oldPluginID];
-            $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
-            $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
-            $oldPaymentMethods = $this->db->queryPrepared(
-                'SELECT kZahlungsart, cModulId
-                    FROM tzahlungsart
-                    WHERE cModulId LIKE :newID',
-                ['newID' => 'kPlugin_' . $oldPluginID . '_%'],
-                ReturnType::ARRAY_OF_OBJECTS
+        }
+        $upd = (object)['kEmailvorlage' => $kEmailvorlageNeu];
+        $this->db->update('tpluginemailvorlageeinstellungen', 'kEmailvorlage', $kEmailvorlageAlt, $upd);
+        $this->db->update('tlink', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
+        // tboxen
+        // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
+        // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
+        $oObj = $this->db->select('tboxvorlage', 'kCustomID', $oldPluginID, 'eTyp', 'plugin');
+        if (isset($oObj->kBoxvorlage) && (int)$oObj->kBoxvorlage > 0) {
+            $upd              = new stdClass();
+            $upd->kBoxvorlage = $oObj->kBoxvorlage;
+            $this->db->update('tboxen', 'kCustomID', $oldPluginID, $upd);
+        } else {
+            $this->db->delete('tboxen', 'kCustomID', $oldPluginID);
+        }
+        $upd = (object)['kPlugin' => $oldPluginID];
+        $this->db->update('tcheckboxfunktion', 'kPlugin', $pluginID, $upd);
+        $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
+        $oldPaymentMethods = $this->db->queryPrepared(
+            'SELECT kZahlungsart, cModulId
+                FROM tzahlungsart
+                WHERE cModulId LIKE :newID',
+            ['newID' => 'kPlugin_' . $oldPluginID . '_%'],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($oldPaymentMethods as $method) {
+            $oldModuleID      = \str_replace(
+                'kPlugin_' . $oldPluginID . '_',
+                'kPlugin_' . $pluginID . '_',
+                $method->cModulId
             );
-            foreach ($oldPaymentMethods as $method) {
-                $oldModuleID      = \str_replace(
-                    'kPlugin_' . $oldPluginID . '_',
-                    'kPlugin_' . $pluginID . '_',
-                    $method->cModulId
-                );
-                $newPaymentMethod = $this->db->queryPrepared(
-                    'SELECT kZahlungsart
+            $newPaymentMethod = $this->db->queryPrepared(
+                'SELECT kZahlungsart
+                    FROM tzahlungsart
+                    WHERE cModulId LIKE :oldID',
+                ['oldID' => $oldModuleID],
+                ReturnType::SINGLE_OBJECT
+            );
+            $setSQL           = '';
+            if (isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
+                $this->db->query(
+                    'DELETE tzahlungsart, tzahlungsartsprache
                         FROM tzahlungsart
-                        WHERE cModulId LIKE :oldID',
-                    ['oldID' => $oldModuleID],
-                    ReturnType::SINGLE_OBJECT
-                );
-                $setSQL           = '';
-                if (isset($method->kZahlungsart, $newPaymentMethod->kZahlungsart)) {
-                    $this->db->query(
-                        'DELETE tzahlungsart, tzahlungsartsprache
-                            FROM tzahlungsart
-                            JOIN tzahlungsartsprache
-                                ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                            WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
-                        ReturnType::AFFECTED_ROWS
-                    );
-
-                    $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
-                    $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
-                    $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
-                }
-
-                $this->db->queryPrepared(
-                    'UPDATE tzahlungsart
-                        SET cModulId = :newID ' . $setSQL . '
-                        WHERE cModulId LIKE :oldID',
-                    ['oldID' => $oldModuleID, 'newID' => $method->cModulId],
+                        JOIN tzahlungsartsprache
+                            ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                        WHERE tzahlungsart.kZahlungsart = ' . $method->kZahlungsart,
                     ReturnType::AFFECTED_ROWS
                 );
+
+                $setSQL = ' , kZahlungsart = ' . $method->kZahlungsart;
+                $upd    = (object)['kZahlungsart' => $method->kZahlungsart];
+                $this->db->update('tzahlungsartsprache', 'kZahlungsart', $newPaymentMethod->kZahlungsart, $upd);
             }
 
-            return InstallCode::OK;
+            $this->db->queryPrepared(
+                'UPDATE tzahlungsart
+                    SET cModulId = :newID ' . $setSQL . '
+                    WHERE cModulId LIKE :oldID',
+                ['oldID' => $oldModuleID, 'newID' => $method->cModulId],
+                ReturnType::AFFECTED_ROWS
+            );
         }
-        $this->uninstaller->uninstall($pluginID);
 
-        return InstallCode::SQL_ERROR;
+        return InstallCode::OK;
     }
 }

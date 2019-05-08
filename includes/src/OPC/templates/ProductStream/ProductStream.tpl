@@ -41,7 +41,6 @@
         {/card}
         <script>
             function startSlider() {
-                console.log('load.opc');
                 $('.evo-box-vertical:not(.slick-initialized)').slick({
                     //dots: true,
                     arrows: true,

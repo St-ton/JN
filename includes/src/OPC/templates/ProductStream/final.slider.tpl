@@ -36,7 +36,6 @@
         </div>
         <script>
             function startSlider() {
-                console.log('load.opc');
                 $('.evo-opc-slider:not(.slick-initialized)').slick({
                     //dots: true,
                     arrows: true,

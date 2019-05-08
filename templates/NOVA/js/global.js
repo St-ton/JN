@@ -162,16 +162,19 @@ function navigation()
 }
 
 function addValidationListener() {
-    var forms   = $('form.evo-validate'),
-        inputs  = $('form.evo-validate input,form.evo-validate select,form.evo-validate textarea'),
-        selects = $('form.evo-validate select'),
-        $body   = $('body');
+    var forms      = $('form.evo-validate'),
+        inputs     = $('form.evo-validate input, form.evo-validate textarea').not('[type="radio"],[type="checkbox"]'),
+        selects    = $('form.evo-validate select'),
+        checkables = $('form.evo-validate input[type="radio"], form.evo-validate input[type="checkbox"]'),
+        $body      = $('body');
 
     for (var i = 0; i < forms.length; i++) {
         forms[i].addEventListener('invalid', function (event) {
             event.preventDefault();
             $(event.target).closest('.form-group').find('div.form-error-msg').remove();
-            $(event.target).closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
+            $(event.target).closest('.form-group')
+                .addClass('has-error')
+                .append('<div class="form-error-msg text-danger w-100"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
 
             if (!$body.data('doScrolling')) {
                 var $firstError = $(event.target).closest('.form-group.has-error');
@@ -203,6 +206,11 @@ function addValidationListener() {
             checkInputError(event);
         }, true);
     }
+    for (var i = 0; i < checkables.length; i++) {
+        checkables[i].addEventListener('click', function (event) {
+            checkInputError(event);
+        }, true);
+    }
     for (var i = 0; i < selects.length; i++) {
         selects[i].addEventListener('change', function (event) {
             checkInputError(event);
@@ -213,7 +221,14 @@ function addValidationListener() {
 function checkInputError(event)
 {
     var $target = $(event.target);
-    $target.closest('.form-group').find('div.form-error-msg').remove();
+    if ($target.parents('.cfg-group') != undefined) {
+        $target.parents('.cfg-group').find('div.form-error-msg').slideUp(function () {
+            $(this).remove();
+        });
+    }
+    $target.parents('.form-group').find('div.form-error-msg').slideUp(function () {
+        $(this).remove();
+    });
 
     if ($target.data('must-equal-to') !== undefined) {
         var $equalsTo = $($target.data('must-equal-to'));

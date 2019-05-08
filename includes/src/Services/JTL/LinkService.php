@@ -31,11 +31,6 @@ final class LinkService implements LinkServiceInterface
     private static $instance;
 
     /**
-     * @var LinkGroupCollection
-     */
-    public $linkGroups;
-
-    /**
      * @var LinkGroupListInterface
      */
     private $linkGroupList;
@@ -71,7 +66,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getLinkGroups(): LinkGroupCollection
     {
-        return $this->linkGroupList->getVisibleLinkgroups();
+        return $this->linkGroupList->getLinkGroups();
     }
 
     /**
@@ -79,7 +74,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getVisibleLinkGroups(): LinkGroupCollection
     {
-        return $this->getLinkGroups();
+        return $this->linkGroupList->getVisibleLinkgroups();
     }
 
     /**
@@ -87,17 +82,15 @@ final class LinkService implements LinkServiceInterface
      */
     public function getAllLinkGroups(): LinkGroupCollection
     {
-        return $this->linkGroups;
+        return $this->linkGroupList->getLinkGroups();
     }
 
     /**
      * @inheritdoc
      */
-    public function initLinkGroups(): LinkGroupCollection
+    public function initLinkGroups(): void
     {
-        $this->linkGroups = $this->linkGroupList->loadAll()->getLinkGroups();
-
-        return $this->linkGroupList->getVisibleLinkgroups();
+        $this->linkGroupList->loadAll();
     }
 
     /**
@@ -105,7 +98,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getLinkByID(int $id): ?LinkInterface
     {
-        foreach ($this->linkGroups as $linkGroup) {
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), function (LinkInterface $link) use ($id) {
                 return $link->getID() === $id;
@@ -123,7 +116,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getParentForID(int $id): ?LinkInterface
     {
-        foreach ($this->linkGroups as $linkGroup) {
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = first($linkGroup->getLinks(), function (LinkInterface $link) use ($id) {
                 return $link->getID() === $id;
@@ -143,7 +136,6 @@ final class LinkService implements LinkServiceInterface
     {
         $result = [];
         $link   = $this->getParentForID($id);
-
         while ($link !== null && $link->getID() > 0) {
             \array_unshift($result, $link->getID());
             $link = $this->getLinkByID($link->getParent());
@@ -159,7 +151,6 @@ final class LinkService implements LinkServiceInterface
     {
         $result = new Collection();
         $link   = $this->getParentForID($id);
-
         while ($link !== null && $link->getID() > 0) {
             $result->push($link);
             $link = $this->getLinkByID($link->getParent());
@@ -190,14 +181,15 @@ final class LinkService implements LinkServiceInterface
      */
     public function isDirectChild(int $parentLinkID, int $linkID): bool
     {
-        if ($parentLinkID > 0) {
-            foreach ($this->linkGroups as $linkGroup) {
-                /** @var LinkGroupInterface $linkGroup */
-                foreach ($linkGroup->getLinks() as $link) {
-                    /** @var LinkInterface $link */
-                    if ($link->getID() === $linkID && $link->getParent() === $parentLinkID) {
-                        return true;
-                    }
+        if ($parentLinkID <= 0) {
+            return false;
+        }
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
+            /** @var LinkGroupInterface $linkGroup */
+            foreach ($linkGroup->getLinks() as $link) {
+                /** @var LinkInterface $link */
+                if ($link->getID() === $linkID && $link->getParent() === $parentLinkID) {
+                    return true;
                 }
             }
         }
@@ -210,9 +202,7 @@ final class LinkService implements LinkServiceInterface
      */
     public function getLinkObjectByID(int $id): LinkInterface
     {
-        $link = new Link($this->db);
-
-        return $link->load($id);
+        return (new Link($this->db))->load($id);
     }
 
     /**
@@ -299,15 +289,15 @@ final class LinkService implements LinkServiceInterface
     public function getSpecialPages(): Collection
     {
         $lg = $this->getLinkGroupByName('specialpages');
-        if ($lg !== null) {
-            return $lg->getLinks()->groupBy(function (LinkInterface $link) {
-                return $link->getLinkType();
-            })->map(function (Collection $group) {
-                return $group->first();
-            });
+        if ($lg === null) {
+            return new Collection();
         }
 
-        return new Collection();
+        return $lg->getLinks()->groupBy(function (LinkInterface $link) {
+            return $link->getLinkType();
+        })->map(function (Collection $group) {
+            return $group->first();
+        });
     }
 
     /**
@@ -388,13 +378,12 @@ final class LinkService implements LinkServiceInterface
         $meta->cTitle    = '';
         $meta->cDesc     = '';
         $meta->cKeywords = '';
-        foreach ($this->linkGroups as $linkGroup) {
+        foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             $first = $linkGroup->getLinks()->first(function (LinkInterface $link) use ($type) {
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
-                Shop::dbg($first, false, 'FOUND:');
                 $meta->cTitle    = $first->getMetaTitle();
                 $meta->cDesc     = $first->getMetaDescription();
                 $meta->cKeywords = $first->getMetaKeyword();
@@ -419,7 +408,8 @@ final class LinkService implements LinkServiceInterface
      */
     public function activate(int $pageType): LinkGroupCollection
     {
-        foreach ($this->linkGroups as $linkGroup) {
+        $linkGroups = $this->linkGroupList->getLinkGroups();
+        foreach ($linkGroups as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
             foreach ($linkGroup->getLinks() as $link) {
                 /** @var LinkInterface $link */
@@ -500,7 +490,7 @@ final class LinkService implements LinkServiceInterface
             }
         }
 
-        return $this->linkGroups;
+        return $linkGroups;
     }
 
     /**
@@ -508,9 +498,6 @@ final class LinkService implements LinkServiceInterface
      */
     public function getAGBWRB(int $langID, int $customerGroupID)
     {
-        if ($langID <= 0 || $customerGroupID <= 0) {
-            return false;
-        }
         $linkAGB = null;
         $linkWRB = null;
         // kLink für AGB und WRB suchen
@@ -518,8 +505,11 @@ final class LinkService implements LinkServiceInterface
             /** @var LinkInterface $sp */
             if ($sp->getLinkType() === \LINKTYP_AGB) {
                 $linkAGB = $sp;
-            } elseif ($sp->getLinkType() === \LINKTYP_WRB) {
+                break;
+            }
+            if ($sp->getLinkType() === \LINKTYP_WRB) {
                 $linkWRB = $sp;
+                break;
             }
         }
         $data = $this->db->select(
@@ -532,15 +522,14 @@ final class LinkService implements LinkServiceInterface
         if (empty($data->kText)) {
             $data = $this->db->select('ttext', 'nStandard', 1);
         }
-        if (!empty($data->kText)) {
-            $data->cURLAGB  = $linkAGB !== null ? $linkAGB->getURL() : '';
-            $data->cURLWRB  = $linkWRB !== null ? $linkWRB->getURL() : '';
-            $data->kLinkAGB = $linkAGB !== null ? $linkAGB->getID() : 0;
-            $data->kLinkWRB = $linkWRB !== null ? $linkWRB->getID() : 0;
-
-            return $data;
+        if (empty($data->kText)) {
+            return false;
         }
+        $data->cURLAGB  = $linkAGB !== null ? $linkAGB->getURL() : '';
+        $data->cURLWRB  = $linkWRB !== null ? $linkWRB->getURL() : '';
+        $data->kLinkAGB = $linkAGB !== null ? $linkAGB->getID() : 0;
+        $data->kLinkWRB = $linkWRB !== null ? $linkWRB->getID() : 0;
 
-        return false;
+        return $data;
     }
 }

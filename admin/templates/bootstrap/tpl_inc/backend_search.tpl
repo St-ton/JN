@@ -10,18 +10,19 @@
         var selectedSearchItem  = null;
         var searchDropdown      = $('#backend-search-dropdown');
         var searchInput         = $('#backend-search-input');
+        var lastSearchTerm      = '';
 
         searchInput
             .on('input', function() {
-                var value = $(this).val();
+                lastSearchTerm = $(this).val();
 
-                if (value.length >= 3) {
+                if (lastSearchTerm.length >= 3) {
                     if(lastIoSearchCall) {
                         lastIoSearchCall.abort();
                         lastIoSearchCall = null;
                     }
 
-                    lastIoSearchCall = ioCall('adminSearch', [value], function (html) {
+                    lastIoSearchCall = ioCall('adminSearch', [lastSearchTerm], function (html) {
                         if (html) {
                             searchDropdown.html(html).addClass('open');
                         } else {
@@ -33,14 +34,20 @@
                         selectedSearchItem  = null;
                     });
                 } else {
+                    searchDropdown.html('');
                     searchDropdown.removeClass('open');
+                    searchItems         = null;
+                    selectedSearchIndex = null;
+                    selectedSearchItem  = null;
                 }
             })
             .on('keydown', function(e) {
                 if(e.key === 'Enter') {
                     if(selectedSearchItem === null) {
                         var searchString = $('#backend-search-input').val();
-                        window.location.href = 'einstellungen.php?cSuche=' + searchString + '&einstellungen_suchen=1';
+                        if (searchString.length >= 3) {
+                            window.location.href = 'searchresults.php?cSuche=' + searchString;
+                        }
                     } else {
                         window.location.href = selectedSearchItem.find('a').attr('href');
                     }
@@ -67,23 +74,41 @@
                 searchItems = searchDropdown.find('.backend-search-item');
             }
 
-            if(selectedSearchIndex === null) {
-                if(down)
-                    selectedSearchIndex = 0;
-                else
-                    selectedSearchIndex = searchItems.length - 1;
-            } else {
-                if(down)
-                    selectedSearchIndex = (selectedSearchIndex + 1) % searchItems.length;
-                else
-                    selectedSearchIndex = (selectedSearchIndex - 1 + searchItems.length) % searchItems.length;
-            }
+            if (searchItems.length > 0) {
+                if(selectedSearchIndex === null) {
+                    if(down) {
+                        selectedSearchIndex = 0;
+                    } else {
+                        selectedSearchIndex = searchItems.length - 1;
+                    }
+                } else {
+                    if(down) {
+                        selectedSearchIndex = (selectedSearchIndex + 1) % searchItems.length;
+                    } else {
+                        selectedSearchIndex = (selectedSearchIndex - 1 + searchItems.length) % searchItems.length;
+                        if(selectedSearchIndex === searchItems.length - 1) {
+                            selectedSearchIndex = null;
+                        }
+                    }
+                }
 
-            searchDropdown.find('.selected').removeClass('selected');
-            selectedSearchItem = $(searchItems[selectedSearchIndex]);
-            selectedSearchItem.addClass('selected');
-            selectedSearchItem.find('a').focus();
-            searchInput.focus();
+                searchDropdown.find('.selected').removeClass('selected');
+
+                if (selectedSearchIndex === null) {
+                    selectedSearchItem = null;
+                    searchInput.val(lastSearchTerm);
+                } else {
+                    selectedSearchItem = $(searchItems[selectedSearchIndex]);
+                    selectedSearchItem.addClass('selected');
+                    selectedSearchItem.find('a').focus();
+                    var mark = selectedSearchItem.find('mark');
+                    if (mark.length > 0) {
+                        searchInput.val(mark[0].innerText);
+                    }
+                }
+
+                searchInput.focus();
+            }
         }
     </script>
 </div>

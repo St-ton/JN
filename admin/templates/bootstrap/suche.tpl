@@ -1,3 +1,24 @@
+{if $standalonePage}
+    {include file='tpl_inc/header.tpl'}
+    {$cTitel = 'Suchergebnisse für: '|cat:$query}
+    {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
+    <ul>
+{/if}
+
+{if $adminMenuItems|count}
+    <li>
+        <h4>Seiten / Menüpunkte</h4>
+    </li>
+    <ul class="backend-search-section">
+        {foreach $adminMenuItems as $item}
+            <li class="backend-search-item" tabindex="-1">
+                <a href="{$item->link}">
+                    {$item->path}
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+{/if}
 {if isset($settings)}
     {foreach $settings as $setting}
         <li>
@@ -22,7 +43,8 @@
             </ul>
         </li>
     {/foreach}
-{elseif isset($shippings)}
+{/if}
+{if isset($shippings)}
     <li>
         <h4><a href="versandarten.php" class="value">{__('shippingTypesOverview')}</a></h4>
     </li>
@@ -39,7 +61,8 @@
             {/foreach}
         </ul>
     </li>
-{elseif isset($paymentMethods)}
+{/if}
+{if isset($paymentMethods)}
     <li>
         <h4><a href="zahlungsarten.php" class="value">{__('paymentTypesOverview')}</a></h4>
     </li>
@@ -48,10 +71,15 @@
             {foreach $paymentMethods as $paymentMethod}
                 <li class="backend-search-item" tabindex="-1">
                     <a href="zahlungsarten.php?kZahlungsart={$paymentMethod->kZahlungsart}&token={$smarty.session.jtl_token}" class="value">
-                        <p>{$paymentMethod->cName}</p>
+                        {$paymentMethod->cName}
                     </a>
                 </li>
             {/foreach}
         </ul>
     </li>
+{/if}
+
+{if $standalonePage}
+    </ul>
+    {include file='tpl_inc/footer.tpl'}
 {/if}

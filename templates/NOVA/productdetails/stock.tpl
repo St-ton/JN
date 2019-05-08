@@ -14,22 +14,8 @@
                             {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
                                 <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
                             {elseif !$Artikel->nErscheinendesProdukt}
-                                {if $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' &&
-                                ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') &&
-                                $Artikel->fLagerbestand <= 0 && $Artikel->fZulauf > 0 && isset($Artikel->dZulaufDatum_de) && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N'}
-                                    {assign var=cZulauf value=$Artikel->fZulauf|cat:':::'|cat:$Artikel->dZulaufDatum_de}
-                                    <span class="status status-1">{lang key='productInflowing' section='productDetails' printf=$cZulauf}</span>
-                                {elseif $anzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $Artikel->cLagerBeachten === 'Y' &&
-                                $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
-                                ($Artikel->cLagerKleinerNull === 'N' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I' || $Artikel->cLagerKleinerNull === 'Y' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
-                                    <span class="status status-1">{lang key='supplierStockNotice' printf=$Artikel->fLieferzeit}</span>
-                                {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
-                                    <span class="status status-{$Artikel->Lageranzeige->nStatus}"><span class="fas fa-truck mr-2"></span>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
-                                {elseif $anzeige === 'ampel'}
-                                    <span class="status status-{$Artikel->Lageranzeige->nStatus}"><span class="fas fa-truck mr-2"></span>{$Artikel->Lageranzeige->AmpelText}</span>
-                                {/if}
-                                {block name='productdetails-stock-include-warehouse'}
-                                    {include file='productdetails/warehouse.tpl' tplscope='detail'}
+                                {block name='productdetails-stock-include-stock-status'}
+                                    {include file='snippets/stock_status.tpl' currentProduct=$Artikel}
                                 {/block}
                             {else}
                                 {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && $Artikel->fLagerbestand > 0}

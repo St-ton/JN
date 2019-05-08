@@ -58,7 +58,7 @@
                                 {/block}
 
                                 {block name='productdetails-config-container-group-items'}
-                                    {row}
+                                    {row class="form-group"}
                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                             {block name='productdetails-config-container-group-item-type-swatch'}
                                                 {foreach $oGruppe->oItem_arr as $oItem}
@@ -89,6 +89,7 @@
                                                                 checked=$checkboxActive
                                                                 id="item{$oItem->getKonfigitem()}"
                                                                 class="cfg-swatch"
+                                                                required=$oItem@first && $oGruppe->getMin() > 0
                                                             }
                                                                 <div data-id="$oItem->getKonfigitem()" class="config-item text-center mb-5{if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
 

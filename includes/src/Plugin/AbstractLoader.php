@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin;
 
+use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -22,7 +23,6 @@ use JTL\Plugin\Data\PaymentMethods;
 use JTL\Plugin\Data\Widget;
 use JTL\Shop;
 use stdClass;
-use Illuminate\Support\Collection;
 
 /**
  * Class AbstractLoader

@@ -371,14 +371,12 @@ class Preise
     }
 
     /**
-     * @param int $kKundengruppe
-     * @param int $kArtikel
      * @return $this
      * @deprecated since 5.0.0 - removed tpreise
      */
-    public function loadFromDB(int $kKundengruppe, int $kArtikel): self
+    public function loadFromDB(): self
     {
-        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
         return $this;
     }
@@ -477,7 +475,7 @@ class Preise
      */
     public function insertInDB(): int
     {
-        trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+        \trigger_error(__FUNCTION__ . ' is deprecated.',\ E_USER_DEPRECATED);
 
         return 0;
     }

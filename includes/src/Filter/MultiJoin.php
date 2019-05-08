@@ -12,9 +12,11 @@ namespace JTL\Filter;
  * Class MultiJoin
  * @package JTL\Filter
  */
-class MultiJoin extends Join implements JoinInterface
+class MultiJoin extends Join
 {
-    /** @var JoinInterface[] */
+    /**
+     * @var JoinInterface[]
+     */
     private $joinChain = [];
 
     /**

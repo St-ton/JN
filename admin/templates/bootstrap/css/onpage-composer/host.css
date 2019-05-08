@@ -211,18 +211,6 @@ body {
   height: 100%;
   transition: all 0.2s ease-in-out;
 }
-#previewPanel {
-  height: 100%;
-  text-align: center;
-  background: #ddd;
-  margin-left: 380px;
-}
-#previewPanel iframe {
-  border: 0;
-  width: 100%;
-  height: 100%;
-  transition: all 0.2s ease-in-out;
-}
 .modal .modal-header {
   background-color: #5cbcf6;
   color: #fff;

@@ -721,7 +721,7 @@ final class Mapper
      * @param string $toMap
      * @return array
      */
-    public function mapArray($xml, $name, $toMap): array
+    public function mapArray(array $xml, string $name, string $toMap): array
     {
         $objects = [];
         $idx     = $name . ' attr';

@@ -71,7 +71,6 @@ class PageService
             'publicateDraft',
             'saveDraft',
             'createPagePreview',
-            'createPageLivePreview',
             'deleteDraft',
         ];
     }
@@ -357,16 +356,6 @@ class PageService
     public function createPagePreview(array $data): array
     {
         return $this->createPageFromData($data)->getAreaList()->getPreviewHtml();
-    }
-
-    /**
-     * @param array $data
-     * @return string[]
-     * @throws \Exception
-     */
-    public function createPageLivePreview(array $data): array
-    {
-        return $this->createPageFromData($data)->getAreaList()->getFinalHtml();
     }
 
     /**

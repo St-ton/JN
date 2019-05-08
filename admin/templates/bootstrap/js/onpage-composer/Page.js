@@ -7,7 +7,6 @@ function Page(io, shopUrl, key)
     this.io             = io;
     this.shopUrl        = shopUrl;
     this.key            = key;
-    this.cachedPageData = [];
 }
 
 Page.prototype = {
@@ -132,24 +131,6 @@ Page.prototype = {
             publishTo: this.publishTo ? this.encodeDate(this.publishTo) : null,
             name: this.name,
         }, saveCB, errorCB);
-    },
-
-    showLivePreview: function(onDone)
-    {
-        this.cachedPageData = this.toJSON();
-
-        this.io.createPageLivePreview(
-            this.cachedPageData,
-            function(preview) {
-                this.onLoad(noop, preview);
-                onDone();
-            }.bind(this)
-        );
-    },
-
-    hideLivePreview: function(onDone)
-    {
-        this.loadFromData(this.cachedPageData, onDone);
     },
 
     encodeDate: function(localDate)

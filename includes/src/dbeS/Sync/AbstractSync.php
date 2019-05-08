@@ -90,6 +90,23 @@ abstract class AbstractSync
     }
 
     /**
+     * @param array  $xml
+     * @param string $table
+     * @param string $toMap
+     * @param array  $pks
+     * @return array
+     */
+    protected function insertOnExistsUpdateXMLinDB(array $xml, string $table, string $toMap, array $pks): array
+    {
+        $idx = $table . ' attr';
+        if ((isset($xml[$table]) && \is_array($xml[$table])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
+            return $this->insertOnExistUpdate($table, $this->mapper->mapArray($xml, $table, $toMap), $pks);
+        }
+
+        return \array_fill_keys($pks, []);
+    }
+
+    /**
      * @param string     $tablename
      * @param array      $objects
      * @param string     $pk1
@@ -108,6 +125,76 @@ abstract class AbstractSync
             if (!$key) {
                 $this->logger->error('Failed upsert@' . $tablename . ' with data: ' . \print_r($object, true));
             }
+        }
+    }
+
+    /**
+     * @param string $tableName
+     * @param array  $objects
+     * @param array  $pks
+     * @return array
+     */
+    protected function insertOnExistUpdate(string $tableName, array $objects, array $pks): array
+    {
+        $result = \array_fill_keys($pks, []);
+        if (!\is_array($objects)) {
+            return $result;
+        }
+        if (!\is_array($pks)) {
+            $pks = [(string)$pks];
+        }
+
+        foreach ($objects as $object) {
+            foreach ($pks as $pk) {
+                if (!isset($object->$pk)) {
+                    $this->logger->error(
+                        'PK not set on insertOnExistUpdate@' . $tableName . ' with data: ' . \print_r($object, true)
+                    );
+
+                    continue 2;
+                }
+                $result[$pk][] = $object->$pk;
+            }
+
+            if ($this->db->upsert($tableName, $object, $pks)) {
+                $this->logger->error(
+                    'Failed insertOnExistUpdate@' . $tableName . ' with data: ' . \print_r($object, true)
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $tableName
+     * @param array  $pks
+     * @param string $excludeKey
+     * @param array  $excludeValues
+     * @return void
+     */
+    protected function deleteByKey(
+        string $tableName,
+        array $pks,
+        string $excludeKey = '',
+        array $excludeValues = []
+    ): void {
+        $whereKeys = [];
+        $params    = [];
+        foreach ($pks as $name => $value) {
+            $whereKeys[]   = $name . ' = :' . $name;
+            $params[$name] = $value;
+        }
+        if (empty($excludeKey) || !\is_array($excludeValues)) {
+            $excludeValues = [];
+        }
+        $stmt = 'DELETE FROM ' . $tableName . '
+                WHERE ' . \implode(' AND ', $whereKeys) . (\count($excludeValues) > 0 ? '
+                    AND ' . $excludeKey . ' NOT IN (' . \implode(', ', $excludeValues) . ')' : '');
+        if (!$this->db->queryPrepared($stmt, $params, ReturnType::DEFAULT)) {
+            $this->logger->error(
+                'DBDeleteByKey fehlgeschlagen! Tabelle: ' . $tableName . ', PK: ' . \print_r($pks, true)
+            );
         }
     }
 

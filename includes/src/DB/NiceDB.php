@@ -168,9 +168,6 @@ class NiceDB implements DbInterface
             if (PROFILE_QUERIES === true) {
                 $this->debug = true;
             }
-            if ($this->debug === true && \is_numeric(PROFILE_QUERIES)) {
-                $this->debugLevel = (int)PROFILE_QUERIES;
-            }
         }
         if (\ES_DB_LOGGING !== false && \ES_DB_LOGGING !== 0) {
             $this->logErrors = true;
@@ -663,6 +660,93 @@ class NiceDB implements DbInterface
      * @inheritdoc
      * @throws InvalidEntityNameException
      */
+    public function upsert(string $tableName, $object, array $excludeUpdate = [], bool $echo = false): int
+    {
+        $this->validateEntityName($tableName);
+        $this->validateDbObject($object);
+        $start   = $this->debug === true ? \microtime(true) : 0;
+        $insData = [];
+        $updData = [];
+        $assigns = [];
+
+        foreach ($object as $column => $value) {
+            if ($value === '_DBNULL_') {
+                $value = null;
+            } elseif ($value === null) {
+                $value = '';
+            }
+
+            if (\mb_convert_case($value, \MB_CASE_LOWER) === 'now()') {
+                $insData['`' . $column . '`'] = $value;
+                if (!\in_array($column, $excludeUpdate)) {
+                    $updData[] = '`' . $column . '` = ' . $value;
+                }
+            } else {
+                $insData['`' . $column . '`'] = ':' . $column;
+                $assigns[':' . $column]       = $value;
+                if (!\in_array($column, $excludeUpdate)) {
+                    $updData[] = '`' . $column . '` = :' . $column;
+                }
+            }
+        }
+
+        $sql = 'INSERT' . (\count($updData) > 0 ? ' ' : ' IGNORE ') . 'INTO ' . $tableName
+            . '(' . \implode(', ', \array_keys($insData)) . ')
+                    VALUES (' . \implode(', ', $insData) . ')' . (\count($updData) > 0 ? ' ON DUPLICATE KEY
+                    UPDATE ' . \implode(', ', $updData) : '');
+        if ($echo) {
+            echo $sql;
+        }
+        $stmt = $this->pdo->prepare($sql);
+        try {
+            $res = $stmt->execute($assigns);
+        } catch (PDOException $e) {
+            if (\NICEDB_EXCEPTION_ECHO === true) {
+                Shop::dbg($stmt, false, 'NiceDB exception when insert or updating row: ');
+                Shop::dbg($assigns, false, 'Bound params:');
+                Shop::dbg($e->getMessage());
+            }
+            if (\NICEDB_EXCEPTION_BACKTRACE === true) {
+                Shop::dbg(\debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
+            }
+
+            return -1;
+        }
+
+        if (!$res) {
+            if ($this->logErrors) {
+                $errMsg = $stmt . "\n" .
+                    $this->getErrorCode() . ': ' . $this->getErrorMessage() .
+                    "\n\nBacktrace:" . \print_r(\debug_backtrace());
+                try {
+                    Shop::Container()->getLogService()->error($errMsg);
+                } catch (\Exception $e) {
+                    \user_error($errMsg);
+                }
+            }
+
+            return -1;
+        }
+
+        $lastID = $this->pdo->lastInsertId();
+        if ($this->debug === true && \mb_strpos($tableName, 'tprofiler') !== 0) {
+            $parsed = $sql;
+            $end    = \microtime(true);
+            $dbt    = $this->debugLevel > 2 ? \debug_backtrace() : null;
+            foreach ($assigns as $name => $value) {
+                $parsed = \str_replace($name, $this->pdo->quote($value), $parsed);
+            }
+
+            $this->analyzeQuery('insert', $parsed, $end - $start, $dbt);
+        }
+
+        return $lastID;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws InvalidEntityNameException
+     */
     public function selectSingleRow(
         string $tableName,
         $keyname,
@@ -945,7 +1029,7 @@ class NiceDB implements DbInterface
     protected function _execute(int $type, $stmt, $params, int $return, bool $echo = false, $fnInfo = null)
     {
         $params = \is_array($params) ? $params : [];
-        if (!\in_array($type, [0, 1], true)) {
+        if (!in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('$type parameter must be 0 or 1, "' . $type . '" given');
         }
         if ($return <= 0 || $return > 12) {

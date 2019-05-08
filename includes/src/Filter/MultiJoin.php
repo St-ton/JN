@@ -33,7 +33,7 @@ class MultiJoin extends Join implements JoinInterface
      */
     public function getSQL(): string
     {
-        if (count($this->joinChain) === 0) {
+        if (\count($this->joinChain) === 0) {
             return parent::getSQL();
         }
         $table = $this->getTable();

@@ -6,6 +6,8 @@
 
 namespace JTL\dbeS\Sync;
 
+use DateTime;
+use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -283,6 +285,7 @@ abstract class AbstractSync
     /**
      * @param int   $productID
      * @param array $xml
+     * @throws Exception
      */
     protected function handlePriceHistory(int $productID, array $xml)
     {
@@ -320,7 +323,7 @@ abstract class AbstractSync
             $details = empty($xml['tpreis'][$i])
                 ? $this->mapper->mapArray($xml['tpreis'], 'tpreisdetail', 'mPreisDetail')
                 : $this->mapper->mapArray($xml['tpreis'][$i], 'tpreisdetail', 'mPreisDetail');
-            if (count($details) > 0 && (int)$details[0]->nAnzahlAb === 0) {
+            if (\count($details) > 0 && (int)$details[0]->nAnzahlAb === 0) {
                 $this->db->queryPrepared(
                     'UPDATE tpreisverlauf SET
                         fVKNetto = :nettoPrice
@@ -343,16 +346,16 @@ abstract class AbstractSync
         foreach ($prices as $i => $price) {
             if ($price->cAktiv === 'Y') {
                 try {
-                    $startDate = new \DateTime($price->dStart);
-                } catch (\Exception $e) {
-                    $startDate = (new \DateTime())->setTime(0, 0, 0);
+                    $startDate = new DateTime($price->dStart);
+                } catch (Exception $e) {
+                    $startDate = (new DateTime())->setTime(0, 0, 0);
                 }
                 try {
-                    $endDate = new \DateTime($price->dEnde);
-                } catch (\Exception $e) {
-                    $endDate = (new \DateTime())->setTime(0, 0, 0);
+                    $endDate = new DateTime($price->dEnde);
+                } catch (Exception $e) {
+                    $endDate = (new DateTime())->setTime(0, 0, 0);
                 }
-                $toDay = (new \DateTime())->setTime(0, 0, 0);
+                $toDay = (new DateTime())->setTime(0, 0, 0);
                 if ($startDate <= $toDay
                     && $endDate >= $toDay
                     && ((int)$price->nIstAnzahl === 0 || (int)$price->nAnzahl < (int)$xml['fLagerbestand'])

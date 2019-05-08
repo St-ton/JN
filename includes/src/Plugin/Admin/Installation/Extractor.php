@@ -6,7 +6,10 @@
 
 namespace JTL\Plugin\Admin\Installation;
 
+use InvalidArgumentException;
+use JTL\XMLParser;
 use stdClass;
+use ZipArchive;
 
 /**
  * Class Extractor
@@ -14,29 +17,24 @@ use stdClass;
  */
 class Extractor
 {
-    private const UNZIP_PATH = \PFAD_ROOT . \PFAD_PLUGIN;
+    private const UNZIP_PATH = \PFAD_ROOT . \PFAD_DBES_TMP;
 
-    public function __construct()
-    {
-    }
+    private const OLD_PLUGINS_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
+
+    private const NEW_PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
     /**
-     * sanitize names from plugins downloaded via gitlab
-     *
-     * @param array $p_event
-     * @param array $p_header
-     * @return int
+     * @var XMLParser
      */
-    public function pluginPreExtractCallBack($p_event, &$p_header): int
-    {
-        // plugins downloaded from gitlab have -[BRANCHNAME]-[COMMIT_ID] in their name.
-        // COMMIT_ID should be 40 characters
-        \preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $p_header['filename'], $hits);
-        if (\count($hits) >= 3) {
-            $p_header['filename'] = \str_replace('-master-' . $hits[2], '', $p_header['filename']);
-        }
+    private $parser;
 
-        return 1;
+    /**
+     * Extractor constructor.
+     * @param XMLParser $parser
+     */
+    public function __construct(XMLParser $parser)
+    {
+        $this->parser = $parser;
     }
 
     /**
@@ -52,36 +50,72 @@ class Extractor
         $response->files_failed   = [];
         $response->messages       = [];
 
-        return \class_exists('ZipArchive')
-            ? $this->unzip($zipFile, $response)
-            : $this->unPclZip($zipFile, $response);
+        return $this->unzip($zipFile, $response);
     }
 
     /**
-     * @param string    $zipFile
+     * @param string   $dirName
+     * @param stdClass $response
+     * @return stdClass
+     * @throws InvalidArgumentException
+     */
+    private function moveToPluginsDir(string $dirName, stdClass $response): stdClass
+    {
+        $target = null;
+        $info   = self::UNZIP_PATH . $dirName . \PLUGIN_INFO_FILE;
+        if (!\file_exists($info)) {
+            throw new InvalidArgumentException('info.xml does not exist: ' . $info);
+        }
+        $parsed = $this->parser->parse($info);
+        if (isset($parsed['jtlshopplugin']) && \is_array($parsed['jtlshopplugin'])) {
+            $target = self::NEW_PLUGINS_DIR . $dirName;
+        } elseif (isset($parsed['jtlshop3plugin']) && \is_array($parsed['jtlshop3plugin'])) {
+            $target = self::OLD_PLUGINS_DIR . $dirName;
+        }
+        if ($target === null) {
+            throw new InvalidArgumentException('Cannot find plugin definition in ' . $info);
+        }
+        if (\rename(self::UNZIP_PATH . $dirName, $target)) {
+            $response->path = $target;
+        } else {
+            $response->status     = 'FAILED';
+            $response->messages[] = 'Cannot move to ' . $target;
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string   $zipFile
      * @param stdClass $response
      * @return stdClass
      */
     private function unzip(string $zipFile, stdClass $response): stdClass
     {
-        $zip = new \ZipArchive();
+        $dirName            = '';
+        $zip                = new ZipArchive();
+        $response->dir_name = null;
         if (!$zip->open($zipFile) || $zip->numFiles === 0) {
             $response->status     = 'FAILED';
             $response->messages[] = 'Cannot open archive';
         } else {
             for ($i = 0; $i < $zip->numFiles; $i++) {
-                if ($i === 0 && \mb_strpos($zip->getNameIndex($i), '.') !== false) {
-                    $response->status     = 'FAILED';
-                    $response->messages[] = 'Invalid archive';
+                if ($i === 0) {
+                    $dirName            = $zip->getNameIndex($i);
+                    $response->dir_name = $dirName;
+                    if (\mb_strpos($dirName, '.') !== false) {
+                        $response->status     = 'FAILED';
+                        $response->messages[] = 'Invalid archive';
 
-                    return $response;
+                        return $response;
+                    }
                 }
                 $filename = $zip->getNameIndex($i);
                 \preg_match('/(.*)-master-([a-zA-Z0-9]{40})\/(.*)/', $filename, $hits);
                 if (\count($hits) >= 3) {
                     $zip->renameIndex($i, \str_replace('-master-' . $hits[2], '', $filename));
+                    $filename = $zip->getNameIndex($i);
                 }
-                $filename = $zip->getNameIndex($i);
                 if ($zip->extractTo(self::UNZIP_PATH, $filename)) {
                     $response->files_unpacked[] = $filename;
                 } else {
@@ -89,41 +123,11 @@ class Extractor
                 }
             }
             $zip->close();
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param string    $zipFile
-     * @param stdClass $response
-     * @return stdClass
-     */
-    private function unPclZip(string $zipFile, stdClass $response): stdClass
-    {
-        $zip     = new \PclZip($zipFile);
-        $content = $zip->listContent();
-        if (!isset($content[0]['filename']) || \mb_strpos($content[0]['filename'], '.') !== false) {
-            $response->status     = 'FAILED';
-            $response->messages[] = 'Invalid archive';
-        } else {
-            $res = $zip->extract(
-                \PCLZIP_OPT_PATH,
-                self::UNZIP_PATH,
-                \PCLZIP_CB_PRE_EXTRACT,
-                [$this, 'pluginPreExtractCallBack']
-            );
-            if ($res !== 0) {
-                foreach ($res as $_file) {
-                    if ($_file['status'] === 'ok' || $_file['status'] === 'already_a_directory') {
-                        $response->files_unpacked[] = $_file;
-                    } else {
-                        $response->files_failed[] = $_file;
-                    }
-                }
-            } else {
-                $response->status   = 'FAILED';
-                $response->errors[] = 'Got unzip error code: ' . $zip->errorCode();
+            $response->path = self::UNZIP_PATH . $dirName;
+            try {
+                $response = $this->moveToPluginsDir($dirName, $response);
+            } catch (InvalidArgumentException $e) {
+                $response->messages[] = $e->getMessage();
             }
         }
 

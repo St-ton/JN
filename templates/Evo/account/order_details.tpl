@@ -153,15 +153,52 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>{lang key='partialShippedPosition' section='order'}</th>
-                            <th>{lang key='partialShippedCount' section='order'}</th>
+                            <th>{lang key="partialShippedPosition" section="order"}</th>
+                            <th>{lang key="partialShippedCount" section="order"}</th>
+                            <th>{lang key='productNo' section='global'}</th>
+                            <th>{lang key='product' section='global'}</th>
+                            <th>{lang key="order" section="global"}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach $oLieferschein->oLieferscheinPos_arr as $oLieferscheinpos}
                             <tr>
-                                <td>{include file='account/order_item.tpl' Position=$oLieferscheinpos->oPosition bPreis=false bKonfig=false}</td>
+                                <td>{$oLieferscheinpos@iteration}</td>
                                 <td>{$oLieferscheinpos->getAnzahl()}</td>
+                                <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
+                                <td>
+                                    {$oLieferscheinpos->oPosition->cName}
+                                    <ul class="list-unstyled text-muted small">
+                                        {if !empty($oLieferscheinpos->oPosition->cHinweis)}
+                                            <li class="text-info notice">{$oLieferscheinpos->oPosition->cHinweis}</li>
+                                        {/if}
+
+                                        {* eindeutige Merkmale *}
+                                        {if $oLieferscheinpos->oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
+                                            <li class="manufacturer">
+                                                <strong>{lang key='manufacturer' section='productDetails'}</strong>:
+                                                <span class="values">
+                                                   {$oLieferscheinpos->oPosition->Artikel->cHersteller}
+                                                </span>
+                                            </li>
+                                        {/if}
+
+                                        {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oLieferscheinpos->oPosition->Artikel->oMerkmale_arr)}
+                                            {foreach $oLieferscheinpos->oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                <li class="characteristic">
+                                                    <strong>{$oMerkmale_arr->cName}</strong>:
+                                                    <span class="values">
+                                                        {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
+                                                            {if !$oWert@first}, {/if}
+                                                            {$oWert->cWert}
+                                                        {/foreach}
+                                                    </span>
+                                                </li>
+                                            {/foreach}
+                                        {/if}
+                                    </ul>
+                                </td>
+                                <td>{$Bestellung->cBestellNr}</td>
                             </tr>
                         {/foreach}
                     </tbody>

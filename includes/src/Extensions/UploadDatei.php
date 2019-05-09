@@ -162,10 +162,10 @@ class UploadDatei
         foreach (\array_keys(\get_object_vars($objFrom)) as $member) {
             $objTo->$member = $objFrom->$member;
         }
-        $objTo->kUpload    = (int)$objTo->kUpload;
-        $objTo->kCustomID  = (int)$objTo->kCustomID;
-        $objTo->nBytes     = (int)$objTo->nBytes;
-        $objTo->nTyp       = (int)$objTo->nTyp;
+        $objTo->kUpload   = (int)$objTo->kUpload;
+        $objTo->kCustomID = (int)$objTo->kCustomID;
+        $objTo->nBytes    = (int)$objTo->nBytes;
+        $objTo->nTyp      = (int)$objTo->nTyp;
 
         return $objTo;
     }

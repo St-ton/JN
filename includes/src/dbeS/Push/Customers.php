@@ -42,7 +42,7 @@ final class Customers extends AbstractPush
         $crypto     = Shop::Container()->getCryptoService();
         $attributes = [];
         foreach ($customers as &$customer) {
-            $customer['cAnrede']   = Kunde::mapSalutation($customer['cAnrede'], $customer['kSprache']);
+            $customer['cAnrede']   = Kunde::mapSalutation($customer['cAnrede'], (int)$customer['kSprache']);
             $customer['cNachname'] = \trim($crypto->decryptXTEA($customer['cNachname']));
             $customer['cFirma']    = \trim($crypto->decryptXTEA($customer['cFirma']));
             $customer['cStrasse']  = \trim($crypto->decryptXTEA($customer['cStrasse']));

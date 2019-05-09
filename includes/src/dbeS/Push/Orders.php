@@ -59,7 +59,7 @@ final class Orders extends AbstractPush
         foreach ($orders as &$order) {
             $orderAttribute     = $this->buildAttributes($order);
             $orderID            = (int)$orderAttribute['kBestellung'];
-            $order['tkampagne'] = $this->db->query(
+            $order['tkampagne'] = $this->db->queryPrepared(
                 "SELECT tkampagne.cName, tkampagne.cParameter cIdentifier,
                 COALESCE(tkampagnevorgang.cParamWert, '') cWert
                 FROM tkampagnevorgang
@@ -68,23 +68,26 @@ final class Orders extends AbstractPush
                 INNER JOIN tkampagnedef 
                     ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
                 WHERE tkampagnedef.cKey = 'kBestellung'
-                    AND tkampagnevorgang.kKey = " . $orderID . '
-                ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1',
+                    AND tkampagnevorgang.kKey = :oid
+                ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1",
+                ['oid' => $orderID],
                 ReturnType::SINGLE_ASSOC_ARRAY
             );
 
-            $order['ttrackinginfo'] = $this->db->query(
+            $order['ttrackinginfo'] = $this->db->queryPrepared(
                 'SELECT cUserAgent, cReferer
                 FROM tbesucher
-                WHERE kBestellung = ' . $orderID . '
+                WHERE kBestellung = :oid
                 LIMIT 1',
+                ['oid' => $orderID],
                 ReturnType::SINGLE_ASSOC_ARRAY
             );
 
-            $cartPositions      = $this->db->query(
+            $cartPositions      = $this->db->queryPrepared(
                 'SELECT *
                 FROM twarenkorbpos
-                WHERE kWarenkorb = ' . (int)$orderAttribute['kWarenkorb'],
+                WHERE kWarenkorb = :cid',
+                ['cid' => (int)$orderAttribute['kWarenkorb']],
                 ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
             $positionAttributes = [];
@@ -92,11 +95,11 @@ final class Orders extends AbstractPush
                 $posAttribute = $this->buildAttributes($position, ['cUnique', 'kKonfigitem', 'kBestellpos']);
 
                 $posAttribute['kBestellung']          = $orderAttribute['kBestellung'];
-                $position['twarenkorbposeigenschaft'] = $this->db->query(
+                $position['twarenkorbposeigenschaft'] = $this->db->queryPrepared(
                     'SELECT *
                     FROM twarenkorbposeigenschaft
-                    WHERE kWarenkorbPos = ' .
-                    (int)$posAttribute['kWarenkorbPos'],
+                    WHERE kWarenkorbPos = :cid',
+                    ['cid' => (int)$posAttribute['kWarenkorbPos']],
                     ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );
                 unset($posAttribute['kWarenkorb']);
@@ -148,7 +151,7 @@ final class Orders extends AbstractPush
             $order['tlieferadresse']      = $address;
             $order['tlieferadresse attr'] = $attr;
 
-            $billingAddress        = new Rechnungsadresse($orderAttribute['kRechnungsadresse']);
+            $billingAddress        = new Rechnungsadresse((int)$orderAttribute['kRechnungsadresse']);
             $country               = $this->db->select(
                 'tland',
                 'cISO',
@@ -179,11 +182,12 @@ final class Orders extends AbstractPush
             $order['trechnungsadresse']      = $address;
             $order['trechnungsadresse attr'] = $attr;
 
-            $item              = $this->db->query(
-                'SELECT *
+            $item              = $this->db->queryPrepared(
+                "SELECT *
                 FROM tzahlungsinfo
-                WHERE kBestellung = ' . $orderID . " AND cAbgeholt = 'N'
+                WHERE kBestellung = :oid AND cAbgeholt = 'N'
                 ORDER BY kZahlungsInfo DESC LIMIT 1",
+                ['oid' => $orderID],
                 ReturnType::SINGLE_ASSOC_ARRAY
             );
             $item['cBankName'] = isset($item['cBankName']) ? $crypto->decryptXTEA($item['cBankName']) : null;
@@ -194,7 +198,7 @@ final class Orders extends AbstractPush
             $item['cBIC']      = isset($item['cBIC']) ? $crypto->decryptXTEA($item['cBIC']) : null;
             $item['cKartenNr'] = isset($item['cKartenNr']) ? $crypto->decryptXTEA($item['cKartenNr']) : null;
             $item['cCVV']      = isset($item['cCVV']) ? \trim($crypto->decryptXTEA($item['cCVV'])) : null;
-            if (\strlen($item['cCVV']) > 4) {
+            if ($item['cCVV'] !== null && \strlen($item['cCVV']) > 4) {
                 $item['cCVV'] = \substr($item['cCVV'], 0, 4);
             }
             $attr                        = $this->buildAttributes($item);
@@ -202,10 +206,11 @@ final class Orders extends AbstractPush
             $order['tzahlungsinfo attr'] = $attr;
             unset($orderAttribute['kVersandArt'], $orderAttribute['kWarenkorb']);
 
-            $order['tbestellattribut'] = $this->db->query(
+            $order['tbestellattribut'] = $this->db->queryPrepared(
                 'SELECT cName AS `key`, cValue AS `value`
                 FROM tbestellattribut
-                WHERE kBestellung = ' . $orderID,
+                WHERE kBestellung = :oid',
+                ['oid' => $orderID],
                 ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
             if (\count($order['tbestellattribut']) === 0) {

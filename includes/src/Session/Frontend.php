@@ -252,7 +252,7 @@ class Frontend extends AbstractSession
         if (!$_SESSION['Kundengruppe']->hasAttributes()) {
             $_SESSION['Kundengruppe']->initAttributes();
         }
-        if (Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
+        if (Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false && PHP_SAPI !== 'cli') {
             $_SESSION['Linkgruppen'] = Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }

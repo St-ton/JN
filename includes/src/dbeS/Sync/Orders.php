@@ -271,7 +271,7 @@ final class Orders extends AbstractSync
                 \FREIDEFINIERBARER_FEHLER
             );
         }
-        $order->kBestellung = (int)$order->kBestellung;
+        $order->kBestellung          = (int)$order->kBestellung;
         $oldOrder                    = $this->db->select(
             'tbestellung',
             'kBestellung',

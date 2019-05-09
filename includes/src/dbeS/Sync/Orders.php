@@ -271,11 +271,22 @@ final class Orders extends AbstractSync
                 \FREIDEFINIERBARER_FEHLER
             );
         }
-        $oldOrder       = $this->db->select(
+        $order->kBestellung = (int)$order->kBestellung;
+        $oldOrder                    = $this->db->select(
             'tbestellung',
             'kBestellung',
-            (int)$order->kBestellung
+            $order->kBestellung
         );
+        $oldOrder->kBestellung       = (int)$oldOrder->kBestellung;
+        $oldOrder->kWarenkorb        = (int)$oldOrder->kWarenkorb;
+        $oldOrder->kKunde            = (int)$oldOrder->kKunde;
+        $oldOrder->kRechnungsadresse = (int)$oldOrder->kRechnungsadresse;
+        $oldOrder->kLieferadresse    = (int)$oldOrder->kLieferadresse;
+        $oldOrder->kZahlungsart      = (int)$oldOrder->kZahlungsart;
+        $oldOrder->kVersandart       = (int)$oldOrder->kVersandart;
+        $oldOrder->kSprache          = (int)$oldOrder->kSprache;
+        $oldOrder->kWaehrung         = (int)$oldOrder->kWaehrung;
+
         $billingAddress = new Rechnungsadresse($oldOrder->kRechnungsadresse);
         $this->mapper->mapObject($billingAddress, $xml['tbestellung']['trechnungsadresse'], 'mRechnungsadresse');
         if (!empty($billingAddress->cAnrede)) {
@@ -352,7 +363,7 @@ final class Orders extends AbstractSync
                 'fg'    => $order->fGuthaben,
                 'total' => $order->fGesamtsumme,
                 'cmt'   => $order->cKommentar,
-                'oid'   => (int)$oldOrder->kBestellung
+                'oid'   => $oldOrder->kBestellung
             ],
             ReturnType::DEFAULT
         );
@@ -396,7 +407,7 @@ final class Orders extends AbstractSync
         $oldPositions = $this->db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
-            (int)$oldOrder->kWarenkorb
+            $oldOrder->kWarenkorb
         );
         $map          = [];
         foreach ($oldPositions as $key => $oldPosition) {
@@ -409,7 +420,7 @@ final class Orders extends AbstractSync
                 $map[$oldPosition->kArtikel] = $key;
             }
         }
-        $this->db->delete('twarenkorbpos', 'kWarenkorb', (int)$oldOrder->kWarenkorb);
+        $this->db->delete('twarenkorbpos', 'kWarenkorb', $oldOrder->kWarenkorb);
         $cartPositions = $this->mapper->mapArray($xml['tbestellung'], 'twarenkorbpos', 'mWarenkorbpos');
         $positionCount = \count($cartPositions);
         for ($i = 0; $i < $positionCount; $i++) {
@@ -498,22 +509,29 @@ final class Orders extends AbstractSync
     {
         $orders = $this->mapper->mapArray($xml['tbestellungen'], 'tbestellung', 'mBestellung');
         foreach ($orders as $order) {
-            $shopOrder = $this->db->select('tbestellung', 'kBestellung', (int)$order->kBestellung);
+            $order->kBestellung = (int)$order->kBestellung;
+
+            $shopOrder = $this->db->select('tbestellung', 'kBestellung', $order->kBestellung);
             if (!isset($shopOrder->kBestellung) || $shopOrder->kBestellung <= 0) {
                 continue;
             }
+            $shopOrder->cStatus        = (int)$shopOrder->cStatus;
+            $shopOrder->kLieferadresse = (int)$shopOrder->kLieferadresse;
+            $shopOrder->kKunde         = (int)$shopOrder->kKunde;
+            $shopOrder->kBestellung    = (int)$shopOrder->kBestellung;
+
             $trackingURL = '';
-            if (\strlen($order->cIdentCode) > 0) {
+            if ($order->cIdentCode !== null && \strlen($order->cIdentCode) > 0) {
                 $trackingURL = $order->cLogistikURL;
                 if ($shopOrder->kLieferadresse > 0) {
-                    $Lieferadresse = $this->db->query(
+                    $deliveryAddress = $this->db->query(
                         'SELECT cPLZ
                         FROM tlieferadresse 
-                        WHERE kLieferadresse = ' . (int)$shopOrder->kLieferadresse,
+                        WHERE kLieferadresse = ' . $shopOrder->kLieferadresse,
                         ReturnType::SINGLE_OBJECT
                     );
-                    if ($Lieferadresse->cPLZ) {
-                        $trackingURL = \str_replace('#PLZ#', $Lieferadresse->cPLZ, $trackingURL);
+                    if ($deliveryAddress->cPLZ) {
+                        $trackingURL = \str_replace('#PLZ#', $deliveryAddress->cPLZ, $trackingURL);
                     }
                 } else {
                     $customer    = new Kunde($shopOrder->kKunde);
@@ -531,7 +549,7 @@ final class Orders extends AbstractSync
                 if (isset($order->dVersandt) && \strlen($order->dVersandt) > 0) {
                     $status = \BESTELLUNG_STATUS_VERSANDT;
                 }
-                $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true);
+                $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
                 if ((\is_array($updatedOrder->oLieferschein_arr)
                         && \count($updatedOrder->oLieferschein_arr) > 0)
                     && (isset($order->nKomplettAusgeliefert)
@@ -563,14 +581,14 @@ final class Orders extends AbstractSync
             $upd->dBezahltDatum = empty($dBezahltDatum)
                 ? '_DBNULL_'
                 : $dBezahltDatum;
-            $this->db->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $upd);
+            $this->db->update('tbestellung', 'kBestellung', $order->kBestellung, $upd);
             $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
             $customer     = null;
             if ((!$shopOrder->dVersandDatum && $order->dVersandt)
                 || (!$shopOrder->dBezahltDatum && $order->dBezahltDatum)
             ) {
                 $tmp      = $this->db->query(
-                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . (int)$order->kBestellung,
+                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $order->kBestellung,
                     ReturnType::SINGLE_OBJECT
                 );
                 $customer = new Kunde((int)$tmp->kKunde);
@@ -584,7 +602,6 @@ final class Orders extends AbstractSync
                     break;
                 }
             }
-            $status = (int)$status;
             if (($status === \BESTELLUNG_STATUS_VERSANDT && (int)$shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT)
                 || ($status === \BESTELLUNG_STATUS_TEILVERSANDT && $bLieferschein === true)
             ) {
@@ -596,7 +613,7 @@ final class Orders extends AbstractSync
                     || $updatedOrder->oVersandart->cSendConfirmationMail !== 'N'
                 ) {
                     if ($module) {
-                        $module->sendMail((int)$order->kBestellung, $mailType);
+                        $module->sendMail($order->kBestellung, $mailType);
                     } else {
                         if ($customer === null) {
                             $customer = new Kunde((int)$shopOrder->kKunde);
@@ -626,7 +643,7 @@ final class Orders extends AbstractSync
                 // sende Zahlungseingangmail
                 $module = $this->getPaymentMethod($order->kBestellung);
                 if ($module) {
-                    $module->sendMail((int)$order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
+                    $module->sendMail($order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
                 } else {
                     $customer     = $customer ?? new Kunde((int)$shopOrder->kKunde);
                     $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true);

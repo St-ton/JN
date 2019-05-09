@@ -34,7 +34,7 @@
             "manager-version": {
                 "npm": ">=6.0"
             },
-            "manager-install-options": " && npm audit fix && npm run build"
+            "manager-install-options": " && npm run build"
         }
     }
 }

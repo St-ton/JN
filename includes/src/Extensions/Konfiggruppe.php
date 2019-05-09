@@ -370,14 +370,15 @@ class Konfiggruppe implements JsonSerializable
     /**
      * @return bool
      */
-    public function allItemsOutOfStock(): bool
+    public function minItemsInStock(): bool
     {
+        $inStockCount = 0;
         foreach ($this->oItem_arr as $item) {
-            if ($item->isInStock()) {
-                return false;
+            if ($item->isInStock() && ++$inStockCount === $this->nMin) {
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 }

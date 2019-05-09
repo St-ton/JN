@@ -242,7 +242,7 @@ class Konfigurator
     public static function hasUnavailableGroup(array $confGroups): bool
     {
         foreach ($confGroups as $confGroup) {
-            if ($confGroup->allItemsOutOfStock()) {
+            if (!$confGroup->minItemsInStock()) {
                 return true;
             }
         }

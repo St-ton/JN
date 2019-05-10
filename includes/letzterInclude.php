@@ -214,8 +214,15 @@ Shop::Lang()->generateLanguageAndCurrencyLinks();
 $ep = new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
 $ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
-$boxes       = Shop::Container()->getBoxService();
-$boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);
+$boxes            = Shop::Container()->getBoxService();
+$boxesToShowList  = $boxes->buildList($pagetType);
+$boxesToShow      = $boxes->render($boxesToShowList, $pagetType);
+$boxesLeftFilters = Functional\filter($boxesToShowList['left'], function ($boxTMP) {
+    return strpos(get_class($boxTMP), 'Filter') !== false;
+});
+$boxesLeft        = Functional\filter($boxesToShowList['left'], function ($boxTMP) {
+    return strpos(get_class($boxTMP), 'Filter') === false;
+});
 /* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
@@ -248,6 +255,8 @@ $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())
        ->assign('nIsSSL', Request::checkSSL())
        ->assign('boxes', $boxesToShow)
+       ->assign('boxesLeft', $boxesLeft)
+       ->assign('boxesLeftFilters', $boxesLeftFilters)
        ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
        ->assign('Besucherzaehler', $visitorCount)
        ->assign('alertList', Shop::Container()->getAlertService())

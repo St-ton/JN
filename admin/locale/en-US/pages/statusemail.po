@@ -37,3 +37,93 @@ msgstr "Welchen Inhalt soll der E-Mail-Bericht enthalten? Mehrfachauswahl mögli
 
 msgid "sendEmail"
 msgstr "E-Mail-Berichte jetzt senden"
+
+msgid "contentTypeCountItemCustomerGroup"
+msgstr "Count items per customer group"
+
+msgid "contentTypeCountNewCustomer"
+msgstr "Count new customers"
+
+msgid "contentTypeCountNewCustomerOrdered"
+msgstr "Count new customers who also ordered"
+
+msgid "contentTypeCountOrders"
+msgstr "Count orders"
+
+msgid "contentTypeCountOrdersNewCustomers"
+msgstr "Count orders new customers"
+
+msgid "contentTypeCountPayments"
+msgstr "Count payments received for orders"
+
+msgid "contentTypeCountOrdersSent"
+msgstr "Count orders sent"
+
+msgid "contentTypeCountVisitors"
+msgstr "Count visitors"
+
+msgid "contentTypeCountVisitorsSearchEngine"
+msgstr "Count visitors from search machine"
+
+msgid "contentTypeCountRatings"
+msgstr "Count ratings"
+
+msgid "contentTypeCountRatingsLocked"
+msgstr "Count ratings locked"
+
+msgid "contentTypeCountRatingDepositPayed"
+msgstr "Count rating deposit payed"
+
+msgid "contentTypeCountTags"
+msgstr "Count tags"
+
+msgid "contentTypeCountTagsLocked"
+msgstr "Count tags locked"
+
+msgid "contentTypeCountCustomerRecruited"
+msgstr "Count recruited customers"
+
+msgid "contentTypeCountCustomerRecruitedOrdered"
+msgstr "Count recruited customers who also ordered"
+
+msgid "contentTypeCountSentWishlists"
+msgstr "Count wishlists sent"
+
+msgid "contentTypeCountPolls"
+msgstr "Count polls"
+
+msgid "contentTypeCountNewsComments"
+msgstr "Count news comments"
+
+msgid "contentTypeCountNewsCommentsLocked"
+msgstr "Count news comments locked"
+
+msgid "contentTypeCountProductQuestion"
+msgstr "Count question for item"
+
+msgid "contentTypeCountAvailabilityNotifications"
+msgstr "Count availability notification requests"
+
+msgid "contentTypeCountProductCompare"
+msgstr "Count item comparisons"
+
+msgid "contentTypeCountCouponsUsed"
+msgstr "Count coupons used"
+
+msgid "contentTypeLastErrorLog"
+msgstr "Last error in system log"
+
+msgid "contentTypeLastNoteLog"
+msgstr "Last notice in system log"
+
+msgid "contentTypeLastDebugLog"
+msgstr "Last debug notice in system log"
+
+msgid "intervalDay"
+msgstr "Daily report"
+
+msgid "intervalWeek"
+msgstr "Weekly report"
+
+msgid "intervalMonth"
+msgstr "Monthly report"

@@ -60,10 +60,10 @@ msgid "sitemapCountURL"
 msgstr "Anzahl URLs"
 
 msgid "errorSitemapCreatePermission"
-msgstr " kann nicht geschrieben werden. Die Datei besitzt keine ausreichenden Schreibrechte, um eine Sitemap zu erstellen. Bitte überprüfen Sie die Schreibrechte."
+msgstr "%s kann nicht geschrieben werden. Die Datei besitzt keine ausreichenden Schreibrechte, um eine Sitemap zu erstellen. Bitte überprüfen Sie die Schreibrechte."
 
 msgid "successSave"
-msgstr " wurde erfolgreich aktualisiert."
+msgstr "%s wurde erfolgreich aktualisiert."
 
 msgid "successSitemapDLDelete"
 msgstr "Die markierten Sitemap-Downloads wurden erfolgreich gelöscht."

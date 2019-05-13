@@ -2,7 +2,10 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "shopReset"
+msgid "shopResetTitle"
+msgstr "Reset shop data"
+
+msgid "shopResetButton"
 msgstr "Reset shop data"
 
 msgid "shopResetURL"

@@ -53,10 +53,10 @@ msgstr "SEO"
 msgid "newsPraefix"
 msgstr "Monatsübersicht-Präfix"
 
-msgid "newsCatAdd"
+msgid "newsCatCreate"
 msgstr "Neue Kategorie erstellen"
 
-msgid "newsCatNew"
+msgid "newsCatEdit"
 msgstr "Kategorie bearbeiten"
 
 msgid "newsCatSort"

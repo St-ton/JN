@@ -293,7 +293,7 @@ msgid "Back end user"
 msgstr "Back end user"
 
 msgid "Synchronisation with JTL-Wawi"
-msgstr "Synchronisation with JTL-Wawi"
+msgstr "Synchronization with JTL-Wawi"
 
 msgid "Global meta data"
 msgstr "Global meta data"

@@ -61,7 +61,11 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
         if (file_exists($customCSS) && is_writable($customCSS)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutReset'), 'successLayoutReset');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLayoutReset'), 'errorLayoutReset');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                sprintf(__('errorLayoutReset'), $customCSS),
+                'errorLayoutReset'
+            );
         }
     } else {
         $selectors     = $_POST['selector'];
@@ -75,8 +79,8 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
         if (file_put_contents($customCSS, $scss->renderCSS()) === false) {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
-                __('errorStyleFilePermission') . $customCSS . '.',
-                'errorLayoutReset'
+                sprintf(__('errorStyleFilePermission'), $customCSS),
+                'errorStyleFilePermission'
             );
         } else {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutSave'), 'successLayoutSave');

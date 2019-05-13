@@ -19,7 +19,7 @@ msgstr "Import"
 msgid "Export"
 msgstr "Export"
 
-msgid "Publicate"
+msgid "Publish"
 msgstr "Veröffentlichen"
 
 msgid "Save page"

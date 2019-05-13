@@ -57,7 +57,7 @@ msgid "errorParameterInvalid"
 msgstr "Wrong parameter entered."
 
 msgid "errorDownload"
-msgstr " cannot be downloaded."
+msgstr "%s cannot be downloaded."
 
 msgid "errorDownloadFileCreate"
 msgstr "Cannot create download file for %s. Page %s may be currently unavailable. Please try again later."
@@ -66,7 +66,7 @@ msgid "errorDownloadTimeLong"
 msgstr "Cannot download %s because of timeout. Please contact the Support team."
 
 msgid "successDownload"
-msgstr " updated successfully."
+msgstr "%s updated successfully."
 
 msgid "errorImportRunning"
 msgstr "Already running an import. Please wait until the import is finished."

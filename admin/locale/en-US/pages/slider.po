@@ -23,7 +23,7 @@ msgstr "Could not find slider."
 msgid "errorSliderRemove"
 msgstr "Could not remove slider."
 
-msgid "sliderAdd"
+msgid "sliderCreate"
 msgstr "Create slider"
 
 msgid "slides"
@@ -35,11 +35,8 @@ msgstr "Pause when hovering"
 msgid "kenBurnsEffect"
 msgstr "Ken Burns effect"
 
-msgid "overridesOther"
-msgstr "When this option is enabled, it overwrites other"
-
-msgid "willOverride"
-msgstr "The following settings are overwritten: random start, pause when hovering, navigation, thumbnail navigation (direction) and effects."
+msgid "overrideDescription"
+msgstr "When this option is enabled, it overwrites other <a href=\"#\" data-toggle=\"tooltip\" title=\"The following settings are overwritten: random start, pause when hovering, navigation, thumbnail navigation (direction) and effects.\">settings</a>."
 
 msgid "randomEffects"
 msgstr "Random effects"

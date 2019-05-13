@@ -149,7 +149,7 @@ msgstr "Selected plug-ins updated successfully."
 msgid "errorPluginRefresh"
 msgstr "Could not upload one plug-in."
 
-msgid "successPlguinUpdate"
+msgid "successPluginUpdate"
 msgstr "Plug-in updated successfully."
 
 msgid "errorPluginUpdate"

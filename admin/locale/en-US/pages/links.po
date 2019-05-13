@@ -221,8 +221,8 @@ msgstr "The following links are referenced in other link groups and will also be
 msgid "sureDeleteLinkGroup"
 msgstr "Delete link group \"<strong>%s</strong>\"?"
 
-msgid "continueEdit"
-msgstr "and continue editing"
+msgid "newLinksSaveContinueEdit"
+msgstr "Save page and continue editing"
 
 msgid "createWithSearchEngineName"
 msgstr "(create under \"Name for search engines\")"

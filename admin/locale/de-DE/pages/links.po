@@ -221,8 +221,8 @@ msgstr "Die folgenden Links werden in anderen Linkgruppen referenziert und werde
 msgid "sureDeleteLinkGroup"
 msgstr "Möchten Sie die Linkgruppe „<strong>%s</strong>“ wirklich löschen?"
 
-msgid "continueEdit"
-msgstr "und weiter bearbeiten"
+msgid "newLinksSaveContinueEdit"
+msgstr "Seite speichern und weiter bearbeiten"
 
 msgid "createWithSearchEngineName"
 msgstr "(anlegen unter „Name für Suchmaschinen“)"

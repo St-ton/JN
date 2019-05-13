@@ -149,7 +149,7 @@ msgstr "Die ausgewählten Plugins wurden erfolgreich aktualisiert."
 msgid "errorPluginRefresh"
 msgstr "Ein Plugin konnte nicht aktualisiert werden. Bitte installieren Sie das Plugin erneut."
 
-msgid "successPlguinUpdate"
+msgid "successPluginUpdate"
 msgstr "Das Plugin wurde erfolgreich aktualisiert."
 
 msgid "errorPluginUpdate"

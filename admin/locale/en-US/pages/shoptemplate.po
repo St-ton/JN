@@ -11,14 +11,8 @@ msgstr "https://jtl-url.de/4t1so"
 msgid "shoptemplatesDesc"
 msgstr "This page contains all templates included in the folder \"/templates/\" of the online shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">;FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template at the same time. Use the button \"Settings\" to configure the activated template."
 
-msgid "admintemplatesDesc"
-msgstr "Die Möglichkeit, Admin-Templates umzustellen, wird in der finalen Version 4.00 entfernt! Sie dient nur internen Testzwecken."
-
 msgid "templateName"
 msgstr "Template name"
-
-msgid "shoplogouploader"
-msgstr "Laden Sie hier Ihr Shop-Logo hoch."
 
 msgid "warning_responsive_mobile"
 msgstr "Responsive templates support all resolutions and should not be explicitly labelled as a template for mobile devices."
@@ -30,7 +24,7 @@ msgid "errorTemplateSave"
 msgstr "Could not change template/settings."
 
 msgid "errorFileUpload"
-msgstr "Could not upload file. Please check write access."
+msgstr "Could not upload file. Please check write access of the folder \"%s\"."
 
 msgid "successLayoutReset"
 msgstr "Layout reset successfully."
@@ -39,7 +33,7 @@ msgid "errorLayoutReset"
 msgstr "Could not reset layout. File %s does not exist or does not have sufficient write access."
 
 msgid "errorStyleFilePermission"
-msgstr "Could not write style file. Please check the file rights of "
+msgstr "Could not write style file. Please check the file rights of %s."
 
 msgid "successLayoutSave"
 msgstr "Layout changed successfully."
@@ -57,7 +51,7 @@ msgid "activateTemplate"
 msgstr "Activate template"
 
 msgid "inheritsFrom"
-msgstr "Inherits from"
+msgstr "Inherits from %s"
 
 msgid "originalExists"
 msgstr "Original version exists"

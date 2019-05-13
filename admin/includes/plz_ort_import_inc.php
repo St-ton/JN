@@ -188,7 +188,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     $ioLength           = 0;
     if ($ioHandle === false) {
         $result->type    = 'danger';
-        $result->message = $target . __('errorDownload');
+        $result->message = sprintf(__('errorDownload'), $target);
 
         if (!empty($errStr)) {
             $result->message .= ' ' . $errStr;
@@ -199,7 +199,11 @@ function plzimportDoDownload($target, array $sessData, $result): void
 
     if ($fHandle === false) {
         $result->type    = 'danger';
-        $result->message = __('errorDownloadFileCreate');
+        $result->message = sprintf(
+            __('errorDownloadFileCreate'),
+            $target,
+            \PLZIMPORT_URL
+        );
 
         return;
     }
@@ -229,7 +233,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
             fclose($ioHandle);
 
             $result->type    = 'danger';
-            $result->message = $target . __('errorDownload');
+            $result->message = sprintf(__('errorDownload'), $target);
 
             return;
         }
@@ -259,7 +263,7 @@ function plzimportDoDownload($target, array $sessData, $result): void
     plzimportWriteSession('Import', $sessData);
 
     $result->type    = 'success';
-    $result->message = $target . __('successDownload');
+    $result->message = sprintf(__('successDownload'), $target);
     // Download fertig - weiter mit dem Import
     $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'io.php?io=' .
         urlencode(

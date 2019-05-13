@@ -69,7 +69,7 @@ msgid "newsletteroverview"
 msgstr "Newsletter overview"
 
 msgid "newsletteroverviewdesc"
-msgstr ""
+msgstr " "
 
 msgid "newsletterdraftdesc"
 msgstr "Here you can create templates for your newsletters, which you can then test and approve for being sent. "
@@ -138,22 +138,16 @@ msgid "newsletterSubscriberList"
 msgstr "All subscribers"
 
 msgid "newsletterSubscriberListDesc"
-msgstr ""
+msgstr " "
 
 msgid "newslettersubscriberSearch"
 msgstr "Find subscribers"
-
-msgid "newslettersubscriberSearchSubmit"
-msgstr "Suchen"
 
 msgid "newsletterSendAuthentication"
 msgstr "Send newsletter?"
 
 msgid "newsletterSearchBTN"
-msgstr "Suchen"
-
-msgid "newsletterSearch"
-msgstr "Suche"
+msgstr "Search"
 
 msgid "newsletterUnlock"
 msgstr "Activate"
@@ -200,8 +194,11 @@ msgstr "Newsletter recipient added successfully."
 msgid "errorFillEmail"
 msgstr "Please fill in the field \"Email\"."
 
-msgid "successDelete"
-msgstr " wurden erfolgreich gelöscht."
+msgid "successNewsletterQueueDelete"
+msgstr "Newsletterqueue(s) %s successfully deleted."
+
+msgid "successNewsletterHistoryDelete"
+msgstr "Newsletterhistory(s) %s successfully deleted."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Please select at least one newsletter."

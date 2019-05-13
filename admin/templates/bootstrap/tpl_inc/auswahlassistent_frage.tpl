@@ -39,7 +39,7 @@ cDokuURL=__('auswahlassistentURL')}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="kAuswahlAssistentGruppe">
-                                Gruppe
+                                {__('group')}
                                 {if isset($cPlausi_arr.kAuswahlAssistentGruppe)}
                                     <span class="fillout">{__('FillOut')}</span>
                                 {/if}
@@ -59,7 +59,7 @@ cDokuURL=__('auswahlassistentURL')}
 
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="kMM">Merkmal {if isset($cPlausi_arr.kMerkmal) && $cPlausi_arr.kMerkmal == 1} <span class="fillout">{__('FillOut')}</span>{/if}
+                            <label for="kMM">{__('attribute')} {if isset($cPlausi_arr.kMerkmal) && $cPlausi_arr.kMerkmal == 1} <span class="fillout">{__('FillOut')}</span>{/if}
                                 {if isset($cPlausi_arr.kMerkmal) && $cPlausi_arr.kMerkmal == 2 }<span class="fillout">{__('aaMerkmalTaken')}</span>{/if}
                             </label>
                         </span>
@@ -77,7 +77,7 @@ cDokuURL=__('auswahlassistentURL')}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="nSort">
-                                Sortierung
+                                {__('sorting')}
                                 {if isset($cPlausi_arr.nSort)}
                                     <span class="fillout">{__('FillOut')}</span>
                                 {/if}

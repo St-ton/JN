@@ -22,3 +22,6 @@ msgstr "Anzahl Dezimalstellen"
 
 msgid "thousandDivider"
 msgstr "Tausendertrennzeichen"
+
+msgid "decimalsDivider"
+msgstr "Dezimaltrennzeichen"

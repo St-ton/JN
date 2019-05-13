@@ -143,17 +143,11 @@ msgstr " "
 msgid "newslettersubscriberSearch"
 msgstr "Abonnentensuche"
 
-msgid "newslettersubscriberSearchSubmit"
-msgstr "Suchen"
-
 msgid "newsletterSendAuthentication"
 msgstr "Möchten Sie den Newsletter wirklich versenden?"
 
 msgid "newsletterSearchBTN"
 msgstr "Suchen"
-
-msgid "newsletterSearch"
-msgstr "Suche"
 
 msgid "newsletterUnlock"
 msgstr "Freischalten"
@@ -201,10 +195,10 @@ msgid "errorFillEmail"
 msgstr "Bitte füllen Sie das Feld „E-Mail“ aus."
 
 msgid "successNewsletterQueueDelete"
-msgstr "Die Newsletterqueue %s wurden erfolgreich gelöscht."
+msgstr "Die Newsletterqueue(s) %s wurden erfolgreich gelöscht."
 
 msgid "successNewsletterHistoryDelete"
-msgstr "Die Newsletterhistory %s wurden erfolgreich gelöscht."
+msgstr "Die Newsletterhistory(s) %s wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Bitte markieren Sie mindestens einen Newsletter."

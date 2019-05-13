@@ -35,9 +35,6 @@ msgstr "Search queries"
 msgid "searchmiss"
 msgstr "Search queries without results"
 
-msgid "livesuchenSearch"
-msgstr "Suche"
-
 msgid "livesucheSearchItem"
 msgstr "Search term"
 

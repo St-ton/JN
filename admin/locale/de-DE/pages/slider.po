@@ -23,7 +23,7 @@ msgstr "Slider wurde nicht gefunden."
 msgid "errorSliderRemove"
 msgstr "Slider konnte nicht entfernt werden."
 
-msgid "sliderAdd"
+msgid "sliderCreate"
 msgstr "Slider erstellen"
 
 msgid "slides"
@@ -35,11 +35,8 @@ msgstr "Pause bei Hover"
 msgid "kenBurnsEffect"
 msgstr "Ken-Burns-Effekt"
 
-msgid "overridesOther"
-msgstr "Wenn diese Option aktiviert ist, überschreibt sie andere"
-
-msgid "willOverride"
-msgstr "Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail-Navigation, Navigation (Richtung) und Effekte."
+msgid "overrideDescription"
+msgstr "Wenn diese Option aktiviert ist, überschreibt sie andere <a href=\"#\" data-toggle=\"tooltip\" title=\"Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail-Navigation, Navigation (Richtung) und Effekte.\">Einstellungen</a>."
 
 msgid "randomEffects"
 msgstr "Zufällige Effekte"

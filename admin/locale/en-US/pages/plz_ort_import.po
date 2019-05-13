@@ -3,79 +3,79 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "plz_ort_import"
-msgstr "PLZ-Orte Import"
+msgstr "Importing postal codes/locations"
 
 msgid "plz_ort_importDesc"
-msgstr "Hier können Sie aktuelle Daten für PLZ und Orte aus OpenGeoDB importieren."
+msgstr "On this page you can import current data concerning postal codes and locations from OpenGeoDB."
 
 msgid "plz_ort_available"
-msgstr "Vorhandene PLZ und Ortsdaten"
+msgstr "Existing postal codes and location data"
 
 msgid "plz_ort_size"
-msgstr "Dateigröße"
+msgstr "File size"
 
 msgid "plz_ort_import_new"
-msgstr "Neu Importieren"
+msgstr "Import"
 
 msgid "plz_ort_import_select"
-msgstr "Import auswählen"
+msgstr "Select import data"
 
 msgid "plz_ort_import_select_failed"
-msgstr "Die Liste der verfügbaren Imports konnte nicht geladen werden!"
+msgstr "Could not load the list of available imports."
 
 msgid "plz_ort_import_load"
-msgstr "Wird geladen..."
+msgstr "Loading…"
 
 msgid "plz_ort_import_tmp_exists"
-msgstr "Es wurde ein temporärer Import in der Datenbank gefunden. Soll dieser gelöscht werden?"
+msgstr "Temporary import found in the database. Delete import?"
 
 msgid "plz_ort_import_delete_no"
-msgstr "Nein, nicht löschen"
+msgstr "No, do not delete"
 
 msgid "plz_ort_import_delete_yes"
-msgstr "Ja, Löschen"
+msgstr "Yes, delete"
 
 msgid "plz_ort_import_refresh_desc"
-msgstr "Neue Daten importieren..."
+msgstr "Import new data"
 
 msgid "plz_ort_import_reset_desc"
-msgstr "Rückgängig - Backup zurückspielen..."
+msgstr "Reset to state before update"
 
 msgid "plz_ort_import_help"
-msgstr "Mit dem Button \"Neu Importieren\" können Sie direkt von <i>%s</i> eine Datendatei downloaden und automatisch installieren.<br/>Sollte der direkte Download nicht möglich sein oder wg. Zeitüberschreitung abbrechen, dann laden Sie die gewünschte Datei bitte per FTP in das Verzeichnis <i>/uploads</i> ihrer Shopinstallation. Die Datei kann dann über das <i class=\"fa fa-download\"></i>-Symbol in der Übersicht importiert werden.<br/>Vor dem Import wird ein Backup der aktuellen Daten erstellt, welches bei Bedarf zurückgespielt werden kann."
+msgstr "By selecting \"Import\", you can directly download a data file from <i>%s</i> and install it automatically.<br/>If no direct download is possible or if a direct download is cancelled due to a timeout, load the respective file into the <i>/uploads</i> directory of your web server using FTP. You can then import the file via the <i class=\"fa fa-download\"></i> symbol in the overview.<br/>Before the import, a backup is performed that can be restored if needed."
 
 msgid "errorImportInvalid"
-msgstr "Importdatei für %s kann nicht gelesen werden!"
+msgstr "Cannot read import file for %s!"
 
 msgid "importProgress"
-msgstr "Aktualisiere %s in Datenbank..."
+msgstr "Updating %s in database…"
 
 msgid "successImport"
-msgstr "Import erfolgreich!"
+msgstr "Import completed successfully."
 
 msgid "errorParameterInvalid"
-msgstr "Falscher Parameter angegeben!"
+msgstr "Wrong parameter entered."
 
 msgid "errorDownload"
-msgstr " kann nicht heruntergeladen werden!"
+msgstr " cannot be downloaded."
 
 msgid "errorDownloadFileCreate"
-msgstr "Downloaddatei für %s kann nicht erstellt werden!"
+msgstr "Cannot create download file for %s. Page %s may be currently unavailable. Please try again later."
 
 msgid "errorDownloadTimeLong"
-msgstr "Der Download von %s dauert zu lange!"
+msgstr "Cannot download %s because of timeout. Please contact the Support team."
 
 msgid "successDownload"
-msgstr " wurde erfolgreich heruntergeladen!"
+msgstr " updated successfully."
 
 msgid "errorImportRunning"
-msgstr "Es läuft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist!"
+msgstr "Already running an import. Please wait until the import is finished."
 
 msgid "errorImportStart"
-msgstr "Import kann nicht gestartet werden!"
+msgstr "Cannot start import because of session timeout. Please log on again. If the error persists, please contact the Support team."
 
 msgid "successImportTempDelete"
-msgstr "Temporärer Import wurde gelöscht!"
+msgstr "Temporary import deleted successfully."
 
 msgid "importCancel"
 msgstr "Import canceled."

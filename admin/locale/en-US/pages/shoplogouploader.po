@@ -3,37 +3,37 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "shoplogouploader"
-msgstr "Shoplogo-Uploader"
+msgstr "Online shop logo"
 
 msgid "shoplogouploaderURL"
-msgstr "https://jtl-url.de/5f7iy"
+msgstr "https://jtl-url.de/45odx"
 
 msgid "shoplogouploaderDesc"
-msgstr "Laden Sie hier Ihr Shoplogo hoch, es steht dann im Template als Variable zur Verfügung ( {$ShopLogoURL} ). Empfehlung für die Größe des Logos: Breite 180px, Höhe 50px."
+msgstr "Upload your own logo to JTL-Shop. The logo is available to you as a variable {$ShopLogoURL} and is automatically replaced in the JTL-Shop standard template. We recommend a logo size of 180 x 50 pixels. Larger logos will automatically be scaled by the template."
 
 msgid "shoplogouploaderPicture"
-msgstr "Shoplogo"
+msgstr "Online shop logo"
 
 msgid "successLogoDelete"
-msgstr "Ihr Logo wurde erfolgreich gelöscht."
+msgstr "Logo deleted successfully."
 
 msgid "errorLogoDelete"
-msgstr "Fehler beim Löschen des Logos."
+msgstr "Could not delete logo. No logo found under the path %s."
 
 msgid "successLogoUpload"
-msgstr "Ihr Logo wurde erfolgreich hochgeladen."
+msgstr "Logo uploaded successfully."
 
 msgid "errorFileName"
-msgstr "Fehler: Dateiname entspricht nicht der Konvention oder fehlt."
+msgstr "File name missing or does not correspond to naming conventions."
 
 msgid "errorFileType"
-msgstr "Fehler: Dateityp entspricht nicht der Konvention (nur jpg/gif/png/bmp) oder fehlt."
+msgstr "File type missing or not supported (only jpg/gif/png/bmp)."
 
 msgid "errorFileMove"
-msgstr "Fehler beim Verschieben des Logos."
+msgstr "Could not move logo. Please review the write access of folder %s."
 
 msgid "yourLogo"
-msgstr "Ihr Logo"
+msgstr "Your logo"
 
 msgid "errorLogoUpload"
-msgstr "Logo konnte nicht hochgeladen werden."
+msgstr "Could not upload logo. Please update only files of the types jpeg, pjpeg, gif, png, bmp, x-png, or jpg. Check whether the file has a name and review the write access of folder %s."

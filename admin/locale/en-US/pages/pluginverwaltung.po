@@ -3,55 +3,55 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "pluginverwaltung"
-msgstr "Pluginverwaltung"
+msgstr "Plug-in administration"
 
 msgid "pluginverwaltungLocales"
-msgstr "Sprachvariablen"
+msgstr "Language variables"
 
 msgid "pluginverwaltungLicenceKeyInput"
-msgstr "Plugin Lizenzschlüsseleingabe"
+msgstr "Licence key for plug-in"
 
 msgid "pluginverwaltungLicenceKey"
-msgstr "Lizenzschlüssel"
+msgstr "Licence key"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plugins erweitern den Funktionsumfang, ohne den Kern-Shopcode zu verändern. Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br /><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shopsystems!</strong>"
+msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of your online shop system.</strong>"
 
 msgid "pluginverwaltungURL"
-msgstr "https://jtl-url.de/5stze"
+msgstr "https://jtl-url.de/gfso0"
 
 msgid "pluginListNotInstalled"
-msgstr "Verfügbare (nicht installierte) Plugins"
+msgstr "Available plug-ins (not installed)"
 
 msgid "pluginListNotActivated"
-msgstr "Verfügbare (nicht aktivierte) Plugins"
+msgstr "Available plug-ins (not active)"
 
 msgid "pluginListNotInstalledAndError"
-msgstr "Fehlerhafte (nicht installierte) Plugins"
+msgstr "Faulty plug-ins (not installed)"
 
 msgid "pluginListInstalled"
-msgstr "Installierte Plugins"
+msgstr "Installed plug-ins"
 
 msgid "pluginListProblems"
-msgstr "Installierte Plugins, die konfiguriert werden müssen"
+msgstr "Installed plug-ins still to be configured"
 
 msgid "pluginName"
 msgstr "Name"
 
 msgid "pluginErrorCode"
-msgstr "Fehlercode"
+msgstr "Error code"
 
 msgid "pluginAuthor"
-msgstr "Autor"
+msgstr "Author"
 
 msgid "pluginHomepage"
-msgstr "Homepage"
+msgstr "Website"
 
 msgid "pluginDesc"
-msgstr "Beschreibung"
+msgstr "Description"
 
 msgid "pluginLanguage"
-msgstr "Sprachen"
+msgstr "Languages"
 
 msgid "pluginVersion"
 msgstr "Version"
@@ -60,154 +60,154 @@ msgid "pluginInfo"
 msgstr "Info"
 
 msgid "pluginInstalled"
-msgstr "Installiert am"
+msgstr "Installed on"
 
 msgid "pluginUpdated"
-msgstr "Aktualisiert am"
+msgstr "Updated on"
 
 msgid "pluginFolder"
-msgstr "Verzeichnis"
+msgstr "Directory"
 
 msgid "statusInstalled"
-msgstr "Installiert"
+msgstr "Installed"
 
 msgid "statusDeactive"
-msgstr "Deaktiviert"
+msgstr "Deactivated"
 
 msgid "statusNotInstalled"
-msgstr "Nicht installiert"
+msgstr "Not installed"
 
 msgid "statusError"
-msgstr "Fehlerhaft"
+msgstr "Faulty"
 
 msgid "pluginBtnUpdate"
-msgstr "Updaten"
+msgstr "Update"
 
 msgid "pluginBtnInstall"
-msgstr "Installieren"
+msgstr "Install"
 
 msgid "pluginBtnDeInstall"
-msgstr "Deinstallieren"
+msgstr "Uninstall"
 
 msgid "pluginBtnReload"
-msgstr "Neu laden"
+msgstr "Reload"
 
 msgid "pluginBtnLicenceAdd"
-msgstr "Lizenzkey eingeben"
+msgstr "Enter licence key"
 
 msgid "pluginBtnLicenceChange"
-msgstr "ändern"
+msgstr "Change"
 
 msgid "pluginBtnLicence"
-msgstr "Lizenz"
+msgstr "Licence"
 
 msgid "pluginLocalesStd"
-msgstr "auf den Installationszustand zurücksetzen"
+msgstr "Reset to default settings"
 
 msgid "pluginEditLocales"
-msgstr "Sprachvariablen"
+msgstr "Language variables"
 
 msgid "pluginEditLinkgrps"
-msgstr "Linkgruppen"
+msgstr "Link groups"
 
 msgid "pluginUpdateExists"
-msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann geupdated werden"
+msgstr "A newer plug-in version was uploaded. The plug-in can now be updated."
 
 msgid "pluginUpdateExistsError"
-msgstr "Dieses hat jedoch den folgenden Fehler"
+msgstr "The plug-in does, however, have the following error"
 
 msgid "successPluginKeySave"
-msgstr "Ihr Plugin-Lizenzschlüssel wurde gespeichert."
+msgstr "Licence key for plug-in saved successfully."
 
 msgid "errorPluginKeyInvalid"
-msgstr "Fehler: Ihr Lizenzschlüssel ist ungültig."
+msgstr "Invalid licence key. Please check the licence key for potential typing errors and contact the Support team if necessary."
 
 msgid "errorPluginNotFound"
-msgstr "Fehler: Ihr Plugin wurde nicht in der Datenbank gefunden."
+msgstr "Could not find plug-in in database."
 
 msgid "successPluginActivate"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich aktiviert."
+msgstr "Selected plug-ins activated successfully."
 
 msgid "errorAtLeastOnePlugin"
-msgstr "Fehler: Bitte wählen Sie mindestens ein Plugin aus."
+msgstr "Please select at least one plug-in."
 
 msgid "successPluginDeactivate"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich deaktiviert."
+msgstr "Selected plug-ins deactivated successfully."
 
 msgid "errorPluginDeleteSQL"
-msgstr "Fehler: Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden."
+msgstr "Could not uninstall plug-in due to an SQL error. Please check the log file."
 
 msgid "successPluginDelete"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich deinstalliert."
+msgstr "Selected plug-ins uninstalled successfully."
 
 msgid "errorPluginNotFoundMultiple"
-msgstr "Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden."
+msgstr "Could not find one or more plug-ins in the database. Please install the plug-in(s) again."
 
 msgid "successPluginRefresh"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich neu geladen."
+msgstr "Selected plug-ins updated successfully."
 
 msgid "errorPluginRefresh"
-msgstr "Fehler: Ein Plugin konnte nicht neu geladen werden."
+msgstr "Could not upload one plug-in."
 
 msgid "successPlguinUpdate"
-msgstr "Ihr Plugin wurde erfolgreich geupdated."
+msgstr "Plug-in updated successfully."
 
 msgid "errorPluginUpdate"
-msgstr "Fehler: Beim Update ist ein Fehler aufgetreten. Fehlercode: "
+msgstr "Error updating the plug-in. Error code: "
 
 msgid "successPluginInstall"
-msgstr "Ihre ausgewählten Plugins wurden erfolgreich installiert."
+msgstr "Selected plug-ins installed successfully."
 
 msgid "errorPluginInstall"
-msgstr "Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
+msgstr "Error during the installation. Error code: "
 
 msgid "successVariableRestore"
-msgstr "Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt."
+msgstr "Selected variable successfully reset to default settings."
 
 msgid "surePluginUpdate"
-msgstr "Wollen Sie das Plugin wirklich updaten?"
+msgstr "Update plug-in?"
 
 msgid "successPluginUpload"
-msgstr "Plugin erfolgreich hochgeladen."
+msgstr "Plug-in uploaded successfully."
 
 msgid "errorPluginUpload"
-msgstr "Plugin konnte nicht hochgeladen werden."
+msgstr "Could not upload plug-in. Please contact the Support team."
 
 msgid "sureResetLangVar"
-msgstr "Wollen Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br><br> *Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren."
+msgstr "Reset language variable to default settings?<br/><br/> All edited translations of the variable will be deleted."
 
 msgid "dangerPluginNotCompatibleShop5"
-msgstr "Achtung: Plugin ist nicht vollständig Shop5-kompatibel! Es können daher Probleme beim Betrieb entstehen."
+msgstr "Please note that the plug-in is not fully compatible with JTL-Shop 5. This might lead to performance issues."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Achtung: Plugin ist nicht vollständig Shop4-kompatibel! Es können daher Probleme beim Betrieb entstehen."
+msgstr "Please note that the plug-in is not fully compatible with JTL-Shop 4. This might lead to performance issues."
 
 msgid "licensePlugin"
-msgstr "Plugin Lizenz"
+msgstr "Plug-in licence"
 
 msgid "storeNotLinkedDesc"
-msgstr "Um auf JTL-Store Inhalte zugreifen zu k&ouml;nnen, müssen Sie zun&auml;chst Ihr JTL-Konto verkn&uuml;pfen."
+msgstr "To be able to access content relating to JTL-Store, please link the marketplace to your JTL account first."
 
 msgid "storeLink"
-msgstr "Konto verknüpfen"
+msgstr "Link account"
 
 msgid "storeRevoke"
-msgstr "Verknüpfung aufheben"
+msgstr "Remove link"
 
 msgid "storeUpdatesAvailable"
-msgstr "Updates verfügbar"
+msgstr "Available updates"
 
 msgid "storeListUpdates"
-msgstr "Updates anzeigen"
+msgstr "Show updates"
 
 msgid "storePlugins"
-msgstr "lizenzierte Plug-Ins"
+msgstr "licenced Plug-Ins"
 
 msgid "storeListAll"
-msgstr "Alle anzeigen"
+msgstr "Show all"
 
 msgid "storeLastUpdate"
-msgstr "zuletzt aktualisiert"
+msgstr "last updated"
 
 msgid "storeUpdateNow"
-msgstr "Aktualisieren"
+msgstr "Update"

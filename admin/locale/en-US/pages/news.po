@@ -3,148 +3,148 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "news"
-msgstr "News-/Blogsystem"
+msgstr "News and blog system"
 
 msgid "newsURL"
-msgstr "https://jtl-url.de/2ek6o"
+msgstr "https://jtl-url.de/7vfnm"
 
 msgid "newsDesc"
-msgstr "Dieses Modul kann als News bzw. Blogsystem genutzt werden."
+msgstr "With the news and blog system of JTL-Shop, you can keep your customers in the loop at all times. Create new entries and specify how news entries are to be displayed."
 
 msgid "newAdd"
-msgstr "Neuen Beitrag erstellen"
+msgstr "Create news posting"
 
 msgid "newEdit"
-msgstr "Beitrag bearbeiten"
+msgstr "Edit news posting"
 
 msgid "newsPreviewText"
-msgstr "Vorschautext"
+msgstr "Preview text"
 
 msgid "newsValidation"
-msgstr "Erstellt am"
+msgstr "Created on"
 
 msgid "newsDate"
-msgstr "Erstellt am"
+msgstr "Created on"
 
 msgid "newsArchive"
-msgstr "Archivieren"
+msgstr "Archive"
 
 msgid "newsArchiveLast"
-msgstr "Archivierte Beiträge"
+msgstr "Archived postings"
 
 msgid "newsPicAdd"
-msgstr "weiteres Bild"
+msgstr "Add another image"
 
 msgid "newsPics"
-msgstr "Verfügbare Bilder"
+msgstr "Available images"
 
 msgid "newsActivate"
-msgstr "freischalten"
+msgstr "Approve"
 
 msgid "newsCommentActivate"
-msgstr "Nicht aktive Beitragskommentare"
+msgstr "Unapproved comments"
 
 msgid "newsComments"
-msgstr "Kommentare"
+msgstr "Comments"
 
 msgid "newsSeo"
 msgstr "SEO"
 
 msgid "newsPraefix"
-msgstr "Monatsübersicht-Präfix"
+msgstr "Prefix for monthly overview"
 
 msgid "newsCatAdd"
-msgstr "Neue Kategorie erstellen"
+msgstr "Create new category"
 
 msgid "newsCatNew"
-msgstr "Kategorie bearbeiten"
+msgstr "Edit category"
 
 msgid "newsCatSort"
-msgstr "Kategorie Sortierung"
+msgstr "Category sorting"
 
 msgid "newsCatParent"
-msgstr "Oberkategorie"
+msgstr "Parent category"
 
 msgid "newsCatLastUpdate"
-msgstr "Letzte Aktualisierung"
+msgstr "Last update"
 
 msgid "newsOverview"
-msgstr "Beiträge"
+msgstr "News postings"
 
 msgid "newsCatOverview"
-msgstr "Kategorien"
+msgstr "Categories"
 
 msgid "newsInfinite"
-msgstr "immer"
+msgstr "always"
 
 msgid "newsCommentEdit"
-msgstr "Kommentar editieren"
+msgstr "Editing comments"
 
 msgid "newsMetaTitle"
-msgstr "Meta Title"
+msgstr "Meta title"
 
 msgid "newsMetaDescription"
-msgstr "Meta Description"
+msgstr "Meta description"
 
 msgid "newsMetaKeywords"
-msgstr "Meta Keywords"
+msgstr "Meta keywords"
 
 msgid "newsAuthor"
-msgstr "Autor"
+msgstr "Author"
 
 msgid "newsMandatoryFields"
-msgstr "(*) Pflichtfelder"
+msgstr "(*) mandatory field"
 
 msgid "newsAlreadyExists"
-msgstr "schon vorhanden"
+msgstr "already exists."
 
 msgid "newsDeleteCat"
-msgstr "Folgende News-Kategorien und deren Unterkategorien werden gelöscht:"
+msgstr "The following news categories and their subcategories will be deleted:"
 
 msgid "newsDeleteNews"
-msgstr "News löschen"
+msgstr "Delete news"
 
 msgid "newsDeleteComment"
-msgstr "Kommentar löschen"
+msgstr "Delete comment"
 
 msgid "errorNewsCatFirst"
-msgstr "Fehler: Bitte legen Sie zuerst eine Newskategorie an."
+msgstr "Please enter a news category first."
 
 msgid "successNewsCommmentEdit"
-msgstr "Der Newskommentar wurde erfolgreich editiert."
+msgstr "News comment edited successfully."
 
 msgid "successNewsDelete"
-msgstr "Ihre markierten News wurden erfolgreich gelöscht."
+msgstr "Selected news postings deleted successfully."
 
 msgid "errorAtLeastOneNews"
-msgstr "Fehler: Sie müssen mindestens eine News ausgewählt haben."
+msgstr "You must select at least one news posting."
 
 msgid "successNewsCatDelete"
-msgstr "Ihre markierten Newskategorien wurden erfolgreich gelöscht."
+msgstr "Selected news categories deleted successfully."
 
 msgid "errorAtLeastOneNewsCat"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Newskategorie."
+msgstr "Please select at least one news category."
 
 msgid "successNewsImageDelete"
-msgstr "Ihr ausgewähltes Newsbild wurde erfolgreich gelöscht."
+msgstr "Selected news image deleted successfully."
 
 msgid "errorNewsImageDelete"
-msgstr "Fehler: Ihr ausgewähltes Newsbild konnte nicht gelöscht werden."
+msgstr "Could not delete selected news image."
 
 msgid "errorNewsCatNotFound"
-msgstr "Fehler: Die Newskategorie mit der ID %d konnte nicht gefunden werden."
+msgstr "Could not find news category with ID %d."
 
 msgid "successNewsCommentUnlock"
-msgstr "Ihre markierten Newskommentare wurden erfolgreich freigeschaltet."
+msgstr "Selected news comments approved successfully."
 
 msgid "goOnEdit"
-msgstr " und weiter bearbeiten"
+msgstr " and continue editing"
 
 msgid "mainCategory"
-msgstr "Hauptkategorie"
+msgstr "Main category"
 
 msgid "deleteComment"
-msgstr "Kommentare löschen?"
+msgstr "Delete comments?"
 
 msgid "successNewsSave"
 msgstr "News saved"
@@ -156,4 +156,4 @@ msgid "successNewsCommentDelete"
 msgstr "News comments deleted."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Error: Select at least one comment."
+msgstr "Please select at least one news comment."

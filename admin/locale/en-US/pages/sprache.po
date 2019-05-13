@@ -3,76 +3,76 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "lang"
-msgstr "Sprachverwaltung"
+msgstr "Language administration"
 
 msgid "langURL"
-msgstr "https://jtl-url.de/nab7v"
+msgstr "https://jtl-url.de/br78w"
 
 msgid "langDesc"
-msgstr "Ändern Sie hier die Standard-Textbausteine des Shops. Alle Texte sind sprachabhängig definiert. Sie haben in der Sprachverwaltung außerdem  die Möglichkeit, Ihre Textbausteine pro Sprache zu exportieren und wieder zu importieren."
+msgstr "Edit the standard text blocks of the online shops. All texts are defined on the basis of a specific language. You can also use the language administration to export and reimport text blocks for individual languages."
 
 msgid "langVars"
-msgstr "Sprachvariablen"
+msgstr "Language variables"
 
 msgid "notFoundVars"
-msgstr "Nicht gefundene Variablen"
+msgstr "Not found variables"
 
 msgid "section"
-msgstr "Sektion"
+msgstr "Section"
 
 msgid "variableName"
 msgstr "Variable"
 
 msgid "btnAddVar"
-msgstr "Variable hinzufügen"
+msgstr "Add variable"
 
 msgid "btnResetLog"
-msgstr "Liste leeren"
+msgstr "Empty list"
 
 msgid "newLangVar"
-msgstr "Neue Sprachvariable"
+msgstr "New language variable"
 
 msgid "langSection"
-msgstr "Sprachsektion"
+msgstr "Language section"
 
 msgid "notImportedYet"
-msgstr "Sprache wurde noch nicht importiert"
+msgstr "Language not yet imported."
 
 msgid "errorImport"
-msgstr "Fehler beim Importieren der Datei."
+msgstr "File import failed. Could not open file. Please check the file for potential errors."
 
 msgid "successImport"
-msgstr "Es wurden %s Variablen aktualisiert"
+msgstr "%s variables updated successfully."
 
 msgid "newLangAvailable"
-msgstr "Es sind neue Sprache(n) verfügbar."
+msgstr "New language(s) available."
 
 msgid "successVarRemove"
-msgstr "Variable %s wurde erfolgreich gelöscht."
+msgstr "Variable %s deleted successfully."
 
 msgid "errorVarFormat"
-msgstr "Die Variable darf nur aus Buchstaben und Zahlen bestehen und darf nicht leer sein."
+msgstr "The variable may only include letters and numbers and must not be empty."
 
 msgid "errorVarExistsForLang"
-msgstr "Die Variable existiert bereits für folgende Sprachen: %s. Bitte wählen Sie aus, welche Versionen sie überschreiben möchten!"
+msgstr "The variable already exists for the following languages: %s. Please select which version you want to overwrite."
 
 msgid "successVarChange"
-msgstr "Variablen erfolgreich geändert: "
+msgstr "Variables changed successfully: "
 
 msgid "errorVarChangeNone"
-msgstr "Keine Variable wurde geändert."
+msgstr "No variables changed."
 
 msgid "successListReset"
-msgstr "Liste erfolgreich zurückgesetzt."
+msgstr "List reset successfully."
 
 msgid "searchInContentAndVarName"
-msgstr "Suchen im Variablennamen und im Inhalt"
+msgstr "Search variable names and contents"
 
 msgid "systemOwn"
-msgstr "System/eigene"
+msgstr "System/Custom"
 
 msgid "system"
-msgstr "nur System"
+msgstr "System only"
 
 msgid "own"
-msgstr "nur eigene"
+msgstr "Custom only"

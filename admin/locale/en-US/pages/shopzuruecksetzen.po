@@ -3,82 +3,82 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "shopReset"
-msgstr "Shopdaten zurücksetzen"
+msgstr "Reset shop data"
 
 msgid "shopResetURL"
-msgstr "https://jtl-url.de/3wfz8"
+msgstr "https://jtl-url.de/rw054"
 
 msgid "shopResetDesc"
-msgstr "Hier können Sie die Daten aus einzelnen Bereichen Ihres JTL-Shops löschen. Bitte beachten Sie, dass diese Daten komplett entfernt werden und nach dem Löschen nur noch durch ein Backup wiederhergestellt werden können."
+msgstr "Here you can delete data from individual areas of your online shop and reset all settings to the factory settings. Please note that all personal data will be deleted from these areas and that the data can afterwards only be restored using a backup."
 
 msgid "successShopReturn"
-msgstr "Der Shop wurde mit Ihren gewählten Optionen zurückgesetzt."
+msgstr "The Shop has been reset with your selected Options."
 
 msgid "dangerStrong"
-msgstr "!!! ACHTUNG !!!"
+msgstr "CAUTION"
 
 msgid "warningDeleteNotRestoreableData"
-msgstr "Es wurden Daten zur Löschung ausgewählt die NICHT durch einen Abgleich mit der JTL-Wawi wiederhergestellt werden können. Es wird daher dringend empfohlen ein Backup der Shop-Datenbank zu erstellen!"
+msgstr "Please note that you have selected data that cannot be restored via a synchronisation with JTL-Wawi after deletion. We highly recommend creating a backup of the online shop database first."
 
 msgid "shopContent"
-msgstr "Shopinhalte"
+msgstr "Shop contents"
 
 msgid "deleteNews"
-msgstr "News löschen"
+msgstr "Delete news"
 
 msgid "deleteBestseller"
-msgstr "Bestseller löschen"
+msgstr "Delete bestsellers"
 
 msgid "deleteVisitorStatistics"
-msgstr "Besucherstatistiken löschen"
+msgstr "Delete visitor reports"
 
 msgid "deletePriceStatistics"
-msgstr "Preisverläufe löschen"
+msgstr "Delete price histories"
 
 msgid "deletePolls"
-msgstr "Umfragen löschen"
+msgstr "Delete surveys"
 
 msgid "deleteAvailabilityNotifications"
-msgstr "Verfügbarkeitsbenachrichtigungen löschen"
+msgstr "Delete availability notifications"
 
 msgid "deleteRevisions"
-msgstr "Revisionen löschen"
+msgstr "Delete revisions"
 
 msgid "deleteProductCategory"
-msgstr "Artikel, Kategorien, Merkmale löschen (Komplettübertragung aus JTL-Wawi füllt diese Daten wieder auf)"
+msgstr "Delete items, categories and characteristics (complete synchronisation with JTL-Wawi restores data)"
 
 msgid "userGeneratedContent"
-msgstr "Benutzergenerierte Inhalte"
+msgstr "User-generated contents"
 
 msgid "deleteSearch"
-msgstr "Suchanfragen löschen"
+msgstr "Delete search queries"
 
 msgid "deleteTags"
-msgstr "Tags löschen"
+msgstr "Delete tags"
 
 msgid "deleteRatings"
-msgstr "Bewertungen löschen"
+msgstr "Delete customer reviews"
 
 msgid "deleteOrders"
-msgstr "Bestellungen löschen"
+msgstr "Delete purchase orders"
 
 msgid "deleteCustomers"
-msgstr "Shopkunden löschen"
+msgstr "Delete customers"
 
 msgid "customersOrdersCoupons"
-msgstr "Shopkunden, Bestellungen und Coupons"
+msgstr "Customers, purchases and coupons"
 
 msgid "deleteCustomersRecruitCustomers"
-msgstr "Daten zu „Kunden werben Kunden“ löschen"
+msgstr "Delete data regarding customer referral programme"
 
 msgid "deleteCoupons"
-msgstr "Coupons löschen"
+msgstr "Delete coupons"
 
 msgid "yesBackupDone"
-msgstr "Ja, ich habe ein Backup meiner Shop-Datenbank erstellt."
+msgstr "Yes, I performed a backup of my online shop database."
 
 msgid "followingWillBeDeleted"
-msgstr "Es werden folgende Bereiche von JTL-Shop zurückgesetzt<span id=\"messageDataGetsLost\" class=\"hide\">, das heißt, dass alle bisher gespeicherten Daten verloren gehen:</span>"
+msgstr "The following areas of JTL-Shop will be reset <span id=\"messageDataGetsLost\" class=\"hide\">and the respective data will be deleted:</span>"
 
 msgid "sureContinue"
-msgstr "Möchten Sie fortfahren?"
+msgstr "Would you like to continue?"

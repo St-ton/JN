@@ -3,106 +3,106 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "livesearch"
-msgstr "Livesuche"
+msgstr "Live search"
 
 msgid "livesucheURL"
-msgstr "https://jtl-url.de/uxd87"
+msgstr "https://jtl-url.de/hjd59"
 
 msgid "livesucheDesc"
-msgstr "Unter Livesuche verstehen wir die zuletzt getätigten Suchanfragen über die Suchfunktion im Shop sowie Suchanfragen, die besonders häufig ausgeführt wurden und als sprechende URL (sofern SEO Modul installiert) zur Verfügung gestellt werden, wenn diese aktiv geschaltet werden. Weiterhin können Sie hier Suchanfragen auf andere Suchanfragen verknüpfen (mappen), z.B. Mobiltelefon -> Handy. Dadurch wird bei einer Suche nach Mobiltelefon das Ergebnis der Suche nach Handy dem Kunden präsentiert."
+msgstr "Here you can find the latest search queries entered into the search function of JTL-Shop and the search queries that were used most often. You can also link search queries and search terms with other search queries and terms, e.g. mobile phone and smartphone. If a customer looks for the search term \"mobile phone\", he will also see the results for the search term \"smartphone\"."
 
 msgid "search"
-msgstr "Suche"
+msgstr "Search"
 
 msgid "searchnew"
-msgstr "Neue Suche"
+msgstr "New search"
 
 msgid "searchcount"
-msgstr "Suchanzahl"
+msgstr "Number of searches"
 
 msgid "mappingDelete"
-msgstr "Markierte Mappings lösen"
+msgstr "Remove selected links"
 
 msgid "lastsearch"
-msgstr "Zuletzt gesucht"
+msgstr "Last searched"
 
 msgid "blacklistDescription"
-msgstr "Mehrere Begriffe mit Semikolon getrennt"
+msgstr "Separate multiple search terms by semicolon"
 
 msgid "searchrequest"
-msgstr "Suchanfragen"
+msgstr "Search queries"
 
 msgid "searchmiss"
-msgstr "Erfolglose Suchanfragen (Suchanfragen mit 0 Treffern)"
+msgstr "Search queries without results"
 
 msgid "livesuchenSearch"
 msgstr "Suche"
 
 msgid "livesucheSearchItem"
-msgstr "Suchbegriff"
+msgstr "Search term"
 
 msgid "livesucheSearchType"
-msgstr "Suchkategorie"
+msgstr "Search category"
 
 msgid "livesucheMappingOn"
-msgstr "Markierte mappen auf"
+msgstr "Link selected with"
 
 msgid "livesucheMappingOnBTN"
-msgstr "Mappen"
+msgstr "Link"
 
 msgid "livesucheEdit"
-msgstr "Suche editieren"
+msgstr "Edit search"
 
 msgid "livesucheSelectAll"
-msgstr "Alle auswählen"
+msgstr "Select all"
 
 msgid "errorSearchTermMissing"
-msgstr "Fehler: Bitte geben Sie einen Suchbegriff ein."
+msgstr "Please enter a search term."
 
 msgid "successSearchMap"
-msgstr "Die Suchanfrage %s wurde erfolgreich auf %s gemappt."
+msgstr "Search query %s successfully linked with %s."
 
 msgid "errorSearchMapSelf"
-msgstr "Die Suchanfrage %s kann nicht auf den gleichen Suchebegriff gemappt werden."
+msgstr "Search query %s cannot be linked with a search term that refers to the same word."
 
 msgid "successSearchRefresh"
-msgstr "Die Suchanfragen wurden erfolgreich aktualisiert."
+msgstr "Search queries updated successfully."
 
 msgid "successSearchMapMultiple"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich auf %s gemappt."
+msgstr "Selected search queries successfully linked with %s."
 
 msgid "errorSearchMapToNotExist"
-msgstr "Fehler: Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen."
+msgstr "The second search query that you want to link with the first search query does not exist."
 
 msgid "errorSearchMapNotExist"
-msgstr "Fehler: Sie haben versucht eine nicht existierende Suchanfrage zu mappen."
+msgstr "The first search query that you want to link with the second search query does not exist."
 
 msgid "errorAtLeastOneSearch"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Suchanfrage."
+msgstr "Please select at least one search query."
 
 msgid "errorMapNameMissing"
-msgstr "Fehler: Bitte geben Sie ein Mappingname an."
+msgstr "Please enter a name for the link."
 
 msgid "successSearchDelete"
-msgstr "Die Suchanfrage %s wurde erfolgreich gelöscht."
+msgstr "Search query %s deleted successfully."
 
 msgid "successSearchBlacklist"
-msgstr "Die Suchanfrage %s wurde auf die Blacklist hinzugefügt."
+msgstr "Search query %s successfully added to blacklist."
 
 msgid "errorSearchMapLoop"
-msgstr "Das Mapping von %s auf %s würde eine Schleife verursachen."
+msgstr "Linking %s with %s would lead to a loop."
 
 msgid "successSearchDeleteMultiple"
-msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
+msgstr "Selected search queries deleted successfully."
 
 msgid "successBlacklistRefresh"
-msgstr "Die Blacklist wurde erfolgreich aktualisiert."
+msgstr "Black list updated successfully."
 
 msgid "successSearchMapDelete"
-msgstr "Das Mapping %s wurde erfolgreich gelöscht."
+msgstr "Link %s deleted successfully."
 
 msgid "errorSearchMapNotFound"
-msgstr "Es wurde kein Mapping mit der ID %s gefunden."
+msgstr "No links with ID %s found."
 
 msgid "errorAtLeastOneSearchMap"
-msgstr "Bitte wählen Sie mindestens ein Mapping aus."
+msgstr "Please select at least one link."

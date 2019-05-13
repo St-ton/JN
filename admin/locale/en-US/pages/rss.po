@@ -3,22 +3,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "rssURL"
-msgstr "https://jtl-url.de/xo5rt"
+msgstr "https://jtl-url.de/k0iab"
 
 msgid "rssSettings"
-msgstr "RSS-Einstellungen"
+msgstr "RSS settings"
 
 msgid "rssDescription"
-msgstr "JTL-Shop beherrscht die automatische Generierung und Aktualisierung eines RSS-Feeds. In diesem Feed werden Ihre Angebote, die neu im Sortiment sind, sowie News- Blogeinträge und Bewertungen hinterlegt. Somit können Sie Interessenten stets mit diesem RSS-Feed über Ihre neusten Angebote informieren. Der RSS-Feed kann auch so eingestellt werden, dass er nach jedem JTL-Wawi Abgleich neu generiert wird."
+msgstr "You can automatically generate an RSS feed for JTL-Shop. The feed allows you to display new items, news entries and reviews. You can create the RSS feed manually or have it generated automatically with every synchronisation with JTL-Wawi."
 
 msgid "successRSSCreate"
-msgstr "RSS Feed wurde erstellt!"
+msgstr "RSS feed created successfully."
 
 msgid "errorRSSCreate"
-msgstr "RSS Feed konnte nicht erstellt werden!"
+msgstr "Could not create RSS feed."
 
 msgid "errorRSSCreatePermissions"
-msgstr "Datei %s kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine RSS XML Datei erstellt werden."
+msgstr "Cannot write file %s. The file does not have sufficient write access to create an XML file for the RSS feed. Please review the write access."
 
 msgid "xmlCreate"
-msgstr "RSS-Feed XML-Datei erstellen"
+msgstr "Create XML file for RSS feed"

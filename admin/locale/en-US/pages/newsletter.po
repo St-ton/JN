@@ -3,151 +3,151 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "newsletterqueue"
-msgstr "Warteschlange"
+msgstr "Queue"
 
 msgid "newsletterNewSubscriber"
-msgstr "Abonnenten hinzufügen"
+msgstr "Adding subscribers"
 
 msgid "newsletterURL"
-msgstr "https://jtl-url.de/guvcz"
+msgstr "https://jtl-url.de/95cyw"
 
 msgid "newsletterqueuedate"
 msgstr "Start"
 
 msgid "newsletterdraft"
-msgstr "Vorlage"
+msgstr "Template"
 
 msgid "newsletterlastsubscriber"
-msgstr "Letzten 20 Newsletter-Abonnenten"
+msgstr "Last 20 newsletter subscribers"
 
 msgid "newsletterSubscriber"
-msgstr "Abonnenten"
+msgstr "Subscribers"
 
 msgid "newsletterAllSubscriber"
-msgstr "Alle Abonnenten"
+msgstr "All subscribers"
 
 msgid "newsletterSubscripterNotActive"
-msgstr "Inaktive Abonnenten"
+msgstr "Inactive subscribers"
 
 msgid "newslettersubscribername"
-msgstr "Abonnent"
+msgstr "Subscriber"
 
 msgid "newslettersubscriberanrede"
-msgstr "Anrede"
+msgstr "Title"
 
 msgid "newsletterhistory"
-msgstr "Historie"
+msgstr "History"
 
 msgid "newsletterhistorysubject"
-msgstr "Betreff"
+msgstr "Subject"
 
 msgid "newsletterhistorydate"
 msgstr "Start"
 
 msgid "newsletterdraftcreate"
-msgstr "Vorlage erstellen"
+msgstr "Create template"
 
 msgid "newsletterNewSearch"
-msgstr "neue Suche"
+msgstr "New search"
 
 msgid "newsletteredit"
-msgstr "editieren"
+msgstr "Edit"
 
 msgid "newsletterprepare"
-msgstr "Versand vorbereiten"
+msgstr "Prepare for sending"
 
 msgid "newslettersend"
-msgstr "Newsletter versenden"
+msgstr "Send newsletter"
 
 msgid "newsletterHtml"
-msgstr "Inhalt Html"
+msgstr "Content (HTML)"
 
 msgid "newsletterText"
-msgstr "Inhalt Text"
+msgstr "Content (text)"
 
 msgid "newsletteroverview"
-msgstr "Newsletter Übersicht"
+msgstr "Newsletter overview"
 
 msgid "newsletteroverviewdesc"
 msgstr ""
 
 msgid "newsletterdraftdesc"
-msgstr "Testen Sie hier Ihre Newsletter-Vorlage vor dem Versenden. "
+msgstr "Here you can create templates for your newsletters, which you can then test and approve for being sent. "
 
 msgid "newsletterdraftname"
-msgstr "Name der Vorlage"
+msgstr "Template name"
 
 msgid "newsletterdraftcharacter"
-msgstr "Diese Vorlage versenden als"
+msgstr "Send this template as"
 
 msgid "newsletterconfigdesc"
-msgstr "Diese E-Maileinstellungen gelten für den Newsletterversand."
+msgstr "These email settings are valid for sending newsletters."
 
 msgid "newsletterartnr"
-msgstr "Artikelnummer"
+msgstr "SKU"
 
 msgid "newsletternewartnr"
-msgstr "weiteres Artikelfeld"
+msgstr "Additional item field"
 
 msgid "newslettercustomergrp"
-msgstr "Newsletter versenden für"
+msgstr "Send newsletters to"
 
 msgid "newslettersendtest"
-msgstr "Newsletter testen"
+msgstr "Test newsletter"
 
 msgid "newsletterdraftsaveandsend"
-msgstr "speichern, Newsletter versenden"
+msgstr "Save and send newsletter"
 
 msgid "newsletterdraftsaveandtest"
-msgstr "speichern, Newsletter testen"
+msgstr "Save and test newsletter"
 
 msgid "newsletterdraftdate"
-msgstr "Versenden ab"
+msgstr "Send on"
 
 msgid "newsletterdraftformat"
-msgstr "(dd/mm/yyyy hh:ii)"
+msgstr "(DD/MM/YYYY hh:mm)"
 
 msgid "newsletterdraftcal"
-msgstr "Kalender"
+msgstr "Calendar"
 
 msgid "newsletterdesc"
-msgstr "Verwalten Sie hier Ihre Newsletter sowie Abonnenten. Beachten Sie, dass Newsletter pro Sprache verwaltet werden."
+msgstr "Manage your newsletters and subscribers. Please note that newsletters are managed separately for each language."
 
 msgid "newslettersubscriberactive"
-msgstr "(*) = nicht aktiviert"
+msgstr "(*) = not activated"
 
 msgid "newslettersubscriberdate"
-msgstr "Eingetragen am"
+msgstr "Entered on"
 
 msgid "newslettersubscriberLastNewsletter"
-msgstr "Letzter Newsletter am"
+msgstr "Last newsletter sent on"
 
 msgid "newsletterqueueimprovement"
-msgstr "Verschickt"
+msgstr "Sent"
 
 msgid "newsletterhistorycount"
-msgstr "Anzahl Empfänger"
+msgstr "Number of recipients"
 
 msgid "newsletterqueuecount"
-msgstr "Anzahl Empfänger"
+msgstr "Number of recipients"
 
 msgid "newsletterqueuecustomergrp"
-msgstr "Kundengruppen"
+msgstr "Customer groups"
 
 msgid "newsletterSubscriberList"
-msgstr "Alle Abonnenten"
+msgstr "All subscribers"
 
 msgid "newsletterSubscriberListDesc"
 msgstr ""
 
 msgid "newslettersubscriberSearch"
-msgstr "Abonnentensuche"
+msgstr "Find subscribers"
 
 msgid "newslettersubscriberSearchSubmit"
 msgstr "Suchen"
 
 msgid "newsletterSendAuthentication"
-msgstr "Wollen Sie den Newsletter wirklich versenden?"
+msgstr "Send newsletter?"
 
 msgid "newsletterSearchBTN"
 msgstr "Suchen"
@@ -156,82 +156,82 @@ msgid "newsletterSearch"
 msgstr "Suche"
 
 msgid "newsletterUnlock"
-msgstr "Freischalten"
+msgstr "Activate"
 
 msgid "newsletterdraftStd"
-msgstr "Standardvorlagen"
+msgstr "Standard templates"
 
 msgid "newsletterdraftStdShort"
-msgstr "Standardvorlage"
+msgstr "Standard template"
 
 msgid "newsletterdraftStdUse"
-msgstr "Vorlage benutzen"
+msgstr "Use template"
 
 msgid "newsletterdraftStdVarSection"
-msgstr "Vorlagen spezifische Variablen"
+msgstr "Template-specific variables"
 
 msgid "newsletterdraftFillOut"
-msgstr "Bitte ausfüllen"
+msgstr "Please complete"
 
 msgid "newsletterPicLink"
-msgstr "Optionaler Bildlink"
+msgstr "Optional link to image"
 
 msgid "newsletterAltTag"
-msgstr "Alt Tag"
+msgstr "Alt tag"
 
 msgid "newsletterOptInIp"
-msgstr "Opt-In IP"
+msgstr "Opt-in IP"
 
 msgid "newsletterOptInDate"
-msgstr "Opt-In Date"
+msgstr "Opt-in date"
 
 msgid "successNewsletterAboDelete"
-msgstr "Ihre markierten Newsletter-Abonnenten wurden erfolgreich gelöscht."
+msgstr "Selected newsletter subscribers deleted successfully."
 
 msgid "errorAtLeastOneNewsletterAbo"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten."
+msgstr "Please select at least one newsletter subscriber."
 
 msgid "successNewsletterAbounlock"
-msgstr "Ihre markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet."
+msgstr "Selected newsletter subscribers activated successfully."
 
 msgid "successNewsletterAboAdd"
-msgstr "Newsletter-Empfänger wurde erfolgreich hinzugefügt"
+msgstr "Newsletter recipient added successfully."
 
 msgid "errorFillEmail"
-msgstr "Bitte füllen Sie das Feld Email aus."
+msgstr "Please fill in the field \"Email\"."
 
 msgid "successDelete"
 msgstr " wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletter"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter"
+msgstr "Please select at least one newsletter."
 
 msgid "errorAtLeastOneHistory"
-msgstr "Fehler: Bitte markieren Sie mindestens eine History."
+msgstr "Please select at least one history."
 
 msgid "successNewsletterTemplateEdit"
-msgstr "Ihre Newslettervorlage %s wurde erfolgreich editiert."
+msgstr "Newsletter template %s edited successfully."
 
 msgid "successNewsletterTemplateSave"
-msgstr "Ihre Newslettervorlage %s wurde erfolgreich gespeichert."
+msgstr "Newsletter template %s saved successfully."
 
 msgid "successNewsletterPrepared"
-msgstr "Der Newsletter %s wurde zum Versenden vorbereitet."
+msgstr "Newsletter %s is ready to be sent."
 
 msgid "errorTestTemplateEmpty"
-msgstr "Die Empfänger-Adresse zum Testen ist leer."
+msgstr "Empty recipient address for the trial newsletter."
 
 msgid "successTestEmailTo"
-msgstr "Die Newslettervorlage %s wurde zum Testen an %s gesendet."
+msgstr "Newsletter template %s for trial newsletter sent to %s."
 
 msgid "successNewsletterTemplateDelete"
-msgstr "Die Newslettervorlage wurde erfolgreich gelöscht."
+msgstr "Newsletter template deleted successfully."
 
 msgid "availableTemplates"
-msgstr "Vorhandene Vorlagen"
+msgstr "Available templates"
 
 msgid "newsletterNoAccount"
-msgstr "Newsletterempfänger ohne Kundenkonto"
+msgstr "Newsletter recipient w/o customer account"
 
 msgid "errorEmailExists"
 msgstr "Error: Email already exists"

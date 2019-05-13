@@ -3,43 +3,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "newsletterMail"
-msgstr "Newsletterempfänger importieren"
+msgstr "Import newsletter recipients"
 
 msgid "newsletterMailDesc"
-msgstr "Hier haben Sie die Möglichkeit Newsletterempfänger in Form einer CSV-Datei zu importieren"
+msgstr "Here you can import newsletter recipients by using a csv file."
 
 msgid "newsletterURL"
-msgstr "https://jtl-url.de/686sr"
+msgstr "https://jtl-url.de/r8nef"
 
 msgid "language"
-msgstr "Kunden diese Sprache zuweisen"
+msgstr "Assign this language to customers"
 
 msgid "csvFile"
-msgstr "Kunden CSV - Datei"
+msgstr "CSV file with customer data"
 
 msgid "checkHead"
-msgstr "Checke Kopfzeile ..."
+msgstr "Checking header…"
 
 msgid "errorFormatUnknown"
-msgstr "Format nicht erkannt!"
+msgstr "Format not recognised!"
 
 msgid "importPending"
-msgstr "Importiere..."
+msgstr "Importing…"
 
 msgid "errorEmailInvalid"
-msgstr "keine gültige Email (%s)! Übergehe diesen Datensatz."
+msgstr "Invalid email address: (%s)! Data set was skipped."
 
 msgid "errorEmailInvalidBlacklist"
-msgstr "keine gültige Email: (%s)! Kunde hat sich auf die Blacklist setzen lassen! Übergehe diesen Datensatz."
+msgstr "Invalid email address: (%s)! Customer is on blacklist. Data set was skipped."
 
 msgid "errorSurnameMissing"
-msgstr "kein Nachname! Übergehe diesen Datensatz."
+msgstr "No last name. Data set was skipped."
 
 msgid "errorEmailExists"
-msgstr "Newsletterempfänger mit dieser Emailadresse bereits vorhanden: (%s)! Übergehe Datensatz."
+msgstr "A newsletter recipient with this email address already exists: %s. Data set was skipped."
 
 msgid "successImport"
-msgstr "Datensatz OK. Importiere: "
+msgstr "Data set OK. Import of: "
 
 msgid "errorImportRow"
-msgstr "Fehler beim Import dieser Zeile!"
+msgstr "Could not import row."

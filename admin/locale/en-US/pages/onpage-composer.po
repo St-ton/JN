@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "The OPC update is not installed properly. Please update your migrations."
-msgstr "Das OPC Update wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie ihre Migrationen."
+msgstr "Could not properly install the OnPage Composer update. Please update the migrations."
 
 msgid "Draft"
-msgstr "Entwurf"
+msgstr "Draft"
 
 msgid "replaced"
-msgstr "ersetzt"
+msgstr "replaced"
 
 # OPC GUI
 
@@ -20,54 +20,54 @@ msgid "Export"
 msgstr "Export"
 
 msgid "Publicate"
-msgstr "Veröffentlichen"
+msgstr "Publish"
 
 msgid "Save page"
-msgstr "Seite speichern"
+msgstr "Save page"
 
 msgid "Close OnPage-Composer"
-msgstr "OnPage-Composer schließen"
+msgstr "Close OnPage Composer"
 
 msgid "Portlets"
 msgstr "Portlets"
 
 msgid "Blueprints"
-msgstr "Vorlagen"
+msgstr "Templates"
 
 msgid "Revisions"
-msgstr "Versionen"
+msgstr "Versions"
 
 msgid "Page structure"
-msgstr "Seitenstruktur"
+msgstr "Page structure"
 
 msgid "Import blueprint"
-msgstr "Vorlage importieren"
+msgstr "Import template"
 
 msgid "Unsaved revision"
-msgstr "Ungespeicherte Version"
+msgstr "Unsaved version"
 
 msgid "Current revision"
-msgstr "Aktuelle Version"
+msgstr "Current version"
 
 msgid "Please wait..."
-msgstr "Bitte warten..."
+msgstr "Please wait…"
 
 msgid "Edit Portlet"
-msgstr "Portlet bearbeiten"
+msgstr "Edit portlet"
 
 msgid "Save this Portlet as a blueprint"
-msgstr "Portlet als Vorlage speichern"
+msgstr "Save portlet as template"
 
 msgid "Blueprint name"
-msgstr "Vorlagen-Name"
+msgstr "Template name"
 
 msgid "Delete Blueprint?"
-msgstr "Vorlage löschen?"
+msgstr "Delete template?"
 
 # Config Tabs
 
 msgid "Styles"
-msgstr "Stile"
+msgstr "Styles"
 
 msgid "Animation"
 msgstr "Animation"
@@ -75,48 +75,48 @@ msgstr "Animation"
 # Styles tab
 
 msgid "Font color"
-msgstr "Schriftfarbe"
+msgstr "Font colour"
 
 msgid "Visibility"
-msgstr "Sichtbarkeit"
+msgstr "Visible for"
 
 msgid "hide"
-msgstr "ausblenden"
+msgstr "hide"
 
 msgid "Background color"
-msgstr "Hintergrundfarbe"
+msgstr "Background colour"
 
 msgid "Font size"
-msgstr "Schriftgröße"
+msgstr "Font size"
 
 # Animations tab
 
 msgid "Animation style"
-msgstr "Animations-Typ"
+msgstr "Animation type"
 
 msgid "Duration"
-msgstr "Dauer"
+msgstr "Duration"
 
 msgid "Delay"
-msgstr "Verzögerung"
+msgstr "Delay"
 
 msgid "Offset (px)"
-msgstr "Abstand (Pixel)"
+msgstr "Scrolling distance (pixels)"
 
 msgid "Iteration"
-msgstr "Wiederholung"
+msgstr "Repetitions"
 
 msgid "Change the animation duration (e.g. 2s)"
-msgstr "Dauer der Animation (z.B. 2s)"
+msgstr "Duration of the animation (e.g. 2 s)"
 
 msgid "Delay before the animation starts"
-msgstr "Wartezeit bis die Animation beginnt"
+msgstr "Time until animation begins"
 
 msgid "Distance to start the animation (related to the browser bottom)"
-msgstr "Animation beginnt sobald der Scroll-Abstand erreicht ist (von der Unterkante des Fensters)"
+msgstr "The animation starts when the scrolling distance between the top edge of the respective element and the bottom edge of the current browser window equals the entered pixel value. By adjusting this setting, you can, for example, prevent an animation from starting while the element is not yet completely visible."
 
 msgid "Number of times the animation is repeated"
-msgstr "Wie oft wird die Animation wiederholt"
+msgstr "Number of repetitions"
 
 msgid "onPageComposer"
 msgstr "OnPage Composer"
@@ -125,73 +125,73 @@ msgid "toggleNavigation"
 msgstr "Toggle navigation"
 
 msgid "somethingHappend"
-msgstr "Something happened"
+msgstr "An unknown error occurred."
 
 msgid "noteInfoInGuide"
-msgstr "Du findest neben den, nachfolgend aufgelisteten, Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
+msgstr "Aside from the guided tours listed below, you can also find a lot of information in the <a href=\"https://guide.jtl-software.com\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> JTL-Guide</a>."
 
 msgid "generalIntroduction"
-msgstr "Allgemeine Einführung"
+msgstr "General introduction"
 
 msgid "getToKnowComposer"
-msgstr "lerne den Composer kennen und lege dein erstes Portlet an"
+msgstr "Get to know the OnPage Composer and create your first portlet."
 
 msgid "animation"
 msgstr "Animation"
 
 msgid "noteMovementOnPage"
-msgstr "du möchtest etwas Bewegung auf deinen Seiten, lerne hier wie`s geht"
+msgstr "Would you like to have more moving elements on your pages? Learn how to get them."
 
 msgid "noteSaveAsTemplate"
-msgstr "Du hast eine tolle Ansicht angelegt die du häufig wiederverwenden möchtest?<br> Leg' sie doch als Vorlage an und greife so einfach immer wieder darauf zu."
+msgstr "You have created a great view that you would like to use more often?<br/> Why don’t you save it as a template so that you can easily use it again and again?"
 
 msgid "settingsMore"
-msgstr "Einstellungen (Vertiefung)"
+msgstr "Settings (advanced)"
 
 msgid "noteTricks"
-msgstr "Lerne hier ein paar Tricks um deine Seiten für die verschiedenen Displayformate fit zu machen."
+msgstr "Get to know a few tips and tricks to optimise your online shop for a variety of display formats."
 
 msgid "startTour"
-msgstr "Tour starten"
+msgstr "Start tour"
 
 msgid "draftPublic"
-msgstr "Diesen Entwurf veröffentlichen..."
+msgstr "Publish this draft"
 
 msgid "draftName"
-msgstr "Interner Name des Entwurfes"
+msgstr "Internal name of draft"
 
 msgid "restoreChanges"
-msgstr "Lokale Änderungen wiederherstellen?"
+msgstr "Restoring local changes"
 
 msgid "restoreUnsaved"
-msgstr "Dieser Entwurf hat lokal ungespeicherte Änderungen. Wollen Sie diese wiederherstellen?"
+msgstr "This draft contains unsaved local changes. Would you like to restore the changes?"
 
 msgid "noCurrent"
-msgstr "Nein, Aktuelle Version bearbeiten!"
+msgstr "No, edit current version"
 
 msgid "yesRestore"
-msgstr "Ja, wiederherstellen!"
+msgstr "Yes, apply changes"
 
 msgid "portletLabel"
-msgstr "Portlet-Label"
+msgstr "Portlet label"
 
 msgid "editSettings"
-msgstr "Einstellungen bearbeiten"
+msgstr "Edit settings"
 
 msgid "copySelect"
-msgstr "Auswahl kopieren"
+msgstr "Copy selection"
 
 msgid "saveTemplate"
-msgstr "Auswahl als Vorlage speichern"
+msgstr "Save selection as a template"
 
 msgid "goUp"
-msgstr "Gehe eine Ebene höher"
+msgstr "Select next higher level"
 
 msgid "deleteSelect"
-msgstr "Auswahl löschen [Entf]"
+msgstr "Delete selection [Del]"
 
 msgid "portletPreviewLabel"
-msgstr "Portlet-Preview-Label"
+msgstr "Portlet preview label"
 
 msgid "templateTitle"
-msgstr "Vorlagen-Titel"
+msgstr "Template name"

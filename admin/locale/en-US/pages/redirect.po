@@ -3,46 +3,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "redirect"
-msgstr "Weiterleitungen"
+msgstr "Redirections"
 
 msgid "redirectDesc"
-msgstr "Legen Sie Weiterleitungen zu verwaisten Seiten an, wenn die Seiten unter einem neuen Pfad erreichbar sind. JTL-Shop merkt sich automatisch 404-Zugriffe im Shop und listet diese hier auf. Bitte legen Sie nur dann eine Weiterleitung an, wenn der Inhalt der alten Seite umgezogen wurde und nun unter einem neuen Pfad abrufbar ist."
+msgstr "Manage the redirection from orphaned URLs whose target pages are reachable under a new path. JTL-Shop automatically records all URLs that could not be found and lists them here. Only create a redirection if the content of an old page was moved and is now available under a new path."
 
 msgid "redirectURL"
-msgstr "https://jtl-url.de/961as"
+msgstr "https://jtl-url.de/yaxo4"
 
 msgid "redirectDelUnassigned"
-msgstr "Alle ohne Weiterleitung löschen"
+msgstr "Delete all without redirections"
 
 msgid "redirectNew"
-msgstr "Neue Weiterleitung"
+msgstr "New redirection"
 
 msgid "redirectFrom"
-msgstr "Quell-URL"
+msgstr "Source URL"
 
 msgid "redirectTo"
-msgstr "Ziel-URL"
+msgstr "Target URL"
 
 msgid "redirectRefererCount"
-msgstr "Aufrufe"
+msgstr "Calls"
 
 msgid "redirectReferer"
-msgstr "Verweis"
+msgstr "Reference"
 
 msgid "redirectRefererDirect"
-msgstr "Direkteinstieg"
+msgstr "Direct entry"
 
 msgid "redirectCsvImport"
-msgstr "CSV-Import"
+msgstr "CSV import"
 
 msgid "errorURLNotReachable"
-msgstr "Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL %s nicht erreichbar ist."
+msgstr "Could not save changes. The URL to be redirected is not available."
 
 msgid "successRedirectSave"
-msgstr "Ihre Weiterleitung wurde erfolgreich gespeichert."
+msgstr "Redirection saved successfully."
 
 msgid "errorImport"
-msgstr "Fehler: Der Import konnte nicht durchgeführt werden. Bitte prüfen Sie die CSV-Datei"
+msgstr "Could not carry out import. Please review the CSV file."
 
 msgid "successImport"
-msgstr "Der Import wurde erfolgreich durchgeführt"
+msgstr "Import carried out successfully."

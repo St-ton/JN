@@ -3,53 +3,53 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "opcNoticePageReset"
-msgstr "Der Composer-Inhalt für die Seite wurde zurückgesetzt."
+msgstr "The OnPage Composer content for this page was reset."
 
 msgid "opcNoticeDraftDelete"
-msgstr "Der Entwurf wurde gelöscht."
+msgstr "Draft deleted successfully."
 
 msgid "opc"
-msgstr "OnPage Composer Control Center"
+msgstr "OnPage Composer"
 
 msgid "opcDesc"
-msgstr "Hier finden Sie die mittels dem OnPage Composer bearbeiteten Seiten und verfügbaren Portlets"
+msgstr "Here you can find an overview of all pages edited with the OnPage Composer and all available portlets."
 
 msgid "opcUrl"
-msgstr "http://guide.jtl-software.de/index.php?title=Inhalt:CMS"
+msgstr "https://jtl-url.de/flnzh"
 
 msgid "opcPages"
-msgstr "Bearbeitete Seiten"
+msgstr "Edited pages"
 
 msgid "opcPortlets"
-msgstr "Verfügbare Portlets"
+msgstr "Available portlets"
 
 msgid "opcBlueprints"
-msgstr "Verfügbare Vorlagen"
+msgstr "Available templates"
 
 msgid "sureDeleteAll"
-msgstr "Wollen Sie wirklich alle Entwürfe für die Seite löschen?"
+msgstr "Delete all drafts of this page?"
 
 msgid "sureDelete"
-msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+msgstr "Delete this draft?"
 
 msgid "replaceExtend"
-msgstr "Ersetzt/Erweitert"
+msgstr "Replaced/Extended"
 
 msgid "lastChange"
-msgstr "Letzte Änderung"
+msgstr "Last edited on"
 
 msgid "changedNow"
-msgstr "Gerade bearbeitet"
+msgstr "Being edited by"
 
 msgid "tillUnknown"
-msgstr "Auf unbestimmte Zeit"
+msgstr "For indefinite period"
 
 msgid "deleteDraft"
-msgstr "Entwurf löschen."
+msgstr "Delete draft"
 
 msgid "deleteDraftAll"
-msgstr "Alle Entwürfe löschen."
+msgstr "Delete all drafts"
 
 msgid "unpublished"
-msgstr "Unveröffentlicht"
+msgstr "Unpublished"
 

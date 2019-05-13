@@ -3,16 +3,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "permissioncheck"
-msgstr "Verzeichnis-Check"
+msgstr "Directory check"
 
 msgid "permissioncheckDesc"
-msgstr "Mit diesem Tool können Sie die Konsistenz Ihrer Verzeichnisse überprüfen"
+msgstr "With the directory check you can review the consistency of your directories."
 
 msgid "permissioncheckURL"
-msgstr "https://jtl-url.de/5j48f"
+msgstr "https://jtl-url.de/hzn92"
 
 msgid "dirCount"
-msgstr "Anzahl Verzeichnisse:"
+msgstr "Number of directories:"
 
 msgid "dirCountNotWriteable"
-msgstr "Anzahl nicht beschreibbarer Verzeichnisse:"
+msgstr "Number of unwritable directories:"

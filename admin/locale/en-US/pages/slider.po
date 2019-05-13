@@ -3,52 +3,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "slider"
-msgstr "Slider"
+msgstr "Sliders"
 
 msgid "sliderURL"
-msgstr "https://jtl-url.de/uywto"
+msgstr "https://jtl-url.de/uy8kn"
 
 msgid "sliderDesc"
-msgstr "Über die Sliderverwaltung pflegen Sie für beliebige Seiten in Ihrem Onlineshop Slider ein."
+msgstr "Here you can manage sliders for any page of your online shop."
 
 msgid "errorSliderSave"
-msgstr "Slider konnte nicht gespeichert werden."
+msgstr "Could not save slider to the database. Please contact the Support team."
 
 msgid "successSliderSave"
-msgstr "Änderungen erfolgreich gespeichert."
+msgstr "Changes saved successfully."
 
 msgid "errorSliderNotFound"
-msgstr "Slider wurde nicht gefunden."
+msgstr "Could not find slider."
 
 msgid "errorSliderRemove"
-msgstr "Slider konnte nicht entfernt werden."
+msgstr "Could not remove slider."
 
 msgid "sliderAdd"
-msgstr "Slider hinzufügen"
+msgstr "Create slider"
 
 msgid "slides"
 msgstr "Slides"
 
 msgid "pauseOnHover"
-msgstr "Pause bei Hover"
+msgstr "Pause when hovering"
 
 msgid "kenBurnsEffect"
-msgstr "Ken-Burns-Effekt"
+msgstr "Ken Burns effect"
 
 msgid "overridesOther"
-msgstr "Wenn diese Option aktiviert ist, überschreibt sie andere"
+msgstr "When this option is enabled, it overwrites other"
 
 msgid "willOverride"
-msgstr "Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail Navigation, Navigation (Richtung), Effekte."
+msgstr "The following settings are overwritten: random start, pause when hovering, navigation, thumbnail navigation (direction) and effects."
 
 msgid "randomEffects"
-msgstr "zufällige Effekte"
+msgstr "Random effects"
 
 msgid "selectedEffects"
-msgstr "ausgewählte Effekte"
+msgstr "Selected effects"
 
 msgid "availableEffects"
-msgstr "Verfügbare Effekte"
+msgstr "Available effects"
 
 msgid "animationSliceDownLeft"
 msgstr "sliceDownLeft"
@@ -102,8 +102,7 @@ msgid "themeDark"
 msgstr "dark"
 
 msgid "warningAnimationTimeLower"
-msgstr "Der Wert von \"Animations Geschwindigkeit\" darf den Wert von \"Pause Zeit\" nicht überschreiten!"
+msgstr "The value for \"Animation speed\" must not exceed the value for \"Pause between animations\"."
 
 msgid "pauseTime"
-msgstr "Pause Zeit (in ms)"
-
+msgstr "Pause between animations (ms)"

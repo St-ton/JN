@@ -3,34 +3,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "sitemapExport"
-msgstr "Sitemap Export"
+msgstr "Sitemap export"
 
 msgid "sitemapExportURL"
-msgstr "https://jtl-url.de/z84ny"
+msgstr "https://jtl-url.de/gk107"
 
 msgid "sitemapDownload"
-msgstr "Sitemap Downloads"
+msgstr "Sitemap download"
 
 msgid "sitemapExportDesc"
-msgstr "Hier können Sie die zum Shop gehörende Sitemap im Sitemap Protocol 0.9 herunterladen.<br />Diese können Sie in Suchmaschinen hochladen, die diesen Standard unterstützen. Lesen Sie mehr zu zum Thema sitemap.xml bei <a class=\"externURL\" href=\"http://www.sitemaps.org\" rel=\"external\">sitemaps.org</a>.<br />Durch einen Abgleich mit JTL-Wawi oder durch das manuelle Herunterladen der Sitemap werden die Datei <strong>export/sitemap_index.xml</strong> und weitere Inhaltsdateien Ihres Shops neu generiert, so dass auch externe Dienste darauf zugreifen können."
+msgstr "Here you can download the online shop sitemap according to the standard Sitemap Protocol 0.9. You can upload the sitemap to all search engines supporting this standard. <br/>With a synchronisation with JTL-Wawi or a manual download of the sitemap, the file export/sitemap_index.xml and other content files of your online shop will be newly generated so that external services can access them."
 
 msgid "searchEngines"
-msgstr "Unter anderem unterstützen auch <a class=\"externURL\" href=\"http://www.google.de\" rel=\"external\">Google</a>, <a class=\"externURL\" href=\"http://www.yahoo.de\" rel=\"external\">Yahoo!</a> & <a class=\"externURL\" href=\"http://www.msn.de\" rel=\"external\">Microsoft</a> diesen Standard."
+msgstr ""
 
 msgid "sitemapExportSubmit"
-msgstr "Sitemap jetzt neu erstellen"
+msgstr "Create sitemap again now"
 
 msgid "download"
-msgstr "Download-Link:"
+msgstr "Download link:"
 
 msgid "xml"
 msgstr "sitemap_index.xml"
 
 msgid "sitemapName"
-msgstr "Datei"
+msgstr "File"
 
 msgid "sitemapSize"
-msgstr "Größe"
+msgstr "Size"
 
 msgid "sitemapBot"
 msgstr "Bot"
@@ -39,43 +39,43 @@ msgid "sitemapIP"
 msgstr "IP"
 
 msgid "sitemapUserAgent"
-msgstr "User Agent"
+msgstr "User agent"
 
 msgid "sitemapDate"
-msgstr "Erstellt"
+msgstr "Created on"
 
 msgid "sitemapSelectAll"
-msgstr "Alle auswählen"
+msgstr "Select all"
 
 msgid "sitemapReport"
-msgstr "Sitemap Reports"
+msgstr "Sitemap reports"
 
 msgid "sitemapProcessTime"
-msgstr "Verarbeitungszeit"
+msgstr "Processing time"
 
 msgid "sitemapTotalURL"
-msgstr "Gesamtanzahl URLs"
+msgstr "Total number of URLs"
 
 msgid "sitemapCountURL"
-msgstr "Anzahl URLs"
+msgstr "Number of URLs"
 
 msgid "errorSitemapCreatePermission"
-msgstr " kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine Sitemap erstellt werden."
+msgstr " cannot be written. Please note that there must be sufficient write access for this file to create a sitemap. Please review the write access."
 
 msgid "successSave"
-msgstr " wurde erfolgreich aktualisiert."
+msgstr " updated successfully."
 
 msgid "successSitemapDLDelete"
-msgstr "Ihre markierten Sitemap Downloads wurden erfolgreich gelöscht."
+msgstr "Selected sitemap downloads deleted successfully."
 
 msgid "successSitemapReportDelete"
-msgstr "Ihre markierten Sitemap Reports wurden erfolgreich gelöscht."
+msgstr "Selected sitemap reports deleted successfully."
 
 msgid "successSitemapDLDeleteByYear"
-msgstr "Ihre markierten Sitemap Downloads für %s wurden erfolgreich gelöscht."
+msgstr "Selected sitemap downloads for %s deleted successfully."
 
 msgid "successSitemapReportDeleteByYear"
-msgstr "Ihre Sitemap Reports für %s wurden erfolgreich gelöscht."
+msgstr "Sitemap reports for %s deleted successfully."
 
 msgid "sureDeleteEntries"
-msgstr "Wollen Sie wirklich alle Einträge für das ausgewählte Jahr löschen?"
+msgstr "Delete all entries of the selected year?"

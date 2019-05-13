@@ -3,238 +3,238 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "link"
-msgstr "Seite"
+msgstr "Page"
 
 msgid "links"
-msgstr "Content Management System (Eigene Seiten)"
+msgstr "Link groups and custom pages"
 
 msgid "linksDesc"
-msgstr "Erstellen Sie eigene Shop-Seiten mit xHTML-Inhalt, Links zu URLs oder Spezialseiten. Eine Seite ist immer einer Linkgruppe zugeordnet. Linkgruppen können in eigenen Boxen (Boxen-Typ Linkgruppe) angezeigt werden. Die Seiten in der Linkgruppe <em>Kopf</em> werden standardmäßig im Header des Templates als Reiter gelistet. Die Linkgruppe <em>Informationen</em> lässt sich als seitliche Box vom Typ Linkgruppe in der Boxenverwaltung hinzufügen. Die Linkgruppe <em>Fuss</em> wird im Fuß-Bereich des Templates dargestellt."
+msgstr "Here you can adjust the settings for link groups, which you can display via the box administration in JTL-Shop. In every link group, you can create custom pages with contents, links to other URLs or special pages."
 
 msgid "linksUrl"
-msgstr "https://jtl-url.de/rcl9g"
+msgstr "https://jtl-url.de/w8rpi"
 
 msgid "linkGroupMove"
-msgstr "In Linkgruppe verschieben"
+msgstr "Move to link group"
 
 msgid "linkMove"
-msgstr "Unter Link einordnen"
+msgstr "Sort under link"
 
 msgid "linkGroupCopy"
-msgstr "In Linkgruppe kopieren"
+msgstr "Copy to link group"
 
 msgid "linkGroupRemove"
-msgstr "Aus Linkgruppe entfernen"
+msgstr "Remove from link group"
 
 msgid "newLinkGroup"
-msgstr "Neue Linkgruppe erstellen"
+msgstr "Create new link group"
 
 msgid "editLinkGroup"
-msgstr "Linkgruppe bearbeiten"
+msgstr "Edit link group"
 
 msgid "saveLinkGroup"
-msgstr "Linkgruppe speichern"
+msgstr "Save link group"
 
 msgid "deleteLinkGroup"
-msgstr "Linkgruppe löschen"
+msgstr "Delete link group"
 
 msgid "linkGroupTemplatename"
-msgstr "Templatename"
+msgstr "Template name"
 
 msgid "addLink"
-msgstr "Seite hinzufügen"
+msgstr "Add page"
 
 msgid "newLinks"
-msgstr "Seite erstellen/ändern"
+msgstr "Creating and editing pages"
 
 msgid "newLinksSave"
-msgstr "Seite speichern"
+msgstr "Save page"
 
 msgid "linkType"
-msgstr "Seitentyp"
+msgstr "Page type"
 
 msgid "linkWithOwnContent"
-msgstr "Seite mit eigenem xHTML-Inhalt"
+msgstr "Page with user-generated content"
 
 msgid "linkToExternalURL"
-msgstr "Link zu einer externen Adresse"
+msgstr "Link to external address"
 
 msgid "linkToSpecalPage"
-msgstr "Spezialseite"
+msgstr "Special page"
 
 msgid "url"
-msgstr "Ziel-URL"
+msgstr "Target URL"
 
 msgid "urlDesc"
-msgstr "Nur auszufüllen, wenn der Seitentyp <em>Link zu einer externen Adresse</em> ist."
+msgstr "Only fill out this field if the page type is a <em>link to an external address</em>."
 
 msgid "titleDesc"
-msgstr "Nur auszufüllen, wenn der Seitentyp <em>Seite mit eigenem xHtml-Inhalt</em> ist."
+msgstr "Enter the name of the page. You only have to fill it in if the page is a <em>page with user-generated content</em>."
 
 msgid "restrictedToCustomerGroups"
-msgstr "Sichtbar für"
+msgstr "Visible for"
 
 msgid "linkTitle"
-msgstr "Überschrift"
+msgstr "Headline"
 
 msgid "linkSeo"
-msgstr "Suchmaschinenname"
+msgstr "Name for search engines"
 
 msgid "choose"
-msgstr "Bitte wählen"
+msgstr "Please select"
 
 msgid "shipping"
-msgstr "Informationen zum Versand"
+msgstr "Shipping information"
 
 msgid "forgotPassword"
-msgstr "Passwort vergessen"
+msgstr "Forgot password"
 
 msgid "metaTitle"
-msgstr "Meta Title"
+msgstr "Meta title"
 
 msgid "metaKeywords"
-msgstr "Meta Keywords"
+msgstr "Meta keywords"
 
 msgid "metaDescription"
-msgstr "Meta Description"
+msgstr "Meta description"
 
 msgid "metaTitleDesc"
-msgstr "«title»-Tag der Seite. Für Suchmaschinen sehr wichtiger Ranking-Faktor. Empfehlung: Suchwort-optimierter prägnanter Seitentitel, 1-6 Wörter, maximal 69 Zeichen. "
+msgstr "Search engines use the meta title as a page's headline. It should be as precise as possible and should not be longer than 69 characters. "
 
 msgid "metaKeywordsDesc"
-msgstr "Suchbegriffe, die auf dieser Seite vorkommen. Empfehlung: 1-3 Suchbegriffe, maximal 55 Zeichen. Meta-Keywords haben keinen Einfluß auf das Ranking der Seite bei Google (Google ignoriert die Meta-Keywords)! "
+msgstr "As meta keywords, enter important keywords for this page. The most important keywords should be right in the front. If the online shop language is German, umlauts are possible. (Note: the Google search engine does not consider the meta keywords of a page.) "
 
 msgid "metaDescriptionDesc"
-msgstr "Metainformationen für Suchmaschinen (Kurzbeschreibung der Seite). Google zeigt maximal 156 Zeichen der Meta-Description. "
+msgstr "The meta description provides a summary of the page contents and is displayed as a text snippet under the page's URL in search engines. The description should mirror the page content as short and precise as possible (156 characters max). "
 
 msgid "agb"
-msgstr "AGB"
+msgstr "Terms and conditions"
 
 msgid "privacy"
-msgstr "Datenschutz"
+msgstr "Data privacy"
 
 msgid "visibleAfterLogin"
-msgstr "Sichtbar nur nach Anmeldung"
+msgstr "Visible only after login"
 
 msgid "showPrintButton"
-msgstr "Druck-Button anzeigen"
+msgstr "Display Print button"
 
 msgid "noFollow"
-msgstr "\"nofollow\"- bzw. \"noindex\"-Attribut setzen, um Suchmaschinen von der Indizierung der Seite abzuhalten"
+msgstr "Set attribute \"nofollow\" or \"noindex\" to prevent the indexation of the page by search engines"
 
 msgid "tagging"
-msgstr "Tagging Übersicht"
+msgstr "Tagging overview"
 
 msgid "livesearch"
-msgstr "Livesuche"
+msgstr "Live search"
 
 msgid "manufacturer"
-msgstr "Hersteller Übersicht"
+msgstr "Manufacturer overview"
 
 msgid "newsletterArchive"
-msgstr "Newsletterarchiv"
+msgstr "Newsletter archive"
 
 msgid "newsArchive"
-msgstr "Newsarchiv"
+msgstr "News archive"
 
 msgid "gratisGeschenk"
-msgstr "Gratis Geschenk"
+msgstr "Free gift"
 
 msgid "wrb"
-msgstr "WRB"
+msgstr "Withdrawal"
 
 msgid "linkPicAdd"
-msgstr "weiteres Bild"
+msgstr "Add another image"
 
 msgid "linkPics"
-msgstr "Verfügbare Bilder"
+msgstr "Available images"
 
 msgid "cIdentifierText"
-msgstr "Eindeutige Seiten-ID"
+msgstr "Unique page ID"
 
 msgid "bIsFluidText"
-msgstr "Container-Fluid?"
+msgstr "Container layout \"Fluid\" active"
 
 msgid "noData"
-msgstr "keine Links vorhanden"
+msgstr "No links available"
 
 msgid "successLinkFromLinkGroupDelete"
-msgstr "Link erfolgreich aus Linkgruppe entfernt."
+msgstr "Link successfully removed from link group."
 
 msgid "errorLinkFromLinkGroupDelete"
-msgstr "Link konnte nicht aus Linkgruppe entfernt werden."
+msgstr "Could not remove link from link group."
 
 msgid "successLinkDelete"
-msgstr "Link erfolgreich gelöscht!"
+msgstr "Link deleted successfully."
 
 msgid "errorLinkDelete"
-msgstr "Link konnte nicht gelöscht werden."
+msgstr "Could not delete link."
 
 msgid "errorLinkGroupDelete"
-msgstr "Linkgruppe konnte nicht gelöscht werden."
+msgstr "Could not delete link group."
 
 msgid "successLinkGroupDelete"
-msgstr "Linkgruppe erfolgreich gelöscht!"
+msgstr "Link group deleted successfully."
 
 msgid "successLinkCreate"
-msgstr "Link wurde erfolgreich hinzugefügt."
+msgstr "Link added successfully."
 
 msgid "successLinkEdit"
-msgstr "Der Link <strong>%s</strong> wurde erfolgreich geändert."
+msgstr "Link <strong>%s</strong> edited successfully."
 
 msgid "errorTemplateNameDuplicate"
-msgstr "Fehler: Bitte wählen Sie einen eindeutigen Template-Namen."
+msgstr "Please select a unique template name."
 
 msgid "successLinkGroupCreate"
-msgstr "Linkgruppe wurde erfolgreich hinzugefügt."
+msgstr "Link group created successfully."
 
 msgid "successLinkGroupEdit"
-msgstr "Die Linkgruppe <strong>%s</strong> wurde erfolgreich geändert."
+msgstr "Link group <strong>%s</strong> edited successfully."
 
 msgid "errorLinkMoveDuplicate"
-msgstr "Fehler: Der Link konnte nicht verschoben werden, da er bereits in der Zielgruppe existiert."
+msgstr "Could not move link. It is already part of the target link group."
 
 msgid "errorLinkKeyNotFound"
-msgstr "Fehler: Es konnte kein Link mit Ihrem Key gefunden werden."
+msgstr "Could not find a link with this key."
 
 msgid "errorLinkGroupKeyNotFound"
-msgstr "Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden."
+msgstr "Could not find a link group with this key."
 
 msgid "successLinkMove"
-msgstr "Sie haben den Link %s erfolgreich verschoben."
+msgstr "Link %s moved successfully."
 
 msgid "errorLinkMove"
-msgstr "Fehler: Link konnte nicht verschoben werden."
+msgstr "Could not move link."
 
 msgid "errorLinkCopyDuplicate"
-msgstr "Fehler: Der Link konnte nicht kopiert werden, da er bereits in der Zielgruppe existiert."
+msgstr "Could not remove link. It is already part of the target link group."
 
 msgid "successLinkCopy"
-msgstr "Sie haben den Link %s erfolgreich kopiert."
+msgstr "Link %s copied successfully."
 
 msgid "dangerDeleteAllLinksInLinkGroup"
-msgstr "Alle Links innerhalb dieser Linkgruppe werden ebenfalls gelöscht."
+msgstr "All links in this link group will also be deleted."
 
 msgid "dangerDeleteLinksAlso"
-msgstr "Die folgenden Links werden in anderen Linkgruppen referenziert und werden ebenfalls gelöscht"
+msgstr "The following links are referenced in other link groups and will also be deleted from those."
 
 msgid "sureDeleteLinkGroup"
-msgstr "Wollen Sie die Linkgruppe \"<strong>%s</strong>\" wirklich löschen?"
+msgstr "Delete link group \"<strong>%s</strong>\"?"
 
 msgid "continueEdit"
-msgstr "und weiter bearbeiten"
+msgstr "and continue editing"
 
 msgid "createWithSearchEngineName"
-msgstr "(anlegen unter \"Suchmaschinenname\")"
+msgstr "(create under \"Name for search engines\")"
 
 msgid "sureDeleteLink"
-msgstr "Möchten Sie den Link wirklich löschen?\nBitte beachten Sie, dass auch untergeordnete Links und alle Kopien gelöscht werden!"
+msgstr "Delete link?\nAll subordinate links and copies will also be deleted!"
 
 msgid "linksWithoutLinkGroup"
-msgstr "Links ohne Linkgruppe"
+msgstr "Links without link groups"
 
 msgid "dangerLinkWillGetDeleted"
-msgstr "Achtung: Link ist in %s Linkgruppen vorhanden und wird aus allen gelöscht!"
+msgstr "Caution: The link is part of %s link groups and will be deleted from all of them."
 
 msgid "isDuplicateSpecialLink"
 msgstr "The special page already exists for the selected customer group(s)."

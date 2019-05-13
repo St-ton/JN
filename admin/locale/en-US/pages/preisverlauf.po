@@ -3,13 +3,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "configurePriceFlow"
-msgstr "Preisverlauf-Einstellungen"
+msgstr "Price history"
 
 msgid "configurePriceFlowURL"
-msgstr "https://jtl-url.de/9m031"
+msgstr "https://jtl-url.de/ydv6n"
 
 msgid "configurePriceFlowDesc"
-msgstr "Einstellungen zum Preisverlaufgraphen können Sie hier vornehmen."
+msgstr "Here you can specify whether a separate tab with information on the price history of the item is added to the item detail page."
 
 msgid "errorColorCode"
-msgstr "Bitte den Farbcode in folgender Schreibweise angeben: z.B. #FFFFFF"
+msgstr "Please enter the colour code as a hexadecimal value, e.g. #FFFFFF for white."

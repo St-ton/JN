@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "The OPC update is not installed properly. Please update your migrations."
-msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie ihre Migrationen."
+msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
 
 msgid "Draft"
 msgstr "Entwurf"
@@ -50,7 +50,7 @@ msgid "Current revision"
 msgstr "Aktuelle Version"
 
 msgid "Please wait..."
-msgstr "Bitte warten..."
+msgstr "Bitte warten…"
 
 msgid "Edit Portlet"
 msgstr "Portlet bearbeiten"
@@ -107,13 +107,13 @@ msgid "Iteration"
 msgstr "Wiederholung"
 
 msgid "Change the animation duration (e.g. 2s)"
-msgstr "Dauer der Animation (z.B. 2s)"
+msgstr "Dauer der Animation (z. B. 2s)"
 
 msgid "Delay before the animation starts"
 msgstr "Wartezeit, bis die Animation beginnt"
 
 msgid "Distance to start the animation (related to the browser bottom)"
-msgstr "Animation beginnt sobald der Scroll-Abstand erreicht ist (von der Unterkante des Fensters)"
+msgstr "Die Animation beginnt erst, wenn zwischen der Oberkante des entsprechenden Elements und der Unterkante des aktuellen Browserfensters der angegebene Scroll-Abstand in Pixeln erreicht ist. Somit lässt sich z. B. verhindern, dass eine Animation schon startet, obwohl das Element noch nicht ganz sichtbar ist."
 
 msgid "Number of times the animation is repeated"
 msgstr "Anzahl Wiederholungen"
@@ -125,7 +125,7 @@ msgid "toggleNavigation"
 msgstr "Navigation ein-/ausschalten"
 
 msgid "somethingHappend"
-msgstr "Something happened"
+msgstr "Es ist ein unbekannter Fehler aufgetreten."
 
 msgid "noteInfoInGuide"
 msgstr "Sie finden neben den nachfolgend aufgelisteten Touren auch ausführliche Informationen in unserem <a href=\"https://guide.jtl-software.de\" target=\"_blank\"><i class=\"fa fa-external-link\"></i> Guide</a>."
@@ -140,10 +140,10 @@ msgid "animation"
 msgstr "Animation"
 
 msgid "noteMovementOnPage"
-msgstr "Sie möchten etwas Bewegung auf Ihren Seiten? Lernen Sie hier, wie dies geht."
+msgstr "Sie hätten gern etwas mehr Bewegung auf Ihren Seiten?"
 
 msgid "noteSaveAsTemplate"
-msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufig verwenden möchten?<br/> Legen Sie sie doch als Vorlage an und greifen Sie so einfach immer wieder darauf zu."
+msgstr "Sie haben eine tolle Ansicht angelegt, die Sie häufiger verwenden möchten?<br/> Legen Sie sie doch als Vorlage an und greifen Sie so einfach immer wieder darauf zu."
 
 msgid "settingsMore"
 msgstr "Einstellungen (Vertiefung)"
@@ -155,19 +155,19 @@ msgid "startTour"
 msgstr "Tour starten"
 
 msgid "draftPublic"
-msgstr "Diesen Entwurf veröffentlichen..."
+msgstr "Diesen Entwurf veröffentlichen"
 
 msgid "draftName"
 msgstr "Interner Name des Entwurfes"
 
 msgid "restoreChanges"
-msgstr "Möchten Sie die lokalen Änderungen wiederherstellen?"
+msgstr "Lokale Änderungen wiederherstellen"
 
 msgid "restoreUnsaved"
 msgstr "Dieser Entwurf hat nicht gespeicherte lokale Änderungen. Möchten Sie diese wiederherstellen?"
 
 msgid "noCurrent"
-msgstr "Nein, Aktuelle Version bearbeiten"
+msgstr "Nein, aktuelle Version bearbeiten"
 
 msgid "yesRestore"
 msgstr "Ja, wiederherstellen"
@@ -185,7 +185,7 @@ msgid "saveTemplate"
 msgstr "Auswahl als Vorlage speichern"
 
 msgid "goUp"
-msgstr "Eine Ebene höher"
+msgstr "Nächsthöhere Ebene auswählen"
 
 msgid "deleteSelect"
 msgstr "Auswahl löschen [Entf]"
@@ -194,4 +194,4 @@ msgid "portletPreviewLabel"
 msgstr "Portlet-Preview-Label"
 
 msgid "templateTitle"
-msgstr "Vorlagentitel"
+msgstr "Name der Vorlage"

@@ -9,10 +9,10 @@ msgid "sitemapExportURL"
 msgstr "https://jtl-url.de/z84ny"
 
 msgid "sitemapDownload"
-msgstr "Sitemap-Downloads"
+msgstr "Sitemap-Download"
 
 msgid "sitemapExportDesc"
-msgstr "Hier können Sie die zum Shop gehörende Sitemap im Sitemap Protocol 0.9 herunterladen. Sie können die Sitemap in allen Suchmaschinen hochladen, die diesen Standard unterstützen. <br/>Durch einen Abgleich mit JTL-Wawi oder durch das manuelle Herunterladen der Sitemap werden die Datei export/sitemap_index.xml und weitere Inhaltsdateien Ihres Shops neu generiert, so dass auch externe Dienste darauf zugreifen können."
+msgstr "Hier können Sie die zum Shop gehörende Sitemap im Sitemap Protocol 0.9 herunterladen. Sie können die Sitemap in allen Suchmaschinen hochladen, die diesen Standard unterstützen.<br/>Durch einen Abgleich mit JTL-Wawi oder durch das manuelle Herunterladen der Sitemap werden die Datei export/sitemap_index.xml und weitere Inhaltsdateien Ihres Shops neu generiert, so dass auch externe Dienste darauf zugreifen können."
 
 msgid "searchEngines"
 msgstr ""
@@ -60,7 +60,7 @@ msgid "sitemapCountURL"
 msgstr "Anzahl URLs"
 
 msgid "errorSitemapCreatePermission"
-msgstr " kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine Sitemap erstellt werden."
+msgstr " kann nicht geschrieben werden. Die Datei besitzt keine ausreichenden Schreibrechte, um eine Sitemap zu erstellen. Bitte überprüfen Sie die Schreibrechte."
 
 msgid "successSave"
 msgstr " wurde erfolgreich aktualisiert."

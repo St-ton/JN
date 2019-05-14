@@ -250,6 +250,11 @@ if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
+//foreach ($boxesLeftFilters as $bFilters) {
+//    if ($bFilters->getBaseType() === 25) {
+//        Shop::dbg($bFilters);
+//    }
+//}
 
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())

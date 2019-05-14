@@ -27,7 +27,7 @@ final class FilterPricerange extends AbstractBox
         $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && (!empty($searchResults->getPriceRangeFilterOptions()) || $filter->isInitialized());
-        $this->setShow($show);
+        $this->setShow(true);
         $this->setTitle($filter->getFrontendName());
         $this->setItems($filter);
     }

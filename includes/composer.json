@@ -13,10 +13,11 @@
         "andyftw/ssllabs-php": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
         "phpgangsta/googleauthenticator": "dev-master",
-        "phpmailer/phpmailer": "~5.2",
+        "phpmailer/phpmailer": "^6.0",
         "jtlshop/qrcodegenerator": "dev-master",
         "erusev/parsedown": "dev-master",
-        "paragonie/random_compat": "~2.0"
+        "paragonie/random_compat": "~2.0",
+        "studio-42/elfinder": "^2.1"
     },
     "require_dev": {
         "phpunit/php-token-stream": "~1.2",

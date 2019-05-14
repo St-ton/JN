@@ -17,12 +17,12 @@ if (typeof CKEDITOR !== 'undefined') {ldelim}
         config.entities_latin = false;
         config.entities_greek = false;
         config.ignoreEmptyParagraph = false;
-        config.filebrowserBrowseUrl = '{$PFAD_KCFINDER}browse.php?type=Sonstiges&token={$smarty.session.jtl_token}';
-        config.filebrowserImageBrowseUrl = '{$PFAD_KCFINDER}browse.php?type=Bilder&token={$smarty.session.jtl_token}';
-        config.filebrowserFlashBrowseUrl = '{$PFAD_KCFINDER}browse.php?type=Videos&token={$smarty.session.jtl_token}';
-        config.filebrowserUploadUrl = '{$PFAD_KCFINDER}upload.php?type=Sonstiges&token={$smarty.session.jtl_token}';
-        config.filebrowserImageUploadUrl = '{$PFAD_KCFINDER}upload.php?type=Bilder&token={$smarty.session.jtl_token}';
-        config.filebrowserFlashUploadUrl = '{$PFAD_KCFINDER}upload.php?type=Videos&token={$smarty.session.jtl_token}';
+        config.filebrowserBrowseUrl      = 'elfinder.php?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
+        config.filebrowserImageBrowseUrl = 'elfinder.php?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
+        config.filebrowserFlashBrowseUrl = 'elfinder.php?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
+        config.filebrowserUploadUrl      = 'elfinder.php?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
+        config.filebrowserImageUploadUrl = 'elfinder.php?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
+        config.filebrowserFlashUploadUrl = 'elfinder.php?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
         config.extraPlugins = 'codemirror';
         config.fillEmptyBlocks = false;
         config.autoParagraph = false;

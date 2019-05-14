@@ -182,8 +182,7 @@ switch ($cAction) {
         break;
 }
 
-$smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
-       ->assign('PFAD_MEDIAFILES', PFAD_MEDIAFILES)
+$smarty->assign('PFAD_MEDIAFILES', PFAD_MEDIAFILES)
        ->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
        ->assign('cAction', $cAction)

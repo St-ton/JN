@@ -376,9 +376,6 @@ class AdminAccount
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
 
-            $_SESSION['KCFINDER']             = [];
-            $_SESSION['KCFINDER']['disabled'] = false;
-
             if (!is_object($oGroup)) {
                 $oGroup                    = new stdClass();
                 $oGroup->kAdminlogingruppe = ADMINGROUP;

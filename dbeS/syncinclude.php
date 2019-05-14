@@ -124,15 +124,12 @@ function html2rgb($color)
  */
 function checkFile()
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('incoming: ' . $_FILES['data']['name'] .
-            ' size:' . $_FILES['data']['size'], JTLLOG_LEVEL_DEBUG, false, 'syncinclude_xml');
-    }
+    Jtllog::writeLog('incoming: ' . $_FILES['data']['name'] .
+        ' size:' . $_FILES['data']['size'], JTLLOG_LEVEL_DEBUG, false, 'syncinclude_xml');
+
     if ($_FILES['data']['error'] || (isset($_FILES['data']['size']) && $_FILES['data']['size'] == 0)) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('ERROR: incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'] .
-                ' err:' . $_FILES['data']['error'], JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
-        }
+        Jtllog::writeLog('ERROR: incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'] .
+            ' err:' . $_FILES['data']['error'], JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
         $cFehler = 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!';
         switch ($_FILES['data']['error']) {
             case 0:
@@ -191,7 +188,7 @@ function auth()
 function DBinsert($tablename, $object)
 {
     $key = Shop::DB()->insert($tablename, $object);
-    if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+    if (!$key) {
         Jtllog::writeLog('DBinsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
             print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
     }
@@ -218,7 +215,7 @@ function DBDelInsert($tablename, $object_arr, $del)
                 }
             }
             $key = Shop::DB()->insert($tablename, $object);
-            if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            if (!$key) {
                 Jtllog::writeLog('DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
                     print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
             }
@@ -243,11 +240,102 @@ function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
                 Shop::DB()->delete($tablename, [$pk1, $pk2], [$object->$pk1, $object->$pk2]);
             }
             $key = Shop::DB()->insert($tablename, $object);
-            if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+            if (!$key) {
                 Jtllog::writeLog('DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
                     print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
             }
         }
+    }
+}
+
+/**
+ * @param string $tableName
+ * @param array $rows
+ * @param array $pks
+ * @return array
+ */
+function DBInsertOnExistUpdate($tableName, $rows, $pks)
+{
+    $result = array_fill_keys($pks, []);
+    if (!is_array($rows)) {
+        return $result;
+    }
+    if (!is_array($pks)) {
+        $pks = [(string)$pks];
+    }
+
+    foreach ($rows as $row) {
+        foreach ($pks as $pk) {
+            if (!isset($row->$pk)) {
+                Jtllog::writeLog('DBInsertOnExistUpdate fehlgeschlagen! PK nicht vorhanden! Tabelle: ' . $tableName
+                    . ', Objekt: ' . print_r($row, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+
+                continue 2;
+            }
+            $result[$pk][] = $row->$pk;
+        }
+
+        $insData = [];
+        $updData = [];
+        $params  = [];
+        foreach ($row as $name => $value) {
+            if ($value === '_DBNULL_') {
+                $value = null;
+            } elseif ($value === null) {
+                $value = '';
+            }
+
+            if (strtolower($value) === 'now()') {
+                $insData[$name] = $value;
+                if (!in_array($name, $pks)) {
+                    $updData[] = $name . ' = ' . $value;
+                }
+            } else {
+                $insData[$name] = ':' . $name;
+                $params[$name]  = $value;
+                if (!in_array($name, $pks)) {
+                    $updData[] = $name . ' = :' . $name;
+                }
+            }
+        }
+        $stmt = 'INSERT' . (count($updData) > 0 ? ' ' : ' IGNORE ') . 'INTO ' . $tableName
+                    . '(' . implode(', ', array_keys($insData)) . ')
+                    VALUES (' . implode(', ', $insData) . ')' . (count($updData) > 0 ? ' ON DUPLICATE KEY
+                    UPDATE ' . implode(', ', $updData) : '');
+
+        if (!Shop::DB()->queryPrepared($stmt, $params, 4)) {
+            Jtllog::writeLog('DBInsertOnExistUpdate fehlgeschlagen! Tabelle: ' . $tableName . ', Objekt: ' .
+                print_r($row, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+        }
+    }
+
+    return $result;
+}
+
+/**
+ * @param string $tableName
+ * @param array  $pks
+ * @param string $excludeKey
+ * @param array  $excludeValues
+ */
+function DBDeleteByKey($tableName, $pks, $excludeKey = '', $excludeValues = [])
+{
+    $whereKeys = [];
+    $params    = [];
+    foreach ($pks as $name => $value) {
+        $whereKeys[]   = $name . ' = :' . $name;
+        $params[$name] = $value;
+    }
+    if (empty($excludeKey) || !is_array($excludeValues)) {
+        $excludeValues = [];
+    }
+    $stmt = 'DELETE FROM ' . $tableName . '
+                WHERE ' . implode(' AND ', $whereKeys) . (count($excludeValues) > 0 ? '
+                    AND ' . $excludeKey . ' NOT IN (' . implode(', ', $excludeValues) . ')' : '');
+
+    if (!Shop::DB()->queryPrepared($stmt, $params, 4)) {
+        Jtllog::writeLog('DBDeleteByKey fehlgeschlagen! Tabelle: ' . $tableName . ', PK: ' .
+            print_r($pks, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
     }
 }
 
@@ -266,7 +354,7 @@ function getObjectArray($elements, $child)
             if (is_array($elements[$child . ' attr'])) {
                 $keys = array_keys($elements[$child . ' attr']);
                 foreach ($keys as $key) {
-                    if (!$elements[$child . ' attr'][$key] && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+                    if (!$elements[$child . ' attr'][$key]) {
                         Jtllog::writeLog($child . '->' . $key . ' fehlt! XML:' .
                             $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
                     }
@@ -287,7 +375,7 @@ function getObjectArray($elements, $child)
                 if (is_array($elements[$child][$i . ' attr'])) {
                     $keys = array_keys($elements[$child][$i . ' attr']);
                     foreach ($keys as $key) {
-                        if (!$elements[$child][$i . ' attr'][$key] && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+                        if (!$elements[$child][$i . ' attr'][$key]) {
                             Jtllog::writeLog($child . '[' . $i . ']->' . $key .
                                 ' fehlt! XML:' . $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
                         }
@@ -384,7 +472,7 @@ function mapAttributes(&$obj, $xml)
                 $obj->$key = $xml[$key];
             }
         }
-    } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
+    } else {
         Jtllog::writeLog('mapAttributes kein Array: XML:' .
             print_r($xml, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude');
     }
@@ -511,6 +599,26 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 
         DBUpdateInsert($tabelle, $obj_arr, $pk1, $pk2);
     }
+}
+
+/**
+ * @param array $xml
+ * @param string $table
+ * @param array $map
+ * @param array $pks
+ * @return array
+ */
+function insertOnExistsUpdateXMLinDB($xml, $table, $map, $pks)
+{
+    if ((isset($xml[$table]) && is_array($xml[$table])) ||
+        (isset($xml[$table . ' attr']) && is_array($xml[$table . ' attr']))
+    ) {
+        $rows = mapArray($xml, $table, $map);
+
+        return DBInsertOnExistUpdate($table, $rows, $pks);
+    }
+
+    return array_fill_keys($pks, []);
 }
 
 /**
@@ -693,9 +801,7 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
  */
 function unhandledError($cFehler)
 {
-    if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog($cFehler, JTLLOG_LEVEL_ERROR);
-    }
+    Jtllog::writeLog($cFehler, JTLLOG_LEVEL_ERROR);
     syncException($cFehler, FREIDEFINIERBARER_FEHLER);
 }
 
@@ -738,9 +844,7 @@ function handleError($output)
         if ($error['type'] == 1) {
             $cError  = translateError($error['message']) . "\n";
             $cError .= 'Datei: ' . $error['file'];
-            if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                Jtllog::writeLog($cError, JTLLOG_LEVEL_ERROR);
-            }
+            Jtllog::writeLog($cError, JTLLOG_LEVEL_ERROR);
 
             return $cError;
         }

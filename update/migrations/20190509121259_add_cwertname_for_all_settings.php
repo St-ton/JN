@@ -19,6 +19,30 @@ class Migration_20190509121259 extends Migration implements IMigration
 
     public function up()
     {
+        $this->execute(
+            "UPDATE `teinstellungenconf` 
+                SET cName = REPLACE(REPLACE(cName, '&auml;', 'ä'), '&Auml;', 'Ä') 
+                WHERE cName LIKE '%&auml;%' 
+                   OR cName LIKE '%&Auml;%'"
+        );
+        $this->execute(
+            "UPDATE `teinstellungenconf` 
+                SET cName = REPLACE(REPLACE(cName, '&uuml;', 'ü'), '&Uuml;', 'Ü') 
+                WHERE cName LIKE '%&uuml;%' 
+                   OR cName LIKE '%&Uuml;%'"
+        );
+        $this->execute(
+            "UPDATE `teinstellungenconf` 
+                SET cName = REPLACE(REPLACE(cName, '&ouml;', 'ö'), '&Ouml;', 'Ö') 
+                WHERE cName LIKE '%&ouml;%' 
+                   OR cName LIKE '%&Ouml;%'"
+        );
+        $this->execute(
+            "UPDATE `teinstellungenconf`
+                SET cName = REPLACE(cName, '&szlig;', 'ß')
+                WHERE cName LIKE '%&szlig;%'"
+        );
+
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_1_vat_label' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 1 AND cName='UST Ausweisung (z.B. wegen Kleinunternehmerregelung)'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_1_maintenance' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 1 AND cName='Wartungsmodus'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_1_general' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 1 AND cName='Allgemein'");
@@ -34,7 +58,7 @@ class Migration_20190509121259 extends Migration implements IMigration
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_4_extended_view' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 4 AND cName='Erweiterte Darstellung'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_4_search' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 4 AND cName='Suche'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_4_livesearch' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 4 AND cName='Livesuche'");
-        $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_product_available' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Mailbenachrichtigung, wenn Produkt wieder verf&uuml;gbar'");
+        $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_product_available' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Mailbenachrichtigung, wenn Produkt wieder verfügbar'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_product_question' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Frage zum Produkt'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_general' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Allgemeines'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_cross_sell_xy' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='X-Selling (Kunden, die X gekauft haben, haben auch Y gekauft)'");
@@ -43,7 +67,7 @@ class Migration_20190509121259 extends Migration implements IMigration
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_media_module' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='MedienModul'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_product_similar' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Ähnliche Artikel'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_product_tagging' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Produkttagging'");
-        $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_part_list' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='St&uuml;ckliste'");
+        $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_part_list' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Stückliste'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_5_tab_description' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 5 AND cName='Beschreibungs-Tab'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_6_vat_id' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 6 AND cName='Umsatzsteuer Identifikationsnummer'");
         $this->execute("UPDATE `teinstellungenconf` SET cWertName = 'configgroup_6_account_register' WHERE (cWertName IS NULL OR cWertName = '') AND kEinstellungenSektion = 6 AND cName='Kundenaccounterstellung / Unregistriert bestellen'");

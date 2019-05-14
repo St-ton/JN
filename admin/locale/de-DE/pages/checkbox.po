@@ -88,3 +88,25 @@ msgstr "Hier legen Sie fest, an welcher Stelle die Checkbox stehen soll, falls e
 
 msgid "hintCheckboxCustomerGroup"
 msgstr "Hier legen Sie fest, welche Kundengruppen die Checkbox sehen sollen. Mit gehaltener Strg-Taste können Sie mehrere Kundengruppen auswählen."
+
+msgid "checkboxPositionRegistration"
+msgstr "Registrierung"
+
+msgid "checkboxPositionOrderFinal"
+msgstr "Bestellabschluss"
+
+msgid "checkboxPositionNewsletterRegistration"
+msgstr "Newsletteranmeldung"
+
+msgid "checkboxPositionEditCustomerData"
+msgstr "Editieren von Kundendaten"
+
+msgid "checkboxPositionContactForm"
+msgstr "Kontaktformular"
+
+msgid "checkboxPositionProductQuestion"
+msgstr "Frage zum Produkt"
+
+msgid "checkboxPositionAvailabilityNotification"
+msgstr "Verfügbarkeitsanfrage"
+

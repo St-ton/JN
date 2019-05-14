@@ -18,25 +18,25 @@ msgid "csvFile"
 msgstr "CSV-Datei mit Kundendaten"
 
 msgid "checkHead"
-msgstr "Überprüfe Kopfzeile..."
+msgstr "Kopfzeile wird überprüft…"
 
 msgid "errorFormatUnknown"
-msgstr "- Format nicht erkannt!"
+msgstr "Format nicht erkannt!"
 
 msgid "importPending"
-msgstr "Importiere..."
+msgstr "Wird importiert…"
 
 msgid "errorEmailInvalid"
-msgstr "keine gültige E-Mail-Adresse (%s)! Übergehe diesen Datensatz."
+msgstr "Keine gültige E-Mail-Adresse: (%s)! Datensatz wurde übersprungen."
 
 msgid "errorEmailInvalidBlacklist"
-msgstr "keine gültige E-Mail-Adresse: (%s)! Kunde hat sich auf die Blacklist setzen lassen. Übergehe diesen Datensatz."
+msgstr "Keine gültige E-Mail-Adresse: (%s)! Kunde hat sich auf die Blacklist setzen lassen. Datensatz wurde übersprungen."
 
 msgid "errorSurnameMissing"
-msgstr "Kein Nachname. Übergehe diesen Datensatz."
+msgstr "Kein Nachname. Datensatz wurde übersprungen."
 
 msgid "errorEmailExists"
-msgstr "Newsletter-Empfänger mit dieser E-Mail-Adresse bereits vorhanden: (%s)! Übergehe diesen Datensatz."
+msgstr "Newsletter-Empfänger mit dieser E-Mail-Adresse bereits vorhanden: (%s)! Datensatz wurde übersprungen."
 
 msgid "successImport"
 msgstr "Datensatz OK. Importiere: "

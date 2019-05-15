@@ -14,19 +14,21 @@
                 {block name='layout-footer-sidepanel-left'}
                     <aside id="sidepanel_left" class="d-print-none col-12 col-lg-3 order-lg-0 mb-6">
                         {block name='footer-sidepanel-left-content'}
-                        <div id="sidepanel_filters">
-                        <span>Filter</span>
-                        {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
-                            {lang key='removeFilters'}
-                        {/link}
-                        {listgroup}
-                        {foreach $boxesLeftFilters as $box}
-                            {listgroupitem  class="border-0 p-0"}
-                                {$box->getRenderedContent()}
-                            {/listgroupitem}
-                        {/foreach}
-                        </div>
-                        {/listgroup}
+                        {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}
+                            <div id="sidepanel_filters">
+                                <span>Filter</span>
+                                {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
+                                    {lang key='removeFilters'}
+                                {/link}
+                                {listgroup}
+                                {foreach $boxesLeftFilters as $box}
+                                    {listgroupitem  class="border-0 p-0"}
+                                        {$box->getRenderedContent()}
+                                    {/listgroupitem}
+                                {/foreach}
+                                {/listgroup}
+                            </div>
+                        {/if}
                         {foreach $boxesLeft as $box}
                             {$box->getRenderedContent()}
                         {/foreach}

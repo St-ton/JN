@@ -16,13 +16,13 @@
                 +{/button}
             </div>
 
-            {collapse class="box box-filter-price" id="sidebox{$oBox->getID()}"}
+            {collapse class="box box-filter-price" id="sidebox{$oBox->getID()}" visible=true}
                 {inputgroup}
                     {input id="price-range-from" class="price-range-input"}
                     {input id="price-range-to" class="price-range-input"}
                 {/inputgroup}
                 <div id="price-range-slider"></div>
-                <div id="amount">$0 - $500</div>
+                <div id="amount">$0 - ${$maxProductPriceCategory}</div>
             {/collapse}
             <hr class="mt-0 mb-4">
         {/block}
@@ -32,7 +32,7 @@
                 var currentHref      = window.location.href,
                     priceRange       = (new URL(currentHref)).searchParams.get("pf"),
                     priceRangeMin    = 0,
-                    priceRangeMax    = 500,
+                    priceRangeMax    = {$maxProductPriceCategory},
                     priceRangeMinMax = [priceRangeMin, priceRangeMax],
                     $priceRangeFrom  = $("#price-range-from"),
                     $priceRangeTo    = $("#price-range-to");

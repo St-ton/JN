@@ -6,10 +6,11 @@
  * @since         5.0
  */
 
-namespace JTL;
+namespace JTL\Backend;
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
+use JTL\Shop;
 use stdClass;
 
 /**

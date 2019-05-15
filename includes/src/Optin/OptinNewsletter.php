@@ -21,6 +21,10 @@ use JTL\Shop;
 use JTL\SimpleMail;
 use stdClass;
 
+/**
+ * Class OptinNewsletter
+ * @package JTL\Optin
+ */
 class OptinNewsletter extends OptinBase implements OptinInterface
 {
     /**
@@ -79,7 +83,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
     /**
      * @param OptinRefData $refData
-     * @return OptinNewsletter
+     * @return OptinInterface
      * @throws InvalidInputException
      */
     public function createOptin(OptinRefData $refData): OptinInterface

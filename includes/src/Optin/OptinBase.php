@@ -176,7 +176,7 @@ abstract class OptinBase extends OptinFactory
         $newRow->dCreated     = $this->foundOptinTupel->dCreated;
         $newRow->dActivated   = $this->foundOptinTupel->dActivated;
         $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');
-        foreach (array_keys(get_object_vars($newRow)) as $element) {
+        foreach (\array_keys(\get_object_vars($newRow)) as $element) {
             if (empty($newRow->$element)) {
                 unset($newRow->$element);
             }

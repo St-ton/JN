@@ -10,7 +10,7 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Migration
+ * Class Migration_20190424093517
  */
 class Migration_20190424093517 extends Migration implements IMigration
 {

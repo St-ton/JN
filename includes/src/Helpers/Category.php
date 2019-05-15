@@ -780,4 +780,30 @@ class Category
 
         Shop::Smarty()->assign('cKategorielistenHTML_arr', $categories);
     }
+
+    /**
+     * @param int $categoryID
+     * @return float|null
+     */
+    public static function getMostExpensiveProduct(int $categoryID): ?float
+    {
+        $customerGroup = Frontend::getCustomerGroup()->getID();
+        $cacheID       = 'mostExpensiveProduct' . $categoryID . $customerGroup;
+//      TODO: Cache
+        $maxPrice = Shop::Container()->getDB()->queryPrepared(
+            'SELECT MAX(tpreisdetail.fVKNetto) AS maxPrice, kArtikel
+                FROM tkategorieartikel
+                LEFT JOIN tpreis USING(kArtikel)
+                LEFT JOIN tpreisdetail USING(kPreis)
+                WHERE tkategorieartikel.kKategorie = :categoryID
+                    AND tpreis.kKundengruppe = :customerGroup',
+            [
+                'categoryID' => $categoryID,
+                'customerGroup' => $customerGroup
+            ],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        return $maxPrice ? $maxPrice->maxPrice : null;
+    }
 }

@@ -8,6 +8,7 @@ namespace JTL\Boxes\Items;
 
 use JTL\Filter\Visibility;
 use JTL\Shop;
+use JTL\Template;
 
 /**
  * Class FilterPricerange
@@ -21,13 +22,15 @@ final class FilterPricerange extends AbstractBox
      */
     public function __construct(array $config)
     {
+        $templateSettings = Template::getInstance()->getConfig();
         parent::__construct($config);
         $filter        = Shop::getProductFilter()->getPriceRangeFilter();
         $searchResults = Shop::getProductFilter()->getSearchResults();
-        $show          = $filter->getVisibility() !== Visibility::SHOW_NEVER
+        $show          = ($templateSettings['filter_settings']['always_show_price_range'] ?? 'N' === 'Y')
+            || ($filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
-            && (!empty($searchResults->getPriceRangeFilterOptions()) || $filter->isInitialized());
-        $this->setShow(true);
+            && (!empty($searchResults->getPriceRangeFilterOptions()) || $filter->isInitialized()));
+        $this->setShow($show);
         $this->setTitle($filter->getFrontendName());
         $this->setItems($filter);
     }

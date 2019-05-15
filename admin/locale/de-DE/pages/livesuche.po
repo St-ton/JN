@@ -9,7 +9,7 @@ msgid "livesucheURL"
 msgstr "https://jtl-url.de/uxd87"
 
 msgid "livesucheDesc"
-msgstr "Hier finden Sie die zuletzt getätigten Suchanfragen über die Suchfunktion von JTL-Shop, sowie Suchanfragen, die besonders häufig ausgeführt wurden und als sprechende URL zur Verfügung gestellt werden, wenn diese aktiv geschaltet werden. Weiterhin können Sie hier Suchanfragen mit anderen Suchanfragen verknüpfen, z. B. Mobiltelefon auf Smartphone. Dadurch wird Ihren Kunden bei einer Suche nach Mobiltelefon das Suchergebnis für Smartphone angezeigt."
+msgstr "Hier finden Sie die zuletzt getätigten Suchanfragen über die Suchfunktion von JTL-Shop, sowie Suchanfragen bzw. Suchbegriffe mit anderen Suchanfragen/Suchbegriffen verknüpfen, z. B. Mobiltelefon mit Smartphone. Dadurch wird Ihren Kunden bei einer Suche nach Mobiltelefon das Suchergebnis für Smartphone angezeigt."
 
 msgid "search"
 msgstr "Suche"
@@ -33,10 +33,7 @@ msgid "searchrequest"
 msgstr "Suchanfragen"
 
 msgid "searchmiss"
-msgstr "Erfolglose Suchanfragen (Suchanfragen mit 0 Treffern)"
-
-msgid "livesuchenSearch"
-msgstr "Suche"
+msgstr "Suchanfragen mit 0 Treffern"
 
 msgid "livesucheSearchItem"
 msgstr "Suchbegriff"
@@ -57,7 +54,7 @@ msgid "livesucheSelectAll"
 msgstr "Alle auswählen"
 
 msgid "errorSearchTermMissing"
-msgstr "Fehler: Bitte geben Sie einen Suchbegriff ein."
+msgstr "Bitte geben Sie einen Suchbegriff ein."
 
 msgid "successSearchMap"
 msgstr "Die Suchanfrage %s wurde erfolgreich mit %s verknüpft."
@@ -72,22 +69,22 @@ msgid "successSearchMapMultiple"
 msgstr "Ihre markierten Suchanfragen wurden erfolgreich mit %s verknüpft."
 
 msgid "errorSearchMapToNotExist"
-msgstr "Fehler: Sie haben versucht, mit einer nicht existierenden Suchanfrage zu verknüpfen."
+msgstr "Die zweite Suchanfrage, mit der die erste Suchanfrage verknüpft werden soll, existiert nicht."
 
 msgid "errorSearchMapNotExist"
-msgstr "Fehler: Sie haben versucht, eine nicht existierende Suchanfrage zu verknüpfen."
+msgstr "Die erste Suchanfrage, mit der die zweite Suchanfrage verknüpft werden soll, existiert nicht."
 
 msgid "errorAtLeastOneSearch"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Suchanfrage."
+msgstr "Bitte markieren Sie mindestens eine Suchanfrage."
 
 msgid "errorMapNameMissing"
-msgstr "Fehler: Bitte geben Sie einen Namen für die Verknüpfung an."
+msgstr "Bitte geben Sie einen Namen für die Verknüpfung an."
 
 msgid "successSearchDelete"
 msgstr "Die Suchanfrage %s wurde erfolgreich gelöscht."
 
 msgid "successSearchBlacklist"
-msgstr "Die Suchanfrage %s wurde der Blacklist hinzugefügt."
+msgstr "Die Suchanfrage %s wurde der Blacklist erfolgreich hinzugefügt."
 
 msgid "errorSearchMapLoop"
 msgstr "Die Verknüpfung von %s mit %s würde eine Schleife verursachen."

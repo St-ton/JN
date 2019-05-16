@@ -7,7 +7,8 @@
 // Charset
 ifndef('JTL_CHARSET', 'iso-8859-1');
 ini_set('default_charset', JTL_CHARSET);
-date_default_timezone_set('Europe/Berlin');
+ifndef('SHOP_TIMEZONE', 'Europe/Berlin');
+date_default_timezone_set(SHOP_TIMEZONE);
 // Log-Levels
 ifndef('SYNC_LOG_LEVEL', E_ERROR | E_PARSE);
 ifndef('ADMIN_LOG_LEVEL', E_ERROR | E_PARSE);

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 error_reporting(ADMIN_LOG_LEVEL);
-date_default_timezone_set('Europe/Berlin');
+date_default_timezone_set(SHOP_TIMEZONE);
 // Captcha file
 define('CAPTCHA_LOCKFILE', PFAD_ROOT . PFAD_ADMIN . 'templates_c/captcha.lock');
 // AdminMenu

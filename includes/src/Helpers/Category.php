@@ -786,10 +786,10 @@ class Category
      * @param int $categoryID
      * @return float
      */
-    public static function getMostExpensiveProductPrice(int $categoryID): float
+    public static function getMaxProductPrice(int $categoryID): float
     {
         $customerGroup = Frontend::getCustomerGroup()->getID();
-        $cacheID       = 'mostExpensiveProductPrice' . $categoryID . $customerGroup;
+        $cacheID       = 'maxProductPrice' . $categoryID . $customerGroup;
 
         if (($maximum = Shop::Container()->getCache()->get($cacheID)) !== false) {
             return $maximum;

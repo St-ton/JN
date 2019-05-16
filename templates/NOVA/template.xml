@@ -137,8 +137,12 @@
                 <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
         </Section>
-        <Section Name="Filtereinstellungen" Key="filter_settings">
-            <Setting Description="Preisspanne immer anzeigen" Key="always_show_price_range" Type="select" Value="Y">
+        <Section Name="Seitenleiste Einstellungen" Key="sidebar_settings">
+            <Setting Description="Seitenleiste nur auf Artikellisten anzeigen (empfohlen)" Key="show_sidebar_product_list" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>

@@ -26,7 +26,7 @@ final class FilterPricerange extends AbstractBox
         parent::__construct($config);
         $filter        = Shop::getProductFilter()->getPriceRangeFilter();
         $searchResults = Shop::getProductFilter()->getSearchResults();
-        $show          = ($templateSettings['filter_settings']['always_show_price_range'] ?? 'N' === 'Y')
+        $show          = ($templateSettings['sidebar_settings']['always_show_price_range'] ?? 'N' === 'Y')
             || ($filter->getVisibility() !== Visibility::SHOW_NEVER
             && $filter->getVisibility() !== Visibility::SHOW_CONTENT
             && (!empty($searchResults->getPriceRangeFilterOptions()) || $filter->isInitialized()));

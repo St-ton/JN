@@ -116,7 +116,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $minify['plugin_css'])
        ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
-       ->assign('maxProductPriceCategory', Category::getMostExpensiveProductPrice($AktuelleKategorie->kKategorie ?? -1))
+       ->assign('maxProductPriceCategory', Category::getMaxProductPrice($AktuelleKategorie->kKategorie ?? -1))
        ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])
        ->assign('cCSS_arr', $css)
@@ -251,11 +251,6 @@ if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
     trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
-//foreach ($boxesLeftFilters as $bFilters) {
-//    if ($bFilters->getBaseType() === 25) {
-//        Shop::dbg($bFilters);
-//    }
-//}
 
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('Brotnavi', $nav->createNavigation())

@@ -19,10 +19,10 @@ class Migration_20190507095430 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 529');
-        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 626');
-        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 426');
-        $this->execute('DELETE FROM `teinstellungenconf` WHERE `kEinstellungenConf` = 432');
+        $this->removeConfig('configgroup_110_tag_filter');
+        $this->removeConfig('configgroup_5_product_tagging');
+        $this->removeConfig('configgroup_8_box_tagcloud');
+        $this->removeConfig('configgroup_10_tagging_overview');
         $this->removeConfig('allgemein_tagfilter_benutzen');
         $this->removeConfig('tagfilter_max_anzeige');
         $this->removeConfig('tag_filter_type');
@@ -63,21 +63,41 @@ class Migration_20190507095430 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute(
-            "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
-            VALUES (529," . \CONF_NAVIGATIONSFILTER . ",'Tagfilter','',NULL,NULL,NULL,170,1,0,'N')"
+        $this->setConfig(
+            'configgroup_110_tag_filter',
+            'Tagfilter',
+            \CONF_NAVIGATIONSFILTER,
+            'Tagfilter',
+            null,
+            170,
+            (object)['cConf' => 'N']
         );
-        $this->execute(
-            "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
-            VALUES (626," . \CONF_ARTIKELDETAILS . ",'Produkttagging','',NULL,NULL,NULL,1000,1,0,'N')"
+        $this->setConfig(
+            'configgroup_5_product_tagging',
+            'Produkttagging',
+            \CONF_ARTIKELDETAILS,
+            'Produkttagging',
+            null,
+            1000,
+            (object)['cConf' => 'N']
         );
-        $this->execute(
-            "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
-            VALUES (426," . \CONF_BOXEN . ",'Tagwolke','',NULL,NULL,NULL,1000,1,0,'N')"
+        $this->setConfig(
+            'configgroup_8_box_tagcloud',
+            'Tagwolke',
+            \CONF_BOXEN,
+            'Tagwolke',
+            null,
+            1000,
+            (object)['cConf' => 'N']
         );
-        $this->execute(
-            "INSERT INTO `teinstellungenconf` (`kEinstellungenConf`,`kEinstellungenSektion`,`cName`,`cBeschreibung`,`cWertName`,`cInputTyp`,`cModulId`,`nSort`,`nStandardAnzeigen`,`nModul`,`cConf`)
-            VALUES (432," . \CONF_SONSTIGES . ",'Tagging Übersicht','',NULL,NULL,NULL,100,1,0,'N')"
+        $this->setConfig(
+            'configgroup_10_tagging_overview',
+            'Tagging Übersicht',
+            \CONF_SONSTIGES,
+            'Tagging Übersicht',
+            null,
+            100,
+            (object)['cConf' => 'N']
         );
         $this->setConfig(
             'allgemein_tagfilter_benutzen',

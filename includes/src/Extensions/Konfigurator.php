@@ -234,4 +234,19 @@ class Konfigurator
 
         return $component . Shop::Lang()->get($bPlural ? 'configComponents' : 'configComponent', 'productDetails');
     }
+
+    /**
+     * @param array $confGroups
+     * @return bool
+     */
+    public static function hasUnavailableGroup(array $confGroups): bool
+    {
+        foreach ($confGroups as $confGroup) {
+            if (!$confGroup->minItemsInStock()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 error_reporting(ADMIN_LOG_LEVEL);
-date_default_timezone_set('Europe/Berlin');
+date_default_timezone_set(SHOP_TIMEZONE);
 
 define('ADMINGROUP', 1);
 define('MAX_LOGIN_ATTEMPTS', 3);

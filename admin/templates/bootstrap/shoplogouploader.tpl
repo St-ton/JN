@@ -47,7 +47,7 @@
                         {rdelim});
                     </script>
                     <div id="logo-upload-success" class="alert alert-info hidden">{__('successLogoUpload')}</div>
-                    <div id="logo-upload-error" class="alert alert-danger hidden">{__('errorLogoUpload')}</div>
+                    <div id="logo-upload-error" class="alert alert-danger hidden">{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}</div>
                 </div>
             </div>
         </div>

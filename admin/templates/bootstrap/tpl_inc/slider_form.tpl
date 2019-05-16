@@ -70,10 +70,7 @@
                                 <option value="1"{if $oSlider->getUseKB() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
                         </div>
-                        <p><i class="fa fa-warning"></i> {__('overridesOther')} <a
-                                    href="#" data-toggle="tooltip"
-                                    title="{__('willOverride')}">{__('settings')}</a>.
-                        </p>
+                        <p><i class="fa fa-warning"></i> {__('overrideDescription')}</p>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">

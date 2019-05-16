@@ -12,7 +12,7 @@ msgid "sliderDesc"
 msgstr "Über die Sliderverwaltung pflegen Sie für beliebige Seiten in Ihrem Onlineshop Slider ein."
 
 msgid "errorSliderSave"
-msgstr "Slider konnte nicht gespeichert werden."
+msgstr "Der Slider konnte nicht in der Datenbank gespeichert werden. Bitte wenden Sie sich an den Support."
 
 msgid "successSliderSave"
 msgstr "Änderungen erfolgreich gespeichert."
@@ -23,8 +23,8 @@ msgstr "Slider wurde nicht gefunden."
 msgid "errorSliderRemove"
 msgstr "Slider konnte nicht entfernt werden."
 
-msgid "sliderAdd"
-msgstr "Slider hinzufügen"
+msgid "sliderCreate"
+msgstr "Slider erstellen"
 
 msgid "slides"
 msgstr "Slides"
@@ -35,11 +35,8 @@ msgstr "Pause bei Hover"
 msgid "kenBurnsEffect"
 msgstr "Ken-Burns-Effekt"
 
-msgid "overridesOther"
-msgstr "Wenn diese Option aktiviert ist, überschreibt sie andere"
-
-msgid "willOverride"
-msgstr "Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail-Navigation, Navigation (Richtung), Effekte."
+msgid "overrideDescription"
+msgstr "Wenn diese Option aktiviert ist, überschreibt sie andere <a href=\"#\" data-toggle=\"tooltip\" title=\"Es werden überschrieben: zufälliger Start, Pause bei Hover, Navigation, Thumbnail-Navigation, Navigation (Richtung) und Effekte.\">Einstellungen</a>."
 
 msgid "randomEffects"
 msgstr "Zufällige Effekte"
@@ -102,7 +99,7 @@ msgid "themeDark"
 msgstr "dark"
 
 msgid "warningAnimationTimeLower"
-msgstr "Der Wert von \"Animationsgeschwindigkeit\" darf den Wert von \"Pausenzeit\" nicht überschreiten."
+msgstr "Der Wert von „Animationsgeschwindigkeit“ darf den Wert von „Pausenzeit“ nicht überschreiten."
 
 msgid "pauseTime"
 msgstr "Pausenzeit (in ms)"

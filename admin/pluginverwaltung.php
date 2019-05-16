@@ -242,7 +242,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $kPlugin = Request::verifyGPCDataInt('kPlugin');
         $res     = $updater->update($kPlugin);
         if ($res === InstallCode::OK) {
-            $notice .= __('successPlguinUpdate');
+            $notice .= __('successPluginUpdate');
             $reload  = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         } else {

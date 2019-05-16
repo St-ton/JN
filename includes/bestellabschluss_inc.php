@@ -16,6 +16,8 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
+use JTL\Customer\CustomerAttribute;
+use JTL\Customer\CustomerAttributes;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Upload;
@@ -101,7 +103,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $db                = Shop::Container()->getDB();
     $cart              = Frontend::getCart();
     if (Frontend::getCustomer()->getID() <= 0) {
-        $customerAttributes      = $customer->cKundenattribut_arr;
+        $customerAttributes      = $customer->getCustomerAttributes();
         $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
         $customer->kSprache      = Shop::getLanguageID();
         $customer->cAbgeholt     = 'N';
@@ -119,16 +121,8 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
 
         $customer->kKunde = $cart->kKunde;
         $customer->cLand  = $customer->pruefeLandISO($customer->cLand);
-        if (is_array($customerAttributes)) {
-            foreach (array_keys($customerAttributes) as $kKundenfeld) {
-                $oKundenattribut              = new stdClass();
-                $oKundenattribut->kKunde      = $cart->kKunde;
-                $oKundenattribut->kKundenfeld = $customerAttributes[$kKundenfeld]->kKundenfeld;
-                $oKundenattribut->cName       = $customerAttributes[$kKundenfeld]->cWawi;
-                $oKundenattribut->cWert       = $customerAttributes[$kKundenfeld]->cWert;
-
-                $db->insert('tkundenattribut', $oKundenattribut);
-            }
+        if (is_a($customerAttributes, CustomerAttributes::class)) {
+            $customerAttributes->save();
         }
 
         if (!empty($customer->cPasswort)) {
@@ -512,8 +506,7 @@ function unhtmlSession(): void
     $customer->cUSTID        = Text::unhtmlentities($sessionCustomer->cUSTID);
     $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
     $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
-
-    $customer->cKundenattribut_arr = $sessionCustomer->cKundenattribut_arr;
+    $customer->getCustomerAttributes()->load($customer->getID());
 
     $_SESSION['Kunde'] = $customer;
 

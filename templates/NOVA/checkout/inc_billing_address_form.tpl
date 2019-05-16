@@ -514,9 +514,17 @@
                     {/col}
                     {col cols=12 md=5}
                         {if $step === 'formular' || $step === 'edit_customer_address' || $step === 'Lieferadresse' || $step === 'rechnungsdaten'}
+                            {if ($step === 'formular' || $step === 'edit_customer_address') && isset($Kunde)}
+                                {assign var="customerAttributes" value=$Kunde->getCustomerAttributes()}
+                            {/if}
                             {foreach $oKundenfeld_arr as $oKundenfeld}
                                 {block name='checkout-inc-billing-address-form-custom-field'}
                                     {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
+                                    {if isset($customerAttributes[$kKundenfeld])}
+                                        {assign var=cKundenattributWert value=$customerAttributes[$kKundenfeld]->getValue()}
+                                    {else}
+                                        {assign var=cKundenattributWert value=''}
+                                    {/if}
                                     {formgroup class="{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}"
                                         label-for="custom_{$kKundenfeld}"
                                         label="{$oKundenfeld->cName}{if $oKundenfeld->nPflicht != 1}<span class='optional'> - {lang key='optional'}</span>{/if}"
@@ -526,22 +534,22 @@
                                                 type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
                                                 name="custom_{$kKundenfeld}"
                                                 id="custom_{$kKundenfeld}"
-                                                value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{else}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert|default:''}{/if}"
+                                                value="{$cKundenattributWert}"
                                                 placeholder=$oKundenfeld->cName
-                                                required=(($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)))
+                                                required=(($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && empty($cKundenattributWert)))
                                                 data-toggle="floatLabel"
                                                 data-value="no-js"
-                                                readonly=($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))
+                                                readonly=($oKundenfeld->nEditierbar == 0 && !empty($cKundenattributWert))
                                             }
                                         {else}
                                             {select
                                                 name="custom_{$kKundenfeld}"
-                                                disabled=($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert))
+                                                disabled=($oKundenfeld->nEditierbar == 0 && !empty($cKundenattributWert))
                                                 required=($oKundenfeld->nPflicht == 1)
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                                 {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
-                                                    <option value="{$oKundenfeldWert->cWert}" {if ($step === 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                                    <option value="{$oKundenfeldWert->cWert}" {if ($oKundenfeldWert->cWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
                                                 {/foreach}
                                             {/select}
                                         {/if}

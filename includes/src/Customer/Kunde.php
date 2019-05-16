@@ -16,6 +16,7 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\MagicCompatibilityTrait;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
@@ -29,6 +30,8 @@ use stdClass;
  */
 class Kunde
 {
+    use MagicCompatibilityTrait;
+
     /**
      * @var int
      */
@@ -210,11 +213,6 @@ class Kunde
     public $dVeraendert;
 
     /**
-     * @var array
-     */
-    public $cKundenattribut_arr;
-
-    /**
      * @var string
      */
     public $cZusatz;
@@ -244,6 +242,11 @@ class Kunde
      */
     public $nLoginversuche = 0;
 
+    /** @var array */
+    public static $mapping = [
+        'cKundenattribut_arr' => 'CustomerAttributes'
+    ];
+
     /**
      * @param int $kKunde
      */
@@ -262,7 +265,7 @@ class Kunde
      */
     public function holRegKundeViaEmail($cEmail): ?Kunde
     {
-        if (\mb_strlen($cEmail) > 0) {
+        if ($cEmail !== '') {
             $oKundeTMP = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail',
@@ -291,10 +294,10 @@ class Kunde
     {
         $conf          = Shop::getSettings([\CONF_KUNDEN]);
         $cBenutzername = $post['email'];
-        if (isset($conf['kunden']['kundenlogin_max_loginversuche'])
+        if ($cBenutzername !== ''
+            && isset($conf['kunden']['kundenlogin_max_loginversuche'])
             && $conf['kunden']['kundenlogin_max_loginversuche'] !== ''
             && $conf['kunden']['kundenlogin_max_loginversuche'] > 1
-            && \mb_strlen($cBenutzername) > 0
         ) {
             $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
@@ -331,7 +334,7 @@ class Kunde
     public function holLoginKunde($cBenutzername, $cPasswort): int
     {
         $passwordService = Shop::Container()->getPasswordService();
-        if (\mb_strlen($cBenutzername) > 0 && \mb_strlen($cPasswort) > 0) {
+        if ($cBenutzername !== '' && $cPasswort !== '') {
             $oUser = $this->checkCredentials($cBenutzername, $cPasswort);
             if ($oUser === false) {
                 return 0;
@@ -347,7 +350,6 @@ class Kunde
                     $this->$k = $v;
                 }
                 $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
-                $this->holeKundenattribute();
                 // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
                 if (isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort)) {
                     $_upd            = new stdClass();
@@ -458,7 +460,7 @@ class Kunde
             $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
-            $this->holeKundenattribute()->entschluesselKundendaten();
+            $this->entschluesselKundendaten();
             $this->kKunde         = (int)$this->kKunde;
             $this->kKundengruppe  = (int)$this->kKundengruppe;
             $this->kSprache       = (int)$this->kSprache;
@@ -586,10 +588,7 @@ class Kunde
         $this->verschluesselKundendaten();
         $obj = GeneralObject::copyMembers($this);
 
-        $customerAttributes = \is_array($obj->cKundenattribut_arr) ? $obj->cKundenattribut_arr : [];
-
         unset(
-            $obj->cKundenattribut_arr,
             $obj->cPasswort,
             $obj->angezeigtesLand,
             $obj->dGeburtstag_formatted,
@@ -606,9 +605,7 @@ class Kunde
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
         $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
-        if (\is_array($customerAttributes) && \count($customerAttributes) > 0) {
-            $obj->cKundenattribut_arr = $customerAttributes;
-        }
+
         if ($obj->dGeburtstag === '_DBNULL_') {
             $obj->dGeburtstag = '';
         }
@@ -626,24 +623,11 @@ class Kunde
      * get customer attributes
      *
      * @return $this
+     * @deprecated since 5.0.0 - use getCustomerAttributes instead
      */
     public function holeKundenattribute(): self
     {
-        $this->cKundenattribut_arr = [];
-        $customerAttributes        = Shop::Container()->getDB()->selectAll(
-            'tkundenattribut',
-            'kKunde',
-            (int)$this->kKunde,
-            '*',
-            'kKundenAttribut'
-        );
-        foreach ($customerAttributes as $attribute) {
-            $attribute->kKundenAttribut = (int)$attribute->kKundenAttribut;
-            $attribute->kKunde          = (int)$attribute->kKunde;
-            $attribute->kKundenfeld     = (int)$attribute->kKundenfeld;
-
-            $this->cKundenattribut_arr[$attribute->kKundenfeld] = $attribute;
-        }
+        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
         return $this;
     }
@@ -659,7 +643,7 @@ class Kunde
         \preg_match('/[a-zA-Z]{2}/', $iso, $hits);
         if (\mb_strlen($hits[0]) !== \mb_strlen($iso)) {
             $cISO = Sprache::getIsoCodeByCountryName($iso);
-            if ($cISO !== 'noISO' && \mb_strlen($cISO) > 0) {
+            if ($cISO !== 'noISO' && $cISO !== '') {
                 $iso = $cISO;
             }
         }
@@ -861,7 +845,7 @@ class Kunde
      */
     public static function mapSalutation($cAnrede, int $kSprache, int $kKunde = 0)
     {
-        if (($kSprache > 0 || $kKunde > 0) && \mb_strlen($cAnrede) > 0) {
+        if (($kSprache > 0 || $kKunde > 0) && $cAnrede !== '') {
             if ($kSprache === 0 && $kKunde > 0) {
                 $oKunde = Shop::Container()->getDB()->queryPrepared(
                     'SELECT kSprache
@@ -897,7 +881,7 @@ class Kunde
                 ['ciso' => $cISOSprache, 'cname' => $cName],
                 ReturnType::SINGLE_OBJECT
             );
-            if (isset($oSprachWert->cWert) && \mb_strlen($oSprachWert->cWert) > 0) {
+            if (isset($oSprachWert->cWert) && $oSprachWert->cWert !== '') {
                 $cAnrede = $oSprachWert->cWert;
             }
         }
@@ -1010,6 +994,21 @@ class Kunde
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $force
+     * @return CustomerAttributes
+     */
+    public function getCustomerAttributes(bool $force = false): CustomerAttributes
+    {
+        static $customerAttributes = null;
+
+        if ($customerAttributes === null || $force) {
+            $customerAttributes = new CustomerAttributes($this->getID());
+        }
+
+        return $customerAttributes;
     }
 
     /**

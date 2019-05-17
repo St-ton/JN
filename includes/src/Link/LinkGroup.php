@@ -6,11 +6,11 @@
 
 namespace JTL\Link;
 
+use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use Illuminate\Support\Collection;
 use function Functional\flatten;
 use function Functional\map;
 
@@ -34,6 +34,11 @@ final class LinkGroup implements LinkGroupInterface
      * @var array
      */
     private $names = [];
+
+    /**
+     * @var string
+     */
+    private $groupName;
 
     /**
      * @var int
@@ -87,13 +92,13 @@ final class LinkGroup implements LinkGroupInterface
     {
         $this->id       = $id;
         $groupLanguages = $this->db->queryPrepared(
-            'SELECT tlinkgruppesprache.*, tlinkgruppe.cTemplatename AS template, tsprache.kSprache 
-                FROM tlinkgruppe
-                JOIN tlinkgruppesprache
-					ON tlinkgruppe.kLinkgruppe = tlinkgruppesprache.kLinkgruppe
-                JOIN tsprache 
-                    ON tsprache.cISO = tlinkgruppesprache.cISOSprache
-                WHERE tlinkgruppe.kLinkgruppe = :lgid',
+            'SELECT l.*, g.cTemplatename AS template, g.cName AS groupName, lang.kSprache 
+                FROM tlinkgruppe AS g 
+                JOIN tlinkgruppesprache AS l
+					ON g.kLinkgruppe = l.kLinkgruppe
+                JOIN tsprache AS lang
+                    ON lang.cISO = l.cISOSprache
+                WHERE g.kLinkgruppe = :lgid',
             ['lgid' => $this->id],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -115,6 +120,7 @@ final class LinkGroup implements LinkGroupInterface
             $this->names[$langID]        = $groupLanguage->cName;
             $this->languageCode[$langID] = $groupLanguage->cISOSprache;
             $this->template              = $groupLanguage->template;
+            $this->groupName             = $groupLanguage->groupName;
         }
         $this->links = (new LinkList($this->db))->createLinks(map(flatten($this->db->queryPrepared(
             'SELECT kLink
@@ -130,6 +136,22 @@ final class LinkGroup implements LinkGroupInterface
         }));
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroupName(): string
+    {
+        return $this->groupName;
+    }
+
+    /**
+     * @param string $groupName
+     */
+    public function setGroupName(string $groupName): void
+    {
+        $this->groupName = $groupName;
     }
 
     /**

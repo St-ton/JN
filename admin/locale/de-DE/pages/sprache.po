@@ -39,7 +39,7 @@ msgid "notImportedYet"
 msgstr "Sprache wurde noch nicht importiert."
 
 msgid "errorImport"
-msgstr "Fehler beim Importieren der Datei."
+msgstr "Dateiimport fehlgeschlagen. Die Datei konnte nicht geöffnet werden. Bitte überprüfen Sie die Datei auf eventuelle Fehler."
 
 msgid "successImport"
 msgstr "Es wurden %s Variablen aktualisiert."

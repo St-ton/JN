@@ -1,4 +1,4 @@
-<h2>Nach Kategorien suchen</h2>
+<h2>{__('labelSearchCategory')}</h2>
 <fieldset>
     <input class="form-control" type="text" id="categories_list_input" value="{if isset($cSearch)}{$cSearch}{/if}" autocomplete="off" />
     <div class="select_wrapper">

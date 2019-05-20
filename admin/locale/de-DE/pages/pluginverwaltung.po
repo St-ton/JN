@@ -21,13 +21,13 @@ msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/5stze"
 
 msgid "pluginListNotInstalled"
-msgstr "Verfügbare (nicht installierte) Plugins"
+msgstr "Verfügbare Plugins (nicht installiert)"
 
 msgid "pluginListNotActivated"
-msgstr "Verfügbare (nicht aktive) Plugins"
+msgstr "Verfügbare Plugins (nicht aktiv)"
 
 msgid "pluginListNotInstalledAndError"
-msgstr "Fehlerhafte (nicht installierte) Plugins"
+msgstr "Fehlerhafte Plugins (nicht installiert)"
 
 msgid "pluginListInstalled"
 msgstr "Installierte Plugins"
@@ -114,52 +114,52 @@ msgid "pluginUpdateExists"
 msgstr "Das Plugin wurde in einer aktuelleren Version hochgeladen und kann aktualisiert werden."
 
 msgid "pluginUpdateExistsError"
-msgstr "Dieses hat jedoch den folgenden Fehler"
+msgstr "Dieses weist jedoch den folgenden Fehler auf"
 
 msgid "successPluginKeySave"
 msgstr "Ihr Plugin-Lizenzschlüssel wurde gespeichert."
 
 msgid "errorPluginKeyInvalid"
-msgstr "Fehler: Ihr Lizenzschlüssel ist ungültig."
+msgstr "Der eingegebene Lizenzschlüssel ist ungültig. Bitte überprüfen Sie den Lizenzschlüssel auf eventuelle Tippfehler und wenden Sie sich ggf. an den Support."
 
 msgid "errorPluginNotFound"
-msgstr "Fehler: Das Plugin wurde nicht in der Datenbank gefunden."
+msgstr "Das Plugin konnte nicht in der Datenbank gefunden werden. Bitte installieren Sie es erneut."
 
 msgid "successPluginActivate"
 msgstr "Die ausgewählten Plugins wurden erfolgreich aktiviert."
 
 msgid "errorAtLeastOnePlugin"
-msgstr "Fehler: Bitte wählen Sie mindestens ein Plugin aus."
+msgstr "Bitte wählen Sie mindestens ein Plugin aus."
 
 msgid "successPluginDeactivate"
 msgstr "Die ausgewählten Plugins wurden erfolgreich deaktiviert."
 
 msgid "errorPluginDeleteSQL"
-msgstr "Fehler: Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden."
+msgstr "Das Plugin konnte aufgrund eines SQL-Fehlers nicht deinstalliert werden. Bitte sehen Sie sich die Log-Datei an."
 
 msgid "successPluginDelete"
 msgstr "Die ausgewählten Plugins wurden erfolgreich deinstalliert."
 
 msgid "errorPluginNotFoundMultiple"
-msgstr "Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden."
+msgstr "Ein oder mehrere Plugins konnten nicht in der Datenbank gefunden werden. Bitte installieren Sie das/die Plugin(s) erneut."
 
 msgid "successPluginRefresh"
-msgstr "Die ausgewählten Plugins wurden erfolgreich neu geladen."
+msgstr "Die ausgewählten Plugins wurden erfolgreich aktualisiert."
 
 msgid "errorPluginRefresh"
-msgstr "Fehler: Ein Plugin konnte nicht neu geladen werden."
+msgstr "Ein Plugin konnte nicht aktualisiert werden. Bitte installieren Sie das Plugin erneut."
 
-msgid "successPlguinUpdate"
+msgid "successPluginUpdate"
 msgstr "Das Plugin wurde erfolgreich aktualisiert."
 
 msgid "errorPluginUpdate"
-msgstr "Fehler: Bei der Aktualisierung ist ein Fehler aufgetreten. Fehlercode: "
+msgstr "Bei der Aktualisierung ist ein Fehler aufgetreten. Fehlercode: "
 
 msgid "successPluginInstall"
 msgstr "Die ausgewählten Plugins wurden erfolgreich installiert."
 
 msgid "errorPluginInstall"
-msgstr "Fehler: Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
+msgstr "Bei der Installation ist ein Fehler aufgetreten. Fehlercode: "
 
 msgid "successVariableRestore"
 msgstr "Sie haben den Installationszustand der ausgewählten Variable erfolgreich wiederhergestellt."
@@ -171,22 +171,22 @@ msgid "successPluginUpload"
 msgstr "Plugin erfolgreich hochgeladen."
 
 msgid "errorPluginUpload"
-msgstr "Plugin konnte nicht hochgeladen werden."
+msgstr "Das Plugin konnte nicht hochgeladen werden. Bitte wenden Sie sich an den Support."
 
 msgid "sureResetLangVar"
-msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> *Vorsicht* Alle geänderten Übersetzungen der Variable gehen dabei verloren."
+msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> Dabei gehen alle geänderten Übersetzungen der Variable verloren."
 
 msgid "dangerPluginNotCompatibleShop5"
-msgstr "Achtung: Plugin ist nicht vollständig mit JTL-Shop 5 kompatibel. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop 5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Achtung: Plugin ist nicht vollständig mit JTL-Shop 4 kompatibel. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop 4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "licensePlugin"
 msgstr "Plugin-Lizenz"
 
 msgid "storeNotLinkedDesc"
-msgstr "Um auf JTL-Store Inhalte zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto verknüpfen."
+msgstr "Um auf JTL-Store Inhalte zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem Marktplatz verknüpfen."
 
 msgid "storeLink"
 msgstr "Konto verknüpfen"

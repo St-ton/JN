@@ -105,7 +105,7 @@ msgid "newsletterdraftdate"
 msgstr "Versenden ab"
 
 msgid "newsletterdraftformat"
-msgstr "(dd/mm/yyyy hh:ii)"
+msgstr "(TT/MM/JJJJ hh:mm)"
 
 msgid "newsletterdraftcal"
 msgstr "Kalender"
@@ -143,17 +143,11 @@ msgstr " "
 msgid "newslettersubscriberSearch"
 msgstr "Abonnentensuche"
 
-msgid "newslettersubscriberSearchSubmit"
-msgstr "Suchen"
-
 msgid "newsletterSendAuthentication"
 msgstr "Möchten Sie den Newsletter wirklich versenden?"
 
 msgid "newsletterSearchBTN"
 msgstr "Suchen"
-
-msgid "newsletterSearch"
-msgstr "Suche"
 
 msgid "newsletterUnlock"
 msgstr "Freischalten"
@@ -168,7 +162,7 @@ msgid "newsletterdraftStdUse"
 msgstr "Vorlage benutzen"
 
 msgid "newsletterdraftStdVarSection"
-msgstr "Vorlagen-spezifische Variablen"
+msgstr "Vorlagenspezifische Variablen"
 
 msgid "newsletterdraftFillOut"
 msgstr "Bitte ausfüllen"
@@ -189,7 +183,7 @@ msgid "successNewsletterAboDelete"
 msgstr "Die markierten Newsletter-Abonnenten wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletterAbo"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter-Abonnenten."
+msgstr "Bitte markieren Sie mindestens einen Newsletter-Abonnenten."
 
 msgid "successNewsletterAbounlock"
 msgstr "Die markierten Newsletter-Abonnenten wurden erfolgreich freigeschaltet."
@@ -198,19 +192,19 @@ msgid "successNewsletterAboAdd"
 msgstr "Newsletter-Empfänger wurde erfolgreich hinzugefügt."
 
 msgid "errorFillEmail"
-msgstr "Bitte füllen Sie das Feld \"E-Mail\" aus."
+msgstr "Bitte füllen Sie das Feld „E-Mail“ aus."
 
 msgid "successNewsletterQueueDelete"
-msgstr "Die Newsletterqueue %s wurden erfolgreich gelöscht."
+msgstr "Die Newsletterqueue(s) %s wurden erfolgreich gelöscht."
 
 msgid "successNewsletterHistoryDelete"
-msgstr "Die Newsletterhistory %s wurden erfolgreich gelöscht."
+msgstr "Die Newsletterhistory(s) %s wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletter"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Newsletter."
+msgstr "Bitte markieren Sie mindestens einen Newsletter."
 
 msgid "errorAtLeastOneHistory"
-msgstr "Fehler: Bitte markieren Sie mindestens eine History."
+msgstr "Bitte markieren Sie mindestens eine Historie."
 
 msgid "successNewsletterTemplateEdit"
 msgstr "Die Newsletter-Vorlage %s wurde erfolgreich bearbeitet."

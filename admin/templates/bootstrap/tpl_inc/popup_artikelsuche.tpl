@@ -1,4 +1,4 @@
-<h1>Nach Artikel suchen</h1>
+<h1>{__('labelSearchProduct')}</h1>
 <fieldset>
     <input class="form-control" type="text" id="article_list_input" value="{if isset($cSearch)}{$cSearch}{/if}" autocomplete="off" />
     <div class="select_wrapper">

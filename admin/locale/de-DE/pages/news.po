@@ -33,7 +33,7 @@ msgid "newsArchiveLast"
 msgstr "Archivierte Beiträge"
 
 msgid "newsPicAdd"
-msgstr "Weiteres Bild"
+msgstr "Weiteres Bild hinzufügen"
 
 msgid "newsPics"
 msgstr "Verfügbare Bilder"
@@ -53,10 +53,10 @@ msgstr "SEO"
 msgid "newsPraefix"
 msgstr "Monatsübersicht-Präfix"
 
-msgid "newsCatAdd"
+msgid "newsCatCreate"
 msgstr "Neue Kategorie erstellen"
 
-msgid "newsCatNew"
+msgid "newsCatEdit"
 msgstr "Kategorie bearbeiten"
 
 msgid "newsCatSort"
@@ -108,7 +108,7 @@ msgid "newsDeleteComment"
 msgstr "Kommentar löschen"
 
 msgid "errorNewsCatFirst"
-msgstr "Fehler: Bitte legen Sie zuerst eine News-Kategorie an."
+msgstr "Bitte legen Sie zuerst eine News-Kategorie an."
 
 msgid "successNewsCommmentEdit"
 msgstr "Der News-Kommentar wurde erfolgreich bearbeitet."
@@ -117,28 +117,28 @@ msgid "successNewsDelete"
 msgstr "Die markierten News wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNews"
-msgstr "Fehler: Sie müssen mindestens eine News ausgewählt haben."
+msgstr "Bitte wählen Sie mindestens einen News-Beitrag."
 
 msgid "successNewsCatDelete"
 msgstr "Die markierten News-Kategorien wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsCat"
-msgstr "Fehler: Bitte markieren Sie mindestens eine News-Kategorie."
+msgstr "Bitte markieren Sie mindestens eine News-Kategorie."
 
 msgid "successNewsImageDelete"
 msgstr "Das ausgewählte News-Bild wurde erfolgreich gelöscht."
 
 msgid "errorNewsImageDelete"
-msgstr "Fehler: Das ausgewählte News-Bild konnte nicht gelöscht werden."
+msgstr "Das ausgewählte News-Bild konnte nicht gelöscht werden."
 
 msgid "errorNewsCatNotFound"
-msgstr "Fehler: Die News-Kategorie mit der ID %d konnte nicht gefunden werden."
+msgstr "Die News-Kategorie mit der ID %d konnte nicht gefunden werden."
 
 msgid "successNewsCommentUnlock"
 msgstr "Die markierten News-Kommentare wurden erfolgreich freigeschaltet."
 
 msgid "errorAtLeastOneNewsComment"
-msgstr "Fehler: Bitte markieren Sie mindestens einen News-Kommentar."
+msgstr "Bitte markieren Sie mindestens einen News-Kommentar."
 
 msgid "goOnEdit"
 msgstr " und weiter bearbeiten"

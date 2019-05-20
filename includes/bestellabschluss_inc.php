@@ -121,9 +121,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
 
         $customer->kKunde = $cart->kKunde;
         $customer->cLand  = $customer->pruefeLandISO($customer->cLand);
-        if (is_a($customerAttributes, CustomerAttributes::class)) {
-            $customerAttributes->save();
-        }
+        $customerAttributes->save();
 
         if (!empty($customer->cPasswort)) {
             $customer->cPasswortKlartext = $cPasswortKlartext;

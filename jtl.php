@@ -745,7 +745,7 @@ if ($customerID > 0) {
     }
     $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
     $smarty->assign('Kunde', $_SESSION['Kunde'])
-           ->assign('customerAttribute_arr', $_SESSION['Kunde']->getCustomerAttributes());
+           ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes());
 }
 $alertNote = $alertHelper->alertTypeExists(Alert::TYPE_NOTE);
 if (!$alertNote && $step === 'mein Konto' && Frontend::getCustomer()->isLoggedIn()) {

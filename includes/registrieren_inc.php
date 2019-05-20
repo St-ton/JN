@@ -92,9 +92,7 @@ function kundeSpeichern(array $post)
 
             $_SESSION['Kunde'] = $knd;
             // Update Kundenattribute
-            if (is_a($customerAttributes, CustomerAttributes::class)) {
-                $customerAttributes->save();
-            }
+            $customerAttributes->save();
 
             $_SESSION['Kunde'] = new Kunde($_SESSION['Kunde']->kKunde);
             $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);

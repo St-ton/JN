@@ -796,7 +796,7 @@ function gibStepBestaetigung($get)
     }
     //falls zahlungsart extern und Einstellung, dass Bestellung für Kaufabwicklung notwendig, füllte tzahlungsession
     Shop::Smarty()->assign('Kunde', Frontend::getCustomer())
-        ->assign('customerAttribute_arr', Frontend::getCustomer()->getCustomerAttributes())
+        ->assign('customerAttributes', Frontend::getCustomer()->getCustomerAttributes())
         ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
@@ -2552,7 +2552,7 @@ function getKundenattribute($post): CustomerAttributes
 
 /**
  * @return array
- * @deprecated since 5.0.0 - use @see CustomerAttributes:.getNonEditableAttributes instead
+ * @deprecated since 5.0.0 - use @see CustomerAttributes::getNonEditableAttributes instead
  */
 function getKundenattributeNichtEditierbar(): array
 {
@@ -2563,7 +2563,7 @@ function getKundenattributeNichtEditierbar(): array
 
 /**
  * @return array - non editable customer fields
- * @deprecated since 5.0.0 - use @see CustomerAttributes:.getNonEditableAttributes instead
+ * @deprecated since 5.0.0 - use @see CustomerAttributes::getNonEditableAttributes instead
  */
 function getNonEditableCustomerFields(): array
 {

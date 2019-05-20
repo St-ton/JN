@@ -478,12 +478,12 @@
                     {assign var="customerAttributes" value=$Kunde->getCustomerAttributes()}
                 {/if}
                 {foreach $oKundenfeld_arr as $oKundenfeld}
-                    {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
+                    {assign var="kKundenfeld" value=$oKundenfeld->kKundenfeld}
                     {if isset($customerAttributes[$kKundenfeld])}
-                        {assign var=cKundenattributWert value=$customerAttributes[$kKundenfeld]->getValue()}
+                        {assign var="cKundenattributWert" value=$customerAttributes[$kKundenfeld]->getValue()}
                         {assign var="isKundenattributEditable" value=($oKundenfeld->nEditierbar > 0 || $customerAttributes[$kKundenfeld]->getId() === 0)}
                     {else}
-                        {assign var=cKundenattributWert value=''}
+                        {assign var="cKundenattributWert" value=''}
                         {assign var="isKundenattributEditable" value=true}
                     {/if}
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}">
@@ -533,10 +533,10 @@
 </fieldset>
 {/if}
 {if !isset($fehlendeAngaben)}
-    {assign var=fehlendeAngaben value=array()}
+    {assign var="fehlendeAngaben" value=array()}
 {/if}
 {if !isset($cPost_arr)}
-    {assign var=cPost_arr value=array()}
+    {assign var="cPost_arr" value=array()}
 {/if}
 {hasCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$fehlendeAngaben cPost_arr=$cPost_arr bReturn='bHasCheckbox'}
 {if $bHasCheckbox}

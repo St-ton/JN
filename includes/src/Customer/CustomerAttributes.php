@@ -8,6 +8,10 @@
 
 namespace JTL\Customer;
 
+use ArrayAccess;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use Traversable;
@@ -16,7 +20,7 @@ use Traversable;
  * Class CustomerAttributes
  * @package JTL\Customer
  */
-class CustomerAttributes implements \ArrayAccess, \IteratorAggregate, \Countable
+class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
 {
     /** @var CustomerAttribute[] */
     private $attributes = [];
@@ -117,9 +121,9 @@ class CustomerAttributes implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function sort(): self
     {
-        uasort($this->attributes, static function (CustomerAttribute $lft, CustomerAttribute $rgt): int {
+        \uasort($this->attributes, static function (CustomerAttribute $lft, CustomerAttribute $rgt): int {
             if ($lft->getOrder() === $rgt->getOrder()) {
-                return strcmp($lft->getName(), $rgt->getName());
+                return \strcmp($lft->getName(), $rgt->getName());
             }
 
             return $lft->getOrder() < $rgt->getOrder() ? -1 : 1;
@@ -155,7 +159,7 @@ class CustomerAttributes implements \ArrayAccess, \IteratorAggregate, \Countable
      */
     public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->attributes);
+        return new ArrayIterator($this->attributes);
     }
 
     /**
@@ -190,7 +194,7 @@ class CustomerAttributes implements \ArrayAccess, \IteratorAggregate, \Countable
             return null;
         }
 
-        if (!is_a($this->attributes[$offset], CustomerAttribute::class)) {
+        if (!\is_a($this->attributes[$offset], CustomerAttribute::class)) {
             $this->attributes[$offset] = new CustomerAttribute($this->attributes[$offset]);
         }
 
@@ -217,7 +221,7 @@ class CustomerAttributes implements \ArrayAccess, \IteratorAggregate, \Countable
             $this->attributes[$offset] = new CustomerAttribute($value);
         } else {
             throw new \InvalidArgumentException(
-                self::class . '::' . __METHOD__ . ' - value must be an object, ' . gettype($value) . ' given.'
+                self::class . '::' . __METHOD__ . ' - value must be an object, ' . \gettype($value) . ' given.'
             );
         }
     }

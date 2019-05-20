@@ -46,8 +46,8 @@ setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
+$instance = new Newsletter($db, $conf);
 if (Form::validateToken()) {
-    $instance = new Newsletter($db, $conf);
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
         if (isset($_POST['speichern'])) {
             $step = 'uebersicht';
@@ -121,7 +121,7 @@ if (Form::validateToken()) {
                     $entry = $db->query(
                         'SELECT tnewsletterqueue.kNewsletter, tnewsletter.cBetreff
                             FROM tnewsletterqueue
-                            JOIN tnewsletter 
+                            JOIN tnewsletter
                                 ON tnewsletter.kNewsletter = tnewsletterqueue.kNewsletter
                             WHERE tnewsletterqueue.kNewsletterQueue = ' . (int)$kNewsletterQueue,
                         ReturnType::SINGLE_OBJECT
@@ -163,7 +163,7 @@ if (Form::validateToken()) {
             $step               = 'history_anzeigen';
             $kNewsletterHistory = (int)$_GET['anzeigen'];
             $hist               = $db->queryPrepared(
-                "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe, 
+                "SELECT kNewsletterHistory, cBetreff, cHTMLStatic, cKundengruppe,
                     DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewsletterhistory
                     WHERE kNewsletterHistory = :hid
@@ -589,10 +589,10 @@ if (Form::validateToken()) {
                             && $oNewslettervorlage->kNewslettervorlageStd > 0
                         ) {
                             $db->query(
-                                'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt 
+                                'DELETE tnewslettervorlage, tnewslettervorlagestdvarinhalt
                                     FROM tnewslettervorlage
-                                    LEFT JOIN tnewslettervorlagestdvarinhalt 
-                                        ON tnewslettervorlagestdvarinhalt.kNewslettervorlage = 
+                                    LEFT JOIN tnewslettervorlagestdvarinhalt
+                                        ON tnewslettervorlagestdvarinhalt.kNewslettervorlage =
                                            tnewslettervorlage.kNewsletterVorlage
                                     WHERE tnewslettervorlage.kNewsletterVorlage = ' . (int)$kNewsletterVorlage,
                                 ReturnType::AFFECTED_ROWS
@@ -628,7 +628,7 @@ if ($step === 'uebersicht') {
     $queueCount        = (int)$db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterqueue
-            JOIN tnewsletter 
+            JOIN tnewsletter
                 ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
             WHERE tnewsletter.kSprache = ' . (int)$_SESSION['kSprache'],
         ReturnType::SINGLE_OBJECT
@@ -667,13 +667,13 @@ if ($step === 'uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     $queue             = $db->queryPrepared(
-        "SELECT tnewsletter.cBetreff, tnewsletterqueue.kNewsletterQueue, tnewsletterqueue.kNewsletter, 
+        "SELECT tnewsletter.cBetreff, tnewsletterqueue.kNewsletterQueue, tnewsletterqueue.kNewsletter,
             DATE_FORMAT(tnewsletterqueue.dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterqueue
-            JOIN tnewsletter 
+            JOIN tnewsletter
                 ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
             WHERE tnewsletter.kSprache = :lid
-            ORDER BY tnewsletterqueue.dStart DESC 
+            ORDER BY tnewsletterqueue.dStart DESC
             LIMIT " . $pagiQueue->getLimitSQL(),
         ['lid' => (int)$_SESSION['kSprache']],
         ReturnType::ARRAY_OF_OBJECTS
@@ -681,15 +681,15 @@ if ($step === 'uebersicht') {
     foreach ($queue as $entry) {
         $entry->kNewsletter       = (int)$entry->kNewsletter;
         $jobQueue                 = $db->queryPrepared(
-            "SELECT nLimitN
+            "SELECT tasksExecuted as 'nLimitN'
                 FROM tjobqueue
-                WHERE kKey = :nlid
-                    AND cKey = 'kNewsletter'",
+                WHERE jobType = 'newsletter'
+                    AND foreignKeyID = :nlid",
             ['nlid' => $entry->kNewsletter],
             ReturnType::SINGLE_OBJECT
         );
         $recipient                = $instance->getRecipients($entry->kNewsletter);
-        $entry->nLimitN           = $jobQueue->nLimitN;
+        $entry->nLimitN           = $jobQueue->nLimitN ?? 0;
         $entry->nAnzahlEmpfaenger = $recipient->nAnzahl;
         $entry->cKundengruppe_arr = $recipient->cKundengruppe_arr;
     }
@@ -717,17 +717,17 @@ if ($step === 'uebersicht') {
     }
     $inactiveRecipients = $db->query(
         "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname,
-            tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname, 
-            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName, 
+            tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname,
+            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName,
             DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterempfaenger
-            LEFT JOIN tkunde 
+            LEFT JOIN tkunde
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            LEFT JOIN tkundengruppe 
+            LEFT JOIN tkundengruppe
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE tnewsletterempfaenger.nAktiv = 0
             " . $inactiveSearchSQL->cWHERE . '
-            ORDER BY tnewsletterempfaenger.dEingetragen DESC 
+            ORDER BY tnewsletterempfaenger.dEingetragen DESC
             LIMIT ' . $pagiInactive->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -737,19 +737,19 @@ if ($step === 'uebersicht') {
     }
 
     $history       = $db->queryPrepared(
-        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,  
+        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kSprache = :lid
                 AND nAnzahl > 0
-            ORDER BY dStart DESC 
+            ORDER BY dStart DESC
             LIMIT " . $pagiHistory->getLimitSQL(),
         ['lid' => (int)$_SESSION['kSprache']],
         ReturnType::ARRAY_OF_OBJECTS
     );
     $kundengruppen = $db->query(
-        'SELECT * 
-            FROM tkundengruppe 
+        'SELECT *
+            FROM tkundengruppe
             ORDER BY cName',
         ReturnType::ARRAY_OF_OBJECTS
     );

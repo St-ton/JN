@@ -133,6 +133,7 @@ class Newsletter
                 if ($noGroup === true) {
                     $cSQL .= ' OR tkunde.kKundengruppe IS NULL)';
                 }
+                $cSQL .= ')';
             } elseif ($noGroup === true) {
                 $cSQL .= ' AND tkunde.kKundengruppe IS NULL';
             }
@@ -141,14 +142,17 @@ class Newsletter
         $recipients = $this->db->query(
             'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
-            LEFT JOIN tsprache 
+            LEFT JOIN tsprache
                 ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-            LEFT JOIN tkunde 
+            LEFT JOIN tkunde
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
             WHERE tnewsletterempfaenger.kSprache = ' . (int)$data->kSprache . '
                 AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
             ReturnType::SINGLE_OBJECT
         );
+        if ($this->db->getErrorCode() !== 0) {
+            $recipients = new stdClass();
+        }
 
         $recipients->cKundengruppe_arr = $tmpGroups;
 
@@ -262,7 +266,7 @@ class Newsletter
             $oKundengruppe = $this->db->query(
                 'SELECT tkundengruppe.nNettoPreise
                 FROM tkunde
-                JOIN tkundengruppe 
+                JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
                 WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
                 ReturnType::SINGLE_OBJECT

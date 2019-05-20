@@ -49,13 +49,13 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
         $this->customerID = $customerID;
 
         foreach (Shop::Container()->getDB()->queryPrepared(
-            'SELECT tkundenattribut.kKundenAttribut, tkundenattribut.kKunde, tkundenattribut.kKundenfeld,
-                    tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert,
-                    tkundenfeld.nSort, tkundenfeld.nEditierbar
-                FROM tkundenattribut
-                INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
-                WHERE tkundenattribut.kKunde = :customerID
-                    AND tkundenfeld.kSprache = :langID
+            'SELECT tkundenattribut.kKundenAttribut, tkundenattribut.kKunde, tkundenfeld.kKundenfeld,
+                    tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert, tkundenfeld.nSort,
+                    IF(tkundenattribut.kKundenAttribut IS NULL, 1, tkundenfeld.nEditierbar) nEditierbar
+                FROM tkundenfeld
+                LEFT JOIN tkundenattribut ON tkundenattribut.kKunde = :customerID
+                    AND tkundenattribut.kKundenfeld = tkundenfeld.kKundenfeld
+                WHERE tkundenfeld.kSprache = :langID
                 ORDER BY tkundenfeld.nSort, tkundenfeld.cName',
             [
                 'customerID' => $customerID,
@@ -77,11 +77,13 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
         $nonEditables = self::getNonEditableAttributes();
         $usedIDs      = [];
 
-        /** @var CustomerAttribute $customerAttribute */
-        foreach ($this as $customerAttribute) {
-            if ($customerAttribute->isEditable()) {
-                $usedIDs[] = $customerAttribute->getID();
-                $customerAttribute->save();
+        /** @var CustomerAttribute $attribute */
+        foreach ($this as $attribute) {
+            if ($attribute->isEditable()) {
+                $usedIDs[] = $attribute->getID();
+                $attribute->save();
+            } else {
+                $this->attributes[$attribute->getCustomerID()] = CustomerAttribute::load($attribute->getId());
             }
         }
 

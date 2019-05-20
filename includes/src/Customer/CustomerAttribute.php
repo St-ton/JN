@@ -74,7 +74,8 @@ class CustomerAttribute
         $instance = new self();
         $instance->setRecord(Shop::Container()->getDB()->queryPrepared(
             'SELECT tkundenattribut.kKundenAttribut, tkundenattribut.kKunde, tkundenattribut.kKundenfeld,
-                   tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert, tkundenfeld.nSort
+                   tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert,
+                   tkundenfeld.nSort, tkundenfeld.nEditierbar
                 FROM tkundenattribut
                 INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
                 WHERE tkundenattribut.kKundenAttribut = :id',
@@ -119,9 +120,9 @@ class CustomerAttribute
     /**
      * @param int $id
      */
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
-        $this->id = $id;
+        $this->id = $id ?? 0;
     }
 
     /**
@@ -135,9 +136,9 @@ class CustomerAttribute
     /**
      * @param int $customerID
      */
-    public function setCustomerID(int $customerID): void
+    public function setCustomerID(?int $customerID): void
     {
-        $this->customerID = $customerID;
+        $this->customerID = $customerID ?? 0;
     }
 
     /**
@@ -258,6 +259,7 @@ class CustomerAttribute
             $this->setName('');
             $this->setValue('');
             $this->setOrder(0);
+            $this->setEditable(true);
 
             return $this;
         }

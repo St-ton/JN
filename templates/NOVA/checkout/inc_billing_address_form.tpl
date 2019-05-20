@@ -519,11 +519,13 @@
                             {/if}
                             {foreach $oKundenfeld_arr as $oKundenfeld}
                                 {block name='checkout-inc-billing-address-form-custom-field'}
-                                    {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
+                                    {assign var="kKundenfeld" value=$oKundenfeld->kKundenfeld}
                                     {if isset($customerAttributes[$kKundenfeld])}
-                                        {assign var=cKundenattributWert value=$customerAttributes[$kKundenfeld]->getValue()}
+                                        {assign var="cKundenattributWert" value=$customerAttributes[$kKundenfeld]->getValue()}
+                                        {assign var="isKundenattributEditable" value=($oKundenfeld->nEditierbar > 0 || $customerAttributes[$kKundenfeld]->getId() === 0)}
                                     {else}
-                                        {assign var=cKundenattributWert value=''}
+                                        {assign var="cKundenattributWert" value=''}
+                                        {assign var="isKundenattributEditable" value=true}
                                     {/if}
                                     {formgroup class="{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}"
                                         label-for="custom_{$kKundenfeld}"
@@ -539,12 +541,12 @@
                                                 required=(($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && empty($cKundenattributWert)))
                                                 data-toggle="floatLabel"
                                                 data-value="no-js"
-                                                readonly=($oKundenfeld->nEditierbar == 0 && !empty($cKundenattributWert))
+                                                readonly=(!$isKundenattributEditable)
                                             }
                                         {else}
                                             {select
                                                 name="custom_{$kKundenfeld}"
-                                                disabled=($oKundenfeld->nEditierbar == 0 && !empty($cKundenattributWert))
+                                                disabled=(!$isKundenattributEditable)
                                                 required=($oKundenfeld->nPflicht == 1)
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>

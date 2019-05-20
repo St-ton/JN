@@ -93,6 +93,7 @@ function pruefeUnregistriertBestellen($post): int
         true
     ));
 
+    $Kunde->getCustomerAttributes()->assign($customerAttributes);
     if (isset($post['shipping_address'])) {
         if ((int)$post['shipping_address'] === 0) {
             $post['kLieferadresse'] = 0;
@@ -125,8 +126,6 @@ function pruefeUnregistriertBestellen($post): int
             $post,
             ['oKunde' => $Kunde]
         )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true);
-        //selbstdef. Kundenattr in session setzen
-        $Kunde->getCustomerAttributes()->assign($customerAttributes);
         $Kunde->nRegistriert = 0;
         $_SESSION['Kunde']   = $Kunde;
         if (isset($_SESSION['Warenkorb']->kWarenkorb)
@@ -604,7 +603,7 @@ function gibStepUnregistriertBestellen(): void
         ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false)
-        ->assign('customerAttributes', $Kunde->getCustomerAttributes());
+        ->assign('customerAttributes', $Kunde !== null ? $Kunde->getCustomerAttributes() : getKundenattribute($_POST));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPUNREGISTRIERTBESTELLEN);
 }
@@ -2539,26 +2538,13 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
  */
 function getKundenattribute($post): CustomerAttributes
 {
-    $customerAttributes = new CustomerAttributes();
-    $fieldData          = Shop::Container()->getDB()->selectAll(
-        'tkundenfeld',
-        'kSprache',
-        Shop::getLanguage(),
-        'kKundenfeld, cName, cWawi'
-    );
-    foreach ($fieldData as $field) {
-        $customerAttribute = new CustomerAttribute();
-        $customerAttribute->setCustomerID(Session::getCustomer()->getID());
-        $customerAttribute->setCustomerFieldID((int)$field->kKundenfeld);
-        $customerAttribute->setLabel($field->cName);
-        $customerAttribute->setName($field->cWawi);
-        $customerAttribute->setValue(
-            isset($post['custom_' . $field->kKundenfeld])
-                ? Text::filterXSS($post['custom_' . $field->kKundenfeld])
-                : null
-        );
-
-        $customerAttributes[(int)$field->kKundenfeld] = $customerAttribute;
+    $customerAttributes = new CustomerAttributes(Session::getCustomer()->getID());
+    /** @var CustomerAttribute $customerAttribute */
+    foreach ($customerAttributes as $customerAttribute) {
+        if ($customerAttribute->isEditable()) {
+            $idx = 'custom_' . $customerAttribute->getCustomerFieldID();
+            $customerAttribute->setValue(isset($post[$idx]) ? Text::filterXSS($post[$idx]) : null);
+        }
     }
 
     return $customerAttributes;

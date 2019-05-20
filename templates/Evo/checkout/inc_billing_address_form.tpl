@@ -481,8 +481,10 @@
                     {assign var=kKundenfeld value=$oKundenfeld->kKundenfeld}
                     {if isset($customerAttributes[$kKundenfeld])}
                         {assign var=cKundenattributWert value=$customerAttributes[$kKundenfeld]->getValue()}
+                        {assign var="isKundenattributEditable" value=($oKundenfeld->nEditierbar > 0 || $customerAttributes[$kKundenfeld]->getId() === 0)}
                     {else}
                         {assign var=cKundenattributWert value=''}
+                        {assign var="isKundenattributEditable" value=true}
                     {/if}
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}">
                         <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}
@@ -501,9 +503,9 @@
                             {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && empty($cKundenattributWert))} required{/if}
                             data-toggle="floatLabel"
                             data-value="no-js"
-                            {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattributWert)}readonly{/if}/>
+                            {if !$isKundenattributEditable}readonly{/if}/>
                         {else}
-                            <select name="custom_{$kKundenfeld}" class="form-control" {if $oKundenfeld->nEditierbar == 0 && !empty($cKundenattributWert)}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
+                            <select name="custom_{$kKundenfeld}" class="form-control" {if !$isKundenattributEditable}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                 {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
                                     <option value="{$oKundenfeldWert->cWert}" {if ($oKundenfeldWert->cWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>

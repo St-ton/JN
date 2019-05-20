@@ -126,7 +126,7 @@
 
                 {block name='layout-header-container-inner'}
 
-                    <div class="container px-md-4 clearfix">
+                    <div class="container-fluid px-md-4 clearfix">
                     {block name='layout-header-branding-top-bar'}
                         <div id="top-bar" class="pt-2 text-right d-none d-md-block">
                             {include file='layout/header_top_bar.tpl'}
@@ -136,7 +136,7 @@
                     {block name='layout-header-category-nav'}
 
                         {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-0"}
-                            {col id="logo" md=3 order=2 order-md=1 class="mr-auto pb-lg-4"}
+                            {col id="logo" md="auto" order=2 order-md=1 class="pb-lg-4 col-auto mr-auto mr-xl-3"}
                                 {block name='layout-header-logo'}
                                     <div class="navbar-brand ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                         <span itemprop="name" class="d-none">{$meta_publisher}</span>
@@ -153,7 +153,7 @@
                                     </div>
                                 {/block}
                             {/col}
-                            {col id="shop-nav" order=3 order-md=3 class="col-auto"}
+                            {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto"}
                                 {block name='layout-header-branding-shop-nav'}
                                     <div class="d-flex text-right">
                                         {include file='layout/header_nav_icons.tpl'}
@@ -161,25 +161,31 @@
                                 {/block}
                             {/col}
 
-                            {col md=12 order=1 order-md=5 class="no-flex-grow"}
+                            {col md=12 order=1 order-md=5 order-xl=5 class="no-flex-grow"}
                                 {block name='layout-header-navbar-toggler'}
                                     {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}
                                 {/block}
                             {/col}
 
-                            {col cols=12 order=5}
+                            {col cols=12 col-md=auto order=5 order-xl=2 class="col-xl"}
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
                                     <div id="navbarToggler" class="collapse navbar-collapse mt-2" data-parent="#evo-main-nav-wrapper">
+                                        {button id="scrollMenuLeft" class="d-none"}
+                                            <i class="fas fa-chevron-left"></i>
+                                        {/button}
                                         {navbarnav class="megamenu show"}
                                             {include file='snippets/categories_mega.tpl'}
                                         {/navbarnav}
+                                        {button id="scrollMenuRight" class="d-none"}
+                                            <i class="fas fa-chevron-right"></i>
+                                        {/button}
                                         <span class="TabNav_Indicator d-none d-md-block"></span>
                                     </div>
                                 {/block}
                             {/col}
 
-                            {col order=6 cols=12 md="auto" order-md=2 class="col-auto"}
+                            {col order=6 order-md=2 cols=12 order-lg=3 class="col-md-auto"}
                                 {block name='layout-header-include-header-nav-search'}
                                     {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex mx-auto float-md-right"}
                                         {include file='layout/header_nav_search.tpl'}
@@ -196,18 +202,6 @@
         {/block}
     {/if}
 
-    {*{block name='header-category-nav'}
-        {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
-        {navbar id="evo-main-nav-wrapper" sticky=$isSticky toggleable=true fill=true class="navbar-expand-md accordion"}
-            {if $isFluidTemplate}
-                {include file='layout/header_category_nav.tpl'}
-            {else}
-                {container}
-                    {include file='layout/header_category_nav.tpl'}
-                {/container}
-            {/if}
-        {/navbar}
-    {/block}*}
     {block name='layout-header-fluid-banner'}
         {assign var=isFluidBanner value=$Einstellungen.template.theme.banner_full_width === 'Y' && isset($oImageMap)}
         {if $isFluidBanner}

@@ -107,8 +107,30 @@ body.unboxed-layout {
     .container { max-width: 1310px; }
   }
 }
+@include media-breakpoint-up(md) {
+  #navbarToggler {
+    white-space: nowrap;
+    overflow-x: hidden;
+    .megamenu {
+      display: block;
+    }
+  }
 
+  #scrollMenuRight,
+  #scrollMenuLeft {
+    background: #fff;
+    position: absolute;
+    padding: 0.5rem 0.2rem !important;
+  }
 
+  #scrollMenuRight {
+    right: 0;
+  }
+
+  #scrollMenuLeft {
+    left: 0;
+  }
+}
 #evo-nav-wrapper.sticky-top {
   @include media-breakpoint-up(md) {
     top: -30px;
@@ -172,6 +194,9 @@ body.unboxed-layout {
   .nav-item{
     border-bottom: $highlight-border-size solid transparent;
     text-decoration: none;
+    @include media-breakpoint-up(md) {
+      display: inline-table;
+    }
     &.active,
     &[aria-expanded="true"] {
       border-bottom: $highlight-border-size solid $primary;
@@ -384,7 +409,8 @@ ul.partlist-items {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
   background-color: transparent;
 }
 /**  STYLE 11 */

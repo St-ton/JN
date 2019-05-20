@@ -42,7 +42,7 @@
                     {assign var=activeParent value=$activeParents[$i]}
                 {/if}
                 {if $isDropdown}
-                    <li class="nav-item pb-2 dropdown{if $category->kKategorie == $activeId
+                    <li class="nav-item dropdown{if $category->kKategorie == $activeId
                     || ((isset($activeParent)
                     && isset($activeParent->kKategorie))
                     && $activeParent->kKategorie == $category->kKategorie)} active{/if}" data-tab="{$category@iteration}">

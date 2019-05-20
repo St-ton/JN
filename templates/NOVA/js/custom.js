@@ -24,11 +24,13 @@ function positionIndicator() {
     var tabNavCurrentLinkText = tabNavList.querySelector("[data-tab='" + tabsModuleSectionDataValue + "']");
     //get dimensions of current nav link span
     var tabNavCurrentLinkTextPosition = tabNavCurrentLinkText.getBoundingClientRect();
+
+    var scrollLeft = parseInt(tabsModule.scrollLeft);
     //set indicator left position via CSS transform
     //current nav link span left position - tab nav ul left position
     tabNavCurrentLinkindicator.style.transform =
         "translate3d(" +
-        (tabNavCurrentLinkTextPosition.left - tabNavListLeftPosition + 15 ) +
+        (tabNavCurrentLinkTextPosition.left - tabNavListLeftPosition + 15 - scrollLeft) +
         "px,0,0) scaleX(" +
         (tabNavCurrentLinkTextPosition.width) * 0.01 +
         ")";

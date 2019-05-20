@@ -712,6 +712,59 @@
             $('.comparelist .equal-height').height(h);
         },
 
+        checkMenuScroll: function() {
+            var menu = 'body[data-viewport="lg"] .megamenu, body[data-viewport="md"] .megamenu';
+
+            if ($(menu)[0] != undefined) {
+                var scrollWidth = parseInt($(menu)[0].scrollWidth);
+                var width = parseInt($(menu).outerWidth() + 2);
+                var btnLeft = $('#scrollMenuLeft');
+                var btnRight = $('#scrollMenuRight');
+                // reset
+                btnLeft.off("click.menuScroll");
+                btnRight.off("click.menuScroll");
+
+                if (width < scrollWidth) {
+                    checkButtons();
+
+                    btnLeft.on("click.menuScroll",function () {
+                        var leftPos = $('#navbarToggler').scrollLeft();
+                        $('#navbarToggler').animate({scrollLeft: leftPos - 250},{
+                            duration: 600,
+                            complete: checkButtons(leftPos - 250)
+                        });
+                    });
+
+                    btnRight.on("click.menuScroll", function () {
+                        var leftPos2 = $('#navbarToggler').scrollLeft();
+                        $('#navbarToggler').animate({scrollLeft: leftPos2 + 250},{
+                            duration: 600,
+                            complete: checkButtons(leftPos2 + 250)
+                        });
+                    });
+                }
+            }
+            function checkButtons(scrollLeft) {
+                if (typeof scrollLeft === 'undefined') {
+                    scrollLeft = 0;
+                }
+                var scrollWidth = parseInt($(menu)[0].scrollWidth);
+                var width = parseInt($(menu).outerWidth() + 2);
+                var btnLeft = $('#scrollMenuLeft');
+                var btnRight = $('#scrollMenuRight');
+
+                btnRight.addClass('d-none');
+                btnLeft.addClass('d-none');
+
+                if (scrollLeft > 0) {
+                    btnLeft.removeClass('d-none');
+                }
+                if ((scrollWidth - width) > scrollLeft) {
+                    btnRight.removeClass('d-none');
+                }
+            }
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -737,6 +790,7 @@
             this.checkout();
             this.addInactivityCheck();
             this.setCompareListHeight();
+            this.checkMenuScroll();
         }
     };
 
@@ -752,7 +806,9 @@
     }
 
     $(window).on('resize', function () {
-        $.evo.autoheight();
+      /*  console.log('resize');
+        $.evo.autoheight();*/
+        $.evo.checkMenuScroll();
     });
 
     // PLUGIN DEFINITION

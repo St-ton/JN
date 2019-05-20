@@ -48,7 +48,7 @@ class JSONAPI
             $searchIn = null;
         }
 
-        $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, $search, $limit);
+        $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, ltrim($search, '/'), $limit);
 
         return $this->itemsToJson($items);
     }
@@ -210,6 +210,54 @@ class JSONAPI
 
     /**
      * @param string $table
+     * @return bool
+     */
+    private function validateTableName($table)
+    {
+        $res = Shop::DB()->queryPrepared(
+            "SELECT `table_name` 
+                FROM information_schema.tables 
+                WHERE `table_type` = 'base table'
+                    AND `table_schema` = :sma
+                    AND `table_name` = :tn",
+            ['sma' => DB_NAME, 'tn' => $table],
+            1
+        );
+
+        return $res !== false && $res->table_name === $table;
+    }
+
+    /**
+     * @param string $table
+     * @param array  $columns
+     * @return bool
+     */
+    private function validateColumnNames($table, $columns)
+    {
+        $res  = Shop::DB()->queryPrepared(
+            'SELECT `column_name` 
+                FROM information_schema.columns 
+                WHERE `table_schema` = :sma
+                    AND `table_name` = :tn',
+            ['sma' => DB_NAME, 'tn' => $table],
+            2
+        );
+        $rows  = [];
+        foreach ($res as $item) {
+            $rows[] = $item->column_name;
+            $rows[] = $table . '.' . $item->column_name;
+        }
+        foreach ($columns as $column) {
+            if (!in_array($column, $rows, true)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string $table
      * @param string[] $columns
      * @param string $addCacheTag
      * @param string[]|string|null $searchIn
@@ -219,7 +267,11 @@ class JSONAPI
      */
     public function getItems($table, $columns, $addCacheTag = null, $searchIn = null, $searchFor = null, $limit = 0)
     {
-        $table     = Shop::DB()->escape($table);
+        if ($this->validateTableName($table) === false || $this->validateColumnNames($table, $columns) === false) {
+            return [];
+        }
+        $db        = Shop::DB();
+        $table     = $db->escape($table);
         $limit     = (int)$limit;
         $cacheId   = 'jsonapi_' . $table . '_' . $limit . '_';
         $cacheId  .= md5(serialize($columns) . serialize($searchIn) . serialize($searchFor));
@@ -234,43 +286,49 @@ class JSONAPI
         }
 
         foreach ($columns as $i => $column) {
-            $columns[$i] = Shop::DB()->escape($column);
+            $columns[$i] = $db->escape($column);
         }
 
         if (is_array($searchIn) && is_string($searchFor)) {
             // full text search
-            $searchFor  = Shop::DB()->escape($searchFor);
-            $conditions = [];
+            $searchFor   = $db->escape($searchFor);
+            $conditions  = [];
+            $colsToCheck = [];
 
             foreach ($searchIn as $i => $column) {
-                $conditions[] = Shop::DB()->escape($column) . " LIKE '%" . $searchFor . "%'";
+                $colsToCheck[] = $column;
+                $conditions[]  = $db->escape($column) . " LIKE '%" . $searchFor . "%'";
             }
 
-            $result = Shop::DB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    WHERE " . implode(' OR ', $conditions) . "
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                2
-            );
+            $result = $this->validateColumnNames($table, $colsToCheck)
+                ? $db->query(
+                    "SELECT " . implode(',', $columns) . "
+                        FROM " . $table . "
+                        WHERE " . implode(' OR ', $conditions) . "
+                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                    2
+                )
+                : [];
         } elseif (is_string($searchIn) && is_array($searchFor)) {
             // key array select
-            $searchIn = Shop::DB()->escape($searchIn);
+            $searchIn = $db->escape($searchIn);
 
             foreach ($searchFor as $i => $key) {
-                $searchFor[$i] = "'" . Shop::DB()->escape($key) . "'";
+                $searchFor[$i] = "'" . $db->escape($key) . "'";
             }
 
-            $result = Shop::DB()->query(
-                "SELECT " . implode(',', $columns) . "
-                    FROM " . $table . "
-                    WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
-                    " . ($limit > 0 ? "LIMIT " . $limit : ""),
-                2
-            );
+            $result = $this->validateColumnNames($table, [$searchIn])
+                ? $db->query(
+                    "SELECT " . implode(',', $columns) . "
+                        FROM " . $table . "
+                        WHERE " . $searchIn . " IN (" . implode(',', $searchFor) . ")
+                        " . ($limit > 0 ? "LIMIT " . $limit : ""),
+                    2
+                )
+                : [];
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
-            $result = Shop::DB()->query(
+            $result = $db->query(
                 "SELECT " . implode(',', $columns) . "
                     FROM " . $table . "
                     " . ($limit > 0 ? "LIMIT " . $limit : ""),
@@ -290,6 +348,10 @@ class JSONAPI
         return $result;
     }
 
+    /**
+     * @param $items
+     * @return false|mixed|string
+     */
     public function itemsToJson($items)
     {
         // deep UTF-8 encode

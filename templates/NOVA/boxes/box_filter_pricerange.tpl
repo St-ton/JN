@@ -51,16 +51,41 @@
                         $priceRangeTo.val(ui.values[1]);
                     },
                     stop: function(event, ui) {
-                        window.location.href = currentHref.substr(0, currentHref.indexOf('?'))
-                            + '?pf=' + ui.values[0] + '_' + ui.values[1];
+                        window.location.href = updateURLParameter(
+                            currentHref,
+                            'pf',
+                            ui.values[0] + '_' + ui.values[1]
+                        );
                     }
                 });
                 $('.price-range-input').change(function () {
                     var prFrom = $priceRangeFrom.val(),
                         prTo   = $priceRangeTo.val();
-                    window.location.href = currentHref.substr(0, currentHref.indexOf('?')) + '?pf='
-                        + (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax);
+                    window.location.href = updateURLParameter(
+                        currentHref,
+                        'pf',
+                        (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax)
+                    );
                 });
+
+                function updateURLParameter(url, param, paramVal){
+                    var newAdditionalURL = '',
+                        tempArray        = url.split('?'),
+                        baseURL          = tempArray[0],
+                        additionalURL    = tempArray[1],
+                        temp             = '';
+                    if (additionalURL) {
+                        tempArray = additionalURL.split('&');
+                        for (var i=0; i<tempArray.length; i++){
+                            if(tempArray[i].split('=')[0] != param){
+                                newAdditionalURL += temp + tempArray[i];
+                                temp = '&';
+                            }
+                        }
+                    }
+
+                    return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
+                }
             });
         </script>
     {else}

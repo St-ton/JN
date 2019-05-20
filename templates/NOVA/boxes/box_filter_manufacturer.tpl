@@ -12,7 +12,7 @@
             data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}"]
             }{lang key='manufacturers'}+{/button}
         </div>
-        {collapse class="box box-filter-manufacturer" id="sidebox{$oBox->getID()}"}
+        {collapse class="box box-filter-manufacturer" id="sidebox{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
         {block name='boxes-box-filter-search-special-content'}
             {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
         {/block}

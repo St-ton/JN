@@ -19,7 +19,7 @@
                 {$ssf->getFrontendName()}
                 +{/button}
             </div>
-            {collapse class="box box-filter-special" id="sidebox{$oBox->getID()}"}
+            {collapse class="box box-filter-special" id="sidebox{$oBox->getID()}" visible=$ssf->isActive()}
                 {block name='boxes-box-filter-search-special-content'}
                     {include file='snippets/filter/genericFilterItem.tpl' filter=$ssf}
                 {/block}

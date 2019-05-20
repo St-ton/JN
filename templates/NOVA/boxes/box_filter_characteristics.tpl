@@ -21,7 +21,12 @@
                 {/if}
                 +{/button}
             </div>
-            {collapse class="box box-filter-characteristics" id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}"}
+            {collapse
+                class="box box-filter-characteristics overflow-auto"
+                style="max-height: 200px"
+                id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}"
+                visible=$Merkmal->isActive()
+            }
             {block name='boxes-box-filter-characteristics-characteristics'}
                 {if ($Merkmal->getData('cTyp') === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 0}
                     {block name='boxes-box-filter-characteristics-select'}
@@ -33,7 +38,7 @@
                     {/block}
                 {else}
                     {block name='boxes-box-filter-characteristics-link'}
-                        {nav vertical=true}
+                        {nav vertical=$Merkmal->getData('cTyp') !== 'BILD'}
                         {block name='boxes-box-filter-characteristics-include-characteristics-link'}
                             {include file='snippets/filter/characteristic.tpl' Merkmal=$Merkmal}
                         {/block}

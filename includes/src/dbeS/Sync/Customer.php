@@ -64,8 +64,10 @@ final class Customer extends AbstractSync
             if (!($customerData->kKunde > 0 && $customerData->kKundenGruppe > 0)) {
                 continue;
             }
+            $customerData->kKunde = (int)$customerData->kKunde;
+
             $customer = new Kunde($customerData->kKunde);
-            if ($customer->kKunde > 0 && $customer->kKundengruppe != $customerData->kKundenGruppe) {
+            if ($customer->kKunde > 0 && $customer->kKundengruppe !== $customerData->kKundenGruppe) {
                 $this->db->update(
                     'tkunde',
                     'kKunde',

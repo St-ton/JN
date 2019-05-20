@@ -65,7 +65,6 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     $db->query('TRUNCATE tmerkmalwert', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmerkmalwertbild', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmerkmalwertsprache', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tpreise', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tpreis', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tpreisdetail', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tsonderpreise', ReturnType::DEFAULT);

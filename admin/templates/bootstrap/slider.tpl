@@ -54,7 +54,7 @@
                     </table>
                 {/if}
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderAdd')}</a>
+                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderCreate')}</a>
                 </div>
             </div>
         </div>

@@ -302,7 +302,7 @@
             {/foreach}
             <div class="panel{if isset($Link->getID())} btn-group{/if}">
                 <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
-                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSave')} {__('continueEdit')}</button>
+                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
             </div>
         </form>
         {if isset($Link->getID())}

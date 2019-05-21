@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "dbupdater"
+msgstr "Database update"
+
+msgid "dbupdaterURL"
+msgstr "https://jtl-url.de/3ajp1"
+
+msgid "dbupdaterDesc"
+msgstr "Here you can update the database of your JTL-Shop. The target version of the database update corresponds to the currently installed shop version."
+
+msgid "buttonUpdateNow"
+msgstr "Start database update"
+
+msgid "nextStep"
+msgstr "Continue"
+
+msgid "fromVersion"
+msgstr "From version"
+
+msgid "toVersion"
+msgstr "To version"
+
+msgid "errorSqlUpdate"
+msgstr "An SQL command in the update could not be run. Please try again."
+
+msgid "successUpdate"
+msgstr "Update completed successfully."
+
+msgid "errorUpdate"
+msgstr "An SQL command in the update could not be run 3 times. The update has been cancelled. Please contact the Support team."
+
+msgid "eventProtocol"
+msgstr "Event log"
+
+msgid "isDownloaded"
+msgstr " is being downloaded…"
+
+msgid "createSuccess"
+msgstr " created successfully."
+
+msgid "errorSaveCopy"
+msgstr "Could not create backup copy."
+
+msgid "infoUpdatePause"
+msgstr "Update cancelled: "
+
+msgid "successMigrations"
+msgstr "Migrations completed successfully."
+
+msgid "successMigration"
+msgstr "Migration completed successfully."
+
+msgid "updateTo"
+msgstr "Update to "
+
+msgid "successfull"
+msgstr " completed successfully."
+
+msgid "sessionExpired"
+msgstr "Session expired."
+
+msgid "redirectToLogin"
+msgstr "You will shortly be forwarded to the login form…"
+
+msgid "dbUpToDate"
+msgstr "Your database matches the current system status (version %s)"
+
+msgid "successfullMigrations"
+msgstr "Successful migrations"
+
+msgid "openMigrations"
+msgstr "Missed migrations"
+
+msgid "putOnServer"
+msgstr "Save on server"
+
+msgid "infoUpdateNow"
+msgstr "Click on <a href=\"dbupdater.php?action=update\" data-callback=\"update\">update now</a> to perform the database update."
+
+msgid "dbUpdate"
+msgstr "Database update"
+
+msgid "required"
+msgstr "required"

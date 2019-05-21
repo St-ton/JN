@@ -197,6 +197,27 @@ class Mail implements MailInterface
             $this->toName = $this->data->tkunde->cVorname . ' ' . $this->data->tkunde->cNachname;
         } elseif (!empty($this->data->NewsletterEmpfaenger->cEmail)) {
             $this->toMail = $this->data->NewsletterEmpfaenger->cEmail;
+        } elseif (!empty($this->data->mailReceiver->cEmail)) {
+            $this->toMail = $this->data->mailReceiver->cEmail;
+        } elseif (isset($this->data->mail)) {
+            if (isset($this->data->mail->fromEmail)) {
+                $this->fromMail = $this->data->mail->fromEmail;
+            }
+            if (isset($this->data->mail->fromName)) {
+                $this->fromName = $this->data->mail->fromName;
+            }
+            if (isset($this->data->mail->toEmail)) {
+                $this->toMail = $this->data->mail->toEmail;
+            }
+            if (isset($this->data->mail->toName)) {
+                $this->toName = $this->data->mail->toName;
+            }
+            if (isset($this->data->mail->replyToEmail)) {
+                $this->replyToMail = $this->data->mail->replyToEmail;
+            }
+            if (isset($this->data->mail->replyToName)) {
+                $this->replyToName = $this->data->mail->replyToName;
+            }
         }
     }
 

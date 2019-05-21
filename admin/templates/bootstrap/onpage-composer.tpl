@@ -91,7 +91,7 @@
                         </li>
                         <li>
                             <a href="#" id="btnPublish" data-toggle="tooltip" data-placement="bottom"
-                               title="{__('Publicate')}">
+                               title="{__('Publish')}">
                                 <i class="fa fa-newspaper-o fa-fw"></i>
                             </a>
                         </li>

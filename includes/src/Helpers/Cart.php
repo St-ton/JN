@@ -427,8 +427,8 @@ class Cart
                     continue;
                 }
                 $oKonfigitem          = new Konfigitem($kKonfigitem);
-                $oKonfigitem->fAnzahl = (float)($configGroupCounts[$oKonfigitem->getKonfiggruppe()]
-                    ?? $oKonfigitem->getInitial());
+                $oKonfigitem->fAnzahl = (float)($configItemCounts[$kKonfigitem]
+                    ?? $configGroupCounts[$oKonfigitem->getKonfiggruppe()] ?? $oKonfigitem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$oKonfigitem->getKonfigitem()])) {
                     $oKonfigitem->fAnzahl = (float)$configItemCounts[$oKonfigitem->getKonfigitem()];
                 }

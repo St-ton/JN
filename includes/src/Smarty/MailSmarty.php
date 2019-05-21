@@ -56,7 +56,7 @@ final class MailSmarty extends JTLSmarty
         $res  = null;
         $lang = null;
         $tpl  = $this->db->select(
-            'temailvorlageoriginal',
+            'temailvorlage',
             'cDateiname',
             $params['template']
         );

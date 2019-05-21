@@ -48,7 +48,11 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
         if ($delete === true) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLogoDelete'), 'successLogoDelete');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorLogoDelete'), 'errorLogoDelete');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                sprintf(__('errorLogoDelete'), PFAD_ROOT . Shop::getLogo()),
+                'errorLogoDelete'
+            );
         }
     }
     $nReturnValue = saveShopLogo($_FILES);
@@ -65,7 +69,11 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileType'), 'errorFileType');
                 break;
             case 4:
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileMove'), 'errorFileMove');
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    sprintf(__('errorFileMove'), PFAD_ROOT . PFAD_SHOPLOGO . basename($cFiles_arr['shopLogo']['name'])),
+                    'errorFileMove'
+                );
                 break;
             default:
                 break;

@@ -30,19 +30,16 @@ final class TemplateFactory
 
     /**
      * @param int      $id
-     * @param int|null $pluginID
      * @return TemplateInterface|null
      */
-    public function getTemplateByID(int $id, int $pluginID = null): ?TemplateInterface
+    public function getTemplateByID(int $id): ?TemplateInterface
     {
-        $data = $pluginID > 0
-            ? $this->db->select('tpluginemailvorlage', ['kEmailvorlage', 'kPlugin'], [$id, $pluginID])
-            : $this->db->select('temailvorlage', 'kEmailvorlage', $id);
+        $data = $this->db->select('temailvorlage', 'kEmailvorlage', $id);
         if ($data === null) {
             return null;
         }
 
-        return $pluginID > 0
+        return $data->kPlugin > 0
             ? $this->getTemplate('kPlugin_' . $data->kPlugin . '_' . $data->cModulId)
             : $this->getTemplate($data->cModulId);
     }
@@ -96,6 +93,8 @@ final class TemplateFactory
                 return new OrderUpdated($this->db);
             case \MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR:
                 return new ProductAvailable($this->db);
+            case \MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN:
+                return new ProductAvailableOptin($this->db);
             case \MAILTEMPLATE_PRODUKTANFRAGE:
                 return new ProductInquiry($this->db);
             case \MAILTEMPLATE_BEWERTUNG_GUTHABEN:

@@ -6,7 +6,7 @@ msgid "redirect"
 msgstr "Weiterleitungen"
 
 msgid "redirectDesc"
-msgstr "Legen Sie Weiterleitungen für verwaiste URLs an, deren Ziel-Seiten unter einem neuen Pfad erreichbar sind. JTL-Shop merkt sich automatisch alle nicht gefundenen URLs, die aufgerufen wurden, und listet diese hier auf. Legen Sie nur dann eine Weiterleitung an, wenn der Inhalt der alten Seite umgezogen wurde und nun unter einem neuen Pfad abrufbar ist."
+msgstr "Legen Sie Weiterleitungen für verwaiste URLs an, deren Zielseiten unter einem neuen Pfad erreichbar sind. JTL-Shop merkt sich automatisch alle nicht gefundenen URLs, die aufgerufen wurden, und listet diese hier auf. Legen Sie nur dann eine Weiterleitung an, wenn der Inhalt der alten Seite umgezogen wurde und nun unter einem neuen Pfad abrufbar ist."
 
 msgid "redirectURL"
 msgstr "https://jtl-url.de/961as"
@@ -39,10 +39,10 @@ msgid "errorURLNotReachable"
 msgstr "Änderungen konnten nicht gespeichert werden, da die weiterzuleitende URL %s nicht erreichbar ist."
 
 msgid "successRedirectSave"
-msgstr "Ihre Weiterleitung wurde erfolgreich gespeichert."
+msgstr "Die Weiterleitung wurde erfolgreich gespeichert."
 
 msgid "errorImport"
-msgstr "Fehler: Der Import konnte nicht durchgeführt werden. Bitte prüfen Sie die CSV-Datei."
+msgstr "Der Import konnte nicht durchgeführt werden. Bitte prüfen Sie die CSV-Datei."
 
 msgid "successImport"
 msgstr "Der Import wurde erfolgreich durchgeführt."

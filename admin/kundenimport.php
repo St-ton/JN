@@ -158,7 +158,7 @@ function processImport($fmt, $data)
         }
     }
     if (Text::filterEmailAddress($kunde->cMail) === false) {
-        return __('errorInvalidEmail');
+        return sprintf(__('errorInvalidEmail'), $kunde->cMail);
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
         && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')

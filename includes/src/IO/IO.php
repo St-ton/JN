@@ -113,7 +113,8 @@ class IO
         // respond with an error?
         if (\is_object($data)) {
             if ($data instanceof IOError) {
-                \header(Request::makeHTTPHeader($data->code), true, $data->code);
+                $code = empty($data->code) ? 500 : $data->code;
+                \header(Request::makeHTTPHeader($code), true, $code);
             } elseif ($data instanceof IOFile) {
                 $this->pushFile($data->filename, $data->mimetype);
             }

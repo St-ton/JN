@@ -401,7 +401,7 @@ class Status
         }
         // check against plugins, found in file-system
         foreach ($pluginsDB as $szFolder => $nVersion) {
-            $info = \PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/info.xml';
+            $info = \PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/' . \PLUGIN_INFO_FILE;
             $xml  = null;
             if (\file_exists($info)) {
                 $xml = \simplexml_load_file($info);
@@ -514,11 +514,7 @@ class Status
             $_SESSION['emailSyntaxErrorCount'] = (int)Shop::Container()->getDB()->query(
                 'SELECT COUNT(*) AS cnt FROM temailvorlage WHERE nFehlerhaft = 1',
                 ReturnType::SINGLE_OBJECT
-            )->cnt
-                + (int)Shop::Container()->getDB()->query(
-                    'SELECT COUNT(*) AS cnt FROM tpluginemailvorlage WHERE nFehlerhaft = 1',
-                    ReturnType::SINGLE_OBJECT
-                )->cnt;
+            )->cnt;
         }
 
         return $_SESSION['emailSyntaxErrorCount'];

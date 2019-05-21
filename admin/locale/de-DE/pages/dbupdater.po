@@ -11,11 +11,11 @@ msgstr "https://jtl-url.de/8qef4"
 msgid "dbupdaterDesc"
 msgstr "Hier können Sie Ihre JTL-Shop-Datenbank aktualisieren. Die Zielversion für das Datenbank-Update entspricht der derzeit installierten Shop-Version."
 
-msgid "updateNow"
+msgid "buttonUpdateNow"
 msgstr "Datenbank-Update starten"
 
 msgid "nextStep"
-msgstr "fortfahren"
+msgstr "Fortfahren"
 
 msgid "fromVersion"
 msgstr "Von Version"
@@ -24,13 +24,13 @@ msgid "toVersion"
 msgstr "Nach Version"
 
 msgid "errorSqlUpdate"
-msgstr "Fehler: Ein SQL-Befehl im Update konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut."
+msgstr "Ein SQL-Befehl im Update konnte nicht ausgeführt werden. Bitte versuchen Sie es erneut."
 
 msgid "successUpdate"
 msgstr "Das Update wurde erfolgreich abgeschlossen."
 
 msgid "errorUpdate"
-msgstr "Fehler: Ein SQL-Befehl im Update konnte 3 mal ausgeführt werden. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support."
+msgstr "Ein SQL-Befehl im Update konnte 3-mal nicht ausgeführt werden. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support."
 
 msgid "eventProtocol"
 msgstr "Ereignisprotokoll"
@@ -48,7 +48,7 @@ msgid "infoUpdatePause"
 msgstr "Update wurde angehalten: "
 
 msgid "successMigrations"
-msgstr "Migrationen wurden ausgeführt."
+msgstr "Migrationen wurden erfolgreich ausgeführt."
 
 msgid "successMigration"
 msgstr "Migration wurde erfolgreich ausgeführt."
@@ -63,10 +63,10 @@ msgid "sessionExpired"
 msgstr "Sitzung abgelaufen"
 
 msgid "redirectToLogin"
-msgstr "Sie werden zur Anmelde-Maske weitergeleitet..."
+msgstr "Sie werden zur Anmelde-Maske weitergeleitet…"
 
 msgid "dbUpToDate"
-msgstr "Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version"
+msgstr "Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version %s)"
 
 msgid "successfullMigrations"
 msgstr "Erfolgreiche Migrationen"
@@ -85,3 +85,9 @@ msgstr "Datenbankaktualisierung"
 
 msgid "required"
 msgstr "erforderlich"
+
+msgid "currentShopVersion"
+msgstr "Ihre aktuelle Shopversion"
+
+msgid "currentTemplateVersion"
+msgstr "Ihre aktuelle Templateversion"

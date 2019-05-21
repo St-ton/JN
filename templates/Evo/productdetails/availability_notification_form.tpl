@@ -32,7 +32,7 @@
                         }
                     </div>
                     {/if}
-    
+
                     {if $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname !== 'N'}
                     <div class="col-xs-12 col-md-6">
                         {include file='snippets/form_group_simple.tpl'
@@ -46,7 +46,7 @@
                     {/if}
                 </div>
             {/if}
-    
+
             <div class="row">
                 <div class="col-xs-12 col-md-6">
                     <div class="form-group float-label-control{if !empty($fehlendeAngaben_benachrichtigung.email)} has-error{/if}">
@@ -60,13 +60,13 @@
                     </div>
                 </div>
             </div>
-    
+
             {if isset($fehlendeAngaben_benachrichtigung)}
                 {include file='snippets/checkbox.tpl' nAnzeigeOrt=$smarty.const.CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=$fehlendeAngaben_benachrichtigung cPost_arr=null}
             {else}
                 {include file='snippets/checkbox.tpl' nAnzeigeOrt=$smarty.const.CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=null cPost_arr=null cIDPrefix="article_availability{$Artikel->kArtikel}"}
             {/if}
-    
+
         </fieldset>
         {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
             isset($Einstellungen.$tplscope.benachrichtigung_abfragen_captcha) && $Einstellungen.$tplscope.benachrichtigung_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
@@ -78,7 +78,7 @@
                 </div>
             </div>
         {/if}
-    
+
         <input type="hidden" name="a" value="{if $Artikel->kVariKindArtikel}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}" />
         <input type="hidden" name="show" value="1" />
         <input type="hidden" name="benachrichtigung_verfuegbarkeit" value="1" />

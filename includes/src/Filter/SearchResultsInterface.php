@@ -6,9 +6,9 @@
 
 namespace JTL\Filter;
 
-use JTL\Filter\Pagination\Info;
-use JTL\Catalog\Category\Kategorie;
 use Illuminate\Support\Collection;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Filter\Pagination\Info;
 
 /**
  * Interface SearchResultsInterface

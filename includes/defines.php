@@ -10,7 +10,8 @@ ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 mb_internal_encoding(strtoupper(JTL_CHARSET));
-date_default_timezone_set('Europe/Berlin');
+ifndef('SHOP_TIMEZONE', 'Europe/Berlin');
+date_default_timezone_set(SHOP_TIMEZONE);
 ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
 ifndef('SYNC_LOG_LEVEL', E_ERROR | E_PARSE);
@@ -49,6 +50,9 @@ ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
 ifndef('ES_DB_LOGGING', 0);
+ifndef('DEBUG_LEVEL', 0);
+ifndef('NICEDB_EXCEPTION_ECHO', false);
+ifndef('NICEDB_EXCEPTION_BACKTRACE', false);
 // PHP Error Handler
 ifndef('PHP_ERROR_HANDLER', false);
 ifndef('DEBUG_FRAME', false);
@@ -213,6 +217,8 @@ ifndef('ES_SESSIONS', 0);
 ifndef('MAX_REVISIONS', 5);
 
 ifndef('SHOW_DEBUG_BAR', false);
+
+ifndef('ART_MATRIX_MAX', 250);
 
 // security
 ifndef('EXPORTFORMAT_ALLOW_PHP', false);

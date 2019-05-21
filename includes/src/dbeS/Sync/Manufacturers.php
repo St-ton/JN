@@ -51,22 +51,23 @@ final class Manufacturers extends AbstractSync
         }
         foreach ($xml['del_hersteller']['kHersteller'] as $manufacturerID) {
             $manufacturerID = (int)$manufacturerID;
-            if ($manufacturerID > 0) {
-                $affectedProducts = $this->db->selectAll(
-                    'tartikel',
-                    'kHersteller',
-                    $manufacturerID,
-                    'kArtikel'
-                );
-                $this->db->delete('tseo', ['kKey', 'cKey'], [$manufacturerID, 'kHersteller']);
-                $this->db->delete('thersteller', 'kHersteller', $manufacturerID);
-                $this->db->delete('therstellersprache', 'kHersteller', $manufacturerID);
+            if ($manufacturerID <= 0) {
+                continue;
+            }
+            $affectedProducts = $this->db->selectAll(
+                'tartikel',
+                'kHersteller',
+                $manufacturerID,
+                'kArtikel'
+            );
+            $this->db->delete('tseo', ['kKey', 'cKey'], [$manufacturerID, 'kHersteller']);
+            $this->db->delete('thersteller', 'kHersteller', $manufacturerID);
+            $this->db->delete('therstellersprache', 'kHersteller', $manufacturerID);
 
-                \executeHook(\HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $manufacturerID]);
-                $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . $manufacturerID;
-                foreach ($affectedProducts as $product) {
-                    $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
-                }
+            \executeHook(\HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $manufacturerID]);
+            $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . $manufacturerID;
+            foreach ($affectedProducts as $product) {
+                $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
             }
         }
         $this->cache->flushTags(flatten($cacheTags));

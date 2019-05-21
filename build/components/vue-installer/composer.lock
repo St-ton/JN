@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
     "content-hash": "79435aac684579e98100a537ca5a3a10",
@@ -120,16 +120,16 @@
         },
         {
             "name": "foxy/foxy",
-            "version": "v1.0.4",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fxpio/foxy.git",
-                "reference": "5b7cb97abc07fbff4eec87abd941be5c6a532c54"
+                "reference": "619679404d04cbd50a50df0b028430413c86c665"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fxpio/foxy/zipball/5b7cb97abc07fbff4eec87abd941be5c6a532c54",
-                "reference": "5b7cb97abc07fbff4eec87abd941be5c6a532c54",
+                "url": "https://api.github.com/repos/fxpio/foxy/zipball/619679404d04cbd50a50df0b028430413c86c665",
+                "reference": "619679404d04cbd50a50df0b028430413c86c665",
                 "shasum": ""
             },
             "require": {
@@ -176,7 +176,7 @@
                 "package",
                 "yarn"
             ],
-            "time": "2018-09-07T06:51:12+00:00"
+            "time": "2019-05-01T12:06:25+00:00"
         },
         {
             "name": "fzaninotto/faker",

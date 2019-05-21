@@ -776,6 +776,6 @@ class Konfigitem implements JsonSerializable
         return empty($this->kArtikel)
             || (!($tmpPro->cLagerBeachten === 'Y'
                 && $tmpPro->cLagerKleinerNull === 'N'
-                && (float)$tmpPro->fLagerbestand <= 0));
+                && (float)$tmpPro->fLagerbestand < $this->fMin));
     }
 }

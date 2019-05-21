@@ -146,9 +146,9 @@ class Statusmail
     private function getPossibleIntervals(): array
     {
         return [
-            'Tagesbericht'  => 1,
-            'Wochenbericht' => 7,
-            'Monatsbericht' => 30
+            __('intervalDay')   => 1,
+            __('intervalWeek')  => 7,
+            __('intervalMonth') => 30
         ];
     }
 
@@ -158,33 +158,33 @@ class Statusmail
     private function getPossibleContentTypes(): array
     {
         return [
-            'Anzahl Produkte pro Kundengruppe'            => 1,
-            'Anzahl Neukunden'                            => 2,
-            'Anzahl Neukunden, die gekauft haben'         => 3,
-            'Anzahl Bestellungen'                         => 4,
-            'Anzahl Bestellungen von Neukunden'           => 5,
-            'Anzahl Zahlungseingänge zu Bestellungen'     => 23,
-            'Anzahl versendeter Bestellungen'             => 24,
-            'Anzahl Besucher'                             => 6,
-            'Anzahl Besucher von Suchmaschinen'           => 7,
-            'Anzahl Bewertungen'                          => 8,
-            'Anzahl Bewertungen nicht freigeschaltet'     => 9,
-            'Anzahl Bewertungsguthaben gezahlt'           => 10,
-            'Anzahl Tags'                                 => 11,
-            'Anzahl Tags nicht freigeschaltet'            => 12,
-            'Anzahl geworbener Kunden'                    => 13,
-            'Anzahl geworbener Kunden, die gekauft haben' => 14,
-            'Anzahl versendeter Wunschlisten'             => 15,
-            'Anzahl durchgeführter Umfragen'              => 16,
-            'Anzahl neuer Newskommentare'                 => 17,
-            'Anzahl Newskommentare nicht freigeschaltet'  => 18,
-            'Anzahl neuer Produktanfragen'                => 19,
-            'Anzahl neuer Verfügbarkeitsanfragen'         => 20,
-            'Anzahl Produktvergleiche'                    => 21,
-            'Anzahl genutzter Kupons'                     => 22,
-            'Letzte Fehlermeldungen im Systemlog'         => 25,
-            'Letzte Hinweise im Systemlog'                => 26,
-            'Letzte Debugeinträge im Systemlog'           => 27
+            __('contentTypeCountItemCustomerGroup')         => 1,
+            __('contentTypeCountNewCustomer')               => 2,
+            __('contentTypeCountNewCustomerOrdered')        => 3,
+            __('contentTypeCountOrders')                    => 4,
+            __('contentTypeCountOrdersNewCustomers')        => 5,
+            __('contentTypeCountPayments')                  => 23,
+            __('contentTypeCountOrdersSent')                => 24,
+            __('contentTypeCountVisitors')                  => 6,
+            __('contentTypeCountVisitorsSearchEngine')      => 7,
+            __('contentTypeCountRatings')                   => 8,
+            __('contentTypeCountRatingsLocked')             => 9,
+            __('contentTypeCountRatingDepositPayed')        => 10,
+            __('contentTypeCountTags')                      => 11,
+            __('contentTypeCountTagsLocked')                => 12,
+            __('contentTypeCountCustomerRecruited')         => 13,
+            __('contentTypeCountCustomerRecruitedOrdered')  => 14,
+            __('contentTypeCountSentWishlists')             => 15,
+            __('contentTypeCountPolls')                     => 16,
+            __('contentTypeCountNewsComments')              => 17,
+            __('contentTypeCountNewsCommentsLocked')        => 18,
+            __('contentTypeCountProductQuestion')           => 19,
+            __('contentTypeCountAvailabilityNotifications') => 20,
+            __('contentTypeCountProductCompare')            => 21,
+            __('contentTypeCountCouponsUsed')               => 22,
+            __('contentTypeLastErrorLog')                   => 25,
+            __('contentTypeLastNoteLog')                    => 26,
+            __('contentTypeLastDebugLog')                   => 27
         ];
     }
 

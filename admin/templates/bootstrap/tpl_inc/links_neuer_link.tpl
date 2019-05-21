@@ -30,7 +30,23 @@
             }
         }).trigger('change');
     });
-
+    $(window).on('load', function () {
+        $('#specialLinkType, #cKundengruppen').change(function () {
+            ioCall('isDuplicateSpecialLink', [
+                    parseInt($('#specialLinkType').val()),
+                    parseInt($('input[name="kLink"]').val()) || 0,
+                    $('#cKundengruppen').val()
+                ],
+                function (result) {
+                    if (result) {
+                        $('#specialLinkType-error').removeClass('hidden-soft');
+                    } else {
+                        $('#specialLinkType-error').addClass('hidden-soft');
+                    }
+                }
+            );
+        }).trigger('change');
+    });
     {/literal}
 </script>
 {if $Link->getID() > 0 && !empty($Link->getName())}
@@ -43,7 +59,7 @@
     <div id="settings">
         <form id="create_link" name="link_erstellen" method="post" action="links.php" enctype="multipart/form-data">
             {$jtl_token}
-            <input type="hidden" name="neu_link" value="1" />
+            <input type="hidden" name="action" value="create-or-update-link" />
             <input type="hidden" name="kLinkgruppe" value="{$Link->getLinkGroupID()}" />
             <input type="hidden" name="kLink" value="{if $Link->getID() > 0}{$Link->getID()}{/if}" />
             <input type="hidden" name="kPlugin" value="{if $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}" />
@@ -58,7 +74,7 @@
                         </span>
                         <input required type="text" name="cName" id="cName" class="form-control{if isset($xPlausiVar_arr.cName)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cName) && $xPostVar_arr.cName}{$xPostVar_arr.cName}{elseif !empty($Link->getDisplayName())}{$Link->getDisplayName()}{/if}" tabindex="1" />
                     </div>
-                    <div class="input-group{if isset($xPlausiVar_arr.nLinkart)} error{/if}">
+                    <div class="input-group{if isset($xPlausiVar_arr.nLinkart) || isset($xPlausiVar_arr.nSpezialseite)} error{/if}">
                         <span class="input-group-addon">
                             <label>{__('linkType')}{if isset($xPlausiVar_arr.nLinkart)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                         </span>
@@ -68,28 +84,29 @@
                                 <input type="hidden" name="nLinkart" value="25" />
                                 <input type="radio" id="nLink3" name="nLinkart" checked="checked" disabled="disabled" />
                                 <label for="nLink3">{__('linkToSpecalPage')}</label>
-                                <select id="nLink3" name="nSpezialseite" disabled="disabled">
+                                <select id="specialLinkType" name="nSpezialseite" disabled="disabled">
                                     <option selected="selected">{__('plugin')}</option>
                                 </select>
                             </p>
                         {else}
                             <p class="multi_input" style="margin-top: 10px;">
-                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if $Link->getLinkType() === 1}checked{/if} />
+                                <input type="radio" id="nLink1" name="nLinkart" value="1" tabindex="2" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 1}checked{elseif $Link->getLinkType() === 1}checked{/if} />
                                 <label for="nLink1">{__('linkWithOwnContent')}</label>
                             </p>
                             <p class="multi_input">
-                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($Link->getLinkType()) && $Link->getLinkType() === 2}checked{/if} />
+                                <input type="radio" id="nLink2" name="nLinkart" value="2" onclick="$('#nLinkInput2').val('http://')" tabindex="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 2}checked{elseif $Link->getLinkType() === 2}checked{/if} />
                                 <label for="nLink2">{__('linkToExternalURL')} {__('createWithSearchEngineName')}</label>
                             </p>
                             <p class="multi_input" style="margin-bottom: 10px;">
-                                <input type="radio" id="nLink3" name="nLinkart" value="3" {if $Link->getLinkType() > 2}checked{/if} />
+                                <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 2}checked{/if} />
                                 <label for="nLink3">{__('linkToSpecalPage')}</label>
-                                <select id="nLink3" name="nSpezialseite">
+                                <select id="specialLinkType" name="nSpezialseite">
                                     <option value="0">{__('choose')}</option>
-                                    {foreach $oSpezialseite_arr as $oSpezialseite}
-                                        <option value="{$oSpezialseite->nLinkart}" {if $Link->getLinkType() == $oSpezialseite->nLinkart}selected{/if}>{$oSpezialseite->cName}</option>
+                                    {foreach $specialPages as $specialPage}
+                                        <option value="{$specialPage->getLinkType()}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->getLinkType()}selected{elseif $Link->getLinkType() === $specialPage->getLinkType()}selected{/if}>{$specialPage->getName()}</option>
                                     {/foreach}
                                 </select>
+                                <span id="specialLinkType-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fa fa-warning error"></i></span>
                             </p>
                         {/if}
                         </div>
@@ -98,22 +115,30 @@
                         <span class="input-group-addon">
                             <label for="cKundengruppen">{__('restrictedToCustomerGroups')}{if isset($xPlausiVar_arr.cKundengruppen)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                         </span>
+                        {$activeGroups = $Link->getCustomerGroups()}
                         <select required name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
-                            <option value="-1"{if isset($Link->getID()) && $Link->getID() > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
-                                {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
-                                    {if $cPostKndGrp|strlen > 0 && $cPostKndGrp == '-1'}selected{/if}
-                                {/foreach}
-                                    {elseif !$Link->getID()}selected{/if}>{__('all')}</option>
+                            <option value="-1"
+                                {if isset($Link->getID()) && $Link->getID() > 0 && count($activeGroups) === 0} selected
+                                {elseif isset($xPostVar_arr.cKundengruppen)}
+                                    {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
+                                        {if (int)$cPostKndGrp === -1} selected{/if}
+                                    {/foreach}
+                                {elseif !$Link->getID() > 0} selected{/if}
+                            >{__('all')}</option>
 
                             {foreach $kundengruppen as $kundengruppe}
-                                {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
-                                {assign var=postkndgrp value='0'}
+                                {assign var=kKundengruppe value=(int)$kundengruppe->kKundengruppe}
+                                {assign var=postkndgrp value=0}
                                 {if isset($xPostVar_arr.cKundengruppen)}
                                     {foreach $xPostVar_arr.cKundengruppen as $cPostKndGrp}
-                                        {if $cPostKndGrp == $kKundengruppe}{assign var=postkndgrp value='1'}{/if}
+                                        {if $cPostKndGrp == $kKundengruppe}{assign var=postkndgrp value=1}{/if}
                                     {/foreach}
                                 {/if}
-                                <option value="{$kundengruppe->kKundengruppe}" {if (isset($gesetzteKundengruppen[$kKundengruppe]) && $gesetzteKundengruppen[$kKundengruppe]) || (isset($postkndgrp) && $postkndgrp == 1)}selected{/if}>{$kundengruppe->cName}</option>
+                                <option value="{$kundengruppe->kKundengruppe}"
+                                    {if isset($xPostVar_arr) && isset($postkndgrp) && $postkndgrp == 1}selected
+                                    {elseif in_array($kKundengruppe, $activeGroups, true)}selected
+                                    {/if}
+                                >{$kundengruppe->cName}</option>
                             {/foreach}
                         </select>
                         <span class="input-group-addon">{getHelpDesc cDesc=__('multipleChoice')}</span>
@@ -177,7 +202,9 @@
                         {if isset($cDatei_arr)}
                             {foreach $cDatei_arr as $cDatei}
                                 <span class="block tcenter vmiddle">
-                                    <a href="links.php?kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}"><img src="{$currentTemplateDir}/gfx/layout/remove.png" alt="delete"></a>
+                                    <a href="links.php?kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}">
+                                        <img src="{$currentTemplateDir}/gfx/layout/remove.png" alt="delete">
+                                    </a>
                                     $#{$cDatei->cName}#$
                                     <div>{$cDatei->cURL}</div>
                                 </span>
@@ -221,7 +248,7 @@
                         <div class="panel-body">
                             <div class="input-group">
                                 <span class="input-group-addon"><label for="cName_{$cISO}">{__('showedName')}</label></span>
-                                {assign var=cName_ISO value="cName_"|cat:$cISO}
+                                {assign var=cName_ISO value='cName_'|cat:$cISO}
                                 <input class="form-control" type="text" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($xPostVar_arr.$cName_ISO) && $xPostVar_arr.$cName_ISO}{$xPostVar_arr.$cName_ISO}{elseif !empty($Link->getName($langID))}{$Link->getName($langID)}{/if}" tabindex="7" />
                             </div>
                             <div class="input-group">
@@ -229,7 +256,7 @@
                                 {assign var=cSeo_ISO value="cSeo_"|cat:$cISO}
                                 <input class="form-control" type="text" name="cSeo_{$cISO}" id="cSeo_{$cISO}" value="{if isset($xPostVar_arr.$cSeo_ISO) && $xPostVar_arr.$cSeo_ISO}{$xPostVar_arr.$cSeo_ISO}{elseif !empty($Link->getSEO($langID))}{$Link->getSEO($langID)}{/if}" tabindex="7" />
                             </div>
-                            {assign var=cTitle_ISO value="cTitle_"|cat:$cISO}
+                            {assign var=cTitle_ISO value='cTitle_'|cat:$cISO}
                             <div class="input-group">
                                 <span class="input-group-addon"><label for="cTitle_{$cISO}">{__('linkTitle')}</label></span>
                                 <span class="input-group-wrap">
@@ -238,7 +265,7 @@
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('titleDesc')}</span>
                             </div>
                             <div class="input-group">
-                                {assign var=cContent_ISO value="cContent_"|cat:$cISO}
+                                {assign var=cContent_ISO value='cContent_'|cat:$cISO}
                                 <span class="input-group-addon"><label for="cContent_{$cISO}">{__('content')}</label></span>
                                 <span class="input-group-wrap">
                                     <textarea class="form-control ckeditor" id="cContent_{$cISO}" name="cContent_{$cISO}" rows="10" cols="40">{if isset($xPostVar_arr.$cContent_ISO) && $xPostVar_arr.$cContent_ISO}{$xPostVar_arr.$cContent_ISO}{elseif !empty($Link->getContent($langID))}{$Link->getContent($langID)}{/if}</textarea>
@@ -246,7 +273,7 @@
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('titleDesc')}</span>
                             </div>
                             <div class="input-group">
-                                {assign var=cMetaTitle_ISO value="cMetaTitle_"|cat:$cISO}
+                                {assign var=cMetaTitle_ISO value='cMetaTitle_'|cat:$cISO}
                                 <span class="input-group-addon"><label for="cMetaTitle_{$cISO}">{__('metaTitle')}</label></span>
                                 <span class="input-group-wrap">
                                     <input class="form-control" type="text" name="cMetaTitle_{$cISO}" id="cMetaTitle_{$cISO}" value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)}{/if}" tabindex="9" />
@@ -254,7 +281,7 @@
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('metaTitleDesc')}</span>
                             </div>
                             <div class="input-group">
-                            {assign var=cMetaKeywords_ISO value="cMetaKeywords_"|cat:$cISO}
+                            {assign var=cMetaKeywords_ISO value='cMetaKeywords_'|cat:$cISO}
                                 <span class="input-group-addon"><label for="cMetaKeywords_{$cISO}">{__('metaKeywords')}</label></span>
                                 <span class="input-group-wrap">
                                     <input class="form-control" type="text" name="cMetaKeywords_{$cISO}" id="cMetaKeywords_{$cISO}" value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)}{/if}" tabindex="9" />
@@ -262,7 +289,7 @@
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('metaKeywordsDesc')}</span>
                             </div>
                             <div class="input-group">
-                                {assign var=cMetaDescription_ISO value="cMetaDescription_"|cat:$cISO}
+                                {assign var=cMetaDescription_ISO value='cMetaDescription_'|cat:$cISO}
                                 <span class="input-group-addon"><label for="cMetaDescription_{$cISO}">{__('metaDescription')}</label></span>
                                 <span class="input-group-wrap">
                                     <input class="form-control" type="text" name="cMetaDescription_{$cISO}" id="cMetaDescription_{$cISO}" value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)}{/if}" tabindex="9" />
@@ -275,7 +302,7 @@
             {/foreach}
             <div class="panel{if isset($Link->getID())} btn-group{/if}">
                 <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
-                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSave')} {__('continueEdit')}</button>
+                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
             </div>
         </form>
         {if isset($Link->getID())}

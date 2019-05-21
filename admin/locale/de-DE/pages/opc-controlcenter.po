@@ -6,7 +6,7 @@ msgid "opcNoticePageReset"
 msgstr "Der OnPage-Composer-Inhalt für die Seite wurde zurückgesetzt."
 
 msgid "opcNoticeDraftDelete"
-msgstr "Der Entwurf wurde gelöscht."
+msgstr "Der Entwurf wurde erfolgreich gelöscht."
 
 msgid "opc"
 msgstr "OnPage Composer"
@@ -36,10 +36,10 @@ msgid "replaceExtend"
 msgstr "Ersetzt / Erweitert"
 
 msgid "lastChange"
-msgstr "Letzte Änderung"
+msgstr "Letzte Änderung am"
 
 msgid "changedNow"
-msgstr "Gerade bearbeitet"
+msgstr "Gerade bearbeitet von"
 
 msgid "tillUnknown"
 msgstr "Auf unbestimmte Zeit"

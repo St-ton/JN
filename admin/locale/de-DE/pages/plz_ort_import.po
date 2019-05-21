@@ -15,7 +15,7 @@ msgid "plz_ort_size"
 msgstr "Dateigröße"
 
 msgid "plz_ort_import_new"
-msgstr "Neu importieren"
+msgstr "Importieren"
 
 msgid "plz_ort_import_select"
 msgstr "Import auswählen"
@@ -36,19 +36,19 @@ msgid "plz_ort_import_delete_yes"
 msgstr "Ja, löschen"
 
 msgid "plz_ort_import_refresh_desc"
-msgstr "Neue Daten importieren..."
+msgstr "Neue Daten importieren"
 
 msgid "plz_ort_import_reset_desc"
-msgstr "Rückgängig - Backup wieder einspielen..."
+msgstr "Zurücksetzen auf Stand vor Aktualisierung"
 
 msgid "plz_ort_import_help"
-msgstr "Über \"Neue Daten importieren\" können Sie direkt von <i>%s</i> eine Datendatei herunterladen und automatisch installieren.<br/>Sollte der direkte Download nicht möglich sein oder wg. Zeitüberschreitung abbrechen, laden Sie die gewünschte Datei bitte per FTP in das Verzeichnis <i>/uploads</i> Ihres Webservers. Die Datei kann dann über das &lt;i class=\"fa fa-download\"&gt;</i>-Symbol in der Übersicht importiert werden.<br/>Vor dem Import wird ein Backup der aktuellen Daten erstellt, welches bei Bedarf zurückgespielt werden kann."
+msgstr "Über „Neue Daten importieren“ können Sie direkt von <i>%s</i> eine Datendatei herunterladen und automatisch installieren.<br/>Sollte der direkte Download nicht möglich sein oder wg. Zeitüberschreitung abbrechen, laden Sie die gewünschte Datei bitte per FTP in das Verzeichnis <i>/uploads</i> Ihres Webservers. Die Datei kann dann über das <i class=\"fa fa-download\"></i>-Symbol in der Übersicht importiert werden.<br/>Vor dem Import wird ein Backup der aktuellen Daten erstellt, welches bei Bedarf zurückgespielt werden kann."
 
 msgid "errorImportInvalid"
 msgstr "Importdatei für %s kann nicht gelesen werden!"
 
 msgid "importProgress"
-msgstr "Aktualisiere %s in Datenbank..."
+msgstr "%s wird in Datenbank aktualisiert…"
 
 msgid "successImport"
 msgstr "Import erfolgreich."
@@ -57,25 +57,25 @@ msgid "errorParameterInvalid"
 msgstr "Falscher Parameter angegeben."
 
 msgid "errorDownload"
-msgstr " kann nicht heruntergeladen werden."
+msgstr "%s kann nicht heruntergeladen werden."
 
 msgid "errorDownloadFileCreate"
-msgstr "Download-Datei für %s kann nicht erstellt werden."
+msgstr "Download-Datei für %s kann nicht erstellt werden. Eventuell ist die Seite %s gerade nicht erreichbar. Bitte versuchen Sie es später erneut."
 
 msgid "errorDownloadTimeLong"
-msgstr "Der Download von %s dauert zu lange."
+msgstr "Der Download von %s wurde aufgrund einer Zeitüberschreitung abgebrochen. Bitte wenden Sie sich an den Support."
 
 msgid "successDownload"
-msgstr " wurde erfolgreich heruntergeladen."
+msgstr "%s wurde erfolgreich heruntergeladen."
 
 msgid "errorImportRunning"
 msgstr "Es läuft bereits ein Import. Bitte warten Sie bis dieser abgeschlossen ist."
 
 msgid "errorImportStart"
-msgstr "Import kann nicht gestartet werden."
+msgstr "Der Import kann nicht gestartet werden. Die Sitzung ist abgelaufen. Bitte melden Sie sich erneut an. Sollte der Fehler weiterhin auftreten, wenden Sie sich an den Support."
 
 msgid "successImportTempDelete"
-msgstr "Temporärer Import wurde gelöscht."
+msgstr "Temporärer Import wurde erfolgreich gelöscht."
 
 msgid "importCancel"
 msgstr "Import wurde abgebrochen."

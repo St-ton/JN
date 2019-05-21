@@ -12,7 +12,6 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\Catalog\Product\Artikel;
 
 /**
  * Class Category

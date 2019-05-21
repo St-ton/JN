@@ -390,7 +390,7 @@ class PriceRange extends AbstractFilter
         $discount      = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
             ? (float)$_SESSION['Kunde']->fRabatt
             : 0.0;
-        $state         = (new StateSQL())->from($this->productFilter->getCurrentStateData());
+        $state         = (new StateSQL())->from($this->productFilter->getCurrentStateData(self::class));
         if (!$isMerchant && \is_array($_SESSION['Steuersatz']) && \count($_SESSION['Steuersatz']) > 0) {
             $maxTaxRate = \max($_SESSION['Steuersatz']);
             $minTaxRate = \min($_SESSION['Steuersatz']);

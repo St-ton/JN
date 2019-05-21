@@ -18,14 +18,19 @@ if (auth()) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('Anzahl Dateien im Zip: ' . count($list), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
         }
-        if ($archive->extract(PCLZIP_OPT_PATH, PFAD_SYNC_TMP)) {
+        $zipPath = PFAD_ROOT . PFAD_DBES . PFAD_SYNC_TMP . basename($_FILES['data']['tmp_name']) . '_' . date('dhis');
+        if (!mkdir($zipPath) && !is_dir($zipPath)) {
+            syncException('Error : Verzeichnis ' . $zipPath . ' kann nicht erstellt werden!');
+        }
+        $zipPath .= '/';
+        if ($archive->extract(PCLZIP_OPT_PATH, $zipPath)) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
-                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
+                    Jtllog::writeLog('bearbeite: ' . $zipPath . $zip['filename'] . ' size: ' .
+                        filesize($zipPath . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Data_xml');
                 }
-                $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
+                $d   = file_get_contents($zipPath . $zip['filename']);
                 $xml = XML_unserialize($d);
                 if ($zip['filename'] === 'ack_verfuegbarkeitsbenachrichtigungen.xml') {
                     bearbeiteVerfuegbarkeitsbenachrichtigungenAck($xml);

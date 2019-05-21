@@ -30,54 +30,58 @@
         {block name='boxes-box-filter-pricerange-script'}
         <script>
             $(window).on('load', function(){
-                var currentHref      = window.location.href,
-                    priceRange       = (new URL(currentHref)).searchParams.get("pf"),
+                let priceRange       = (new URL(window.location.href)).searchParams.get("pf"),
                     priceRangeMin    = 0,
                     priceRangeMax    = {$priceRangeMax},
-                    priceRangeMinMax = [priceRangeMin, priceRangeMax],
+                    currentPriceMin  = priceRangeMin,
+                    currentPriceMax  = priceRangeMax,
                     $priceRangeFrom  = $("#price-range-from"),
                     $priceRangeTo    = $("#price-range-to");
                 if (priceRange != null) {
-                    priceRangeMinMax = priceRange.split('_');
-                    $priceRangeFrom.val(priceRangeMinMax[0]);
-                    $priceRangeTo.val(priceRangeMinMax[1]);
+                    let priceRangeMinMax = priceRange.split('_');
+                    currentPriceMin      = priceRangeMinMax[0];
+                    currentPriceMax      = priceRangeMinMax[1];
+                    $priceRangeFrom.val(currentPriceMin);
+                    $priceRangeTo.val(currentPriceMax);
                 }
                 $('#price-range-slider').slider({
                     range: true,
                     min: priceRangeMin,
                     max: priceRangeMax,
-                    values: [priceRangeMinMax[0], priceRangeMinMax[1]],
+                    values: [currentPriceMin, currentPriceMax],
                     slide: function(event, ui) {
                         $priceRangeFrom.val(ui.values[0]);
                         $priceRangeTo.val(ui.values[1]);
                     },
                     stop: function(event, ui) {
-                        window.location.href = updateURLParameter(
-                            currentHref,
-                            'pf',
-                            ui.values[0] + '_' + ui.values[1]
-                        );
+                        redirectToNewPriceRange(ui.values[0] + '_' + ui.values[1]);
                     }
                 });
                 $('.price-range-input').change(function () {
-                    var prFrom = $priceRangeFrom.val(),
+                    let prFrom = $priceRangeFrom.val(),
                         prTo   = $priceRangeTo.val();
-                    window.location.href = updateURLParameter(
-                        currentHref,
-                        'pf',
+                    redirectToNewPriceRange(
                         (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax)
                     );
                 });
 
+                function redirectToNewPriceRange(priceRange) {
+                    window.location.href = updateURLParameter(
+                        window.location.href,
+                        'pf',
+                        priceRange
+                    );
+                }
+
                 function updateURLParameter(url, param, paramVal){
-                    var newAdditionalURL = '',
+                    let newAdditionalURL = '',
                         tempArray        = url.split('?'),
                         baseURL          = tempArray[0],
                         additionalURL    = tempArray[1],
                         temp             = '';
                     if (additionalURL) {
                         tempArray = additionalURL.split('&');
-                        for (var i=0; i<tempArray.length; i++){
+                        for (let i=0; i<tempArray.length; i++){
                             if(tempArray[i].split('=')[0] != param){
                                 newAdditionalURL += temp + tempArray[i];
                                 temp = '&';

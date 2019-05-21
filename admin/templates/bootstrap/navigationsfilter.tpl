@@ -91,10 +91,10 @@
                     cFehler += '{__('errorFillRequired')}' + '<br>';
                     $row.addClass('has-error');
                 } else if(fVon >= fBis) {
-                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('isInvalid')}' + '<br>';
+                    cFehler += '{__('thePriceRangeIsInvalid')} (' + fVon + ' {__('to')} ' + fBis + ').<br>';
                     $row.addClass('has-error');
                 } else if(fVon < lastUpperBound) {
-                    cFehler += '{__('thePriceRange')}' + fVon + ' {__('to')} ' + fBis + '{__('overlapps')}' + '<br>';
+                    cFehler += '{__('thePriceRangeOverlapps')} (' + fVon + ' {__('to')} ' + fBis + ').<br>';
                     $row.addClass('has-error');
                 }
 

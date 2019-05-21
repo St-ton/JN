@@ -248,7 +248,7 @@
                                 <span class="label label-default">
                                  <i class="fa fa-folder-o" aria-hidden="true"></i> {$oTemplate->cOrdner}
                                 </span>
-                                {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{__('inheritsFrom')} {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
+                                {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{{__('inheritsFrom')}|sprintf:{$oTemplate->cParent}}">{$oTemplate->cParent}</abbr></span>{/if}
 
                                 {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
                                     {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}

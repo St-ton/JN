@@ -330,11 +330,17 @@ function pruefeWarenkorbArtikelSichtbarkeit(int $customerGroupID): void
         if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$position->kKonfigitem === 0) {
             unset($cart->PositionenArr[$i]);
         }
-        $price = $db->query(
-            'SELECT fVKNetto
-               FROM tpreise
-               WHERE kArtikel = ' . (int)$position->kArtikel . '
-                   AND kKundengruppe = ' . $customerGroupID,
+        $price = $db->queryPrepared(
+            'SELECT tpreisdetail.fVKNetto
+                FROM tpreis
+                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                    AND tpreisdetail.nAnzahlAb = 0
+                WHERE tpreis.kArtikel = :productID
+                    AND tpreis.kKundengruppe = :customerGroup',
+            [
+                'productID'     => (int)$position->kArtikel,
+                'customerGroup' => $customerGroupID,
+            ],
             ReturnType::SINGLE_OBJECT
         );
 

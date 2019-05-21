@@ -195,10 +195,9 @@ class NetSyncHandler
 
     /**
      * @param string $baseDir
-     * @param bool   $preview
      * @return array
      */
-    protected function getFilesStruct(string $baseDir, $preview = false): array
+    protected function getFilesStruct(string $baseDir): array
     {
         $index   = 0;
         $files   = [];

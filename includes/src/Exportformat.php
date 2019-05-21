@@ -838,9 +838,11 @@ class Exportformat
         }
 
         if ($this->config['exportformate_preis_ueber_null'] === 'Y') {
-            $join .= ' JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                            AND tpreise.kKundengruppe = ' . $this->getKundengruppe() . '
-                            AND tpreise.fVKNetto > 0';
+            $join .= ' JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                                AND tpreis.kKundengruppe = ' . $this->getKundengruppe() . '
+                          JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                                AND tpreisdetail.nAnzahlAb = 0
+                                AND tpreisdetail.fVKNetto > 0';
         }
 
         if ($this->config['exportformate_beschreibung'] === 'Y') {

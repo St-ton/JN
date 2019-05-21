@@ -25,13 +25,6 @@
                 {/block}
             {/collapse}
             <hr class="mt-0 mb-4">
-        {else}
-            {card class="box box-filter-special mb-7" id="sidebox{$oBox->getID()}" title=$ssf->getFrontendName()}
-                <hr class="mt-0 mb-4">
-                {block name='boxes-box-filter-search-special-content'}
-                    {include file='snippets/filter/genericFilterItem.tpl' filter=$ssf}
-                {/block}
-            {/card}
         {/if}
     {/if}
 {/block}

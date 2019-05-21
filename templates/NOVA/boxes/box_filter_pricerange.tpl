@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-pricerange'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
+    {if !empty($oBox->getItems()->getOptions()) && $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
         {block name='boxes-box-filter-pricerange-content'}
             <div class="h4">
                 {button
@@ -12,8 +12,8 @@
                 role="button"
                 data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}"]
                 }
-                {lang key='rangeOfPrices'}
-                +{/button}
+                    {lang key='rangeOfPrices'} +
+                {/button}
             </div>
 
             {collapse class="box box-filter-price" id="sidebox{$oBox->getID()}" visible=true}
@@ -22,11 +22,12 @@
                     {input id="price-range-to" class="price-range-input"}
                 {/inputgroup}
                 <div id="price-range-slider"></div>
-                <div id="amount">$0 - ${$priceRangeMax}</div>
+                <div id="amount">0 {$smarty.session.Waehrung->getHtmlEntity()} - {$priceRangeMax} {$smarty.session.Waehrung->getHtmlEntity()}</div>
             {/collapse}
             <hr class="mt-0 mb-4">
         {/block}
 
+        {block name='boxes-box-filter-pricerange-script'}
         <script>
             $(window).on('load', function(){
                 var currentHref      = window.location.href,
@@ -88,12 +89,6 @@
                 }
             });
         </script>
-    {else}
-        {card class="box box-filter-price mb-7" id="sidebox{$oBox->getID()}" title="{lang key='rangeOfPrices'}"}
-            <hr class="mt-0 mb-4">
-            {block name='boxes-box-filter-pricerange-content'}
-                {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
-            {/block}
-        {/card}
+        {/block}
     {/if}
 {/block}

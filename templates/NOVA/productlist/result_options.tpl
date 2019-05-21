@@ -8,6 +8,7 @@
     || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
     || $NaviFilter->getFilterCount() > 0}
     <div id="result-options" class="{if !$show_filters} d-none d-sm-block{/if}">
+        {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
         {row}
             {block name='productlist-result-options-sort'}
                 {col cols=12 class="displayoptions form-inline d-flex justify-content-end order-0 order-md-1"}
@@ -48,6 +49,7 @@
                 {/col}
             {/block}
         {/row}
+        {/if}
         {if $NaviFilter->getFilterCount() > 0}
             {block name='productlist-result-options-active-filters'}
                 <div class="clearfix mt-2"></div>
@@ -82,6 +84,7 @@
                     {/if}
                 </div>
             {/block}
+            {$alertList->displayAlertByKey('noFilterResults')}
         {/if}
     </div>
 {/block}

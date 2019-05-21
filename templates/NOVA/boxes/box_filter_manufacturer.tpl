@@ -10,7 +10,9 @@
             class="text-decoration-none"
             role="button"
             data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}"]
-            }{lang key='manufacturers'}+{/button}
+            }
+                {lang key='manufacturers'} +
+            {/button}
         </div>
         {collapse class="box box-filter-manufacturer" id="sidebox{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
         {block name='boxes-box-filter-search-special-content'}
@@ -18,12 +20,5 @@
         {/block}
         {/collapse}
         <hr class="mt-0 mb-4">
-    {else}
-        {card class="box box-filter-manufacturer mb-7" id="sidebox{$oBox->getID()}" title="{lang key='manufacturers'}"}
-            <hr class="mt-0 mb-4">
-            {block name='boxes-box-filter-manufacturer-content'}
-                {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
-            {/block}
-        {/card}
     {/if}
 {/block}

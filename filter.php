@@ -58,7 +58,8 @@ if ($oSuchergebnisse->getProductCount() === 0) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_NOTE,
         Shop::Lang()->get('noFilterResults'),
-        'noFilterResults'
+        'noFilterResults',
+        ['showInAlertListTemplate' => false]
     );
 }
 if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergebnisse->getVisibleProductCount() === 1) {

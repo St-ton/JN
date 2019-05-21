@@ -1,5 +1,0 @@
-msgid "ExtensionViewer_title"
-msgstr "Erweiterungen"
-
-msgid "ExtensionViewer_desc"
-msgstr "Zeigt alle aktiven Erweiterungen"

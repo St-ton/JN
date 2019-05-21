@@ -1,5 +1,0 @@
-msgid "Clock_title"
-msgstr "Uhr"
-
-msgid "Clock_desc"
-msgstr "Aktuelle Uhrzeit + Datum"

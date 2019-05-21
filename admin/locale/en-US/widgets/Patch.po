@@ -1,5 +1,0 @@
-msgid "Patch_title"
-msgstr "Patches"
-
-msgid "Patch_desc"
-msgstr "Aktuelle JTL-Shop Patches"

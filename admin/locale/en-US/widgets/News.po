@@ -1,5 +1,0 @@
-msgid "News_title"
-msgstr "News"
-
-msgid "News_desc"
-msgstr "Aktuelle JTL-Shop News"

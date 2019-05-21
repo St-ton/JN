@@ -1,5 +1,0 @@
-msgid "VisitorsOnline_title"
-msgstr "Besucher (Online)"
-
-msgid "VisitorsOnline_desc"
-msgstr "Aktuelle Besucher im Shop"

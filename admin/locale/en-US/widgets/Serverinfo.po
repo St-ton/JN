@@ -1,5 +1,0 @@
-msgid "Serverinfo_title"
-msgstr "Server-Informationen"
-
-msgid "Serverinfo_desc"
-msgstr "Server-Informationen"

@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Visitors_title"
-msgstr "Besucher (aktueller Monat)"
+msgstr "Visitors (current month)"
 
 msgid "Visitors_desc"
-msgstr "Besucher-Chart für den aktuellen Monat"
+msgstr "Visitor chart for current month"

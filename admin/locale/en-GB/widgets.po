@@ -6,7 +6,7 @@ msgid "buyNow"
 msgstr "Buy now"
 
 msgid "loading"
-msgstr "Loading..."
+msgstr "Loading…"
 
 msgid "communityForum"
 msgstr "Community forum"

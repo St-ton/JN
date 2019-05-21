@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Serverinfo_title"
-msgstr "Server-Informationen"
+msgstr "Server information"
 
 msgid "Serverinfo_desc"
-msgstr "Informationen zum Server"
+msgstr "Information regarding the server"

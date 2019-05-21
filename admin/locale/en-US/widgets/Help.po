@@ -1,5 +1,0 @@
-msgid "Help_title"
-msgstr "Hilfe"
-
-msgid "Help_desc"
-msgstr "Aktuelle JTL-Shop Hilfethemen"

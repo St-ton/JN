@@ -6,4 +6,4 @@ msgid "News_title"
 msgstr "News"
 
 msgid "News_desc"
-msgstr "Aktuelle News zu JTL-Shop"
+msgstr "Recent news about JTL-Shop"

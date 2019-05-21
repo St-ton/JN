@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "VisitorsOnline_title"
-msgstr "Besucher (online)"
+msgstr "Visitors (online)"
 
 msgid "VisitorsOnline_desc"
-msgstr "Aktuelle Besucher im Shop"
+msgstr "Visitors currently online"

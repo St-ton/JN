@@ -75,11 +75,13 @@ if (isset($_POST['kUpload'])
     && Form::validateToken()
 ) {
     $file = new UploadDatei((int)$_POST['kUpload']);
-    UploadDatei::send_file_to_browser(
-        PFAD_UPLOADS . $file->cPfad,
-        'application/octet-stream',
-        $file->cName
-    );
+    if ($file->validateOwner((int)$_SESSION['Kunde']->kKunde)) {
+        UploadDatei::send_file_to_browser(
+            PFAD_UPLOADS . $file->cPfad,
+            'application/octet-stream',
+            $file->cName
+        );
+    }
 }
 
 unset($_SESSION['JTL_REDIRECT']);

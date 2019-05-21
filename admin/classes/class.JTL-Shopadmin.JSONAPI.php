@@ -234,18 +234,24 @@ class JSONAPI
      */
     private function validateColumnNames($table, $columns)
     {
-        $res  = Shop::DB()->queryPrepared(
-            'SELECT `column_name` 
-                FROM information_schema.columns 
-                WHERE `table_schema` = :sma
-                    AND `table_name` = :tn',
-            ['sma' => DB_NAME, 'tn' => $table],
-            2
-        );
-        $rows  = [];
-        foreach ($res as $item) {
-            $rows[] = $item->column_name;
-            $rows[] = $table . '.' . $item->column_name;
+        static $tableRows = null;
+        if (isset($tableRows[$table])) {
+            $rows = $tableRows[$table];
+        } else {
+            $res  = Shop::DB()->queryPrepared(
+                'SELECT `column_name` 
+                    FROM information_schema.columns 
+                    WHERE `table_schema` = :sma
+                        AND `table_name` = :tn',
+                ['sma' => DB_NAME, 'tn' => $table],
+                2
+            );
+            $rows = [];
+            foreach ($res as $item) {
+                $rows[] = $item->column_name;
+                $rows[] = $table . '.' . $item->column_name;
+            }
+            $tableRows[$table] = $rows;
         }
         foreach ($columns as $column) {
             if (!in_array($column, $rows, true)) {

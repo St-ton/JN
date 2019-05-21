@@ -136,7 +136,7 @@
                     {block name='layout-header-category-nav'}
 
                         {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-0"}
-                            {col id="logo" md="auto" order=2 order-md=1 class="pb-lg-4 col-auto mr-auto mr-xl-3"}
+                            {col id="logo" md="auto" order=2 order-md=1 class="col-auto mr-auto mr-xl-3"}
                                 {block name='layout-header-logo'}
                                     <div class="navbar-brand ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                         <span itemprop="name" class="d-none">{$meta_publisher}</span>
@@ -170,7 +170,7 @@
                             {col cols=12 col-md=auto order=5 order-xl=2 class="col-xl"}
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="navbarToggler" class="collapse navbar-collapse mt-2" data-parent="#evo-main-nav-wrapper">
+                                    <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#evo-main-nav-wrapper">
                                         {button id="scrollMenuLeft" class="d-none"}
                                             <i class="fas fa-chevron-left"></i>
                                         {/button}

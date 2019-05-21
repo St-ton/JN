@@ -526,7 +526,7 @@
                                                 type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
                                                 name="custom_{$kKundenfeld}"
                                                 id="custom_{$kKundenfeld}"
-                                                value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{else}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert|default:''}{/if}"
+                                                value="{if isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($step === 'rechnungsdaten' || $step === 'formular' || $step === 'edit_customer_address')}{$cKundenattribut_arr[$kKundenfeld]->cWert}{else}{$Kunde->cKundenattribut_arr[$kKundenfeld]->cWert|default:''}{/if}"
                                                 placeholder=$oKundenfeld->cName
                                                 required=(($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && !empty($cKundenattribut_arr[$kKundenfeld]->cWert)))
                                                 data-toggle="floatLabel"
@@ -541,7 +541,7 @@
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
                                                 {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
-                                                    <option value="{$oKundenfeldWert->cWert}" {if ($step === 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                                    <option value="{$oKundenfeldWert->cWert}" {if ($step === 'rechnungsdaten' || $step === 'formular' || $step === 'edit_customer_address') && isset($cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $cKundenattribut_arr[$kKundenfeld]->cWert)}selected{elseif isset($Kunde->cKundenattribut_arr[$kKundenfeld]->cWert) && ($oKundenfeldWert->cWert == $Kunde->cKundenattribut_arr[$kKundenfeld]->cWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
                                                 {/foreach}
                                             {/select}
                                         {/if}

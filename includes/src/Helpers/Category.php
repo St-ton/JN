@@ -781,45 +781,4 @@ class Category
 
         Shop::Smarty()->assign('cKategorielistenHTML_arr', $categories);
     }
-
-    /**
-     * @param int $categoryID
-     * @return float
-     */
-    public static function getMaxProductPrice(int $categoryID): float
-    {
-        $customerGroup = Frontend::getCustomerGroup()->getID();
-        $cacheID       = 'maxProductPrice' . $categoryID . $customerGroup;
-
-        if (($maximum = Shop::Container()->getCache()->get($cacheID)) !== false) {
-            return $maximum;
-        }
-        $productID = Shop::Container()->getDB()->queryPrepared(
-            'SELECT tpreis.kArtikel FROM tpreis
-                  LEFT JOIN tpreisdetail USING (kPreis)
-                  WHERE tpreisdetail.fVKNetto IN (
-                      SELECT MAX(tpreisdetail.fVKNetto)
-                          FROM tkategorieartikel
-                          LEFT JOIN tpreis USING(kArtikel)
-                          LEFT JOIN tpreisdetail USING(kPreis)
-                          WHERE tkategorieartikel.kKategorie = :categoryID
-                              AND tpreis.kKundengruppe = :customerGroup
-                  )
-                LIMIT 1',
-            [
-                'categoryID' => $categoryID,
-                'customerGroup' => $customerGroup
-            ],
-            ReturnType::SINGLE_OBJECT
-        );
-        $product   = (new Artikel())->fuelleArtikel(
-            $productID ? $productID->kArtikel : 0,
-            Artikel::getDefaultOptions(),
-            $customerGroup
-        );
-        $maximum   = ($product->kArtikel ?? 0) > 0 ? ceil($product->Preise->fVKBrutto + 1) : 0;
-        Shop::Container()->getCache()->set($cacheID, $maximum, [\CACHING_GROUP_OBJECT]);
-
-        return $maximum;
-    }
 }

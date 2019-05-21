@@ -22,7 +22,7 @@
                     {input id="price-range-to" class="price-range-input"}
                 {/inputgroup}
                 <div id="price-range-slider"></div>
-                <div id="amount">$0 - ${$maxProductPriceCategory}</div>
+                <div id="amount">$0 - ${$priceRangeMax}</div>
             {/collapse}
             <hr class="mt-0 mb-4">
         {/block}
@@ -32,7 +32,7 @@
                 var currentHref      = window.location.href,
                     priceRange       = (new URL(currentHref)).searchParams.get("pf"),
                     priceRangeMin    = 0,
-                    priceRangeMax    = {$maxProductPriceCategory},
+                    priceRangeMax    = {$priceRangeMax},
                     priceRangeMinMax = [priceRangeMin, priceRangeMax],
                     $priceRangeFrom  = $("#price-range-from"),
                     $priceRangeTo    = $("#price-range-to");

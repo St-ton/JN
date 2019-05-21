@@ -415,7 +415,7 @@ class PriceRange extends AbstractFilter
             $discount = ($discount = Frontend::getCustomerGroup()->getDiscount()) > 0
                 ? $discount
                 : 0.0;
-            $state    = (new StateSQL())->from($this->productFilter->getCurrentStateData());
+            $state    = (new StateSQL())->from($this->productFilter->getCurrentStateData(self::class));
             foreach ($this->getSQLJoin() as $join) {
                 $state->addJoin($join);
             }

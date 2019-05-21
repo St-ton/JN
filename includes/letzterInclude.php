@@ -116,7 +116,6 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $minify['plugin_css'])
        ->assign('oUnterKategorien_arr', Category::getSubcategoryList($AktuelleKategorie->kKategorie ?? -1))
-       ->assign('maxProductPriceCategory', Category::getMaxProductPrice($AktuelleKategorie->kKategorie ?? -1))
        ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
        ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])
        ->assign('cCSS_arr', $css)
@@ -215,9 +214,8 @@ Shop::Lang()->generateLanguageAndCurrencyLinks();
 $ep = new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
 $ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
-$boxes           = Shop::Container()->getBoxService();
-$boxesToShowList = $boxes->buildList($pagetType);
-$boxesToShow     = $boxes->render($boxesToShowList, $pagetType);
+$boxes       = Shop::Container()->getBoxService();
+$boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);
 /* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);

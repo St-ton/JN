@@ -165,7 +165,14 @@ AuswahlAssistent::startIfRequired(
 );
 $pagination = new JTL\Filter\Pagination\Pagination($NaviFilter, new JTL\Filter\Pagination\ItemFactory());
 $pagination->create($pages);
+
+$priceRanges = $NaviFilter->getPriceRangeFilter()->getOptions();
+if (($priceRangesCount = count($priceRanges)) > 0) {
+    $priceRangeMax = (int)explode(' ', $priceRanges[$priceRangesCount - 1]->getName())[3];
+}
+
 $smarty->assign('NaviFilter', $NaviFilter)
+       ->assign('priceRangeMax', $priceRangeMax ?? 0)
        ->assign('KategorieInhalt', $categoryContent)
        ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
        ->assign('oBestseller_arr', $bestsellers)

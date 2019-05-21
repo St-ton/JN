@@ -77,19 +77,25 @@
                     {
                         breakpoint: 576, // xs
                         settings: {
-                            slidesToShow: 1
+                            slidesToShow: 1,
+                            centerMode: true,
+                            centerPadding: '60px',
                         }
                     },
                     {
                         breakpoint: 768, // sm
                         settings: {
-                            slidesToShow: 2
+                            slidesToShow: 2,
+                            centerMode: true,
+                            centerPadding: '60px',
                         }
                     },
                     {
                         breakpoint: 992, // md
                         settings: {
-                            slidesToShow: 3
+                            slidesToShow: 3,
+                            centerMode: true,
+                            centerPadding: '60px',
                         }
                     }
                 ]

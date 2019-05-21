@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productlist-item-slider'}
-    <div class="product-cell text-center{if isset($class)} {$class}{/if} thumbnail mx-5">
+    <div class="product-cell text-center{if isset($class)} {$class}{/if} thumbnail mx-3">
         {block name='productlist-item-slider-link'}
             {link class="image-wrapper" href=$Artikel->cURLFull}
                 {if isset($Artikel->Bilder[0]->cAltAttribut)}

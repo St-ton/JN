@@ -281,9 +281,9 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     }
     $_POST = [];
 } elseif ($step === 'edit-link') {
-    $dirName = $uploadDir . $link->getID();
     $step    = 'neuer Link';
     $link    = (new Link($db))->load($linkID);
+    $dirName = $uploadDir . $link->getID();
     $files   = [];
     if (Request::verifyGPCDataInt('delpic') === 1) {
         @unlink($dirName . '/' . Request::verifyGPDataString('cName'));

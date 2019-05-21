@@ -609,14 +609,16 @@ class CheckBox
      */
     public static function gibCheckBoxAnzeigeOrte(): array
     {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/checkbox');
+
         return [
-            \CHECKBOX_ORT_REGISTRIERUNG        => 'Registrierung',
-            \CHECKBOX_ORT_BESTELLABSCHLUSS     => 'Bestellabschluss',
-            \CHECKBOX_ORT_NEWSLETTERANMELDUNG  => 'Newsletteranmeldung',
-            \CHECKBOX_ORT_KUNDENDATENEDITIEREN => 'Editieren von Kundendaten',
-            \CHECKBOX_ORT_KONTAKT              => 'Kontaktformular',
-            \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => 'Frage zum Produkt',
-            \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => 'Verf&uuml;gbarkeitsanfrage'
+            \CHECKBOX_ORT_REGISTRIERUNG        => __('checkboxPositionRegistration'),
+            \CHECKBOX_ORT_BESTELLABSCHLUSS     => __('checkboxPositionOrderFinal'),
+            \CHECKBOX_ORT_NEWSLETTERANMELDUNG  => __('checkboxPositionNewsletterRegistration'),
+            \CHECKBOX_ORT_KUNDENDATENEDITIEREN => __('checkboxPositionEditCustomerData'),
+            \CHECKBOX_ORT_KONTAKT              => __('checkboxPositionContactForm'),
+            \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => __('checkboxPositionProductQuestion'),
+            \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => __('checkboxPositionAvailabilityNotification')
         ];
     }
 

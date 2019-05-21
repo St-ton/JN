@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -32,7 +32,7 @@ class ProductDownloads extends NetSyncHandler
                 }
                 $basePath = $_POST['cBasePath'];
                 if (\is_dir($basePath)) {
-                    self::throwResponse(NetSyncResponse::OK, $this->getFilesStruct($basePath, $preview));
+                    self::throwResponse(NetSyncResponse::OK, $this->getFilesStruct($basePath));
                 } else {
                     self::throwResponse(NetSyncResponse::FOLDERNOTEXISTS);
                 }

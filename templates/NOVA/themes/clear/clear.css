@@ -14022,8 +14022,8 @@ table caption {
 .hr-sect::before, .hr-sect::after {
   content: "";
   flex-grow: 1;
-  background: #f5f7fa;
-  height: 1px;
+  background: #ebebeb;
+  height: 2px;
   font-size: 0px;
   line-height: 0px;
   margin: 0px 8px;
@@ -14345,10 +14345,63 @@ input.form-control[name=wishlist-url] {
   background: #fff;
   z-index: 1000;
 }
+.comparelist .table {
+  width: 98%;
+}
 .comparelist .table thead th {
   background: #fff;
   vertical-align: top;
   z-index: 999;
+}
+.comparelist .stretched {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.cfg-group .config-item {
+  padding: 0.75rem;
+  border: 2px solid #f8f8f8;
+  border-radius: 0.125rem;
+}
+.cfg-group .config-item .badge-circle {
+  display: none;
+}
+.cfg-group .config-item .nmbr-cfg-group {
+  display: none;
+}
+.cfg-group .cfg-swatch ~ .custom-control-label::before,
+.cfg-group .cfg-swatch ~ .custom-control-label::after {
+  display: none;
+}
+.cfg-group .cfg-swatch:disabled ~ .custom-control-label .config-item {
+  background: #f8f8f8;
+  color: #9b9b9b;
+}
+.cfg-group .custom-control {
+  margin-right: 0;
+  padding-left: 0;
+}
+.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item {
+  border-color: #F8BF00;
+}
+.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .badge-circle {
+  display: flex;
+  background-color: #F8BF00;
+  border-color: #F8BF00;
+  color: #fff;
+  opacity: 1;
+  align-items: center;
+  position: absolute;
+  top: -20px;
+  right: -22px;
+}
+.cfg-group .cfg-swatch:checked ~ .custom-control-label .config-item .nmbr-cfg-group {
+  display: flex;
+}
+.cfg-group .drpdwn_qnt {
+  display: none;
 }
 
 /* Artikel Bilder Slider vertikal */

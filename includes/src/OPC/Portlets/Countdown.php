@@ -41,9 +41,6 @@ class Countdown extends Portlet
                 'type'  => InputType::TIME,
                 'width' => 50,
             ],
-            'class'     => [
-                'label' => 'CSS Klasse',
-            ],
             'expired-text' => [
                 'label' => 'Text nach Ablauf',
                 'type'  => InputType::RICHTEXT,

@@ -21,7 +21,7 @@ class Row extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-columns"></i><br>Spalten';
+        return $this->getFontAwesomeButtonHtml('columns');
     }
 
     /**
@@ -31,25 +31,21 @@ class Row extends Portlet
     {
         return [
             'layout-xs' => [
-                'label'          => '<i class="fa fa-mobile"></i> Layout XS',
-                'default'        => '6+6',
-                'width'     => 25,
+                'label'   => '<i class="fa fa-mobile"></i> Layout XS',
+                'default' => '6+6',
+                'width'   => 25,
             ],
             'layout-sm' => [
                 'label' => '<i class="fa fa-tablet"></i> Layout S',
-                'width'     => 25,
+                'width' => 25,
             ],
             'layout-md' => [
                 'label' => '<i class="fa fa-laptop"></i> Layout M',
-                'width'     => 25,
+                'width' => 25,
             ],
             'layout-lg' => [
                 'label' => '<i class="fa fa-desktop"></i> Layout L',
-                'width'     => 25,
-            ],
-            'class'     => [
-                'label'      => 'CSS Klasse',
-                'dspl_width' => 50,
+                'width' => 25,
             ],
         ];
     }

@@ -6,6 +6,7 @@
 
 namespace JTL\Link;
 
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -13,7 +14,6 @@ use JTL\Helpers\Text;
 use JTL\Plugin\State;
 use JTL\Shop;
 use stdClass;
-use Illuminate\Support\Collection;
 
 /**
  * Class Link
@@ -109,6 +109,11 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
+    protected $reference = 0;
+
+    /**
+     * @var int
+     */
     protected $sort = 0;
 
     /**
@@ -192,13 +197,19 @@ final class Link extends AbstractLink
     protected $db;
 
     /**
+     * @var int
+     */
+    private $currentLanguageID = 1;
+
+    /**
      * Link constructor.
      * @param DbInterface $db
      */
     public function __construct(DbInterface $db)
     {
-        $this->db         = $db;
-        $this->childLinks = new Collection();
+        $this->db                = $db;
+        $this->childLinks        = new Collection();
+        $this->currentLanguageID = Shop::getLanguageID();
     }
 
     /**
@@ -208,18 +219,12 @@ final class Link extends AbstractLink
     {
         $this->id = $id;
         $link     = $this->db->queryPrepared(
-            "SELECT tlink.*, tlinksprache.cISOSprache, 
-                tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName, 
-                tlinksprache.cTitle AS localizedTitle, 
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tseo.kSprache AS languageID,
-                tseo.cSeo AS localizedUrl,
-                tplugin.nStatus AS pluginState,
-                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
+            "SELECT tlink.*, tlinksprache.cISOSprache, tlink.cName AS displayName,
+                tlinksprache.cName AS localizedName,  tlinksprache.cTitle AS localizedTitle,
+                tlinksprache.cContent AS content, tlinksprache.cMetaDescription AS metaDescription,
+                tlinksprache.cMetaKeywords AS metaKeywords, tlinksprache.cMetaTitle AS metaTitle,
+                tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,
+                tplugin.nStatus AS pluginState, GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups
             FROM tlink
                 JOIN tlinksprache
                     ON tlink.kLink = tlinksprache.kLink
@@ -235,7 +240,7 @@ final class Link extends AbstractLink
                     ON tplugin.kPlugin = tlink.kPlugin
                 WHERE tlink.kLink = :lid
                 GROUP BY tseo.kSprache",
-            ['lid' => $this->id],
+            ['lid' => $this->getRealID($id)],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($link) === 0) {
@@ -243,6 +248,23 @@ final class Link extends AbstractLink
         }
 
         return $this->map($link);
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    private function getRealID(int $id): int
+    {
+        $reference = $this->db->queryPrepared(
+            'SELECT `reference` FROM `tlink` WHERE kLink = :lid',
+            ['lid' => $id],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        return (int)$reference->reference > 0
+            ? (int)$reference->reference
+            : $id;
     }
 
     /**
@@ -290,6 +312,7 @@ final class Link extends AbstractLink
             $this->setVisibleLoggedInOnly($link->cSichtbarNachLogin === 'Y');
             $this->setPrintButton($link->cDruckButton === 'Y');
             $this->setSort($link->nSort);
+            $this->setReference($link->reference);
             $this->setSSL((bool)$link->bSSL);
             $this->setIsFluid((bool)$link->bIsFluid);
             $this->setIsEnabled((bool)$link->bIsActive);
@@ -325,24 +348,19 @@ final class Link extends AbstractLink
      */
     private function sanitizeLinkData(stdClass $link): stdClass
     {
-        $link->languageID = (int)$link->languageID;
-        $link->kVaterLink = (int)$link->kVaterLink;
-        $link->kPlugin    = (int)$link->kPlugin;
-        $link->bSSL       = (int)$link->bSSL;
-        $link->nLinkart   = (int)$link->nLinkart;
-        $link->nSort      = (int)$link->nSort;
-        $link->enabled    = $link->pluginState === null || (int)$link->pluginState === State::ACTIVATED;
+        $link->languageID  = (int)$link->languageID;
+        $link->kVaterLink  = (int)$link->kVaterLink;
+        $link->kPlugin     = (int)$link->kPlugin;
+        $link->bSSL        = (int)$link->bSSL;
+        $link->nLinkart    = (int)$link->nLinkart;
+        $link->nSort       = (int)$link->nSort;
+        $link->enabled     = $link->pluginState === null || (int)$link->pluginState === State::ACTIVATED;
+        $link->cISOSprache = $link->cISOSprache ?? Shop::getLanguageCode();
         if ($link->languageID === 0) {
-            $link->languageID = Shop::getLanguageID();
-        }
-        if ($link->languageID === 0) {
-            $link->languageID = Shop::getLanguageID();
+            $link->languageID = $this->currentLanguageID;
         }
         if ($link->bSSL === 2) {
             $link->bSSL = 1;
-        }
-        if (!isset($link->cISOSprache)) {
-            $link->cISOSprache = Shop::getLanguageCode();
         }
 
         return $link;
@@ -462,9 +480,7 @@ final class Link extends AbstractLink
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->names[$idx] ?? '';
+        return $this->names[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -480,7 +496,7 @@ final class Link extends AbstractLink
      */
     public function setName(string $name, int $idx = null): void
     {
-        $this->names[$idx ?? Shop::getLanguageID()] = $name;
+        $this->names[$idx ?? $this->currentLanguageID] = $name;
     }
 
     /**
@@ -504,9 +520,7 @@ final class Link extends AbstractLink
      */
     public function getSEO(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->seo[$idx] ?? '';
+        return $this->seo[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -522,7 +536,7 @@ final class Link extends AbstractLink
      */
     public function setSEO(string $url, int $idx = null): void
     {
-        $this->seo[$idx ?? Shop::getLanguageID()] = $url;
+        $this->seo[$idx ?? $this->currentLanguageID] = $url;
     }
 
     /**
@@ -530,9 +544,7 @@ final class Link extends AbstractLink
      */
     public function getURL(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->urls[$idx] ?? '/?s=' . $this->getID();
+        return $this->urls[$idx ?? $this->currentLanguageID] ?? '/?s=' . $this->getID();
     }
 
     /**
@@ -548,7 +560,7 @@ final class Link extends AbstractLink
      */
     public function setURL(string $url, int $idx = null): void
     {
-        $this->urls[$idx ?? Shop::getLanguageID()] = $url;
+        $this->urls[$idx ?? $this->currentLanguageID] = $url;
     }
 
     /**
@@ -564,9 +576,7 @@ final class Link extends AbstractLink
      */
     public function getTitle(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->titles[$idx] ?? '';
+        return $this->titles[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -582,7 +592,7 @@ final class Link extends AbstractLink
      */
     public function setTitle(string $title, int $idx = null): void
     {
-        $this->titles[$idx ?? Shop::getLanguageID()] = $title;
+        $this->titles[$idx ?? $this->currentLanguageID] = $title;
     }
 
     /**
@@ -614,9 +624,7 @@ final class Link extends AbstractLink
      */
     public function getLanguageCode(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->languageCodes[$idx] ?? '';
+        return $this->languageCodes[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -632,7 +640,7 @@ final class Link extends AbstractLink
      */
     public function setLanguageCode(string $languageCode, int $idx = null): void
     {
-        $this->languageCodes[$idx ?? Shop::getLanguageID()] = $languageCode;
+        $this->languageCodes[$idx ?? $this->currentLanguageID] = $languageCode;
     }
 
     /**
@@ -641,6 +649,22 @@ final class Link extends AbstractLink
     public function setLanguageCodes(array $languageCodes): void
     {
         $this->languageCodes = $languageCodes;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getReference(): int
+    {
+        return $this->reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setReference(int $reference): void
+    {
+        $this->reference = $reference;
     }
 
     /**
@@ -768,9 +792,7 @@ final class Link extends AbstractLink
      */
     public function getLanguageID(int $idx = null): int
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->languageIDs[$idx] ?? 0;
+        return $this->languageIDs[$idx ?? $this->currentLanguageID] ?? 0;
     }
 
     /**
@@ -778,7 +800,7 @@ final class Link extends AbstractLink
      */
     public function setLanguageID(int $languageID, int $idx = null): void
     {
-        $this->languageIDs[$idx ?? Shop::getLanguageID()] = $languageID;
+        $this->languageIDs[$idx ?? $this->currentLanguageID] = $languageID;
     }
 
     /**
@@ -874,10 +896,7 @@ final class Link extends AbstractLink
      */
     public function setChildLinks($links): void
     {
-        if (\is_array($links)) {
-            $links = \collect($links);
-        }
-        $this->childLinks = $links;
+        $this->childLinks = \is_array($links) ? \collect($links) : $links;
     }
 
     /**
@@ -917,9 +936,7 @@ final class Link extends AbstractLink
      */
     public function getContent(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->contents[$idx] ?? '';
+        return $this->contents[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -927,7 +944,7 @@ final class Link extends AbstractLink
      */
     public function setContent(string $content, int $idx = null): void
     {
-        $this->contents[$idx ?? Shop::getLanguageID()] = $content;
+        $this->contents[$idx ?? $this->currentLanguageID] = $content;
     }
 
     /**
@@ -951,9 +968,7 @@ final class Link extends AbstractLink
      */
     public function getMetaTitle(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->metaTitles[$idx] ?? '';
+        return $this->metaTitles[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -961,7 +976,7 @@ final class Link extends AbstractLink
      */
     public function setMetaTitle(string $metaTitle, int $idx = null): void
     {
-        $this->metaTitles[$idx ?? Shop::getLanguageID()] = $metaTitle;
+        $this->metaTitles[$idx ?? $this->currentLanguageID] = $metaTitle;
     }
 
     /**
@@ -977,9 +992,7 @@ final class Link extends AbstractLink
      */
     public function getMetaKeyword(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->metaKeywords[$idx] ?? '';
+        return $this->metaKeywords[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -995,7 +1008,7 @@ final class Link extends AbstractLink
      */
     public function setMetaKeyword(string $metaKeyword, int $idx = null): void
     {
-        $this->metaKeywords[$idx ?? Shop::getLanguageID()] = $metaKeyword;
+        $this->metaKeywords[$idx ?? $this->currentLanguageID] = $metaKeyword;
     }
 
     /**
@@ -1011,9 +1024,7 @@ final class Link extends AbstractLink
      */
     public function getMetaDescription(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->metaDescriptions[$idx] ?? '';
+        return $this->metaDescriptions[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -1029,7 +1040,7 @@ final class Link extends AbstractLink
      */
     public function setMetaDescription(string $metaDescription, int $idx = null): void
     {
-        $this->metaDescriptions[$idx ?? Shop::getLanguageID()] = $metaDescription;
+        $this->metaDescriptions[$idx ?? $this->currentLanguageID] = $metaDescription;
     }
 
     /**
@@ -1093,19 +1104,36 @@ final class Link extends AbstractLink
      */
     public function buildChildLinks(): array
     {
-        if ($this->getID() > 0) {
-            $links = [];
-            $ids   = $this->db->selectAll('tlink', 'kVaterLink', $this->getID(), 'kLink');
-            foreach ($ids as $id) {
-                $link = new self($this->db);
-                $link->load((int)$id->kLink);
-                $links[] = $link;
-            }
-
-            return $links;
+        $links = [];
+        foreach ($this->db->selectAll('tlink', 'kVaterLink', $this->getID(), 'kLink') as $id) {
+            $links[] = (new self($this->db))->load((int)$id->kLink);
         }
 
-        return [];
+        return $links;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasDuplicateSpecialLink(): bool
+    {
+        $group = Shop::Container()->getLinkService()->getAllLinkGroups()->getLinkgroupByTemplate('specialpages');
+        if ($group === null) {
+            return false;
+        }
+        $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link) {
+            return ($link->getPluginID() === 0
+                && $link->getLinkType() === $this->getLinkType()
+                && $link->getID() !== $this->getID()
+                && (empty($this->getCustomerGroups())
+                    || \in_array(-1, $this->getCustomerGroups(), true)
+                    || empty($link->getCustomerGroups())
+                    || \array_intersect($link->getCustomerGroups(), $this->getCustomerGroups())
+                )
+            );
+        });
+
+        return $duplicateLinks->isNotEmpty();
     }
 
     /**

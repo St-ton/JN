@@ -40,8 +40,9 @@ class Migration_20180919103846 extends Migration implements IMigration
                 PRIMARY KEY kAnonDatenHistory(kAnonDatenHistory),
                 KEY kIssuer(iIssuerId)
             )
-            ENGINE=InnoDB
-            DEFAULT CHARSET=utf8
+            ENGINE = InnoDB
+            DEFAULT CHARSET = utf8
+            COLLATE = utf8_unicode_ci
         ");
     }
 

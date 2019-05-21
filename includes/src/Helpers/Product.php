@@ -20,6 +20,8 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Konfiggruppe;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigurator;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinRefData;
 use JTL\Kampagne;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -30,6 +32,7 @@ use JTL\Smarty\JTLSmarty;
 use JTL\Sprache;
 use stdClass;
 use function Functional\group;
+use JTL\Optin\OptinAvailAgain;
 
 /**
  * Class Product
@@ -1275,48 +1278,22 @@ class Product
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
             if (!self::checkAvailibityFormFloodProtection($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
-                $inquiry            = self::getAvailabilityFormDefaults();
-                $inquiry->kSprache  = Shop::getLanguage();
-                $inquiry->kArtikel  = (int)$_POST['a'];
-                $inquiry->cIP       = Request::getRealIP();
-                $inquiry->dErstellt = 'NOW()';
-                $inquiry->nStatus   = 0;
-                $checkBox           = new CheckBox();
-                $customerGroupID    = Frontend::getCustomerGroup()->getID();
-                if (empty($inquiry->cNachname)) {
-                    $inquiry->cNachname = '';
+                $dbHandler = Shop::Container()->getDB();
+                $refData   = (new OptinRefData())
+                    ->setSalutation('')
+                    ->setFirstName('')
+                    ->setLastName('')
+                    ->setProductId((int)$_POST['a'])
+                    ->setEmail(Text::filterXSS($dbHandler->escape(strip_tags($_POST['email']))) ?: '')
+                    ->setLanguageID(Shop::getLanguage())
+                    ->setRealIP(Request::getRealIP());
+                try {
+                    (new Optin(OptinAvailAgain::class))
+                        ->getOptinInstance()
+                        ->createOptin($refData)
+                        ->sendActivationMail();
+                } catch (\Exception $e) {
                 }
-                if (empty($inquiry->cVorname)) {
-                    $inquiry->cVorname = '';
-                }
-                \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $inquiry]);
-                $checkBox->triggerSpecialFunction(
-                    \CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT,
-                    $customerGroupID,
-                    true,
-                    $_POST,
-                    ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
-                )->checkLogging(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true);
-
-                $inquiryID = Shop::Container()->getDB()->queryPrepared(
-                    'INSERT INTO tverfuegbarkeitsbenachrichtigung
-                        (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
-                        VALUES
-                        (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, NOW(), :nStatus)
-                        ON DUPLICATE KEY UPDATE
-                            cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache,
-                            cIP = :cIP, dErstellt = NOW(), nStatus = :nStatus',
-                    \get_object_vars($inquiry),
-                    ReturnType::LAST_INSERTED_ID
-                );
-                if (isset($_SESSION['Kampagnenbesucher'])) {
-                    Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
-                }
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    Shop::Lang()->get('thankYouForNotificationSubscription', 'messages'),
-                    'thankYouForNotificationSubscription'
-                );
             } else {
                 $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');
             }
@@ -1468,7 +1445,7 @@ class Product
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $prev        = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
-                    FROM tkategorieartikel, tpreise, tartikel
+                    FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
@@ -1476,16 +1453,14 @@ class Product
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
-                        AND tpreise.kArtikel = tartikel.kArtikel
-                        AND tartikel.kArtikel < ' . $productID . '
-                        AND tpreise.kKundengruppe = ' . $customerGroupID . ' ' . $stockFilter . '
+                        AND tartikel.kArtikel < ' . $productID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel DESC
                     LIMIT 1',
                 ReturnType::SINGLE_OBJECT
             );
             $next        = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
-                    FROM tkategorieartikel, tpreise, tartikel
+                    FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
@@ -1493,9 +1468,7 @@ class Product
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
-                        AND tpreise.kArtikel = tartikel.kArtikel
-                        AND tartikel.kArtikel > ' . $productID . '
-                        AND tpreise.kKundengruppe = ' . $customerGroupID . ' ' . $stockFilter . '
+                        AND tartikel.kArtikel > ' . $productID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel
                     LIMIT 1',
                 ReturnType::SINGLE_OBJECT
@@ -2142,6 +2115,7 @@ class Product
      * @param array     $configGroups
      * @param array     $configGroupAmounts
      * @param array     $configItemAmounts
+     * @param bool      $singleProductOutput
      * @return stdClass|null
      * @since 5.0.0
      */
@@ -2151,7 +2125,8 @@ class Product
         $variations,
         $configGroups,
         $configGroupAmounts,
-        $configItemAmounts
+        $configItemAmounts,
+        $singleProductOutput = false
     ): ?stdClass {
         $config                  = new stdClass;
         $config->fAnzahl         = $amount;
@@ -2192,14 +2167,16 @@ class Product
             $amount = (int)$amount;
         }
 
+        $_amount              = $singleProductOutput ? 1 : $amount;
         $config->fGesamtpreis = [
             Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
                 Tax::getSalesTax($product->kSteuerklasse)
-            ) * $amount,
-            $product->gibPreis($amount, $selectedProperties) * $amount
+            ) * $_amount,
+            $product->gibPreis($amount, $selectedProperties) * $_amount
         ];
-        $config->oKonfig_arr  = $product->oKonfig_arr;
+
+        $config->oKonfig_arr = $product->oKonfig_arr;
 
         foreach ($configGroups as $i => $data) {
             $configGroups[$i] = (array)$data;
@@ -2225,7 +2202,7 @@ class Product
                     $configItem->fAnzahl = 1;
                 }
                 $configItem->fAnzahlWK = $configItem->fAnzahl;
-                if (!$configItem->ignoreMultiplier()) {
+                if (!$configItem->ignoreMultiplier() && !$singleProductOutput) {
                     $configItem->fAnzahlWK *= $amount;
                 }
                 $configItem->bAktiv = \in_array($configItemID, $configItems);

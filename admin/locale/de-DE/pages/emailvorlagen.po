@@ -18,7 +18,7 @@ msgid "testmailsGoToEmail"
 msgstr "Test-E-Mails werden an folgende Adresse gesendet: "
 
 msgid "noMasterEmailSpecified"
-msgstr "Keine Master-E-Mail-Adresse hinterlegt Bitte tragen Sie eine Master-Absender E-Mailadresse unter Inhalte &gt; E-Mails &gt; Einstellungen ein."
+msgstr "Keine Master-E-Mail-Adresse hinterlegt. Bitte tragen Sie eine Master-E-Mail-Adresse für den Absender unter Inhalte &gt; E-Mails &gt; Einstellungen ein."
 
 msgid "emailTemplateModifyHint"
 msgstr "Hier bearbeiten Sie den Inhalt einer E-Mail-Vorlage in jeder in JTL-Shop gepflegten Sprache. Sie können außerdem festlegen, von welcher Adresse aus die E-Mail versendet werden soll, und ob bestimmte Anhänge standardmäßig mitgesendet werden sollen."
@@ -81,13 +81,13 @@ msgid "errorEmailSend"
 msgstr "E-Mail konnte nicht versendet werden."
 
 msgid "errorFileName"
-msgstr "Fehler: Ihr Dateiname %s enthält unzulässige Zeichen (Erlaubt sind A-Z, a-z, 0-9, _ und -)."
+msgstr "Ihr Dateiname %s enthält unzulässige Zeichen (Erlaubt sind A–Z, a–z, 0–9, _ und -)."
 
 msgid "errorFileSave"
-msgstr "Fehler: Die Dateien konnten nicht geschrieben werden. Prüfen Sie bitte, ob für das PDF-Verzeichnis Schreibrechte gesetzt sind."
+msgstr "Die Dateien konnten nicht geschrieben werden. Prüfen Sie bitte, ob für das PDF-Verzeichnis Schreibrechte gesetzt sind."
 
 msgid "errorFileNameMissing"
-msgstr "Fehler: Bitte geben Sie zu jeder Datei auch einen Dateinamen (Wunschnamen) ein."
+msgstr "Bitte geben Sie zu jeder Datei auch einen Dateinamen ein."
 
 msgid "errorFileSizeType"
 msgstr "Fehler: Die Datei muss ein PDF sein und darf maximal 2MB groß sein."
@@ -102,13 +102,13 @@ msgid "successFileAppendixDelete"
 msgstr "Die Dateianhänge für die gewählte Sprache wurden erfolgreich gelöscht."
 
 msgid "multipleDividedColon"
-msgstr "(mehrere durch Semikolon getrennt)"
+msgstr "(mehrere Empfänger durch Semikolon trennen)"
 
 msgid "resetEmailTemplate"
 msgstr "Die E-Mail-Vorlage wird zurückgesetzt."
 
 msgid "sureResetEmailTemplate"
-msgstr "Möchten Sie die E-Mail-Vorlage \"<b>%s</b>\" wirklich zurücksetzen?"
+msgstr "Möchten Sie die E-Mail-Vorlage „<b>%s</b>“ wirklich zurücksetzen?"
 
 msgid "pluginTemplates"
 msgstr "Plugin-Vorlagen"

@@ -44,7 +44,7 @@
             <p><input type="text" readonly="readonly" value="{$URL}" class="form-control" /></p>
 
             <div class="alert alert-info">
-                <p>{__('searchEngines')}</p>
+                <p>{__('searchEnginesHint')}</p>
                 <p>{__('download')} <a href="{$URL}">{__('xml')}</a></p>
             </div>
 

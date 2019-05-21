@@ -55,7 +55,7 @@ class MailTemplates
                 $localized->cContentHtml                 = $item->cContentHtml;
                 $localized->cContentText                 = $item->cContentText;
                 $localized->cPDFS                        = $item->cPDFS;
-                $localized->cDateiname                   = $item->cDateiname;
+                $localized->cPDFNames                    = $item->cPDFNames;
                 $first->oPluginEmailvorlageSprache_arr[] = $localized;
             }
             $templates[] = $first;

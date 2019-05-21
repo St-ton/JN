@@ -336,8 +336,9 @@ class IOMethods
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
-                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
+                                      ->fetch('layout/header_shop_nav_compare.tpl');
+
         $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
@@ -384,12 +385,13 @@ class IOMethods
         $_GET['vlplo']           = $kArtikel;
 
         Frontend::getInstance()->setStandardSessionVars();
-        $response->nType       = 2;
-        $response->nCount      = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
+        $response->nType     = 2;
+        $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
             \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
-        $response->cTitle      = Shop::Lang()->get('compare');
-        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
-                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cTitle    = Shop::Lang()->get('compare');
+        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
+                                      ->fetch('layout/header_shop_nav_compare.tpl');
+
         $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
@@ -672,11 +674,20 @@ class IOMethods
             $variationValues,
             $items,
             $quantities,
-            $itemQuantities
+            $itemQuantities,
+            true
         );
         $net             = Frontend::getCustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID);
-        $Artikel->Preise->cVKLocalized[$net] = Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount);
+        $fVKNetto                      = $Artikel->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
+        $fVK                           = [
+            Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$Artikel->kSteuerklasse]),
+            $fVKNetto
+        ];
+        $Artikel->Preise->cVKLocalized = [
+            0 => Preise::getLocalizedPriceString($fVK[0]),
+            1 => Preise::getLocalizedPriceString($fVK[1])
+        ];
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)

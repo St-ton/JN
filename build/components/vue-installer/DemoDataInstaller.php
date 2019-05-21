@@ -398,7 +398,7 @@ class DemoDataInstaller
         $this->pdo->query(
             'TRUNCATE TABLE tkategorie; TRUNCATE TABLE tartikel; TRUNCATE TABLE tartikelpict; ' .
             'TRUNCATE TABLE tkategorieartikel; TRUNCATE TABLE tbewertung; TRUNCATE TABLE tartikelext; ' .
-            'TRUNCATE TABLE tkategoriepict; TRUNCATE TABLE thersteller; TRUNCATE TABLE tpreise; ' .
+            'TRUNCATE TABLE tkategoriepict; TRUNCATE TABLE thersteller; ' .
             'TRUNCATE TABLE tpreis; TRUNCATE TABLE tpreisdetail; TRUNCATE TABLE teinheit; TRUNCATE TABLE tkunde;',
             ReturnType::DEFAULT
         );
@@ -738,16 +738,6 @@ class DemoDataInstaller
                 $_seoEntry->cSeo     .= '-en';
                 $_seoEntry->kSprache = 2;
                 $this->pdo->insert('tseo', $_seoEntry);
-
-                $_price                = new \stdClass();
-                $_price->kKundengruppe = 1;
-                $_price->kArtikel      = $_article->kArtikel;
-                $_price->fVKNetto      = $_articlePrice / 19.00;
-                $this->pdo->insert('tpreise', $_price);
-
-                $_price->kKundengruppe = 2;
-                $_price->fVKNetto      = (rand(0, 1) === 0) ? $_price->fVKNetto : ($_price->fVKNetto * 0.9);
-                $this->pdo->insert('tpreise', $_price);
 
                 $_price2                = new \stdClass();
                 $_price2->kArtikel      = $_article->kArtikel;

@@ -28,6 +28,11 @@ final class Images extends AbstractSync
     private $brandingConfig;
 
     /**
+     * @var string
+     */
+    private $unzipPath;
+
+    /**
      * @param Starter $starter
      * @return mixed|null
      */
@@ -232,8 +237,8 @@ final class Images extends AbstractSync
         $categoryImages     = $this->mapper->mapArray($xml['bilder'], 'tkategoriepict', 'mKategoriePict');
         $propertyImages     = $this->mapper->mapArray($xml['bilder'], 'teigenschaftwertpict', 'mEigenschaftWertPict');
         $manufacturerImages = $this->mapper->mapArray($xml['bilder'], 'therstellerbild', 'mEigenschaftWertPict');
-        $attrValImages      = $this->mapper->mapArray($xml['bilder'], 'tmerkmalwertbild', 'mEigenschaftWertPict');
         $attributeImages    = $this->mapper->mapArray($xml['bilder'], 'tMerkmalbild', 'mEigenschaftWertPict');
+        $attrValImages      = $this->mapper->mapArray($xml['bilder'], 'tmerkmalwertbild', 'mEigenschaftWertPict');
         $configImages       = $this->mapper->mapArray($xml['bilder'], 'tkonfiggruppebild', 'mKonfiggruppePict');
 
         \executeHook(\HOOK_BILDER_XML_BEARBEITE, [
@@ -246,150 +251,192 @@ final class Images extends AbstractSync
             'Merkmal'          => &$attributeImages,
             'Konfiggruppe'     => &$configImages
         ]);
-        foreach ($productImages as $image) {
-            if (\strlen($image->cPfad) <= 0) {
-                continue;
-            }
-            $image->nNr  = (int)$image->nNr;
-            $imgFilename = $image->cPfad;
-            $format      = $this->getExtension($unzipPath . $imgFilename);
-            if (!$format) {
-                $this->logger->error(
-                    'Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            // first delete by kArtikelPict
-            $this->deleteArtikelPict($image->kArtikelPict, 0);
-            // then delete by kArtikel + nNr since Wawi > .99923 has changed all kArtikelPict keys
-            if (isset($image->nNr) && $image->nNr > 0) {
-                $this->deleteArtikelPict($image->kArtikel, $image->nNr);
-            }
-            if ($image->kMainArtikelBild > 0) {
-                $main = $this->db->select(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$image->kMainArtikelBild
-                );
-                if (!empty($main->cPfad)) {
-                    $image->cPfad = $this->getNewFilename($main->cPfad);
-                    $this->upsert('tartikelpict', [$image], 'kArtikel', 'kArtikelpict');
-                } else {
-                    $this->createProductImage($image, $format, $unzipPath, $imgFilename, $sql);
-                }
-            } else {
-                $productImage = $this->db->select(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$image->kArtikelPict
-                );
-                // update all references, if img is used by other products
-                if (!empty($productImage->cPfad)) {
-                    $this->db->update(
-                        'tartikelpict',
-                        'kMainArtikelBild',
-                        (int)$productImage->kArtikelPict,
-                        (object)['cPfad' => $productImage->cPfad]
-                    );
-                }
-                $this->createProductImage($image, $format, $unzipPath, $imgFilename, $sql);
-            }
-        }
-        if (\count($productImages) > 0) {
-            $handle = \opendir($unzipPath);
-            while (($file = \readdir($handle)) !== false) {
-                if ($file === '.' || $file === '..' || $file === 'bilder_a.xml') {
-                    continue;
-                }
-                if (\file_exists($unzipPath . $file) && !\unlink($unzipPath . $file)) {
-                    $this->logger->error('Artikelbild konnte nicht geloescht werden: ' . $file);
-                }
-            }
-            \closedir($handle);
-        }
-        foreach ($categoryImages as $categoryImage) {
-            if (empty($categoryImage->cPfad)) {
-                continue;
-            }
-            $imgFilename = $categoryImage->cPfad;
-            $format      = $this->getExtension($unzipPath . $imgFilename);
-            if (!$format) {
-                $this->logger->error(
-                    'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
+        $this->unzipPath = $unzipPath;
 
-            $categoryImage->cPfad = $this->getCategoryImageName($categoryImage, $format, $sql);
-            $categoryImage->cPfad = $this->getNewFilename($categoryImage->cPfad);
+        $this->handleProductImages($productImages, $sql);
+        $this->handleCategoryImages($categoryImages, $sql);
+        $this->handlePropertyImages($propertyImages, $sql);
+        $this->handleManufacturerImages($propertyImages);
+        $this->handleAttributeImages($attributeImages);
+        $this->handleAttributeValueImages($attrValImages);
+        $this->handleConfigImages($configImages);
+
+        \executeHook(\HOOK_BILDER_XML_BEARBEITE_ENDE, [
+            'Artikel'          => &$productImages,
+            'Kategorie'        => &$categoryImages,
+            'Eigenschaftswert' => &$propertyImages,
+            'Hersteller'       => &$manufacturerImages,
+            'Merkmalwert'      => &$attrValImages,
+            'Merkmal'          => &$attributeImages,
+            'Konfiggruppe'     => &$configImages
+        ]);
+    }
+
+    /**
+     * @param array $configImages
+     */
+    private function handleConfigImages(array $configImages): void
+    {
+        foreach ($configImages as $configImage) {
+            $item                = new stdClass();
+            $item->cBildPfad     = $configImage->cPfad;
+            $item->kKonfiggruppe = $configImage->kKonfiggruppe;
+            if (empty($item->cBildPfad)) {
+                continue;
+            }
+            $imgFilename = $item->cBildPfad;
+            $format      = $this->getExtension($this->unzipPath . $imgFilename);
+            if (!$format) {
+                $this->logger->error(
+                    'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
+                continue;
+            }
+            $item->cBildPfad = $item->kKonfiggruppe . '.' . $format;
+            $item->cBildPfad = $this->getNewFilename($item->cBildPfad);
+
+            $branding                               = new stdClass();
+            $branding->oBrandingEinstellung         = new stdClass();
+            $branding->oBrandingEinstellung->nAktiv = 0;
+
             if ($this->createThumbnail(
-                $this->brandingConfig['Kategorie'],
-                $unzipPath . $imgFilename,
-                \PFAD_KATEGORIEBILDER . $categoryImage->cPfad,
-                $this->config['bilder']['bilder_kategorien_breite'],
-                $this->config['bilder']['bilder_kategorien_hoehe'],
+                $branding,
+                $this->unzipPath . $imgFilename,
+                \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
+                $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
+                $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
                 1,
                 $this->config['bilder']['container_verwenden']
             )) {
-                $this->upsert('tkategoriepict', [$categoryImage], 'kKategorie');
+                $this->db->update(
+                    'tkonfiggruppe',
+                    'kKonfiggruppe',
+                    (int)$item->kKonfiggruppe,
+                    (object)['cBildPfad' => $item->cBildPfad]
+                );
             }
-            \unlink($unzipPath . $imgFilename);
+            \unlink($this->unzipPath . $imgFilename);
         }
-        foreach ($propertyImages as $propertyImage) {
-            if (empty($propertyImage->cPfad)) {
+    }
+
+    /**
+     * @param array $attrValImages
+     */
+    private function handleAttributeValueImages(array $attrValImages): void
+    {
+        foreach ($attrValImages as $attrValImage) {
+            $attrValImage->kMerkmalWert = (int)$attrValImage->kMerkmalWert;
+            if (empty($attrValImage->cPfad) || $attrValImage->kMerkmalWert <= 0) {
                 continue;
             }
-            $imgFilename = $propertyImage->cPfad;
-            $format      = $this->getExtension($unzipPath . $imgFilename);
+            $imgFilename = $attrValImage->cPfad;
+            $format      = $this->getExtension($this->unzipPath . $imgFilename);
             if (!$format) {
                 $this->logger->error(
-                    'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
+                    'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
                     $imgFilename . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $propertyImage->cPfad = $this->getAttributeImageName($propertyImage, $format, $sql);
-            $propertyImage->cPfad = $this->getNewFilename($propertyImage->cPfad);
+            $attrValImage->cPfad .= '.' . $format;
+            $attrValImage->cPfad  = $this->getNewFilename($attrValImage->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Variationen'],
-                $unzipPath . $imgFilename,
-                \PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
-                $this->config['bilder']['bilder_variationen_gross_breite'],
-                $this->config['bilder']['bilder_variationen_gross_hoehe'],
+                $this->brandingConfig['Merkmalwerte'],
+                $this->unzipPath . $imgFilename,
+                \PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
+                $this->config['bilder']['bilder_merkmalwert_normal_breite'],
+                $this->config['bilder']['bilder_merkmalwert_normal_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
                 1,
-                $this->config['bilder']['container_verwenden']
-            );
-            $this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
-                \PFAD_VARIATIONSBILDER_NORMAL . $propertyImage->cPfad,
-                $this->config['bilder']['bilder_variationen_breite'],
-                $this->config['bilder']['bilder_variationen_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
                 $this->config['bilder']['container_verwenden']
             );
             if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
-                \PFAD_VARIATIONSBILDER_MINI . $propertyImage->cPfad,
-                $this->config['bilder']['bilder_variationen_mini_breite'],
-                $this->config['bilder']['bilder_variationen_mini_hoehe'],
+                \PFAD_ROOT . \PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
+                \PFAD_MERKMALWERTBILDER_KLEIN . $attrValImage->cPfad,
+                $this->config['bilder']['bilder_merkmalwert_klein_breite'],
+                $this->config['bilder']['bilder_merkmalwert_klein_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
                 $this->config['bilder']['container_verwenden']
             )) {
-                $this->upsert('teigenschaftwertpict', [$propertyImage], 'kEigenschaftWert');
+                $this->db->update(
+                    'tmerkmalwert',
+                    'kMerkmalWert',
+                    (int)$attrValImage->kMerkmalWert,
+                    (object)['cBildpfad' => $attrValImage->cPfad]
+                );
+                $oMerkmalwertbild               = new stdClass();
+                $oMerkmalwertbild->kMerkmalWert = (int)$attrValImage->kMerkmalWert;
+                $oMerkmalwertbild->cBildpfad    = $attrValImage->cPfad;
+
+                $this->upsert('tmerkmalwertbild', [$oMerkmalwertbild], 'kMerkmalWert');
             }
-            \unlink($unzipPath . $imgFilename);
+            \unlink($this->unzipPath . $imgFilename);
         }
+    }
+
+    /**
+     * @param array $attributeImages
+     */
+    private function handleAttributeImages(array $attributeImages): void
+    {
+        foreach ($attributeImages as $attributeImage) {
+            $attributeImage->kMerkmal = (int)$attributeImage->kMerkmal;
+            if (empty($attributeImage->cPfad) || $attributeImage->kMerkmal <= 0) {
+                continue;
+            }
+            $imgFilename = $attributeImage->cPfad;
+            $format      = $this->getExtension($this->unzipPath . $imgFilename);
+            if (!$format) {
+                $this->logger->error(
+                    'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
+                continue;
+            }
+            $attributeImage->cPfad .= '.' . $format;
+            $attributeImage->cPfad  = $this->getNewFilename($attributeImage->cPfad);
+            $this->createThumbnail(
+                $this->brandingConfig['Merkmale'],
+                $this->unzipPath . $imgFilename,
+                \PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
+                $this->config['bilder']['bilder_merkmal_normal_breite'],
+                $this->config['bilder']['bilder_merkmal_normal_hoehe'],
+                $this->config['bilder']['bilder_jpg_quali'],
+                1,
+                $this->config['bilder']['container_verwenden']
+            );
+            if ($this->createBrandedThumbnail(
+                \PFAD_ROOT . \PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
+                \PFAD_MERKMALBILDER_KLEIN . $attributeImage->cPfad,
+                $this->config['bilder']['bilder_merkmal_klein_breite'],
+                $this->config['bilder']['bilder_merkmal_klein_hoehe'],
+                $this->config['bilder']['bilder_jpg_quali'],
+                $this->config['bilder']['container_verwenden']
+            )) {
+                $this->db->update(
+                    'tmerkmal',
+                    'kMerkmal',
+                    (int)$attributeImage->kMerkmal,
+                    (object)['cBildpfad' => $attributeImage->cPfad]
+                );
+            }
+            \unlink($this->unzipPath . $imgFilename);
+        }
+    }
+    /**
+     * @param array $manufacturerImages
+     */
+    private function handleManufacturerImages(array $manufacturerImages): void
+    {
         foreach ($manufacturerImages as $manufacturerImage) {
             $manufacturerImage->kHersteller = (int)$manufacturerImage->kHersteller;
             if (empty($manufacturerImage->cPfad) || $manufacturerImage->kHersteller <= 0) {
                 continue;
             }
             $imgFilename = $manufacturerImage->cPfad;
-            $format      = $this->getExtension($unzipPath . $imgFilename);
+            $format      = $this->getExtension($this->unzipPath . $imgFilename);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei ' .
@@ -411,7 +458,7 @@ final class Images extends AbstractSync
             $manufacturerImage->cPfad = $this->getNewFilename($manufacturerImage->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Hersteller'],
-                $unzipPath . $imgFilename,
+                $this->unzipPath . $imgFilename,
                 \PFAD_HERSTELLERBILDER_NORMAL . $manufacturerImage->cPfad,
                 $this->config['bilder']['bilder_hersteller_normal_breite'],
                 $this->config['bilder']['bilder_hersteller_normal_hoehe'],
@@ -444,151 +491,169 @@ final class Images extends AbstractSync
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
             }
             $this->cache->flushTags($cacheTags);
-            \unlink($unzipPath . $imgFilename);
+            \unlink($this->unzipPath . $imgFilename);
         }
-        foreach ($attributeImages as $attributeImage) {
-            $attributeImage->kMerkmal = (int)$attributeImage->kMerkmal;
-            if (empty($attributeImage->cPfad) || $attributeImage->kMerkmal <= 0) {
+    }
+
+    /**
+     * @param array  $propertyImages
+     * @param string $sql
+     */
+    private function handlePropertyImages(array $propertyImages, string $sql): void
+    {
+        foreach ($propertyImages as $propertyImage) {
+            if (empty($propertyImage->cPfad)) {
                 continue;
             }
-            $imgFilename = $attributeImage->cPfad;
-            $format      = $this->getExtension($unzipPath . $imgFilename);
+            $imgFilename = $propertyImage->cPfad;
+            $format      = $this->getExtension($this->unzipPath . $imgFilename);
             if (!$format) {
                 $this->logger->error(
-                    'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
+                    'Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei ' .
                     $imgFilename . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $attributeImage->cPfad .= '.' . $format;
-            $attributeImage->cPfad  = $this->getNewFilename($attributeImage->cPfad);
+            $propertyImage->cPfad = $this->getAttributeImageName($propertyImage, $format, $sql);
+            $propertyImage->cPfad = $this->getNewFilename($propertyImage->cPfad);
             $this->createThumbnail(
-                $this->brandingConfig['Merkmale'],
-                $unzipPath . $imgFilename,
-                \PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
-                $this->config['bilder']['bilder_merkmal_normal_breite'],
-                $this->config['bilder']['bilder_merkmal_normal_hoehe'],
+                $this->brandingConfig['Variationen'],
+                $this->unzipPath . $imgFilename,
+                \PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
+                $this->config['bilder']['bilder_variationen_gross_breite'],
+                $this->config['bilder']['bilder_variationen_gross_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
                 1,
                 $this->config['bilder']['container_verwenden']
             );
-            if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_MERKMALBILDER_NORMAL . $attributeImage->cPfad,
-                \PFAD_MERKMALBILDER_KLEIN . $attributeImage->cPfad,
-                $this->config['bilder']['bilder_merkmal_klein_breite'],
-                $this->config['bilder']['bilder_merkmal_klein_hoehe'],
+            $this->createBrandedThumbnail(
+                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
+                \PFAD_VARIATIONSBILDER_NORMAL . $propertyImage->cPfad,
+                $this->config['bilder']['bilder_variationen_breite'],
+                $this->config['bilder']['bilder_variationen_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
-                $this->config['bilder']['container_verwenden']
-            )) {
-                $this->db->update(
-                    'tmerkmal',
-                    'kMerkmal',
-                    (int)$attributeImage->kMerkmal,
-                    (object)['cBildpfad' => $attributeImage->cPfad]
-                );
-            }
-            \unlink($unzipPath . $imgFilename);
-        }
-        foreach ($attrValImages as $attrValImage) {
-            $attrValImage->kMerkmalWert = (int)$attrValImage->kMerkmalWert;
-            if (empty($attrValImage->cPfad) || $attrValImage->kMerkmalWert <= 0) {
-                continue;
-            }
-            $imgFilename = $attrValImage->cPfad;
-            $format      = $this->getExtension($unzipPath . $imgFilename);
-            if (!$format) {
-                $this->logger->error(
-                    'Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei ' .
-                    $imgFilename . ' keine Bilddatei?'
-                );
-                continue;
-            }
-            $attrValImage->cPfad .= '.' . $format;
-            $attrValImage->cPfad  = $this->getNewFilename($attrValImage->cPfad);
-            $this->createThumbnail(
-                $this->brandingConfig['Merkmalwerte'],
-                $unzipPath . $imgFilename,
-                \PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
-                $this->config['bilder']['bilder_merkmalwert_normal_breite'],
-                $this->config['bilder']['bilder_merkmalwert_normal_hoehe'],
-                $this->config['bilder']['bilder_jpg_quali'],
-                1,
                 $this->config['bilder']['container_verwenden']
             );
             if ($this->createBrandedThumbnail(
-                \PFAD_ROOT . \PFAD_MERKMALWERTBILDER_NORMAL . $attrValImage->cPfad,
-                \PFAD_MERKMALWERTBILDER_KLEIN . $attrValImage->cPfad,
-                $this->config['bilder']['bilder_merkmalwert_klein_breite'],
-                $this->config['bilder']['bilder_merkmalwert_klein_hoehe'],
+                \PFAD_ROOT . \PFAD_VARIATIONSBILDER_GROSS . $propertyImage->cPfad,
+                \PFAD_VARIATIONSBILDER_MINI . $propertyImage->cPfad,
+                $this->config['bilder']['bilder_variationen_mini_breite'],
+                $this->config['bilder']['bilder_variationen_mini_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
                 $this->config['bilder']['container_verwenden']
             )) {
-                $this->db->update(
-                    'tmerkmalwert',
-                    'kMerkmalWert',
-                    (int)$attrValImage->kMerkmalWert,
-                    (object)['cBildpfad' => $attrValImage->cPfad]
-                );
-                $oMerkmalwertbild               = new stdClass();
-                $oMerkmalwertbild->kMerkmalWert = (int)$attrValImage->kMerkmalWert;
-                $oMerkmalwertbild->cBildpfad    = $attrValImage->cPfad;
-
-                $this->upsert('tmerkmalwertbild', [$oMerkmalwertbild], 'kMerkmalWert');
+                $this->upsert('teigenschaftwertpict', [$propertyImage], 'kEigenschaftWert');
             }
-            \unlink($unzipPath . $imgFilename);
+            \unlink($this->unzipPath . $imgFilename);
         }
-        foreach ($configImages as $configImage) {
-            $item                = new stdClass();
-            $item->cBildPfad     = $configImage->cPfad;
-            $item->kKonfiggruppe = $configImage->kKonfiggruppe;
-            if (empty($item->cBildPfad)) {
+    }
+
+    /**
+     * @param array  $categoryImages
+     * @param string $sql
+     */
+    private function handleCategoryImages(array $categoryImages, string $sql): void
+    {
+        foreach ($categoryImages as $categoryImage) {
+            if (empty($categoryImage->cPfad)) {
                 continue;
             }
-            $imgFilename = $item->cBildPfad;
-            $format      = $this->getExtension($unzipPath . $imgFilename);
+            $imgFilename = $categoryImage->cPfad;
+            $format      = $this->getExtension($this->unzipPath . $imgFilename);
             if (!$format) {
                 $this->logger->error(
-                    'Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei ' .
+                    'Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei ' .
                     $imgFilename . ' keine Bilddatei?'
                 );
                 continue;
             }
-            $item->cBildPfad = $item->kKonfiggruppe . '.' . $format;
-            $item->cBildPfad = $this->getNewFilename($item->cBildPfad);
 
-            $branding                               = new stdClass();
-            $branding->oBrandingEinstellung         = new stdClass();
-            $branding->oBrandingEinstellung->nAktiv = 0;
-
+            $categoryImage->cPfad = $this->getCategoryImageName($categoryImage, $format, $sql);
+            $categoryImage->cPfad = $this->getNewFilename($categoryImage->cPfad);
             if ($this->createThumbnail(
-                $branding,
-                $unzipPath . $imgFilename,
-                \PFAD_KONFIGURATOR_KLEIN . $item->cBildPfad,
-                $this->config['bilder']['bilder_konfiggruppe_klein_breite'],
-                $this->config['bilder']['bilder_konfiggruppe_klein_hoehe'],
+                $this->brandingConfig['Kategorie'],
+                $this->unzipPath . $imgFilename,
+                \PFAD_KATEGORIEBILDER . $categoryImage->cPfad,
+                $this->config['bilder']['bilder_kategorien_breite'],
+                $this->config['bilder']['bilder_kategorien_hoehe'],
                 $this->config['bilder']['bilder_jpg_quali'],
                 1,
                 $this->config['bilder']['container_verwenden']
             )) {
-                $this->db->update(
-                    'tkonfiggruppe',
-                    'kKonfiggruppe',
-                    (int)$item->kKonfiggruppe,
-                    (object)['cBildPfad' => $item->cBildPfad]
-                );
+                $this->upsert('tkategoriepict', [$categoryImage], 'kKategorie');
             }
-            \unlink($unzipPath . $imgFilename);
+            \unlink($this->unzipPath . $imgFilename);
         }
+    }
 
-        \executeHook(\HOOK_BILDER_XML_BEARBEITE_ENDE, [
-            'Artikel'          => &$productImages,
-            'Kategorie'        => &$categoryImages,
-            'Eigenschaftswert' => &$propertyImages,
-            'Hersteller'       => &$manufacturerImages,
-            'Merkmalwert'      => &$attrValImages,
-            'Merkmal'          => &$attributeImages,
-            'Konfiggruppe'     => &$configImages
-        ]);
+    /**
+     * @param array  $productImages
+     * @param string $sql
+     */
+    private function handleProductImages(array $productImages, string $sql): void
+    {
+        foreach ($productImages as $image) {
+            if (\strlen($image->cPfad) <= 0) {
+                continue;
+            }
+            $image->nNr  = (int)$image->nNr;
+            $imgFilename = $image->cPfad;
+            $format      = $this->getExtension($this->unzipPath . $imgFilename);
+            if (!$format) {
+                $this->logger->error(
+                    'Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei ' .
+                    $imgFilename . ' keine Bilddatei?'
+                );
+                continue;
+            }
+            // first delete by kArtikelPict
+            $this->deleteArtikelPict($image->kArtikelPict, 0);
+            // then delete by kArtikel + nNr since Wawi > .99923 has changed all kArtikelPict keys
+            if (isset($image->nNr) && $image->nNr > 0) {
+                $this->deleteArtikelPict($image->kArtikel, $image->nNr);
+            }
+            if ($image->kMainArtikelBild > 0) {
+                $main = $this->db->select(
+                    'tartikelpict',
+                    'kArtikelPict',
+                    (int)$image->kMainArtikelBild
+                );
+                if (!empty($main->cPfad)) {
+                    $image->cPfad = $this->getNewFilename($main->cPfad);
+                    $this->upsert('tartikelpict', [$image], 'kArtikel', 'kArtikelpict');
+                } else {
+                    $this->createProductImage($image, $format, $this->unzipPath, $imgFilename, $sql);
+                }
+            } else {
+                $productImage = $this->db->select(
+                    'tartikelpict',
+                    'kArtikelPict',
+                    (int)$image->kArtikelPict
+                );
+                // update all references, if img is used by other products
+                if (!empty($productImage->cPfad)) {
+                    $this->db->update(
+                        'tartikelpict',
+                        'kMainArtikelBild',
+                        (int)$productImage->kArtikelPict,
+                        (object)['cPfad' => $productImage->cPfad]
+                    );
+                }
+                $this->createProductImage($image, $format, $this->unzipPath, $imgFilename, $sql);
+            }
+        }
+        if (\count($productImages) > 0) {
+            $handle = \opendir($this->unzipPath);
+            while (($file = \readdir($handle)) !== false) {
+                if ($file === '.' || $file === '..' || $file === 'bilder_a.xml') {
+                    continue;
+                }
+                if (\file_exists($this->unzipPath . $file) && !\unlink($this->unzipPath . $file)) {
+                    $this->logger->error('Artikelbild konnte nicht geloescht werden: ' . $file);
+                }
+            }
+            \closedir($handle);
+        }
     }
 
     /**

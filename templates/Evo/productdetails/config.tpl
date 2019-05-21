@@ -40,7 +40,7 @@
                                                 {else}
                                                     {assign var=bSelectable value=0}
                                                 {/if}
-                                                <li class="list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
+                                                <li class="form-group list-group-item {if $oItem->getEmpfohlen()}alert-info{/if}{if empty($bSelectable)} disabled{/if}" data-id="{$oItem->getKonfigitem()}">
                                                     {assign var=kKonfigitem value=$oItem->getKonfigitem()}
                                                     {assign var=cKurzBeschreibung value=$oItem->getKurzBeschreibung()}
                                                     {if !empty($cKurzBeschreibung)}
@@ -67,7 +67,9 @@
                                                                        value="{$oItem->getKonfigitem()}"
                                                                        {if empty($bSelectable)} disabled{/if}
                                                                        {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"{else}
-                                                                       {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
+                                                                       {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$kKonfiggruppe]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if}
+                                                                       {if $oGruppe->getAnzeigeTyp() == $smarty.const.KONFIG_ANZEIGE_TYP_RADIO && $oItem@first && $oGruppe->getMin() > 0}required="required"{/if}
+                                                                />
                                                                 {if $oItem->getMin() == $oItem->getMax()}{$oItem->getInitial()}x {/if}
                                                                 {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                                 {if $smarty.session.Kundengruppe->mayViewPrices()}

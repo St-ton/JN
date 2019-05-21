@@ -71,7 +71,7 @@
                 {__('infoUpdateNow')}
             </div>
             <div class="btn-group btn-group-md" id="btn-update-group" role="group">
-                <a href="dbupdater.php?action=update" class="btn btn-success" data-callback="update"><i class="fa fa-flash"></i> {__('updateNow')}</a>
+                <a href="dbupdater.php?action=update" class="btn btn-success" data-callback="update"><i class="fa fa-flash"></i> {__('buttonUpdateNow')}</a>
                 <div class="btn-group btn-group-md" role="group">
                     <button id="backup-button" type="button" class="btn btn-default dropdown-toggle ladda-button" data-size="l" data-style="zoom-out" data-spinner-color="#000" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="ladda-label">{__('saveCopy')} &nbsp; <i class="fa fa-caret-down"></i></span>
@@ -85,7 +85,7 @@
         {else}
             <div class="alert alert-success h4">
                 <p class="text-center">
-                    {__('dbUpToDate')} {$currentDatabaseVersion}).
+                    {{__('dbUpToDate')}|sprintf:{$currentDatabaseVersion}}.
                 </p>
             </div>
         {/if}

@@ -55,9 +55,6 @@ class Banner extends Portlet
                 'srcProp' => 'src',
                 'default' => [],
             ],
-            'class' => [
-                'label' => __('CSS class'),
-            ],
             'alt'   => [
                 'label' => __('Alternativ text'),
             ],

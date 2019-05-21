@@ -335,6 +335,48 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getAnimationClass(): string
+    {
+        $style = $this->getProperty('animation-style');
+
+        return $style !== '' ? 'wow ' . $style : '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getAnimationData(): array
+    {
+        $data = [];
+
+        foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
+            if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
+                !empty($this->getProperty($propname))
+            ) {
+                $data[$propname] = $this->getProperty($propname);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAnimationDataAttributeString(): string
+    {
+        $res = '';
+
+        foreach ($this->getAnimationData() as $key => $val) {
+            $res .= ' data-' . $key . '="' . $val . '"';
+        }
+
+        return $res;
+    }
+
+    /**
      * @return $this
      */
     public function updateAttributes(): self
@@ -370,7 +412,7 @@ class PortletInstance implements \JsonSerializable
         $result = '';
 
         foreach ($this->getAttributes() as $name => $value) {
-            $result .= "$name='$value'";
+            $result .= ' ' . $name . '="' . $value . '"';
         }
 
         return $result;
@@ -430,11 +472,12 @@ class PortletInstance implements \JsonSerializable
 
         $settings        = Shop::getSettings([\CONF_BILDER]);
         $name            = \basename($src);
+        $decodedName     = \rawurldecode($name);
         $widthHeuristics = $this->widthHeuristics;
-        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $name;
+        $srcImgPath      = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $decodedName;
 
         foreach (static::$dirSizes as $size => $width) {
-            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name;
+            $sizedImgPath = \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $decodedName;
 
             if (!\file_exists($sizedImgPath)) {
                 $manager = new ImageManager(['driver' => Image::getImageDriver()]);
@@ -445,10 +488,7 @@ class PortletInstance implements \JsonSerializable
                     $constraint->aspectRatio();
                 });
 
-                $img->save(
-                    \PFAD_ROOT . \PFAD_MEDIAFILES . 'Bilder/' . $size . $name,
-                    $settings['bilder']['bilder_jpg_quali']
-                );
+                $img->save($sizedImgPath, $settings['bilder']['bilder_jpg_quali']);
             }
 
             $srcset .= \PFAD_MEDIAFILES . 'Bilder/' . $size . $name . ' ' . $width . 'w,';

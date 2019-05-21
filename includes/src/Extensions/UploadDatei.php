@@ -125,20 +125,23 @@ class UploadDatei
         if (!self::checkLicense()) {
             return [];
         }
-        $files = Shop::Container()->getDB()->selectAll(
+        $files   = Shop::Container()->getDB()->selectAll(
             'tuploaddatei',
             ['kCustomID', 'nTyp'],
             [$kCustomID, $type]
         );
-        foreach ($files as $upload) {
+        $baseURL = Shop::getURL();
+        $crypto  = Shop::Container()->getCryptoService();
+        foreach ($files as &$upload) {
+            $upload             = self::copyMembers($upload);
             $upload->cGroesse   = Upload::formatGroesse($upload->nBytes);
             $upload->bVorhanden = \is_file(\PFAD_UPLOADS . $upload->cPfad);
             $upload->bVorschau  = Upload::vorschauTyp($upload->cName);
             $upload->cBildpfad  = \sprintf(
                 '%s/%s?action=preview&secret=%s&sid=%s',
-                Shop::getURL(),
+                $baseURL,
                 \PFAD_UPLOAD_CALLBACK,
-                \rawurlencode(Shop::Container()->getCryptoService()->encryptXTEA($upload->kUpload)),
+                \rawurlencode($crypto->encryptXTEA($upload->kUpload)),
                 \session_id()
             );
         }
@@ -149,7 +152,7 @@ class UploadDatei
     /**
      * @param object      $objFrom
      * @param null|object $objTo
-     * @return null|object
+     * @return object
      */
     private static function copyMembers($objFrom, &$objTo = null)
     {
@@ -159,6 +162,10 @@ class UploadDatei
         foreach (\array_keys(\get_object_vars($objFrom)) as $member) {
             $objTo->$member = $objFrom->$member;
         }
+        $objTo->kUpload   = (int)$objTo->kUpload;
+        $objTo->kCustomID = (int)$objTo->kCustomID;
+        $objTo->nBytes    = (int)$objTo->nBytes;
+        $objTo->nTyp      = (int)$objTo->nTyp;
 
         return $objTo;
     }

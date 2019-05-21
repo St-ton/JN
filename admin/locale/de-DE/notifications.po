@@ -1,0 +1,5 @@
+msgid "duplicateSpecialLinkTitle"
+msgstr "Spezialseite mehrmals angelegt"
+
+msgid "duplicateSpecialLinkDesc"
+msgstr "Mindestens eine Spezialseite wurde mehrmals für die gleiche(n) Kundengruppe(n) angelegt."

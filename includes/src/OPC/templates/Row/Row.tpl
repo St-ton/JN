@@ -1,9 +1,12 @@
+{$data = $instance->getAnimationData()}
+
 {if $isPreview}
-    {assign var=data value=['portlet' => $instance->getDataAttribute()]}
-    {assign var=areaClass value='opc-area'}
+    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
+    {$areaClass = 'opc-area'}
 {/if}
+
 {row data=$data|default:[]
-     class=$instance->getProperty('class')
+     class=$instance->getAnimationClass()
      style=$instance->getStyleString()|default:null}
     {foreach $portlet->getLayouts($instance) as $i => $colLayout}
         {assign var=areaId value="col-$i"}

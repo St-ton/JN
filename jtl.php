@@ -438,47 +438,9 @@ if ($customerID > 0) {
                 ['oKunde' => $knd]
             )->checkLogging(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, $postData, true);
             Kundendatenhistory::saveHistory($_SESSION['Kunde'], $knd, Kundendatenhistory::QUELLE_MEINKONTO);
+            $customerAttributes->save();
+            $knd->getCustomerAttributes()->load($knd->getID());
             $_SESSION['Kunde'] = $knd;
-            if (is_array($customerAttributes) && count($customerAttributes) > 0) {
-                $nonEditableFields = \Functional\map(
-                    getKundenattributeNichtEditierbar(),
-                    function ($e) {
-                        return (int)$e->kKundenfeld;
-                    }
-                );
-                $cSQL              = count($nonEditableFields) === 0
-                    ? ''
-                    : ' AND kKundenfeld NOT IN (' . implode(',', $nonEditableFields) . ')';
-                Shop::Container()->getDB()->query(
-                    'DELETE FROM tkundenattribut
-                        WHERE kKunde = ' . $customerID . $cSQL,
-                    ReturnType::DEFAULT
-                );
-                $customerAttributeIDs  = array_keys($customerAttributes);
-                $nonEditableAttributes = getNonEditableCustomerFields();
-                if (count($nonEditableAttributes) > 0) {
-                    $attrKeys = array_keys($nonEditableAttributes);
-                    foreach (array_diff($customerAttributeIDs, $attrKeys) as $item) {
-                        $attribute              = new stdClass();
-                        $attribute->kKunde      = $customerID;
-                        $attribute->kKundenfeld = (int)$customerAttributes[$item]->kKundenfeld;
-                        $attribute->cName       = $customerAttributes[$item]->cWawi;
-                        $attribute->cWert       = $customerAttributes[$item]->cWert;
-
-                        Shop::Container()->getDB()->insert('tkundenattribut', $attribute);
-                    }
-                } else {
-                    foreach ($customerAttributeIDs as $item) {
-                        $attribute              = new stdClass();
-                        $attribute->kKunde      = $customerID;
-                        $attribute->kKundenfeld = (int)$customerAttributes[$item]->kKundenfeld;
-                        $attribute->cName       = $customerAttributes[$item]->cWawi;
-                        $attribute->cWert       = $customerAttributes[$item]->cWert;
-
-                        Shop::Container()->getDB()->insert('tkundenattribut', $attribute);
-                    }
-                }
-            }
             // $step = 'mein Konto';
             $alertHelper->addAlert(
                 Alert::TYPE_NOTE,
@@ -737,11 +699,11 @@ if ($customerID > 0) {
             $knd                = getKundendaten($_POST, 0, 0);
             $customerAttributes = getKundenattribute($_POST);
         } else {
-            $customerAttributes = $knd->cKundenattribut_arr;
+            $customerAttributes = $knd->getCustomerAttributes();
         }
 
         $smarty->assign('Kunde', $knd)
-               ->assign('cKundenattribut_arr', $customerAttributes)
+               ->assign('customerAttributes', $customerAttributes)
                ->assign('laender', ShippingMethod::getPossibleShippingCountries(
                    $_SESSION['Kunde']->kKundengruppe,
                    false,
@@ -752,7 +714,7 @@ if ($customerID > 0) {
             'kSprache',
             Shop::getLanguageID(),
             '*',
-            'nSort DESC'
+            'nSort, cName'
         );
         foreach ($customerFields as $field) {
             if ($field->cTyp !== 'auswahl') {
@@ -781,9 +743,8 @@ if ($customerID > 0) {
         );
     }
     $_SESSION['Kunde']->cGuthabenLocalized = Preise::getLocalizedPriceString($_SESSION['Kunde']->fGuthaben);
-    krsort($_SESSION['Kunde']->cKundenattribut_arr);
     $smarty->assign('Kunde', $_SESSION['Kunde'])
-           ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
+           ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes());
 }
 $alertNote = $alertHelper->alertTypeExists(Alert::TYPE_NOTE);
 if (!$alertNote && $step === 'mein Konto' && Frontend::getCustomer()->isLoggedIn()) {

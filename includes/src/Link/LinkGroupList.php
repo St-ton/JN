@@ -111,7 +111,7 @@ final class LinkGroupList implements LinkGroupListInterface
     private function loadUnassignedGroups(): LinkGroupInterface
     {
         $unassigned = $this->db->query(
-            "SELECT tlink.*,tlinksprache.cISOSprache, 
+            "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
@@ -180,7 +180,7 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $groups         = [];
         $groupLanguages = $this->db->query(
-            'SELECT loc.*, g.cTemplatename AS template, IFNULL(tsprache.kSprache, 0) AS kSprache 
+            'SELECT loc.*, g.cTemplatename AS template, g.cName AS groupName, IFNULL(tsprache.kSprache, 0) AS kSprache 
                 FROM tlinkgruppe AS g
                 LEFT JOIN tlinkgruppesprache AS loc
                     ON g.kLinkgruppe = loc.kLinkgruppe
@@ -208,7 +208,7 @@ final class LinkGroupList implements LinkGroupListInterface
     private function loadSpecialPages(): LinkGroupInterface
     {
         $specialPages = $this->db->query(
-            "SELECT tlink.*,tlinksprache.cISOSprache, 
+            "SELECT tlink.*, tlinksprache.cISOSprache, 
                 tlink.cName AS displayName, 
                 tlinksprache.cName AS localizedName, 
                 tlinksprache.cTitle AS localizedTitle, 
@@ -240,11 +240,10 @@ final class LinkGroupList implements LinkGroupListInterface
                     GROUP BY tlink.kLink, tseo.kSprache",
             ReturnType::ARRAY_OF_OBJECTS
         );
-
-        $grouped = group($specialPages, function ($e) {
+        $grouped      = group($specialPages, function ($e) {
             return $e->kLink;
         });
-        $lg      = new LinkGroup($this->db);
+        $lg           = new LinkGroup($this->db);
         $lg->setID(998);
         $lg->setNames(['specialpages']);
         $lg->setTemplate('specialpages');
@@ -282,22 +281,14 @@ final class LinkGroupList implements LinkGroupListInterface
     {
         $staticRoutes = $this->db->query(
             "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, 
-                tspezialseite.nLinkart, tlink.kLink, 
-                tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName,
-                tlinksprache.cTitle AS localizedTitle,
-                tlinksprache.cContent AS content,
-                tlinksprache.cMetaDescription AS metaDescription,
-                tlinksprache.cMetaKeywords AS metaKeywords,
-                tlinksprache.cMetaTitle AS metaTitle,
-                tlink.cKundengruppen, 
-                tseo.cSeo AS localizedUrl, 
-                tsprache.cISO AS cISOSprache, tsprache.kSprache AS languageID, 
-                tlink.kVaterLink, tspezialseite.kPlugin, 
-                tlink.cName, tlink.cNoFollow, tlink.cSichtbarNachLogin, tlink.cDruckButton, 
-                tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
-                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups,
-                2 AS pluginState
+                tspezialseite.nLinkart, tlink.kLink, tlink.cName AS displayName, tlink.reference,
+                tlinksprache.cName AS localizedName, tlinksprache.cTitle AS localizedTitle,
+                tlinksprache.cContent AS content, tlinksprache.cMetaDescription AS metaDescription,
+                tlinksprache.cMetaKeywords AS metaKeywords, tlinksprache.cMetaTitle AS metaTitle,
+                tlink.cKundengruppen,  tseo.cSeo AS localizedUrl,  tsprache.cISO AS cISOSprache, 
+                tsprache.kSprache AS languageID, tlink.kVaterLink, tspezialseite.kPlugin, tlink.cName, tlink.cNoFollow, 
+                tlink.cSichtbarNachLogin, tlink.cDruckButton, tlink.nSort, tlink.bIsActive, tlink.bIsFluid, tlink.bSSL,
+                GROUP_CONCAT(tlinkgroupassociations.linkGroupID) AS linkGroups, 2 AS pluginState
             FROM tspezialseite
                 LEFT JOIN tlink 
                     ON tlink.nLinkart = tspezialseite.nLinkart

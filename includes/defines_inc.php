@@ -197,6 +197,7 @@ define('LINKTYP_BESTELLVORGANG', 32);
 define('LINKTYP_BESTELLABSCHLUSS', 33);
 define('LINKTYP_WUNSCHLISTE', 34);
 define('LINKTYP_VERGLEICHSLISTE', 35);
+define('LINKTYP_REFERENZ', 36);
 // Artikel
 define('INWKNICHTLEGBAR_LAGER', -1);
 define('INWKNICHTLEGBAR_LAGERVAR', -2);
@@ -491,7 +492,6 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 // Max Anzahl an Variationswerten für Warenkorbmatrix
-define('ART_MATRIX_MAX', 250);
 
 define('BROWSER_UNKNOWN', 0);
 define('BROWSER_MSIE', 1);

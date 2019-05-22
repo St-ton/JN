@@ -6,9 +6,9 @@
 
 namespace JTL\Filter\SortingOptions;
 
+use Illuminate\Support\Collection;
 use JTL\Filter\ProductFilter;
 use JTL\Mapper\SortingType;
-use Illuminate\Support\Collection;
 
 /**
  * Class Factory

@@ -139,7 +139,7 @@ class DBMigrationHelper
         $database   = Shop::Container()->getDB()->getConfig()['database'];
         $excludeStr = \implode("','", Text::filterXSS($excludeTables));
 
-        return Shop::Container()->getDB()->queryPrepared(
+        $result = Shop::Container()->getDB()->queryPrepared(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 , COUNT(c.COLUMN_NAME) TEXT_FIELDS
                 , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
@@ -160,6 +160,8 @@ class DBMigrationHelper
             ['schema' => $database],
             ReturnType::SINGLE_OBJECT
         );
+
+        return \is_object($result) ? $result : null;
     }
 
     /**

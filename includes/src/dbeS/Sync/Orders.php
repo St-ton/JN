@@ -7,14 +7,14 @@
 namespace JTL\dbeS\Sync;
 
 use JTL\Checkout\Bestellung;
-use JTL\DB\ReturnType;
-use JTL\dbeS\Starter;
-use JTL\Emailvorlage;
-use JTL\Customer\Kunde;
-use JTL\Customer\KundenwerbenKunden;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\Customer\Kunde;
+use JTL\Customer\KundenwerbenKunden;
+use JTL\DB\ReturnType;
+use JTL\dbeS\Starter;
+use JTL\Emailvorlage;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
@@ -113,23 +113,24 @@ final class Orders extends AbstractSync
         }
         foreach ($xml['del_bestellungen']['kBestellung'] as $orderID) {
             $orderID = (int)$orderID;
-            if ($orderID > 0) {
-                $module = $this->getPaymentMethod($orderID);
-                if ($module) {
-                    $module->cancelOrder($orderID, true);
-                }
-                $this->deleteOrder($orderID);
-                // uploads (bestellungen)
-                $this->db->delete('tuploadschema', ['kCustomID', 'nTyp'], [$orderID, 2]);
-                $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, 2]);
-                // uploads (artikel der bestellung)
-                // todo...
-                // wenn unreg kunde, dann kunden auch löschen
-                $this->db->query(
-                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $orderID,
-                    ReturnType::SINGLE_OBJECT
-                );
+            if ($orderID <= 0) {
+                continue;
             }
+            $module = $this->getPaymentMethod($orderID);
+            if ($module) {
+                $module->cancelOrder($orderID, true);
+            }
+            $this->deleteOrder($orderID);
+            // uploads (bestellungen)
+            $this->db->delete('tuploadschema', ['kCustomID', 'nTyp'], [$orderID, 2]);
+            $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, 2]);
+            // uploads (artikel der bestellung)
+            // todo...
+            // wenn unreg kunde, dann kunden auch löschen
+            $this->db->query(
+                'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $orderID,
+                ReturnType::SINGLE_OBJECT
+            );
         }
     }
 
@@ -271,11 +272,14 @@ final class Orders extends AbstractSync
                 \FREIDEFINIERBARER_FEHLER
             );
         }
-        $oldOrder       = $this->db->select(
-            'tbestellung',
-            'kBestellung',
-            (int)$order->kBestellung
-        );
+        $order->kBestellung = (int)$order->kBestellung;
+        $oldOrder           = $this->getShopOrder($order->kBestellung);
+        if ($oldOrder === null) {
+            \syncException(
+                'Keine Bestellung in Shop gefunden:' . \print_r($xml, true),
+                \FREIDEFINIERBARER_FEHLER
+            );
+        }
         $billingAddress = new Rechnungsadresse($oldOrder->kRechnungsadresse);
         $this->mapper->mapObject($billingAddress, $xml['tbestellung']['trechnungsadresse'], 'mRechnungsadresse');
         if (!empty($billingAddress->cAnrede)) {
@@ -352,7 +356,7 @@ final class Orders extends AbstractSync
                 'fg'    => $order->fGuthaben,
                 'total' => $order->fGesamtsumme,
                 'cmt'   => $order->cKommentar,
-                'oid'   => (int)$oldOrder->kBestellung
+                'oid'   => $oldOrder->kBestellung
             ],
             ReturnType::DEFAULT
         );
@@ -396,7 +400,7 @@ final class Orders extends AbstractSync
         $oldPositions = $this->db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
-            (int)$oldOrder->kWarenkorb
+            $oldOrder->kWarenkorb
         );
         $map          = [];
         foreach ($oldPositions as $key => $oldPosition) {
@@ -409,7 +413,7 @@ final class Orders extends AbstractSync
                 $map[$oldPosition->kArtikel] = $key;
             }
         }
-        $this->db->delete('twarenkorbpos', 'kWarenkorb', (int)$oldOrder->kWarenkorb);
+        $this->db->delete('twarenkorbpos', 'kWarenkorb', $oldOrder->kWarenkorb);
         $cartPositions = $this->mapper->mapArray($xml['tbestellung'], 'twarenkorbpos', 'mWarenkorbpos');
         $positionCount = \count($cartPositions);
         for ($i = 0; $i < $positionCount; $i++) {
@@ -492,157 +496,236 @@ final class Orders extends AbstractSync
     }
 
     /**
+     * @param int $orderID
+     * @return stdClass|null
+     */
+    private function getShopOrder(int $orderID): ?stdClass
+    {
+        $order = $this->db->select('tbestellung', 'kBestellung', $orderID);
+        if (!isset($order->kBestellung) || $order->kBestellung <= 0) {
+            return null;
+        }
+        $order->kBestellung       = (int)$order->kBestellung;
+        $order->kWarenkorb        = (int)$order->kWarenkorb;
+        $order->kKunde            = (int)$order->kKunde;
+        $order->kRechnungsadresse = (int)$order->kRechnungsadresse;
+        $order->kLieferadresse    = (int)$order->kLieferadresse;
+        $order->kZahlungsart      = (int)$order->kZahlungsart;
+        $order->kVersandart       = (int)$order->kVersandart;
+        $order->kSprache          = (int)$order->kSprache;
+        $order->kWaehrung         = (int)$order->kWaehrung;
+        $order->cStatus           = (int)$order->cStatus;
+
+        return $order;
+    }
+
+    /**
+     * @param stdClass $shopOrder
+     * @param stdClass $order
+     * @return int
+     */
+    private function getOrderState(stdClass $shopOrder, stdClass $order): int
+    {
+        if ($shopOrder->cStatus === \BESTELLUNG_STATUS_STORNO) {
+            $state = \BESTELLUNG_STATUS_STORNO;
+        } else {
+            $state = \BESTELLUNG_STATUS_IN_BEARBEITUNG;
+            if (isset($order->cBezahlt) && $order->cBezahlt === 'Y') {
+                $state = \BESTELLUNG_STATUS_BEZAHLT;
+            }
+            if (isset($order->dVersandt) && \strlen($order->dVersandt) > 0) {
+                $state = \BESTELLUNG_STATUS_VERSANDT;
+            }
+            $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
+            if ((\is_array($updatedOrder->oLieferschein_arr)
+                    && \count($updatedOrder->oLieferschein_arr) > 0)
+                && (isset($order->nKomplettAusgeliefert)
+                    && (int)$order->nKomplettAusgeliefert === 0)
+            ) {
+                $state = \BESTELLUNG_STATUS_TEILVERSANDT;
+            }
+        }
+
+        return $state;
+    }
+
+    /**
+     * @param stdClass $shopOrder
+     * @param stdClass $order
+     * @return string
+     */
+    private function getTrackingURL(stdClass $shopOrder, stdClass $order): string
+    {
+        $trackingURL = '';
+        if ($order->cIdentCode !== null && \strlen($order->cIdentCode) > 0) {
+            $trackingURL = $order->cLogistikURL;
+            if ($shopOrder->kLieferadresse > 0) {
+                $deliveryAddress = $this->db->queryPrepared(
+                    'SELECT cPLZ
+                        FROM tlieferadresse 
+                        WHERE kLieferadresse = :dai',
+                    ['dai' => $shopOrder->kLieferadresse],
+                    ReturnType::SINGLE_OBJECT
+                );
+                if ($deliveryAddress->cPLZ) {
+                    $trackingURL = \str_replace('#PLZ#', $deliveryAddress->cPLZ, $trackingURL);
+                }
+            } else {
+                $customer    = new Kunde($shopOrder->kKunde);
+                $trackingURL = \str_replace('#PLZ#', $customer->cPLZ, $trackingURL);
+            }
+            $trackingURL = \str_replace('#IdentCode#', $order->cIdentCode, $trackingURL);
+        }
+
+        return $trackingURL;
+    }
+
+    /**
+     * @param stdClass $shopOrder
+     * @param stdClass $order
+     * @param int      $state
+     * @return Bestellung
+     */
+    private function updateOrder(stdClass $shopOrder, stdClass $order, int $state): Bestellung
+    {
+        $trackingURL      = $this->getTrackingURL($shopOrder, $order);
+        $cZahlungsartName = $this->db->escape($order->cZahlungsartName);
+        $dBezahltDatum    = $this->db->escape($order->dBezahltDatum);
+        $dVersandDatum    = $this->db->escape($order->dVersandt);
+        if ($dVersandDatum === null || $dVersandDatum === '') {
+            $dVersandDatum = '_DBNULL_';
+        }
+
+        $upd                = new stdClass;
+        $upd->dVersandDatum = $dVersandDatum;
+        $upd->cTracking     = $this->db->escape($order->cIdentCode);
+        $upd->cLogistiker   = $this->db->escape($order->cLogistik);
+        $upd->cTrackingURL  = $this->db->escape($trackingURL);
+        $upd->cStatus       = $state;
+        $upd->cVersandInfo  = $this->db->escape($order->cVersandInfo);
+        if (\strlen($cZahlungsartName) > 0) {
+            $upd->cZahlungsartName = $cZahlungsartName;
+        }
+        $upd->dBezahltDatum = empty($dBezahltDatum)
+            ? '_DBNULL_'
+            : $dBezahltDatum;
+
+        $this->db->update('tbestellung', 'kBestellung', $order->kBestellung, $upd);
+
+        return new Bestellung($shopOrder->kBestellung, true);
+    }
+
+    /**
+     * @param Bestellung $updatedOrder
+     * @param stdClass   $shopOrder
+     * @param int        $state
+     * @param Kunde      $customer
+     */
+    private function sendStatusMail(Bestellung $updatedOrder, stdClass $shopOrder, int $state, $customer): void
+    {
+        $doSend = false;
+        foreach ($updatedOrder->oLieferschein_arr as $slip) {
+            /** @var Lieferschein $slip */
+            if ($slip->getEmailVerschickt() === false) {
+                $doSend = true;
+                break;
+            }
+        }
+        if (($state === \BESTELLUNG_STATUS_VERSANDT && $shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT)
+            || ($state === \BESTELLUNG_STATUS_TEILVERSANDT && $doSend === true)
+        ) {
+            $mailType = $state === \BESTELLUNG_STATUS_VERSANDT
+                ? \MAILTEMPLATE_BESTELLUNG_VERSANDT
+                : \MAILTEMPLATE_BESTELLUNG_TEILVERSANDT;
+            $module   = $this->getPaymentMethod($shopOrder->kBestellung);
+            if (!isset($updatedOrder->oVersandart->cSendConfirmationMail)
+                || $updatedOrder->oVersandart->cSendConfirmationMail !== 'N'
+            ) {
+                if ($module) {
+                    $module->sendMail($shopOrder->kBestellung, $mailType);
+                } else {
+                    $data              = new stdClass;
+                    $data->tkunde      = $customer;
+                    $data->tbestellung = $updatedOrder;
+
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID($mailType, $data));
+                }
+            }
+            /** @var Lieferschein $slip */
+            foreach ($updatedOrder->oLieferschein_arr as $slip) {
+                $slip->setEmailVerschickt(true)->update();
+            }
+            // Guthaben an Bestandskunden verbuchen, Email rausschicken:
+            $oKwK = new KundenwerbenKunden();
+            $oKwK->verbucheBestandskundenBoni($customer->cMail);
+        }
+    }
+
+    /**
+     * @param stdClass $shopOrder
+     * @param stdClass $order
+     * @param Kunde    $customer
+     */
+    private function sendPaymentMail(stdClass $shopOrder, stdClass $order, $customer): void
+    {
+        if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
+            $module = $this->getPaymentMethod($order->kBestellung);
+            if ($module) {
+                $module->sendMail($order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
+            } else {
+                $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true);
+                if (($updatedOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG)
+                    && \strlen($customer->cMail) > 0
+                ) {
+                    $data              = new stdClass;
+                    $data->tkunde      = $customer;
+                    $data->tbestellung = $updatedOrder;
+
+                    $mailer = Shop::Container()->get(Mailer::class);
+                    $mail   = new Mail();
+                    $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_BEZAHLT, $data));
+                }
+            }
+        }
+    }
+
+    /**
      * @param array $xml
      */
     private function handleSet(array $xml): void
     {
         $orders = $this->mapper->mapArray($xml['tbestellungen'], 'tbestellung', 'mBestellung');
         foreach ($orders as $order) {
-            $shopOrder = $this->db->select('tbestellung', 'kBestellung', (int)$order->kBestellung);
-            if (!isset($shopOrder->kBestellung) || $shopOrder->kBestellung <= 0) {
+            $order->kBestellung = (int)$order->kBestellung;
+            $shopOrder          = $this->getShopOrder($order->kBestellung);
+            if ($shopOrder === null) {
                 continue;
             }
-            $trackingURL = '';
-            if (\strlen($order->cIdentCode) > 0) {
-                $trackingURL = $order->cLogistikURL;
-                if ($shopOrder->kLieferadresse > 0) {
-                    $Lieferadresse = $this->db->query(
-                        'SELECT cPLZ
-                        FROM tlieferadresse 
-                        WHERE kLieferadresse = ' . (int)$shopOrder->kLieferadresse,
-                        ReturnType::SINGLE_OBJECT
-                    );
-                    if ($Lieferadresse->cPLZ) {
-                        $trackingURL = \str_replace('#PLZ#', $Lieferadresse->cPLZ, $trackingURL);
-                    }
-                } else {
-                    $customer    = new Kunde($shopOrder->kKunde);
-                    $trackingURL = \str_replace('#PLZ#', $customer->cPLZ, $trackingURL);
-                }
-                $trackingURL = \str_replace('#IdentCode#', $order->cIdentCode, $trackingURL);
-            }
-            if ($shopOrder->cStatus === \BESTELLUNG_STATUS_STORNO) {
-                $status = \BESTELLUNG_STATUS_STORNO;
-            } else {
-                $status = \BESTELLUNG_STATUS_IN_BEARBEITUNG;
-                if (isset($order->cBezahlt) && $order->cBezahlt === 'Y') {
-                    $status = \BESTELLUNG_STATUS_BEZAHLT;
-                }
-                if (isset($order->dVersandt) && \strlen($order->dVersandt) > 0) {
-                    $status = \BESTELLUNG_STATUS_VERSANDT;
-                }
-                $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true);
-                if ((\is_array($updatedOrder->oLieferschein_arr)
-                        && \count($updatedOrder->oLieferschein_arr) > 0)
-                    && (isset($order->nKomplettAusgeliefert)
-                        && (int)$order->nKomplettAusgeliefert === 0)
-                ) {
-                    $status = \BESTELLUNG_STATUS_TEILVERSANDT;
-                }
-            }
+
+            $state = $this->getOrderState($shopOrder, $order);
             \executeHook(\HOOK_BESTELLUNGEN_XML_BESTELLSTATUS, [
-                'status'      => &$status,
+                'status'      => &$state,
                 'oBestellung' => &$shopOrder
             ]);
-            $cZahlungsartName = $this->db->escape($order->cZahlungsartName);
-            $dBezahltDatum    = $this->db->escape($order->dBezahltDatum);
-            $dVersandDatum    = $this->db->escape($order->dVersandt);
-            if ($dVersandDatum === null || $dVersandDatum === '') {
-                $dVersandDatum = '_DBNULL_';
-            }
-            $upd                = new stdClass;
-            $upd->dVersandDatum = $dVersandDatum;
-            $upd->cTracking     = $this->db->escape($order->cIdentCode);
-            $upd->cLogistiker   = $this->db->escape($order->cLogistik);
-            $upd->cTrackingURL  = $this->db->escape($trackingURL);
-            $upd->cStatus       = $status;
-            $upd->cVersandInfo  = $this->db->escape($order->cVersandInfo);
-            if (\strlen($cZahlungsartName) > 0) {
-                $upd->cZahlungsartName = $cZahlungsartName;
-            }
-            $upd->dBezahltDatum = empty($dBezahltDatum)
-                ? '_DBNULL_'
-                : $dBezahltDatum;
-            $this->db->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $upd);
-            $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
+            $updatedOrder = $this->updateOrder($shopOrder, $order, $state);
             $customer     = null;
             if ((!$shopOrder->dVersandDatum && $order->dVersandt)
                 || (!$shopOrder->dBezahltDatum && $order->dBezahltDatum)
             ) {
                 $tmp      = $this->db->query(
-                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . (int)$order->kBestellung,
+                    'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $order->kBestellung,
                     ReturnType::SINGLE_OBJECT
                 );
                 $customer = new Kunde((int)$tmp->kKunde);
             }
-
-            $bLieferschein = false;
-            foreach ($updatedOrder->oLieferschein_arr as $oLieferschein) {
-                /** @var Lieferschein $oLieferschein */
-                if ($oLieferschein->getEmailVerschickt() === false) {
-                    $bLieferschein = true;
-                    break;
-                }
+            if ($customer === null) {
+                $customer = new Kunde($shopOrder->kKunde);
             }
-            $status = (int)$status;
-            if (($status === \BESTELLUNG_STATUS_VERSANDT && (int)$shopOrder->cStatus !== \BESTELLUNG_STATUS_VERSANDT)
-                || ($status === \BESTELLUNG_STATUS_TEILVERSANDT && $bLieferschein === true)
-            ) {
-                $mailType = $status === \BESTELLUNG_STATUS_VERSANDT
-                    ? \MAILTEMPLATE_BESTELLUNG_VERSANDT
-                    : \MAILTEMPLATE_BESTELLUNG_TEILVERSANDT;
-                $module   = $this->getPaymentMethod($order->kBestellung);
-                if (!isset($updatedOrder->oVersandart->cSendConfirmationMail)
-                    || $updatedOrder->oVersandart->cSendConfirmationMail !== 'N'
-                ) {
-                    if ($module) {
-                        $module->sendMail((int)$order->kBestellung, $mailType);
-                    } else {
-                        if ($customer === null) {
-                            $customer = new Kunde((int)$shopOrder->kKunde);
-                        }
-                        $data              = new stdClass;
-                        $data->tkunde      = $customer;
-                        $data->tbestellung = $updatedOrder;
+            $this->sendStatusMail($updatedOrder, $shopOrder, $state, $customer);
+            $this->sendPaymentMail($shopOrder, $order, $customer);
 
-                        $mailer = Shop::Container()->get(Mailer::class);
-                        $mail   = new Mail();
-                        $mailer->send($mail->createFromTemplateID($mailType, $data));
-                    }
-                }
-                /** @var Lieferschein $oLieferschein */
-                foreach ($updatedOrder->oLieferschein_arr as $oLieferschein) {
-                    $oLieferschein->setEmailVerschickt(true)->update();
-                }
-                // Guthaben an Bestandskunden verbuchen, Email rausschicken:
-                if ($customer === null) {
-                    $customer = new Kunde($shopOrder->kKunde);
-                }
-                $oKwK = new KundenwerbenKunden();
-                $oKwK->verbucheBestandskundenBoni($customer->cMail);
-            }
-
-            if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
-                // sende Zahlungseingangmail
-                $module = $this->getPaymentMethod($order->kBestellung);
-                if ($module) {
-                    $module->sendMail((int)$order->kBestellung, \MAILTEMPLATE_BESTELLUNG_BEZAHLT);
-                } else {
-                    $customer     = $customer ?? new Kunde((int)$shopOrder->kKunde);
-                    $updatedOrder = new Bestellung((int)$shopOrder->kBestellung, true);
-                    if (($updatedOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG)
-                        && \strlen($customer->cMail) > 0
-                    ) {
-                        $data              = new stdClass;
-                        $data->tkunde      = $customer;
-                        $data->tbestellung = $updatedOrder;
-
-                        $mailer = Shop::Container()->get(Mailer::class);
-                        $mail   = new Mail();
-                        $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_BEZAHLT, $data));
-                    }
-                }
-            }
             \executeHook(\HOOK_BESTELLUNGEN_XML_BEARBEITESET, [
                 'oBestellung'     => &$shopOrder,
                 'oKunde'          => &$customer,
@@ -693,7 +776,7 @@ final class Orders extends AbstractSync
     }
 
     /**
-     * @param int         $orderID
+     * @param int        $orderID
      * @param stdClass[] $orderAttributes
      */
     private function editAttributes(int $orderID, $orderAttributes): void

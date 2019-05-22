@@ -2319,10 +2319,13 @@ input.form-control[name="wishlist-url"] {
       z-index: $zindex-dropdown;
     }
   }
-  .table thead th {
-    background: #fff;
-    vertical-align: top;
-    z-index: $zindex-dropdown - 1;
+  .table {
+    width: 98%;
+    thead th {
+      background: #fff;
+      vertical-align: top;
+      z-index: $zindex-dropdown - 1;
+    }
   }
 
   .stretched {

@@ -48,7 +48,7 @@ if (isset($_GET['kExportformat'])
 }
 if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::validateToken()) {
     $ef          = new Exportformat(0, $db);
-    $checkResult = $ef->check($_POST);
+    $checkResult = $ef->check(StringHandler::filterXSS($_POST));
     if ($checkResult === true) {
         unset($_SESSION['exportSyntaxErrorCount']);
         $kExportformat = $ef->getExportformat();
@@ -108,8 +108,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         }
     } else {
         $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
-        $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
+        $_POST['cKopfzeile'] = isset($_POST['cKopfzeile']) ? str_replace('<tab>', "\t", $_POST['cKopfzeile']) : '';
+        $_POST['cFusszeile'] = isset($_POST['cFusszeile']) ? str_replace('<tab>', "\t", $_POST['cFusszeile']) : '';
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', Text::filterXSS($_POST));
         $step = 'neuer Export';

@@ -62,10 +62,10 @@ class Optin extends OptinBase
 
     /**
      * return message meanings:
-     * 'optinCanceled'      = cancel (a previously active) subscription
-     * 'optinRemoved'       = cancel optin without the existence  of a subscription
-     * 'optinSucceded'      = subscription successfully
-     * 'optinSuccededAgain' = user clicked again
+     * 'optinCanceled'       = cancel (a previously active) subscription
+     * 'optinRemoved'        = cancel optin without the existence  of a subscription
+     * 'optinSucceeded'      = subscription successfully
+     * 'optinSucceededAgain' = user clicked again
      *
      * @return string
      * @throws EmptyResultSetException
@@ -90,7 +90,7 @@ class Optin extends OptinBase
         if ($this->actionPrefix === self::ACTIVATE_CODE || $this->externalAction === self::ACTIVATE_CODE) {
             $this->activateOptin();
 
-            return empty($this->foundOptinTupel->dActivated) ? 'optinSucceded' : 'optinSuccededAgain';
+            return empty($this->foundOptinTupel->dActivated) ? 'optinSucceeded' : 'optinSucceededAgain';
         }
         throw new InvalidInputException('unknown action received.');
     }

@@ -268,7 +268,7 @@ class GetText
                 $config->cBeschreibung = '';
             }
         } elseif ($config->cConf === 'N') {
-            $config->cName = __('configgroup_' . $config->kEinstellungenConf);
+            $config->cName = __($config->cWertName);
         }
     }
 

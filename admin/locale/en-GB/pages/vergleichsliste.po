@@ -3,34 +3,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "configureComparelist"
-msgstr "Vergleichsliste"
+msgstr "Comparison list"
 
 msgid "configureComparelistURL"
-msgstr "https://jtl-url.de/4djgz"
+msgstr "https://jtl-url.de/8g6qc"
 
 msgid "configureComparelistDesc"
-msgstr "Konfigurieren Sie hier die Vergleichsliste im Shop."
+msgstr "You customers can use the comparison list to view similar items side by side. You can adjust how the comparison list is displayed and view which items were compared by your customers."
 
 msgid "last20Compares"
-msgstr "Alle Vergleiche"
+msgstr "All comparisons"
 
 msgid "topCompareProducts"
-msgstr "Top Artikel die verglichen wurden"
+msgstr "Most frequent comparisons"
 
 msgid "compareID"
-msgstr "Vergleichsnummer"
+msgstr "Comparison ID"
 
 msgid "compareProducts"
-msgstr "Artikel die verglichen wurden"
+msgstr "Compared items"
 
 msgid "compareDate"
-msgstr "Vergleichsdatum"
+msgstr "Comparison date"
 
 msgid "compareCount"
-msgstr "Anzahl"
+msgstr "Number"
 
 msgid "compareProduct"
-msgstr "Artikel"
+msgstr "Item"
 
 msgid "compareFrom"
 msgstr "von"
@@ -42,16 +42,16 @@ msgid "compareNext"
 msgstr "Nächster"
 
 msgid "compareTimeFilter"
-msgstr "Zeitfilter"
+msgstr "Time period"
 
 msgid "compareNoTopCompares"
-msgstr "Es wurden keine Vergleiche gefunden."
+msgstr "No comparisons found."
 
 msgid "compareTopCount"
-msgstr "Artikelanzahl"
+msgstr "Number of items"
 
 msgid "compareSettings"
-msgstr "Einstellungen"
+msgstr "Settings"
 
 msgid "compareSave"
-msgstr "Speichern"
+msgstr "Save"

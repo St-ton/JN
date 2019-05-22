@@ -3,169 +3,169 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "statisticTitle"
-msgstr "Statistik"
+msgstr "Reports"
 
 msgid "statisticBesucherURL"
-msgstr "https://jtl-url.de/sd6h2"
+msgstr "https://jtl-url.de/rk925"
 
 msgid "statisticKundenherkunft"
-msgstr "Kundenherkunft"
+msgstr "Origins of shop visitors"
 
 msgid "statisticKundenherkunftURL"
-msgstr "https://jtl-url.de/7bf5d"
+msgstr "https://jtl-url.de/fzxua"
 
 msgid "statisticSuchmaschine"
-msgstr "Suchmaschinen"
+msgstr "Search engines"
 
 msgid "statisticSuchmaschineURL"
-msgstr "https://jtl-url.de/3va0g"
+msgstr "https://jtl-url.de/hrkb3"
 
 msgid "statisticUmsatz"
-msgstr "Umsatz"
+msgstr "Sales revenues"
 
 msgid "statisticUmsatzURL"
-msgstr "https://jtl-url.de/6vzmt"
+msgstr "https://jtl-url.de/39h7w"
 
 msgid "statisticEinstiegsseite"
-msgstr "Einstiegsseite"
+msgstr "Start page"
 
 msgid "statisticEinstiegsseiteURL"
-msgstr "https://jtl-url.de/lmtjs"
+msgstr "https://jtl-url.de/8bs5u"
 
 msgid "statisticURL"
-msgstr "https://jtl-url.de/mx3hu"
+msgstr "https://jtl-url.de/p-93k"
 
 msgid "statisticDesc"
-msgstr "Detaillierte Statistiken für Ihren Online-Shop. Bitte wählen Sie den Zeitraum, für den Sie Ihre Shop-Statistiken einsehen möchten."
+msgstr "Here you can find detailed reports regarding your online shop. Select the period for which you want to view the reports."
 
 msgid "salesStatisticTitle"
-msgstr "Umsatz Statistiken"
+msgstr "Sales reports"
 
 msgid "salesStatisticDesc"
-msgstr "Hier können Sie sich Ihre Umsätze auswerten lassen. Um genauere Daten für einen bestimmten Monat anzuzeigen, klicken Sie auf die entsprechende Zeile in der Tabelle oder wählen das Datum direkt aus der Listenbox.<br />Sämtliche Preise sind als brutto (inkl. MWSt.) zu betrachten."
+msgstr "Here you can review your revenues. To view the data of a specific month, click on the respective row of the table or select the date directly from the list.<br/>All prices are gross prices (VAT included)."
 
 msgid "monthYear"
-msgstr "Monat und Jahr auswählen"
+msgstr "Select month and year"
 
 msgid "allMonth"
-msgstr "Alle Monate"
+msgstr "All months"
 
 msgid "allYears"
-msgstr "Alle Jahre"
+msgstr "All years"
 
 msgid "filters"
-msgstr "Folgende Filter setzen:"
+msgstr "Apply filters:"
 
 msgid "filter1"
-msgstr "Offen"
+msgstr "Open"
 
 msgid "filter2"
-msgstr "In Bearbeitung"
+msgstr "Being processed"
 
 msgid "filter3"
-msgstr "Bezahlt"
+msgstr "Paid"
 
 msgid "filter4"
-msgstr "Versendet"
+msgstr "Shipped"
 
 msgid "numbersOfOrder"
-msgstr "Anzahl Bestellungen"
+msgstr "Number of purchase orders"
 
 msgid "numbersOfProducts"
-msgstr "Anzahl Produkte"
+msgstr "Number of items"
 
 msgid "numbersOfVisitedSites"
-msgstr "Anzahl Seitenaufrufe"
+msgstr "Number of page views"
 
 msgid "taxes"
-msgstr "Steuern"
+msgstr "Taxes"
 
 msgid "shipping"
 msgstr "Versand"
 
 msgid "sales"
-msgstr "Umsatz"
+msgstr "Sales revenues"
 
 msgid "complete"
-msgstr "Gesamt"
+msgstr "Total"
 
 msgid "noTaxes"
-msgstr "Keine Umsätze für diesen Monat"
+msgstr "No revenues available for this month"
 
 msgid "submit"
 msgstr "Absenden"
 
 msgid "export"
-msgstr "Exportieren"
+msgstr "Export"
 
 msgid "vititsSitesTitle"
-msgstr "Besuchte Seiten Statistiken"
+msgstr "Page reports"
 
 msgid "vititsSitesDesc"
-msgstr "Hier werden die am häufigsten besuchten Seiten des Shops angezeigt."
+msgstr "View the pages of your online shop that are called up most frequently."
 
 msgid "siteOptions"
-msgstr "Anzahl der Ergebnisse:"
+msgstr "Number of results:"
 
 msgid "cells"
-msgstr "Zeilen"
+msgstr "Rows"
 
 msgid "sortOptions"
-msgstr "Sortierreihenfolge"
+msgstr "Sorting order"
 
 msgid "desc"
-msgstr "Absteigend"
+msgstr "In descending order"
 
 msgid "asc"
-msgstr "Aufsteigend"
+msgstr "In ascending order"
 
 msgid "sortby"
-msgstr "Sortieren nach"
+msgstr "Sort by"
 
 msgid "sortby1"
-msgstr "Artikel"
+msgstr "Items"
 
 msgid "sortby2"
-msgstr "Suchanfragen"
+msgstr "Search queries"
 
 msgid "sortby3"
 msgstr "Tags"
 
 msgid "sortby4"
-msgstr "Hersteller"
+msgstr "Manufacturers"
 
 msgid "sortby5"
-msgstr "Kategorien"
+msgstr "Categories"
 
 msgid "sortby6"
 msgstr "Links"
 
 msgid "sortby7"
-msgstr "Seitenaufrufe"
+msgstr "Page views"
 
 msgid "sortby8"
 msgstr "News"
 
 msgid "sortby9"
-msgstr "News Monate"
+msgstr "News (months)"
 
 msgid "sortby10"
-msgstr "News Kategorien"
+msgstr "News (categories)"
 
 msgid "groupby"
-msgstr "Gruppieren nach"
+msgstr "Group by"
 
 msgid "groupby1"
-msgstr "Kategorien"
+msgstr "Categories"
 
 msgid "groupby2"
-msgstr "Kategorie"
+msgstr "Category"
 
 msgid "nameSEOLink"
-msgstr "Name (+SEO Link)"
+msgstr "Name (and SEO link)"
 
 msgid "articleNo"
-msgstr "Artikel-Nr."
+msgstr "Artikelnummer"
 
 msgid "articleNo1"
 msgstr "Art.-Nr."
@@ -174,22 +174,22 @@ msgid "intLink"
 msgstr "(int.) Link"
 
 msgid "visiterStatisticTitle"
-msgstr "Besucher Statistiken"
+msgstr "Visitor reports"
 
 msgid "visiterStatisticDesc"
-msgstr "Beim ersten Aufrufen dieser Seite werden automatisch die Einträge der letzten Zeit angezeigt."
+msgstr "Beim ersten Aufruf dieser Seite werden automatisch die Einträge der letzten Zeit angezeigt."
 
 msgid "groupto"
-msgstr "Gruppieren nach"
+msgstr "Group by"
 
 msgid "sortto"
-msgstr "Sortieren nach"
+msgstr "Sort by"
 
 msgid "orderNo"
-msgstr " Bestell-Nr."
+msgstr " Purchase order ID"
 
 msgid "browser"
-msgstr "Browser"
+msgstr "Web browser"
 
 msgid "referrer"
 msgstr "Referrer"
@@ -198,16 +198,16 @@ msgid "searchatse"
 msgstr "Suchbegriff über Suchmaschinen"
 
 msgid "date"
-msgstr "Datum"
+msgstr "Date"
 
 msgid "accountNumber"
-msgstr "Kunden-Nr."
+msgstr "Customer ID"
 
 msgid "accountBuild"
 msgstr "Kunden erstellt"
 
 msgid "searchKey"
-msgstr "Suchbegriffe"
+msgstr "Search terms"
 
 msgid "groupOrderDesc1"
 msgstr "Von insgesamt"
@@ -243,16 +243,16 @@ msgid "number"
 msgstr "Anzahl"
 
 msgid "searchStatisticTitle"
-msgstr "Suchmaschinenstatistiken"
+msgstr "Search engine reports"
 
 msgid "searchStatisticDesc"
-msgstr "Im Folgenden können Sie sich anzeigen lassen, welche Suchmaschinen am häufigsten zu Ihrem Shop führen und welche die häufigste Einstiegsseite war.<br />Die angezeigte Einstiegsseite ist in der Tabelle gegebenenfalls gekürzt, dort wird Ihnen der komplette Suchausdruck angezeigt, wenn Sie den Mauszeiger etwas länger auf dem Begriff stehen lassen.<br />Beim ersten Aufrufen dieser Seite werden automatisch die Einträge der letzten Zeit angezeigt."
+msgstr "Im Folgenden können Sie sich anzeigen lassen, welche Suchmaschinen am häufigsten zu Ihrem Shop führen und welche Shopseite die häufigste Einstiegsseite war.<br/>Die angezeigte Einstiegsseite ist in der Tabelle gegebenenfalls gekürzt, dort wird Ihnen der komplette Suchausdruck angezeigt, wenn Sie den Mauszeiger etwas länger auf dem Begriff stehen lassen.<br/>Beim ersten Aufruf dieser Seite werden automatisch die Einträge der letzten Zeit angezeigt."
 
 msgid "se"
-msgstr "Suchmaschine"
+msgstr "Search engine"
 
 msgid "ses"
-msgstr "Suchmaschinen"
+msgstr "Search engines"
 
 msgid "sq"
 msgstr "Suchanfrage"
@@ -261,37 +261,37 @@ msgid "sqs"
 msgstr "Suchanfrage"
 
 msgid "hp"
-msgstr "Einstiegsseite"
+msgstr "Start page"
 
 msgid "orderNoReferrer"
-msgstr "Bestellanzahl (Alle Referrer)"
+msgstr "Number of purchase orders (all referrers)"
 
 msgid "orderNoSe"
-msgstr "Bestellanzahl (Suchmaschinen)"
+msgstr "Number of purchase orders (search engines)"
 
 msgid "orderNoSqSe"
-msgstr "Bestellanzahl (Suchanfragen ü. Suchmaschinen)"
+msgstr "Number of purchase orders (search queries via search engines)"
 
 msgid "conversionRate"
-msgstr "Conversion Rate"
+msgstr "Conversion rate"
 
 msgid "nav"
-msgstr "Seitennavigation"
+msgstr "Page navigation"
 
 msgid "productStatisticTitle"
-msgstr "Produktanfragestatistiken"
+msgstr "Reports on questions about items"
 
 msgid "productStatisticDesc"
-msgstr "Welche Produkte bei Ihren Kunden am begehrtesten sind, können Sie unter anderem daran sehen, wie oft eine Anfrage zu einem bestimmten Produkt abgeschickt wurde. Oder auch daran, wie oft sich die Kunden bei bestimmten Produkten benachrichtigen lassen wollen, wennn das Produkt wieder verfügbar ist."
+msgstr "One way to determine which of your items are the most popular is to look at how often customers had questions regarding a specific item. Another way is to look at how often customers ask for availability notifications for specific items."
 
 msgid "sitesToBeLook"
-msgstr "Zu betrachtenden Seiten"
+msgstr "Zu betrachtende Seiten"
 
 msgid "productQuestion"
-msgstr "Frage zum Produkt"
+msgstr "Question about item"
 
 msgid "allQuestions"
-msgstr "Benachrichtigen, wenn verfügbar (alle Anfragen)"
+msgstr "Availability notification (all requests)"
 
 msgid "productSend"
 msgstr "Benachrichtigen, wenn verfügbar (bereits versendet)"
@@ -303,7 +303,7 @@ msgid "restrictions"
 msgstr "Artikel"
 
 msgid "dateOfQuestion"
-msgstr "Datum der Anfrage"
+msgstr "Question date"
 
 msgid "productShipping"
 msgstr "Versendet"
@@ -312,4 +312,4 @@ msgid "productName"
 msgstr "Name"
 
 msgid "statisticType"
-msgstr "Statistiktyp"
+msgstr "Report type"

@@ -3,61 +3,61 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "paymentmethods"
-msgstr "Zahlungsarten"
+msgstr "Payment methods"
 
 msgid "paymentmethodsURL"
-msgstr "https://jtl-url.de/covba"
+msgstr "https://jtl-url.de/vjrdl"
 
 msgid "paymentmethodName"
-msgstr "Zahlungsartname"
+msgstr "Name of the payment method"
 
 msgid "installedPaymentmethods"
-msgstr "Folgende Zahlungsarten sind installiert"
+msgstr "The following payment methods are installed:"
 
 msgid "name"
-msgstr "Zahlungsart"
+msgstr "Payment method"
 
 msgid "moduleid"
-msgstr "Modul"
+msgstr "Module"
 
 msgid "configurePaymentmethod"
-msgstr "Einstellungen für Zahlungsart"
+msgstr "Here you can adjust the settings for this payment method."
 
 msgid "restrictedToCustomerGroups"
-msgstr "Erlaubte Kundengruppen"
+msgstr "Available to customer groups"
 
 msgid "feeName"
-msgstr "Gebührname"
+msgstr "Fee name"
 
 msgid "pictureURL"
-msgstr "Bild-URL"
+msgstr "Image URL"
 
 msgid "pictureDesc"
-msgstr "Geben Sie hier den Pfad oder URL zu einem Bild an, das statt des anzuzeigenden Namens in der Kaufabwicklung bei dieser Zahlungsart angezeigt werden soll."
+msgstr "Enter the path or URL of the image that is to be displayed instead of the name of the payment method during checkout."
 
 msgid "noticeText"
-msgstr "Hinweistext"
+msgstr "Note"
 
 msgid "noticeTextShop"
-msgstr "Hinweistext Shop"
+msgstr "Note (online shop)"
 
 msgid "noticeTextEmail"
-msgstr "Hinweistext Email"
+msgstr "Note (email)"
 
 msgid "paymentAckMail"
-msgstr "E-Mail: Bestätigung der Zahlung"
+msgstr "Email: Confirmation of payment"
 
 msgid "paymentCancelMail"
-msgstr "E-Mail: Storno der Bestellung"
+msgstr "Email: Order cancellation"
 
 msgid "provider"
 msgstr "Anbieter"
 
 msgid "duringOrder"
-msgstr "Zahlung vor Bestellabschluss"
+msgstr "Payment before order completion"
 
 msgid "paymentmethodsCheckAll"
-msgstr "Anforderungen aller Zahlungsarten prüfen"
+msgstr "Check requirements of all payment methods"
 
 msgid "expansionNeeded"
 msgstr "Erweiterung nötig"
@@ -66,16 +66,16 @@ msgid "log"
 msgstr "Log"
 
 msgid "viewLog"
-msgstr "Log anzeigen"
+msgstr "View log"
 
 msgid "logText"
 msgstr "Text"
 
 msgid "logDate"
-msgstr "Datum"
+msgstr "Date"
 
 msgid "logLevel"
-msgstr "Fehlerlevel"
+msgstr "Error level"
 
 msgid "logError"
 msgstr "Error"
@@ -87,37 +87,37 @@ msgid "logDebug"
 msgstr "Debug"
 
 msgid "logReset"
-msgstr "Log zurücksetzen"
+msgstr "Reset log"
 
 msgid "payments"
-msgstr "Zahlungseingänge für "
+msgstr "Payments received for "
 
 msgid "paymentsURL"
-msgstr "https://jtl-url.de/covba"
+msgstr "https://jtl-url.de/vjrdl"
 
 msgid "paymentsDesc"
-msgstr "Hier können Sie alle Zahlungseingänge zu einer gewünschten Zahlungsart einsehen und deren Abgleichs-Status zur Wawi untersuchen."
+msgstr "Here you can view the payments received for a specific payment method and its synchronisation status with JTL-Wawi."
 
 msgid "successPaymentMethodCheck"
-msgstr "Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft."
+msgstr "Payment methods tested for operational readiness."
 
 msgid "successLogReset"
-msgstr "Der Fehlerlog von %s wurde erfolgreich zurückgesetzt."
+msgstr "Error log for %s reset successfully."
 
 msgid "noLogs"
-msgstr "Keine Logs vorhanden."
+msgstr "No logs available."
 
 msgid "amountPayed"
-msgstr "Gezahlter Betrag"
+msgstr "Amount paid"
 
 msgid "syncedWithWawi"
-msgstr "Abgeholt durch Wawi"
+msgstr "Already transferred to JTL-Wawi"
 
 msgid "wawiSyncReset"
-msgstr "Wawi-Abholung zurücksetzen"
+msgstr "Put down for transfer to JTL-Wawi during next synchronisation"
 
 msgid "installedPaymentTypes"
-msgstr "Installierte Zahlungsarten"
+msgstr "Installed payment methods"
 
 msgid "successPaymentMethodSave"
 msgstr "Payment method saved."

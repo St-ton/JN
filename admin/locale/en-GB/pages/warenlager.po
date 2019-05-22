@@ -3,22 +3,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "warenlager"
-msgstr "Warenlager"
+msgstr "Warehouse"
 
 msgid "warenlagerURL"
-msgstr "https://jtl-url.de/2onym"
+msgstr "https://jtl-url.de/anf89"
 
 msgid "warenlagerDesc"
-msgstr "Über die Warenlagerverwaltung pflegen Sie die Anzeige der Läger im Shop"
+msgstr "Specify whether to display the stocks of individual warehouses in the item details. For this, check \"Active in online shop\" for the respective warehouse and click \"Update\". In the options, you can adjust the names displayed for each warehouse."
 
 msgid "warenlagerIntern"
-msgstr "interne Bezeichnung"
+msgstr "Internal name"
 
 msgid "watenlagerActive"
-msgstr "Im Shop aktiv"
+msgstr "Active in online shop"
 
 msgid "warenlagerDesignation"
 msgstr "Bezeichnung ändern"
 
 msgid "successStoreRefresh"
-msgstr "Ihre Warenlager wurden erfolgreich aktualisiert"
+msgstr "Warehouses updated successfully."

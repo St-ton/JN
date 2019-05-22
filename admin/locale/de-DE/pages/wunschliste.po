@@ -15,7 +15,7 @@ msgid "wishlistPosCount"
 msgstr "Anzahl Artikel"
 
 msgid "wishlistDesc"
-msgstr "Hier erhalten Sie einen Überblick über die von Ihren Kunden erstellten Wunschzettel. Unter \"Einstellungen\" können Sie die Wunschzettelfunktion konfigurieren."
+msgstr "Hier erhalten Sie einen Überblick über die von Ihren Kunden erstellten Wunschzettel. Unter „Einstellungen“ können Sie die Wunschzettelfunktion konfigurieren."
 
 msgid "wishlistSend"
 msgstr "An Freunde versendete Wunschzettel"

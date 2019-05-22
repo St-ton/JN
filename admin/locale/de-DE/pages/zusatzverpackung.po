@@ -9,7 +9,7 @@ msgid "zusatzverpackungURL"
 msgstr "https://jtl-url.de/0hqn3"
 
 msgid "zusatzverpackungDesc"
-msgstr "Hier können Sie verschiedene kostenpflichtige Verpackungsoptionen, z. B. Geschenkverpackungen oder Versicherungen, hinterlegen. Zusatzverpackungsoptionen werden in der Kaufabwicklung im Schritt der Versandartauswahl angezeigt und abgefragt."
+msgstr "Hier können Sie verschiedene kostenpflichtige Verpackungsoptionen, z. B. Geschenkverpackungen oder Versicherungen, hinterlegen. Zusatzverpackungsoptionen werden in der Kaufabwicklung im Schritt der Versandartauswahl angezeigt und abgefragt."
 
 msgid "zusatzverpackungISOLang"
 msgstr "Sprach-ISO"
@@ -42,10 +42,10 @@ msgid "zusatzverpackungAddedNone"
 msgstr "Keine Zusatzverpackung angelegt"
 
 msgid "errorNameMissing"
-msgstr "Fehler: Bitte geben Sie der Verpackung einen Namen."
+msgstr "Bitte geben Sie der Verpackung einen Namen."
 
 msgid "errorCustomerGroupMissing"
-msgstr "Fehler: Bitte wählen Sie mindestens eine Kundengruppe aus."
+msgstr "Bitte wählen Sie mindestens eine Kundengruppe aus."
 
 msgid "successPackagingSave"
 msgstr "Die Verpackung %s wurde erfolgreich gespeichert."
@@ -54,7 +54,7 @@ msgid "successPackagingDelete"
 msgstr "Die markierten Verpackungen wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOnePackaging"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Verpackung."
+msgstr "Bitte markieren Sie mindestens eine Verpackung."
 
 msgid "successPackagingSaveMultiple"
 msgstr "Die markierten Verpackungen wurden erfolgreich aktualisiert."

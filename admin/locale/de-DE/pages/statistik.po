@@ -246,7 +246,7 @@ msgid "searchStatisticTitle"
 msgstr "Suchmaschinenstatistiken"
 
 msgid "searchStatisticDesc"
-msgstr "Im Folgenden können Sie sich anzeigen lassen, welche Suchmaschinen am häufigsten zu Ihrem Shop führen und welche Shopseite die häufigste Einstiegsseite war.<br/>Die angezeigte Einstiegsseite ist in der Tabelle gegebenenfalls gekürzt, dort wird Ihnen der komplette Suchausdruck angezeigt, wenn Sie den Mauszeiger etwas länger auf dem Begriff stehen lassen.<br/>Beim ersten Aufruf dieser Seite werden automatisch die Einträge der letzten Zeit angezeigt."
+msgstr "Im Folgenden können Sie sich anzeigen lassen, welche Suchmaschinen am häufigsten zu Ihrem Shop führen und welche Shopseite die häufigste Einstiegsseite war.<br/>Die angezeigte Einstiegsseite ist in der Tabelle gegebenenfalls gekürzt, dort wird Ihnen der komplette Suchbegriff angezeigt, wenn Sie den Mauszeiger etwas länger auf dem Begriff stehen lassen.<br/>Beim ersten Aufruf dieser Seite werden automatisch die Einträge der letzten Zeit angezeigt."
 
 msgid "se"
 msgstr "Suchmaschine"
@@ -282,13 +282,13 @@ msgid "productStatisticTitle"
 msgstr "Artikelanfragestatistiken"
 
 msgid "productStatisticDesc"
-msgstr "Welche Artikel bei Ihren Kunden am begehrtesten sind, können Sie unter anderem daran sehen, wie oft eine Anfrage zu einem bestimmten Artikel abgeschickt wurde. Oder auch daran, wie oft sich Kunden bei bestimmten Artikeln benachrichtigen lassen wollen, wenn der Artikel wieder verfügbar ist."
+msgstr "Welche Artikel bei Ihren Kunden am begehrtesten sind, können Sie unter anderem daran sehen, wie oft Rückfragen zu einem bestimmten Artikel abgeschickt wurden. Oder auch daran, wie oft sich Kunden bei bestimmten Artikeln benachrichtigen lassen wollen, wenn der Artikel wieder verfügbar ist."
 
 msgid "sitesToBeLook"
 msgstr "Zu betrachtende Seiten"
 
 msgid "productQuestion"
-msgstr "Frage zum Artikel"
+msgstr "Rückfrage zum Artikel"
 
 msgid "allQuestions"
 msgstr "Benachrichtigen, wenn verfügbar (alle Anfragen)"

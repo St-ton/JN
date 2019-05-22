@@ -42,7 +42,7 @@ msgid "compareNext"
 msgstr "Nächster"
 
 msgid "compareTimeFilter"
-msgstr "Zeitfilter"
+msgstr "Zeitraum"
 
 msgid "compareNoTopCompares"
 msgstr "Es wurden keine Vergleiche gefunden."

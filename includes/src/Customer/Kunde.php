@@ -32,6 +32,16 @@ class Kunde
 {
     use MagicCompatibilityTrait;
 
+    public const OK = 1;
+
+    public const ERROR_LOCKED = 2;
+
+    public const ERROR_INACTIVE = 3;
+
+    public const ERROR_CAPTCHA = 4;
+
+    public const ERROR_INVALID_DATA = 0;
+
     /**
      * @var int
      */
@@ -242,7 +252,9 @@ class Kunde
      */
     public $nLoginversuche = 0;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     public static $mapping = [
         'cKundenattribut_arr' => 'CustomerAttributes'
     ];
@@ -326,54 +338,55 @@ class Kunde
     }
 
     /**
-     * @param string $cBenutzername
-     * @param string $cPasswort
+     * @param string $username
+     * @param string $password
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
      * @throws Exception
      */
-    public function holLoginKunde($cBenutzername, $cPasswort): int
+    public function holLoginKunde($username, $password): int
     {
         $passwordService = Shop::Container()->getPasswordService();
-        if ($cBenutzername !== '' && $cPasswort !== '') {
-            $oUser = $this->checkCredentials($cBenutzername, $cPasswort);
-            if ($oUser === false) {
-                return 0;
+        if ($username === '' || $password === '') {
+            return self::ERROR_INVALID_DATA;
+        }
+        $user = $this->checkCredentials($username, $password);
+        if ($user === false) {
+            return self::ERROR_INVALID_DATA;
+        }
+        if (isset($user->cSperre) && $user->cSperre === 'Y') {
+            return self::ERROR_LOCKED;
+        }
+        if (isset($user->cAktiv) && $user->cAktiv === 'N') {
+            return self::ERROR_INACTIVE;
+        }
+        if (isset($user->kKunde) && $user->kKunde > 0) {
+            foreach (\get_object_vars($user) as $k => $v) {
+                $this->$k = $v;
             }
-            if (isset($oUser->cSperre) && $oUser->cSperre === 'Y') {
-                return 2; // Kunde ist gesperrt
-            }
-            if (isset($oUser->cAktiv) && $oUser->cAktiv === 'N') {
-                return 3; // Kunde ist nicht aktiv
-            }
-            if (isset($oUser->kKunde) && $oUser->kKunde > 0) {
-                foreach (\get_object_vars($oUser) as $k => $v) {
-                    $this->$k = $v;
-                }
-                $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
-                // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if (isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort)) {
-                    $_upd            = new stdClass();
-                    $_upd->cPasswort = $passwordService->hash($cPasswort);
-                    Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
-                }
-            }
-            \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
-                'oKunde'        => &$this,
-                'oUser'         => $oUser,
-                'cBenutzername' => $cBenutzername,
-                'cPasswort'     => $cPasswort
-            ]);
-            if ($this->kKunde > 0) {
-                $this->entschluesselKundendaten();
-                // Anrede mappen
-                $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
-                $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-
-                return 1;
+            $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
+            // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
+            if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
+                $_upd            = new stdClass();
+                $_upd->cPasswort = $passwordService->hash($password);
+                Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $_upd);
             }
         }
+        \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
+            'oKunde'        => &$this,
+            'oUser'         => $user,
+            'cBenutzername' => $username,
+            'cPasswort'     => $password
+        ]);
+        if ($this->kKunde > 0) {
+            $this->entschluesselKundendaten();
+            // Anrede mappen
+            $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
+            $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
 
-        return 0;
+            return self::OK;
+        }
+
+        return self::ERROR_INVALID_DATA;
     }
 
     /**

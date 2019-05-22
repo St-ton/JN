@@ -99,14 +99,14 @@
                                             {/if}
 
                                             {if $question->getType() === \JTL\Survey\QuestionType::SELECT_SINGLE}
-                                                <option value=$answer->getID()
+                                                <option value={$answer->getID()}
                                                     {if $nSessionFragenWerte_arr[$questionID]->isActive($answer->getID())} selected{/if}>
                                                     {$answer->getName()}
                                                 </option>
                                             {/if}
 
                                             {if $question->getType() === \JTL\Survey\QuestionType::SELECT_MULTI}
-                                                <option value=$answer->getID()
+                                                <option value={$answer->getID()}
                                                     {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $answer->getID()} selected{/if}{/foreach}{/if}>
                                                     {$answer->getName()}
                                                 </option>

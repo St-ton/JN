@@ -15,7 +15,7 @@ use stdClass;
 
 /**
  * Class CustomerFields
- * @package JTL
+ * @package JTL\Backend
  */
 class CustomerFields
 {

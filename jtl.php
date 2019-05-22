@@ -7,7 +7,6 @@
  */
 
 use JTL\Checkout\Bestellung;
-use JTL\Customer\CustomerAttributes;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -437,10 +436,8 @@ if ($customerID > 0) {
                 ['oKunde' => $knd]
             )->checkLogging(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, $postData, true);
             Kundendatenhistory::saveHistory($_SESSION['Kunde'], $knd, Kundendatenhistory::QUELLE_MEINKONTO);
-            if (is_a($customerAttributes, CustomerAttributes::class)) {
-                $customerAttributes->save();
-                $knd->getCustomerAttributes()->load($knd->getID());
-            }
+            $customerAttributes->save();
+            $knd->getCustomerAttributes()->load($knd->getID());
             $_SESSION['Kunde'] = $knd;
             // $step = 'mein Konto';
             $alertHelper->addAlert(

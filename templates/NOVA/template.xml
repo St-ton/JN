@@ -137,6 +137,16 @@
                 <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
         </Section>
+        <Section Name="Seitenleiste Einstellungen" Key="sidebar_settings">
+            <Setting Description="Seitenleiste nur auf Artikellisten anzeigen (empfohlen)" Key="show_sidebar_product_list" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+        </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
@@ -167,6 +177,7 @@
     <Minify>
         <CSS Name="clear.css">
             <File Path="themes/base/fontawesome/css/all.min.css"/>
+            <File Path="themes/base/jquery-ui.min.css"/>
             <File Path="themes/clear/clear.css"/>
         </CSS>
         <JS Name="jtl3.js">
@@ -194,6 +205,7 @@
             <File Path="js/Chart.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/bs4-input-spinner.js"/>
+            <File Path="js/jquery-ui-1.11.4.min.js"/>
         </JS>
     </Minify>
     <Boxes>

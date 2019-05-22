@@ -10,7 +10,12 @@
 
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
-            {if !$bExclusive && $hasLeftBox && !empty($boxes.left|strip_tags|trim)}
+            {if ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
+                || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')
+                && !$bExclusive
+                && $hasLeftBox
+                && !empty($boxes.left|strip_tags|trim)
+            }
                 {block name='layout-footer-sidepanel-left'}
                     <aside id="sidepanel_left" class="d-print-none col-12 col-lg-3 order-lg-0 mb-6">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}

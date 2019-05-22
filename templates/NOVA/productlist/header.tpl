@@ -103,13 +103,11 @@
         {include file='selectionwizard/index.tpl'}
     {/block}
 
-    {if count($Suchergebnisse->getProducts()) > 0}
-        {block name='productlist-header-include-result-options'}
-            <div id="improve_search" class="mb-3">
-                {include file='productlist/result_options.tpl'}
-            </div>
-        {/block}
-    {/if}
+    {block name='productlist-header-include-result-options'}
+        <div id="improve_search" class="mb-3">
+            {include file='productlist/result_options.tpl'}
+        </div>
+    {/block}
 
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
         {if isset($KategorieInhalt->TopArtikel->elemente)}

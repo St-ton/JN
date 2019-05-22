@@ -418,13 +418,12 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array $params
      * @return string
      */
-    public function aaURLEncode($params, $smarty): string
+    public function aaURLEncode($params): string
     {
-        $rest   = (isset($params['nReset']) && (int)$params['nReset'] === 1);
+        $reset  = (isset($params['nReset']) && (int)$params['nReset'] === 1);
         $url    = $_SERVER['REQUEST_URI'];
         $params = ['&aaParams', '?aaParams', '&aaReset', '?aaReset'];
         $exists = false;
@@ -452,7 +451,7 @@ class Plugins
 
         $sep = (\strpos($url, '?') === false) ? '?' : '&';
 
-        return $url . $sep . ($rest ? 'aaReset=' : 'aaParams=') . \base64_encode($paramString);
+        return $url . $sep . ($reset ? 'aaReset=' : 'aaParams=') . \base64_encode($paramString);
     }
 
     /**
@@ -461,17 +460,17 @@ class Plugins
      */
     public function getNavigation($params, $smarty): void
     {
-        $linkgroupIdentifier = $params['linkgroupIdentifier'];
-        $oLinkGruppe         = null;
-        if (\strlen($linkgroupIdentifier) > 0) {
-            $linkGroups  = Shop::Container()->getLinkService()->getVisibleLinkGroups();
-            $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
+        if (!isset($params['assign'])) {
+            return;
         }
-        if (\is_object($oLinkGruppe)
-            && isset($params['assign'])
-            && $oLinkGruppe->isAvailableInLanguage(Shop::getLanguageID())
-        ) {
-            $smarty->assign($params['assign'], $this->buildNavigationSubs($oLinkGruppe));
+        $identifier = $params['linkgroupIdentifier'];
+        $linkGroup  = null;
+        if (\strlen($identifier) > 0) {
+            $linkGroups = Shop::Container()->getLinkService()->getVisibleLinkGroups();
+            $linkGroup  = $linkGroups->getLinkgroupByTemplate($identifier);
+        }
+        if ($linkGroup !== null && $linkGroup->isAvailableInLanguage(Shop::getLanguageID())) {
+            $smarty->assign($params['assign'], $this->buildNavigationSubs($linkGroup));
         }
     }
 
@@ -480,7 +479,7 @@ class Plugins
      * @param int                $parentID
      * @return Collection
      */
-    public function buildNavigationSubs(LinkGroupInterface $linkGroup, $parentID = 0)
+    public function buildNavigationSubs(LinkGroupInterface $linkGroup, $parentID = 0): Collection
     {
         $parentID = (int)$parentID;
         $links    = new Collection();
@@ -501,11 +500,10 @@ class Plugins
     }
 
     /**
-     * @param array                         $params
-     * @param \Smarty_Internal_TemplateBase $smarty
+     * @param array $params
      * @return string|object|null
      */
-    public function prepareImageDetails($params, $smarty)
+    public function prepareImageDetails($params)
     {
         if (!isset($params['item'])) {
             return null;
@@ -713,17 +711,14 @@ class Plugins
     /**
      * @param array                         $params
      * @param \Smarty_Internal_TemplateBase $smarty
-     * @return object|null
+     * @return array|null|void
      */
     public function getStates($params, $smarty)
     {
         $regions = Staat::getRegions($params['cIso']);
-        if (isset($params['assign'])) {
-            $smarty->assign($params['assign'], $regions);
-
-            return;
+        if (!isset($params['assign'])) {
+            return $regions;
         }
-
-        return $regions;
+        $smarty->assign($params['assign'], $regions);
     }
 }

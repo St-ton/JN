@@ -187,7 +187,7 @@ function kundeSpeichern(array $post)
     } else {
         $knd->getCustomerAttributes()->assign($customerAttributes);
         if ((int)$post['checkout'] === 1) {
-            //weiterleitung zum chekout
+            //weiterleitung zum checkout
             $_SESSION['checkout.register']        = 1;
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $post;

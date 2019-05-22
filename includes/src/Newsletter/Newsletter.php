@@ -13,6 +13,8 @@ use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Kampagne;
+use JTL\Mail\Mail\Mail;
+use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -308,30 +310,35 @@ class Newsletter
 
             return $e->getMessage();
         }
-        $mail          = new stdClass();
-        $mail->toEmail = $recipients->cEmail;
-        $mail->toName  = ($recipients->cVorname ?? '') . ' ' . ($recipients->cNachname ?? '');
+        $toName = ($recipients->cVorname ?? '') . ' ' . ($recipients->cNachname ?? '');
         if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
-            $mail->toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
+            $toName = ($oKunde->cVorname ?? '') . ' ' . ($oKunde->cNachname ?? '');
         }
-
-        $mail->fromEmail     = $this->config['newsletter']['newsletter_emailadresse'];
-        $mail->fromName      = $this->config['newsletter']['newsletter_emailabsender'];
-        $mail->replyToEmail  = $this->config['newsletter']['newsletter_emailadresse'];
-        $mail->replyToName   = $this->config['newsletter']['newsletter_emailabsender'];
-        $mail->subject       = $newsletter->cBetreff;
-        $mail->bodyText      = $bodyText;
-        $mail->bodyHtml      = $bodyHtml;
-        $mail->lang          = Sprache::getIsoFromLangID((int)$newsletter->kSprache)->cISO;
-        $mail->methode       = $this->config['newsletter']['newsletter_emailmethode'];
-        $mail->sendmail_pfad = $this->config['newsletter']['newsletter_sendmailpfad'];
-        $mail->smtp_hostname = $this->config['newsletter']['newsletter_smtp_host'];
-        $mail->smtp_port     = $this->config['newsletter']['newsletter_smtp_port'];
-        $mail->smtp_auth     = $this->config['newsletter']['newsletter_smtp_authnutzen'];
-        $mail->smtp_user     = $this->config['newsletter']['newsletter_smtp_benutzer'];
-        $mail->smtp_pass     = $this->config['newsletter']['newsletter_smtp_pass'];
-        $mail->SMTPSecure    = $this->config['newsletter']['newsletter_smtp_verschluesselung'];
-        \verschickeMail($mail);
+        $mailer                 = Shop::Container()->get(Mailer::class);
+        $config                 = [
+            'email_methode'               => $this->config['newsletter']['newsletter_emailmethode'],
+            'email_sendmail_pfad'         => $this->config['newsletter']['newsletter_sendmailpfad'],
+            'email_smtp_hostname'         => $this->config['newsletter']['newsletter_smtp_host'],
+            'email_smtp_port'             => $this->config['newsletter']['newsletter_smtp_port'],
+            'email_smtp_auth'             => $this->config['newsletter']['newsletter_smtp_authnutzen'],
+            'email_smtp_user'             => $this->config['newsletter']['newsletter_smtp_benutzer'],
+            'email_smtp_pass'             => $this->config['newsletter']['newsletter_smtp_pass'],
+            'email_smtp_verschluesselung' => $this->config['newsletter']['newsletter_smtp_verschluesselung']
+        ];
+        $mailerConfig['emails'] = $config;
+        $mailer->setConfig($mailerConfig);
+        $mailNL = (new Mail())
+            ->setToMail($recipients->cEmail)
+            ->setToName($toName)
+            ->setFromMail($this->config['newsletter']['newsletter_emailadresse'])
+            ->setFromName($this->config['newsletter']['newsletter_emailabsender'])
+            ->setReplyToMail($this->config['newsletter']['newsletter_emailadresse'])
+            ->setReplyToName($this->config['newsletter']['newsletter_emailabsender'])
+            ->setSubject($newsletter->cBetreff)
+            ->setBodyText($bodyText)
+            ->setBodyHTML($bodyHtml)
+            ->setLanguageCode(Sprache::getIsoFromLangID((int)$newsletter->kSprache)->cISO);
+        $mailer->send($mailNL);
 
         return true;
     }

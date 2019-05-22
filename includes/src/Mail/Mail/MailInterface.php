@@ -44,8 +44,9 @@ interface MailInterface
 
     /**
      * @param mixed $data
+     * @return MailInterface
      */
-    public function setData($data): void;
+    public function setData($data): self;
 
     /**
      * @return int
@@ -54,8 +55,9 @@ interface MailInterface
 
     /**
      * @param int $customerGroupID
+     * @return MailInterface
      */
-    public function setCustomerGroupID(int $customerGroupID): void;
+    public function setCustomerGroupID(int $customerGroupID): self;
 
     /**
      * @return int
@@ -64,8 +66,9 @@ interface MailInterface
 
     /**
      * @param int $languageID
+     * @return MailInterface
      */
-    public function setLanguageID(int $languageID): void;
+    public function setLanguageID(int $languageID): self;
 
     /**
      * @return string
@@ -81,8 +84,9 @@ interface MailInterface
 
     /**
      * @param mixed $languageCode
+     * @return MailInterface
      */
-    public function setLanguageCode($languageCode): void;
+    public function setLanguageCode($languageCode): self;
 
     /**
      * @return string
@@ -91,8 +95,9 @@ interface MailInterface
 
     /**
      * @param mixed $fromMail
+     * @return MailInterface
      */
-    public function setFromMail($fromMail): void;
+    public function setFromMail($fromMail): self;
 
     /**
      * @return string
@@ -101,8 +106,9 @@ interface MailInterface
 
     /**
      * @param string $fromName
+     * @return MailInterface
      */
-    public function setFromName($fromName): void;
+    public function setFromName($fromName): self;
 
     /**
      * @return string
@@ -111,8 +117,9 @@ interface MailInterface
 
     /**
      * @param mixed $toMail
+     * @return MailInterface
      */
-    public function setToMail($toMail): void;
+    public function setToMail($toMail): self;
 
     /**
      * @return string
@@ -121,8 +128,9 @@ interface MailInterface
 
     /**
      * @param string $toName
+     * @return MailInterface
      */
-    public function setToName($toName): void;
+    public function setToName($toName): self;
 
     /**
      * @return string
@@ -131,8 +139,9 @@ interface MailInterface
 
     /**
      * @param string $replyToMail
+     * @return MailInterface
      */
-    public function setReplyToMail($replyToMail): void;
+    public function setReplyToMail($replyToMail): self;
 
     /**
      * @return string
@@ -141,8 +150,9 @@ interface MailInterface
 
     /**
      * @param mixed $replyToName
+     * @return MailInterface
      */
-    public function setReplyToName(string $replyToName): void;
+    public function setReplyToName(string $replyToName): self;
 
     /**
      * @return string
@@ -151,8 +161,9 @@ interface MailInterface
 
     /**
      * @param mixed $subject
+     * @return MailInterface
      */
-    public function setSubject($subject): void;
+    public function setSubject($subject): self;
 
     /**
      * @return string
@@ -161,8 +172,9 @@ interface MailInterface
 
     /**
      * @param string $bodyHTML
+     * @return MailInterface
      */
-    public function setBodyHTML(string $bodyHTML): void;
+    public function setBodyHTML(string $bodyHTML): self;
 
     /**
      * @return string
@@ -171,8 +183,9 @@ interface MailInterface
 
     /**
      * @param string $bodyText
+     * @return MailInterface
      */
-    public function setBodyText($bodyText): void;
+    public function setBodyText($bodyText): self;
 
     /**
      * @return Attachment[]
@@ -181,8 +194,9 @@ interface MailInterface
 
     /**
      * @param array $attachments
+     * @return MailInterface
      */
-    public function setAttachments(array $attachments): void;
+    public function setAttachments(array $attachments): self;
 
     /**
      * @return Attachment[]
@@ -191,8 +205,9 @@ interface MailInterface
 
     /**
      * @param Attachment[] $pdfAttachments
+     * @return MailInterface
      */
-    public function setPdfAttachments(array $pdfAttachments): void;
+    public function setPdfAttachments(array $pdfAttachments): self;
 
     /**
      * @param Attachment $pdf
@@ -212,8 +227,9 @@ interface MailInterface
 
     /**
      * @param string $error
+     * @return MailInterface
      */
-    public function setError(string $error): void;
+    public function setError(string $error): self;
 
     /**
      * @return array
@@ -222,8 +238,9 @@ interface MailInterface
 
     /**
      * @param array $copyRecipients
+     * @return MailInterface
      */
-    public function setCopyRecipients(array $copyRecipients): void;
+    public function setCopyRecipients(array $copyRecipients): self;
 
     /**
      * @param string $copyRecipient
@@ -237,6 +254,7 @@ interface MailInterface
 
     /**
      * @param TemplateInterface|null $template
+     * @return MailInterface
      */
-    public function setTemplate(?TemplateInterface $template): void;
+    public function setTemplate(?TemplateInterface $template): self;
 }

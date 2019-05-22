@@ -678,6 +678,9 @@ if ($step === 'uebersicht') {
         ['lid' => (int)$_SESSION['kSprache']],
         ReturnType::ARRAY_OF_OBJECTS
     );
+    if (!($instance instanceof Newsletter)) {
+        $instance = new Newsletter($db, $conf);
+    }
     foreach ($queue as $entry) {
         $entry->kNewsletter       = (int)$entry->kNewsletter;
         $jobQueue                 = $db->queryPrepared(

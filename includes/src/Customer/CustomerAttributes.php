@@ -49,8 +49,9 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
         $this->customerID = $customerID;
 
         foreach (Shop::Container()->getDB()->queryPrepared(
-            'SELECT tkundenattribut.kKundenAttribut, tkundenattribut.kKunde, tkundenfeld.kKundenfeld,
-                    tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert, tkundenfeld.nSort,
+            'SELECT tkundenattribut.kKundenAttribut, COALESCE(tkundenattribut.kKunde, :customerID) kKunde,
+                    tkundenfeld.kKundenfeld, tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert,
+                    tkundenfeld.nSort,
                     IF(tkundenattribut.kKundenAttribut IS NULL, 1, tkundenfeld.nEditierbar) nEditierbar
                 FROM tkundenfeld
                 LEFT JOIN tkundenattribut ON tkundenattribut.kKunde = :customerID
@@ -80,10 +81,10 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
         /** @var CustomerAttribute $attribute */
         foreach ($this as $attribute) {
             if ($attribute->isEditable()) {
-                $usedIDs[] = $attribute->getID();
                 $attribute->save();
+                $usedIDs[] = $attribute->getID();
             } else {
-                $this->attributes[$attribute->getCustomerID()] = CustomerAttribute::load($attribute->getId());
+                $this->attributes[$attribute->getCustomerFieldID()] = CustomerAttribute::load($attribute->getId());
             }
         }
 

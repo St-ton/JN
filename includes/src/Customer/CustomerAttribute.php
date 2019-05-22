@@ -104,7 +104,15 @@ class CustomerAttribute
         if ($record->kKundenAttribut === 0) {
             unset($record->kKundenAttribut);
         }
-        Shop::Container()->getDB()->upsert('tkundenattribut', $record, ['kKundenAttribut', 'kKunde', 'kKundenfeld']);
+        $res = Shop::Container()->getDB()->upsert(
+            'tkundenattribut',
+            $record,
+            ['kKundenAttribut', 'kKunde', 'kKundenfeld']
+        );
+
+        if ($res > 0) {
+            $this->setId($res);
+        }
 
         return $this;
     }

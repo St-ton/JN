@@ -166,7 +166,7 @@ abstract class OptinBase extends OptinFactory
     /**
      * only move the optin-tupel to the history
      */
-    protected function finishOptin(): void
+    public function finishOptin(): void
     {
         $newRow               = new \stdClass();
         $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;

@@ -467,7 +467,7 @@ if (Form::validateToken()) {
                     $nCount_arr[0] = 0;     // Count Kundengruppennamen
                     $nCount_arr[1] = 0;     // Count Kundengruppenkeys
                     foreach ($recipient->cKundengruppe_arr as $cKundengruppeTMP) {
-                        if ($cKundengruppeTMP != '0') {
+                        if (!empty($cKundengruppeTMP)) {
                             $oKundengruppeTMP = $db->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
                             if (mb_strlen($oKundengruppeTMP->cName) > 0) {
                                 if ($nCount_arr[0] > 0) {

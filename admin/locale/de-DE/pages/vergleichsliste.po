@@ -32,15 +32,6 @@ msgstr "Anzahl"
 msgid "compareProduct"
 msgstr "Artikel"
 
-msgid "compareFrom"
-msgstr "von"
-
-msgid "comparePrevious"
-msgstr "Vorherige"
-
-msgid "compareNext"
-msgstr "Nächster"
-
 msgid "compareTimeFilter"
 msgstr "Zeitraum"
 

@@ -184,3 +184,6 @@ msgstr "Add an option"
 
 msgid "activePolls"
 msgstr "Active surveys"
+
+msgid "pollSortHint"
+msgstr "Enter a number to specify in which order the questions are to appear. The question with the number 1 will be displayed first."

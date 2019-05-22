@@ -14,11 +14,8 @@ msgstr "Specify whether to display the stocks of individual warehouses in the it
 msgid "warenlagerIntern"
 msgstr "Internal name"
 
-msgid "watenlagerActive"
+msgid "warenlagerActive"
 msgstr "Active in online shop"
-
-msgid "warenlagerDesignation"
-msgstr "Bezeichnung ändern"
 
 msgid "successStoreRefresh"
 msgstr "Warehouses updated successfully."

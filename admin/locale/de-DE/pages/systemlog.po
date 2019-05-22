@@ -56,15 +56,6 @@ msgstr " Markierte Log-Einträge wurden erfolgreich gelöscht."
 msgid "minLogLevel"
 msgstr "Log-Eintrag erstellen ab Level"
 
-msgid "logLevelEmergency"
-msgstr "Emergency"
-
-msgid "logLevelAlert"
-msgstr "Alert"
-
-msgid "logLevelCritical"
-msgstr "Critical"
-
 msgid "logLevelError"
 msgstr "Error"
 
@@ -73,9 +64,6 @@ msgstr "Warning"
 
 msgid "logLevelNotice"
 msgstr "Notice"
-
-msgid "logLevelInfo"
-msgstr "Info"
 
 msgid "logLevelDebug"
 msgstr "Debug"

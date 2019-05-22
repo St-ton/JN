@@ -116,15 +116,6 @@ msgstr "Zahlungsarten"
 msgid "shippingPrice"
 msgstr "Versandkosten"
 
-msgid "deleteShippingType"
-msgstr "Löschen"
-
-msgid "modifyShippingType"
-msgstr "Ändern"
-
-msgid "cloneShippingType"
-msgstr "Duplizieren"
-
 msgid "isleListFor"
 msgstr "Zuschlagslisten für"
 
@@ -218,7 +209,7 @@ msgstr "Kombination hinzufügen"
 msgid "validOnShippingClasses"
 msgstr "Gültig für folgende Versandklassen-Kombinationen im Warenkorb"
 
-msgid "all"
+msgid "allCustomerGroups"
 msgstr "Alle"
 
 msgid "allCombinations"

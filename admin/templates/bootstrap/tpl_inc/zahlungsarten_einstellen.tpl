@@ -33,7 +33,12 @@
                             <span class="input-group-addon">
                                 <label for="cGebuehrname_{$cISO}">{__('feeName')} ({$sprache->cNameDeutsch})</label>
                             </span>
-                            <input class="form-control" type="text" name="cGebuehrname_{$cISO}" id="cGebuehrname_{$cISO}" value="{if isset($Gebuehrname[$cISO])}{$Gebuehrname[$cISO]}{/if}" tabindex="2" />
+                            <td>
+                                <div class="input-group">
+                                    <input class="form-control" type="text" name="cGebuehrname_{$cISO}" id="cGebuehrname_{$cISO}" value="{if isset($Gebuehrname[$cISO])}{$Gebuehrname[$cISO]}{/if}" tabindex="2" />
+                                    <span class="input-group-addon">{getHelpDesc cDesc=__('feeNameHint')}</span>
+                                </div>
+                            </td>
                         </li>
                     {/foreach}
                     <li class="input-group">

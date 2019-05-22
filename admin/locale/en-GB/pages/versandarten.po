@@ -116,15 +116,6 @@ msgstr "Payment methods"
 msgid "shippingPrice"
 msgstr "Shipping costs"
 
-msgid "deleteShippingType"
-msgstr "Delete"
-
-msgid "modifyShippingType"
-msgstr "Ändern"
-
-msgid "cloneShippingType"
-msgstr "Duplicate"
-
 msgid "isleListFor"
 msgstr "Surcharge lists for"
 
@@ -218,7 +209,7 @@ msgstr "Add combination"
 msgid "validOnShippingClasses"
 msgstr "Valid for the following combinations of shipping classes in the basket"
 
-msgid "all"
+msgid "allCustomerGroups"
 msgstr "All"
 
 msgid "allCombinations"

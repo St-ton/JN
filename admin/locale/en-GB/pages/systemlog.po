@@ -56,15 +56,6 @@ msgstr " Selected log entries deleted successfully."
 msgid "minLogLevel"
 msgstr "Create log entry starting with level"
 
-msgid "logLevelEmergency"
-msgstr "Emergency"
-
-msgid "logLevelAlert"
-msgstr "Alert"
-
-msgid "logLevelCritical"
-msgstr "Critical"
-
 msgid "logLevelError"
 msgstr "Error"
 
@@ -73,9 +64,6 @@ msgstr "Warning"
 
 msgid "logLevelNotice"
 msgstr "Notice"
-
-msgid "logLevelInfo"
-msgstr "Info"
 
 msgid "logLevelDebug"
 msgstr "Debug"

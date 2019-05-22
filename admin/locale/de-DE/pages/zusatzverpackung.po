@@ -11,9 +11,6 @@ msgstr "https://jtl-url.de/0hqn3"
 msgid "zusatzverpackungDesc"
 msgstr "Hier können Sie verschiedene kostenpflichtige Verpackungsoptionen, z. B. Geschenkverpackungen oder Versicherungen, hinterlegen. Zusatzverpackungsoptionen werden in der Kaufabwicklung im Schritt der Versandartauswahl angezeigt und abgefragt."
 
-msgid "zusatzverpackungISOLang"
-msgstr "Sprach-ISO"
-
 msgid "zusatzverpackungExemptFromCharge"
 msgstr "Kostenfrei ab"
 
@@ -26,7 +23,7 @@ msgstr "Zusatzverpackung speichern"
 msgid "zusatzverpackungAutoTax"
 msgstr "Automatisch berechnen"
 
-msgid "zusatzverpackungAdd"
+msgid "zusatzverpackungCreate"
 msgstr "Zusatzverpackung anlegen"
 
 msgid "zusatzverpackungEdit"
@@ -34,9 +31,6 @@ msgstr "Zusatzverpackung bearbeiten"
 
 msgid "zusatzverpackungAdded"
 msgstr "Angelegte Zusatzverpackungen"
-
-msgid "zusatzverpackungCreate"
-msgstr "Neue Zusatzverpackung anlegen"
 
 msgid "zusatzverpackungAddedNone"
 msgstr "Keine Zusatzverpackung angelegt"

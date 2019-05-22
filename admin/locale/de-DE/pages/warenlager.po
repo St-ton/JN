@@ -14,11 +14,8 @@ msgstr "Hier können Sie festlegen, ob die Bestände einzelner Lager auf der Art
 msgid "warenlagerIntern"
 msgstr "Interne Bezeichnung"
 
-msgid "watenlagerActive"
+msgid "warenlagerActive"
 msgstr "Im Shop aktiv"
-
-msgid "warenlagerDesignation"
-msgstr "Bezeichnung ändern"
 
 msgid "successStoreRefresh"
 msgstr "Die Warenlager wurden erfolgreich aktualisiert."

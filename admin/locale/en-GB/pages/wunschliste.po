@@ -8,7 +8,7 @@ msgstr "Wish list"
 msgid "wishlistURL"
 msgstr "https://jtl-url.de/fj5ov"
 
-msgid "wishlistReceiverCount"
+msgid "wishlistRecipientCount"
 msgstr "Number of recipients"
 
 msgid "wishlistPosCount"

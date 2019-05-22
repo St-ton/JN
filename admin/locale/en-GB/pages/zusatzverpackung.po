@@ -11,9 +11,6 @@ msgstr "https://jtl-url.de/5no62"
 msgid "zusatzverpackungDesc"
 msgstr "Here you can manage fee-based packaging options such as gift wrapping or insurance. Additional packaging options are displayed during the checkout in the shipping method selection step."
 
-msgid "zusatzverpackungISOLang"
-msgstr "Sprach-ISO"
-
 msgid "zusatzverpackungExemptFromCharge"
 msgstr "Free from"
 
@@ -26,7 +23,7 @@ msgstr "Save additional packaging"
 msgid "zusatzverpackungAutoTax"
 msgstr "Calculate automatically"
 
-msgid "zusatzverpackungAdd"
+msgid "zusatzverpackungCreate"
 msgstr "Create additional packaging"
 
 msgid "zusatzverpackungEdit"
@@ -34,9 +31,6 @@ msgstr "Edit additional packaging"
 
 msgid "zusatzverpackungAdded"
 msgstr "Available additional packaging"
-
-msgid "zusatzverpackungCreate"
-msgstr "Neue Zusatzverpackung anlegen"
 
 msgid "zusatzverpackungAddedNone"
 msgstr "No additional packaging available yet"

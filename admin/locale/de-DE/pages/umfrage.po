@@ -184,3 +184,6 @@ msgstr "Option hinzufügen"
 
 msgid "activePolls"
 msgstr "Aktive Umfragen"
+
+msgid "pollSortHint"
+msgstr "Hier wird eine Nummer für die Sortierung der Fragen angegeben. Je kleiner die Zahl, desto höher liegt die Frage in der Liste."

@@ -87,7 +87,7 @@ msgid "contentTypeCountCustomerRecruitedOrdered"
 msgstr "Anzahl geworbener Kunden, die gekauft haben"
 
 msgid "contentTypeCountSentWishlists"
-msgstr "Anzahl versendeter Wunschlisten"
+msgstr "Anzahl versendeter Wunschzettel"
 
 msgid "contentTypeCountPolls"
 msgstr "Anzahl durchgeführter Umfragen"

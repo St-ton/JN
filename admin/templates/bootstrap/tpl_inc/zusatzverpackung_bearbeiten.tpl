@@ -4,7 +4,7 @@
     <input type="hidden" name="kVerpackung" value="{if isset($kVerpackung)}{$kVerpackung}{/if}" />
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">{if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungAdd')}{/if}</h3>
+            <h3 class="panel-title">{if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}</h3>
         </div>
         <div class="table-responsive">
             <table class="kundenfeld table">

@@ -45,14 +45,18 @@
                     <li class="nav-item dropdown{if $category->kKategorie == $activeId
                     || ((isset($activeParent)
                     && isset($activeParent->kKategorie))
-                    && $activeParent->kKategorie == $category->kKategorie)} active{/if}" data-tab="{$category@iteration}">
+                    && $activeParent->kKategorie == $category->kKategorie)} active{/if}">
+
+                        {if $category->kKategorie == $activeId
+                            || ((isset($activeParent)
+                                    && isset($activeParent->kKategorie))
+                                && $activeParent->kKategorie == $category->kKategorie)}
+                            <div class="wee d-none d-md-block"></div>
+                        {/if}
                         {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
                             {$category->cName}
                         {/link}
                         <div class="dropdown-menu">
-                    {*{navitemdropdown text=$category->cKurzbezeichnung
-                        data=["tab"=>$category@iteration]
-                        class="{if $category->kKategorie == $activeId} active{/if}"}*}
                         {container class="pt-md-2"}
                             {row}
                                 {assign var=hasInfoColumn value=false}
@@ -151,7 +155,10 @@
 
                 {else}
                     {navitem href=$category->cURLFull title=$category->cSeo
-                        data=["tab"=>$category@iteration] class="{if $category->kKategorie == $activeId}active{/if}"}
+                        class="{if $category->kKategorie == $activeId}active{/if}"}
+                        {if $category->kKategorie == $activeId}
+                            <div class="wee d-none d-md-block"></div>
+                        {/if}
                         {$category->cKurzbezeichnung}
                     {/navitem}
                 {/if}
@@ -176,7 +183,7 @@
         {if !empty($manufacturers)}
             {assign var=linkKeyHersteller value=JTL\Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
             {assign var=linkSEOHersteller value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
-            {navitemdropdown text="{if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}" data=["tab"=>"manufacturer"]}
+            {navitemdropdown text="{if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}"}
                 {container}
                     {row}
                         {foreach $manufacturers as $hst}
@@ -206,7 +213,6 @@
         {/if}
     {/if}
     {/block}{* megamenu-manufacturers *}
-
 
     {block name='snippets-categories-mega-global-characteristics'}
     {*

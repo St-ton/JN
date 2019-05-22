@@ -180,7 +180,6 @@
                                         {button id="scrollMenuRight" class="d-none"}
                                             <i class="fas fa-chevron-right"></i>
                                         {/button}
-                                        <span class="TabNav_Indicator d-none d-md-block"></span>
                                     </div>
                                 {/block}
                             {/col}

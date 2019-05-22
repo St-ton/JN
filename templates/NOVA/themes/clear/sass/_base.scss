@@ -192,15 +192,15 @@ body.unboxed-layout {
     #nav-account-collapse { min-width: $dropdown-min-width*2.3; }
   }
   .nav-item{
-    border-bottom: $highlight-border-size solid transparent;
+    //border-bottom: $highlight-border-size solid transparent;
     text-decoration: none;
     @include media-breakpoint-up(md) {
       display: inline-table;
     }
-    &.active,
-    &[aria-expanded="true"] {
-      border-bottom: $highlight-border-size solid $primary;
-    }
+    //&.active,
+    //&[aria-expanded="true"] {
+    //  border-bottom: $highlight-border-size solid $primary;
+    //}
   }
   @include media-breakpoint-down(md) {
     #logo img{
@@ -1810,40 +1810,27 @@ footer {
   }
 }
 
-.TabNav_Indicator,
-.TabNav_Indicator2 {
+.megamenu > .nav-item .wee {
+  height: 6px;
+  width: 100%;
+  background-color: #F8BF00;
   position: absolute;
-  bottom: 0;
   left: 0;
-  width: 100px;
-  height: $highlight-border-size;
-  background-color: $primary;
-  /*transition-property: left, background-color, -webkit-transform;
-  transition-property: transform, left, background-color;*/
-  transition-property: transform, left, background-color, -webkit-transform;
-  transition-duration: .2s;
-  -webkit-transform-origin: 0;
-  transform-origin: 0;
-  -webkit-transform: translate3d(0, 0, 0) scaleX(0);
-  transform: translate3d(0, 0, 0) scaleX(0);
-  opacity: 0;
-  -webkit-animation: fadeMeIn .2s forwards;
-  animation: fadeMeIn .2s forwards;
-  -webkit-animation-delay: .2s;
-  animation-delay: .2s;
-  pointer-events: none;
+  bottom: 0;
+  z-index: 1;
+  transition: 0.75s;
 }
-
-@-webkit-keyframes fadeMeIn {
-  to {
-    opacity: 1;
-  }
+.megamenu > .nav-item > a {
+  padding: 16px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #525252;
+  transition: 0.75s;
 }
-
-@keyframes fadeMeIn {
-  to {
-    opacity: 1;
-  }
+.megamenu > .nav-item:hover > a {
+  color: #525252;
+  background: #F5F7FA;
 }
 
 .ns-ScrollWrapper {

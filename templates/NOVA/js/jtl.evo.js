@@ -722,34 +722,53 @@
             var menu = 'body[data-viewport="lg"] .megamenu, body[data-viewport="md"] .megamenu';
 
             if ($(menu)[0] != undefined) {
-                var scrollWidth = parseInt($(menu)[0].scrollWidth);
-                var width = parseInt($(menu).outerWidth() + 2);
+                var scrollWidth = parseInt(Math.round($(menu)[0].scrollWidth));
+                var width = parseInt(Math.round($(menu).outerWidth() + 2));
                 var btnLeft = $('#scrollMenuLeft');
                 var btnRight = $('#scrollMenuRight');
+                var wee = document.querySelector('.wee').style;
                 // reset
                 btnLeft.off("click.menuScroll");
                 btnRight.off("click.menuScroll");
 
                 if (width < scrollWidth) {
                     checkButtons();
-
                     btnLeft.on("click.menuScroll",function () {
-                        var leftPos = $('#navbarToggler').scrollLeft();
-                        $('#navbarToggler').animate({scrollLeft: leftPos - 250},{
+                        var leftPos = parseInt(Math.round($('#navbarToggler').scrollLeft()));
+                        var newLeft = leftPos-250;
+                        var weeMove = 250;
+
+                        if (newLeft < 0) {
+                            weeMove = leftPos;
+                        }
+                        $('#navbarToggler').animate({scrollLeft: newLeft},{
                             duration: 600,
-                            complete: checkButtons(leftPos - 250)
+                            start: checkButtonsAndWee(newLeft, weeMove)
                         });
                     });
 
                     btnRight.on("click.menuScroll", function () {
-                        var leftPos2 = $('#navbarToggler').scrollLeft();
-                        $('#navbarToggler').animate({scrollLeft: leftPos2 + 250},{
+                        var leftPos2 = parseInt(Math.round($('#navbarToggler').scrollLeft()));
+                        var newLeft = leftPos2+250;
+                        var y = parseInt(Math.round(scrollWidth-(width+newLeft)));
+                        var weeMove = -250;
+
+                        if (y < 0) {
+                            weeMove = -(250+y);
+                        }
+                        $('#navbarToggler').animate({scrollLeft: newLeft},{
                             duration: 600,
-                            complete: checkButtons(leftPos2 + 250)
+                            start: checkButtonsAndWee(newLeft, weeMove)
                         });
                     });
                 }
             }
+
+            function checkButtonsAndWee(scrollLeft, weeMove) {
+                wee['left'] = parseInt(wee.left) + weeMove + 'px';
+                checkButtons(scrollLeft);
+            }
+
             function checkButtons(scrollLeft) {
                 if (typeof scrollLeft === 'undefined') {
                     scrollLeft = 0;

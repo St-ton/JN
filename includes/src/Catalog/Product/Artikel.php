@@ -6810,6 +6810,27 @@ class Artikel
     }
 
     /**
+     * @param string $cISO
+     * @return bool
+     */
+    public function isUsedForShippingCostCalculation(string $cISO): bool
+    {
+        $excludedAttributes = [\FKT_ATTRIBUT_VERSANDKOSTEN, \FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
+
+        foreach ($excludedAttributes as $excludedAttribute) {
+            if (isset($this->FunktionsAttribute[$excludedAttribute])
+                && ($cISO === ''
+                    || (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+                )
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @since 4.06.10
      * @param bool $onlyStockRelevant
      * @return object[]

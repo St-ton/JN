@@ -1675,3 +1675,60 @@ msgstr "Search for own page"
 
 msgid "titleChoosePage"
 msgstr "Choose own page"
+
+msgid "datepickerFormat"
+msgstr "DD.MM.YYYY"
+
+msgid "datepickerCustom"
+msgstr "Custom"
+
+msgid "datepickerToday"
+msgstr "Today"
+
+msgid "datepickerYesterday"
+msgstr "Yesterday"
+
+msgid "datepickerThisWeek"
+msgstr "This week"
+
+msgid "datepickerLastWeek"
+msgstr "Last week"
+
+msgid "datepickerThisMonth"
+msgstr "This month"
+
+msgid "datepickerLastMonth"
+msgstr "Last month"
+
+msgid "datepickerThisYear"
+msgstr "This year"
+
+msgid "datepickerLastYear"
+msgstr "Last year"
+
+msgid "datepickerSeparator"
+msgstr " - "
+
+msgid "mondayShort"
+msgstr "Mo"
+
+msgid "tuesdayShort"
+msgstr "Tu"
+
+msgid "wednesdayShort"
+msgstr "We"
+
+msgid "thursdayShort"
+msgstr "Th"
+
+msgid "fridayShort"
+msgstr "Fr"
+
+msgid "saturdayShort"
+msgstr "Sa"
+
+msgid "sundayShort"
+msgstr "Su"
+
+msgid "Zeitraum"
+msgstr "Period of time"

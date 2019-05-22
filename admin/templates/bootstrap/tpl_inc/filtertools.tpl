@@ -66,7 +66,7 @@
                                 </div>
                             {elseif $oField->getType() === 'daterange'}
                                 <div class="col-md-3 toolbar-col">
-                                    <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                                    <label for="{$oFilter->getId()}_{$oField->getId()}">{__($oField->getTitle())}</label>
                                     <input type="text"  class="form-control"
                                            name="{$oFilter->getId()}_{$oField->getId()}"
                                            id="{$oFilter->getId()}_{$oField->getId()}">
@@ -75,11 +75,21 @@
                                             var $datepicker = $('#{$oFilter->getId()}_{$oField->getId()}');
                                             $datepicker.daterangepicker({
                                                 locale: {
-                                                    format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'Übernehmen',
-                                                    cancelLabel: 'Abbrechen', customRangeLabel: 'Benutzerdefiniert',
-                                                    daysOfWeek: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-                                                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-                                                        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                                                    format: '{__('datepickerFormat')}',
+                                                    separator: '{__('datepickerSeparator')}',
+                                                    applyLabel: '{__('apply')}',
+                                                    cancelLabel: '{__('cancel')}',
+                                                    customRangeLabel: '{__('datepickerCustom')}',
+                                                    daysOfWeek: ['{__('sundayShort')}', '{__('mondayShort')}',
+                                                        '{__('tuesdayShort')}', '{__('wednesdayShort')}',
+                                                        '{__('thursdayShort')}', '{__('fridayShort')}',
+                                                        '{__('saturdayShort')}'
+                                                    ],
+                                                    monthNames: ['{__('january')}', '{__('february')}', '{__('march')}',
+                                                        '{__('april')}', '{__('may')}', '{__('june')}', '{__('july')}',
+                                                        '{__('august')}', '{__('september')}', '{__('october')}',
+                                                        '{__('november')}', '{__('december')}'
+                                                    ],
                                                     firstDay: 1
                                                 },
                                                 alwaysShowCalendars: true,
@@ -89,29 +99,29 @@
                                                 applyClass: 'btn btn-primary',
                                                 cancelClass: 'btn btn-danger',
                                                 ranges: {
-                                                    'Heute': [moment(), moment()],
-                                                    'Gestern': [
+                                                    '{__('datepickerToday')}': [moment(), moment()],
+                                                    '{__('datepickerYesterday')}': [
                                                         moment().subtract(1, 'days'),
                                                         moment().subtract(1, 'days')
                                                     ],
-                                                    'Diese Woche': [
+                                                    '{__('datepickerThisWeek')}': [
                                                         moment().startOf('week').add(1, 'day'),
                                                         moment().endOf('week').add(1, 'day')
                                                     ],
-                                                    'Letzte Woche': [
+                                                    '{__('datepickerLastWeek')}': [
                                                         moment().subtract(1, 'week').startOf('week').add(1, 'day'),
                                                         moment().subtract(1, 'week').endOf('week').add(1, 'day')
                                                     ],
-                                                    'Dieser Monat': [
+                                                    '{__('datepickerThisMonth')}': [
                                                         moment().startOf('month'),
                                                         moment().endOf('month')
                                                     ],
-                                                    'Letzter Monat': [
+                                                    '{__('datepickerLastMonth')}': [
                                                         moment().subtract(1, 'month').startOf('month'),
                                                         moment().subtract(1, 'month').endOf('month')
                                                     ],
-                                                    'Dieses Jahr': [moment().startOf('year'), moment().endOf('year')],
-                                                    'Letztes Jahr': [
+                                                    '{__('datepickerThisYear')}': [moment().startOf('year'), moment().endOf('year')],
+                                                    '{__('datepickerLastYear')}': [
                                                         moment().subtract(1, 'year').startOf('year'),
                                                         moment().subtract(1, 'year').endOf('year')
                                                     ]

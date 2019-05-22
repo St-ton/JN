@@ -339,7 +339,7 @@ if ($step === 'neuer Link') {
     $cgroups = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
     $lgl     = new LinkGroupList($db, Shop::Container()->getCache());
     $lgl->loadAll();
-    $smarty->assign('specialPages', $lgl->getLinkgroupByTemplate('specialpages', false)->getLinks())
+    $smarty->assign('specialPages', $linkAdmin->getSpecialPageTypes())
            ->assign('kundengruppen', $cgroups);
 }
 $smarty->assign('step', $step)

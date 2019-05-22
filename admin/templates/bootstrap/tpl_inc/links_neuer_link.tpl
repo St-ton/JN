@@ -100,7 +100,6 @@
                             <p class="multi_input" style="margin-bottom: 10px;">
                                 <input type="radio" id="nLink3" name="nLinkart" value="3" {if isset($xPostVar_arr.nLinkart) && (int)$xPostVar_arr.nLinkart === 3}checked{elseif $Link->getLinkType() > 2}checked{/if} />
                                 <label for="nLink3">{__('linkToSpecalPage')}</label>
-                                {$specialPages|var_dump}
                                 <select id="specialLinkType" name="nSpezialseite">
                                     <option value="0">{__('choose')}</option>
                                     {foreach $specialPages as $specialPage}

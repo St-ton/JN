@@ -51,7 +51,7 @@ msgid "hintInternalPage"
 msgstr "You can optionally link a custom page next to the check box."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Specify the place in which the check box is to be displayed. By holding Ctrl, you can select several pages."
+msgstr "Specify the place in which the check box is to be displayed. You can select several pages by holding the Ctrl key."
 
 msgid "hintCheckCheckboxActivation"
 msgstr "Specify whether the check box must be activated or whether it is optional."
@@ -90,16 +90,16 @@ msgid "hintCheckboxCustomerGroup"
 msgstr "Here you can set which customer groups can view the check box. You can select several customer groups by holding the Ctrl key."
 
 msgid "Newsletteranmeldung"
-msgstr "Newsletteranmeldung"
+msgstr "Newsletter subscription"
 
 msgid "Emailbenachrichtigung an Shopbetreiber"
-msgstr "Emailbenachrichtigung an Shopbetreiber"
+msgstr "Email notification to shop operator"
 
 msgid "checkboxPositionRegistration"
 msgstr "Registration"
 
 msgid "checkboxPositionOrderFinal"
-msgstr "Order finalize"
+msgstr "Order completion"
 
 msgid "checkboxPositionNewsletterRegistration"
 msgstr "Newsletter registration"

@@ -37,28 +37,28 @@ msgstr "Here you can specify which file to use for the watermark. We recommend u
 
 # branding types (tbranding)
 msgid "Artikel"
-msgstr "Artikel"
+msgstr "Items"
 
 # branding types (tbranding)
 msgid "Kategorie"
-msgstr "Kategorie"
+msgstr "Category"
 
 # branding types (tbranding)
 msgid "Variationen"
-msgstr "Variationen"
+msgstr "Variations"
 
 # branding types (tbranding)
 msgid "Merkmale"
-msgstr "Merkmale"
+msgstr "Characteristics"
 
 # branding types (tbranding)
 msgid "Merkmalwerte"
-msgstr "Merkmalwerte"
+msgstr "Characteristic values"
 
 # branding types (tbranding)
 msgid "Hersteller"
-msgstr "Hersteller"
+msgstr "Manufacturer"
 
 #placeholder: name of image category
 msgid "headingEditBrandingForProduct"
-msgstr "Branding für %s bearbeiten"
+msgstr "Editing the branding for %s"

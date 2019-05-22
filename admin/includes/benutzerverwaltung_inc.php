@@ -192,7 +192,7 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
                 ],
                 ReturnType::DEFAULT
             ) === 0) {
-                $messages['error'] .= $key . __('errorKeyChange');
+                $messages['error'] .= sprintf(__('errorKeyChange'), $key);
             }
             $handledKeys[] = $key;
         }

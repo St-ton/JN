@@ -51,7 +51,7 @@ msgid "hintInternalPage"
 msgstr "Hier können Sie optional eine eigene Seite neben der Checkbox verlinken lassen."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Hier legen Sie die Stelle fest, an der die Checkbox angezeigt werden soll. Sie können mit gehaltener Strg-Taste mehrere Seiten auswählen."
+msgstr "Hier legen Sie die Stelle fest, an der die Checkbox angezeigt werden soll. Mit gehaltener Strg-Taste können Sie mehrere Seiten auswählen."
 
 msgid "hintCheckCheckboxActivation"
 msgstr "Hier legen Sie fest, ob die Checkbox aktiviert werden muss oder optional ist."
@@ -90,10 +90,10 @@ msgid "hintCheckboxCustomerGroup"
 msgstr "Hier legen Sie fest, welche Kundengruppen die Checkbox sehen sollen. Mit gehaltener Strg-Taste können Sie mehrere Kundengruppen auswählen."
 
 msgid "Newsletteranmeldung"
-msgstr "Newsletteranmeldung"
+msgstr "Newsletter-Anmeldung"
 
 msgid "Emailbenachrichtigung an Shopbetreiber"
-msgstr "Emailbenachrichtigung an Shopbetreiber"
+msgstr "E-Mail-Benachrichtigung an Shopbetreiber"
 
 msgid "checkboxPositionRegistration"
 msgstr "Registrierung"

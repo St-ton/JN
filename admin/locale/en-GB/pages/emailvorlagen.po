@@ -84,13 +84,13 @@ msgid "errorFileName"
 msgstr "File name %s contains forbidden characters (A–Z, a–z, 0–9, _ and - are allowed)."
 
 msgid "errorFileSave"
-msgstr "Could not write files. Please check whether write access is set for the PDF directory."
+msgstr "Files could not be written. Please check whether write access is set for the pdf directory."
 
 msgid "errorFileNameMissing"
 msgstr "Please also enter a name for every file."
 
 msgid "errorFileSizeType"
-msgstr "The file must be a PDF and must not be larger than 2 MB."
+msgstr "The file must be a PDF and must not be larger than 2 MB."
 
 msgid "errorFileNamePdfMissing"
 msgstr "The PDF file does not have a name."
@@ -102,7 +102,7 @@ msgid "successFileAppendixDelete"
 msgstr "Attachments for the selected languages deleted successfully."
 
 msgid "multipleDividedColon"
-msgstr "(separate several recipients by semicolon)"
+msgstr "(in case of multiple recipients, use a semicolon as a separator)"
 
 msgid "resetEmailTemplate"
 msgstr "The email template will be reset."
@@ -115,79 +115,79 @@ msgstr "Plug-in templates"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kupon"
-msgstr "Kupon (Standard / Versandkupon)"
+msgstr "Coupon (standard/shipping coupon)"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_gutschein"
-msgstr "Kunde erhält Guthaben"
+msgstr "Customer receives credit"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellbestaetigung"
-msgstr "Bestellbestätigung"
+msgstr "Order confirmation"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_passwort_vergessen"
-msgstr "Passwort vergessen"
+msgstr "Forgot password"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_neukundenregistrierung"
-msgstr "Neukundenregistrierung"
+msgstr "New customer registration"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_accounterstellung_durch_betreiber"
-msgstr "Accounterstellung durch Shopbetreiber"
+msgstr "Creation of a customer account by shop operator"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_bezahlt"
-msgstr "Bestellung bezahlt"
+msgstr "Order was paid"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_versandt"
-msgstr "Bestellung versandt"
+msgstr "Order was shipped"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_account_geloescht"
-msgstr "Kundenaccount-Löschung"
+msgstr "Deletion of customer account"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kdgrp_zuweisung"
-msgstr "Kundengruppenzuweisung durch Shopbetreiber"
+msgstr "Assignment to customer group by shop operator"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kontaktformular"
-msgstr "Kontaktformular"
+msgstr "Contact form"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_produktanfrage"
-msgstr "Frage zum Produkt"
+msgstr "Question about item"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung"
-msgstr "Benachrichtigung, wenn Produkt wieder verfügbar"
+msgstr "Notification when item is available again"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_wunschliste"
-msgstr "Wunschzettelversand an Freunde"
+msgstr "Sharing wish lists with friends"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bewertungerinnerung"
-msgstr "Bewertungserinnerung nach Artikelkauf"
+msgstr "Reminder: review after purchase"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_aktualisiert"
-msgstr "Bestellung aktualisiert"
+msgstr "Order was updated"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_storno"
-msgstr "Bestellung storniert"
+msgstr "Ordered was cancelled"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_restorno"
-msgstr "Bestellung reaktiviert"
+msgstr "Order was reactivated"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bestellung_teilversandt"
-msgstr "Bestellung teilversandt"
+msgstr "Order was partly shipped"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_footer"
@@ -199,36 +199,36 @@ msgstr "Header"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_newsletteranmelden"
-msgstr "Freischaltungsemail nach Newsletteranmeldung"
+msgstr "Activation email after newsletter subscription"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kundenwerbenkunden"
-msgstr "Kunden werben Kunden"
+msgstr "Customer referral programme"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_kundenwerbenkundenboni"
-msgstr "Kunden werben Kunden Belohnung"
+msgstr "Customer referral programme – reward"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_artikelweiterempfehlen"
-msgstr "Artikel Weiterempfehlen"
+msgstr "Recommend item"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_bewertung_guthaben"
-msgstr "Bonusguthaben für Bewertung"
+msgstr "Bonus credit for customer review"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_anbieterkennzeichnung"
-msgstr "Anbieterkennzeichnung"
+msgstr "Legal disclosure"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_checkbox_shopbetreiber"
-msgstr "Checkbox Emailvorlage"
+msgstr "Selection of a check box option"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_admin_passwort_vergessen"
-msgstr "Passwort vergessen (Admin)"
+msgstr "Forgot password (administrator)"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_statusemail"
-msgstr "Status Email"
+msgstr "Email report"

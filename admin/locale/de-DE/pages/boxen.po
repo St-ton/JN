@@ -9,7 +9,7 @@ msgid "boxenURL"
 msgstr "https://jtl-url.de/2uknw"
 
 msgid "boxenDesc"
-msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Ob ein spezieller Container verfügbar ist oder nicht, wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
+msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Ob ein spezieller Container verfügbar ist oder nicht, wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
 
 msgid "showContainer"
 msgstr "Container anzeigen"
@@ -36,7 +36,7 @@ msgid "catBoxNum"
 msgstr "Kategoriebox-Nummer"
 
 msgid "catBoxNumTooltip"
-msgstr "Listet nur die Kategorien mit dem Kategorieattribut \"kategoriebox\" aus JTL-Wawi und der gesetzten Nummer auf. Standard=0 für alle Kategorien mit oder ohne Funktionsattribut."
+msgstr "Listet nur die Kategorien mit dem Kategorieattribut „kategoriebox“ aus JTL-Wawi und der gesetzten Nummer auf. Standard=0 für alle Kategorien mit oder ohne Funktionsattribut."
 
 msgid "linkgroup"
 msgstr "Linkgruppe"
@@ -45,7 +45,7 @@ msgid "remove"
 msgstr "Aus Liste entfernen"
 
 msgid "confirmDeleteBox"
-msgstr "Sind Sie sicher, dass Sie die Box \"%s\" löschen möchten? Wenn Sie einen Container löschen, werden alle im Container enthaltenen Boxen ebenfalls entfernt."
+msgstr "Sind Sie sicher, dass Sie die Box „%s“ löschen möchten? Wenn Sie einen Container löschen, werden alle im Container enthaltenen Boxen ebenfalls entfernt."
 
 msgid "new"
 msgstr "Neue Box"
@@ -60,7 +60,7 @@ msgid "pleaseSelect"
 msgstr "Bitte auswählen"
 
 msgid "resort"
-msgstr "sortieren"
+msgstr "Sortieren"
 
 msgid "noTemplateConfig"
 msgstr "Die Konfigurationsdatei (template.xml) wurde nicht gefunden."
@@ -72,13 +72,13 @@ msgid "boxEdit"
 msgstr "Box bearbeiten"
 
 msgid "warningInvisibleBoxes"
-msgstr "Achtung! Es existieren Boxen, die aktuell nicht angezeigt werden können."
+msgstr "Es existieren Boxen, die aktuell nicht angezeigt werden können."
 
 msgid "noBoxesAvailableFor"
-msgstr "Momentan sind noch keine Boxen vorhanden für \"%s\"."
+msgstr "Momentan sind noch keine Boxen vorhanden für „%s“."
 
 msgid "showBoxOnlyFor"
-msgstr "Box \"%s\" nur anzeigen für:"
+msgstr "Box „%s“ nur anzeigen für:"
 
 msgid "visibleOnPages"
 msgstr "Sichtbar auf folgenden Seiten"
@@ -138,10 +138,10 @@ msgid "deactivatedOnAllPages"
 msgstr "auf allen Seiten deaktiviert"
 
 msgid "warningChangesForAllPages"
-msgstr "Die Auswahl „Alle Seiten“ überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten gemacht wurden."
+msgstr "Die Auswahl „Alle Seiten“ überschreibt entsprechende Änderungen an den Boxen, die vorher für einzelne Seiten vorgenommen wurden."
 
 msgid "errorBoxesVisibilityEdit"
-msgstr "Fehler beim setzen der Sichtbarkeit der Boxen."
+msgstr "Die Sichtbarkeit der Boxen konnte nicht gesetzt werden. Es ist ein MySQL-Fehler aufgetreten. Bitte wenden Sie sich an den Support."
 
 #box name
 msgid "Bestseller"
@@ -157,11 +157,11 @@ msgstr "Vergleichsliste"
 
 #box name
 msgid "Wunschliste"
-msgstr "Wunschliste"
+msgstr "Wunschzettel"
 
 #box name
 msgid "Login"
-msgstr "Login"
+msgstr "Anmeldung"
 
 #box name
 msgid "Zuletzt angesehen"
@@ -173,15 +173,15 @@ msgstr "Hersteller"
 
 #box name
 msgid "Neue im Sortiment"
-msgstr "Neue im Sortiment"
+msgstr "Neu im Sortiment"
 
 #box name
 msgid "News Kategorien"
-msgstr "News Kategorien"
+msgstr "News: Kategorien des News-Systems"
 
 #box name
 msgid "News (Monatsübersicht)"
-msgstr "News (Monatsübersicht)"
+msgstr "News: Monate mit Beiträgen"
 
 #box name
 msgid "Schnellkauf"
@@ -197,7 +197,7 @@ msgstr "Sonderangebot"
 
 #box name
 msgid "Top Angebot"
-msgstr "Top Angebot"
+msgstr "Top-Angebot"
 
 #box name
 msgid "Top bewertet"
@@ -205,7 +205,7 @@ msgstr "Top bewertet"
 
 #box name
 msgid "In Kürze Verfügbar"
-msgstr "In Kürze Verfügbar"
+msgstr "In Kürze verfügbar"
 
 #box name
 msgid "Globale Merkmale"
@@ -245,19 +245,19 @@ msgstr "Filter (Suche)"
 
 #box name
 msgid "Filter (Suchspecial)"
-msgstr "Filter (Suchspecial)"
+msgstr "Filter (Artikel-Overlay)"
 
 #box name
 msgid "Eigene Box (Ohne Rahmen)"
-msgstr "Eigene Box (Ohne Rahmen)"
+msgstr "Eigene Box (ohne Rahmen)"
 
 #box name
 msgid "Eigene Box (Mit Rahmen)"
-msgstr "Eigene Box (Mit Rahmen)"
+msgstr "Eigene Box (mit Rahmen)"
 
 #box name
 msgid "Tagwolke"
-msgstr "Tagwolke"
+msgstr "Tag-Wolke"
 
 #box name
 msgid "Konfigurator"
@@ -273,7 +273,7 @@ msgstr "Filter (Kategorie)"
 
 #box name
 msgid "Trusted Shops - Reviews"
-msgstr "Trusted Shops - Reviews"
+msgstr "Trusted Shops – Reviews"
 
 msgid "templateTypeTemplate"
 msgstr "Vorlage"

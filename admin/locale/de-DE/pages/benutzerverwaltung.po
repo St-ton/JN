@@ -21,7 +21,7 @@ msgid "benutzer2FA"
 msgstr "2-Faktor-Authentifizierung"
 
 msgid "benutzerLoginVersuche"
-msgstr "Fehlgeschlagene Login-Versuche"
+msgstr "Fehlgeschlagene Anmeldeversuche"
 
 msgid "benutzerLetzterLogin"
 msgstr "Letzte Anmeldung"
@@ -129,28 +129,28 @@ msgid "errorGroupDeleteCustomer"
 msgstr "Die Benutzergruppe kann nicht gelöscht werden, da sie noch mindestens ein Mitglied hat."
 
 msgid "errorKeyChange"
-msgstr " konnte nicht geändert werden!"
+msgstr " %s konnte nicht geändert werden!"
 
 msgid "sureDeleteGroup"
 msgstr "Sind Sie sicher, dass die Gruppe gelöscht werden soll?"
 
 msgid "usernameNotAvailable"
-msgstr "Benutzername <strong>%s</strong> bereits vergeben."
+msgstr "Benutzername <strong>%s</strong> ist bereits vergeben."
 
 msgid "timelyAccess"
 msgstr "Zeitlich begrenzter Zugriff"
 
 msgid "tillInclusive"
-msgstr "... bis einschließlich"
+msgstr "… bis einschließlich"
 
 msgid "errorUsernameMissing"
 msgstr "Bitte legen Sie zuerst in den Anmeldedaten einen Benutzernamen fest."
 
 msgid "warningAuthSecretOverwrite"
-msgstr "Das bisherige \"Authentication Secret\" wird ersetzt. Möchten Sie fortfahren?"
+msgstr "Das bisherige „Authentication Secret“ wird ersetzt. Möchten Sie fortfahren?"
 
 msgid "warningNoPermissionToBackendAfter"
-msgstr "<strong>Achtung:</strong> Bitte beachten Sie, dass Sie nach dem Speichern mit diesem Benutzerkonto keine Möglichkeit mehr haben, in das Backend von JTL-Shop zu gelangen, falls Sie keinen Zugriff mehr auf die Google Authenticator App auf Ihrem Mobilgerät haben sollten!"
+msgstr "Bitte beachten Sie, dass Sie nach dem Speichern mit diesem Benutzerkonto keine Möglichkeit mehr haben, in das Backend von JTL-Shop zu gelangen, falls Sie keinen Zugriff mehr auf die Google Authenticator App auf Ihrem Mobilgerät haben sollten!"
 
 msgid "infoScanQR"
 msgstr "Scannen Sie den hier abgebildeten QR-Code mit der Google Authenticator App auf Ihrem Handy."
@@ -175,7 +175,7 @@ msgstr "Notfall-Codes für das JTL-Shop-Backend"
 
 #module name (tadminrechtemodul)
 msgid "Admin"
-msgstr "Admin"
+msgstr "Administrator"
 
 #module name (tadminrechtemodul)
 msgid "Einstellungen"
@@ -214,16 +214,16 @@ msgid "Statistik"
 msgstr "Statistik"
 
 msgid "permission_ORDER_VIEW"
-msgstr "Bestellhistory"
+msgstr "Bestellhistorie"
 
 msgid "permission_BOXES_VIEW"
 msgstr "Boxenverwaltung"
 
 msgid "permission_CHECKBOXES_VIEW"
-msgstr "Checkboxverwaltung"
+msgstr "Checkboxenverwaltung"
 
 msgid "permission_EMAIL_REPORTS_VIEW"
-msgstr "E-Mail Berichte"
+msgstr "E-Mail-Berichte"
 
 msgid "permission_UNLOCK_CENTRAL_VIEW"
 msgstr "Freischaltzentrale"
@@ -244,7 +244,7 @@ msgid "permission_SETTINGS_ARTICLEOVERVIEW_VIEW"
 msgstr "Artikelübersicht / Suche"
 
 msgid "permission_SETTINGS_SPECIALPRODUCTS_VIEW"
-msgstr "Besondere Produkte"
+msgstr "Besondere Artikel"
 
 msgid "permission_SETTINGS_IMAGES_VIEW"
 msgstr "Bilder"
@@ -253,7 +253,7 @@ msgid "permission_SETTINGS_BOXES_VIEW"
 msgstr "Boxen"
 
 msgid "permission_SETTINGS_EMAIL_BLACKLIST_VIEW"
-msgstr "E-Mail Blacklist"
+msgstr "E-Mail-Blacklist"
 
 msgid "permission_SETTINGS_EMAILS_VIEW"
 msgstr "E-Mails"
@@ -268,13 +268,13 @@ msgid "permission_SETTINGS_CONTACTFORM_VIEW"
 msgstr "Kontaktformular"
 
 msgid "permission_SETTINGS_META_KEYWORD_BLACKLIST_VIEW"
-msgstr "Meta-Keywords Blacklist"
+msgstr "Blacklist für Meta-Keywords"
 
 msgid "permission_SETTINGS_NAVIGATION_FILTER_VIEW"
 msgstr "Navigationsfilter"
 
 msgid "permission_SETTINGS_SITEMAP_VIEW"
-msgstr "Sitemapaufbau"
+msgstr "Sitemap-Aufbau"
 
 msgid "permission_SETTINGS_STARTPAGE_VIEW"
 msgstr "Startseite"
@@ -283,7 +283,7 @@ msgid "permission_SETTINGS_BASKET_VIEW"
 msgstr "Warenkorb / Kaufabwicklung"
 
 msgid "permission_DISPLAY_ARTICLEOVERLAYS_VIEW"
-msgstr "Artikeloverlays"
+msgstr "Artikel-Overlays"
 
 msgid "permission_DISPLAY_OWN_LOGO_VIEW"
 msgstr "Eigenes Logo"
@@ -295,19 +295,19 @@ msgid "permission_DISPLAY_BRANDING_VIEW"
 msgstr "Wasserzeichen / Branding"
 
 msgid "permission_CONTENT_PAGE_VIEW"
-msgstr "CMS (Eigene Seite)"
+msgstr "CMS (eigene Seite)"
 
 msgid "permission_CONTENT_EMAIL_TEMPLATE_VIEW"
-msgstr "Emailvorlagen"
+msgstr "E-Mail-Vorlagen"
 
 msgid "permission_CONTENT_NEWS_SYSTEM_VIEW"
 msgstr "News- / Blogsystem"
 
 msgid "permission_ORDER_AGB_WRB_VIEW"
-msgstr "AGB / WBR"
+msgstr "AGB / Widerrufsbelehrung"
 
 msgid "permission_ORDER_COUPON_VIEW"
-msgstr "Kupon"
+msgstr "Coupon"
 
 msgid "permission_ORDER_CUSTOMERFIELDS_VIEW"
 msgstr "selbstdef. Kundenfelder"
@@ -328,13 +328,13 @@ msgid "permission_MODULE_SAVED_BASKETS_VIEW"
 msgstr "Gespeicherte Warenkörbe"
 
 msgid "permission_MODULE_GIFT_VIEW"
-msgstr "Gratis Geschenk"
+msgstr "Gratisgeschenk"
 
 msgid "permission_MODULE_CAC_VIEW"
 msgstr "Kunden werben Kunden"
 
 msgid "permission_MODULE_LIVESEARCH_VIEW"
-msgstr "Livesuche"
+msgstr "Live-Suche"
 
 msgid "permission_MODULE_NEWSLETTER_VIEW"
 msgstr "Newsletter"
@@ -343,31 +343,31 @@ msgid "permission_MODULE_PRICECHART_VIEW"
 msgstr "Preisverlauf"
 
 msgid "permission_MODULE_PRODUCTTAGS_VIEW"
-msgstr "Produkttags"
+msgstr "Artikel-Tags"
 
 msgid "permission_MODULE_COMPARELIST_VIEW"
 msgstr "Vergleichsliste"
 
 msgid "permission_MODULE_WISHLIST_VIEW"
-msgstr "Wunschliste"
+msgstr "Wunschzettel"
 
 msgid "permission_EXPORT_SCHEDULE_VIEW"
-msgstr "Aufgabenplaner Exporte"
+msgstr "Aufgabenplaner für Exporte"
 
 msgid "permission_EXPORT_FORMATS_VIEW"
 msgstr "Exportformate"
 
 msgid "permission_IMPORT_NEWSLETTER_RECEIVER_VIEW"
-msgstr "Import Newsletterempfänger"
+msgstr "Import Newsletter-Empfänger"
 
 msgid "permission_IMPORT_CUSTOMER_VIEW"
 msgstr "Kundenimport"
 
 msgid "permission_EXPORT_RSSFEED_VIEW"
-msgstr "RSS Feed"
+msgstr "RSS-Feed"
 
 msgid "permission_EXPORT_SHOPINFO_VIEW"
-msgstr "Shopinfo (elm@ar)"
+msgstr "Exportdatei shopinfo.xml (elm@ar)"
 
 msgid "permission_EXPORT_SITEMAP_VIEW"
 msgstr "Sitemap für Suchmaschinen"
@@ -376,7 +376,7 @@ msgid "permission_EXTENSION_VOTE_VIEW"
 msgstr "Umfragesystem"
 
 msgid "permission_PLUGIN_ADMIN_VIEW"
-msgstr "Pluginverwaltung"
+msgstr "Plugin-Verwaltung"
 
 msgid "permission_SETTINGS_CUSTOMERFORM_VIEW"
 msgstr "Kunden / Formulare"
@@ -400,16 +400,16 @@ msgid "permission_DASHBOARD_VIEW"
 msgstr "Dashboard"
 
 msgid "permission_SETTINGS_SEARCH_VIEW"
-msgstr "Einstellungen suchen"
+msgstr "Einstellungen durchsuchen"
 
 msgid "permission_FILECHECK_VIEW"
-msgstr "Shopdatei Check"
+msgstr "Shopdatei-Check"
 
 msgid "permission_EXTENSION_SELECTIONWIZARD_VIEW"
 msgstr "Auswahlassistent"
 
 msgid "permission_SYSTEMLOG_VIEW"
-msgstr "Systemlog"
+msgstr "System-Log"
 
 msgid "permission_SETTINGS_SEPARATOR_VIEW"
 msgstr "Zahlenformate"
@@ -418,10 +418,10 @@ msgid "permission_RMA_VIEW"
 msgstr "Warenrücksendung"
 
 msgid "permission_STATS_COUPON_VIEW"
-msgstr "Kupons"
+msgstr "Coupons"
 
 msgid "permission_DBCHECK_VIEW"
-msgstr "Datenbank Check"
+msgstr "Datenbank-Check"
 
 msgid "permission_DISPLAY_BANNER_VIEW"
 msgstr "Banner"
@@ -430,7 +430,7 @@ msgid "permission_REDIRECT_VIEW"
 msgstr "Weiterleitung"
 
 msgid "permission_EMAILHISTORY_VIEW"
-msgstr "Emailhistory"
+msgstr "E-Mail-Historie"
 
 msgid "permission_SLIDER_VIEW"
 msgstr "Slider"
@@ -439,16 +439,16 @@ msgid "permission_WAREHOUSE_VIEW"
 msgstr "Warenlager"
 
 msgid "permission_PERMISSIONCHECK_VIEW"
-msgstr "Verzeichnis Check"
+msgstr "Verzeichnis-Check"
 
 msgid "permission_OBJECTCACHE_VIEW"
-msgstr "Object Cache"
+msgstr "Objekt-Cache"
 
 msgid "permission_PROFILER_VIEW"
-msgstr "Profiler"
+msgstr "Plugin-Profiler"
 
 msgid "permission_WAWI_SYNC_VIEW"
-msgstr "WAWI-Sync"
+msgstr "Synchronisierung mit JTL-Wawi"
 
 msgid "permission_DISPLAY_IMAGES_VIEW"
 msgstr "Bilderverwaltung"

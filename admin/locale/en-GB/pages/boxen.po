@@ -72,7 +72,7 @@ msgid "boxEdit"
 msgstr "Edit box"
 
 msgid "warningInvisibleBoxes"
-msgstr "Caution! Some boxes cannot currently be displayed."
+msgstr "Some boxes cannot currently be displayed."
 
 msgid "noBoxesAvailableFor"
 msgstr "Currently there are no boxes available for \"%s\"."
@@ -138,26 +138,26 @@ msgid "deactivatedOnAllPages"
 msgstr "deactivated on all pages"
 
 msgid "warningChangesForAllPages"
-msgstr "The Option \"All pages\" overrides all changes previously made for single pages."
+msgstr "The selection \"All pages\" overwrites existing changes to the boxes that were performed for individual pages beforehand."
 
 msgid "errorBoxesVisibilityEdit"
-msgstr "Error setting the visibility of the boxes."
+msgstr "Could not set box visibility due to a MySQL error. Please contact the JTL Support team."
 
 #box name
 msgid "Bestseller"
-msgstr "Bestseller"
+msgstr "Bestsellers"
 
 #box name
 msgid "Kategorien"
-msgstr "Kategorien"
+msgstr "Categories"
 
 #box name
 msgid "Vergleichsliste"
-msgstr "Vergleichsliste"
+msgstr "Comparison list"
 
 #box name
 msgid "Wunschliste"
-msgstr "Wunschliste"
+msgstr "Wish list"
 
 #box name
 msgid "Login"
@@ -165,130 +165,130 @@ msgstr "Login"
 
 #box name
 msgid "Zuletzt angesehen"
-msgstr "Zuletzt angesehen"
+msgstr "Recently viewed"
 
 #box name
 msgid "Hersteller"
-msgstr "Hersteller"
+msgstr "Manufacturer"
 
 #box name
 msgid "Neue im Sortiment"
-msgstr "Neue im Sortiment"
+msgstr "New in product range"
 
 #box name
 msgid "News Kategorien"
-msgstr "News Kategorien"
+msgstr "News: categories of the news system"
 
 #box name
 msgid "News (Monatsübersicht)"
-msgstr "News (Monatsübersicht)"
+msgstr "News: months with news postings"
 
 #box name
 msgid "Schnellkauf"
-msgstr "Schnellkauf"
+msgstr "Quick buy"
 
 #box name
 msgid "Suchwolke"
-msgstr "Suchwolke"
+msgstr "Search cloud"
 
 #box name
 msgid "Sonderangebot"
-msgstr "Sonderangebot"
+msgstr "Special offer"
 
 #box name
 msgid "Top Angebot"
-msgstr "Top Angebot"
+msgstr "Top offer"
 
 #box name
 msgid "Top bewertet"
-msgstr "Top bewertet"
+msgstr "Top rated"
 
 #box name
 msgid "In Kürze Verfügbar"
-msgstr "In Kürze Verfügbar"
+msgstr "Available soon"
 
 #box name
 msgid "Globale Merkmale"
-msgstr "Globale Merkmale"
+msgstr "Global characteristics"
 
 #box name
 msgid "Warenkorb"
-msgstr "Warenkorb"
+msgstr "Basket"
 
 #box name
 msgid "Umfrage"
-msgstr "Umfrage"
+msgstr "Survey"
 
 #box name
 msgid "Linkgruppe"
-msgstr "Linkgruppe"
+msgstr "Link group"
 
 #box name
 msgid "Filter (Tag)"
-msgstr "Filter (Tag)"
+msgstr "Filter (tag)"
 
 #box name
 msgid "Filter (Preisspanne)"
-msgstr "Filter (Preisspanne)"
+msgstr "Filter (price range)"
 
 #box name
 msgid "Filter (Bewertung)"
-msgstr "Filter (Bewertung)"
+msgstr "Filter (customer review)"
 
 #box name
 msgid "Filter (Merkmale)"
-msgstr "Filter (Merkmale)"
+msgstr "Filter (characteristics)"
 
 #box name
 msgid "Filter (Suche)"
-msgstr "Filter (Suche)"
+msgstr "Filter (search)"
 
 #box name
 msgid "Filter (Suchspecial)"
-msgstr "Filter (Suchspecial)"
+msgstr "Filter (item overlay)"
 
 #box name
 msgid "Eigene Box (Ohne Rahmen)"
-msgstr "Eigene Box (Ohne Rahmen)"
+msgstr "Custom box (without frame)"
 
 #box name
 msgid "Eigene Box (Mit Rahmen)"
-msgstr "Eigene Box (Mit Rahmen)"
+msgstr "Custom shipping box (with frame)"
 
 #box name
 msgid "Tagwolke"
-msgstr "Tagwolke"
+msgstr "Tag cloud"
 
 #box name
 msgid "Konfigurator"
-msgstr "Konfigurator"
+msgstr "Configurator"
 
 #box name
 msgid "Filter (Hersteller)"
-msgstr "Filter (Hersteller)"
+msgstr "Filter (manufacturer)"
 
 #box name
 msgid "Filter (Kategorie)"
-msgstr "Filter (Kategorie)"
+msgstr "Filter (category)"
 
 #box name
 msgid "Trusted Shops - Reviews"
-msgstr "Trusted Shops - Reviews"
+msgstr "Trusted Shops – Reviews"
 
 msgid "templateTypeTemplate"
-msgstr "Vorlage"
+msgstr "Template"
 
 msgid "templateTypeContent"
-msgstr "Inhalt"
+msgstr "Contents"
 
 msgid "templateTypeLinkList"
-msgstr "Linkliste"
+msgstr "Link list"
 
 msgid "templateTypePlugin"
-msgstr "Plugin"
+msgstr "Plug-in"
 
 msgid "templateTypeCategory"
-msgstr "Kategorie"
+msgstr "Category"
 
 msgid "templateTypeExtension"
 msgstr "Extension"

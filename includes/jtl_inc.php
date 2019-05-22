@@ -375,7 +375,7 @@ function fuehreLoginAus($userLogin, $passLogin): void
         $nReturnValue   = $Kunde->holLoginKunde($userLogin, $passLogin);
         $nLoginversuche = $Kunde->nLoginversuche;
     } else {
-        $nReturnValue   = 4;
+        $nReturnValue   = Kunde::ERROR_CAPTCHA;
         $nLoginversuche = $loginCaptchaOK;
     }
     if ($Kunde->kKunde > 0) {
@@ -551,9 +551,9 @@ function fuehreLoginAus($userLogin, $passLogin): void
         } else {
             $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
         }
-    } elseif ($nReturnValue === 2) { // Kunde ist gesperrt
+    } elseif ($nReturnValue === Kunde::ERROR_LOCKED) {
         $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');
-    } elseif ($nReturnValue === 3) { // Kunde ist nicht aktiv
+    } elseif ($nReturnValue === Kunde::ERROR_INACTIVE) {
         $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
     } else {
         if (isset($config['kunden']['kundenlogin_max_loginversuche'])

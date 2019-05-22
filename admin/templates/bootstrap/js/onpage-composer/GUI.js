@@ -67,6 +67,10 @@ GUI.prototype = {
             'collapseGroup',
             'restoreUnsavedModal',
             'restoreUnsavedForm',
+            'btnDisplayWidthMobile',
+            'btnDisplayWidthTablet',
+            'btnDisplayWidthLaptop',
+            'btnDisplayWidthDesktop',
         ]);
 
         this.missingConfigButtons.hide();
@@ -189,10 +193,12 @@ GUI.prototype = {
             this.iframePanel.show();
             this.previewFrame.previewPanel.hide();
             this.inPreviewMode = false;
+            this.btnPreview.parent().removeClass('active');
         } else {
             this.iframePanel.hide();
             this.previewFrame.showPreview(this.page.fullUrl, JSON.stringify(this.page.toJSON()));
             this.inPreviewMode = true;
+            this.btnPreview.parent().addClass('active');
         }
     },
 
@@ -550,5 +556,37 @@ GUI.prototype = {
     setImageSelectCallback: function(callback)
     {
         this.imageSelectCB = callback;
+    },
+
+    onBtnDisplayWidthMobile: function(e)
+    {
+        this.iframe.iframe.width('375px');
+        this.previewFrame.previewFrame.width('375px');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthMobile.parent().addClass('active');
+    },
+
+    onBtnDisplayWidthTablet: function(e)
+    {
+        this.iframe.iframe.width('768px');
+        this.previewFrame.previewFrame.width('768px');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthTablet.parent().addClass('active');
+    },
+
+    onBtnDisplayWidthLaptop: function(e)
+    {
+        this.iframe.iframe.width('992px');
+        this.previewFrame.previewFrame.width('992px');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthLaptop.parent().addClass('active');
+    },
+
+    onBtnDisplayWidthDesktop: function(e)
+    {
+        this.iframe.iframe.width('100%');
+        this.previewFrame.previewFrame.width('100%');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthDesktop.parent().addClass('active');
     },
 };

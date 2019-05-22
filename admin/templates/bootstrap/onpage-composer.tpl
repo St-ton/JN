@@ -180,19 +180,21 @@
         </div>
 
         <div id="displayPreviews">
-            <ul class="">
+            <ul id="displayWidths">
                 <li>
-                    <a href="#" onclick="$('#iframe').width('375px');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-mobile"></i></a>
+                    <a href="#" id="btnDisplayWidthMobile"><i class="fa fa-mobile"></i></a>
                 </li>
                 <li>
-                    <a href="#" onclick="$('#iframe').width('768px');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-tablet"></i></a>
+                    <a href="#" id="btnDisplayWidthTablet"><i class="fa fa-tablet"></i></a>
                 </li>
                 <li>
-                    <a href="#" onclick="$('#iframe').width('992px');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-laptop"></i></a>
+                    <a href="#" id="btnDisplayWidthLaptop"><i class="fa fa-laptop"></i></a>
                 </li>
-                <li>
-                    <a href="#" onclick="$('#iframe').width('100%');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');" class="active"><i class="fa fa-desktop"></i></a>
+                <li class="active">
+                    <a href="#" id="btnDisplayWidthDesktop"><i class="fa fa-desktop"></i></a>
                 </li>
+            </ul>
+            <ul>
                 <li>
                     <a href="#" id="btnPreview" data-toggle="tooltip" data-placement="right"
                        title="Preview">

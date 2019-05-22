@@ -16,6 +16,7 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class CheckBox
@@ -472,11 +473,12 @@ class CheckBox
                 ORDER BY cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($checkboxFunctions as $checkboxFunction) {
-            $checkboxFunction->cName = __($checkboxFunction->cName);
-        }
 
-        return $checkboxFunctions;
+        return map($checkboxFunctions, function ($checkboxFunction) {
+            $checkboxFunction->cName = __($checkboxFunction->cName);
+
+            return $checkboxFunction;
+        });
     }
 
     /**

@@ -7,6 +7,7 @@
 use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use function Functional\map;
 
 /**
  * @param float $fPreis
@@ -377,16 +378,19 @@ function getMissingShippingClassCombi()
  */
 function getShippingTypes(int $shippingTypeID = null)
 {
-    $shippingTypes = Shop::Container()->getDB()->query(
+    $shippingTypes = Shop::Container()->getDB()->queryPrepared(
         'SELECT *
             FROM tversandberechnung'
-                . ($shippingTypeID ? ' WHERE kVersandberechnung = ' . $shippingTypeID : '')
+                . ($shippingTypeID ? ' WHERE kVersandberechnung = :shippingTypeID' : '')
                 . ' ORDER BY cName',
+        ['shippingTypeID' => $shippingTypeID],
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($shippingTypes as $shippingType) {
+    $shippingTypes = map($shippingTypes, function ($shippingType) {
         $shippingType->cName = __('shippingType_' . $shippingType->cModulId);
-    }
 
-    return count($shippingTypes) === 1 ? $shippingTypes[0] : $shippingTypes;
+        return $shippingType;
+    });
+
+    return $shippingTypeID === null ? $shippingTypes : ($shippingTypes[0] ?? null);
 }

@@ -311,10 +311,8 @@ final class Controller
                 'SELECT kNews
                     FROM tnews
                     WHERE MONTH(dGueltigVon) = :mnth
-                        AND YEAR(dGueltigVon) = :yr
-                        AND kSprache = :lid',
+                        AND YEAR(dGueltigVon) = :yr',
                 [
-                    'lid'  => $langID,
                     'mnth' => $month,
                     'yr'   => $year
                 ],

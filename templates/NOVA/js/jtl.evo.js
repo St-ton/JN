@@ -731,8 +731,8 @@
                 btnLeft.off("click.menuScroll");
                 btnRight.off("click.menuScroll");
 
+                checkButtons();
                 if (width < scrollWidth) {
-                    checkButtons();
                     btnLeft.on("click.menuScroll",function () {
                         var leftPos = parseInt(Math.round($('#navbarToggler').scrollLeft()));
                         var newLeft = leftPos-250;

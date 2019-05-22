@@ -153,7 +153,7 @@
                                     </div>
                                 {/block}
                             {/col}
-                            {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto"}
+                            {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white" style="z-index: 1;"}
                                 {block name='layout-header-branding-shop-nav'}
                                     <div class="d-flex text-right">
                                         {include file='layout/header_nav_icons.tpl'}
@@ -184,7 +184,7 @@
                                 {/block}
                             {/col}
 
-                            {col order=6 order-md=2 cols=12 order-lg=3 class="col-md-auto"}
+                            {col order=6 order-md=2 cols=12 order-lg=3 class="col-md-auto bg-white"}
                                 {block name='layout-header-include-header-nav-search'}
                                     {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex mx-auto float-md-right"}
                                         {include file='layout/header_nav_search.tpl'}

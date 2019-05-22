@@ -18,11 +18,12 @@ function setupNav() {
 
     wee['left'] = currentNav.offsetLeft + 'px';
     wee['width'] = currentNav.offsetWidth + 'px';
-    
+
     // note: The addEventListener() method is not supported in Internet Explorer 8 and earlier versions//
     navList.forEach(function(nav){
         nav.addEventListener('click', function() {
-            wee['left'] = this.offsetLeft + 'px';
+            var leftPos = parseInt(Math.round($('#navbarToggler').scrollLeft()));
+            wee['left'] = this.offsetLeft - leftPos + 'px';
             wee['width'] = this.offsetWidth + 'px';
         });
 

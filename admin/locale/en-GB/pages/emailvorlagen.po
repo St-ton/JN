@@ -232,3 +232,7 @@ msgstr "Forgot password (administrator)"
 # email name (temailvorlage)
 msgid "name_core_jtl_statusemail"
 msgstr "Email report"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung_optin"
+msgstr "Back in stock notification email (confirmation according to double opt-in process)"

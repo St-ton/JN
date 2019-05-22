@@ -9,7 +9,6 @@ namespace JTL\Boxes\Admin;
 use JTL\Boxes\Type;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Shop;
 use JTL\Template;
 use JTL\Mapper\PageTypeToPageNiceName;
 use stdClass;

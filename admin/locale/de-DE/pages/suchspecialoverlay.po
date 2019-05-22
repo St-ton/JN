@@ -70,11 +70,11 @@ msgstr "Neu im Sortiment"
 
 #overlay name (tsuchspecialoverlay)
 msgid "Top Angebote"
-msgstr "Top Angebote"
+msgstr "Top-Angebote"
 
 #overlay name (tsuchspecialoverlay)
 msgid "In kürze Verfügbar"
-msgstr "In kürze Verfügbar"
+msgstr "In Kürze verfügbar"
 
 #overlay name (tsuchspecialoverlay)
 msgid "Top bewertet"

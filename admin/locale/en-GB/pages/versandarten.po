@@ -340,16 +340,16 @@ msgstr "ZIP / ZIP-area deleted."
 
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandkosten_pauschale_jtl"
-msgstr "Pauschale Versandkosten nach Lieferland"
+msgstr "Standard shipping costs according to destination country"
 
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandberechnung_artikelanzahl_jtl"
-msgstr "Versandkosten nach Artikelanzahl und Lieferland"
+msgstr "Shipping costs according to item quantity and destination country"
 
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandberechnung_warenwert_jtl"
-msgstr "Versandkosten nach Warenwert und Lieferland"
+msgstr "Shipping costs according to product value and destination country"
 
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandberechnung_gewicht_jtl"
-msgstr "Versandkosten nach Gewicht und Lieferland"
+msgstr "Shipping costs according to weight and destination country"

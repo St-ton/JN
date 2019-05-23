@@ -6,6 +6,7 @@
 
 namespace JTL\Extensions;
 
+use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 use stdClass;
@@ -84,6 +85,23 @@ class UploadDatei
         }
 
         return false;
+    }
+
+    /**
+     * @param int $customerID
+     * @return bool
+     */
+    public function validateOwner(int $customerID): bool
+    {
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT tbestellung.kKunde
+                FROM tuploaddatei 
+                JOIN tbestellung
+                ON tbestellung.kBestellung = tuploaddatei.kCustomID
+                WHERE tuploaddatei.kCustomID = :ulid AND tbestellung.kKunde = :cid',
+            ['ulid' => $this->kCustomID ?? 0, 'cid' => $customerID],
+            ReturnType::SINGLE_OBJECT
+        ) !== false;
     }
 
     /**

@@ -256,7 +256,7 @@ final class Images extends AbstractSync
         $this->handleProductImages($productImages, $sql);
         $this->handleCategoryImages($categoryImages, $sql);
         $this->handlePropertyImages($propertyImages, $sql);
-        $this->handleManufacturerImages($propertyImages);
+        $this->handleManufacturerImages($manufacturerImages);
         $this->handleAttributeImages($attributeImages);
         $this->handleAttributeValueImages($attrValImages);
         $this->handleConfigImages($configImages);

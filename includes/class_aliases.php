@@ -172,7 +172,7 @@ class_alias(\JTL\Cart\WarenkorbPersPosEigenschaft::class, 'WarenkorbPersPosEigen
 class_alias(\JTL\Cart\WarenkorbPers::class, 'WarenkorbPers', true);
 class_alias(\JTL\DB\NiceDB::class, 'NiceDB', true);
 class_alias(\JTL\DB\DbInterface::class, 'DbInterface', true);
-class_alias(\JTL\CustomerFields::class, 'CustomerFields', true);
+class_alias(\JTL\Backend\CustomerFields::class, 'CustomerFields', true);
 class_alias(\JTL\Boxes\LegacyBoxes::class, 'Boxen', true);
 class_alias(\JTL\Linechart::class, 'Linechart', true);
 class_alias(\JTL\Cron\JobQueue::class, 'JobQueue', true);

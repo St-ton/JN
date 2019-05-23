@@ -199,7 +199,11 @@ class ShippingMethod
             $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
             $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
             $shippingMethod->Zuschlag           = self::getAdditionalFees($shippingMethod, $countryCode, $zip);
-            $shippingMethod->fEndpreis          = self::calculateShippingFees($shippingMethod, $countryCode, null);
+            $shippingMethod->fEndpreis          = self::calculateShippingFees(
+                $shippingMethod,
+                $countryCode,
+                null
+            );
             if ($shippingMethod->fEndpreis === -1) {
                 unset($methods[$i]);
                 continue;
@@ -994,9 +998,14 @@ class ShippingMethod
      * @return int|string
      * @former berechneVersandpreis()
      */
-    public static function calculateShippingFees($shippingMethod, $iso, $additionalProduct, $product = null)
-    {
-        $db = Shop::Container()->getDB();
+    public static function calculateShippingFees(
+        $shippingMethod,
+        $iso,
+        $additionalProduct,
+        $product = null
+    ) {
+        $db                            = Shop::Container()->getDB();
+        $excludeShippingCostAttributes = self::normalerArtikelversand($iso) === true;
         if (!isset($additionalProduct->fAnzahl)) {
             if ($additionalProduct === null) {
                 $additionalProduct = new stdClass();
@@ -1019,7 +1028,7 @@ class ShippingMethod
             case 'vm_versandberechnung_gewicht_jtl':
                 $totalWeight  = $product
                     ? $product->fGewicht
-                    : Frontend::getCart()->getWeight();
+                    : Frontend::getCart()->getWeight($excludeShippingCostAttributes, $iso);
                 $totalWeight += $additionalProduct->fGewicht;
                 $shipping     = $db->queryPrepared(
                     'SELECT *
@@ -1040,7 +1049,12 @@ class ShippingMethod
             case 'vm_versandberechnung_warenwert_jtl':
                 $total    = $product
                     ? $product->Preise->fVKNetto
-                    : Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
+                    : Frontend::getCart()->gibGesamtsummeWarenExt(
+                        [\C_WARENKORBPOS_TYP_ARTIKEL],
+                        true,
+                        $excludeShippingCostAttributes,
+                        $iso
+                    );
                 $total   += $additionalProduct->fWarenwertNetto;
                 $shipping = $db->queryPrepared(
                     'SELECT *
@@ -1062,7 +1076,11 @@ class ShippingMethod
                 $productCount = 1;
                 if (!$product) {
                     $productCount = isset($_SESSION['Warenkorb'])
-                        ? Frontend::getCart()->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL])
+                        ? Frontend::getCart()->gibAnzahlArtikelExt(
+                            [\C_WARENKORBPOS_TYP_ARTIKEL],
+                            $excludeShippingCostAttributes,
+                            $iso
+                        )
                         : 0;
                 }
                 $productCount += $additionalProduct->fAnzahl;
@@ -1087,8 +1105,8 @@ class ShippingMethod
                 break;
         }
         if ($shippingMethod->cNurAbhaengigeVersandart === 'Y'
-            && (!empty($product->FunktionsAttribute['versandkosten'])
-                || !empty($product->FunktionsAttribute['versandkosten gestaffelt']))
+            && (!empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
+                || !empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))
         ) {
             $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1);
             $price           += $fArticleSpecific->fKosten ?? 0;
@@ -1099,15 +1117,15 @@ class ShippingMethod
         if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
             $price += $shippingMethod->Zuschlag->fZuschlag;
         }
-        $productPrice = 0;
-        $grandTotal   = 0;
+        $productPrice         = 0;
+        $totalForShippingFree = 0;
         if ($shippingMethod->eSteuer === 'netto') {
             if ($product) {
                 $productPrice = $product->Preise->fVKNetto;
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $grandTotal = Tax::getNet(
-                    Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true),
+                $totalForShippingFree = Tax::getNet(
+                    Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $iso),
                     Tax::getSalesTax(Frontend::getCart()->gibVersandkostenSteuerklasse())
                 );
             }
@@ -1119,16 +1137,18 @@ class ShippingMethod
                 );
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $grandTotal = Frontend::getCart()->gibGesamtsummeWarenExt(
+                $totalForShippingFree = Frontend::getCart()->gibGesamtsummeWarenExt(
                     [\C_WARENKORBPOS_TYP_ARTIKEL],
-                    true
+                    true,
+                    true,
+                    $iso
                 );
             }
         }
 
         if ($shippingMethod->fVersandkostenfreiAbX > 0
             && (($product && $productPrice >= $shippingMethod->fVersandkostenfreiAbX)
-                || ($grandTotal >= $shippingMethod->fVersandkostenfreiAbX))
+                || ($totalForShippingFree >= $shippingMethod->fVersandkostenfreiAbX))
         ) {
             $price = 0;
         }
@@ -1158,8 +1178,8 @@ class ShippingMethod
         $dep = '';
         $fee = 99999;
         $db  = Shop::Container()->getDB();
-        if (empty($product->FunktionsAttribute['versandkosten'])
-            && empty($product->FunktionsAttribute['versandkosten gestaffelt'])
+        if (empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
+            && empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])
         ) {
             $dep = " AND cNurAbhaengigeVersandart = 'N'";
         }

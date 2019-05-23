@@ -1,21 +1,19 @@
-function GUI(io, page)
+class GUI
 {
-    debuglog('construct GUI');
+    constructor(io, page)
+    {
+        debuglog('construct GUI');
 
-    bindProtoOnHandlers(this);
+        bindProtoOnHandlers(this);
 
-    this.io            = io;
-    this.page          = page;
-    this.configSaveCb  = noop;
-    this.imageSelectCB = noop;
-    this.inPreviewMode = false;
-}
+        this.io            = io;
+        this.page          = page;
+        this.configSaveCb  = noop;
+        this.imageSelectCB = noop;
+        this.inPreviewMode = false;
+    }
 
-GUI.prototype = {
-
-    constructor: GUI,
-
-    init: function(iframe, previewFrame, tutorial, error)
+    init(iframe, previewFrame, tutorial, error)
     {
         debuglog('GUI init');
 
@@ -91,37 +89,37 @@ GUI.prototype = {
             this.updateBlueprintList();
             this.updateRevisionList();
         }
-    },
+    }
 
-    showLoader: function()
+    showLoader()
     {
         this.loaderModal.modal('show');
-    },
+    }
 
-    hideLoader: function()
+    hideLoader()
     {
         this.loaderModal.modal('hide');
-    },
+    }
 
-    showRestoreUnsaved: function()
+    showRestoreUnsaved()
     {
         this.restoreUnsavedModal.modal('show');
-    },
+    }
 
-    showError: function(msg)
+    showError(msg)
     {
         this.loaderModal.modal('hide');
         this.errorAlert.html(msg);
         this.errorModal.modal('show');
         throw msg;
-    },
+    }
 
-    updateBlueprintList: function()
+    updateBlueprintList()
     {
         this.io.getBlueprints(this.onGetBlueprintList);
-    },
+    }
 
-    onGetBlueprintList: function(blueprints)
+    onGetBlueprintList(blueprints)
     {
         this.blueprintList.empty();
 
@@ -137,14 +135,14 @@ GUI.prototype = {
         }, this);
 
         this.updateDynamicGui();
-    },
+    }
 
-    updateRevisionList: function()
+    updateRevisionList()
     {
         this.page.getRevisionList(this.onGetRevisions);
-    },
+    }
 
-    onGetRevisions: function(revisions)
+    onGetRevisions(revisions)
     {
         this.revisionList.empty();
 
@@ -157,9 +155,9 @@ GUI.prototype = {
         }, this);
 
         this.updateDynamicGui();
-    },
+    }
 
-    updateDynamicGui: function()
+    updateDynamicGui()
     {
         installGuiElements(this, [
             'blueprintButton',
@@ -167,27 +165,27 @@ GUI.prototype = {
             'blueprintDelete',
             'revisionBtn',
         ]);
-    },
+    }
 
-    onBtnImport: function()
+    onBtnImport()
     {
         this.page.loadFromImport(
             this.iframe.onPageLoad,
             er => this.showError('Could not import OPC page JSON: ' + er.error.message)
         );
-    },
+    }
 
-    onBtnExport: function()
+    onBtnExport()
     {
         this.page.exportAsDownload();
-    },
+    }
 
-    onBtnHelp: function(e)
+    onBtnHelp(e)
     {
         this.tutorial.start();
-    },
+    }
 
-    onBtnPreview: function(e)
+    onBtnPreview(e)
     {
         if (this.inPreviewMode) {
             this.iframePanel.show();
@@ -200,27 +198,27 @@ GUI.prototype = {
             this.inPreviewMode = true;
             this.btnPreview.parent().addClass('active');
         }
-    },
+    }
 
-    onBtnSave: function(e)
+    onBtnSave(e)
     {
         this.showLoader();
         this.page.save(this.onSavePageDone, this.onSavePageError);
-    },
+    }
 
-    onSavePageDone: function()
+    onSavePageDone()
     {
         this.hideLoader();
         this.updateRevisionList();
         this.setUnsaved(false, true);
-    },
+    }
 
-    onSavePageError: function(error)
+    onSavePageError(error)
     {
         this.showError('Page could not be saved: ' + error.error.message);
-    },
+    }
 
-    setUnsaved: function(enable, record)
+    setUnsaved(enable, record)
     {
         record = record || false;
 
@@ -237,56 +235,56 @@ GUI.prototype = {
                 this.unsavedRevision.hide();
             }
         }
-    },
+    }
 
-    onBtnClose: function(e)
+    onBtnClose(e)
     {
         this.page.unlock(this.onUnlockedPage);
-    },
+    }
 
-    onUnlockedPage: function()
+    onUnlockedPage()
     {
         window.location = this.page.fullUrl;
-    },
+    }
 
-    onCollapseGroup: function(e)
+    onCollapseGroup(e)
     {
         $(e.target)
             .find('i.fa')
             .toggleClass('fa-plus-circle fa-minus-circle');
-    },
+    }
 
-    onPortletButtonDragStart: function(e)
+    onPortletButtonDragStart(e)
     {
         initDragStart(e);
 
         var portletBtn = $(e.target).closest('.portletButton');
 
         this.iframe.dragNewPortlet(portletBtn.data('portlet-class'));
-    },
+    }
 
-    onPortletButtonDragEnd: function(e)
+    onPortletButtonDragEnd(e)
     {
         this.iframe.dragNewPortlet();
         this.iframe.cleanUpDrag();
-    },
+    }
 
-    onBlueprintButtonDragStart: function(e)
+    onBlueprintButtonDragStart(e)
     {
         initDragStart(e);
 
         var blueprintBtn = $(e.target).closest('.blueprintButton');
 
         this.iframe.dragNewBlueprint(blueprintBtn.data('blueprint-id'));
-    },
+    }
 
-    onBlueprintButtonDragEnd: function(e)
+    onBlueprintButtonDragEnd(e)
     {
         this.iframe.dragNewBlueprint();
         this.iframe.cleanUpDrag();
-    },
+    }
 
-    onRevisionBtn: function(e)
+    onRevisionBtn(e)
     {
         var elm   = $(e.target).closest('a');
         var revId = elm.data('revision-id');
@@ -298,9 +296,9 @@ GUI.prototype = {
             er => this.showError('Error while loading draft preview: ' + er.error.message),
         );
         this.setUnsaved(revId !== 0);
-    },
+    }
 
-    openConfigurator: function(portlet)
+    openConfigurator(portlet)
     {
         var portletData = portlet.data('portlet');
 
@@ -315,9 +313,9 @@ GUI.prototype = {
         );
 
         this.curPortlet = portlet;
-    },
+    }
 
-    onGetConfigPanelHtml: function(html)
+    onGetConfigPanelHtml(html)
     {
         var portletData = this.curPortlet.data('portlet');
 
@@ -332,9 +330,9 @@ GUI.prototype = {
         this.configModalBody.html(html);
         this.configModalTitle.html(portletData.title + ' bearbeiten');
         this.configModal.modal('show');
-    },
+    }
 
-    onConfigForm: function(e)
+    onConfigForm(e)
     {
         e.preventDefault();
 
@@ -368,16 +366,16 @@ GUI.prototype = {
             this.configModal.modal('hide');
             this.showError('Error while saving Portlet configuration: ' + er.error.message);
         });
-    },
+    }
 
-    onPortletPreviewHtml: function(preview)
+    onPortletPreviewHtml(preview)
     {
         this.iframe.replaceSelectedPortletHtml(preview);
         this.configModal.modal('hide');
         this.page.updateFlipcards();
-    },
+    }
 
-    onBlueprintForm: function(e)
+    onBlueprintForm(e)
     {
         e.preventDefault();
 
@@ -388,54 +386,54 @@ GUI.prototype = {
             this.io.saveBlueprint(blueprintName, blueprintData, this.onBlueprintSaved);
             this.blueprintModal.modal('hide');
         }
-    },
+    }
 
-    onBlueprintSaved: function()
+    onBlueprintSaved()
     {
         this.updateBlueprintList();
-    },
+    }
 
-    onBlueprintDelete: function(e)
+    onBlueprintDelete(e)
     {
         var elm = $(e.target).closest('.blueprintDelete');
 
         this.blueprintDeleteId.val(elm.data('blueprint-id'));
         this.blueprintDeleteModal.modal('show');
-    },
+    }
 
-    onBlueprintExport: function(e)
+    onBlueprintExport(e)
     {
         var elm         = $(e.target).closest('.blueprintExport');
         var blueprintId = elm.data('blueprint-id');
 
         this.io.getBlueprint(blueprintId, this.onGetExportBlueprint);
-    },
+    }
 
-    onGetExportBlueprint: function(blueprint)
+    onGetExportBlueprint(blueprint)
     {
         download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
-    },
+    }
 
-    onBtnImportBlueprint: function()
+    onBtnImportBlueprint()
     {
         $('<input type="file" accept=".json">').on('change', this.onBlueprintImportChosen.bind(this)).click();
-    },
+    }
 
-    onBlueprintImportChosen: function(e)
+    onBlueprintImportChosen(e)
     {
         this.importReader = new FileReader();
         this.importReader.onload = this.onBlueprintReaderLoad.bind(this);
         this.importReader.readAsText(e.target.files[0]);
-    },
+    }
 
-    onBlueprintReaderLoad: function()
+    onBlueprintReaderLoad()
     {
         var blueprint = JSON.parse(this.importReader.result);
 
         this.io.saveBlueprint(blueprint.name, blueprint.instance, this.onBlueprintSaved);
-    },
+    }
 
-    onBlueprintDeleteForm: function (e)
+    onBlueprintDeleteForm (e)
     {
         var blueprintId = this.blueprintDeleteId.val();
 
@@ -443,14 +441,14 @@ GUI.prototype = {
         this.blueprintDeleteModal.modal('hide');
 
         e.preventDefault();
-    },
+    }
 
-    onBlueprintDeleted: function()
+    onBlueprintDeleted()
     {
         this.updateBlueprintList();
-    },
+    }
 
-    onBtnPublish: function(e)
+    onBtnPublish(e)
     {
         if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
             this.publishFrom.val(this.page.publishFrom);
@@ -474,9 +472,9 @@ GUI.prototype = {
 
         this.draftName.val(this.page.name);
         this.publishModal.modal('show');
-    },
+    }
 
-    onPublishForm: function (e)
+    onPublishForm (e)
     {
         e.preventDefault();
 
@@ -487,9 +485,9 @@ GUI.prototype = {
         this.page.publicate(noop, er => this.showError(er.error.message));
 
         this.publishModal.modal('hide');
-    },
+    }
 
-    onPublishFromEnabled: function (e)
+    onPublishFromEnabled (e)
     {
         if(this.publishFromEnabled.prop('checked')) {
             this.publishFrom.val(moment().format(localDateFormat));
@@ -499,9 +497,9 @@ GUI.prototype = {
             this.publishFrom.prop('disabled', true);
             this.publishTo.data("DateTimePicker").minDate(false);
         }
-    },
+    }
 
-    onPublishToEnabled: function (e)
+    onPublishToEnabled (e)
     {
         if(this.publishToEnabled.prop('checked')) {
             if(this.publishFromEnabled.prop('checked')) {
@@ -515,78 +513,78 @@ GUI.prototype = {
             this.publishTo.prop('disabled', true);
             this.publishFrom.data("DateTimePicker").maxDate(false);
         }
-    },
+    }
 
-    selectImageProp: function(propName)
+    selectImageProp(propName)
     {
         this.openElFinder(function(url) {
             this.imageSelectCB(url, propName);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', url);
         }.bind(this), 'image');
-    },
+    }
 
-    selectVideoProp: function(propName)
+    selectVideoProp(propName)
     {
          this.openElFinder(function(url) {
              this.configForm.find('[name="' + propName + '"]').val(url);
              this.configForm.find('#preview-vid-' + propName).attr('src', url);
              this.configForm.find('#cont-preview-vid-' + propName)[0].load();
          }.bind(this),'video');
-    },
+    }
 
-    openElFinder: function (callback, type)
+    openElFinder (callback, type)
     {
         openElFinder(callback, type);
-    },
+    }
 
-    onRestoreUnsavedForm: function (e)
+    onRestoreUnsavedForm (e)
     {
         e.preventDefault();
 
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
-    },
+    }
 
-    setConfigSaveCallback: function(callback)
+    setConfigSaveCallback(callback)
     {
         this.configSaveCb = callback;
-    },
+    }
 
-    setImageSelectCallback: function(callback)
+    setImageSelectCallback(callback)
     {
         this.imageSelectCB = callback;
-    },
+    }
 
-    onBtnDisplayWidthMobile: function(e)
+    onBtnDisplayWidthMobile(e)
     {
         this.iframe.iframe.width('375px');
         this.previewFrame.previewFrame.width('375px');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthMobile.parent().addClass('active');
-    },
+    }
 
-    onBtnDisplayWidthTablet: function(e)
+    onBtnDisplayWidthTablet(e)
     {
         this.iframe.iframe.width('768px');
         this.previewFrame.previewFrame.width('768px');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthTablet.parent().addClass('active');
-    },
+    }
 
-    onBtnDisplayWidthLaptop: function(e)
+    onBtnDisplayWidthLaptop(e)
     {
         this.iframe.iframe.width('992px');
         this.previewFrame.previewFrame.width('992px');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthLaptop.parent().addClass('active');
-    },
+    }
 
-    onBtnDisplayWidthDesktop: function(e)
+    onBtnDisplayWidthDesktop(e)
     {
         this.iframe.iframe.width('100%');
         this.previewFrame.previewFrame.width('100%');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthDesktop.parent().addClass('active');
-    },
-};
+    }
+}

@@ -1,22 +1,20 @@
-function PageTree(page, iframe)
+class PageTree
 {
-    bindProtoOnHandlers(this);
+    constructor(page, iframe)
+    {
+        bindProtoOnHandlers(this);
 
-    this.page     = page;
-    this.iframe   = iframe;
-    this.selected = undefined;
-}
+        this.page     = page;
+        this.iframe   = iframe;
+        this.selected = undefined;
+    }
 
-PageTree.prototype = {
-
-    constructor: PageTree,
-
-    init: function()
+    init()
     {
         installGuiElements(this, ['pageTreeView']);
-    },
+    }
 
-    setSelected: function(portlet)
+    setSelected(portlet)
     {
         if(this.selected) {
             $(this.selected[0].treeItem).removeClass('selected');
@@ -28,9 +26,9 @@ PageTree.prototype = {
             $(this.selected[0].treeItem).addClass('selected');
             this.expandTo(portlet);
         }
-    },
+    }
 
-    expandTo: function(portlet)
+    expandTo(portlet)
     {
         var treeItem = $(portlet[0].treeItem);
 
@@ -38,9 +36,9 @@ PageTree.prototype = {
             treeItem = treeItem.parent().closest('li');
             treeItem.addClass('expanded');
         }
-    },
+    }
 
-    render: function()
+    render()
     {
         debuglog('PageTree render');
 
@@ -56,9 +54,9 @@ PageTree.prototype = {
         }.bind(this));
 
         this.pageTreeView.empty().append(ul);
-    },
+    }
 
-    renderBaseItem: function(text, click)
+    renderBaseItem(text, click)
     {
         var expander = $('<a href="#">');
         var item     = $('<a href="#" class="item-label">');
@@ -85,9 +83,9 @@ PageTree.prototype = {
         });
 
         return li.append(expander).append(item);
-    },
+    }
 
-    renderArea: function(area, expanded)
+    renderArea(area, expanded)
     {
         var portlets = area.children('[data-portlet]');
         var jq       = area.constructor;
@@ -115,9 +113,9 @@ PageTree.prototype = {
         li[0].area       = area[0];
 
         return li.append(ul);
-    },
+    }
 
-    renderPortlet: function(portlet)
+    renderPortlet(portlet)
     {
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
         var jq       = portlet.constructor;
@@ -145,14 +143,13 @@ PageTree.prototype = {
         li[0].portlet       = portlet[0];
 
         return li.append(ul);
-    },
+    }
 
-    updateArea: function(area)
+    updateArea(area)
     {
         var treeItem = $(area[0].treeItem);
         var expanded = treeItem.hasClass('expanded');
 
         $(area[0].treeItem).replaceWith(this.renderArea(area, expanded));
-    },
-
-};
+    }
+}

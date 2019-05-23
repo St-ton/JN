@@ -3,40 +3,38 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-function IO(readyCB)
+class IO
 {
-    debuglog('construct IO');
+    constructor(readyCB)
+    {
+        debuglog('construct IO');
 
-    bindProtoOnHandlers(this);
+        bindProtoOnHandlers(this);
 
-    this.readyCB      = readyCB || noop;
-    this.opcReady     = false;
-    this.opcPageReady = false;
+        this.readyCB      = readyCB || noop;
+        this.opcReady     = false;
+        this.opcPageReady = false;
 
-    ioCall('opcGetIOFunctionNames', [], this.onGetIOFunctionNames);
-}
+        ioCall('opcGetIOFunctionNames', [], this.onGetIOFunctionNames);
+    }
 
-IO.prototype = {
-
-    constructor: IO,
-
-    onGetIOFunctionNames: function(names)
+    onGetIOFunctionNames(names)
     {
         debuglog('IO onGetIOFunctionNames');
 
         this.generateIoFunctions(names);
         ioCall('opcGetPageIOFunctionNames', [], this.onGetPageIOFunctionNames);
-    },
+    }
 
-    onGetPageIOFunctionNames: function(names)
+    onGetPageIOFunctionNames(names)
     {
         debuglog('IO onGetPageIOFunctionNames');
 
         this.generateIoFunctions(names);
         this.readyCB();
-    },
+    }
 
-    generateIoFunctions: function(names)
+    generateIoFunctions(names)
     {
         for (var i=0; i<names.length; i++) {
             var name       = names[i];
@@ -44,9 +42,9 @@ IO.prototype = {
 
             this[name] = this.generateIoFunction(publicName);
         }
-    },
+    }
 
-    generateIoFunction: function(publicName)
+    generateIoFunction(publicName)
     {
         return function()
         {
@@ -72,11 +70,10 @@ IO.prototype = {
 
             ioCall(publicName, args, success || noop, error || noop);
         };
-    },
+    }
 
-    createPortlet: function(portletClass, success, error)
+    createPortlet(portletClass, success, error)
     {
         this.getPortletPreviewHtml({"class": portletClass}, success, error);
-    },
-
-};
+    }
+}

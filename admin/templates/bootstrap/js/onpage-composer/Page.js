@@ -1,80 +1,78 @@
-function Page(io, shopUrl, key)
+class Page
 {
-    debuglog('construct Page');
+    constructor(io, shopUrl, key)
+    {
+        debuglog('construct Page');
 
-    bindProtoOnHandlers(this);
+        bindProtoOnHandlers(this);
 
-    this.io             = io;
-    this.shopUrl        = shopUrl;
-    this.key            = key;
-}
+        this.io             = io;
+        this.shopUrl        = shopUrl;
+        this.key            = key;
+    }
 
-Page.prototype = {
-
-    constructor: Page,
-
-    init: function(lockedCB)
+    init(lockedCB)
     {
         debuglog('Page init');
 
         this.loadDraft(this.lock.bind(this, lockedCB));
 
         setInterval(this.onTimeToLockAgain, 1000 * 60);
-    },
+    }
 
-    lock: function(lockedCB)
+    lock(lockedCB)
     {
         debuglog('Page lock');
 
         this.io.lockDraft(this.key, lockedCB);
-    },
+    }
 
-    unlock: function(unlockedCB)
+    unlock(unlockedCB)
     {
         this.io.unlockDraft(this.key, unlockedCB);
-    },
+    }
 
-    updateFlipcards: function()
+    updateFlipcards()
     {
         this.rootAreas.find('.flipcard').each(function(i, elm) {
             elm.updateFlipcardHeight();
         });
-    },
+    }
 
-    onTimeToLockAgain: function()
+    onTimeToLockAgain()
     {
         this.lock();
-    },
+    }
 
-    getRevisionList: function(revisionsCB)
+    getRevisionList(revisionsCB)
     {
         this.io.getRevisionList(this.key, revisionsCB);
-    },
+    }
 
-    initIframe: function(jq, loadCB, errorCB)
+    initIframe(jq, loadCB, errorCB)
     {
         debuglog('Page initIframe');
 
         this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
         this.loadDraftPreview(loadCB, errorCB);
-    },
+    }
 
-    loadDraft: function(loadCB)
+    loadDraft(loadCB)
     {
         debuglog('Page loadDraft');
 
         this.io.getDraft(this.key, this.onLoadDraft.bind(this, loadCB || noop));
-    },
+    }
 
-    loadDraftPreview: function(loadCB, errorCB)
+    loadDraftPreview(loadCB, errorCB)
     {
         debuglog('Page loadDraftPreview');
 
         this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
-    },
+    }
 
-    loadRev: function(revId, loadCB, errorCB)
+    loadRev(revId, loadCB, errorCB)
     {
         if(revId === -1) {
             this.loadPageFromWebStorage(loadCB || noop, errorCB || noop);
@@ -83,18 +81,18 @@ Page.prototype = {
         } else {
             this.io.getRevisionPreview(revId, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
         }
-    },
+    }
 
-    loadFromData: function(data, loadCB, errorCB)
+    loadFromData(data, loadCB, errorCB)
     {
         this.io.createPagePreview(
             {areas: data.areas},
             this.onLoad.bind(this, loadCB || noop),
             errorCB || noop,
         );
-    },
+    }
 
-    loadFromJSON: function(json, loadCB, errorCB)
+    loadFromJSON(json, loadCB, errorCB)
     {
         try {
             var data = JSON.parse(json);
@@ -103,15 +101,15 @@ Page.prototype = {
         }
 
         this.loadFromData(data, loadCB, errorCB);
-    },
+    }
 
-    loadFromImport: function(loadCB, errorCB)
+    loadFromImport(loadCB, errorCB)
     {
         this.jq('<input type="file" accept=".json">')
             .on('change', this.onImportChosen.bind(this, loadCB, errorCB)).click();
-    },
+    }
 
-    loadPageFromWebStorage: function(loadCB, errorCB)
+    loadPageFromWebStorage(loadCB, errorCB)
     {
         var pageJson = window.localStorage.getItem(this.getStorageId());
 
@@ -121,9 +119,9 @@ Page.prototype = {
         } else {
             errorCB({error:{message:'could not find locally stored draft data'}})
         }
-    },
+    }
 
-    publicate: function(saveCB, errorCB)
+    publicate(saveCB, errorCB)
     {
         this.io.publicateDraft({
             key: this.key,
@@ -131,36 +129,36 @@ Page.prototype = {
             publishTo: this.publishTo ? this.encodeDate(this.publishTo) : null,
             name: this.name,
         }, saveCB, errorCB);
-    },
+    }
 
-    encodeDate: function(localDate)
+    encodeDate(localDate)
     {
         return moment(localDate, localDateFormat).format(internalDateFormat);
-    },
+    }
 
-    decodeDate: function(internalDate)
+    decodeDate(internalDate)
     {
         return moment(internalDate, internalDateFormat).format(localDateFormat);
-    },
+    }
 
-    getStorageId: function()
+    getStorageId()
     {
         return 'opcpage.' + this.key;
-    },
+    }
 
-    onImportChosen: function(loadCB, errorCB, e)
+    onImportChosen(loadCB, errorCB, e)
     {
         this.importReader = new FileReader();
         this.importReader.onload = this.onReaderLoad.bind(this, loadCB, errorCB);
         this.importReader.readAsText(e.target.files[0]);
-    },
+    }
 
-    onReaderLoad: function(loadCB, errorCB)
+    onReaderLoad(loadCB, errorCB)
     {
         this.loadFromJSON(this.importReader.result, loadCB, errorCB);
-    },
+    }
 
-    onLoadDraft: function(loadCB, pageData)
+    onLoadDraft(loadCB, pageData)
     {
         debuglog('Page on draft loaded');
 
@@ -173,9 +171,9 @@ Page.prototype = {
         this.fullUrl     = this.shopUrl + this.url;
 
         loadCB();
-    },
+    }
 
-    onLoad: function(loadCB, preview)
+    onLoad(loadCB, preview)
     {
         var areas = this.rootAreas;
 
@@ -190,39 +188,39 @@ Page.prototype = {
         }
 
         loadCB();
-    },
+    }
 
-    save: function(saveCB, errorCB)
+    save(saveCB, errorCB)
     {
         this.io.saveDraft(this.toJSON(), saveCB, errorCB);
-    },
+    }
 
-    savePageToWebStorage: function()
+    savePageToWebStorage()
     {
         window.localStorage.setItem(this.getStorageId(), JSON.stringify(this.toJSON()));
-    },
+    }
 
-    clearPageWebStorage: function ()
+    clearPageWebStorage ()
     {
         window.localStorage.removeItem(this.getStorageId());
-    },
+    }
 
-    hasUnsavedContent: function ()
+    hasUnsavedContent ()
     {
         return window.localStorage.getItem(this.getStorageId()) !== null;
-    },
+    }
 
-    exportAsDownload: function()
+    exportAsDownload()
     {
         download(JSON.stringify(this), this.name + '.json', 'application/json');
-    },
+    }
 
-    clear: function()
+    clear()
     {
         this.rootAreas.empty();
-    },
+    }
 
-    toJSON: function(withDom)
+    toJSON(withDom)
     {
         withDom = withDom || false;
 
@@ -237,9 +235,9 @@ Page.prototype = {
         }
 
         return result;
-    },
+    }
 
-    areaToJSON: function(area, withDom)
+    areaToJSON(area, withDom)
     {
         withDom = withDom || false;
 
@@ -253,9 +251,9 @@ Page.prototype = {
         }
 
         return result;
-    },
+    }
 
-    portletToJSON: function(portlet, withDom)
+    portletToJSON(portlet, withDom)
     {
         withDom = withDom || false;
 
@@ -281,9 +279,9 @@ Page.prototype = {
         }
 
         return result;
-    },
+    }
 
-    computePortletWidthHeuristics: function(portlet)
+    computePortletWidthHeuristics(portlet)
     {
         var elm             = portlet;
         var widthHeuristics = {xs: null, sm: null, md: null, lg: null};
@@ -313,6 +311,5 @@ Page.prototype = {
         if(widthHeuristics.lg === null) widthHeuristics.lg = widthHeuristics.md;
 
         return widthHeuristics;
-    },
-
-};
+    }
+}

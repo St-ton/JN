@@ -35,7 +35,7 @@ $controller   = new AccountController(Shop::Container()->getDB(), $alertService,
 
 unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
-    $controller->fuehreLoginAus($_POST['email'], $_POST['passwort']);
+    $controller->login($_POST['email'], $_POST['passwort']);
 }
 if (Request::verifyGPCDataInt('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';

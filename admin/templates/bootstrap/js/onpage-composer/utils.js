@@ -92,7 +92,7 @@ function capitalize(str)
 function bindProtoOnHandlers(obj)
 {
     var proto = obj.constructor.prototype;
-    var keys  = Object.keys(proto);
+    var keys  = Object.getOwnPropertyNames(proto);
 
     for(var i=0; i<keys.length; i++) {
         var key    = keys[i];

@@ -100,13 +100,13 @@ class Wunschliste
     /**
      * fügt eine Position zur Wunschliste hinzu
      *
-     * @param int    $kArtikel
-     * @param string $cArtikelName
+     * @param int    $productID
+     * @param string $productName
      * @param array  $attributes
-     * @param float  $fAnzahl
+     * @param float  $qty
      * @return int
      */
-    public function fuegeEin(int $kArtikel, string $cArtikelName, array $attributes, $fAnzahl): int
+    public function fuegeEin(int $productID, string $productName, array $attributes, $qty): int
     {
         $exists = false;
         $index  = 0;
@@ -116,8 +116,8 @@ class Wunschliste
                 break;
             }
 
-            if ($position->kArtikel === $kArtikel) {
-                $index         = $i;
+            if ($position->kArtikel === $productID) {
+                $index  = $i;
                 $exists = true;
                 if (\count($position->CWunschlistePosEigenschaft_arr) > 0) {
                     foreach ($attributes as $attr) {
@@ -131,14 +131,14 @@ class Wunschliste
         }
 
         if ($exists) {
-            $this->CWunschlistePos_arr[$index]->fAnzahl += $fAnzahl;
+            $this->CWunschlistePos_arr[$index]->fAnzahl += $qty;
             $this->CWunschlistePos_arr[$index]->updateDB();
             $kWunschlistePos = $this->CWunschlistePos_arr[$index]->kWunschlistePos;
         } else {
             $position                = new WunschlistePos(
-                $kArtikel,
-                $cArtikelName,
-                $fAnzahl,
+                $productID,
+                $productName,
+                $qty,
                 $this->kWunschliste
             );
             $position->dHinzugefuegt = \date('Y-m-d H:i:s');
@@ -146,8 +146,8 @@ class Wunschliste
             $kWunschlistePos = $position->kWunschlistePos;
             $position->erstellePosEigenschaften($attributes);
             $product = new Artikel();
-            $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
-            $position->Artikel          = $product;
+            $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
+            $position->Artikel           = $product;
             $this->CWunschlistePos_arr[] = $position;
         }
 
@@ -211,27 +211,27 @@ class Wunschliste
      * Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
      * Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
      *
-     * @param int   $kWunschliste
-     * @param array $oWarenkorbpositionen_arr
+     * @param int   $wishlistID
+     * @param array $cartPositions
      * @return bool|int
      */
-    public static function pruefeArtikelnachBestellungLoeschen(int $kWunschliste, array $oWarenkorbpositionen_arr)
+    public static function pruefeArtikelnachBestellungLoeschen(int $wishlistID, array $cartPositions)
     {
         $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($kWunschliste < 1 || $conf['global']['global_wunschliste_artikel_loeschen_nach_kauf'] !== 'Y') {
+        if ($wishlistID < 1 || $conf['global']['global_wunschliste_artikel_loeschen_nach_kauf'] !== 'Y') {
             return false;
         }
         $nCount   = 0;
-        $wishlist = new self($kWunschliste);
+        $wishlist = new self($wishlistID);
         if (!($wishlist->kWunschliste > 0
-            && \is_array($oWarenkorbpositionen_arr)
+            && \is_array($cartPositions)
             && \count($wishlist->CWunschlistePos_arr) > 0
-            && \count($oWarenkorbpositionen_arr) > 0)
+            && \count($cartPositions) > 0)
         ) {
             return false;
         }
         foreach ($wishlist->CWunschlistePos_arr as $position) {
-            foreach ($oWarenkorbpositionen_arr as $oArtikel) {
+            foreach ($cartPositions as $oArtikel) {
                 if ($position->kArtikel != $oArtikel->kArtikel) {
                     continue;
                 }
@@ -277,12 +277,12 @@ class Wunschliste
     }
 
     /**
-     * @param string $cSuche
+     * @param string $query
      * @return array
      */
-    public function sucheInWunschliste(string $cSuche): array
+    public function sucheInWunschliste(string $query): array
     {
-        if (empty($cSuche)) {
+        if (empty($query)) {
             return [];
         }
         $db            = Shop::Container()->getDB();
@@ -296,23 +296,23 @@ class Wunschliste
                     OR twunschlistepos.cKommentar LIKE :search)
                 WHERE twunschliste.kWunschliste = :wlID",
             [
-                'search' => '%' . $cSuche . '%',
+                'search' => '%' . $query . '%',
                 'wlID'   => (int)$this->kWunschliste
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as $i => $result) {
-            $wlPosition = new WunschlistePos(
+            $position = new WunschlistePos(
                 $result->kArtikel,
                 $result->cArtikelName,
                 $result->fAnzahl,
                 $result->kWunschliste
             );
 
-            $wlPosition->kWunschlistePos  = $result->kWunschlistePos;
-            $wlPosition->cKommentar       = $result->cKommentar;
-            $wlPosition->dHinzugefuegt    = $result->dHinzugefuegt;
-            $wlPosition->dHinzugefuegt_de = $result->dHinzugefuegt_de;
+            $position->kWunschlistePos  = $result->kWunschlistePos;
+            $position->cKommentar       = $result->cKommentar;
+            $position->dHinzugefuegt    = $result->dHinzugefuegt;
+            $position->dHinzugefuegt_de = $result->dHinzugefuegt_de;
 
             $wlPositionAttributes = $db->queryPrepared(
                 'SELECT twunschlisteposeigenschaft.*, teigenschaftsprache.cName
@@ -340,25 +340,25 @@ class Wunschliste
 
                 $wlAttribute->kWunschlistePosEigenschaft = $wlPositionAttribute->kWunschlistePosEigenschaft;
 
-                $wlPosition->CWunschlistePosEigenschaft_arr[] = $wlAttribute;
+                $position->CWunschlistePosEigenschaft_arr[] = $wlAttribute;
             }
 
-            $wlPosition->Artikel = new Artikel();
-            $wlPosition->Artikel->fuelleArtikel($result->kArtikel, Artikel::getDefaultOptions());
-            $wlPosition->cArtikelName = $wlPosition->Artikel->cName;
+            $position->Artikel = new Artikel();
+            $position->Artikel->fuelleArtikel($result->kArtikel, Artikel::getDefaultOptions());
+            $position->cArtikelName = $position->Artikel->cName;
 
             if (Frontend::getCustomerGroup()->isMerchant()) {
-                $fPreis = (int)$wlPosition->fAnzahl *
-                    $wlPosition->Artikel->Preise->fVKNetto;
+                $fPreis = (int)$position->fAnzahl *
+                    $position->Artikel->Preise->fVKNetto;
             } else {
-                $fPreis = (int)$wlPosition->fAnzahl *
-                    ($wlPosition->Artikel->Preise->fVKNetto *
-                        (100 + $_SESSION['Steuersatz'][$wlPosition->Artikel->kSteuerklasse]) /
+                $fPreis = (int)$position->fAnzahl *
+                    ($position->Artikel->Preise->fVKNetto *
+                        (100 + $_SESSION['Steuersatz'][$position->Artikel->kSteuerklasse]) /
                         100);
             }
 
-            $wlPosition->cPreis = Preise::getLocalizedPriceString($fPreis, Frontend::getCurrency());
-            $searchResults[$i]  = $wlPosition;
+            $position->cPreis  = Preise::getLocalizedPriceString($fPreis, Frontend::getCurrency());
+            $searchResults[$i] = $position;
         }
 
         return $searchResults;
@@ -369,15 +369,15 @@ class Wunschliste
      */
     public function schreibeDB(): self
     {
-        $oTemp               = new stdClass();
-        $oTemp->kKunde       = $this->kKunde;
-        $oTemp->cName        = $this->cName;
-        $oTemp->nStandard    = $this->nStandard;
-        $oTemp->nOeffentlich = $this->nOeffentlich;
-        $oTemp->dErstellt    = $this->dErstellt;
-        $oTemp->cURLID       = $this->cURLID;
+        $ins               = new stdClass();
+        $ins->kKunde       = $this->kKunde;
+        $ins->cName        = $this->cName;
+        $ins->nStandard    = $this->nStandard;
+        $ins->nOeffentlich = $this->nOeffentlich;
+        $ins->dErstellt    = $this->dErstellt;
+        $ins->cURLID       = $this->cURLID;
 
-        $this->kWunschliste = Shop::Container()->getDB()->insert('twunschliste', $oTemp);
+        $this->kWunschliste = Shop::Container()->getDB()->insert('twunschliste', $ins);
 
         return $this;
     }
@@ -388,27 +388,27 @@ class Wunschliste
     public function ladeWunschliste(): self
     {
         $db                 = Shop::Container()->getDB();
-        $oWunschliste       = $db->queryPrepared(
+        $data               = $db->queryPrepared(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                 FROM twunschliste
                 WHERE kWunschliste = :wlID",
             ['wlID' => (int)$this->kWunschliste],
             ReturnType::SINGLE_OBJECT
         );
-        $this->kWunschliste = (int)$oWunschliste->kWunschliste;
-        $this->kKunde       = (int)$oWunschliste->kKunde;
-        $this->nStandard    = (int)$oWunschliste->nStandard;
-        $this->nOeffentlich = (int)$oWunschliste->nOeffentlich;
-        $this->cName        = $oWunschliste->cName;
-        $this->cURLID       = $oWunschliste->cURLID;
-        $this->dErstellt    = $oWunschliste->dErstellt;
-        $this->dErstellt_DE = $oWunschliste->dErstellt_DE;
+        $this->kWunschliste = (int)$data->kWunschliste;
+        $this->kKunde       = (int)$data->kKunde;
+        $this->nStandard    = (int)$data->nStandard;
+        $this->nOeffentlich = (int)$data->nOeffentlich;
+        $this->cName        = $data->cName;
+        $this->cURLID       = $data->cURLID;
+        $this->dErstellt    = $data->dErstellt;
+        $this->dErstellt_DE = $data->dErstellt_DE;
         if ((int)$this->kKunde > 0) {
             $this->oKunde = new Kunde($this->kKunde);
             unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
         }
         $langID         = Shop::getLanguageID();
-        $wlPositions    = $db->selectAll(
+        $positions      = $db->selectAll(
             'twunschlistepos',
             'kWunschliste',
             (int)$this->kWunschliste,
@@ -416,7 +416,7 @@ class Wunschliste
         );
         $defaultOptions = Artikel::getDefaultOptions();
         // Hole alle Eigenschaften für eine Position
-        foreach ($wlPositions as $position) {
+        foreach ($positions as $position) {
             $position->kWunschlistePos = (int)$position->kWunschlistePos;
             $position->kWunschliste    = (int)$position->kWunschliste;
             $position->kArtikel        = (int)$position->kArtikel;
@@ -428,7 +428,6 @@ class Wunschliste
                 $position->kWunschliste
             );
 
-            $cArtikelName                 = $wlPosition->cArtikelName;
             $wlPosition->kWunschlistePos  = $position->kWunschlistePos;
             $wlPosition->cKommentar       = $position->cKommentar;
             $wlPosition->dHinzugefuegt    = $position->dHinzugefuegt;
@@ -495,7 +494,7 @@ class Wunschliste
             $wlPosition->Artikel = new Artikel();
             $wlPosition->Artikel->fuelleArtikel($wlPosition->kArtikel, $defaultOptions);
             $wlPosition->cArtikelName    = \mb_strlen($wlPosition->Artikel->cName) === 0
-                ? $cArtikelName
+                ? $wlPosition->cArtikelName
                 : $wlPosition->Artikel->cName;
             $this->CWunschlistePos_arr[] = $wlPosition;
         }
@@ -508,30 +507,30 @@ class Wunschliste
      */
     public function ueberpruefePositionen(): string
     {
-        $cArtikel_arr = [];
-        $notice       = '';
-        $db           = Shop::Container()->getDB();
+        $names  = [];
+        $notice = '';
+        $db     = Shop::Container()->getDB();
         foreach ($this->CWunschlistePos_arr as $wlPosition) {
             if (!isset($wlPosition->kArtikel) || (int)$wlPosition->kArtikel <= 0) {
                 continue;
             }
-            $oArtikelVorhanden = $db->select('tartikel', 'kArtikel', $wlPosition->kArtikel);
-            if (isset($oArtikelVorhanden->kArtikel) && (int)$oArtikelVorhanden->kArtikel > 0) {
-                $oSichtbarkeit = $db->select(
+            $exists = $db->select('tartikel', 'kArtikel', $wlPosition->kArtikel);
+            if (isset($exists->kArtikel) && (int)$exists->kArtikel > 0) {
+                $visibility = $db->select(
                     'tartikelsichtbarkeit',
                     'kArtikel',
                     (int)$wlPosition->kArtikel,
                     'kKundengruppe',
                     Frontend::getCustomerGroup()->getID()
                 );
-                if ($oSichtbarkeit === null || empty($oSichtbarkeit->kArtikel)) {
+                if ($visibility === null || empty($visibility->kArtikel)) {
                     if (\count($wlPosition->CWunschlistePosEigenschaft_arr) > 0) {
                         if (Product::isVariChild($wlPosition->kArtikel)) {
                             foreach ($wlPosition->CWunschlistePosEigenschaft_arr as $wlAttribute) {
-                                $oEigenschaftWertVorhanden = $db->select(
+                                $attrValExists = $db->select(
                                     'teigenschaftkombiwert',
                                     'kEigenschaftKombi',
-                                    (int)$oArtikelVorhanden->kEigenschaftKombi,
+                                    (int)$exists->kEigenschaftKombi,
                                     'kEigenschaftWert',
                                     (int)$wlAttribute->kEigenschaftWert,
                                     'kEigenschaft',
@@ -539,44 +538,44 @@ class Wunschliste
                                     false,
                                     'kEigenschaftKombi'
                                 );
-                                if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
-                                    $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                    $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                                if (empty($attrValExists->kEigenschaftKombi)) {
+                                    $names[] = $wlPosition->cArtikelName;
+                                    $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                                     break;
                                 }
                             }
                         } else {
-                            $oEigenschaft_arr = $db->selectAll(
+                            $attributes = $db->selectAll(
                                 'teigenschaft',
                                 'kArtikel',
                                 (int)$wlPosition->kArtikel,
                                 'kEigenschaft, cName, cTyp'
                             );
-                            if (\count($oEigenschaft_arr) > 0) {
+                            if (\count($attributes) > 0) {
                                 foreach ($wlPosition->CWunschlistePosEigenschaft_arr as $wlAttribute) {
-                                    $oEigenschaftWertVorhanden = null;
+                                    $attrValExists = null;
                                     if (!empty($wlAttribute->kEigenschaft)) {
-                                        $oEigenschaftWertVorhanden = $db->select(
+                                        $attrValExists = $db->select(
                                             'teigenschaftwert',
                                             'kEigenschaftWert',
                                             (int)$wlAttribute->kEigenschaftWert,
                                             'kEigenschaft',
                                             (int)$wlAttribute->kEigenschaft
                                         );
-                                        if (empty($oEigenschaftWertVorhanden)) {
-                                            $oEigenschaftWertVorhanden = $db->select(
+                                        if (empty($attrValExists)) {
+                                            $attrValExists = $db->select(
                                                 'twunschlisteposeigenschaft',
                                                 'kEigenschaft',
                                                 $wlAttribute->kEigenschaft
                                             );
                                         }
                                     }
-                                    if (empty($oEigenschaftWertVorhanden->kEigenschaftWert)
-                                        && empty($oEigenschaftWertVorhanden->cFreifeldWert)
+                                    if (empty($attrValExists->kEigenschaftWert)
+                                        && empty($attrValExists->cFreifeldWert)
                                     ) {
-                                        $cArtikel_arr[] = $wlPosition->cArtikelName;
-                                        $notice        .= '<br />' .
+                                        $names[] = $wlPosition->cArtikelName;
+                                        $notice .= '<br />' .
                                             Shop::Lang()->get('noProductWishlist', 'messages');
 
                                         $this->delWunschlistePosSess($wlPosition->kArtikel);
@@ -589,35 +588,35 @@ class Wunschliste
                         }
                     }
                 } else {
-                    $cArtikel_arr[] = $wlPosition->cArtikelName;
-                    $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                    $names[] = $wlPosition->cArtikelName;
+                    $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                     $this->delWunschlistePosSess($wlPosition->kArtikel);
                 }
             } else {
-                $cArtikel_arr[] = $wlPosition->cArtikelName;
-                $notice        .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
+                $names[] = $wlPosition->cArtikelName;
+                $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                 $this->delWunschlistePosSess($wlPosition->kArtikel);
             }
         }
 
-        $notice .= \implode(', ', $cArtikel_arr);
+        $notice .= \implode(', ', $names);
         Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'wlNote');
 
         return $notice;
     }
 
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return bool
      */
-    public function delWunschlistePosSess(int $kArtikel): bool
+    public function delWunschlistePosSess(int $productID): bool
     {
-        if (!$kArtikel) {
+        if (!$productID) {
             return false;
         }
         $db = Shop::Container()->getDB();
         foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $i => $position) {
-            if ($kArtikel === (int)$position->kArtikel) {
+            if ($productID === (int)$position->kArtikel) {
                 unset($_SESSION['Wunschliste']->CWunschlistePos_arr[$i]);
                 \array_merge($_SESSION['Wunschliste']->CWunschlistePos_arr);
                 $db->delete(
@@ -711,11 +710,10 @@ class Wunschliste
         if ($id === 0) {
             return $msg;
         }
-        $db = Shop::Container()->getDB();
-        // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-        $oWunschliste = $db->select('twunschliste', 'kWunschliste', $id);
-        $customer     = Frontend::getCustomer();
-        if (isset($oWunschliste->kKunde) && (int)$oWunschliste->kKunde === $customer->getID()) {
+        $db       = Shop::Container()->getDB();
+        $data     = $db->select('twunschliste', 'kWunschliste', $id);
+        $customer = Frontend::getCustomer();
+        if (isset($data->kKunde) && (int)$data->kKunde === $customer->getID()) {
             // Hole alle Positionen der Wunschliste
             $positions = $db->selectAll(
                 'twunschlistepos',
@@ -742,18 +740,18 @@ class Wunschliste
                 unset($_SESSION['Wunschliste']);
             }
             // Wenn die gelöschte Wunschliste nStandard = 1 war => neue setzen
-            if ((int)$oWunschliste->nStandard === 1) {
+            if ((int)$data->nStandard === 1) {
                 // Neue Wunschliste holen (falls vorhanden) und nStandard=1 neu setzen
-                $oWunschliste = $db->select('twunschliste', 'kKunde', $customer->getID());
-                if (isset($oWunschliste->kWunschliste)) {
+                $data = $db->select('twunschliste', 'kKunde', $customer->getID());
+                if (isset($data->kWunschliste)) {
                     $db->query(
                         'UPDATE twunschliste 
                             SET nStandard = 1 
-                            WHERE kWunschliste = ' . (int)$oWunschliste->kWunschliste,
+                            WHERE kWunschliste = ' . (int)$data->kWunschliste,
                         ReturnType::AFFECTED_ROWS
                     );
                     // Neue Standard Wunschliste in die Session laden
-                    $_SESSION['Wunschliste'] = new Wunschliste($oWunschliste->kWunschliste);
+                    $_SESSION['Wunschliste'] = new Wunschliste($data->kWunschliste);
                     $_SESSION['Wunschliste']->ueberpruefePositionen();
                 }
             }
@@ -806,7 +804,8 @@ class Wunschliste
                         'twunschlistepos',
                         'kWunschlistePos',
                         $id,
-                        (object)['fAnzahl' => (float)$quantity]);
+                        (object)['fAnzahl' => (float)$quantity]
+                    );
                 }
             }
         }

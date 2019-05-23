@@ -406,27 +406,27 @@ function gibMappingDaten($type)
 
     $cMapping_arr                                   = [];
     $cMapping_arr[STATS_ADMIN_TYPE_BESUCHER]        = [
-        'nCount' => 'Anzahl',
-        'dZeit'  => 'Datum'
+        'nCount' => __('count'),
+        'dZeit'  => __('date')
     ];
     $cMapping_arr[STATS_ADMIN_TYPE_KUNDENHERKUNFT]  = [
-        'nCount'   => 'Anzahl',
-        'dZeit'    => 'Datum',
-        'cReferer' => 'Herkunft'
+        'nCount'   => __('count'),
+        'dZeit'    => __('date'),
+        'cReferer' => __('origin')
     ];
     $cMapping_arr[STATS_ADMIN_TYPE_SUCHMASCHINE]    = [
-        'nCount'     => 'Anzahl',
-        'dZeit'      => 'Datum',
-        'cUserAgent' => 'UserAgent'
+        'nCount'     => __('count'),
+        'dZeit'      => __('date'),
+        'cUserAgent' => __('userAgent')
     ];
     $cMapping_arr[STATS_ADMIN_TYPE_UMSATZ]          = [
-        'nCount' => 'Betrag',
-        'dZeit'  => 'Datum'
+        'nCount' => __('amount'),
+        'dZeit'  => __('date')
     ];
     $cMapping_arr[STATS_ADMIN_TYPE_EINSTIEGSSEITEN] = [
-        'nCount'          => 'Anzahl',
-        'dZeit'           => 'Datum',
-        'cEinstiegsseite' => 'Einstiegsseite'
+        'nCount'          => __('count'),
+        'dZeit'           => __('date'),
+        'cEinstiegsseite' => __('entryPage')
     ];
 
     return $cMapping_arr[$type];

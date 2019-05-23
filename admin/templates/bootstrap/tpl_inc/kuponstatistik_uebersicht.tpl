@@ -7,65 +7,13 @@
                 <input type="hidden" name="formFilter" value="1" class="form-control"/>
                 <label for="SelectFromDay">{__('fromUntilDate')}:</label>
                 <input type="text" size="21" name="daterange" class="form-control"/>
-                <script type="text/javascript">
-                    $(function() {
-                        $('input[name="daterange"]').daterangepicker(
-                            {
-                                locale: {
-                                    format: 'YYYY-MM-DD',
-                                    separator: '{__('datepickerSeparator')}',
-                                    applyLabel: '{__('apply')}',
-                                    cancelLabel: '{__('cancel')}',
-                                    customRangeLabel: '{__('datepickerCustom')}',
-                                    daysOfWeek: ['{__('sundayShort')}', '{__('mondayShort')}',
-                                        '{__('tuesdayShort')}', '{__('wednesdayShort')}',
-                                        '{__('thursdayShort')}', '{__('fridayShort')}',
-                                        '{__('saturdayShort')}'
-                                    ],
-                                    monthNames: ['{__('january')}', '{__('february')}', '{__('march')}',
-                                        '{__('april')}', '{__('may')}', '{__('june')}', '{__('july')}',
-                                        '{__('august')}', '{__('september')}', '{__('october')}',
-                                        '{__('november')}', '{__('december')}'
-                                    ],
-                                },
-                                alwaysShowCalendars: true,
-                                applyClass: 'btn btn-primary',
-                                cancelClass: 'btn btn-danger',
-                                ranges: {
-                                    '{__('datepickerToday')}': [moment(), moment()],
-                                    '{__('datepickerYesterday')}': [
-                                        moment().subtract(1, 'days'),
-                                        moment().subtract(1, 'days')
-                                    ],
-                                    '{__('datepickerThisWeek')}': [
-                                        moment().startOf('week').add(1, 'day'),
-                                        moment().endOf('week').add(1, 'day')
-                                    ],
-                                    '{__('datepickerLastWeek')}': [
-                                        moment().subtract(1, 'week').startOf('week').add(1, 'day'),
-                                        moment().subtract(1, 'week').endOf('week').add(1, 'day')
-                                    ],
-                                    '{__('datepickerThisMonth')}': [
-                                        moment().startOf('month'),
-                                        moment().endOf('month')
-                                    ],
-                                    '{__('datepickerLastMonth')}': [
-                                        moment().subtract(1, 'month').startOf('month'),
-                                        moment().subtract(1, 'month').endOf('month')
-                                    ],
-                                    '{__('datepickerThisYear')}': [moment().startOf('year'), moment().endOf('year')],
-                                    '{__('datepickerLastYear')}': [
-                                        moment().subtract(1, 'year').startOf('year'),
-                                        moment().subtract(1, 'year').endOf('year')
-                                    ]
-                                },
-                                parentEl: 'html',
-                                startDate: '{$startDate}',
-                                endDate: '{$endDate}',
-                            }
-                        );
-                    });
-                </script>
+                {include
+                    file="snippets/daterange_picker.tpl"
+                    datepickerID='input[name="daterange"]'
+                    currentDate="{$startDate} - {$endDate}"
+                    format="YYYY-MM-DD"
+                    separator=" - "
+                }
             </div>
             <div class="form-group">
                 <select id="kKupon" name="kKupon" class="combo form-control">

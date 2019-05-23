@@ -6,13 +6,14 @@ function OPC(env)
     setJtlToken(env.jtlToken);
     installJqueryFixes();
 
-    this.error    = env.error;
-    this.io       = new IO(this.onIOReady);
-    this.page     = new Page(this.io, env.shopUrl, env.pageKey);
-    this.gui      = new GUI(this.io, this.page);
-    this.iframe   = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
-    this.tutorial = new Tutorial(this.gui, this.iframe);
-    this.pagetree = new PageTree(this.page, this.iframe);
+    this.error        = env.error;
+    this.io           = new IO(this.onIOReady);
+    this.page         = new Page(this.io, env.shopUrl, env.pageKey);
+    this.gui          = new GUI(this.io, this.page);
+    this.iframe       = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
+    this.tutorial     = new Tutorial(this.gui, this.iframe);
+    this.pagetree     = new PageTree(this.page, this.iframe);
+    this.previewFrame = new PreviewFrame();
 }
 
 OPC.prototype = {
@@ -23,10 +24,11 @@ OPC.prototype = {
     {
         debuglog('on IO ready');
 
-        this.gui.init(this.iframe, this.tutorial, this.error);
+        this.gui.init(this.iframe, this.previewFrame, this.tutorial, this.error);
         this.tutorial.init();
         this.page.init(this.onPageLocked);
         this.pagetree.init();
+        this.previewFrame.init();
     },
 
     onPageLocked: function(state)

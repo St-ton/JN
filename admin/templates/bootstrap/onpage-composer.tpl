@@ -39,6 +39,7 @@
     <script src="{$templateUrl}js/onpage-composer/IO.js"></script>
     <script src="{$templateUrl}js/onpage-composer/Tutorial.js"></script>
     <script src="{$templateUrl}js/onpage-composer/PageTree.js"></script>
+    <script src="{$templateUrl}js/onpage-composer/PreviewFrame.js"></script>
 
     <script>
         var opc = new OPC({
@@ -179,19 +180,21 @@
         </div>
 
         <div id="displayPreviews">
-            <ul class="">
+            <ul id="displayWidths">
                 <li>
-                    <a href="#" onclick="$('#iframe').width('375px');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-mobile"></i></a>
+                    <a href="#" id="btnDisplayWidthMobile"><i class="fa fa-mobile"></i></a>
                 </li>
                 <li>
-                    <a href="#" onclick="$('#iframe').width('768px');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-tablet"></i></a>
+                    <a href="#" id="btnDisplayWidthTablet"><i class="fa fa-tablet"></i></a>
                 </li>
                 <li>
-                    <a href="#" onclick="$('#iframe').width('992px');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');"><i class="fa fa-laptop"></i></a>
+                    <a href="#" id="btnDisplayWidthLaptop"><i class="fa fa-laptop"></i></a>
                 </li>
-                <li>
-                    <a href="#" onclick="$('#iframe').width('100%');$('#displayPreviews a').removeClass('active'); $(this).addClass('active');" class="active"><i class="fa fa-desktop"></i></a>
+                <li class="active">
+                    <a href="#" id="btnDisplayWidthDesktop"><i class="fa fa-desktop"></i></a>
                 </li>
+            </ul>
+            <ul>
                 <li>
                     <a href="#" id="btnPreview" data-toggle="tooltip" data-placement="right"
                        title="Preview">
@@ -205,6 +208,14 @@
 
     <div id="iframePanel">
         <iframe id="iframe"></iframe>
+    </div>
+
+    <div id="previewPanel" style="display: none">
+        <iframe id="previewFrame" name="previewFrame"></iframe>
+        <form action="" target="previewFrame" method="post" id="previewForm">
+            <input type="hidden" name="opcPreviewMode" value="yes">
+            <input type="hidden" name="pageData" value="" id="previewPageDataInput">
+        </form>
     </div>
 
     <div id="loaderModal" class="modal fade" tabindex="-1" style="padding-top:25%">

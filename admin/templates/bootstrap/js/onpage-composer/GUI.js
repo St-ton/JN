@@ -8,23 +8,26 @@ function GUI(io, page)
     this.page          = page;
     this.configSaveCb  = noop;
     this.imageSelectCB = noop;
+    this.inPreviewMode = false;
 }
 
 GUI.prototype = {
 
     constructor: GUI,
 
-    init: function(iframe, tutorial, error)
+    init: function(iframe, previewFrame, tutorial, error)
     {
         debuglog('GUI init');
 
-        this.iframe   = iframe;
-        this.tutorial = tutorial;
+        this.iframe       = iframe;
+        this.previewFrame = previewFrame;
+        this.tutorial     = tutorial;
 
         installGuiElements(this, [
             'sidebarPanel',
             'topNav',
             'iframePanel',
+            'previewPanel',
             'loaderModal',
             'errorModal',
             'errorAlert',
@@ -64,6 +67,10 @@ GUI.prototype = {
             'collapseGroup',
             'restoreUnsavedModal',
             'restoreUnsavedForm',
+            'btnDisplayWidthMobile',
+            'btnDisplayWidthTablet',
+            'btnDisplayWidthLaptop',
+            'btnDisplayWidthDesktop',
         ]);
 
         this.missingConfigButtons.hide();
@@ -182,7 +189,17 @@ GUI.prototype = {
 
     onBtnPreview: function(e)
     {
-        this.iframe.togglePreview()
+        if (this.inPreviewMode) {
+            this.iframePanel.show();
+            this.previewFrame.previewPanel.hide();
+            this.inPreviewMode = false;
+            this.btnPreview.parent().removeClass('active');
+        } else {
+            this.iframePanel.hide();
+            this.previewFrame.showPreview(this.page.fullUrl, JSON.stringify(this.page.toJSON()));
+            this.inPreviewMode = true;
+            this.btnPreview.parent().addClass('active');
+        }
     },
 
     onBtnSave: function(e)
@@ -539,5 +556,37 @@ GUI.prototype = {
     setImageSelectCallback: function(callback)
     {
         this.imageSelectCB = callback;
+    },
+
+    onBtnDisplayWidthMobile: function(e)
+    {
+        this.iframe.iframe.width('375px');
+        this.previewFrame.previewFrame.width('375px');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthMobile.parent().addClass('active');
+    },
+
+    onBtnDisplayWidthTablet: function(e)
+    {
+        this.iframe.iframe.width('768px');
+        this.previewFrame.previewFrame.width('768px');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthTablet.parent().addClass('active');
+    },
+
+    onBtnDisplayWidthLaptop: function(e)
+    {
+        this.iframe.iframe.width('992px');
+        this.previewFrame.previewFrame.width('992px');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthLaptop.parent().addClass('active');
+    },
+
+    onBtnDisplayWidthDesktop: function(e)
+    {
+        this.iframe.iframe.width('100%');
+        this.previewFrame.previewFrame.width('100%');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthDesktop.parent().addClass('active');
     },
 };

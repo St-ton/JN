@@ -7,7 +7,6 @@ function Page(io, shopUrl, key)
     this.io             = io;
     this.shopUrl        = shopUrl;
     this.key            = key;
-    this.cachedPageData = [];
 }
 
 Page.prototype = {
@@ -134,24 +133,6 @@ Page.prototype = {
         }, saveCB, errorCB);
     },
 
-    showLivePreview: function(onDone)
-    {
-        this.cachedPageData = this.toJSON();
-
-        this.io.createPageLivePreview(
-            this.cachedPageData,
-            function(preview) {
-                this.onLoad(noop, preview);
-                onDone();
-            }.bind(this)
-        );
-    },
-
-    hideLivePreview: function(onDone)
-    {
-        this.loadFromData(this.cachedPageData, onDone);
-    },
-
     encodeDate: function(localDate)
     {
         return moment(localDate, localDateFormat).format(internalDateFormat);
@@ -188,6 +169,7 @@ Page.prototype = {
         this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
         this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
         this.url         = pageData.url;
+        this.replace     = pageData.replace;
         this.fullUrl     = this.shopUrl + this.url;
 
         loadCB();
@@ -244,7 +226,7 @@ Page.prototype = {
     {
         withDom = withDom || false;
 
-        var result = {id: this.id, url: this.url, key: this.key, areas: {}};
+        var result = {id: this.id, url: this.url, key: this.key, replace: this.replace, areas: {}};
         var areas  = this.rootAreas;
 
         for(var i=0; i<areas.length; i++) {

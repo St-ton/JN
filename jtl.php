@@ -611,9 +611,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     if (isset($_POST['del_acc']) && (int)$_POST['del_acc'] === 1) {
         $csrfTest = validateToken();
         if ($csrfTest === false) {
-            $cHinweis .= Shop::Lang()->get('csrfValidationFailed', 'global');
-            Jtllog::writeLog('CSRF-Warnung fuer Account-Loeschung und kKunde ' .
-                (int)$_SESSION['Kunde']->kKunde, JTLLOG_LEVEL_ERROR);
+            $cHinweis .= Shop::Lang()->get('csrfValidationFailed');
+            Jtllog::writeLog('CSRF-Warnung fuer Account-Loeschung und kKunde ' . (int)$_SESSION['Kunde']->kKunde);
         } else {
             $oBestellung = Shop::DB()->query(
                 "SELECT COUNT(kBestellung) AS countBestellung
@@ -635,7 +634,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             } else {
                 // Es gibt noch Bestellungen, die noch nicht versandt oder storniert wurden - der Account wird in einen Gastzugang umgewandelt
                 $cText = utf8_decode('Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' .
-                    $_SESSION['Kunde']->cNachname . ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .
+                    substr($_SESSION['Kunde']->cNachname, 0, 1) .
+                    '. (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') .
                     ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto gelöscht. Es gab noch ' .
                     $oBestellung->countBestellung . ' offene Bestellungen.' .
                     ' Der Account wurde deshalb in einen temporären Gastzugang umgewandelt.');
@@ -646,8 +646,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 ]);
             }
 
-            Jtllog::writeLog(PFAD_LOGFILES . 'geloeschteKundenkontos.log', $cText, 1);
-
+            Jtllog::writeLog($cText, JTLLOG_LEVEL_NOTICE, true);
             // Newsletter
             Shop::DB()->delete('tnewsletterempfaenger', 'cEmail', $_SESSION['Kunde']->cMail);
             Shop::DB()->insert('tnewsletterempfaengerhistory', (object)[

@@ -4,14 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Rating\RatingController;
+use JTL\Shop;
+use JTL\Sprache;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -25,6 +26,8 @@ $step        = 'bewertung_uebersicht';
 $cTab        = 'freischalten';
 $cacheTags   = [];
 $alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
+$controller  = new RatingController($db, $smarty);
 
 setzeSprache();
 
@@ -33,7 +36,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 if (Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
-        if (editiereBewertung($_POST)) {
+        if ($controller->editiereBewertung($_POST)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingEdit'), 'successRatingEdit');
             if (Request::verifyGPCDataInt('nFZ') === 1) {
                 header('Location: freischalten.php');
@@ -63,9 +66,9 @@ if (Form::validateToken()) {
                 foreach ($_POST['kBewertung'] as $i => $kBewertung) {
                     $upd         = new stdClass();
                     $upd->nAktiv = 1;
-                    Shop::Container()->getDB()->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
-                    aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
-                    checkeBewertungGuthabenBonus($kBewertung, $conf);
+                    $db->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
+                    $controller->aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
+                    $controller->checkeBewertungGuthabenBonus($kBewertung);
                     $cacheTags[] = $kArtikel_arr[$i];
                 }
                 array_walk(
@@ -84,7 +87,7 @@ if (Form::validateToken()) {
         } elseif (isset($_POST['loeschen'])) { // Bewertungen loeschen
             if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
                 foreach ($_POST['kBewertung'] as $kBewertung) {
-                    Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
+                    $db->delete('tbewertung', 'kBewertung', (int)$kBewertung);
                 }
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
@@ -96,7 +99,7 @@ if (Form::validateToken()) {
     } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
         if (isset($_POST['cArtNr'])) {
             // Bewertungen holen
-            $oBewertungAktiv_arr = Shop::Container()->getDB()->queryPrepared(
+            $oBewertungAktiv_arr = $db->queryPrepared(
                 "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                     FROM tbewertung
                     LEFT JOIN tartikel 
@@ -117,9 +120,9 @@ if (Form::validateToken()) {
         if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
-                BewertungsGuthabenBonusLoeschen($kBewertung);
-                Shop::Container()->getDB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
-                aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
+                $controller->BewertungsGuthabenBonusLoeschen($kBewertung);
+                $db->delete('tbewertung', 'kBewertung', (int)$kBewertung);
+                $controller->aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
                 $cacheTags[] = $kArtikel_arr[$i];
             }
             array_walk(
@@ -140,23 +143,23 @@ if (Form::validateToken()) {
 
 if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_editieren') {
     $step = 'bewertung_editieren';
-    $smarty->assign('oBewertung', holeBewertung(Request::verifyGPCDataInt('kBewertung')));
+    $smarty->assign('oBewertung', $controller->holeBewertung(Request::verifyGPCDataInt('kBewertung')));
     if (Request::verifyGPCDataInt('nFZ') === 1) {
         $smarty->assign('nFZ', 1);
     }
 } elseif ($step === 'bewertung_uebersicht') {
     if (isset($_GET['a']) && $_GET['a'] === 'delreply' && Form::validateToken()) {
-        removeReply(Request::verifyGPCDataInt('kBewertung'));
+        $controller->removeReply(Request::verifyGPCDataInt('kBewertung'));
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingCommentDelete'), 'successRatingCommentDelete');
     }
-    $nBewertungen      = (int)Shop::Container()->getDB()->query(
+    $nBewertungen      = (int)$db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 0',
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
-    $nBewertungenAktiv = (int)Shop::Container()->getDB()->query(
+    $nBewertungenAktiv = (int)$db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
@@ -171,7 +174,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->setItemCount($nBewertungenAktiv)
         ->assemble();
 
-    $ratings       = Shop::Container()->getDB()->query(
+    $ratings       = $db->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -182,7 +185,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             LIMIT ' . $oPagiInaktiv->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $last50ratings = Shop::Container()->getDB()->query(
+    $last50ratings = $db->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -195,14 +198,14 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     );
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)
-           ->assign('oPagiAktiv', $oPageAktiv)
-           ->assign('oBewertung_arr', $ratings)
-           ->assign('oBewertungLetzten50_arr', $last50ratings)
-           ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
-           ->assign('oConfig_arr', getAdminSectionSettings(CONF_BEWERTUNG))
-           ->assign('Sprachen', Sprache::getAllLanguages());
+        ->assign('oPagiAktiv', $oPageAktiv)
+        ->assign('oBewertung_arr', $ratings)
+        ->assign('oBewertungLetzten50_arr', $last50ratings)
+        ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
+        ->assign('oConfig_arr', getAdminSectionSettings(CONF_BEWERTUNG))
+        ->assign('Sprachen', Sprache::getAllLanguages());
 }
 
 $smarty->assign('step', $step)
-       ->assign('cTab', $cTab)
-       ->display('bewertung.tpl');
+    ->assign('cTab', $cTab)
+    ->display('bewertung.tpl');

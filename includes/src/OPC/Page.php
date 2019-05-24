@@ -333,6 +333,7 @@ class Page implements \JsonSerializable
         $this->setName($data['name'] ?? $this->getName());
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
+        $this->setReplace($data['replace'] ?? $this->isReplace());
 
         if (isset($data['areas']) && \is_array($data['areas'])) {
             $this->getAreaList()->deserialize($data['areas']);

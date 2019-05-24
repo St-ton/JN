@@ -17,7 +17,6 @@ function Iframe(io, gui, page, shopUrl, templateUrl)
     this.hoveredElm         = null;
     this.selectedElm        = null;
     this.dropTarget         = null;
-    this.previewMode        = false;
     this.dragNewPortletCls  = null;
     this.dragNewBlueprintId = 0;
 }
@@ -413,31 +412,6 @@ Iframe.prototype = {
     {
         this.dragNewBlueprintId = id || 0;
         this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
-    },
-
-    togglePreview: function()
-    {
-        if (this.previewMode) {
-            this.gui.showLoader();
-            this.page.hideLivePreview(function() {
-                this.enableEditingEvents();
-                this.portlets().removeClass('opc-preview');
-                this.pagetree.render();
-                this.updateDropTargets();
-                this.previewMode = false;
-                this.gui.hideLoader();
-            }.bind(this));
-        } else {
-            this.gui.showLoader();
-            this.page.showLivePreview(function () {
-                this.disableEditingEvents();
-                this.setSelected();
-                this.setHovered();
-                this.portlets().addClass('opc-preview');
-                this.previewMode = true;
-                this.gui.hideLoader();
-            }.bind(this));
-        }
     },
 
     onBtnConfig: function()

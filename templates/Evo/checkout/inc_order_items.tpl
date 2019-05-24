@@ -239,8 +239,8 @@
                                                                class="form-control quantity form-control text-right"
                                                                size="3"
                                                                min="0"
-                                                                {if $Artikel->fAbnahmeintervall > 0}
-                                                                    step="{$Artikel->fAbnahmeintervall}"
+                                                                {if $oPosition->Artikel->fAbnahmeintervall > 0}
+                                                                    step="{$oPosition->Artikel->fAbnahmeintervall}"
                                                                 {/if}
                                                                value="{$oPosition->nAnzahl}"
                                                         />

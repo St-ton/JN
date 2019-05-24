@@ -16,8 +16,12 @@ function setupNav() {
         navList = document.querySelectorAll('.megamenu .nav-item'),
         currentNav = document.querySelector('.megamenu .nav-item.active');
 
-    wee['left'] = currentNav.offsetLeft + 'px';
-    wee['width'] = currentNav.offsetWidth + 'px';
+    if (currentNav != undefined) {
+        wee['left'] = currentNav.offsetLeft + 'px';
+        wee['width'] = currentNav.offsetWidth + 'px';
+    } else {
+        wee['width'] = 0 + 'px';
+    }
 
     // note: The addEventListener() method is not supported in Internet Explorer 8 and earlier versions//
     navList.forEach(function(nav){
@@ -26,7 +30,6 @@ function setupNav() {
             wee['left'] = this.offsetLeft - leftPos + 'px';
             wee['width'] = this.offsetWidth + 'px';
         });
-
     });
 };
 

@@ -12152,6 +12152,7 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
     background: #fff;
     position: absolute;
     padding: 0.5rem 0.2rem !important;
+    z-index: 1;
   }
 
   #scrollMenuRight {
@@ -12925,7 +12926,7 @@ ul.partlist-items {
     z-index: 999;
     top: -7%;
     left: -5%;
-    bottom: 0;
+    bottom: -5%;
     width: 110%;
     transition: box-shadow 222ms ease;
     box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
@@ -12997,6 +12998,7 @@ ul.partlist-items {
 
 .list .product-cell .product-body {
   padding: 15px 0 20px;
+  border-bottom: 1px solid #ebebeb;
 }
 .list .product-cell .price_wrapper {
   color: #F8BF00;
@@ -13055,7 +13057,7 @@ ul.partlist-items {
 .gallery .product-cell .actions-small .actions,
 .gallery-with-action .actions-small .actions {
   position: static;
-  margin: 10px auto 0 auto;
+  margin: 10px 10px 0 auto;
 }
 .list .product-cell .actions-small .actions .btn,
 .gallery .product-cell .actions-small .actions .btn,
@@ -13385,6 +13387,10 @@ aside .badge-light {
   height: 200px;
 }
 
+.breadcrumb {
+  border-top: 1px solid #ebebeb;
+  border-bottom: 1px solid #ebebeb;
+}
 .breadcrumb a {
   text-decoration: none;
 }
@@ -14326,7 +14332,6 @@ table caption {
   align-items: center;
   padding: 0.5rem 0;
   margin-bottom: 1rem;
-  border-top: 1px solid #ebebeb;
   border-bottom: 1px solid #ebebeb;
 }
 .productlist-page-nav .pagination {

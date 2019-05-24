@@ -8,48 +8,6 @@
     || $NaviFilter->getSearchResults()->getProductCount() >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab
     || $NaviFilter->getFilterCount() > 0}
     <div id="result-options" class="{if !$show_filters} d-none d-sm-block{/if}">
-        {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
-        {row}
-            {block name='productlist-result-options-sort'}
-                {col cols=12 class="displayoptions form-inline d-flex justify-content-end order-0 order-md-1"}
-                    {dropdown class="filter-type-FilterItemSort btn-group  mb-2" variant="light" text="{lang key='sorting' section='productOverview'}"}
-                        {foreach $Suchergebnisse->getSortingOptions() as $option}
-                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                {$option->getName()}
-                            {/dropdownitem}
-                        {/foreach}
-                    {/dropdown}
-                    {dropdown class="filter-type-FilterItemLimits btn-group  mb-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
-                        {foreach $Suchergebnisse->getLimitOptions() as $option}
-                            {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                {$option->getName()}
-                            {/dropdownitem}
-                        {/foreach}
-                    {/dropdown}
-                    {if isset($oErweiterteDarstellung->nDarstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])}
-                        {buttongroup class="mb-2"}
-                            {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
-                                id="ed_list"
-                                class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
-                                role="button"
-                                title="{lang key='list' section='productOverview'}"
-                            }
-                                <span class="fa fa-th-list"></span>
-                            {/link}
-                            {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
-                                id="ed_gallery"
-                                class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
-                                role="button"
-                                title="{lang key='gallery' section='productOverview'}"
-                            }
-                                <span class="fa fa-th-large"></span>
-                            {/link}
-                        {/buttongroup}
-                    {/if}
-                {/col}
-            {/block}
-        {/row}
-        {/if}
         {if $NaviFilter->getFilterCount() > 0}
             {block name='productlist-result-options-active-filters'}
                 <div class="clearfix mt-2"></div>

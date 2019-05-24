@@ -246,7 +246,11 @@
                         </div>
                     {/block}
                 {/if}
-
+                            </div> {*closes result-wrapper*}
+                        </div> {*closes content*}
+                    </div> {*closes row*}
+                </div> {*closes content-wrapper*}
+                {container fluid=true}
                 {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
                     <div class="recommendations d-print-none">
                         {block name='productdetails-details-recommendations'}
@@ -268,6 +272,11 @@
                         {/block}
                     </div>
                 {/if}
+                {/container}
+                <div class="container mt-0 mt-md-6 pt-4 px-md-4"> {*reopens content-wrapper container*}
+                    <div class="row"> {*reopens row*}
+                        <div class="col-12"> {*reopens content col*}
+                            <div> {*reopens result-wrapper*}
             {/if}
             {block name='productdetails-details-include-popups'}
                 <div id="article_popups">

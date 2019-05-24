@@ -17,7 +17,7 @@
                 {link data=["toggle"=>"popover",
                     "placement"=>"left",
                     "container"=>"body",
-                    "ref"=>"#popover-warehouse",
+                    "selector"=>"#popover-warehouse",
                     "trigger"=>"click hover"]
                 }
                     <i class="fas fa-map-marker-alt" title="{lang key='availability' section='productDetails'}"></i>

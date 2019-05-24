@@ -136,7 +136,7 @@
                     {block name='layout-header-category-nav'}
 
                         {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-0"}
-                            {col id="logo" md="auto" order=2 order-md=1 class="col-auto mr-auto mr-xl-3"}
+                            {col id="logo" md="auto" order=2 order-md=1 class="col-auto mr-auto bg-white" style="z-index: 1;"}
                                 {block name='layout-header-logo'}
                                     <div class="navbar-brand ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                         <span itemprop="name" class="d-none">{$meta_publisher}</span>
@@ -234,6 +234,10 @@
             {/if}
         {/block}
 
+        {block name='layout-header-breadcrumb'}
+            {include file='layout/breadcrumb.tpl'}
+        {/block}
+
         {block name='layout-header-content-row-starttag'}
             <div class="row">
         {/block}
@@ -241,10 +245,6 @@
         {block name='layout-header-content-starttag'}
             <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
             || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')} col-lg-9{/if} order-lg-1 mb-6">
-        {/block}
-
-        {block name='layout-header-breadcrumb'}
-            {include file='layout/breadcrumb.tpl'}
         {/block}
 
         {block name='layout-header-alert'}

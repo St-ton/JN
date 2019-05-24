@@ -121,6 +121,7 @@ body.unboxed-layout {
     background: #fff;
     position: absolute;
     padding: 0.5rem 0.2rem !important;
+    z-index: 1;
   }
 
   #scrollMenuRight {
@@ -901,7 +902,7 @@ ul.partlist-items {
         z-index: $zindex-dropdown - 1;
         top: -7%;
         left: -5%;
-        bottom: 0;
+        bottom: -5%;
         width: 110%;
         transition: box-shadow 222ms ease;
         box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
@@ -962,6 +963,7 @@ ul.partlist-items {
 .list .product-cell {
   .product-body {
     padding: 15px 0 20px;
+    border-bottom: 1px solid $sand;
   }
   .price_wrapper {
     color: $primary;
@@ -1021,7 +1023,7 @@ ul.partlist-items {
     }
   }
   .actions-small {
-    .actions { position: static; margin: 10px auto 0 auto;
+    .actions { position: static; margin: 10px 10px 0 auto;
       .btn { margin: 0 8px; }
     }
   }
@@ -1352,6 +1354,8 @@ $jqcloud-classes: 7;
 }
 
 .breadcrumb {
+  border-top: 1px solid $sand;
+  border-bottom: 1px solid $sand;
   a { text-decoration: none; }
   > li {
     &.last a {
@@ -2307,8 +2311,14 @@ table caption {
 
 /* productlist navigation */
 
-.productlist-page-nav { align-items: center; padding: map-get($spacers, 2) 0; margin-bottom: $spacer; border-top: 1px solid $sand; border-bottom: 1px solid $sand;
-  .pagination { margin: 0; }
+.productlist-page-nav {
+  align-items: center;
+  padding: map-get($spacers, 2) 0;
+  margin-bottom: $spacer;
+  border-bottom: 1px solid $sand;
+  .pagination {
+    margin: 0;
+  }
 }
 
 .productlist-item-info {

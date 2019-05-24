@@ -17,12 +17,12 @@
             </div>
 
             {collapse class="box box-filter-price" id="sidebox{$oBox->getID()}" visible=true}
-                {inputgroup}
+                {inputgroup class="mb-2"}
                     {input id="price-range-from" class="price-range-input"}
                     {input id="price-range-to" class="price-range-input"}
                 {/inputgroup}
                 <div id="price-range-slider"></div>
-                <div id="amount">0 {$smarty.session.Waehrung->getHtmlEntity()} - {$priceRangeMax} {$smarty.session.Waehrung->getHtmlEntity()}</div>
+               {* <div id="amount">0 {$smarty.session.Waehrung->getHtmlEntity()} - {$priceRangeMax} {$smarty.session.Waehrung->getHtmlEntity()}</div>*}
             {/collapse}
             <hr class="mt-0 mb-4">
         {/block}

@@ -18,7 +18,6 @@
         {if $Einstellungen.template.megamenu.show_subcategories !== 'N'}
             {assign var=show_subcategories value=true}
         {/if}
-
         {get_category_array categoryId=0 assign='categories'}
         {if !empty($categories)}
             {if !isset($activeId)}
@@ -46,11 +45,7 @@
                     || ((isset($activeParent)
                     && isset($activeParent->kKategorie))
                     && $activeParent->kKategorie == $category->kKategorie)} active{/if}">
-
-                        {if $category->kKategorie == $activeId
-                            || ((isset($activeParent)
-                                    && isset($activeParent->kKategorie))
-                                && $activeParent->kKategorie == $category->kKategorie)}
+                        {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}
                         {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
@@ -152,11 +147,10 @@
                         </div>
                     </li>
                     {*{/navitemdropdown}*}
-
                 {else}
                     {navitem href=$category->cURLFull title=$category->cSeo
                         class="{if $category->kKategorie == $activeId}active{/if}"}
-                        {if $category->kKategorie == $activeId}
+                        {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}
                         {$category->cKurzbezeichnung}

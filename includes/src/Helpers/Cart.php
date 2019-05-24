@@ -2017,8 +2017,9 @@ class Cart
      */
     public static function isMultiple(float $quantity, float $multiple): bool
     {
-        $decimals = 10 ** \strlen(\substr(\strrchr($multiple, '.'), 1));
+        $decimals    = 10 ** \strlen(\substr(\strrchr($multiple, '.'), 1));
+        $quantityTMP = $quantity * $decimals;
 
-        return ($quantity * $decimals) % ($multiple * $decimals) === 0;
+        return $quantityTMP === \ceil($quantityTMP) && $quantityTMP % ($multiple * $decimals) === 0;
     }
 }

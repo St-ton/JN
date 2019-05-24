@@ -1285,6 +1285,14 @@ aside {
       text-decoration: none;
     }
   }
+  .last-seen-link {
+    text-decoration: underline;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    display: block;
+  }
 }
 
 .filter-item,
@@ -1583,12 +1591,17 @@ $jqcloud-classes: 7;
   .nmbr-cfg-group{
     display: flex;
     position: relative;
-    flex: 1 1 auto;
-    width: 1%;
+    /*flex: 1 1 auto;
+    width: 1%;*/
+    flex: 0 1 auto;
+    width: auto;
+    max-width: 250px;
     margin-bottom: 0;
     input.quantity {
       display: flex;
       position: relative;
+      /*flex: 1 1 auto;
+      width: 1%;*/
       flex: 1 1 auto;
       width: 1%;
       margin-bottom: 0;
@@ -1634,7 +1647,7 @@ a[data-toggle="collapse"][aria-expanded=true],
 .product-offer .price {
   font-size: $h1-font-size * 1.3;
   font-weight: bold;
-  color: $primary;
+  color: $gray-dark;
 }
 .price-note { font-size: 12px; }
 

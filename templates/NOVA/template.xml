@@ -34,7 +34,7 @@
             <Setting Description="Theme" Key="theme_default" Type="select" Value="evo">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
             </Setting>
-            <Setting Description="Hintergrundbild" Key="background_image" Type="select" Value="">
+            <!--<Setting Description="Hintergrundbild" Key="background_image" Type="select" Value="">
                 <Option Value="">- Kein Hintergrundbild -</Option>
                 <Option Value="arktis">Arktis - Berge und Schnee</Option>
                 <Option Value="berge">Tal - Ein gr<![CDATA[&uuml;]]>nes Tal</Option>
@@ -50,11 +50,11 @@
                 <Option Value="vulkan">Vulkan - Inaktiver Vulkan in einer Pr<![CDATA[&auml;]]>rie</Option>
                 <Option Value="wolken">Wolken - <![CDATA[&Uuml;]]>ber den Wolken...</Option>
                 <Option Value="custom">Custom - Ihr eigenes Hintergrundbild (themes/IhrTheme/background.jpg)</Option>
-            </Setting>
-            <Setting Description="Layout" Key="pagelayout" Type="select" Value="fluid">
+            </Setting>-->
+            <!--<Setting Description="Layout" Key="pagelayout" Type="select" Value="fluid">
                 <Option Value="fluid">fluid - Inhalt soll gesamten Bildschirm nutzen</Option>
                 <Option Value="boxed">boxed - Der Inhalt hat eine Maximalbreite</Option>
-            </Setting>
+            </Setting>-->
             <Setting Description="Sliderposition" Key="slider_full_width" Type="select" Value="N">
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>

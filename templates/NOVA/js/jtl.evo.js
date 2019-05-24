@@ -25,7 +25,6 @@
             $('.evo-box-slider:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows: true,
-                vertical: true,
                 lazyLoad: 'ondemand',
                 slidesToShow: 1
             });
@@ -105,9 +104,9 @@
             $('#pushed-success .evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
             if ($('#content').hasClass('col-lg-9')) {
-                evoSliderOptions.slidesToShow = 3;
+                evoSliderOptions.slidesToShow = 4;
             } else {
-                evoSliderOptions.slidesToShow = 5;
+                evoSliderOptions.slidesToShow = 6;
             }
             $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
@@ -303,7 +302,7 @@
                     //}
                 }
             });*/
-            $('img.lazy', $wrapper).each(function(i, item) {
+            $('img.lazy', 'body').each(function(i, item) {
                 var img = $(this),
                     src = img.data('src');
 
@@ -666,12 +665,12 @@
         addInactivityCheck: function() {
             var timeoutID;
             var config = {
-                decrementButton: "<strong>-</strong>", // button text
-                incrementButton: "<strong>+</strong>", // ..
+                decrementButton: "<i class='fas fa-minus'></i>", // button text
+                incrementButton: "<i class='fas fa-plus'></i>", // ..
                 groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
                 buttonsClass: "btn-light form-control",
-                buttonsWidth: "",
-                textAlign: "right",
+                buttonsWidth: "42px",
+                textAlign: "center",
                 autoDelay: 500, // ms holding before auto value change
                 autoInterval: 100, // speed of auto value change
                 boostThreshold: 10, // boost after these steps

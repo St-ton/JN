@@ -169,8 +169,16 @@
 
                             {row}
                                 {block name='productdetails-details-include-price'}
-                                    {col cols=12}
+                                    {col}
                                         {include file='productdetails/price.tpl' Artikel=$Artikel tplscope='detail'}
+                                    {/col}
+                                    {col class="text-right align-self-end"}
+                                    {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
+                                        <button type="button" id="z{$Artikel->kArtikel}" class="btn btn-link popup-dep question" title="{lang key='productQuestion' section='productDetails'}">
+                                            <span class="fa fa-question-circle"></span>
+                                            <span class="hidden-xs hidden-sm">{lang key='productQuestion' section='productDetails'}</span>
+                                        </button>
+                                    {/if}
                                     {/col}
                                 {/block}
                                 {block name='productdetails-details-include-stock'}

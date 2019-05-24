@@ -51,7 +51,7 @@
                 {block name='productlist-index-products'}
                     {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
                         {foreach $Suchergebnisse->getProducts() as $Artikel}
-                            {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper {if !$Artikel@last}mb-5{/if}" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
+                            {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-8{/if}" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
                                 {if $style === 'list'}
                                     {block name='productlist-index-include-item-list'}
                                         {include file='productlist/item_list.tpl' tplscope=$style}

@@ -13296,6 +13296,14 @@ aside .box-monthlynews a .value {
 aside .box-monthlynews a .value:hover {
   text-decoration: none;
 }
+aside .last-seen-link {
+  text-decoration: underline;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  display: block;
+}
 
 .filter-item .badge-light,
 aside .badge-light {
@@ -13603,8 +13611,11 @@ aside .badge-light {
 .input-group .nmbr-cfg-group {
   display: flex;
   position: relative;
-  flex: 1 1 auto;
-  width: 1%;
+  /*flex: 1 1 auto;
+  width: 1%;*/
+  flex: 0 1 auto;
+  width: auto;
+  max-width: 250px;
   margin-bottom: 0;
 }
 .choose_quantity .nmbr-cfg-group input.quantity,
@@ -13612,6 +13623,8 @@ aside .badge-light {
 .input-group .nmbr-cfg-group input.quantity {
   display: flex;
   position: relative;
+  /*flex: 1 1 auto;
+  width: 1%;*/
   flex: 1 1 auto;
   width: 1%;
   margin-bottom: 0;
@@ -13650,7 +13663,7 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 .product-offer .price {
   font-size: 1.6250325rem;
   font-weight: bold;
-  color: #F8BF00;
+  color: #525252;
 }
 
 .price-note {

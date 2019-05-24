@@ -171,13 +171,13 @@
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
                                     <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#evo-main-nav-wrapper">
-                                        {button id="scrollMenuLeft" class="d-none"}
+                                        {button id="scrollMenuLeft"  variant="light" class="d-none"}
                                             <i class="fas fa-chevron-left"></i>
                                         {/button}
                                         {navbarnav class="megamenu show"}
                                             {include file='snippets/categories_mega.tpl'}
                                         {/navbarnav}
-                                        {button id="scrollMenuRight" class="d-none"}
+                                        {button id="scrollMenuRight" variant="light" class="d-none"}
                                             <i class="fas fa-chevron-right"></i>
                                         {/button}
                                     </div>

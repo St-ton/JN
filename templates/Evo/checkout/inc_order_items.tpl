@@ -233,7 +233,17 @@
                                                         {/if}
                                                     </label>:
                                                     <div id="quantity-grp{$oPosition@index}" class="choose_quantity input-group">
-                                                        <input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="form-control quantity form-control text-right" size="3" value="{$oPosition->nAnzahl}" />
+                                                        <input name="anzahl[{$oPosition@index}]"
+                                                               type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                               id="quantity{$oPosition@index}"
+                                                               class="form-control quantity form-control text-right"
+                                                               size="3"
+                                                               min="0"
+                                                                {if $Artikel->fAbnahmeintervall > 0}
+                                                                    step="{$Artikel->fAbnahmeintervall}"
+                                                                {/if}
+                                                               value="{$oPosition->nAnzahl}"
+                                                        />
                                                         <span class="input-group-btn">
                                                             <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>
                                                         </span>

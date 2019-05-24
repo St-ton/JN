@@ -721,4 +721,13 @@ class Plugins
         }
         $smarty->assign($params['assign'], $regions);
     }
+
+    /**
+     * @param $params
+     * @return int
+     */
+    public function getDecimalLength($params): int
+    {
+        return \strlen(\substr(\strrchr(\str_replace(',', '.', $params['quantity']), '.'), 1));
+    }
 }

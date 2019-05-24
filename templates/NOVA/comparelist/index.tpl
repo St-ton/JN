@@ -129,12 +129,14 @@
                                                     {block name='comparelist-index-form-quantity'}
                                                         {formgroup class="quantity-wrapper"}
                                                         {inputgroup class="quantity-wrapper px-3"}
-                                                        {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
+                                                        {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                        min="0"
                                                         step="{if $oArtikel->fAbnahmeintervall > 0}{$oArtikel->fAbnahmeintervall}{/if}"
                                                         id="quantity{$oArtikel->kArtikel}"
                                                         class="quantity text-right"
                                                         name="anzahl"
                                                         autocomplete="off"
+                                                        data=["decimals"=>{getDecimalLength quantity=$oArtikel->fAbnahmeintervall}]
                                                         value="{if $oArtikel->fAbnahmeintervall > 0}{if $oArtikel->fMindestbestellmenge > $oArtikel->fAbnahmeintervall}{$oArtikel->fMindestbestellmenge}{else}{$oArtikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                                         {block name='comparelist-index-form-submit'}
                                                             {inputgroupaddon}

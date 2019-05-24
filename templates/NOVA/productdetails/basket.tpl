@@ -32,7 +32,7 @@
                                 id="quantity" class="quantity" name="anzahl"
                                 aria=["label"=>"{lang key='quantity'}"]
                                 value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
-                                data=["decimals"=>"{if $Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                             }
                             {if $Artikel->cEinheit}
                                 {inputgroupappend}

@@ -30,10 +30,10 @@ class Checkboxes extends AbstractItem
             $i = (string)$i;
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
-                if (\mb_strlen($cb['Name']) === 0) {
+                if (!isset($cb['Name']) || \mb_strlen($cb['Name']) === 0) {
                     return InstallCode::INVALID_CHECKBOX_FUNCTION_NAME;
                 }
-                if (\mb_strlen($cb['ID']) === 0) {
+                if (!isset($cb['ID']) || \mb_strlen($cb['ID']) === 0) {
                     return InstallCode::INVALID_CHECKBOX_FUNCTION_ID;
                 }
             }

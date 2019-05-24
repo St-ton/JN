@@ -8,6 +8,7 @@ namespace JTL\Plugin\Admin\Validation\Items;
 
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 
 /**
  * Class Menus
@@ -56,7 +57,8 @@ class Menus extends AbstractItem
             return InstallCode::OK;
         }
         foreach ($node['Settingslink'] as $i => $settingsLink) {
-            $i = (string)$i;
+            $i            = (string)$i;
+            $settingsLink = $this->sanitizeSettingsLink($settingsLink);
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
@@ -71,7 +73,11 @@ class Menus extends AbstractItem
                     return InstallCode::MISSING_CONFIG;
                 }
                 foreach ($settingsLink['Setting'] as $j => $setting) {
-                    $j = (string)$j;
+                    if (!\is_array($setting)) {
+                        return InstallCode::MISSING_CONFIG;
+                    }
+                    $j       = (string)$j;
+                    $setting = $this->sanitizeSetting($setting);
                     \preg_match('/[0-9]+\sattr/', $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
 
@@ -90,10 +96,7 @@ class Menus extends AbstractItem
                         if (\mb_strlen($setting['Name']) === 0) {
                             return InstallCode::INVALID_CONFIG_NAME;
                         }
-                        if (!isset($setting['ValueName'])
-                            || !\is_string($setting['ValueName'])
-                            || \mb_strlen($setting['ValueName']) === 0
-                        ) {
+                        if (!\is_string($setting['ValueName']) || \mb_strlen($setting['ValueName']) === 0) {
                             return InstallCode::INVALID_CONF_VALUE_NAME;
                         }
                         if ($type === InputType::SELECT) {
@@ -196,5 +199,27 @@ class Menus extends AbstractItem
         }
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param array $setting
+     * @return array
+     */
+    private function sanitizeSetting(array $setting): array
+    {
+        $setting['Name']      = $setting['Name'] ?? '';
+        $setting['ValueName'] = $setting['ValueName'] ?? '';
+        $setting['type']      = $setting['type'] ?? '';
+
+        return $setting;
+    }
+
+    /**
+     * @param array $settingsLink
+     * @return array
+     */
+    private function sanitizeSettingsLink(array $settingsLink): array
+    {
+        return $settingsLink;
     }
 }

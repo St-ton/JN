@@ -35,7 +35,7 @@ class Localization extends AbstractItem
             if (\mb_strlen($hits2[0]) !== \mb_strlen($t)) {
                 continue;
             }
-            if (\mb_strlen($var['Name']) === 0) {
+            if (!isset($var['Name']) || \mb_strlen($var['Name']) === 0) {
                 return InstallCode::INVALID_LANG_VAR_NAME;
             }
             // Nur eine Sprache vorhanden

@@ -31,7 +31,11 @@ class Portlets extends AbstractItem
             return InstallCode::MISSING_PORTLETS;
         }
         foreach ($node['Portlets'][0]['Portlet'] as $i => $portlet) {
-            $i = (string)$i;
+            if (!\is_array($portlet)) {
+                continue;
+            }
+            $i       = (string)$i;
+            $portlet = $this->sanitizePortlet($portlet);
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
@@ -40,13 +44,14 @@ class Portlets extends AbstractItem
                     $portlet['Title'],
                     $hits1
                 );
-                if (\mb_strlen($hits1[0]) !== \mb_strlen($portlet['Title'])) {
+                $len = \mb_strlen($portlet['Title']);
+                if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                     return InstallCode::INVALID_PORTLET_TITLE;
                 }
                 \preg_match('/[a-zA-Z0-9\/_\-.]+/', $portlet['Class'], $hits1);
-                if (\mb_strlen($hits1[0]) === \mb_strlen($portlet['Class'])) {
-                    if (!\file_exists($dir . \PFAD_PLUGIN_PORTLETS . $portlet['Class'] . '.php')
-                    ) {
+                $len = \mb_strlen($portlet['Class']);
+                if ($len === 0 || \mb_strlen($hits1[0]) === $len) {
+                    if (!\file_exists($dir . \PFAD_PLUGIN_PORTLETS . $portlet['Class'] . '.php')) {
                         return InstallCode::INVALID_PORTLET_CLASS_FILE;
                     }
                 } else {
@@ -57,7 +62,8 @@ class Portlets extends AbstractItem
                     $portlet['Group'],
                     $hits1
                 );
-                if (\mb_strlen($hits1[0]) !== \mb_strlen($portlet['Group'])) {
+                $len = \mb_strlen($portlet['Group']);
+                if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                     return InstallCode::INVALID_PORTLET_GROUP;
                 }
                 \preg_match('/[0-1]{1}/', $portlet['Active'], $hits1);
@@ -68,5 +74,19 @@ class Portlets extends AbstractItem
         }
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param array $portlet
+     * @return array
+     */
+    private function sanitizePortlet(array $portlet): array
+    {
+        $portlet['Title']  = $portlet['Title'] ?? '';
+        $portlet['Class']  = $portlet['Class'] ?? '';
+        $portlet['Group']  = $portlet['Group'] ?? '';
+        $portlet['Active'] = $portlet['Active'] ?? '1';
+
+        return $portlet;
     }
 }

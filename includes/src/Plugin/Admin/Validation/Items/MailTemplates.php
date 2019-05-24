@@ -30,7 +30,11 @@ class MailTemplates extends AbstractItem
             return InstallCode::MISSING_EMAIL_TEMPLATES;
         }
         foreach ($node['Emailtemplate'][0]['Template'] as $i => $tpl) {
-            $i = (string)$i;
+            if (!\is_array($tpl)) {
+                continue;
+            }
+            $tpl = $this->sanitizeTemplate($tpl);
+            $i   = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
@@ -47,19 +51,19 @@ class MailTemplates extends AbstractItem
             if ($tpl['Type'] !== 'text/html' && $tpl['Type'] !== 'text') {
                 return InstallCode::INVALID_TEMPLATE_TYPE;
             }
-            if (!isset($tpl['ModulId']) || \mb_strlen($tpl['ModulId']) === 0) {
+            if (\mb_strlen($tpl['ModulId']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_MODULE_ID;
             }
-            if (!isset($tpl['Active']) || \mb_strlen($tpl['Active']) === 0) {
+            if (\mb_strlen($tpl['Active']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_ACTIVE;
             }
-            if (!isset($tpl['AKZ']) || \mb_strlen($tpl['AKZ']) === 0) {
+            if (\mb_strlen($tpl['AKZ']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_AKZ;
             }
-            if (!isset($tpl['AGB']) || \mb_strlen($tpl['AGB']) === 0) {
+            if (\mb_strlen($tpl['AGB']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_AGB;
             }
-            if (!isset($tpl['WRB']) || \mb_strlen($tpl['WRB']) === 0) {
+            if (\mb_strlen($tpl['WRB']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_WRB;
             }
             if (!isset($tpl['TemplateLanguage'])
@@ -69,7 +73,11 @@ class MailTemplates extends AbstractItem
                 return InstallCode::MISSING_EMAIL_TEMPLATE_LANGUAGE;
             }
             foreach ($tpl['TemplateLanguage'] as $l => $localized) {
-                $l = (string)$l;
+                if (!\is_array($localized)) {
+                    continue;
+                }
+                $localized = $this->sanitzeLocaliation($localized);
+                $l         = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
@@ -89,5 +97,33 @@ class MailTemplates extends AbstractItem
         }
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param array $tpl
+     * @return array
+     */
+    private function sanitizeTemplate(array $tpl): array
+    {
+        $tpl['Name']    = $tpl['Name'] ?? '';
+        $tpl['Type']    = $tpl['Type'] ?? '';
+        $tpl['ModulId'] = $tpl['ModulId'] ?? '';
+        $tpl['Active']  = $tpl['Active'] ?? '';
+        $tpl['AKZ']     = $tpl['AKZ'] ?? '';
+        $tpl['AGB']     = $tpl['AGB'] ?? '';
+        $tpl['WRB']     = $tpl['WRB'] ?? '';
+
+        return $tpl;
+    }
+
+    /**
+     * @param array $localized
+     * @return array
+     */
+    private function sanitzeLocaliation(array $localized): array
+    {
+        $localized['Subject'] = $localized['Subject'] ?? '';
+
+        return $localized;
     }
 }

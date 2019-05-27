@@ -17,7 +17,7 @@ use JTL\Plugin\Admin\Validation\Items\ExtensionDir;
 use JTL\Plugin\Admin\Validation\Items\FrontendLinks;
 use JTL\Plugin\Admin\Validation\Items\Hooks;
 use JTL\Plugin\Admin\Validation\Items\Installation;
-use JTL\Plugin\Admin\Validation\Items\Licence;
+use JTL\Plugin\Admin\Validation\Items\LicenceExtension;
 use JTL\Plugin\Admin\Validation\Items\Localization;
 use JTL\Plugin\Admin\Validation\Items\MailTemplates;
 use JTL\Plugin\Admin\Validation\Items\Menus;
@@ -52,7 +52,7 @@ class PluginValidationFactory
         $validation[] = new PluginID($node, $dir, $version, $pluginID);
         $validation[] = new Installation($node, $dir, $version, $pluginID);
         $validation[] = new Author($node, $dir, $version, $pluginID);
-        $validation[] = new Licence($node, $dir, $version, $pluginID);
+        $validation[] = new LicenceExtension($node, $dir, $version, $pluginID);
         $validation[] = new Hooks($node, $dir, $version, $pluginID);
         $validation[] = new Menus($node, $dir, $version, $pluginID);
         $validation[] = new FrontendLinks($node, $dir, $version, $pluginID);

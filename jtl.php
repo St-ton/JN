@@ -56,7 +56,7 @@ if (isset($_POST['kUpload']) &&
     validateToken()
 ) {
     $oUploadDatei = new UploadDatei((int)$_POST['kUpload']);
-    if ($file->validateOwner((int)$_SESSION['Kunde']->kKunde)) {
+    if ($oUploadDatei->validateOwner((int)$_SESSION['Kunde']->kKunde)) {
         UploadDatei::send_file_to_browser(
             PFAD_UPLOADS . $oUploadDatei->cPfad,
             'application/octet-stream',

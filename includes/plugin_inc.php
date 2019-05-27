@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
 use JTL\Events\Dispatcher;
 use JTL\Plugin\Helper;
-use JTL\Plugin\LegacyPluginLoader;
+use JTL\Plugin\LegacyPlugin;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
-use JTL\DB\ReturnType;
 
 /**
  * @param int   $hookID
@@ -33,7 +33,7 @@ function executeHook(int $hookID, $args_arr = [])
     foreach ($hookList[$hookID] as $item) {
         $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {
-            $loader  = new LegacyPluginLoader($db, $cache);
+            $loader  = Helper::getLoaderByPluginID((int)$item->kPlugin, $db, $cache);
             $oPlugin = $loader->init((int)$item->kPlugin);
             if ($oPlugin === null) {
                 continue;
@@ -76,8 +76,8 @@ function executeHook(int $hookID, $args_arr = [])
 }
 
 /**
- * @param \JTL\Plugin\LegacyPlugin $oPlugin
- * @param array                    $params
+ * @param LegacyPlugin $oPlugin
+ * @param array        $params
  * @return bool
  * @deprecated since 5.0.0
  */
@@ -88,8 +88,8 @@ function pluginLizenzpruefung($oPlugin, array $params = []): bool
 }
 
 /**
- * @param \JTL\Plugin\LegacyPlugin $oPlugin
- * @param int                      $nStatus
+ * @param LegacyPlugin $oPlugin
+ * @param int          $nStatus
  * @deprecated since 5.0.0
  */
 function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)

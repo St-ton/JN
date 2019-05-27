@@ -88,8 +88,7 @@ class AccountController
         AlertServiceInterface $alertService,
         LinkServiceInterface $linkService,
         JTLSmarty $smarty
-    )
-    {
+    ) {
         $this->db           = $db;
         $this->alertService = $alertService;
         $this->linkService  = $linkService;
@@ -719,10 +718,10 @@ class AccountController
                 $tmpProduct->fuelleArtikel($position->kArtikel, Artikel::getDefaultOptions());
 
                 if ((int)$tmpProduct->kArtikel > 0 && \count(Cart::addToCartCheck(
-                        $tmpProduct,
-                        $position->fAnzahl,
-                        $position->oWarenkorbPersPosEigenschaft_arr
-                    )) === 0) {
+                    $tmpProduct,
+                    $position->fAnzahl,
+                    $position->oWarenkorbPersPosEigenschaft_arr
+                )) === 0) {
                     Cart::addProductIDToCart(
                         $position->kArtikel,
                         $position->fAnzahl,

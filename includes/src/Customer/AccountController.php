@@ -88,7 +88,8 @@ class AccountController
         AlertServiceInterface $alertService,
         LinkServiceInterface $linkService,
         JTLSmarty $smarty
-    ) {
+    )
+    {
         $this->db           = $db;
         $this->alertService = $alertService;
         $this->linkService  = $linkService;
@@ -103,6 +104,7 @@ class AccountController
     {
         Shop::setPageType(\PAGE_MEINKONTO);
         $customerID = Frontend::getCustomer()->getID();
+        $step       = 'login';
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $customer = new Kunde($_SESSION['Kunde']->kKunde);
             if ($customer->kKunde > 0) {
@@ -117,26 +119,12 @@ class AccountController
                 'wlidmsg'
             );
         }
-        // Falls eine Aktion durchführt wird die ein Kundenkonto benötigt und der Gast nicht einloggt ist,
-        // wird dieser hierher umgeleitet und es werden die passenden Parameter erstellt.
-        // Nach dem erfolgreichen Einloggen wird die zuvor angestrebte Aktion durchgeführt.
         if (isset($_SESSION['JTL_REDIRECT']) || Request::verifyGPCDataInt('r') > 0) {
             $this->smarty->assign(
                 'oRedirect',
                 $_SESSION['JTL_REDIRECT'] ?? $this->gibRedirect(Request::verifyGPCDataInt('r'))
             );
             \executeHook(\HOOK_JTL_PAGE_REDIRECT_DATEN);
-        }
-        // Upload zum Download freigeben
-        if ($customerID > 0 && ($uploadID = Request::verifyGPCDataInt('kUpload')) > 0 && Form::validateToken()) {
-            $file = new UploadDatei($uploadID);
-            if ($file->validateOwner($customerID)) {
-                UploadDatei::send_file_to_browser(
-                    \PFAD_UPLOADS . $file->cPfad,
-                    'application/octet-stream',
-                    $file->cName
-                );
-            }
         }
         unset($_SESSION['JTL_REDIRECT']);
         if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
@@ -147,10 +135,8 @@ class AccountController
             );
         }
         if (isset($_POST['login'], $_POST['email'], $_POST['passwort']) && (int)$_POST['login'] === 1) {
-            $this->login($_POST['email'], $_POST['passwort']);
+            $customerID = $this->login($_POST['email'], $_POST['passwort'])->getID();
         }
-        Shop::setPageType(\PAGE_LOGIN);
-        $step = 'login';
         if (isset($_GET['loggedout'])) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loggedOut'), 'loggedOut');
         }
@@ -158,7 +144,7 @@ class AccountController
             $step = $this->handleCustomerRequest($customerID);
         }
         $alertNote = $this->alertService->alertTypeExists(Alert::TYPE_NOTE);
-        if (!$alertNote && $step === 'mein Konto' && Frontend::getCustomer()->isLoggedIn()) {
+        if (!$alertNote && $step === 'mein Konto' && $customerID > 0) {
             $this->alertService->addAlert(
                 Alert::TYPE_INFO,
                 Shop::Lang()->get('myAccountDesc', 'login'),
@@ -180,11 +166,21 @@ class AccountController
         $ratings = [];
         $kLink   = $this->linkService->getSpecialPageLinkKey(\LINKTYP_LOGIN);
         $step    = 'mein Konto';
-        if (isset($_GET['logout']) && (int)$_GET['logout'] === 1) {
+        $valid   = Form::validateToken();
+        if (Request::verifyGPCDataInt('logout') === 1) {
             $this->logout();
         }
-
-        if (isset($_GET['del']) && (int)$_GET['del'] === 1) {
+        if ($valid && ($uploadID = Request::verifyGPCDataInt('kUpload')) > 0) {
+            $file = new UploadDatei($uploadID);
+            if ($file->validateOwner($customerID)) {
+                UploadDatei::send_file_to_browser(
+                    \PFAD_UPLOADS . $file->cPfad,
+                    'application/octet-stream',
+                    $file->cName
+                );
+            }
+        }
+        if (Request::verifyGPCDataInt('del') === 1) {
             $openOrders = Frontend::getCustomer()->getOpenOrders();
             if (!empty($openOrders)) {
                 if ($openOrders->ordersInCancellationTime > 0) {
@@ -210,7 +206,7 @@ class AccountController
             \header('Location: ' . $this->linkService->getStaticRoute('jtl.php'), true, 303);
             exit();
         }
-        if (Request::verifyGPCDataInt('wllo') > 0 && Form::validateToken()) {
+        if ($valid && Request::verifyGPCDataInt('wllo') > 0) {
             $step = 'mein Konto';
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -218,7 +214,7 @@ class AccountController
                 'wllo'
             );
         }
-        if (isset($_POST['wls']) && (int)$_POST['wls'] > 0 && Form::validateToken()) {
+        if ($valid && isset($_POST['wls']) && (int)$_POST['wls'] > 0) {
             $step = 'mein Konto';
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -280,7 +276,7 @@ class AccountController
         if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
             $this->changeCustomerData();
         }
-        if (isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern'] && Form::validateToken()) {
+        if ($valid && isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern']) {
             $step = $this->changePassword($customerID);
         }
         if (Request::verifyGPCDataInt('bestellungen') > 0) {
@@ -352,10 +348,11 @@ class AccountController
     /**
      * @param string $userLogin
      * @param string $passLogin
-     * @throws Exception
+     * @return Kunde
      */
-    public function login(string $userLogin, string $passLogin): void
+    public function login(string $userLogin, string $passLogin): Kunde
     {
+        $customer = new Kunde();
         if (Form::validateToken() === false) {
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -364,9 +361,8 @@ class AccountController
             );
             Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
 
-            return;
+            return $customer;
         }
-        $customer     = new Kunde();
         $captchaState = $customer->verifyLoginCaptcha($_POST);
         if ($captchaState === true) {
             $returnCode = $customer->holLoginKunde($userLogin, $passLogin);
@@ -385,6 +381,8 @@ class AccountController
             $this->checkLoginCaptcha($tries);
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
         }
+
+        return $customer;
     }
 
     /**
@@ -402,7 +400,7 @@ class AccountController
      * @param Kunde $customer
      * @throws Exception
      */
-    private function initCustomer(Kunde $customer)
+    private function initCustomer(Kunde $customer): void
     {
         unset($_SESSION['showLoginCaptcha']);
         $coupons   = [];
@@ -525,19 +523,19 @@ class AccountController
         if (\count($cart->PositionenArr) > 0) {
             return false;
         }
-        $oWarenkorbPers = new WarenkorbPers($customer->kKunde);
-        $oWarenkorbPers->ueberpruefePositionen(true);
-        if (\count($oWarenkorbPers->oWarenkorbPersPos_arr) === 0) {
+        $persCart = new WarenkorbPers($customer->kKunde);
+        $persCart->ueberpruefePositionen(true);
+        if (\count($persCart->oWarenkorbPersPos_arr) === 0) {
             return false;
         }
-        foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
-            if (!empty($oWarenkorbPersPos->Artikel->bHasKonfig)) {
+        foreach ($persCart->oWarenkorbPersPos_arr as $position) {
+            if (!empty($position->Artikel->bHasKonfig)) {
                 continue;
             }
             // Gratisgeschenk in Warenkorb legen
-            if ((int)$oWarenkorbPersPos->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
-                $oArtikelGeschenk = $this->db->queryPrepared(
+            if ((int)$position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$position->kArtikel;
+                $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                         tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                         FROM tartikelattribut
@@ -547,49 +545,48 @@ class AccountController
                             AND tartikelattribut.cName = :atr
                             AND CAST(tartikelattribut.cWert AS DECIMAL) <= :sum',
                     [
-                        'pid' => $kArtikelGeschenk,
+                        'pid' => $productID,
                         'atr' => \FKT_ATTRIBUT_GRATISGESCHENK,
                         'sum' => $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
-                if ((isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0)
-                    && ($oArtikelGeschenk->fLagerbestand > 0
-                        || $oArtikelGeschenk->cLagerKleinerNull === 'Y'
-                        || $oArtikelGeschenk->cLagerBeachten === 'N')
+                if ((isset($present->kArtikel) && $present->kArtikel > 0)
+                    && ($present->fLagerbestand > 0
+                        || $present->cLagerKleinerNull === 'Y'
+                        || $present->cLagerBeachten === 'N')
                 ) {
                     \executeHook(\HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
                     $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_GRATISGESCHENK)
-                        ->fuegeEin($kArtikelGeschenk, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                        ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
                 // Konfigitems ohne Artikelbezug
-            } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem)) {
-                $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
+            } elseif ($position->kArtikel === 0 && !empty($position->kKonfigitem)) {
+                $configItem = new Konfigitem($position->kKonfigitem);
                 $cart->erstelleSpezialPos(
-                    $oKonfigitem->getName(),
-                    $oWarenkorbPersPos->fAnzahl,
-                    $oKonfigitem->getPreis(),
-                    $oKonfigitem->getSteuerklasse(),
+                    $configItem->getName(),
+                    $position->fAnzahl,
+                    $configItem->getPreis(),
+                    $configItem->getSteuerklasse(),
                     \C_WARENKORBPOS_TYP_ARTIKEL,
                     false,
                     !Frontend::getCustomerGroup()->isMerchant(),
                     '',
-                    $oWarenkorbPersPos->cUnique,
-                    $oWarenkorbPersPos->kKonfigitem,
-                    $oWarenkorbPersPos->kArtikel
+                    $position->cUnique,
+                    $position->kKonfigitem,
+                    $position->kArtikel
                 );
-                //Artikel in den Warenkorb einfügen
             } else {
                 Cart::addProductIDToCart(
-                    $oWarenkorbPersPos->kArtikel,
-                    $oWarenkorbPersPos->fAnzahl,
-                    $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
+                    $position->kArtikel,
+                    $position->fAnzahl,
+                    $position->oWarenkorbPersPosEigenschaft_arr,
                     1,
-                    $oWarenkorbPersPos->cUnique,
-                    $oWarenkorbPersPos->kKonfigitem,
+                    $position->cUnique,
+                    $position->kKonfigitem,
                     null,
                     false,
-                    $oWarenkorbPersPos->cResponsibility
+                    $position->cResponsibility
                 );
             }
         }
@@ -620,7 +617,6 @@ class AccountController
                     AND kKundengruppe = ' . $customerGroupID,
                 ReturnType::SINGLE_OBJECT
             );
-
             if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$position->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }
@@ -631,13 +627,9 @@ class AccountController
                     AND tpreisdetail.nAnzahlAb = 0
                 WHERE tpreis.kArtikel = :productID
                     AND tpreis.kKundengruppe = :customerGroup',
-                [
-                    'productID'     => (int)$position->kArtikel,
-                    'customerGroup' => $customerGroupID,
-                ],
+                ['productID' => (int)$position->kArtikel, 'customerGroup' => $customerGroupID],
                 ReturnType::SINGLE_OBJECT
             );
-
             if (!isset($price->fVKNetto)) {
                 unset($cart->PositionenArr[$i]);
             }
@@ -654,11 +646,10 @@ class AccountController
             return false;
         }
         $cart = Frontend::getCart();
-        foreach ($cart->PositionenArr as $oWarenkorbPos) {
-            if ($oWarenkorbPos->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $productID = (int)$oWarenkorbPos->kArtikel;
-                // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-                $present = $this->db->queryPrepared(
+        foreach ($cart->PositionenArr as $position) {
+            if ($position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$position->kArtikel;
+                $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
@@ -675,24 +666,17 @@ class AccountController
                     ReturnType::SINGLE_OBJECT
                 );
                 if (isset($present->kArtikel) && $present->kArtikel > 0) {
-                    WarenkorbPers::addToCheck(
-                        $productID,
-                        1,
-                        [],
-                        null,
-                        0,
-                        \C_WARENKORBPOS_TYP_GRATISGESCHENK
-                    );
+                    WarenkorbPers::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
                 WarenkorbPers::addToCheck(
-                    $oWarenkorbPos->kArtikel,
-                    $oWarenkorbPos->nAnzahl,
-                    $oWarenkorbPos->WarenkorbPosEigenschaftArr,
-                    $oWarenkorbPos->cUnique,
-                    $oWarenkorbPos->kKonfigitem,
-                    $oWarenkorbPos->nPosTyp,
-                    $oWarenkorbPos->cResponsibility
+                    $position->kArtikel,
+                    $position->nAnzahl,
+                    $position->WarenkorbPosEigenschaftArr,
+                    $position->cUnique,
+                    $position->kKonfigitem,
+                    $position->nPosTyp,
+                    $position->cResponsibility
                 );
             }
         }
@@ -735,10 +719,10 @@ class AccountController
                 $tmpProduct->fuelleArtikel($position->kArtikel, Artikel::getDefaultOptions());
 
                 if ((int)$tmpProduct->kArtikel > 0 && \count(Cart::addToCartCheck(
-                    $tmpProduct,
-                    $position->fAnzahl,
-                    $position->oWarenkorbPersPosEigenschaft_arr
-                )) === 0) {
+                        $tmpProduct,
+                        $position->fAnzahl,
+                        $position->oWarenkorbPersPosEigenschaft_arr
+                    )) === 0) {
                     Cart::addProductIDToCart(
                         $position->kArtikel,
                         $position->fAnzahl,
@@ -1148,14 +1132,15 @@ class AccountController
                 );
             }
         }
-        $orders = $this->db->selectAll(
+        $orders     = $this->db->selectAll(
             'tbestellung',
             'kKunde',
             $customerID,
             '*, date_format(dErstellt,\'%d.%m.%Y\') AS dBestelldatum',
             'kBestellung DESC'
         );
-        foreach ($orders as $i => $order) {
+        $currencies = [];
+        foreach ($orders as $order) {
             $order->bDownload = false;
             foreach ($downloads as $oDownload) {
                 if ((int)$order->kBestellung === (int)$oDownload->kBestellung) {
@@ -1163,9 +1148,6 @@ class AccountController
                     break;
                 }
             }
-        }
-        $currencies = [];
-        foreach ($orders as $order) {
             if ($order->kWaehrung > 0) {
                 if (isset($currencies[(int)$order->kWaehrung])) {
                     $order->Waehrung = $currencies[(int)$order->kWaehrung];
@@ -1177,9 +1159,7 @@ class AccountController
                     );
                     $currencies[(int)$order->kWaehrung] = $order->Waehrung;
                 }
-                if (isset($order->fWaehrungsFaktor, $order->Waehrung->fFaktor)
-                    && $order->fWaehrungsFaktor !== 1
-                ) {
+                if (isset($order->fWaehrungsFaktor, $order->Waehrung->fFaktor) && $order->fWaehrungsFaktor !== 1) {
                     $order->Waehrung->fFaktor = $order->fWaehrungsFaktor;
                 }
             }
@@ -1284,11 +1264,7 @@ class AccountController
             'kWunschliste',
             $wishlistID,
             'kKunde',
-            $customerID,
-            null,
-            null,
-            false,
-            'kWunschliste, cURLID'
+            $customerID
         );
         if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0 && mb_strlen($wishlist->cURLID) > 0) {
             $step = 'wunschliste anzeigen';

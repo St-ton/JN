@@ -700,7 +700,7 @@ if ($step === 'uebersicht') {
         'SELECT kNewsletterVorlage, kNewslettervorlageStd, cBetreff, cName
             FROM tnewslettervorlage
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
-            ORDER BY cName LIMIT ' . $pagiTemplates->getLimitSQL(),
+            ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
     $defaultData = $db->query(

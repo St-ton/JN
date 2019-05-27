@@ -76,13 +76,13 @@ final class Newsletter extends Job
         $cgSQL        .= ')';
         $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign, $oNewsletter->kSprache);
         $recipients    = $this->db->query(
-            'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, 
-            tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname, 
+            'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger,
+            tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname,
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
                 FROM tnewsletterempfaenger
-                LEFT JOIN tsprache 
+                LEFT JOIN tsprache
                     ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-                LEFT JOIN tkunde 
+                LEFT JOIN tkunde
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
                 WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
                     AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
@@ -117,7 +117,7 @@ final class Newsletter extends Job
                     (int)$recipient->kNewsletterEmpfaenger,
                     (object)['dLetzterNewsletter' => \date('Y-m-d H:m:s')]
                 );
-                ++$queueEntry->taskLimit;
+                ++$queueEntry->tasksExecuted;
             }
             $this->setFinished(false);
         } else {

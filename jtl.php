@@ -56,12 +56,14 @@ if (isset($_POST['kUpload']) &&
     validateToken()
 ) {
     $oUploadDatei = new UploadDatei((int)$_POST['kUpload']);
-    UploadDatei::send_file_to_browser(
-        PFAD_UPLOADS . $oUploadDatei->cPfad,
-        'application/octet-stream',
-        true,
-        $oUploadDatei->cName
-    );
+    if ($oUploadDatei->validateOwner((int)$_SESSION['Kunde']->kKunde)) {
+        UploadDatei::send_file_to_browser(
+            PFAD_UPLOADS . $oUploadDatei->cPfad,
+            'application/octet-stream',
+            true,
+            $oUploadDatei->cName
+        );
+    }
 }
 
 unset($_SESSION['JTL_REDIRECT']);

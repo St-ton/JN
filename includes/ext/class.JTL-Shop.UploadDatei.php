@@ -91,6 +91,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
+         * @param int $customerID
+         * @return bool
+         */
+        public function validateOwner($customerID)
+        {
+            return Shop::DB()->queryPrepared(
+                'SELECT tbestellung.kKunde
+                    FROM tuploaddatei 
+                    JOIN tbestellung
+                    ON tbestellung.kBestellung = tuploaddatei.kCustomID
+                    WHERE tuploaddatei.kCustomID = :ulid AND tbestellung.kKunde = :cid',
+                    ['ulid' => (int)$this->kCustomID, 'cid' => (int)$customerID],
+                    1
+                ) !== false;
+        }
+
+        /**
          * @param int $kCustomID
          * @param int $nTyp
          * @return mixed

@@ -4,17 +4,27 @@ class Page
     {
         bindProtoOnHandlers(this);
 
-        this.io      = io;
-        this.shopUrl = shopUrl;
-        this.key     = key;
+        this.io           = io;
+        this.shopUrl      = shopUrl;
+        this.key          = key;
+        this.lockTimeout = null;
     }
 
     lock()
     {
         return this.io.lockDraft(this.key).then(state => {
             if (state === true) {
+                this.lockTimeout = setTimeout(() => {
+                    this.lock();
+                }, 1000 * 60);
+
                 return Promise.resolve();
             } else {
+                if(this.lockTimeout !== null) {
+                    clearTimeout(this.lockTimeout);
+                    this.lockTimeout = null;
+                }
+
                 return Promise.reject();
             }
         });
@@ -22,17 +32,14 @@ class Page
 
     unlock()
     {
+        clearTimeout(this.lockTimeout);
+        this.lockTimeout = null;
         return this.io.unlockDraft(this.key);
     }
 
     updateFlipcards()
     {
         this.rootAreas.find('.flipcard').each((i, elm) => elm.updateFlipcardHeight());
-    }
-
-    onTimeToLockAgain()
-    {
-        this.lock();
     }
 
     getRevisionList()

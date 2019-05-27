@@ -2,8 +2,6 @@ class GUI
 {
     constructor(io, page)
     {
-        debuglog('construct GUI');
-
         bindProtoOnHandlers(this);
 
         this.io            = io;
@@ -15,8 +13,6 @@ class GUI
 
     init(iframe, previewFrame, tutorial, error)
     {
-        debuglog('GUI init');
-
         this.iframe       = iframe;
         this.previewFrame = previewFrame;
         this.tutorial     = tutorial;
@@ -74,17 +70,20 @@ class GUI
         this.missingConfigButtons.hide();
 
         if(typeof error === 'string' && error.length > 0) {
-            this.showError(error);
+            return this.showError(error);
         } else {
             this.showLoader();
             this.publishFrom.datetimepicker({locale: 'de', useCurrent: false});
             this.publishTo.datetimepicker({locale: 'de', useCurrent: false});
-            this.publishFrom.on("dp.change", function (e) {
+
+            this.publishFrom.on("dp.change", e => {
                 this.publishTo.data("DateTimePicker").minDate(e.date);
-            }.bind(this));
-            this.publishTo.on("dp.change", function (e) {
+            });
+
+            this.publishTo.on("dp.change", e => {
                 this.publishFrom.data("DateTimePicker").maxDate(e.date);
-            }.bind(this));
+            });
+
             this.collapseGroups.first().click();
             this.updateBlueprintList();
             this.updateRevisionList();
@@ -111,50 +110,44 @@ class GUI
         this.loaderModal.modal('hide');
         this.errorAlert.html(msg);
         this.errorModal.modal('show');
-        throw msg;
+        return Promise.reject(msg);
     }
 
     updateBlueprintList()
     {
-        this.io.getBlueprints(this.onGetBlueprintList);
-    }
+        this.io.getBlueprints().then(blueprints => {
+            this.blueprintList.empty();
 
-    onGetBlueprintList(blueprints)
-    {
-        this.blueprintList.empty();
+            blueprints.forEach(blueprint => {
+                var newBtn = this.blueprintBtnBlueprint.clone()
+                    .attr('id', '').css('display', '')
+                    .appendTo(this.blueprintList);
 
-        blueprints.forEach(function(blueprint) {
-            var newBtn = this.blueprintBtnBlueprint.clone()
-                .attr('id', '').css('display', '')
-                .appendTo(this.blueprintList);
+                newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.id);
+                newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
+                newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
+                newBtn.find('span').html(blueprint.name);
+            });
 
-            newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.id);
-            newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
-            newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
-            newBtn.find('span').html(blueprint.name);
-        }, this);
-
-        this.updateDynamicGui();
+            this.updateDynamicGui();
+        });
     }
 
     updateRevisionList()
     {
-        this.page.getRevisionList(this.onGetRevisions);
-    }
+        this.page.getRevisionList().then(revisions => {
+            this.revisionList.empty();
 
-    onGetRevisions(revisions)
-    {
-        this.revisionList.empty();
+            revisions.forEach(rev => {
+                this.revisionBtnBlueprint.clone()
+                    .attr('id', '').css('display', '')
+                    .attr('data-revision-id', rev.id)
+                    .html(rev.timestamp)
+                    .appendTo(this.revisionList);
+            });
 
-        revisions.forEach(function(rev) {
-            this.revisionBtnBlueprint.clone()
-                .attr('id', '').css('display', '')
-                .attr('data-revision-id', rev.id)
-                .html(rev.timestamp)
-                .appendTo(this.revisionList);
-        }, this);
-
-        this.updateDynamicGui();
+            this.updateDynamicGui();
+        });
     }
 
     updateDynamicGui()
@@ -169,10 +162,9 @@ class GUI
 
     onBtnImport()
     {
-        this.page.loadFromImport(
-            this.iframe.onPageLoad,
-            er => this.showError('Could not import OPC page JSON: ' + er.error.message)
-        );
+        this.page.loadFromImport()
+            .catch(er => this.showError('Could not import OPC page JSON: ' + er.error.message))
+            .then(this.iframe.onPageLoad);
     }
 
     onBtnExport()
@@ -203,19 +195,13 @@ class GUI
     onBtnSave(e)
     {
         this.showLoader();
-        this.page.save(this.onSavePageDone, this.onSavePageError);
-    }
-
-    onSavePageDone()
-    {
-        this.hideLoader();
-        this.updateRevisionList();
-        this.setUnsaved(false, true);
-    }
-
-    onSavePageError(error)
-    {
-        this.showError('Page could not be saved: ' + error.error.message);
+        this.page.save()
+            .catch(error => this.showError('Page could not be saved: ' + error.error.message))
+            .then(() => {
+                this.hideLoader();
+                this.updateRevisionList();
+                this.setUnsaved(false, true);
+            });
     }
 
     setUnsaved(enable, record)
@@ -239,12 +225,9 @@ class GUI
 
     onBtnClose(e)
     {
-        this.page.unlock(this.onUnlockedPage);
-    }
-
-    onUnlockedPage()
-    {
-        window.location = this.page.fullUrl;
+        this.page.unlock().then(() => {
+            window.location = this.page.fullUrl;
+        });
     }
 
     onCollapseGroup(e)
@@ -290,11 +273,11 @@ class GUI
         var revId = elm.data('revision-id');
 
         this.showLoader();
-        this.page.loadRev(
-            revId,
-            this.iframe.onPageLoad,
-            er => this.showError('Error while loading draft preview: ' + er.error.message),
-        );
+
+        this.page.loadRev(revId)
+            .catch(er => this.showError('Error while loading draft preview: ' + er.error.message))
+            .then(this.iframe.onPageLoad);
+
         this.setUnsaved(revId !== 0);
     }
 
@@ -305,31 +288,26 @@ class GUI
         this.setConfigSaveCallback(noop);
         this.setImageSelectCallback(noop);
 
+        this.curPortlet = portlet;
+
         this.io.getConfigPanelHtml(
             portletData.class,
             portletData.missingClass,
-            portletData.properties,
-            this.onGetConfigPanelHtml
-        );
+            portletData.properties
+        ).then(html => {
+            if (portletData.class === 'MissingPortlet') {
+                this.stdConfigButtons.hide();
+                this.missingConfigButtons.show();
+            } else {
+                this.stdConfigButtons.show();
+                this.missingConfigButtons.hide();
+            }
 
-        this.curPortlet = portlet;
-    }
+            this.configModalBody.html(html);
+            this.configModalTitle.html(portletData.title + ' bearbeiten');
+            this.configModal.modal('show');
+        });
 
-    onGetConfigPanelHtml(html)
-    {
-        var portletData = this.curPortlet.data('portlet');
-
-        if (portletData.class === 'MissingPortlet') {
-            this.stdConfigButtons.hide();
-            this.missingConfigButtons.show();
-        } else {
-            this.stdConfigButtons.show();
-            this.missingConfigButtons.hide();
-        }
-
-        this.configModalBody.html(html);
-        this.configModalTitle.html(portletData.title + ' bearbeiten');
-        this.configModal.modal('show');
     }
 
     onConfigForm(e)
@@ -362,17 +340,16 @@ class GUI
 
         portletData.properties = configObject;
 
-        this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml, er => {
-            this.configModal.modal('hide');
-            this.showError('Error while saving Portlet configuration: ' + er.error.message);
-        });
-    }
-
-    onPortletPreviewHtml(preview)
-    {
-        this.iframe.replaceSelectedPortletHtml(preview);
-        this.configModal.modal('hide');
-        this.page.updateFlipcards();
+        this.io.getPortletPreviewHtml(portletData)
+            .catch(er => {
+                this.configModal.modal('hide');
+                return this.showError('Error while saving Portlet configuration: ' + er.error.message);
+            })
+            .then(preview => {
+                this.iframe.replaceSelectedPortletHtml(preview);
+                this.configModal.modal('hide');
+                this.page.updateFlipcards();
+            });
     }
 
     onBlueprintForm(e)
@@ -383,14 +360,12 @@ class GUI
             var blueprintName = this.blueprintName.val();
             var blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
 
-            this.io.saveBlueprint(blueprintName, blueprintData, this.onBlueprintSaved);
+            this.io.saveBlueprint(blueprintName, blueprintData).then(() => {
+                this.updateBlueprintList();
+            });
+
             this.blueprintModal.modal('hide');
         }
-    }
-
-    onBlueprintSaved()
-    {
-        this.updateBlueprintList();
     }
 
     onBlueprintDelete(e)
@@ -406,46 +381,37 @@ class GUI
         var elm         = $(e.target).closest('.blueprintExport');
         var blueprintId = elm.data('blueprint-id');
 
-        this.io.getBlueprint(blueprintId, this.onGetExportBlueprint);
-    }
-
-    onGetExportBlueprint(blueprint)
-    {
-        download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
+        this.io.getBlueprint(blueprintId).then(blueprint => {
+            download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
+        });
     }
 
     onBtnImportBlueprint()
     {
-        $('<input type="file" accept=".json">').on('change', this.onBlueprintImportChosen.bind(this)).click();
-    }
-
-    onBlueprintImportChosen(e)
-    {
-        this.importReader = new FileReader();
-        this.importReader.onload = this.onBlueprintReaderLoad.bind(this);
-        this.importReader.readAsText(e.target.files[0]);
-    }
-
-    onBlueprintReaderLoad()
-    {
-        var blueprint = JSON.parse(this.importReader.result);
-
-        this.io.saveBlueprint(blueprint.name, blueprint.instance, this.onBlueprintSaved);
+        $('<input type="file" accept=".json">')
+            .on(
+                'change',
+                e => {
+                    this.importReader = new FileReader();
+                    this.importReader.onload = () => {
+                        let blueprint = JSON.parse(this.importReader.result);
+                        this.io.saveBlueprint(blueprint.name, blueprint.instance)
+                            .then(() => this.updateBlueprintList());
+                    };
+                    this.importReader.readAsText(e.target.files[0]);
+                }
+            )
+            .click();
     }
 
     onBlueprintDeleteForm (e)
     {
         var blueprintId = this.blueprintDeleteId.val();
 
-        this.io.deleteBlueprint(blueprintId, this.onBlueprintDeleted);
+        this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');
 
         e.preventDefault();
-    }
-
-    onBlueprintDeleted()
-    {
-        this.updateBlueprintList();
     }
 
     onBtnPublish(e)
@@ -482,8 +448,7 @@ class GUI
         this.page.publishFrom = this.publishFromEnabled.prop('checked') ? this.publishFrom.val() : null;
         this.page.publishTo   = this.publishToEnabled.prop('checked') ? this.publishTo.val() : null;
 
-        this.page.publicate(noop, er => this.showError(er.error.message));
-
+        this.page.publicate().catch(er => this.showError(er.error.message));
         this.publishModal.modal('hide');
     }
 
@@ -511,26 +476,26 @@ class GUI
         } else {
             this.publishTo.val('Auf unbestimmte Zeit öffentlich');
             this.publishTo.prop('disabled', true);
-            this.publishFrom.data("DateTimePicker").maxDate(false);
+            this.publishFrom.data('DateTimePicker').maxDate(false);
         }
     }
 
     selectImageProp(propName)
     {
-        this.openElFinder(function(url) {
+        this.openElFinder(url => {
             this.imageSelectCB(url, propName);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', url);
-        }.bind(this), 'image');
+        }, 'image');
     }
 
     selectVideoProp(propName)
     {
-         this.openElFinder(function(url) {
+         this.openElFinder(url => {
              this.configForm.find('[name="' + propName + '"]').val(url);
              this.configForm.find('#preview-vid-' + propName).attr('src', url);
              this.configForm.find('#cont-preview-vid-' + propName)[0].load();
-         }.bind(this),'video');
+         }, 'video');
     }
 
     openElFinder (callback, type)

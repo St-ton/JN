@@ -40,18 +40,13 @@ class PageTree
 
     render()
     {
-        debuglog('PageTree render');
-
         var rootAreas = this.page.rootAreas;
         var jq        = rootAreas.constructor;
         var ul        = $('<ul>');
 
-        rootAreas.each(function(i, area)
-        {
-            area = jq(area);
-            ul.append(this.renderArea(area));
-
-        }.bind(this));
+        rootAreas.each((i, area) => {
+            ul.append(this.renderArea(jq(area)));
+        });
 
         this.pageTreeView.empty().append(ul);
     }
@@ -74,7 +69,7 @@ class PageTree
         expander.on('click', expand);
         item.dblclick(expand);
 
-        item.on('click', function(e) {
+        item.on('click', e => {
             e.preventDefault();
 
             if(click) {
@@ -95,17 +90,14 @@ class PageTree
 
         expanded = expanded || false;
 
-        portlets.each(function(i, portlet)
-        {
+        portlets.each((i, portlet) => {
             portlet = jq(portlet);
             ul.append(this.renderPortlet(portlet));
-
-        }.bind(this));
+        });
 
         if(portlets.length === 0) {
             li.addClass('leaf');
-        }
-        else if(expanded) {
+        } else if(expanded) {
             li.addClass('expanded');
         }
 
@@ -122,18 +114,14 @@ class PageTree
         var data     = portlet.data('portlet');
         var ul       = $('<ul>');
 
-        var li = this.renderBaseItem(data.class, function()
-        {
+        var li = this.renderBaseItem(data.class, () => {
             this.iframe.setSelected(portlet);
+        });
 
-        }.bind(this));
-
-        subareas.each(function(i, area)
-        {
+        subareas.each((i, area) => {
             area = jq(area);
             ul.append(this.renderArea(area));
-
-        }.bind(this));
+        });
 
         if(subareas.length === 0) {
             li.addClass('leaf');

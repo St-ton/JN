@@ -5,75 +5,34 @@
 
 class IO
 {
-    constructor(readyCB)
+    init()
     {
-        debuglog('construct IO');
-
-        bindProtoOnHandlers(this);
-
-        this.readyCB      = readyCB || noop;
-        this.opcReady     = false;
-        this.opcPageReady = false;
-
-        ioCall('opcGetIOFunctionNames', [], this.onGetIOFunctionNames);
-    }
-
-    onGetIOFunctionNames(names)
-    {
-        debuglog('IO onGetIOFunctionNames');
-
-        this.generateIoFunctions(names);
-        ioCall('opcGetPageIOFunctionNames', [], this.onGetPageIOFunctionNames);
-    }
-
-    onGetPageIOFunctionNames(names)
-    {
-        debuglog('IO onGetPageIOFunctionNames');
-
-        this.generateIoFunctions(names);
-        this.readyCB();
+        return Promise.all([
+            new Promise((res, rej) => ioCall('opcGetIOFunctionNames', [], res, rej))
+                .then(names => this.generateIoFunctions(names)),
+            new Promise((res, rej) => ioCall('opcGetPageIOFunctionNames', [], res, rej))
+                .then(names => this.generateIoFunctions(names)),
+        ]);
     }
 
     generateIoFunctions(names)
     {
-        for (var i=0; i<names.length; i++) {
-            var name       = names[i];
-            var publicName = 'opc' + capitalize(name);
-
-            this[name] = this.generateIoFunction(publicName);
-        }
+        names.forEach(name => {
+            this[name] = this.generateIoFunction('opc' + capitalize(name));
+        });
     }
 
     generateIoFunction(publicName)
     {
-        return function()
-        {
-            var success = undefined;
-            var error = undefined;
-            var args = [];
-
-            for(var i=0; i<arguments.length; i++) {
-                var arg = arguments[i];
-
-                if(typeof arg === 'function') {
-                    if(typeof success === 'function') {
-                        error = arg;
-                    } else {
-                        success = arg;
-                    }
-                } else {
-                    args.push(arg);
-                }
-            }
-
-            debuglog('IO call', publicName);
-
-            ioCall(publicName, args, success || noop, error || noop);
+        return function(...args) {
+            return new Promise((res, rej) => {
+                ioCall(publicName, args, res, rej);
+            })
         };
     }
 
-    createPortlet(portletClass, success, error)
+    createPortlet(portletClass)
     {
-        this.getPortletPreviewHtml({"class": portletClass}, success, error);
+        return this.getPortletPreviewHtml({class: portletClass});
     }
 }

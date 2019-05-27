@@ -2,41 +2,32 @@ class Page
 {
     constructor(io, shopUrl, key)
     {
-        debuglog('construct Page');
-
         bindProtoOnHandlers(this);
 
-        this.io             = io;
-        this.shopUrl        = shopUrl;
-        this.key            = key;
+        this.io      = io;
+        this.shopUrl = shopUrl;
+        this.key     = key;
     }
 
-    init(lockedCB)
+    lock()
     {
-        debuglog('Page init');
-
-        this.loadDraft(this.lock.bind(this, lockedCB));
-
-        setInterval(this.onTimeToLockAgain, 1000 * 60);
+        return this.io.lockDraft(this.key).then(state => {
+            if (state === true) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject();
+            }
+        });
     }
 
-    lock(lockedCB)
+    unlock()
     {
-        debuglog('Page lock');
-
-        this.io.lockDraft(this.key, lockedCB);
-    }
-
-    unlock(unlockedCB)
-    {
-        this.io.unlockDraft(this.key, unlockedCB);
+        return this.io.unlockDraft(this.key);
     }
 
     updateFlipcards()
     {
-        this.rootAreas.find('.flipcard').each(function(i, elm) {
-            elm.updateFlipcardHeight();
-        });
+        this.rootAreas.find('.flipcard').each((i, elm) => elm.updateFlipcardHeight());
     }
 
     onTimeToLockAgain()
@@ -44,91 +35,100 @@ class Page
         this.lock();
     }
 
-    getRevisionList(revisionsCB)
+    getRevisionList()
     {
-        this.io.getRevisionList(this.key, revisionsCB);
+        return this.io.getRevisionList(this.key);
     }
 
-    initIframe(jq, loadCB, errorCB)
+    initIframe(jq)
     {
-        debuglog('Page initIframe');
-
         this.jq        = jq;
         this.rootAreas = this.jq('.opc-rootarea');
-        this.loadDraftPreview(loadCB, errorCB);
+
+        return this.loadDraftPreview();
     }
 
-    loadDraft(loadCB)
+    loadDraft()
     {
-        debuglog('Page loadDraft');
-
-        this.io.getDraft(this.key, this.onLoadDraft.bind(this, loadCB || noop));
+        return this.io.getDraft(this.key)
+            .then(pageData => {
+                this.id          = pageData.id;
+                this.name        = pageData.name;
+                this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
+                this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
+                this.url         = pageData.url;
+                this.replace     = pageData.replace;
+                this.fullUrl     = this.shopUrl + this.url;
+            });
     }
 
-    loadDraftPreview(loadCB, errorCB)
+    loadDraftPreview()
     {
-        debuglog('Page loadDraftPreview');
-
-        this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
+        return this.io.getDraftPreview(this.key).then(this.onLoad)
     }
 
-    loadRev(revId, loadCB, errorCB)
+    loadRev(revId)
     {
         if(revId === -1) {
-            this.loadPageFromWebStorage(loadCB || noop, errorCB || noop);
+            return this.loadPageFromWebStorage();
         } else if(revId === 0) {
-            this.io.getDraftPreview(this.key, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
+            return this.io.getDraftPreview(this.key).then(this.onLoad);
         } else {
-            this.io.getRevisionPreview(revId, this.onLoad.bind(this, loadCB || noop), errorCB || noop);
+            return this.io.getRevisionPreview(revId).then(this.onLoad);
         }
     }
 
-    loadFromData(data, loadCB, errorCB)
+    loadFromData(data)
     {
-        this.io.createPagePreview(
-            {areas: data.areas},
-            this.onLoad.bind(this, loadCB || noop),
-            errorCB || noop,
-        );
+        return this.io.createPagePreview({areas: data.areas})
+            .then(this.onLoad);
     }
 
-    loadFromJSON(json, loadCB, errorCB)
+    loadFromJSON(json)
     {
         try {
             var data = JSON.parse(json);
         } catch (e) {
-            errorCB({error:{message:'JSON data could not be loaded'}});
+            return Promise.reject({error:{message:'JSON data could not be loaded'}});
         }
 
-        this.loadFromData(data, loadCB, errorCB);
+        return this.loadFromData(data);
     }
 
-    loadFromImport(loadCB, errorCB)
+    loadFromImport()
     {
-        this.jq('<input type="file" accept=".json">')
-            .on('change', this.onImportChosen.bind(this, loadCB, errorCB)).click();
+        return new Promise(res => {
+            this.jq('<input type="file" accept=".json">')
+                .on('change', res).click();
+        }).then(e => {
+            return new Promise(res => {
+                this.importReader = new FileReader();
+                this.importReader.onload = res;
+                this.importReader.readAsText(e.target.files[0]);
+            });
+        }).then(() => this.loadFromJSON(this.importReader.result));
     }
 
-    loadPageFromWebStorage(loadCB, errorCB)
+    loadPageFromWebStorage()
     {
         var pageJson = window.localStorage.getItem(this.getStorageId());
 
         if(pageJson !== null) {
             this.clear();
-            this.loadFromJSON(pageJson, loadCB, errorCB);
+            return this.loadFromJSON(pageJson);
         } else {
-            errorCB({error:{message:'could not find locally stored draft data'}})
+            return Promise.reject({error:{message:'could not find locally stored draft data'}});
         }
     }
 
-    publicate(saveCB, errorCB)
+    publicate()
     {
-        this.io.publicateDraft({
+        return this.io.publicateDraft({
             key: this.key,
             publishFrom: this.publishFrom ? this.encodeDate(this.publishFrom) : null,
             publishTo: this.publishTo ? this.encodeDate(this.publishTo) : null,
             name: this.name,
-        }, saveCB, errorCB);
+        });
     }
 
     encodeDate(localDate)
@@ -146,53 +146,21 @@ class Page
         return 'opcpage.' + this.key;
     }
 
-    onImportChosen(loadCB, errorCB, e)
-    {
-        this.importReader = new FileReader();
-        this.importReader.onload = this.onReaderLoad.bind(this, loadCB, errorCB);
-        this.importReader.readAsText(e.target.files[0]);
-    }
-
-    onReaderLoad(loadCB, errorCB)
-    {
-        this.loadFromJSON(this.importReader.result, loadCB, errorCB);
-    }
-
-    onLoadDraft(loadCB, pageData)
-    {
-        debuglog('Page on draft loaded');
-
-        this.id          = pageData.id;
-        this.name        = pageData.name;
-        this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
-        this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
-        this.url         = pageData.url;
-        this.replace     = pageData.replace;
-        this.fullUrl     = this.shopUrl + this.url;
-
-        loadCB();
-    }
-
-    onLoad(loadCB, preview)
+    onLoad(preview)
     {
         var areas = this.rootAreas;
 
         this.clear();
 
-        for (var i=0; i<areas.length; i++) {
-            var area = this.jq(areas[i]);
-            var id   = area.data('area-id');
-            var html = preview[id];
-
-            area.html(html);
-        }
-
-        loadCB();
+        areas.each((i, area) => {
+            area = this.jq(area);
+            area.html(preview[area.data('area-id')]);
+        });
     }
 
-    save(saveCB, errorCB)
+    save()
     {
-        this.io.saveDraft(this.toJSON(), saveCB, errorCB);
+        this.io.saveDraft(this.toJSON());
     }
 
     savePageToWebStorage()
@@ -244,11 +212,9 @@ class Page
         var result   = {id: area.data('area-id'), content: []};
         var portlets = area.children('[data-portlet]');
 
-        for(var i=0; i<portlets.length; i++) {
-            var portlet = this.jq(portlets[i]);
-
-            result.content.push(this.portletToJSON(portlet, withDom));
-        }
+        portlets.each((i, portlet) => {
+            result.content.push(this.portletToJSON(this.jq(portlet), withDom));
+        });
 
         return result;
     }
@@ -265,12 +231,11 @@ class Page
             result.missingClass = data.missingClass;
         }
 
-        for(var i=0; i<subareas.length; i++) {
-            var subarea     = this.jq(subareas[i]);
-            var subareaData = this.areaToJSON(subarea, withDom);
-
+        subareas.each((i, subarea) => {
+            subarea = this.jq(subarea);
+            let subareaData = this.areaToJSON(subarea, withDom);
             result.subareas[subareaData.id] = subareaData;
-        }
+        });
 
         result.widthHeuristics = this.computePortletWidthHeuristics(portlet);
 
@@ -290,8 +255,8 @@ class Page
             var clsStr = elm.attr('class');
             var cls    = typeof clsStr === 'string' ? clsStr.split(/\s+/) : [];
 
-            for(var i=0; i < cls.length; i++) {
-                var match = cls[i].match(/col-(xs|sm|md|lg)-([0-9]+)/);
+            cls.forEach(item => {
+                var match = item.match(/col-(xs|sm|md|lg)-([0-9]+)/);
 
                 if(Array.isArray(match)) {
                     var size = match[1];
@@ -300,7 +265,7 @@ class Page
                     widthHeuristics[size] = widthHeuristics[size] === null ? 1 : widthHeuristics[size];
                     widthHeuristics[size] *= cols / 12;
                 }
-            }
+            });
 
             elm = elm.parent();
         }

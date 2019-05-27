@@ -3,17 +3,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-var log = console.log;
-var debugging = false;
 var localDateFormat = 'DD.MM.YYYY HH:mm';
 var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
-
-function debuglog()
-{
-    if(debugging) {
-        console.log.apply(console.log, arguments);
-    }
-}
 
 function noop() {}
 
@@ -122,7 +113,7 @@ function installGuiElements(obj, elmIds)
         }
 
         if (elm.length === 0) {
-            log('warning: ' + elmId + ' could not be found');
+            console.log('warning: ' + elmId + ' could not be found');
             return;
         }
 

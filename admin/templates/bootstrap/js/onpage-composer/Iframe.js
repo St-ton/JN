@@ -23,10 +23,8 @@ class Iframe
         this.dragNewBlueprintId = 0;
     }
 
-    init(loadCB, pagetree)
+    init(pagetree)
     {
-        debuglog('Iframe init');
-
         installGuiElements(this, [
             'iframe',
             'portletToolbar',
@@ -41,9 +39,38 @@ class Iframe
 
         this.pagetree = pagetree;
 
-        this.iframe
-            .attr('src', this.getIframePageUrl())
-            .on('load', this.onIframeLoad.bind(this, loadCB || noop));
+        return new Promise(res => {
+            this.iframe
+                .attr('src', this.getIframePageUrl())
+                .on('load', res);
+        }).then(() => {
+            this.ctx  = this.iframe[0].contentWindow;
+            this.jq   = this.ctx.$;
+            this.head = this.jq('head');
+            this.body = this.jq('body');
+
+            this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.css');
+
+            this.loadScript(
+                'https://unpkg.com/popper.js/dist/umd/popper.min.js',
+                () => {
+                    this.toolbarPopper      = this.makePopper(this.portletToolbar);
+                    this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
+                }
+            );
+
+            this.jq('a, button')      // disable links and buttons that could change the current iframe page
+                .off('click')
+                .attr('onclick', '')
+                .on('click', e => e.preventDefault());
+
+            this.portletPreviewLabel.appendTo(this.body);
+            this.portletToolbar.appendTo(this.body);
+
+            return this.page.initIframe(this.jq)
+                .catch(er => this.gui.showError('Error while loading draft preview: ' + er.toString()))
+                .then(this.onPageLoad);
+        })
     }
 
     getIframePageUrl()
@@ -63,41 +90,6 @@ class Iframe
         return pageUrlLink.href.toString();
     }
 
-    onIframeLoad(loadCB)
-    {
-        debuglog('Iframe onIframeLoad');
-
-        this.ctx = this.iframe[0].contentWindow;
-        this.jq  = this.ctx.$;
-
-        this.head = this.jq('head');
-        this.body = this.jq('body');
-
-        this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.css');
-        this.loadScript('https://unpkg.com/popper.js/dist/umd/popper.min.js', this.onPopperLoad);
-
-        this.jq('a, button')      // disable links and buttons that could change the current iframe page
-            .off('click')
-            .attr('onclick', '')
-            .on('click', function(e) { e.preventDefault(); });
-
-        this.portletPreviewLabel.appendTo(this.body);
-        this.portletToolbar.appendTo(this.body);
-        this.page.initIframe(
-            this.jq,
-            this.onPageLoad.bind(this,loadCB),
-            er => this.gui.showError('Error while loading draft preview: ' + er.error.message)
-        );
-    }
-
-    onPopperLoad()
-    {
-        debuglog('Iframe onPopperLoad');
-
-        this.toolbarPopper      = this.makePopper(this.portletToolbar);
-        this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
-    }
-
     makePopper(elm)
     {
         return new this.ctx.Popper(
@@ -107,18 +99,12 @@ class Iframe
         );
     }
 
-    onPageLoad(loadCB)
+    onPageLoad()
     {
-        debuglog('Iframe onPageLoad');
-
-        loadCB = loadCB || noop;
-
         this.enableEditingEvents();
         this.updateDropTargets();
         this.pagetree.render();
         this.gui.hideLoader();
-
-        loadCB();
     }
 
     updateDropTargets()
@@ -251,8 +237,6 @@ class Iframe
 
     onPortletDrop(e)
     {
-        debuglog('Iframe onPortletDrop');
-
         if(this.dropTarget !== null) {
             var oldArea = this.draggedElm.parent();
 
@@ -263,18 +247,17 @@ class Iframe
             if(this.dragNewPortletCls) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.createPortlet(
-                    this.dragNewPortletCls,
-                    this.onNewPortletCreated,
-                    er => {
+                this.io.createPortlet(this.dragNewPortletCls)
+                    .catch(er => {
                         this.newPortletDropTarget.remove();
-                        this.gui.showError(er.error.message);
-                    },
-                );
+                        return this.gui.showError(er.error.message);
+                    })
+                    .then(this.onNewPortletCreated);
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.getBlueprintPreview(this.dragNewBlueprintId, this.onNewPortletCreated);
+                this.io.getBlueprintPreview(this.dragNewBlueprintId)
+                    .then(this.onNewPortletCreated);
             } else {
                 this.pagetree.updateArea(oldArea);
                 this.pagetree.updateArea(this.draggedElm.parent());

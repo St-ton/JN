@@ -28,8 +28,8 @@ function executeHook(int $hookID, $args_arr = [])
         $timer->stopMeasure('shop.hook.' . $hookID);
         return;
     }
-    $db    = JTL\Shop::Container()->getDB();
-    $cache = JTL\Shop::Container()->getCache();
+    $db    = Shop::Container()->getDB();
+    $cache = Shop::Container()->getCache();
     foreach ($hookList[$hookID] as $item) {
         $oPlugin = Shop::get('oplugin_' . $item->kPlugin);
         if ($oPlugin === null) {

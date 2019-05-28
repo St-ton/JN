@@ -6,6 +6,7 @@
 
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerAttributes;
+use JTL\Customer\CustomerFields;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod as Helper;
@@ -2552,24 +2553,24 @@ function getKundenattribute($post): CustomerAttributes
 
 /**
  * @return array
- * @deprecated since 5.0.0 - use @see CustomerAttributes::getNonEditableAttributes instead
+ * @deprecated since 5.0.0 - use @see CustomerFields::getNonEditableFields instead
  */
 function getKundenattributeNichtEditierbar(): array
 {
     \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-    return CustomerAttributes::getNonEditableAttributes();
+    return (new CustomerFields())->getNonEditableFields();
 }
 
 /**
  * @return array - non editable customer fields
- * @deprecated since 5.0.0 - use @see CustomerAttributes::getNonEditableAttributes instead
+ * @deprecated since 5.0.0 - use @see CustomerFields::getNonEditableFields instead
  */
 function getNonEditableCustomerFields(): array
 {
     \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-    return CustomerAttributes::getNonEditableAttributes();
+    return (new CustomerFields())->getNonEditableFields();
 }
 
 /**
@@ -2814,7 +2815,7 @@ function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
 }
 
 /**
- * @return array
+ * @return CustomerFields
  */
 function gibSelbstdefKundenfelder(): array
 {
@@ -2837,7 +2838,9 @@ function gibSelbstdefKundenfelder(): array
             '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
         );
     }
-
+    Shop::dbg($customerFields);
+    $ca = new CustomerFields(Shop::getLanguageID());
+    Shop::dbg($ca);
     return $customerFields;
 }
 

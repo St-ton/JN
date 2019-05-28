@@ -75,7 +75,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
      */
     public function save(): self
     {
-        $nonEditables = self::getNonEditableAttributes();
+        $nonEditables = (new CustomerFields)->getNonEditableFields();
         $usedIDs      = [];
 
         /** @var CustomerAttribute $attribute */
@@ -133,24 +133,6 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
         });
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getNonEditableAttributes(): array
-    {
-        $result = [];
-        foreach (Shop::Container()->getDB()->selectAll(
-            'tkundenfeld',
-            ['kSprache', 'nEditierbar'],
-            [Shop::getLanguage(), 0],
-            'kKundenfeld'
-        ) as $attribute) {
-            $result[] = (int)$attribute->kKundenfeld;
-        }
-
-        return $result;
     }
 
     /**

@@ -39,7 +39,8 @@ class RatingAdminController extends BaseController
         JTLCacheInterface $cache,
         ?AlertServiceInterface $alertService = null,
         ?JTLSmarty $smarty = null
-    ) {
+    )
+    {
         $this->db           = $db;
         $this->smarty       = $smarty;
         $this->config       = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_BEWERTUNG]);
@@ -141,8 +142,15 @@ class RatingAdminController extends BaseController
      */
     private function handleActive(array $data): bool
     {
+        if (isset($data['loeschen']) && \is_array($data['kBewertung']) && \count($data['kBewertung']) > 0) {
+            $this->alertService->addAlert(
+                Alert::TYPE_SUCCESS,
+                $this->delete($data['kBewertung']) . __('successRatingDelete'),
+                'successRatingDelete'
+            );
+        }
         if (isset($data['cArtNr'])) {
-            $activeRatings = $this->db->queryPrepared(
+            $filtered = $this->db->queryPrepared(
                 "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                     FROM tbewertung
                     LEFT JOIN tartikel 
@@ -151,21 +159,11 @@ class RatingAdminController extends BaseController
                         AND (tartikel.cArtNr LIKE :cartnr
                             OR tartikel.cName LIKE :cartnr)
                     ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC",
-                [
-                    'lang'   => (int)$_SESSION['kSprache'],
-                    'cartnr' => '%' . $data['cArtNr'] . '%'
-                ],
+                ['lang' => (int)$_SESSION['kSprache'], 'cartnr' => '%' . $data['cArtNr'] . '%'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $this->smarty->assign('cArtNr', Text::filterXSS($data['cArtNr']))
-                ->assign('oBewertungAktiv_arr', $activeRatings ?? null);
-        }
-        if (isset($data['loeschen']) && \is_array($data['kBewertung']) && \count($data['kBewertung']) > 0) {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
-                $this->delete($data['kBewertung']) . __('successRatingDelete'),
-                'successRatingDelete'
-            );
+                ->assign('filteredRatings', $filtered ?? []);
         }
 
         return true;

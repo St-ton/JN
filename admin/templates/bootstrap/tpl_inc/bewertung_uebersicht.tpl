@@ -61,10 +61,13 @@
                                     {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
                                         <tr>
                                             <td class="check">
-                                                <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
-                                                <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
+                                                <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}"/>
+                                                <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" id="inactive-{$oBewertung->kBewertung}" />
                                             </td>
-                                            <td><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
+                                            <td>
+                                                <label for="inactive-{$oBewertung->kBewertung}">{$oBewertung->ArtikelName}</label>
+                                                &nbsp;<a href="{$shopURL}/index.php?a={$oBewertung->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                            </td>
                                             <td>{$oBewertung->cName}.</td>
                                             <td><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
                                             <td class="tcenter">{$oBewertung->nSterne}</td>
@@ -125,8 +128,14 @@
                                 <tbody>
                                 {foreach $oBewertungLetzten50_arr as $oBewertungLetzten50}
                                     <tr>
-                                        <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
-                                        <td><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
+                                        <td class="check">
+                                            <input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}" id="l50-{$oBewertungLetzten50->kBewertung}">
+                                            <input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}">
+                                        </td>
+                                        <td>
+                                            <label for="l50-{$oBewertungLetzten50->kBewertung}">{$oBewertungLetzten50->ArtikelName}</label>
+                                            &nbsp;<a href="{$shopURL}/index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                        </td>
                                         <td>{$oBewertungLetzten50->cName}.</td>
                                         <td>
                                             <strong>{$oBewertungLetzten50->cTitel}</strong><br>
@@ -184,7 +193,7 @@
                     </span>
                     <input type="hidden" name="bewertung_aktiv" value="1" />
                     <input type="hidden" name="tab" value="artikelbewertung" />
-                    <input class="form-control" name="cArtNr" type="text" />
+                    <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
                     <span class="input-group-btn">
                         <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fa fa-search"></i> {__('search')}</button>
                     </span>
@@ -192,10 +201,10 @@
                 {if isset($cArtNr) && $cArtNr|strlen > 0}
                     <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                 {/if}
-                {if isset($oBewertungAktiv_arr) && $oBewertungAktiv_arr|@count > 0}
+                {if isset($filteredRatings) && $filteredRatings|@count > 0}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__('ratingsInaktive')}</h3>
+                            <h3 class="panel-title">{$cArtNr}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -211,16 +220,22 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach $oBewertungAktiv_arr as $oBewertungAktiv}
+                                {foreach $filteredRatings as $rating}
                                     <tr>
-                                        <td><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
-                                        <td><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
-                                        <td>{$oBewertungAktiv->cName}.</td>
-                                        <td><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
-                                        <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
-                                        <td class="tcenter">{$oBewertungAktiv->Datum}</td>
+                                        <td>
+                                            <input name="kBewertung[]" type="checkbox" value="{$rating->kBewertung}" id="filtered-{$rating->kBewertung}">
+                                            <input type="hidden" name="kArtikel[]" value="{$rating->kArtikel}">
+                                        </td>
+                                        <td>
+                                            <label for="filtered-{$rating->kBewertung}">{$rating->ArtikelName}</label>
+                                            &nbsp;<a href="{$shopURL}/index.php?a={$rating->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                        </td>
+                                        <td>{$rating->cName}.</td>
+                                        <td><b>{$rating->cTitel}</b><br />{$rating->cText}</td>
+                                        <td class="tcenter">{$rating->nSterne}</td>
+                                        <td class="tcenter">{$rating->Datum}</td>
                                         <td class="tcenter">
-                                            <a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung"
+                                            <a href="bewertung.php?a=editieren&kBewertung={$rating->kBewertung}&tab=artikelbewertung"
                                                class="btn btn-default" title="{__('modify')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>

@@ -167,7 +167,7 @@ class Page
 
     save()
     {
-        this.io.saveDraft(this.toJSON());
+        return this.io.saveDraft(this.toJSON());
     }
 
     savePageToWebStorage()

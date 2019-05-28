@@ -27,7 +27,7 @@ class OPC
                 return this.page.lock();
             })
             .catch(er => this.gui.showError(
-                'Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden. ' + er.toString()
+                'Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.'
             ))
             .then(() => this.page.loadDraft())
             .then(() => this.iframe.init(this.pagetree))

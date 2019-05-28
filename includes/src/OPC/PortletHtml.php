@@ -120,7 +120,12 @@ trait PortletHtml
      */
     final protected function getHtmlFromTpl(PortletInstance $instance, bool $isPreview): string
     {
-        $smarty  = $isPreview ? \getFrontendSmarty() : Shop::Smarty();
+        if (\function_exists('\getFrontendSmarty')) {
+            $smarty = \getFrontendSmarty();
+        } else {
+            $smarty = Shop::Smarty();
+        }
+
         $tplPath = $this->getTemplatePath() . $this->getClass() . '.tpl';
 
         if (\file_exists($tplPath) === false) {

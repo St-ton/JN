@@ -281,9 +281,9 @@ if ($step === 'loesch_linkgruppe' && $linkGroupID > 0) {
     }
     $_POST = [];
 } elseif ($step === 'edit-link') {
-    $dirName = $uploadDir . $link->getID();
     $step    = 'neuer Link';
     $link    = (new Link($db))->load($linkID);
+    $dirName = $uploadDir . $link->getID();
     $files   = [];
     if (Request::verifyGPCDataInt('delpic') === 1) {
         @unlink($dirName . '/' . Request::verifyGPDataString('cName'));
@@ -339,7 +339,7 @@ if ($step === 'neuer Link') {
     $cgroups = $db->query('SELECT * FROM tkundengruppe ORDER BY cName', ReturnType::ARRAY_OF_OBJECTS);
     $lgl     = new LinkGroupList($db, Shop::Container()->getCache());
     $lgl->loadAll();
-    $smarty->assign('specialPages', $lgl->getLinkgroupByTemplate('specialpages', false)->getLinks())
+    $smarty->assign('specialPages', $linkAdmin->getSpecialPageTypes())
            ->assign('kundengruppen', $cgroups);
 }
 $smarty->assign('step', $step)

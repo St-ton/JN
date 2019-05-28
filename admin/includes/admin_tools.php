@@ -593,6 +593,13 @@ function getFrontendSmarty()
 
     if ($frontendSmarty === null) {
         $frontendSmarty = new JTLSmarty();
+        $frontendSmarty
+            ->assign('imageBaseURL', \Shop::getImageBaseURL())
+            ->assign('NettoPreise', \JTL\Session\Frontend::getCustomerGroup()->getIsMerchant())
+            ->assign('ShopURL', \Shop::getURL())
+            ->assign('Suchergebnisse', new \JTL\Filter\SearchResults())
+            ->assign('NaviFilter', \Shop::getProductFilter())
+            ->assign('Einstellungen', \Shopsetting::getInstance()->getAll());
     }
 
     return $frontendSmarty;

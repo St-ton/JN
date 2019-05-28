@@ -151,7 +151,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
            'WarenkorbVersandkostenfreiHinweis',
            ShippingMethod::getShippingFreeString(
                ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin),
-               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin)
            )
        )
        ->assign('meta_title', $cMetaTitle ?? '')
@@ -186,7 +186,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
-       ->assign('wishlists', Wunschliste::getWishlists());
+       ->assign('wishlists', Wunschliste::getWishlists())
+       ->assign('robotsContent', $smarty->get_template_vars('robotsContent'));
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

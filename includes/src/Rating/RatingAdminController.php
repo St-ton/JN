@@ -39,8 +39,7 @@ class RatingAdminController extends BaseController
         JTLCacheInterface $cache,
         ?AlertServiceInterface $alertService = null,
         ?JTLSmarty $smarty = null
-    )
-    {
+    ) {
         $this->db           = $db;
         $this->smarty       = $smarty;
         $this->config       = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_BEWERTUNG]);

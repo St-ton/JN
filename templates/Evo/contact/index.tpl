@@ -7,9 +7,6 @@
 {/block}
 
 {block name='content'}
-    {if $opcPageService->getCurPage()->isReplace()}
-        {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-    {else}
         {if !empty($Spezialcontent->titel)}
             <div class="title text-center">
                 <h2>{$Spezialcontent->titel}</h2>
@@ -203,7 +200,6 @@
             {/if}
         {/if}
         {include file='snippets/opc_mount_point.tpl' id='opc_contact_append'}
-    {/if}
 {/block}
 
 {block name='footer'}

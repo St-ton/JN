@@ -10,9 +10,6 @@
 
 {block name='content'}
     <div id="result-wrapper">
-        {if $opcPageService->getCurPage()->isReplace()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-        {else}
             {block name='productlist-header'}
                 {include file='productlist/header.tpl'}
             {/block}
@@ -60,7 +57,6 @@
             {block name='productlist-footer'}
                 {include file='productlist/footer.tpl'}
             {/block}
-        {/if}
     </div>
 {/block}
 

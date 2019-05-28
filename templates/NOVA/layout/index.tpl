@@ -17,9 +17,6 @@
         {/block}
 
         {block name='layout-index-content'}
-            {if $opcPageService->getCurPage()->isReplace()}
-                {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-            {else}
                 {block name='layout-index-heading'}
                     {if !empty($Link->getTitle())}
                         <h1>{$Link->getTitle()}</h1>
@@ -90,7 +87,6 @@
                         {include file='page/404.tpl'}
                     {/if}
                 {/block}
-            {/if}
         {/block}
 
         {block name='layout-index-include-footer'}

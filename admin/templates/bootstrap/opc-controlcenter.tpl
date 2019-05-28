@@ -71,7 +71,6 @@
                                                 <th>{__('draft')}</th>
                                                 <th>{__('publicFrom')}</th>
                                                 <th>{__('publicTill')}</th>
-                                                <th>{__('replaceExtend')}</th>
                                                 <th>{__('lastChange')}</th>
                                                 <th>{__('changedNow')}</th>
                                                 <th></th>
@@ -99,7 +98,6 @@
                                                             {$draft->getPublishTo()|date_format:'%c'}
                                                         {/if}
                                                     </td>
-                                                    <td>{if $draft->isReplace()}{__('replaced')}{else}{__('extended')}{/if}</td>
                                                     <td>{$draft->getLastModified()|date_format:'%c'}</td>
                                                     <td>
                                                         {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}

@@ -8,9 +8,6 @@
     {/block}
 
     {block name='blog-index-content'}
-        {if $opcPageService->getCurPage()->isReplace()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-        {else}
             {if JTL\Shop::$AktuelleSeite === 'NEWSDETAIL'}
                 {block name='blog-index-include-details'}
                     {include file='blog/details.tpl'}
@@ -20,7 +17,6 @@
                     {include file='blog/overview.tpl'}
                 {/block}
             {/if}
-        {/if}
     {/block}
 
     {block name='blog-index-include-footer'}

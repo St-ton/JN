@@ -64,7 +64,6 @@ class Page
                 this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
                 this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
                 this.url         = pageData.url;
-                this.replace     = pageData.replace;
                 this.fullUrl     = this.shopUrl + this.url;
             });
     }
@@ -199,7 +198,7 @@ class Page
     {
         withDom = withDom || false;
 
-        var result = {id: this.id, url: this.url, key: this.key, replace: this.replace, areas: {}};
+        var result = {id: this.id, url: this.url, key: this.key, areas: {}};
         var areas  = this.rootAreas;
 
         for(var i=0; i<areas.length; i++) {

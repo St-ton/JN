@@ -63,11 +63,6 @@ class Page implements \JsonSerializable
     protected $lockedAt;
 
     /**
-     * @var bool
-     */
-    protected $replace = false;
-
-    /**
      * @var null|AreaList
      */
     protected $areaList;
@@ -168,7 +163,7 @@ class Page implements \JsonSerializable
      * @param string $name
      * @return Page
      */
-    public function setName($name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -271,25 +266,6 @@ class Page implements \JsonSerializable
     }
 
     /**
-     * @return bool
-     */
-    public function isReplace(): bool
-    {
-        return $this->replace;
-    }
-
-    /**
-     * @param bool $replace
-     * @return $this
-     */
-    public function setReplace(bool $replace): self
-    {
-        $this->replace = $replace;
-
-        return $this;
-    }
-
-    /**
      * @return AreaList
      */
     public function getAreaList(): AreaList
@@ -310,9 +286,10 @@ class Page implements \JsonSerializable
 
     /**
      * @param string $json
-     * @return $this
+     * @return Page
+     * @throws \Exception
      */
-    public function fromJson($json): self
+    public function fromJson(string $json): self
     {
         $this->deserialize(\json_decode($json, true));
 
@@ -333,7 +310,6 @@ class Page implements \JsonSerializable
         $this->setName($data['name'] ?? $this->getName());
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
-        $this->setReplace($data['replace'] ?? $this->isReplace());
 
         if (isset($data['areas']) && \is_array($data['areas'])) {
             $this->getAreaList()->deserialize($data['areas']);
@@ -358,7 +334,6 @@ class Page implements \JsonSerializable
             'lastModified' => $this->getLastModified(),
             'lockedBy'     => $this->getLockedBy(),
             'lockedAt'     => $this->getLockedAt(),
-            'replace'      => $this->isReplace(),
             'areaList'     => $this->getAreaList()->jsonSerialize(),
         ];
 

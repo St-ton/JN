@@ -36,7 +36,7 @@ class WidgetsExtension extends AbstractItem
                 continue;
             }
             $i      = (string)$i;
-            $widget = $this->sanitizeWidgget($widget);
+            $widget = $this->sanitizeWidget($widget);
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
@@ -81,7 +81,7 @@ class WidgetsExtension extends AbstractItem
      * @param array $widget
      * @return array
      */
-    private function sanitizeWidgget(array $widget): array
+    private function sanitizeWidget(array $widget): array
     {
         $widget['Title']     = $widget['Title'] ?? '';
         $widget['Class']     = $widget['Class'] ?? '';

@@ -280,7 +280,6 @@ abstract class DataModel implements DataModelInterface, Iterator
                 default:
                     throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
             }
-
         }
 
         return $instance->fill($record);

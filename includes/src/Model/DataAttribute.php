@@ -65,8 +65,8 @@ class DataAttribute
         bool $nullable = true,
         bool $isPrimaryKey = false,
         string $foreignKey = null,
-        $foreignKeyChild = null)
-    {
+        $foreignKeyChild = null
+    ) {
         $this->name            = $name;
         $this->dataType        = $dataType;
         $this->default         = $default;
@@ -96,8 +96,7 @@ class DataAttribute
         bool $isPrimaryKey = false,
         string $foreignKey = null,
         $foreignKeyChild = null
-    ): self
-    {
+    ): self {
         return new self($name, $dataType, $default, $nullable, $isPrimaryKey, $foreignKey, $foreignKeyChild);
     }
 }

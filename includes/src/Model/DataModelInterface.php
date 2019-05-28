@@ -17,18 +17,18 @@ use stdClass;
  */
 interface DataModelInterface
 {
-    public const NONE = 0;
+    public const NONE                = 0;
     public const ON_NOTEXISTS_CREATE = 0x001;
-    public const ON_NOTEXISTS_NEW = 0x002;
-    public const ON_EXISTS_UPDATE = 0x004;
-    public const ON_NOTEXISTS_FAIL = 0x008;
-    public const ON_INSERT_IGNORE = 0x0A0;
+    public const ON_NOTEXISTS_NEW    = 0x002;
+    public const ON_EXISTS_UPDATE    = 0x004;
+    public const ON_NOTEXISTS_FAIL   = 0x008;
+    public const ON_INSERT_IGNORE    = 0x0A0;
 
-    public const ERR_NOT_FOUND = 0x101;
-    public const ERR_DUPLICATE = 0x102;
-    public const ERR_INVALID_PARAM = 0x104;
+    public const ERR_NOT_FOUND      = 0x101;
+    public const ERR_DUPLICATE      = 0x102;
+    public const ERR_INVALID_PARAM  = 0x104;
     public const ERR_NO_PRIMARY_KEY = 0x108;
-    public const ERR_DATABASE = 0x1A0;
+    public const ERR_DATABASE       = 0x1A0;
 
     /**
      * non-static variant of create()

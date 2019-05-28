@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Portlets
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Portlets extends AbstractItem
+final class Portlets extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -24,10 +24,7 @@ class Portlets extends AbstractItem
         if (!isset($node['Portlets']) || !\is_array($node['Portlets'])) {
             return InstallCode::OK;
         }
-        if (!isset($node['Portlets'][0]['Portlet'])
-            || !\is_array($node['Portlets'][0]['Portlet'])
-            || \count($node['Portlets'][0]['Portlet']) === 0
-        ) {
+        if (empty($node['Portlets'][0]['Portlet']) || !\is_array($node['Portlets'][0]['Portlet'])) {
             return InstallCode::MISSING_PORTLETS;
         }
         foreach ($node['Portlets'][0]['Portlet'] as $i => $portlet) {

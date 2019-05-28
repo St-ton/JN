@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Blueprints
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Blueprints extends AbstractItem
+final class Blueprints extends AbstractItem
 {
     /**
      * @inheritdoc

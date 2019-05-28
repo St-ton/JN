@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class MailTemplates
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class MailTemplates extends AbstractItem
+final class MailTemplates extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -23,10 +23,7 @@ class MailTemplates extends AbstractItem
         if (!isset($node['Emailtemplate']) || !\is_array($node['Emailtemplate'])) {
             return InstallCode::OK;
         }
-        if (!isset($node['Emailtemplate'][0]['Template'])
-            || !\is_array($node['Emailtemplate'][0]['Template'])
-            || \count($node['Emailtemplate'][0]['Template']) === 0
-        ) {
+        if (empty($node['Emailtemplate'][0]['Template']) || !\is_array($node['Emailtemplate'][0]['Template'])) {
             return InstallCode::MISSING_EMAIL_TEMPLATES;
         }
         foreach ($node['Emailtemplate'][0]['Template'] as $i => $tpl) {
@@ -66,32 +63,42 @@ class MailTemplates extends AbstractItem
             if (\mb_strlen($tpl['WRB']) === 0) {
                 return InstallCode::INVALID_TEMPLATE_WRB;
             }
-            if (!isset($tpl['TemplateLanguage'])
-                || !\is_array($tpl['TemplateLanguage'])
-                || \count($tpl['TemplateLanguage']) === 0
-            ) {
+            if (empty($tpl['TemplateLanguage']) || !\is_array($tpl['TemplateLanguage'])) {
                 return InstallCode::MISSING_EMAIL_TEMPLATE_LANGUAGE;
             }
-            foreach ($tpl['TemplateLanguage'] as $l => $localized) {
-                if (!\is_array($localized)) {
-                    continue;
+            if (($res = $this->validateLocalization($tpl['TemplateLanguage'])) !== InstallCode::OK) {
+                return $res;
+            }
+        }
+
+        return InstallCode::OK;
+    }
+
+    /**
+     * @param array $localization
+     * @return int
+     */
+    private function validateLocalization(array $localization): int
+    {
+        foreach ($localization as $l => $localized) {
+            if (!\is_array($localized)) {
+                continue;
+            }
+            $localized = $this->sanitizeLocaliation($localized);
+            $l         = (string)$l;
+            \preg_match('/[0-9]+\sattr/', $l, $hits1);
+            \preg_match('/[0-9]+/', $l, $hits2);
+            if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
+                \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
+                $len = \mb_strlen($localized['iso']);
+                if ($len === 0 || \mb_strlen($hits[0]) !== $len) {
+                    return InstallCode::INVALID_EMAIL_TEMPLATE_ISO;
                 }
-                $localized = $this->sanitizeLocaliation($localized);
-                $l         = (string)$l;
-                \preg_match('/[0-9]+\sattr/', $l, $hits1);
-                \preg_match('/[0-9]+/', $l, $hits2);
-                if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
-                    \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
-                    $len = \mb_strlen($localized['iso']);
-                    if ($len === 0 || \mb_strlen($hits[0]) !== $len) {
-                        return InstallCode::INVALID_EMAIL_TEMPLATE_ISO;
-                    }
-                } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    \preg_match('/[a-zA-Z0-9\/_\-.#: ]+/', $localized['Subject'], $hits1);
-                    $len = \mb_strlen($localized['Subject']);
-                    if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
-                        return InstallCode::INVALID_EMAIL_TEMPLATE_SUBJECT;
-                    }
+            } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
+                \preg_match('/[a-zA-Z0-9\/_\-.#: ]+/', $localized['Subject'], $hits1);
+                $len = \mb_strlen($localized['Subject']);
+                if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
+                    return InstallCode::INVALID_EMAIL_TEMPLATE_SUBJECT;
                 }
             }
         }

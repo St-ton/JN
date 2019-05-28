@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Checkboxes
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Checkboxes extends AbstractItem
+final class Checkboxes extends AbstractItem
 {
     /**
      * @inheritdoc

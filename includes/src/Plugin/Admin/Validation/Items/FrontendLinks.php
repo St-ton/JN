@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class FrontendLinks
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class FrontendLinks extends AbstractItem
+final class FrontendLinks extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -106,10 +106,7 @@ class FrontendLinks extends AbstractItem
             if (isset($hits3[0]) && \mb_strlen($hits3[0]) !== \mb_strlen($link['NoFollow'])) {
                 return InstallCode::INVALID_FRONTEND_LINK_NO_FOLLOW;
             }
-            if (!isset($link['LinkLanguage'])
-                || !\is_array($link['LinkLanguage'])
-                || \count($link['LinkLanguage']) === 0
-            ) {
+            if (empty($link['LinkLanguage']) || !\is_array($link['LinkLanguage'])) {
                 return InstallCode::INVALID_FRONEND_LINK_ISO;
             }
             foreach ($link['LinkLanguage'] as $l => $localized) {
@@ -181,6 +178,10 @@ class FrontendLinks extends AbstractItem
         return InstallCode::OK;
     }
 
+    /**
+     * @param array $link
+     * @return array
+     */
     private function sanitizeLinkData(array $link): array
     {
         $link['Filename'] = $link['Filename'] ?? '';

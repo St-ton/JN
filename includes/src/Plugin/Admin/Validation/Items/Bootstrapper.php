@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Bootstrapper
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Bootstrapper extends AbstractItem
+final class Bootstrapper extends AbstractItem
 {
     /**
      * @inheritdoc

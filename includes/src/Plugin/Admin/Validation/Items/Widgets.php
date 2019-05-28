@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Widgets
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Widgets extends AbstractItem
+final class Widgets extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -25,10 +25,7 @@ class Widgets extends AbstractItem
         if (!isset($node['AdminWidget']) || !\is_array($node['AdminWidget'])) {
             return InstallCode::OK;
         }
-        if (!isset($node['AdminWidget'][0]['Widget'])
-            || !\is_array($node['AdminWidget'][0]['Widget'])
-            || \count($node['AdminWidget'][0]['Widget']) === 0
-        ) {
+        if (empty($node['AdminWidget'][0]['Widget']) || !\is_array($node['AdminWidget'][0]['Widget'])) {
             return InstallCode::MISSING_WIDGETS;
         }
         $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET;

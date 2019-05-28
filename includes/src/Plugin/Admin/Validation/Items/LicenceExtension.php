@@ -14,7 +14,7 @@ use JTL\Shop;
  * Class LicenceExtension
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class LicenceExtension extends AbstractItem
+final class LicenceExtension extends AbstractItem
 {
     /**
      * @inheritdoc

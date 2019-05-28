@@ -26,6 +26,7 @@ use JTL\Plugin\Admin\Validation\Items\NoUninstaller;
 use JTL\Plugin\Admin\Validation\Items\PaymentMethods;
 use JTL\Plugin\Admin\Validation\Items\PluginID;
 use JTL\Plugin\Admin\Validation\Items\Portlets;
+use JTL\Plugin\Admin\Validation\Items\Version;
 use JTL\Plugin\Admin\Validation\Items\WidgetsExtension;
 use JTL\Plugin\Admin\Validation\Items\XMLVersion;
 
@@ -45,6 +46,7 @@ class PluginValidationFactory
     public function getValidations($node, $dir, $version, $pluginID): array
     {
         $validation   = [];
+        $validation[] = new Version($node, $dir, $version, $pluginID);
         $validation[] = new Name($node, $dir, $version, $pluginID);
         $validation[] = new ExtensionDir($node, $dir, $version, $pluginID);
         $validation[] = new XMLVersion($node, $dir, $version, $pluginID);

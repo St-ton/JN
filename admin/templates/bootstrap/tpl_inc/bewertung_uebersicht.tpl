@@ -192,7 +192,7 @@
                 {if isset($cArtNr) && $cArtNr|strlen > 0}
                     <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                 {/if}
-                {if $oBewertungAktiv_arr && $oBewertungAktiv_arr|@count > 0}
+                {if isset($oBewertungAktiv_arr) && $oBewertungAktiv_arr|@count > 0}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{__('ratingsInaktive')}</h3>

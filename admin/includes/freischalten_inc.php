@@ -7,7 +7,7 @@
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
-use JTL\Rating\RatingController;
+use JTL\Rating\RatingAdminController;
 use JTL\Shop;
 
 /**
@@ -148,7 +148,7 @@ function schalteBewertungFrei($ratingIDs): bool
     if (!is_array($ratingIDs) || count($ratingIDs) === 0) {
         return false;
     }
-    $controller = new RatingController(Shop::Container()->getDB(), Shop::Container()->getCache());
+    $controller = new RatingAdminController(Shop::Container()->getDB(), Shop::Container()->getCache());
     $controller->activate($ratingIDs);
 
     return true;

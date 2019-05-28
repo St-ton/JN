@@ -15,52 +15,35 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Mail\Mail\Mail;
-use JTL\Mail\Mailer;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTLSmarty;
-use stdClass;
-use function Functional\map;
 
 /**
  * Class RatingController
  * @package JTL\Rating
  */
-class RatingController
+class RatingController extends BaseController
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @var JTLSmarty
-     */
-    private $smarty;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
      * RatingController constructor.
-     * @param DbInterface       $db
-     * @param JTLCacheInterface $cache
-     * @param JTLSmarty|null    $smarty
+     * @param DbInterface                $db
+     * @param JTLCacheInterface          $cache
+     * @param AlertServiceInterface|null $alertService
+     * @param JTLSmarty|null             $smarty
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, ?JTLSmarty $smarty = null)
-    {
-        $this->db     = $db;
-        $this->smarty = $smarty;
-        $this->config = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_BEWERTUNG]);
-        $this->cache  = $cache;
+    public function __construct(
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        ?AlertServiceInterface $alertService = null,
+        ?JTLSmarty $smarty = null
+    ) {
+        $this->db           = $db;
+        $this->smarty       = $smarty;
+        $this->config       = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_BEWERTUNG]);
+        $this->cache        = $cache;
+        $this->alertService = $alertService;
     }
 
     /**
@@ -94,126 +77,6 @@ class RatingController
         if (Request::verifyGPCDataInt('bfa') === 1) {
             return $this->ratingPreCheck($customer, $params);
         }
-    }
-
-    /**
-     * @param int $id
-     * @return RatingModel|null
-     */
-    public function holeBewertung(int $id): ?RatingModel
-    {
-        try {
-            return new RatingModel(['id' => $id], $this->db);
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
-    /**
-     * @param array $data
-     * @return bool
-     */
-    public function edit($data): bool
-    {
-        $id = Request::verifyGPCDataInt('kBewertung');
-        try {
-            $rating = new RatingModel(['id' => $id], $this->db);
-        } catch (Exception $e) {
-            return false;
-        }
-        if ($rating->id === null
-            || empty($data['cName'])
-            || empty($data['cTitel'])
-            || !isset($data['nSterne'])
-            || (int)$data['nSterne'] <= 0
-        ) {
-            return false;
-        }
-        $rating->name    = $data['cName'];
-        $rating->title   = $data['cTitel'];
-        $rating->content = $data['cText'];
-        $rating->stars   = (int)$data['nSterne'];
-        $rating->answer  = !empty($data['cAntwort']) ? $data['cAntwort'] : null;
-
-        if ($data['cAntwort'] !== $rating->answer) {
-            $rating->answerDate = !empty($data['cAntwort']) ? \date('Y-m-d') : null;
-        }
-        $rating->save();
-        $this->updateAverage($rating->productID, $this->config['bewertung']['bewertung_freischalten']);
-
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $rating->productID]);
-
-        return true;
-    }
-
-    /**
-     * @param array $ids
-     * @return int
-     */
-    public function delete(array $ids): int
-    {
-        $cacheTags = [];
-        $affected  = 0;
-        foreach (\array_map('\intval', $ids) as $id) {
-            try {
-                $model = new RatingModel(['id' => $id], $this->db);
-            } catch (Exception $e) {
-                continue;
-            }
-            $this->updateAverage($model->productID, $this->config['bewertung']['bewertung_freischalten']);
-            $this->deleteRatingReward($model);
-            $model->delete();
-            $cacheTags[] = $model->productID;
-            ++$affected;
-        }
-        $this->cache->flushTags(map($cacheTags, function ($e) {
-            return \CACHING_GROUP_ARTICLE . '_' . $e;
-        }));
-
-        return $affected;
-    }
-
-    /**
-     * @param array $ids
-     * @return int
-     */
-    public function activate(array $ids): int
-    {
-        $cacheTags = [];
-        $affected  = 0;
-        foreach (\array_map('\intval', $ids) as $i => $id) {
-            try {
-                $model = new RatingModel(['id' => $id], $this->db);
-            } catch (Exception $e) {
-                continue;
-            }
-            $model->active = 1;
-            $model->save(['active']);
-            $this->updateAverage($model->productID, $this->config['bewertung']['bewertung_freischalten']);
-            $this->addReward($model);
-            $cacheTags[] = $model->productID;
-            ++$affected;
-        }
-        $this->cache->flushTags(map($cacheTags, function ($e) {
-            return \CACHING_GROUP_ARTICLE . '_' . $e;
-        }));
-
-        return $affected;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function removeReply(int $id): void
-    {
-        try {
-            $model = new RatingModel(['id' => $id], $this->db);
-        } catch (Exception $e) {
-            return;
-        }
-        $model->answer     = null;
-        $model->answerDate = null;
-        $model->save(['answer', 'answerDate']);
     }
 
     /**
@@ -340,7 +203,7 @@ class RatingController
             $product->holehilfreichsteBewertung(Shop::getLanguageID());
         }
         if ($this->checkProductWasPurchased($product->kArtikel, Frontend::getCustomer()) === false) {
-            Shop::Container()->getAlertService()->addAlert(
+            $this->alertService->addAlert(
                 Alert::TYPE_DANGER,
                 Shop::Lang()->get('productNotBuyed', 'product rating'),
                 'productNotBuyed',
@@ -389,134 +252,6 @@ class RatingController
         );
 
         return isset($order->kBestellung) && $order->kBestellung > 0;
-    }
-
-    /**
-     * @param int    $productID
-     * @param string $activate
-     * @return bool
-     */
-    private function updateAverage(int $productID, string $activate): bool
-    {
-        $sql       = $activate === 'Y' ? ' AND nAktiv = 1' : '';
-        $countData = $this->db->query(
-            'SELECT COUNT(*) AS nAnzahl
-            FROM tbewertung
-            WHERE kArtikel = ' . $productID . $sql,
-            ReturnType::SINGLE_OBJECT
-        );
-
-        if ((int)$countData->nAnzahl === 1) {
-            $sql = '';
-        } elseif ((int)$countData->nAnzahl === 0) {
-            $this->db->delete('tartikelext', 'kArtikel', $productID);
-
-            return false;
-        }
-        $avg = $this->db->query(
-            'SELECT (SUM(nSterne) / COUNT(*)) AS fDurchschnitt
-            FROM tbewertung
-            WHERE kArtikel = ' . $productID . $sql,
-            ReturnType::SINGLE_OBJECT
-        );
-        if (isset($avg->fDurchschnitt) && $avg->fDurchschnitt > 0) {
-            $this->db->delete('tartikelext', 'kArtikel', $productID);
-            $oArtikelExt                          = new stdClass();
-            $oArtikelExt->kArtikel                = $productID;
-            $oArtikelExt->fDurchschnittsBewertung = (float)$avg->fDurchschnitt;
-
-            $this->db->insert('tartikelext', $oArtikelExt);
-        }
-
-        return true;
-    }
-
-    /**
-     * @param RatingModel $rating
-     * @return float
-     */
-    private function addReward(RatingModel $rating): float
-    {
-        $reward = 0.0;
-        if ($this->config['bewertung']['bewertung_guthaben_nutzen'] !== 'Y') {
-            return $reward;
-        }
-        $maxBalance    = (float)$this->config['bewertung']['bewertung_max_guthaben'];
-        $level2balance = (float)$this->config['bewertung']['bewertung_stufe2_guthaben'];
-        $level1balance = (float)$this->config['bewertung']['bewertung_stufe1_guthaben'];
-        $ratingBonus   = $this->db->queryPrepared(
-            'SELECT SUM(fGuthabenBonus) AS fGuthabenProMonat
-            FROM tbewertungguthabenbonus
-            WHERE kKunde = :cid
-                AND kBewertung != :rid
-                AND YEAR(dDatum) = :dyear
-                AND MONTH(dDatum) = :dmonth',
-            [
-                'cid'    => $rating->customerID,
-                'rid'    => $rating->id,
-                'dyear'  => \date('Y'),
-                'dmonth' => \date('m')
-            ],
-            ReturnType::SINGLE_OBJECT
-        );
-        if ((float)$ratingBonus->fGuthabenProMonat > $maxBalance) {
-            return $reward;
-        }
-        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($rating->content)) {
-            $reward = ((float)$ratingBonus->fGuthabenProMonat + $level2balance) > $maxBalance
-                ? $maxBalance - (float)$ratingBonus->fGuthabenProMonat
-                : $level2balance;
-        } else {
-            $reward = ((float)$ratingBonus->fGuthabenProMonat + $level1balance) > $maxBalance
-                ? $maxBalance - (float)$ratingBonus->fGuthabenProMonat
-                : $level1balance;
-        }
-        $this->increaseCustomerBalance($rating->customerID, $reward);
-
-        $ratingBonus = RatingBonusModel::loadByAttributes(
-            ['customerID' => $rating->customerID, 'ratingID' => $rating->id],
-            $this->db
-        );
-        /** @var $ratingBonus RatingBonusModel */
-        $ratingBonus->bonus      = $reward;
-        $ratingBonus->ratingID   = $rating->id;
-        $ratingBonus->customerID = $rating->customerID;
-        $ratingBonus->date       = 'NOW()';
-        $ratingBonus->save();
-        $this->sendRewardMail($ratingBonus);
-
-        return $reward;
-    }
-
-    /**
-     * @param int   $customerID
-     * @param float $reward
-     * @return int
-     */
-    private function increaseCustomerBalance(int $customerID, float $reward): int
-    {
-        return $this->db->queryPrepared(
-            'UPDATE tkunde
-                SET fGuthaben = fGuthaben + :rew
-                WHERE kKunde = :cid',
-            ['cid' => $customerID, 'rew' => $reward],
-            ReturnType::AFFECTED_ROWS
-        );
-    }
-
-    /**
-     * @param RatingBonusModel $ratingBonus
-     * @return bool
-     */
-    private function sendRewardMail(RatingBonusModel $ratingBonus): bool
-    {
-        $obj                          = new stdClass();
-        $obj->tkunde                  = new Kunde($ratingBonus->customerID);
-        $obj->oBewertungGuthabenBonus = $ratingBonus->rawObject();
-        $mailer                       = Shop::Container()->get(Mailer::class);
-        $mail                         = new Mail();
-
-        return $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BEWERTUNG_GUTHABEN, $obj));
     }
 
     /**
@@ -606,26 +341,5 @@ class RatingController
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $rating->productID]);
         \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
         exit;
-    }
-
-    /**
-     * @param RatingModel $rating
-     * @return int
-     */
-    private function deleteRatingReward(RatingModel $rating): int
-    {
-        $affected = 0;
-        foreach ($rating->bonus as $bonusItem) {
-            /** @var RatingBonusModel $bonusItem */
-            $customer = $this->db->select('tkunde', 'kKunde', $bonusItem->customerID);
-            if ($customer !== null && $customer->kKunde > 0) {
-                $balance = $customer->fGuthaben - $bonusItem->bonus;
-                $upd     = (object)['fGuthaben' => $balance > 0 ? $balance : 0];
-                $this->db->update('tkunde', 'kKunde', $bonusItem->customerID, $upd);
-                ++$affected;
-            }
-        }
-
-        return $affected;
     }
 }

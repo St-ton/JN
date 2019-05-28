@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Cron\JobQueue;
+use JTL\Cron\Type;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
@@ -392,8 +393,9 @@ if (Form::validateToken()) {
         } elseif (isset($_POST['speichern_und_senden'])) { // Vorlage speichern und senden
             unset($newsletterTPL, $oNewsletter, $oKunde, $oEmailempfaenger);
 
+            $cronTabEntry  = $db->select('tcron', 'jobType', Type::NEWSLETTER);
             $newsletterTPL = $admin->saveTemplate($_POST);
-            if ($newsletterTPL !== false) {
+            if ($newsletterTPL !== false && !empty($cronTabEntry)) {
                 // baue tnewsletter Objekt
                 $oNewsletter                = new stdClass();
                 $oNewsletter->kSprache      = $newsletterTPL->kSprache;
@@ -416,21 +418,20 @@ if (Form::validateToken()) {
                 $tnewsletterqueue->dStart            = $oNewsletter->dStartZeit;
                 // tnewsletterqueue fuellen
                 $db->insert('tnewsletterqueue', $tnewsletterqueue);
-                // baue jobqueue objekt
-                $nLimitM  = JOBQUEUE_LIMIT_M_NEWSLETTER;
-                $jobQueue = new JobQueue(
-                    null,
-                    0,
-                    $oNewsletter->kNewsletter,
-                    0,
-                    $nLimitM,
-                    0,
-                    'newsletter',
-                    'tnewsletter',
-                    'kNewsletter',
-                    $oNewsletter->dStartZeit
-                );
-                $jobQueue->speicherJobInDB();
+                $nLimitM = JOBQUEUE_LIMIT_M_NEWSLETTER;
+
+                $oLogger->debug('foreignKeyID: '.print_r($oNewsletter->kNewsletter, true)); // --DEBUG--
+
+                // update cron table and let do cron package the job
+                $oLogger->debug('crontab row: '.print_r($cronTabEntry, true)); // --DEBUG--
+                $cronTabEntry->foreignKeyID = $oNewsletter->kNewsletter;
+                $cronTabEntry->startDate    = 'NOW()';
+                $cronTabEntry->startTime    = 'NOW()';
+                $cronTabEntry->lastStart    = '_DBNULL_';
+                $cronTabEntry->lastFinish   = '_DBNULL_';
+                $oLogger->debug('NEW crontab row: '.print_r($cronTabEntry, true)); // --DEBUG--
+                $db->update('tcron', 'cronID', $cronTabEntry->cronID, $cronTabEntry);
+
                 // Baue Arrays mit kKeys
                 $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
                 $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);
@@ -526,6 +527,10 @@ if (Form::validateToken()) {
                     sprintf(__('successNewsletterPrepared'), $oNewsletter->cName),
                     'successNewsletterPrepared'
                 );
+            } elseif (empty($cronTabEntry)) {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('newsletterCronjobNotFound'), 'errorNewsletter');
+            } elseif ($newsletterTPL === false) {
+                $alertHelper->addAlert(Alert::TYPE_ERROR, __('newsletterCronjobNotFound'), 'errorNewsletter');
             }
         } elseif (isset($_POST['speichern_und_testen'])) { // Vorlage speichern und testen
             $instance->initSmarty();

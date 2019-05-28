@@ -96,18 +96,6 @@ final class Controller
         } catch (InvalidArgumentException $e) {
             return -1;
         }
-        if ($class === Newsletter::class) {
-            $ins             = new stdClass();
-            $ins->frequency  = (int)$post['frequency'];
-            $ins->jobType    = $post['type'];
-            $ins->foreignKey = 'kNewsletter';
-            $ins->tableName  = 'tnewsletter';
-            $ins->name       = 'manuell@' . \date('Y-m-d H:i:s');
-            $ins->startTime  = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
-            $ins->startDate  = (new DateTime($post['date']))->format('Y-m-d H:i:s');
-
-            return $this->db->insert('tcron', $ins);
-        }
         if ($class === Statusmail::class) {
             $jobs  = $this->db->selectAll('tstatusemail', 'nAktiv', 1);
             $count = 0;
@@ -145,7 +133,6 @@ final class Controller
         $available = [
             Type::IMAGECACHE,
             Type::STATUSMAIL,
-            Type::NEWSLETTER,
             Type::DATAPROTECTION,
         ];
         Dispatcher::getInstance()->fire(Event::GET_AVAILABLE_CRONJOBS, ['jobs' => &$available]);

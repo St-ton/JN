@@ -21,22 +21,18 @@ $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$conf        = Shop::getSettings([CONF_BEWERTUNG]);
 $step        = 'bewertung_uebersicht';
-$cTab        = 'freischalten';
 $cacheTags   = [];
+$cache       = Shop::Container()->getCache();
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
-$controller  = new RatingController($db, $smarty);
+$controller  = new RatingController($db, $cache, $smarty);
+$cTab        = mb_strlen(Request::verifyGPDataString('tab')) > 0 ? Request::verifyGPDataString('tab') : 'freischalten';
 
 setzeSprache();
-
-if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-    $cTab = Request::verifyGPDataString('tab');
-}
 if (Form::validateToken()) {
     if (Request::verifyGPCDataInt('bewertung_editieren') === 1) {
-        if ($controller->editiereBewertung($_POST)) {
+        if ($controller->edit($_POST)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingEdit'), 'successRatingEdit');
             if (Request::verifyGPCDataInt('nFZ') === 1) {
                 header('Location: freischalten.php');
@@ -52,7 +48,7 @@ if (Form::validateToken()) {
         ) {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCreditUnlock'), 'errorCreditUnlock');
         } else {
-            Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
+            $cache->flushTags([CACHING_GROUP_ARTICLE]);
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
                 saveAdminSectionSettings(CONF_BEWERTUNG, $_POST),
@@ -62,44 +58,24 @@ if (Form::validateToken()) {
     } elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
         if (isset($_POST['aktivieren'])) {
             if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
-                $kArtikel_arr = $_POST['kArtikel'];
-                foreach ($_POST['kBewertung'] as $i => $kBewertung) {
-                    $upd         = new stdClass();
-                    $upd->nAktiv = 1;
-                    $db->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
-                    $controller->aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
-                    $controller->checkeBewertungGuthabenBonus($kBewertung);
-                    $cacheTags[] = $kArtikel_arr[$i];
-                }
-                array_walk(
-                    $cacheTags,
-                    function (&$i) {
-                        $i = CACHING_GROUP_ARTICLE . '_' . $i;
-                    }
-                );
-                Shop::Container()->getCache()->flushTags($cacheTags);
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
-                    count($_POST['kBewertung']) . __('successRatingUnlock'),
+                    $controller->activate($_POST['kBewertung']) . __('successRatingUnlock'),
                     'successRatingUnlock'
                 );
             }
-        } elseif (isset($_POST['loeschen'])) { // Bewertungen loeschen
+        } elseif (isset($_POST['loeschen'])) {
             if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
-                foreach ($_POST['kBewertung'] as $kBewertung) {
-                    $db->delete('tbewertung', 'kBewertung', (int)$kBewertung);
-                }
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
-                    count($_POST['kBewertung']) . __('successRatingDelete'),
+                    $controller->delete($_POST['kBewertung']) . __('successRatingDelete'),
                     'successRatingDelete'
                 );
             }
         }
     } elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
         if (isset($_POST['cArtNr'])) {
-            // Bewertungen holen
-            $oBewertungAktiv_arr = $db->queryPrepared(
+            $activeRatings = $db->queryPrepared(
                 "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
                     FROM tbewertung
                     LEFT JOIN tartikel 
@@ -116,25 +92,10 @@ if (Form::validateToken()) {
             );
             $smarty->assign('cArtNr', Text::filterXSS($_POST['cArtNr']));
         }
-        // Bewertungen loeschen
         if (isset($_POST['loeschen']) && is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
-            $kArtikel_arr = $_POST['kArtikel'];
-            foreach ($_POST['kBewertung'] as $i => $kBewertung) {
-                $controller->BewertungsGuthabenBonusLoeschen($kBewertung);
-                $db->delete('tbewertung', 'kBewertung', (int)$kBewertung);
-                $controller->aktualisiereDurchschnitt($kArtikel_arr[$i], $conf['bewertung']['bewertung_freischalten']);
-                $cacheTags[] = $kArtikel_arr[$i];
-            }
-            array_walk(
-                $cacheTags,
-                function (&$i) {
-                    $i = CACHING_GROUP_ARTICLE . '_' . $i;
-                }
-            );
-            Shop::Container()->getCache()->flushTags($cacheTags);
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                count($_POST['kBewertung']) . __('successRatingDelete'),
+                $controller->delete($_POST['kBewertung']) . __('successRatingDelete'),
                 'successRatingDelete'
             );
         }
@@ -152,14 +113,14 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         $controller->removeReply(Request::verifyGPCDataInt('kBewertung'));
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingCommentDelete'), 'successRatingCommentDelete');
     }
-    $nBewertungen      = (int)$db->query(
+    $totalCount  = (int)$db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
                 AND nAktiv = 0',
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
-    $nBewertungenAktiv = (int)$db->query(
+    $activeCount = (int)$db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tbewertung
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
@@ -168,10 +129,10 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     )->nAnzahl;
 
     $oPagiInaktiv = (new Pagination('inactive'))
-        ->setItemCount($nBewertungen)
+        ->setItemCount($totalCount)
         ->assemble();
     $oPageAktiv   = (new Pagination('active'))
-        ->setItemCount($nBewertungenAktiv)
+        ->setItemCount($activeCount)
         ->assemble();
 
     $ratings       = $db->query(
@@ -201,7 +162,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         ->assign('oPagiAktiv', $oPageAktiv)
         ->assign('oBewertung_arr', $ratings)
         ->assign('oBewertungLetzten50_arr', $last50ratings)
-        ->assign('oBewertungAktiv_arr', $oBewertungAktiv_arr ?? null)
+        ->assign('oBewertungAktiv_arr', $activeRatings ?? null)
         ->assign('oConfig_arr', getAdminSectionSettings(CONF_BEWERTUNG))
         ->assign('Sprachen', Sprache::getAllLanguages());
 }

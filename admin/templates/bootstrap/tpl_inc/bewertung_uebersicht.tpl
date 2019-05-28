@@ -133,7 +133,7 @@
                                             {$oBewertungLetzten50->cText}
                                             {if !empty($oBewertungLetzten50->cAntwort)}
                                                 <blockquote class="review-reply">
-                                                    <strong>{__('ratingReply')}:</strong><br>
+                                                    <strong>{__('ratingReply')}</strong><br>
                                                     {$oBewertungLetzten50->cAntwort}
                                                 </blockquote>
                                             {/if}

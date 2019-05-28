@@ -190,7 +190,7 @@ class Preise
                             FROM tpreis AS p1
                             WHERE p1.kArtikel = ' . $kArtikel . '
                                 AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = ' . $kKundengruppe . ')
-                                AND (p1.kKunde = ' . $kKunde . ' OR p1.kKunde IS NULL))';
+                                AND (p1.kKunde = 0 OR p1.kKunde = ' . $kKunde . '))';
         }
         $this->kArtikel      = $kArtikel;
         $this->kKundengruppe = $kKundengruppe;

@@ -84,7 +84,7 @@ final class MailTemplates extends AbstractItem
             if (!\is_array($localized)) {
                 continue;
             }
-            $localized = $this->sanitizeLocaliation($localized);
+            $localized = $this->sanitizeLocalization($localized);
             $l         = (string)$l;
             \preg_match('/[0-9]+\sattr/', $l, $hits1);
             \preg_match('/[0-9]+/', $l, $hits2);
@@ -127,7 +127,7 @@ final class MailTemplates extends AbstractItem
      * @param array $localized
      * @return array
      */
-    private function sanitizeLocaliation(array $localized): array
+    private function sanitizeLocalization(array $localized): array
     {
         $localized['Subject'] = $localized['Subject'] ?? '';
 

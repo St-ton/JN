@@ -300,6 +300,9 @@ class JTLSmarty extends SmartyBC
         $this->template = $template;
 
         if ($fast_init === false) {
+            if (FIX_REGEX_ENCODING === true) {
+                mb_regex_encoding(JTL_CHARSET);
+            }
             $this->registerPlugin('function', 'lang', [$this, '__gibSprachWert'])
                  ->registerPlugin('modifier', 'replace_delim', [$this, 'replaceDelimiters'])
                  ->registerPlugin('modifier', 'count_characters', [$this, 'countCharacters'])

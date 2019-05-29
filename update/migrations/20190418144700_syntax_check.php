@@ -26,22 +26,10 @@ class Migration_20190418144700 extends Migration implements IMigration
 
     public function up()
     {
-        unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
-        $smarty   = new MailSmarty($this->getDB());
-        $renderer = new SmartyRenderer($smarty);
-        $checker  = new SyntaxChecker(
-            $this->getDB(),
-            new TemplateFactory($this->getDB()),
-            $renderer,
-            new TestHydrator($smarty, $this->getDB(), Shopsetting::getInstance())
-        );
-        $checker->checkAll();
-        $ef = new Exportformat(0, $this->getDB());
-        $ef->checkAll();
+        // moved to Migration_20190901000000 for sequence reasons
     }
 
     public function down()
     {
-        unset($_SESSION['emailSyntaxErrorCount'], $_SESSION['exportSyntaxErrorCount']);
     }
 }

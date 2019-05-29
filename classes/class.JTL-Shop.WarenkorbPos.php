@@ -217,6 +217,10 @@ class WarenkorbPos
             } else {
                 $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
             }
+        } else {
+            if ($this->Artikel->Preise->rabatt > 0) {
+                $NeueWarenkorbPosEigenschaft->fAufpreis = $EigenschaftWert->fAufpreisNetto - (($this->Artikel->Preise->rabatt / 100) * $EigenschaftWert->fAufpreisNetto);
+            }
         }
         $NeueWarenkorbPosEigenschaft->cTyp               = $Eigenschaft->cTyp;
         $NeueWarenkorbPosEigenschaft->cAufpreisLocalized = gibPreisStringLocalized($NeueWarenkorbPosEigenschaft->fAufpreis);

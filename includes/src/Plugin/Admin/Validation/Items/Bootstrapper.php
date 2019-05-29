@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Plugin\BootstrapperInterface;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -34,7 +35,7 @@ class Bootstrapper extends AbstractItem
 
         $bootstrapper = new $class((object)['cPluginID' => $namespace], null, null);
 
-        return \is_subclass_of($bootstrapper, \JTL\Plugin\Bootstrapper::class)
+        return $bootstrapper instanceof BootstrapperInterface
             ? InstallCode::OK
             : InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION;
     }

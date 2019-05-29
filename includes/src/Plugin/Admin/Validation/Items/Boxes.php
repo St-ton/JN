@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Boxes
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Boxes extends AbstractItem
+final class Boxes extends AbstractItem
 {
     /**
      * @inheritdoc

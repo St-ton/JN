@@ -178,6 +178,8 @@ ifndef('PRODUCT_LIST_SHOW_RATINGS', false);
 ifndef('IMAGE_CLEANUP_LIMIT', 50);
 ifndef('OBJECT_CACHE_DIR', PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/');
 
+ifndef('FIX_REGEX_ENCODING', true);
+
 /**
  * @param string     $constant
  * @param string|int $value

@@ -52,7 +52,7 @@
 
     function loadFiltersAvailable()
     {
-        opc.io.getFilterOptions(getFiltersEnabled(), renderFiltersAvailable);
+        opc.io.getFilterOptions(getFiltersEnabled()).then(renderFiltersAvailable);
     }
 
     function getFiltersEnabled()

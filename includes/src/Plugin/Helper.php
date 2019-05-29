@@ -452,7 +452,7 @@ class Helper
                 return null;
             }
             $bootstrapper = new $class($plugin, $loader->getDB(), $loader->getCache());
-            if (!\is_subclass_of($bootstrapper, Bootstrapper::class)) {
+            if (!$bootstrapper instanceof BootstrapperInterface) {
                 return null;
             }
             self::$bootstrapper[$id] = $bootstrapper;

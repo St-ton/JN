@@ -23,8 +23,8 @@
     {else}
         <div id="result-wrapper" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
             <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
-                {include file='snippets/extension.tpl'}
-                {include file='productdetails/details.tpl'}
+            {include file='snippets/extension.tpl'}
+            {include file='productdetails/details.tpl'}
         </div>
     {/if}
 {/block}

@@ -8,15 +8,15 @@
     {/block}
 
     {block name='blog-index-content'}
-            {if JTL\Shop::$AktuelleSeite === 'NEWSDETAIL'}
-                {block name='blog-index-include-details'}
-                    {include file='blog/details.tpl'}
-                {/block}
-            {else}
-                {block name='blog-index-overview'}
-                    {include file='blog/overview.tpl'}
-                {/block}
-            {/if}
+        {if JTL\Shop::$AktuelleSeite === 'NEWSDETAIL'}
+            {block name='blog-index-include-details'}
+                {include file='blog/details.tpl'}
+            {/block}
+        {else}
+            {block name='blog-index-overview'}
+                {include file='blog/overview.tpl'}
+            {/block}
+        {/if}
     {/block}
 
     {block name='blog-index-include-footer'}

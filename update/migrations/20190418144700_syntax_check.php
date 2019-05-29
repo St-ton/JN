@@ -6,13 +6,6 @@
  * @created Thu, 18 Apr 2019 14:47:00 +0200
  */
 
-use JTL\Exportformat;
-use JTL\Mail\Hydrator\TestHydrator;
-use JTL\Mail\Renderer\SmartyRenderer;
-use JTL\Mail\Template\TemplateFactory;
-use JTL\Mail\Validator\SyntaxChecker;
-use JTL\Shopsetting;
-use JTL\Smarty\MailSmarty;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 

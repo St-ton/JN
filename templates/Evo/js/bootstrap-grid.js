@@ -71,7 +71,7 @@
             var cols = _this.detectGridColumns();
             _this.equalHeightGrid(cols);
         }
-        $(window).bind('resize' + event_namespace + ' load' + event_namespace, syncHeights);
+        $(window).on('resize' + event_namespace + ' load' + event_namespace, syncHeights);
         syncHeights();
         grids_event_uid++;
         return this;
@@ -83,7 +83,7 @@
     $.fn.responsiveEqualHeightGridDestroy = function() {
         var _this = this;
         _this.css('height', 'auto');
-        $(window).unbind(_this.data('grids-event-namespace'));
+        $(window).off(_this.data('grids-event-namespace'));
         return this;
     };
 

@@ -520,7 +520,7 @@ $.extend(Timepicker.prototype, {
 				})
 			);
 			this.timezone_select.val((typeof this.timezone != "undefined" && this.timezone != null && this.timezone != "") ? this.timezone : o.timezone);
-			this.timezone_select.change(function() {
+			this.timezone_select.on('change', function() {
 				tp_inst._onTimeChange();
 			});
 
@@ -533,7 +533,7 @@ $.extend(Timepicker.prototype, {
 					marginLeft: (size / (-2 * hourGridSize)) + "%",
 					borderCollapse: 'collapse'
 				}).find("td").each( function(index) {
-					$(this).click(function() {
+					$(this).on('click', function() {
 						var h = $(this).html();
 						if(o.ampm)	{
 							var ap = h.substring(2).toLowerCase(),
@@ -563,7 +563,7 @@ $.extend(Timepicker.prototype, {
 					marginLeft: (size / (-2 * minuteGridSize)) + "%",
 					borderCollapse: 'collapse'
 				}).find("td").each(function(index) {
-					$(this).click(function() {
+					$(this).on('click', function() {
 						tp_inst.minute_slider.slider("option", "value", $(this).html());
 						tp_inst._onTimeChange();
 						tp_inst._onSelectHandler();
@@ -582,7 +582,7 @@ $.extend(Timepicker.prototype, {
 					marginLeft: (size / (-2 * secondGridSize)) + "%",
 					borderCollapse: 'collapse'
 				}).find("td").each(function(index) {
-					$(this).click(function() {
+					$(this).on('click', function() {
 						tp_inst.second_slider.slider("option", "value", $(this).html());
 						tp_inst._onTimeChange();
 						tp_inst._onSelectHandler();
@@ -601,7 +601,7 @@ $.extend(Timepicker.prototype, {
 					marginLeft: (size / (-2 * millisecGridSize)) + "%",
 					borderCollapse: 'collapse'
 				}).find("td").each(function(index) {
-					$(this).click(function() {
+					$(this).on('click', function() {
 						tp_inst.millisec_slider.slider("option", "value", $(this).html());
 						tp_inst._onTimeChange();
 						tp_inst._onSelectHandler();
@@ -630,10 +630,10 @@ $.extend(Timepicker.prototype, {
 			var onSelectDelegate = function() {
 				tp_inst._onSelectHandler();
 			};
-			this.hour_slider.bind('slidestop',onSelectDelegate);
-			this.minute_slider.bind('slidestop',onSelectDelegate);
-			this.second_slider.bind('slidestop',onSelectDelegate);
-			this.millisec_slider.bind('slidestop',onSelectDelegate);
+			this.hour_slider.on('slidestop',onSelectDelegate);
+			this.minute_slider.on('slidestop',onSelectDelegate);
+			this.second_slider.on('slidestop',onSelectDelegate);
+			this.millisec_slider.on('slidestop',onSelectDelegate);
 			
 			// slideAccess integration: http://trentrichardson.com/2011/11/11/jquery-ui-sliders-and-touch-accessibility/
 			if (this._defaults.addSliderAccess){
@@ -1080,7 +1080,7 @@ $.datepicker._gotoToday = function(id) {
 		tp_inst.timezone_select.val(tzoffset);
 	}
 	this._setTime(inst, now);
-	$( '.ui-datepicker-today', $dp).click(); 
+	$( '.ui-datepicker-today', $dp).trigger('click');
 };
 
 //#######################################################################################

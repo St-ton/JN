@@ -13,13 +13,13 @@
                     }
                 });
             }
-            $('#massaction-main-switch').click(function () {
+            $('#massaction-main-switch').on('click', function () {
                 var checkboxes = $('.massaction-checkbox'),
                     checked = $(this).prop('checked');
                 checkboxes.prop('checked', checked);
             });
 
-            $('#btn_toggle_cache').click(function () {
+            $('#btn_toggle_cache').on('click', function () {
                 $("#row_toggle_cache").slideToggle('slow', 'linear');
             });
         });

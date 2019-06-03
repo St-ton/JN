@@ -1,7 +1,7 @@
 {literal}
 <script type="text/javascript">
     $(document).ready(function () {
-        $('.edit').click(function () {
+        $('.edit').on('click', function () {
             var kWarenlager = $(this).attr('id').replace('btn_', ''),
                 row = $('.row_' + kWarenlager);
             if (row.css('display') === 'none') {

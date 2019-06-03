@@ -7,7 +7,7 @@
             tpl = "{$shopURL}/{$PFAD_ADMIN}{$currentTemplateDir}gfx/jquery";
         {literal}
         $(function () {
-            $('#exportall').click(function () {
+            $('#exportall').on('click', function () {
                 $('.extract_async').trigger('click');
                 return false;
             });

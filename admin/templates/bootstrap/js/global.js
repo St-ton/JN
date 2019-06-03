@@ -14,9 +14,9 @@ jQuery.fn.center = function () {
  * @param assign
  */
 jQuery.fn.set_search = function (type, assign) {
-    this.click(function () {
+    this.on('click', function () {
         $('.ajax_list_picker.' + type).center().fadeIn(850);
-        $('#' + type + '_list_input').focus().val('');
+        $('#' + type + '_list_input').trigger('focus').val('');
         // empty list views
         set_selected_list(type, $(assign).val());
         $('select[name="' + type + '_list_found"]').empty();
@@ -25,7 +25,7 @@ jQuery.fn.set_search = function (type, assign) {
             $('#' + type + '_list_input').keyup(function () {
                 search_list(type, $('#' + type + '_list_input').val());
             });
-            $('#' + type + '_list_save').click(function () {
+            $('#' + type + '_list_save').on('click', function () {
                 // save
                 var list = '';
                 $('select[name="' + type + '_list_selected"] option').each(function (i) {
@@ -35,18 +35,18 @@ jQuery.fn.set_search = function (type, assign) {
                 $('#' + type + '_list_cancel').trigger('click');
                 return false;
             });
-            $('#' + type + '_list_cancel').click(function () {
+            $('#' + type + '_list_cancel').on('click', function () {
                 // cancel
                 $('.ajax_list_picker.' + type).fadeOut(500);
                 return false;
             });
-            $('#' + type + '_list_add').click(function () {
+            $('#' + type + '_list_add').on('click', function () {
                 $('select[name="' + type + '_list_found"] option:selected').each(function (i, e) {
                     $('select[name="' + type + '_list_selected"]').append($(e));
                 });
                 return false;
             });
-            $('#' + type + '_list_remove').click(function () {
+            $('#' + type + '_list_remove').on('click', function () {
                 $('select[name="' + type + '_list_selected"] option:selected').each(function (i, e) {
                     $(e).remove();
                 });
@@ -187,11 +187,11 @@ function init_simple_search(callback) {
         }, 750);
     });
 
-    browser.find('.button.remove').click(function () {
+    browser.find('.button.remove').on('click', function () {
         browser.fadeOut(850);
     });
 
-    browser.find('.button.add').click(function () {
+    browser.find('.button.add').on('click', function () {
         // callback
         res = {'kPrimary': 0, 'kKey': 0, 'cName': '', 'cUrl': ''};
         type = browser.attr('type');
@@ -562,7 +562,7 @@ function reloadFavs() {
 }
 
 function switchCouponTooltipVisibility() {
-    $('#cWertTyp').change(function() {
+    $('#cWertTyp').on('change', function() {
         if($(this).val() === 'prozent') {
             $('#fWertTooltip').parent().hide();
         } else {
@@ -578,7 +578,7 @@ $(document).ready(function () {
     switchCouponTooltipVisibility();
     $('.collapse').removeClass('in');
 
-    $('.accordion-toggle').click(function () {
+    $('.accordion-toggle').on('click', function () {
         var self = this;
         $(self).find('i').toggleClass('fa-minus fa-plus');
         $('.accordion-toggle').each(function () {
@@ -595,20 +595,20 @@ $(document).ready(function () {
             offset;
         $('body').append(tooltip);
         $(this).attr('title', '');
-        $(this).bind('mouseenter', function () {
+        $(this).on('mouseenter', function () {
             var help = $('#help' + id);
             offset = $(this).offset();
             help.css({
                 left: offset.left - help.outerWidth() + $(this).outerWidth() + 5,
                 top: offset.top - ((help.outerHeight() - $(this).outerHeight()) / 2)
             }).fadeIn(200);
-        }).bind('mouseleave', function () {
+        }).on('mouseleave', function () {
             $('#help' + id).hide();
         });
     });
 
     $('body').tooltip({selector: '[data-toggle=tooltip]'});
-    $('#user_login').focus();
+    $('#user_login').trigger('focus');
     $('#check-menus').on('change', function () {
         $(this).parent().submit();
     });
@@ -624,7 +624,7 @@ $(document).ready(function () {
 
     });
 
-    $('#fav-add').click(function() {
+    $('#fav-add').on('click', function() {
         var title = $('.content-header h1').text();
         var url = window.location.href;
         ioCall('addFav', [title, url], function() {
@@ -640,7 +640,7 @@ $(document).ready(function () {
     $('button.blue, input[type=submit].blue').addClass('btn btn-primary');
     $('button.orange, input[type=submit].orange').addClass('btn btn-default');
 
-    $(window).scroll(function () {
+    $(window).on('scroll', function () {
         if ($(this).scrollTop() > 100) {
             $('#scroll-top').fadeIn();
         } else {
@@ -648,7 +648,7 @@ $(document).ready(function () {
         }
     });
     //Click event to scroll to top
-    $('#scroll-top').click(function () {
+    $('#scroll-top').on('click', function () {
         $('html, body').animate({scrollTop: 0}, 800);
         return false;
     });
@@ -660,7 +660,7 @@ $(document).ready(function () {
         $('body a[href="' + location.hash + '"]').tab('show');
     }
     //Checkboxen de-/aktivieren die über der Einstellung liegen und in der gleichen Klasse sind
-    $(".Boxen").click(function () {
+    $(".Boxen").on('click', function () {
         var checkbox = $(this).parent().parent().find("input:not(.Boxen)");
         var activitem = $(this).prop("checked");
         $(checkbox).each(function (id, item) {
@@ -685,7 +685,7 @@ $(document).ready(function () {
     });
 
     // Massenerstellung von Kupons de-/aktivieren
-    $("#couponCreation").change(function () {
+    $("#couponCreation").on('change', function () {
         massCreationCoupons();
     });
 });
@@ -865,7 +865,7 @@ function enableTypeahead(selector, funcName, display, suggestion, onSelect)
                 }
             }
         )
-        .bind('typeahead:select', onSelect)
+        .on('typeahead:select', onSelect)
     ;
 }
 

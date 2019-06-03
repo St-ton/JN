@@ -602,7 +602,7 @@ function gibStepUnregistriertBestellen(): void
         ->assign('Kunde', $Kunde ?? null)
         ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
         ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
-        ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
+        ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
         ->assign('code_registrieren', false)
         ->assign('customerAttributes', $Kunde !== null ? $Kunde->getCustomerAttributes() : getKundenattribute($_POST));
@@ -2764,6 +2764,7 @@ function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
 
 /**
  * @return CustomerFields
+ * @deprecated since 5.0.0 - use CustomerFields class instead
  */
 function gibSelbstdefKundenfelder(): CustomerFields
 {
@@ -3022,7 +3023,7 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
                    true
                )
            )
-           ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
+           ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
            ->assign('customerAttributes', Frontend::getCustomer()->getCustomerAttributes())
            ->assign(
                'warning_passwortlaenge',
@@ -3060,7 +3061,7 @@ function setzeFehlerSmartyRechnungsadresse($missingData, $nUnreg = 0, $post = nu
                 'LieferLaender',
                 ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID())
             )
-            ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
+            ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
             ->assign(
                 'warning_passwortlaenge',
                 lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge'])

@@ -6,6 +6,7 @@
 
 use JTL\CheckBox;
 use JTL\Customer\CustomerAttributes;
+use JTL\Customer\CustomerFields;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
 use JTL\DB\ReturnType;
@@ -238,7 +239,7 @@ function gibFormularDaten(int $nCheckout = 0)
             'warning_passwortlaenge',
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))
         )
-        ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
+        ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()));
 
     if ($nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1)

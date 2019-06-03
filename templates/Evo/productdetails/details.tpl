@@ -16,13 +16,15 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
-{include file='snippets/opc_mount_point.tpl' id='opc_article_content_prepend'}
+{include file='snippets/opc_mount_point.tpl' id='opc_before_buy_form'}
 
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}" class="evo-validate">
     {$jtl_token}
     <div class="row product-primary" id="product-offer">
         <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_gallery'}
             {include file='productdetails/image.tpl'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_after_gallery'}
         </div>
         <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
             {block name='productdetails-info'}
@@ -47,7 +49,8 @@
 
                 <div class="product-headline hidden-xs">
                     {block name='productdetails-info-product-title'}
-                    <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
+                        {include file='snippets/opc_mount_point.tpl' id='opc_before_headline'}
+                        <h1 class="fn product-title" itemprop="name">{$Artikel->cName}</h1>
                     {/block}
                 </div>
 
@@ -109,9 +112,11 @@
                 {block name='productdetails-info-description-wrapper'}
                 {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                     {block name='productdetails-info-description'}
-                    <div class="shortdesc" itemprop="description">
-                        {$Artikel->cKurzBeschreibung}
-                    </div>
+                        {include file='snippets/opc_mount_point.tpl' id='opc_before_short_desc'}
+                        <div class="shortdesc" itemprop="description">
+                            {$Artikel->cKurzBeschreibung}
+                        </div>
+                        {include file='snippets/opc_mount_point.tpl' id='opc_after_short_desc'}
                     {/block}
                     <div class="clearfix top10"></div>
                 {/if}
@@ -178,6 +183,7 @@
                 {/if}
             </div>{* /product-info-inner *}
             {/block}{* productdetails-info *}
+            {include file='snippets/opc_mount_point.tpl' id='opc_after_product_info'}
         </div>{* /col *}
         {if $Artikel->bHasKonfig}
             {block name='productdetails-config'}
@@ -195,8 +201,6 @@
     {/block}
 </form>
 
-{include file='snippets/opc_mount_point.tpl' id='opc_article_content_append'}
-
 {if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
     <div class="clearfix"></div>
 
@@ -205,8 +209,6 @@
     {/block}
 
     <div class="clearfix"></div>
-
-    {include file='snippets/opc_mount_point.tpl' id='opc_article_tabs_prepend'}
 
     {*SLIDERS*}
     {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0

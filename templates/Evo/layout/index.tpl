@@ -76,8 +76,6 @@
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_404}
             {include file='page/404.tpl'}
         {/if}
-
-        {include file='snippets/opc_mount_point.tpl' id='opc_content'}
     {/block}
 
     {block name='footer'}

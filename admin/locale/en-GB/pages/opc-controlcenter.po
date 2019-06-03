@@ -32,9 +32,6 @@ msgstr "Delete all drafts of this page?"
 msgid "sureDelete"
 msgstr "Delete this draft?"
 
-msgid "replaceExtend"
-msgstr "Replaced/Extended"
-
 msgid "lastChange"
 msgstr "Last edited on"
 

@@ -1,85 +1,66 @@
-function OPC(env)
+class OPC
 {
-    debuglog('construct OPC');
-
-    bindProtoOnHandlers(this);
-    setJtlToken(env.jtlToken);
-    installJqueryFixes();
-
-    this.error        = env.error;
-    this.io           = new IO(this.onIOReady);
-    this.page         = new Page(this.io, env.shopUrl, env.pageKey);
-    this.gui          = new GUI(this.io, this.page);
-    this.iframe       = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
-    this.tutorial     = new Tutorial(this.gui, this.iframe);
-    this.pagetree     = new PageTree(this.page, this.iframe);
-    this.previewFrame = new PreviewFrame();
-}
-
-OPC.prototype = {
-
-    constructor: OPC,
-
-    onIOReady: function()
+    constructor(env)
     {
-        debuglog('on IO ready');
+        bindProtoOnHandlers(this);
+        setJtlToken(env.jtlToken);
+        installJqueryFixes();
 
-        this.gui.init(this.iframe, this.previewFrame, this.tutorial, this.error);
-        this.tutorial.init();
-        this.page.init(this.onPageLocked);
-        this.pagetree.init();
-        this.previewFrame.init();
-    },
+        this.error        = env.error;
+        this.io           = new IO();
+        this.page         = new Page(this.io, env.shopUrl, env.pageKey);
+        this.gui          = new GUI(this.io, this.page);
+        this.iframe       = new Iframe(this.io, this.gui, this.page, env.shopUrl, env.templateUrl);
+        this.tutorial     = new Tutorial(this.gui, this.iframe);
+        this.pagetree     = new PageTree(this.page, this.iframe);
+        this.previewFrame = new PreviewFrame();
+    }
 
-    onPageLocked: function(state)
+    init()
     {
-        debuglog('OPC onPageLocked');
+        this.io.init()
+            .then(() => {
+                this.gui.init(this.iframe, this.previewFrame, this.tutorial, this.error);
+                this.tutorial.init();
+                this.pagetree.init();
+                this.previewFrame.init();
+                return this.page.lock();
+            })
+            .catch(er => this.gui.showError(
+                'Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.'
+            ))
+            .then(() => this.page.loadDraft())
+            .then(() => this.iframe.init(this.pagetree))
+            .then(() => {
+                this.gui.hideLoader();
+                this.pagetree.render();
 
-        if (state === false) {
-            this.gui.showError('Die Seite wird derzeit bearbeitet und kann von Ihnen nicht bearbeitet werden.');
-        } else {
-            this.iframe.init(this.onPageLoadInital, this.pagetree);
-        }
-    },
+                if(this.page.hasUnsavedContent()) {
+                    this.gui.showRestoreUnsaved();
+                    this.gui.unsavedRevision.show();
+                } else {
+                    this.gui.unsavedRevision.hide();
+                }
+            });
+    }
 
-    onPageLoadInital: function()
-    {
-        this.onPageLoad();
-
-        if(this.page.hasUnsavedContent()) {
-            this.gui.showRestoreUnsaved();
-            this.gui.unsavedRevision.show();
-        } else {
-            this.gui.unsavedRevision.hide();
-        }
-    },
-
-    onPageLoad: function()
-    {
-        debuglog('OPC onPageLoad');
-
-        this.gui.hideLoader();
-        this.pagetree.render();
-    },
-
-    selectImageProp: function(propName)
+    selectImageProp(propName)
     {
         this.gui.selectImageProp(propName);
-    },
+    }
 
-    selectVideoProp: function(propName)
+    selectVideoProp(propName)
     {
         this.gui.selectVideoProp(propName);
-    },
+    }
 
-    setConfigSaveCallback: function(callback)
+    setConfigSaveCallback(callback)
     {
         this.gui.setConfigSaveCallback(callback);
-    },
+    }
 
-    setImageSelectCallback: function(callback)
+    setImageSelectCallback(callback)
     {
         this.gui.setImageSelectCallback(callback);
-    },
-
-};
+    }
+}

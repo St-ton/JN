@@ -419,19 +419,13 @@ if (Form::validateToken()) {
                 // tnewsletterqueue fuellen
                 $db->insert('tnewsletterqueue', $tnewsletterqueue);
                 $nLimitM = JOBQUEUE_LIMIT_M_NEWSLETTER;
-
-                $oLogger->debug('foreignKeyID: '.print_r($oNewsletter->kNewsletter, true)); // --DEBUG--
-
                 // update cron table and let do cron package the job
-                $oLogger->debug('crontab row: '.print_r($cronTabEntry, true)); // --DEBUG--
                 $cronTabEntry->foreignKeyID = $oNewsletter->kNewsletter;
                 $cronTabEntry->startDate    = 'NOW()';
                 $cronTabEntry->startTime    = 'NOW()';
                 $cronTabEntry->lastStart    = '_DBNULL_';
                 $cronTabEntry->lastFinish   = '_DBNULL_';
-                $oLogger->debug('NEW crontab row: '.print_r($cronTabEntry, true)); // --DEBUG--
                 $db->update('tcron', 'cronID', $cronTabEntry->cronID, $cronTabEntry);
-
                 // Baue Arrays mit kKeys
                 $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
                 $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);

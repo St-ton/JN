@@ -4,11 +4,8 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Remove replace column from topcpage
- *
- * @author Danny Raufeisen
+ * Class Migration_20190528085500
  */
-
 class Migration_20190528085500 extends Migration implements IMigration
 {
     protected $author      = 'Danny Raufeisen';

@@ -1,5 +1,5 @@
 {assign var=title value=__('pluginverwaltungLicenceKeyInput')}
-{include file='tpl_inc/seite_header.tpl' cTitel=$title|cat:': '|cat:$oPlugin->cName cBeschreibung=__('pluginverwaltungDesc')}
+{include file='tpl_inc/seite_header.tpl' cTitel=$title|cat:': '|cat:$oPlugin->getMeta()->getName() cBeschreibung=__('pluginverwaltungDesc')}
 <div id="content" class="container-fluid">
     <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
         {$jtl_token}

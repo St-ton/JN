@@ -6,7 +6,7 @@ msgid "buyNow"
 msgstr "Jetzt kaufen"
 
 msgid "loading"
-msgstr "Wird geladen..."
+msgstr "Wird geladen…"
 
 msgid "communityForum"
 msgstr "Community-Forum"
@@ -79,3 +79,21 @@ msgstr "Mehr Details unter <a href=\"statistik.php?s=3\">Statistiken</a>"
 
 msgid "noStatisticsFound"
 msgstr "Keine Statistiken gefunden"
+
+msgid "moduleSurvey"
+msgstr "Umfragen Modul"
+
+msgid "moduleSelectionWizard"
+msgstr "Auswahlassistent Modul"
+
+msgid "moduleUpload"
+msgstr "Upload Modul"
+
+msgid "moduleDownload"
+msgstr "Download Modul"
+
+msgid "moduleConfigurator"
+msgstr "Konfigurator Modul"
+
+msgid "moduleBrandFree"
+msgstr "Brandfree Option"

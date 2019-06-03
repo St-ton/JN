@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class ExtensionDir
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class ExtensionDir extends AbstractItem
+final class ExtensionDir extends AbstractItem
 {
     /**
      * @inheritdoc

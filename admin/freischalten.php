@@ -121,7 +121,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     // Bewertungen
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
+            if (schalteBewertungFrei($_POST['kBewertung'])) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingUnlock'), 'successRatingUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');

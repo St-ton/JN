@@ -4,109 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
-use JTL\Alert\Alert;
-use JTL\Catalog\Product\Artikel;
+use JTL\Rating\RatingController;
 use JTL\Shop;
-use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_INCLUDES . 'bewertung_inc.php';
 
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
-$params        = Shop::getParameters();
-$conf          = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
-$ratingAllowed = true;
-if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
-    $messageSaveRating = speicherBewertung(
-        $params['kArtikel'],
-        Frontend::getCustomer()->getID(),
-        Shop::getLanguageID(),
-        Request::verifyGPDataString('cTitel'),
-        Request::verifyGPDataString('cText'),
-        $params['nSterne']
-    );
-    header('Location: ' . $messageSaveRating . '#alert-list', true, 303);
-    exit;
-} elseif (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
-    speicherHilfreich(
-        $params['kArtikel'],
-        Frontend::getCustomer()->getID(),
-        Shop::getLanguageID(),
-        Request::verifyGPCDataInt('btgseite'),
-        Request::verifyGPCDataInt('btgsterne')
-    );
-} elseif (Request::verifyGPCDataInt('bfa') === 1) {
-    if (Frontend::getCustomer()->getID() <= 0) {
-        $helper = Shop::Container()->getLinkService();
-        header(
-            'Location: ' . $helper->getStaticRoute('jtl.php') .
-                '?a=' . Request::verifyGPCDataInt('a') .
-                '&bfa=1&r=' . R_LOGIN_BEWERTUNG,
-            true,
-            303
-        );
-        exit();
-    }
-    $AktuellerArtikel = new Artikel();
-    $AktuellerArtikel->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());
-    if (!$AktuellerArtikel->kArtikel) {
-        header('Location: ' . Shop::getURL() . '/', true, 303);
-        exit;
-    }
-    if ($AktuellerArtikel->Bewertungen === null) {
-        $AktuellerArtikel->holeBewertung(
-            Shop::getLanguageID(),
-            $conf['bewertung']['bewertung_anzahlseite'],
-            0,
-            -1,
-            $conf['bewertung']['bewertung_freischalten'],
-            $params['nSortierung']
-        );
-        $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
-    }
-    if (!Frontend::getCustomer()->isLoggedIn()) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
-            Shop::Lang()->get('loginFirst', 'product rating'),
-            'loginFirst',
-            ['showInAlertListTemplate' => false]
-        );
-        $ratingAllowed = false;
-    } elseif (pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, Frontend::getCustomer()) === false) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
-            Shop::Lang()->get('productNotBuyed', 'product rating'),
-            'productNotBuyed',
-            ['showInAlertListTemplate' => false]
-        );
-        $ratingAllowed = false;
-    }
-
-    Shop::Smarty()->assign(
-        'BereitsBewertet',
-        pruefeKundeArtikelBewertet(
-            $AktuellerArtikel->kArtikel,
-            $_SESSION['Kunde']->kKunde
-        )
-    )
-        ->assign('Artikel', $AktuellerArtikel)
-        ->assign('ratingAllowed', $ratingAllowed)
-        ->assign(
-            'oBewertung',
-            Shop::Container()->getDB()->select(
-                'tbewertung',
-                ['kArtikel', 'kKunde'],
-                [$AktuellerArtikel->kArtikel, Frontend::getCustomer()->getID()]
-            )
-        );
-
+$smarty     = Shop::Smarty();
+$controller = new RatingController(Shop::Container()->getDB(), Shop::Container()->getCache(), $smarty);
+if ($controller->handleRequest() === true) {
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-    Shop::Smarty()->display('productdetails/review_form.tpl');
-} else {
-    header('Location: ' . Shop::getURL() . '/', true, 303);
-    exit;
+    $smarty->display('productdetails/review_form.tpl');
 }
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

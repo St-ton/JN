@@ -31,7 +31,7 @@
                 <td><textarea id="cText" class="ckeditor" name="cText" rows="15" cols="60">{$oBewertung->cText}</textarea></td>
             </tr>
             <tr>
-                <td><label for="cAntwort">{__('ratingReply')}:</label></td>
+                <td><label for="cAntwort">{__('ratingReply')}</label></td>
                 <td><textarea id="cAntwort" class="ckeditor" name="cAntwort" rows="15" cols="60">{$oBewertung->cAntwort}</textarea></td>
             </tr>
         </table>

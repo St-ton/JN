@@ -48,6 +48,11 @@ class DataAttribute
     public $foreignKeyChild;
 
     /**
+     * @var bool
+     */
+    public $dynamic;
+
+    /**
      * DataAttribute constructor.
      *
      * @param string      $name - name of the attribute
@@ -57,6 +62,7 @@ class DataAttribute
      * @param bool        $isPrimaryKey - true if the attribute is the primary key, false otherwise
      * @param string      $foreignKey
      * @param string|null $foreignKeyChild
+     * @param bool        $dynamic
      */
     public function __construct(
         string $name,
@@ -65,7 +71,8 @@ class DataAttribute
         bool $nullable = true,
         bool $isPrimaryKey = false,
         string $foreignKey = null,
-        $foreignKeyChild = null
+        $foreignKeyChild = null,
+        bool $dynamic = false
     ) {
         $this->name            = $name;
         $this->dataType        = $dataType;
@@ -74,6 +81,7 @@ class DataAttribute
         $this->isPrimaryKey    = $isPrimaryKey;
         $this->foreignKey      = $foreignKey;
         $this->foreignKeyChild = $foreignKeyChild;
+        $this->dynamic         = $dynamic;
     }
 
     /**
@@ -86,6 +94,7 @@ class DataAttribute
      * @param bool        $isPrimaryKey - true if the attribute is the primary key, false otherwise
      * @param string      $foreignKey
      * @param string|null $foreignKeyChild
+     * @param bool        $dynamic
      * @return self
      */
     public static function create(
@@ -95,8 +104,9 @@ class DataAttribute
         bool $nullable = true,
         bool $isPrimaryKey = false,
         string $foreignKey = null,
-        $foreignKeyChild = null
+        $foreignKeyChild = null,
+        bool $dynamic = false
     ): self {
-        return new self($name, $dataType, $default, $nullable, $isPrimaryKey, $foreignKey, $foreignKeyChild);
+        return new self($name, $dataType, $default, $nullable, $isPrimaryKey, $foreignKey, $foreignKeyChild, $dynamic);
     }
 }

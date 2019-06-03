@@ -4,14 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
-use JTL\Sprache;
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -510,7 +509,6 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     $smarty->assign('tab', 'mapping');
 }
 
-$languages         = Sprache::getAllLanguages();
 $queryCount        = $db->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrage

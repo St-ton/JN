@@ -24,12 +24,12 @@
                 <input type="text" name="cTemplatename" id="cTemplatename" class="form-control{if isset($xPlausiVar_arr.cTemplatename)} fieldfillout{/if}" value="{if isset($xPostVar_arr.cTemplatename)}{$xPostVar_arr.cTemplatename}{elseif $linkGroup !== null}{$linkGroup->getTemplate()}{/if}" />
             </div>
             {foreach $sprachen as $sprache}
-                {assign var=cISO value=$sprache->cISO}
+                {assign var=cISO value=$sprache->getCode()}
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
+                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->getLocalizedName()})</label>
                     </span>
-                    <input class="form-control" type="text" name="cName_{$cISO}" id="cName_{$cISO}" value="{if $linkGroup !== null}{$linkGroup->getName($sprache->kSprache)}{/if}" />
+                    <input class="form-control" type="text" name="cName_{$cISO}" id="cName_{$cISO}" value="{if $linkGroup !== null}{$linkGroup->getName($sprache->getID())}{/if}" />
                 </div>
             {/foreach}
         </div>

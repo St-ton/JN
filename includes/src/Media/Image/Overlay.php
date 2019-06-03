@@ -7,9 +7,9 @@
 namespace JTL\Media\Image;
 
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Template;
 use stdClass;
 
@@ -171,7 +171,7 @@ class Overlay
     {
         $overlay = $this->getDataForLanguage($this->getLanguage());
         // get overlay data for fallback language
-        $overlay = $overlay ?? $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
+        $overlay = $overlay ?? $this->getDataForLanguage(LanguageHelper::getDefaultLanguage()->kSprache);
         if (!empty($overlay)) {
             $this->setActive($overlay->nAktiv)
                 ->setMargin($overlay->nMargin)
@@ -242,7 +242,7 @@ class Overlay
             $defaultImgName = self::IMAGE_DEFAULT['name'] . '_' . $this->getLanguage() . '_'
                 . $this->getType() . self::IMAGE_DEFAULT['extension'];
             $imgName        = self::IMAGE_DEFAULT['name'] . '_' .
-                Sprache::getDefaultLanguage()->kSprache . '_' .
+                LanguageHelper::getDefaultLanguage()->kSprache . '_' .
                 $this->getType() . self::IMAGE_DEFAULT['extension'];
 
             if (\file_exists(\PFAD_ROOT . \PFAD_SUCHSPECIALOVERLAY_NORMAL . $defaultImgName)) {
@@ -250,7 +250,7 @@ class Overlay
                 $fallbackImageName = $defaultImgName;
                 $fallbackPath      = true;
             } else {
-                $overlayDefaultLanguage = $this->getDataForLanguage(Sprache::getDefaultLanguage()->kSprache);
+                $overlayDefaultLanguage = $this->getDataForLanguage(LanguageHelper::getDefaultLanguage()->kSprache);
                 if (!empty($overlayDefaultLanguage)) {
                     if ($overlayDefaultLanguage->cTemplate !== self::DEFAULT_TEMPLATE
                         && \file_exists(

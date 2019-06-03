@@ -4,14 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Backend\CustomerFields;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Backend\CustomerFields;
-use JTL\PlausiKundenfeld;
-use JTL\Sprache;
 use JTL\Helpers\Text;
+use JTL\PlausiKundenfeld;
 use JTL\Shop;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

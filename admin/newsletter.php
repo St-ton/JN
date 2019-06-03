@@ -4,19 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
+use JTL\Alert\Alert;
 use JTL\Cron\JobQueue;
-use JTL\Kampagne;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundengruppe;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Kampagne;
+use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -25,11 +24,11 @@ $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'newsletter_inc.php';
 
 $db            = Shop::Container()->getDB();
-$newsletterTPL = null;
 $conf          = Shop::getSettings([CONF_NEWSLETTER]);
+$alertHelper   = Shop::Container()->getAlertService();
+$newsletterTPL = null;
 $step          = 'uebersicht';
 $option        = '';
-$alertHelper   = Shop::Container()->getAlertService();
 
 $inactiveSearchSQL         = new stdClass();
 $inactiveSearchSQL->cJOIN  = '';

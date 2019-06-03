@@ -4,10 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

@@ -7,8 +7,8 @@
 use JTL\Backend\Revision;
 use JTL\Helpers\Form;
 use JTL\Exportformat;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
@@ -226,7 +226,7 @@ if ($step === 'uebersicht') {
     );
     $eCount        = count($exportformate);
     for ($i = 0; $i < $eCount; $i++) {
-        $exportformate[$i]->Sprache              = Shop::Lang()->getLanguageByID(
+        $exportformate[$i]->Sprache              = LanguageHelper::getLanguageByID(
             (int)$exportformate[$i]->kSprache
         );
         $exportformate[$i]->Waehrung             = $db->select(
@@ -250,13 +250,12 @@ if ($step === 'uebersicht') {
 }
 
 if ($step === 'neuer Export') {
-    $smarty->assign('sprachen', Sprache::getAllLanguages())
-           ->assign('kundengruppen', $db->query(
-               'SELECT * 
+    $smarty->assign('kundengruppen', $db->query(
+        'SELECT * 
                     FROM tkundengruppe 
                     ORDER BY cName',
-               ReturnType::ARRAY_OF_OBJECTS
-           ))
+        ReturnType::ARRAY_OF_OBJECTS
+    ))
            ->assign('waehrungen', $db->query(
                'SELECT * 
                     FROM twaehrung 

@@ -7,6 +7,7 @@
 namespace JTL\Model;
 
 use Exception;
+use function Functional\select;
 use Illuminate\Support\Collection;
 use Iterator;
 use JTL\DB\DbInterface;
@@ -52,7 +53,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     /**
      * @var DbInterface
      */
-    protected $db;
+    private $db;
 
     /**
      * @inheritDoc
@@ -77,17 +78,41 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function __construct($attributes = null, DbInterface $db = null)
     {
-        $this->db           = $db;
-        $this->iteratorKeys = \array_keys($this->getAttributes());
-        $this->onRegisterHandlers();
+        $this->prepare($db);
         if ($attributes !== null) {
             $this->fill($attributes);
             if ($db !== null) {
                 $this->init((array)$attributes);
             }
+            $this->onInstanciation();
         } else {
             $this->fabricate();
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return select(\array_keys(\get_object_vars($this)), function ($e) {
+            return $e !== 'getters' && $e !== 'db' && $e !== 'setters';
+        });
+    }
+
+    public function __wakeup()
+    {
+        $this->onRegisterHandlers();
+    }
+
+    /**
+     * @param DbInterface|null $db
+     */
+    public function prepare(DbInterface $db = null): void
+    {
+        $this->db           = $db;
+        $this->iteratorKeys = \array_keys($this->getAttributes());
+        $this->onRegisterHandlers();
     }
 
     /**
@@ -127,7 +152,8 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         $attributes = $this->getAttributes();
 
-        return \array_key_exists($name, $attributes) && $this->getAttribValue($name) !== null;
+        return (\array_key_exists($name, $attributes) && $this->getAttribValue($name) !== null)
+            || ($this->hasMapping($name) && $this->getAttribValue($this->getMapping($name)) !== null);
     }
 
     /**
@@ -362,6 +388,10 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
 
         return $result;
+    }
+
+    protected function onInstanciation(): void
+    {
     }
 
     /**
@@ -623,6 +653,26 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
+     * @param string $attribName
+     * @return bool
+     */
+    private function hasMapping(string $attribName): bool
+    {
+        static $mapping = [];
+
+        if (!isset($mapping[$attribName])) {
+            foreach ($this->getAttributes() as $name => $attribute) {
+                if ($attribute->name === $attribName) {
+                    $mapping[$attribName] = $name;
+                    break;
+                }
+            }
+        }
+
+        return isset($mapping[$attribName]);
+    }
+
+    /**
      * @inheritDoc
      */
     public function getKey(): int
@@ -715,9 +765,12 @@ abstract class DataModel implements DataModelInterface, Iterator
         $attributes = $this->getAttributes();
 
         if (!\array_key_exists($attribName, $attributes)) {
+            Shop::dbg($attribName, false, '$attribName:');
+            Shop::dbg($this->members, false, '$members:');
+            Shop::dbg(\get_object_vars($this), false, 'get_object_vars:');
+            Shop::dbg($this, true, '$attributes:', 6);
             throw new Exception(__METHOD__ . ': invalid attribute(' . $attribName . ')', self::ERR_INVALID_PARAM);
         }
-
         if (isset($this->setters[$attribName])) {
             $this->members[$attribName] = self::cast(
                 \call_user_func($this->setters[$attribName], $value, $this),
@@ -744,7 +797,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function rawArray(bool $iterated = false): array
     {
         $result = [];
-
         if ($iterated) {
             foreach ($this as $member => $value) {
                 if (\is_a($value, Collection::class)) {
@@ -807,12 +859,12 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function getSqlObject(): stdClass
     {
         $result = new stdClass();
-        foreach ($this->getAttributes() as $name => $attribute) {
-            if ($attribute->foreignKey !== null || $attribute->foreignKeyChild !== null) {
+        foreach ($this->getAttributes() as $name => $attr) {
+            if ($attr->foreignKey !== null || $attr->foreignKeyChild !== null || $attr->dynamic === true) {
                 // do not add child relations to sql statement
                 continue;
             }
-            $member          = $attribute->name;
+            $member          = $attr->name;
             $result->$member = $this->members[$name];
         }
 

@@ -6,21 +6,22 @@
 
 namespace JTL\Sitemap;
 
-use function Functional\some;
+use JTL\Customer\Kundengruppe;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
-use JTL\Customer\Kundengruppe;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\Sitemap\Factories\FactoryInterface;
 use JTL\Sitemap\ItemRenderers\RendererInterface;
 use JTL\Sitemap\Items\ItemInterface;
 use JTL\Sitemap\SchemaRenderers\SchemaRendererInterface;
-use JTL\Sprache;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use function Functional\first;
+use function Functional\some;
 
 /**
  * Class Export
@@ -116,7 +117,7 @@ final class Export
 
     /**
      * @param array              $customerGroupIDs
-     * @param array              $languages
+     * @param LanguageModel[]    $languages
      * @param FactoryInterface[] $factories
      */
     public function generate(array $customerGroupIDs, array $languages, array $factories): void
@@ -129,7 +130,7 @@ final class Export
         $res        = '';
 
         foreach ($languages as $language) {
-            $language->cISO639 = Text::convertISO2ISO639($language->cISO);
+            $language->setIso639(Text::convertISO2ISO639($language->cISO));
         }
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
@@ -176,7 +177,7 @@ final class Export
      */
     private function setSessionData(array $customerGroupIDs): void
     {
-        $defaultLang             = Sprache::getDefaultLanguage();
+        $defaultLang             = LanguageHelper::getDefaultLanguage();
         $defaultLangID           = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;

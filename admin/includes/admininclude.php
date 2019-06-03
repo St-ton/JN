@@ -8,11 +8,11 @@ use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Notification;
 use JTL\Backend\Revision;
 use JTL\Helpers\Form;
+use JTL\Language\LanguageHelper;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
 use JTL\Shop;
-use JTL\Sprache;
 use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
@@ -59,7 +59,7 @@ $db       = Shop::Container()->getDB();
 $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
-$lang     = Sprache::getInstance($db, $cache);
+$lang     = LanguageHelper::getInstance($db, $cache);
 $session  = Backend::getInstance();
 $oAccount = Shop::Container()->getAdminAccount();
 

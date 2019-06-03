@@ -16,12 +16,12 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -363,7 +363,7 @@ class Kunde
             foreach (\get_object_vars($user) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
+            $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
             // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
             if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
                 $_upd            = new stdClass();
@@ -472,7 +472,7 @@ class Kunde
             }
             $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
-            $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
+            $this->angezeigtesLand  = LanguageHelper::getCountryCodeByCountryName($this->cLand);
             $this->entschluesselKundendaten();
             $this->kKunde         = (int)$this->kKunde;
             $this->kKundengruppe  = (int)$this->kKundengruppe;
@@ -655,7 +655,7 @@ class Kunde
     {
         \preg_match('/[a-zA-Z]{2}/', $iso, $hits);
         if (\mb_strlen($hits[0]) !== \mb_strlen($iso)) {
-            $cISO = Sprache::getIsoCodeByCountryName($iso);
+            $cISO = LanguageHelper::getIsoCodeByCountryName($iso);
             if ($cISO !== 'noISO' && $cISO !== '') {
                 $iso = $cISO;
             }

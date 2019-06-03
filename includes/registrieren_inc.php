@@ -13,11 +13,11 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * @param array $post
@@ -124,7 +124,7 @@ function kundeSpeichern(array $post)
             $knd->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
             $knd->dErstellt         = 'NOW()';
             $knd->nRegistriert      = 1;
-            $knd->angezeigtesLand   = Sprache::getCountryCodeByCountryName($knd->cLand);
+            $knd->angezeigtesLand   = LanguageHelper::getCountryCodeByCountryName($knd->cLand);
             $cLand                  = $knd->cLand;
             $knd->cPasswortKlartext = $cPasswortKlartext;
             $obj                    = new stdClass();

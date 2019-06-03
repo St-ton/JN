@@ -15,8 +15,8 @@ use JTL\Filter\States\BaseCategory;
 use JTL\Filter\StateSQL;
 use JTL\Filter\Type;
 use JTL\Helpers\Category as CategoryHelper;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -172,7 +172,7 @@ class Category extends BaseCategory
         $cSQLKategorieSprache        = new stdClass();
         $cSQLKategorieSprache->cJOIN = '';
         $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
-        if (!Sprache::isDefaultLanguageActive()) {
+        if (!LanguageHelper::isDefaultLanguageActive()) {
             $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $sql->addJoin((new Join())
                 ->setComment('join5 from ' . __METHOD__)

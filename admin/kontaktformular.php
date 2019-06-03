@@ -5,8 +5,8 @@
  */
 
 use JTL\Helpers\Form;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
 
@@ -26,7 +26,7 @@ if (isset($_GET['del']) && (int)$_GET['del'] > 0 && Form::validateToken()) {
 
 if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateToken()) {
     Shop::Container()->getDB()->delete('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR);
-    $sprachen = Sprache::getAllLanguages();
+    $sprachen = LanguageHelper::getAllLanguages();
     foreach ($sprachen as $sprache) {
         $spezialContent1                  = new stdClass();
         $spezialContent2                  = new stdClass();
@@ -85,7 +85,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
                 'successSubjectSave'
             );
         }
-        $sprachen                             = Sprache::getAllLanguages();
+        $sprachen                             = LanguageHelper::getAllLanguages();
         $neuerBetreffSprache                  = new stdClass();
         $neuerBetreffSprache->kKontaktBetreff = $kKontaktBetreff;
         foreach ($sprachen as $sprache) {
@@ -187,7 +187,6 @@ if ($step === 'betreff') {
 }
 
 $smarty->assign('step', $step)
-       ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('cTab', $cTab)
        ->display('kontaktformular.tpl');
 

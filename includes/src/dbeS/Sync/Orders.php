@@ -15,10 +15,10 @@ use JTL\Customer\KundenwerbenKunden;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Emailvorlage;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -318,7 +318,7 @@ final class Orders extends AbstractSync
                     WHEN tzahlungsart.cName LIKE :name3 THEN 3
                     END, kZahlungsart',
                 [
-                    'iso'    => Sprache::getLanguageDataByType('', (int)$order->kSprache),
+                    'iso'    => LanguageHelper::getLanguageDataByType('', (int)$order->kSprache),
                     'search' => '%' . $paymentMethodName . '%',
                     'name1'  => $paymentMethodName,
                     'name2'  => $paymentMethodName . '%',

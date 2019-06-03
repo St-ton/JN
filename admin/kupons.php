@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Checkout\Kupon;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Checkout\Kupon;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
-use JTL\Pagination\Pagination;
 use JTL\Pagination\Operation;
-use JTL\DB\ReturnType;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -25,7 +25,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $action       = '';
 $tab          = Kupon::TYPE_STANDARD;
-$oSprache_arr = Sprache::getAllLanguages();
+$oSprache_arr = LanguageHelper::getAllLanguages();
 $oKupon       = null;
 $alertHelper  = Shop::Container()->getAlertService();
 $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
@@ -181,7 +181,6 @@ if ($action === 'bearbeiten') {
            ->assign('oHersteller_arr', $oHersteller_arr)
            ->assign('oKategorie_arr', $oKategorie_arr)
            ->assign('kKunde_arr', $kKunde_arr)
-           ->assign('oSprache_arr', $oSprache_arr)
            ->assign('oKuponName_arr', $oKuponName_arr)
            ->assign('oKupon', $oKupon);
 } else {

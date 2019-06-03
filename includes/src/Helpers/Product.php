@@ -20,19 +20,19 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Konfiggruppe;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigurator;
-use JTL\Optin\Optin;
-use JTL\Optin\OptinRefData;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinAvailAgain;
+use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use JTL\Sprache;
 use stdClass;
 use function Functional\group;
-use JTL\Optin\OptinAvailAgain;
 
 /**
  * Class Product
@@ -297,7 +297,7 @@ class Product
             $attributes[]      = $i;
             $attributeValues[] = $propertyValues[$i];
         }
-        if ($langID > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $attr->cSELECT = 'teigenschaftsprache.cName AS cName_teigenschaftsprache, ';
             $attr->cJOIN   = 'LEFT JOIN teigenschaftsprache
                                         ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
@@ -373,7 +373,7 @@ class Product
                         $propValue->kEigenschaft     = $oEigenschaft->kEigenschaft;
                         $propValue->cTyp             = $oEigenschaft->cTyp;
 
-                        if ($langID > 0 && !Sprache::isDefaultLanguageActive()) {
+                        if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                             $propValue->cEigenschaftName     = $oEigenschaft->cName_teigenschaftsprache;
                             $propValue->cEigenschaftWertName = $oEigenschaft->cName_teigenschaftwertsprache;
                         } else {

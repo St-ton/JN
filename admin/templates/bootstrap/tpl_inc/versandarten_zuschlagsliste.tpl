@@ -14,9 +14,9 @@
                 <table class="list table">
                     <tbody>
                     {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                        {assign var=cISO value=$sprache->getCode()}
                         <tr>
-                            <td width="35%">{__('showedName')} ({$sprache->name})</td>
+                            <td width="35%">{__('showedName')} ({$sprache->getLocalizedName()})</td>
                             <td>{$zuschlag->angezeigterName[$cISO]}</td>
                         </tr>
                     {/foreach}
@@ -104,11 +104,11 @@
                     </div>
                     {assign var=idx value=1}
                     {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                        {assign var=cISO value=$sprache->getCode()}
                         {assign var=idx value=$idx+1}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->getLocalizedName()})</label>
                             </span>
                             <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandzuschlag->oVersandzuschlagSprache_arr.$cISO->cName)}{$oVersandzuschlag->oVersandzuschlagSprache_arr.$cISO->cName}{/if}" tabindex="{$idx}" />
                         </div>

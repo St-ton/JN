@@ -11,6 +11,7 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
@@ -18,7 +19,6 @@ use JTL\Sitemap\Config\DefaultConfig;
 use JTL\Sitemap\Export;
 use JTL\Sitemap\ItemRenderers\DefaultRenderer;
 use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
-use JTL\Sprache;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -89,7 +89,7 @@ final class LastJob
                         );
                         $exporter->generate(
                             [Kundengruppe::getDefaultGroupID()],
-                            Sprache::getAllLanguages(),
+                            LanguageHelper::getAllLanguages(),
                             $exportConfig->getFactories()
                         );
                         $this->restartJob(\LASTJOBS_SITEMAP);

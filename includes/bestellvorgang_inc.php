@@ -4,30 +4,30 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Catalog\Product\Preise;
+use JTL\CheckBox;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Zahlungsart;
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerAttributes;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Alert\Alert;
-use JTL\CheckBox;
-use JTL\Customer\Kunde;
-use JTL\Checkout\Kupon;
-use JTL\Checkout\Lieferadresse;
-use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Plugin\Helper as PluginHelper;
+use JTL\Plugin\State;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
-use JTL\Sprache;
 use JTL\Staat;
-use JTL\Helpers\Text;
-use JTL\Checkout\Zahlungsart;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
-use JTL\Plugin\Helper as PluginHelper;
-use JTL\Plugin\State;
 use JTL\VerificationVAT\VATCheck;
 
 /**
@@ -2521,7 +2521,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
     $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
         ? ''
         : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
-    $customer->angezeigtesLand       = Sprache::getCountryCodeByCountryName($customer->cLand);
+    $customer->angezeigtesLand       = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
         if (is_object($oISO)) {
@@ -2598,7 +2598,7 @@ function getLieferdaten($post)
     $shippingAddress->cAdressZusatz   = $post['adresszusatz'] ?? null;
     $shippingAddress->cMobil          = $post['mobil'] ?? null;
     $shippingAddress->cBundesland     = $post['bundesland'] ?? null;
-    $shippingAddress->angezeigtesLand = Sprache::getCountryCodeByCountryName($shippingAddress->cLand);
+    $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
 
     if (!empty($shippingAddress->cBundesland)) {
         $oISO = Staat::getRegionByIso($shippingAddress->cBundesland, $shippingAddress->cLand);
@@ -2807,7 +2807,7 @@ function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
     $shippingAddress->cAdressZusatz   = $customer->cAdressZusatz;
     $shippingAddress->cMobil          = $customer->cMobil;
     $shippingAddress->cBundesland     = $customer->cBundesland;
-    $shippingAddress->angezeigtesLand = Sprache::getCountryCodeByCountryName($shippingAddress->cLand);
+    $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
     $_SESSION['Lieferadresse']        = $shippingAddress;
 
     return $shippingAddress;
@@ -3001,7 +3001,7 @@ function setzeSesssionAccountwahlLogin($customer): bool
         $_SESSION['NeukundenKupon'],
         $_SESSION['Kupon']
     );
-    $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+    $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
     $session                   = Frontend::getInstance();
     $session->setCustomer($customer);
 

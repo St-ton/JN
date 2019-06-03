@@ -9,6 +9,7 @@ namespace JTL\News\Admin;
 use DateTime;
 use DirectoryIterator;
 use Exception;
+use Illuminate\Support\Collection;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
@@ -16,6 +17,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
+use JTL\Language\LanguageModel;
 use JTL\News\Category;
 use JTL\News\CategoryInterface;
 use JTL\News\CategoryList;
@@ -25,7 +27,6 @@ use JTL\News\ItemList;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use Illuminate\Support\Collection;
 use function Functional\map;
 
 /**
@@ -95,9 +96,9 @@ final class Controller
     }
 
     /**
-     * @param array         $post
-     * @param array         $languages
-     * @param ContentAuthor $contentAuthor
+     * @param array           $post
+     * @param LanguageModel[] $languages
+     * @param ContentAuthor   $contentAuthor
      * @throws Exception
      */
     public function createOrUpdateNewsItem(array $post, array $languages, ContentAuthor $contentAuthor): void
@@ -134,7 +135,7 @@ final class Controller
             $this->db->delete('tnewssprache', 'kNews', $newsItemID);
             $flags = \ENT_COMPAT | \ENT_HTML401;
             foreach ($languages as $language) {
-                $iso                  = $language->cISO;
+                $iso                  = $language->getCode();
                 $langID               = (int)$post['lang_' . $iso];
                 $loc                  = new stdClass();
                 $loc->kNews           = $newsItemID;
@@ -396,9 +397,9 @@ final class Controller
     }
 
     /**
-     * @param array  $post
-     * @param array  $languages
-     * @param string $iso
+     * @param array           $post
+     * @param LanguageModel[] $languages
+     * @param string          $iso
      * @return null|string
      */
     private function getSeo(array $post, array $languages, string $iso = null): ?string
@@ -414,13 +415,13 @@ final class Controller
             }
         }
         foreach ($languages as $language) {
-            $idx = 'cSeo_' . $language->cISO;
+            $idx = 'cSeo_' . $language->getCode();
             if (!empty($post[$idx])) {
                 return $post[$idx];
             }
         }
         foreach ($languages as $language) {
-            $idx = 'cName_' . $language->cISO;
+            $idx = 'cName_' . $language->getCode();
             if (!empty($post[$idx])) {
                 return $post[$idx];
             }
@@ -430,10 +431,10 @@ final class Controller
     }
 
     /**
-     * @param array $post
-     * @param array $languages
+     * @param array           $post
+     * @param LanguageModel[] $languages
      * @return CategoryInterface
-     * @throws \Exception
+     * @throws Exception
      */
     public function createOrUpdateCategory(array $post, array $languages): CategoryInterface
     {
@@ -460,13 +461,13 @@ final class Controller
         }
         $newsCategory->kNewsKategorie = $categoryID;
         foreach ($languages as $language) {
-            $iso   = $language->cISO;
+            $iso   = $language->getCode();
             $cSeo  = $this->getSeo($post, $languages, $iso);
             $cName = \htmlspecialchars($post['cName_' . $iso] ?? '', $flag, \JTL_CHARSET);
 
             $loc                  = new stdClass();
             $loc->kNewsKategorie  = $categoryID;
-            $loc->languageID      = $language->kSprache;
+            $loc->languageID      = $language->getID();
             $loc->languageCode    = $iso;
             $loc->name            = $cName;
             $loc->description     = $post['cBeschreibung_' . $iso];
@@ -486,7 +487,7 @@ final class Controller
                 $this->db->update(
                     'tnewskategoriesprache',
                     ['kNewsKategorie', 'languageID'],
-                    [$categoryID, $language->kSprache],
+                    [$categoryID, $language->getID()],
                     $loc
                 );
             } else {

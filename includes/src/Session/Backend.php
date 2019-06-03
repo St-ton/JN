@@ -8,8 +8,8 @@ namespace JTL\Session;
 
 use JTL\Catalog\Currency;
 use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Backend
@@ -57,7 +57,7 @@ class Backend extends AbstractSession
             $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
         }
         if (empty($_SESSION['Sprachen'])) {
-            $_SESSION['Sprachen'] = Sprache::getInstance()->gibInstallierteSprachen();
+            $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         }
     }
 

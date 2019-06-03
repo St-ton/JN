@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
-use JTL\Helpers\Tax;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Helpers\Text;
+use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
 use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -286,7 +286,7 @@ if (isset($_POST['neuerZuschlag']) && (int)$_POST['neuerZuschlag'] === 1 && Form
         if (isset($Zuschlag->kVersandzuschlag) && $Zuschlag->kVersandzuschlag > 0) {
             $kVersandzuschlag = $Zuschlag->kVersandzuschlag;
         }
-        $sprachen        = Sprache::getAllLanguages();
+        $sprachen        = LanguageHelper::getAllLanguages();
         $zuschlagSprache = new stdClass();
 
         $zuschlagSprache->kVersandzuschlag = $kVersandzuschlag;
@@ -461,7 +461,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
                 $versandartstaffel->kVersandart = $kVersandart;
                 $db->insert('tversandartstaffel', $versandartstaffel);
             }
-            $sprachen       = Sprache::getAllLanguages();
+            $sprachen       = LanguageHelper::getAllLanguages();
             $versandSprache = new stdClass();
 
             $versandSprache->kVersandart = $kVersandart;
@@ -566,9 +566,8 @@ if ($step === 'neue Versandart') {
         $kVersandartTMP = $Versandart->kVersandart;
     }
 
-    $sprachen = Sprache::getAllLanguages();
-    $smarty->assign('sprachen', $sprachen)
-           ->assign('zahlungsarten', $zahlungsarten)
+    $sprachen = LanguageHelper::getAllLanguages();
+    $smarty->assign('zahlungsarten', $zahlungsarten)
            ->assign('versandlaender', $versandlaender)
            ->assign('versandberechnung', $versandberechnung)
            ->assign('waehrung', $standardwaehrung->cName)
@@ -736,8 +735,7 @@ if ($step === 'Zuschlagsliste') {
     $smarty->assign('Versandart', $Versandart)
            ->assign('Zuschlaege', $Zuschlaege)
            ->assign('waehrung', $standardwaehrung->cName)
-           ->assign('Land', $countryHelper->getCountry($cISO))
-           ->assign('sprachen', Sprache::getAllLanguages());
+           ->assign('Land', $countryHelper->getCountry($cISO));
 }
 
 $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$nSteuersatzKey_arr[0]])

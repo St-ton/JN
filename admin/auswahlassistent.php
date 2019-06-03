@@ -11,7 +11,6 @@ use JTL\Extensions\AuswahlAssistentFrage;
 use JTL\Extensions\AuswahlAssistentGruppe;
 use JTL\Nice;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Alert\Alert;

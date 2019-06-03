@@ -7,13 +7,13 @@
 namespace JTL\Mail\Mail;
 
 use InvalidArgumentException;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use PHPMailer\PHPMailer\PHPMailer;
-use stdClass;
 
 /**
  * Class Mail
@@ -29,14 +29,9 @@ class Mail implements MailInterface
     private $customerGroupID = 0;
 
     /**
-     * @var int
+     * @var LanguageModel
      */
-    private $languageID = 0;
-
-    /**
-     * @var string
-     */
-    private $languageCode;
+    private $language;
 
     /**
      * @var string
@@ -142,21 +137,18 @@ class Mail implements MailInterface
     {
         $this->setData($data);
         $this->setTemplate($template);
-        $language              = $language ?? $this->getLanguage();
-        $this->languageID      = (int)$language->kSprache;
-        $this->languageCode    = $language->cISO;
+        $this->language        = $language ?? $this->detectLanguage();
         $this->customerGroupID = Frontend::getCustomer()->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
-        $template->load($this->languageID, $this->customerGroupID);
+        $template->load($this->language->getID(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {
             throw new InvalidArgumentException('Cannot parse model for ' . $template->getID());
         }
-        $names = $model->getAttachmentNames($this->languageID);
-        foreach ($model->getAttachments($this->languageID) as $i => $attachment) {
+        $names = $model->getAttachmentNames($this->language->getID());
+        foreach ($model->getAttachments($this->language->getID()) as $i => $attachment) {
             $this->addPdfFile($names[$i], $attachment);
         }
-        $this->setSubject($model->getSubject($this->languageID));
-        $this->setLanguageCode(Sprache::getIsoFromLangID($model->getLanguageID())->cISO);
+        $this->setSubject($model->getSubject($this->language->getID()));
         $this->fromName       = $template->getFromName() ?? $this->fromName;
         $this->fromMail       = $template->getFromMail() ?? $this->fromMail;
         $this->copyRecipients = $template->getCopyTo() ?? $this->copyRecipients;
@@ -222,14 +214,14 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return stdClass
+     * @return LanguageModel
      */
-    private function detectLanguage(): stdClass
+    private function detectLanguage(): LanguageModel
     {
-        if ($this->languageID !== null && $this->languageCode !== null) {
-            return (object)['kSprache' => $this->getLanguageID(), 'cISO' => $this->getLanguageCode()];
+        if ($this->language !== null) {
+            return $this->language;
         }
-        $allLanguages = Sprache::getAllLanguages(1);
+        $allLanguages = LanguageHelper::getAllLanguages(1);
         if (isset($this->data->tkunde->kSprache) && $this->data->tkunde->kSprache > 0) {
             return $allLanguages[(int)$this->data->tkunde->kSprache];
         }
@@ -242,19 +234,23 @@ class Mail implements MailInterface
 
         return isset($_SESSION['kSprache'])
             ? $allLanguages[$_SESSION['kSprache']]
-            : Sprache::getDefaultLanguage();
+            : LanguageHelper::getDefaultLanguage();
     }
 
     /**
      * @inheritdoc
      */
-    public function getLanguage(): stdClass
+    public function getLanguage(): LanguageModel
     {
-        $language = $this->detectLanguage();
-        $this->setLanguageID((int)$language->kSprache);
-        $this->setLanguageCode($language->cISO);
+        return $this->language;
+    }
 
-        return $language;
+    /**
+     * @inheritDoc
+     */
+    public function setLanguage(LanguageModel $language): void
+    {
+        $this->language = $language;
     }
 
     /**
@@ -297,48 +293,6 @@ class Mail implements MailInterface
     public function setCustomerGroupID(int $customerGroupID): void
     {
         $this->customerGroupID = $customerGroupID;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getLanguageID(): int
-    {
-        return $this->languageID;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setLanguageID(int $languageID): void
-    {
-        $this->languageID = $languageID;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getLanguageCode(): string
-    {
-        return $this->languageCode;
-    }
-
-    /**
-     * ISO 639-1
-     *
-     * @inheritdoc
-     */
-    public function getLanguageCode6391(): string
-    {
-        return $this->languageCode === 'ger' ? 'de' : 'en';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setLanguageCode($languageCode): void
-    {
-        $this->languageCode = $languageCode;
     }
 
     /**

@@ -5,16 +5,7 @@
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="block">
                 <div class="input-group p25 left">
-                    <span class="input-group-addon">
-                        <label for="{__('changeLanguage')}">{__('changeLanguage')}:</strong></label>
-                    </span>
-                    <span class="input-group-wrap last">
-                        <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach $Sprachen as $sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->name}</option>
-                            {/foreach}
-                        </select>
-                    </span>
+                    {include file='tpl_inc/language_switcher.tpl'}
                 </div>
             </div>
         </form>

@@ -162,8 +162,8 @@
                                     class="d-block d-md-none col-6 text-center language-dropdown"
                                     text="<i class='fa fa-language'></i> {lang key='language'}"}
                                     {foreach $smarty.session.Sprachen as $oSprache}
-                                        {dropdownitem href="{if isset($oSprache->cURLFull)}{$oSprache->cURLFull}{else}{$oSprache->cURL}{/if}" rel="nofollow" }
-                                            {$oSprache->nameOriginal}
+                                        {dropdownitem href="{$oSprache->url}" rel="nofollow" }
+                                            {$oSprache->displayLanguage}
                                         {/dropdownitem}
                                     {/foreach}
                                 {/dropdown}

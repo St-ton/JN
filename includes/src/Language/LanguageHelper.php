@@ -4,26 +4,26 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL;
+namespace JTL\Language;
 
-use function Functional\map;
-use function Functional\reindex;
+use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Language\LanguageModel;
+use JTL\Helpers\Text;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;
 use JTL\News\Item;
+use JTL\Shop;
 use JTL\Session\Frontend;
 use stdClass;
-use Illuminate\Support\Collection;
-use JTL\Helpers\Text;
+use function Functional\map;
+use function Functional\reindex;
 
 /**
- * Class Sprache
- * @package JTL
+ * Class LanguageHalper
+ * @package JTL\Language
  * @method string get(string $cName, string $cSektion = 'global', mixed ...$arg1)
  * @method bool set(int $kSprachsektion, string $cName, string $cWert)
  * @method bool insert(string $cSprachISO, int $kSprachsektion, string $cName, string $cWert)
@@ -31,8 +31,8 @@ use JTL\Helpers\Text;
  * @method mixed search(string $cSuchwort)
  * @method bool|int import(string $cFileName, string $cISO, int $nTyp)
  * @method string export(int $nTyp = 0)
- * @method Sprache reset()
- * @method Sprache log(string $cSektion, string $cName)
+ * @method self reset()
+ * @method self log(string $cSektion, string $cName)
  * @method array|mixed generate()
  * @method array getAll()
  * @method array getLogs()
@@ -49,10 +49,10 @@ use JTL\Helpers\Text;
  * @method static bool|int|string getLanguageDataByType(string $cISO = '', int $kSprache = 0)
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
- * @method static stdClass getDefaultLanguage(bool $shop = true)
- * @method static array|int|string getAllLanguages(int $returnType = 0)
+ * @method static LanguageModel getDefaultLanguage(bool $shop = true)
+ * @method static LanguageModel[] getAllLanguages(int $returnType = 0)
  */
-class Sprache
+class LanguageHelper
 {
     /**
      * compatability only
@@ -114,7 +114,7 @@ class Sprache
     public $kSprache;
 
     /**
-     * @var Sprache
+     * @var LanguageHelper
      */
     private static $instance;
 
@@ -168,7 +168,7 @@ class Sprache
     /**
      * @param DbInterface|null  $db
      * @param JTLCacheInterface $cache
-     * @return Sprache
+     * @return $this
      */
     public static function getInstance(DbInterface $db = null, JTLCacheInterface $cache = null): self
     {
@@ -176,7 +176,7 @@ class Sprache
     }
 
     /**
-     * Sprache constructor.
+     * LanguageHelper constructor.
      *
      * @param DbInterface|null       $db
      * @param JTLCacheInterface|null $cache
@@ -573,14 +573,7 @@ class Sprache
      */
     public function gibVerfuegbareSprachen(): array
     {
-        return map(
-            $this->db->query('SELECT * FROM tsprache', ReturnType::ARRAY_OF_OBJECTS),
-            function ($e) {
-                $e->kSprache = (int)$e->kSprache;
-
-                return $e;
-            }
-        );
+        return LanguageModel::loadAll($this->db, [], [])->toArray();
     }
 
     /**
@@ -947,7 +940,7 @@ class Sprache
      * 0 = Normales Array
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
-     * @return array|string|int
+     * @return LanguageModel[]
      * @former gibAlleSprachen()
      * @since  5.0.0
      */
@@ -1005,27 +998,27 @@ class Sprache
 
     /**
      * @param bool $shop
-     * @return stdClass
+     * @return LanguageModel
      * @former gibStandardsprache()
      * @since  5.0.0
      */
-    private function mappedGetDefaultLanguage(bool $shop = true): stdClass
+    private function mappedGetDefaultLanguage(bool $shop = true): LanguageModel
     {
         foreach (Frontend::getLanguages() as $language) {
-            if ($language->cStandard === 'Y' && !$shop) {
+            if ($language->default === 'Y' && !$shop) {
                 return $language;
             }
-            if ($language->cShopStandard === 'Y' && $shop) {
+            if ($language->shopDefault === 'Y' && $shop) {
                 return $language;
             }
         }
+
 
         $cacheID = 'shop_lang_' . (($shop === true) ? 'b' : '');
         if (($lang = $this->cache->get($cacheID)) !== false && $lang !== null) {
             return $lang;
         }
-        $lang           = $this->db->select('tsprache', $shop ? 'cShopStandard' : 'cStandard', 'Y');
-        $lang->kSprache = (int)$lang->kSprache;
+        $lang = LanguageModel::loadByAttributes($shop ? ['default' => 'Y'] : ['shopDefault' => 'Y'], $this->db);
         $this->cache->set($cacheID, $lang, [\CACHING_GROUP_LANGUAGE]);
 
         return $lang;
@@ -1060,48 +1053,47 @@ class Sprache
                 $AktuellerArtikel->baueArtikelSprachURL();
             }
             foreach (Frontend::getLanguages() as $lang) {
-                if (isset($AktuellerArtikel->cSprachURL_arr[$lang->cISO])) {
-                    $lang->cURL     = $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
-                    $lang->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$lang->cISO];
+                $langID  = $lang->getID();
+                $langISO = $lang->getCode();
+                if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
+                    $lang->url = $shopURL . $AktuellerArtikel->cSprachURL_arr[$langISO];
                 } elseif ($specialPage !== null) {
                     if (Shop::getPageType() === \PAGE_STARTSEITE) {
-                        $url = $shopURL . '?lang=' . $lang->cISO;
+                        $url = $shopURL . '?lang=' . $langISO;
                     } elseif ($specialPage->getFileName() !== '') {
                         if (Shop::$kNews > 0) {
                             $newsItem = new Item($this->db);
                             $newsItem->load(Shop::$kNews);
-                            $url = $newsItem->getURL($lang->kSprache);
+                            $url = $newsItem->getURL($langID);
                         } elseif (Shop::$kNewsKategorie > 0) {
                             $newsCategory = new Category($this->db);
                             $newsCategory->load(Shop::$kNewsKategorie);
-                            $url = $newsCategory->getURL($lang->kSprache);
+                            $url = $newsCategory->getURL($langID);
                         } else {
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $lang->cISO);
+                            $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $langISO);
                             // check if there is a SEO link for the given file
                             if ($url === $specialPage->getFileName()) {
                                 // no SEO link - fall back to php file with GET param
-                                $url = $shopURL . $specialPage->getFileName() . '?lang=' . $lang->cISO;
+                                $url = $shopURL . $specialPage->getFileName() . '?lang=' . $langISO;
                             } else { //there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $lang->cISO);
+                                $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $langISO);
                             }
                         }
                     } else {
-                        $url = $specialPage->getURL($lang->kSprache);
+                        $url = $specialPage->getURL($langID);
                     }
-                    $lang->cURL     = $url;
-                    $lang->cURLFull = $url;
+                    $lang->url = $url;
                     \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
                 } elseif ($page !== null) {
-                    $lang->cURL = $page->getURL($lang->kSprache);
+                    $lang->url = $page->getURL($langID);
                     if (\mb_strpos($lang->cURL, '/?s=') !== false) {
-                        $lang->cURL    .= '&amp;lang=' . $lang->cISO;
-                        $lang->cURLFull = \rtrim($shopURL, '/') . $lang->cURL;
+                        $lang->url = \rtrim($shopURL, '/') . $lang->url;
                     } else {
-                        $lang->cURLFull = $lang->cURL;
+                        $lang->url = $lang->cURL;
                     }
                 } else {
                     $originalLanguage = $productFilter->getFilterConfig()->getLanguageID();
-                    $productFilter->getFilterConfig()->setLanguageID($lang->kSprache);
+                    $productFilter->getFilterConfig()->setLanguageID($langID);
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
                     $productFilter->getFilterConfig()->setLanguageID($originalLanguage);
                     if ($productFilter->getPage() > 1) {
@@ -1111,8 +1103,7 @@ class Sprache
                             $url .= \SEP_SEITE . $productFilter->getPage();
                         }
                     }
-                    $lang->cURL     = $url;
-                    $lang->cURLFull = $url;
+                    $lang->url = $url;
                 }
             }
         }

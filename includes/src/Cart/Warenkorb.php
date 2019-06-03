@@ -1667,7 +1667,7 @@ class Warenkorb
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];
         foreach ($_SESSION['Sprachen'] as $language) {
-            $localized                              = Shop::Container()->getDB()->select(
+            $localized                               = Shop::Container()->getDB()->select(
                 'tkuponsprache',
                 'kKupon',
                 (int)$coupon->kKupon,

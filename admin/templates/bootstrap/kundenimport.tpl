@@ -16,8 +16,8 @@
                     </span>
                     <span class="input-group-wrap">
                         <select name="kSprache" id="kSprache" class="form-control combo">
-                            {foreach $sprachen as $sprache}
-                                <option value="{$sprache->kSprache}">{$sprache->name}</option>
+                            {foreach $sprachen as $lang}
+                                <option value="{$lang->getID()}">{$lang->getLocalizedName()}</option>
                             {/foreach}
                         </select>
                     </span>

@@ -6,7 +6,7 @@
 
 namespace JTL\Smarty;
 
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 
 /**
  * Class PluginCollection
@@ -20,17 +20,17 @@ class PluginCollection
     private $config;
 
     /**
-     * @var Sprache
+     * @var LanguageHelper
      */
     private $lang;
 
     /**
      * PluginCollection constructor.
      *
-     * @param array   $config
-     * @param Sprache $lang
+     * @param array          $config
+     * @param LanguageHelper $lang
      */
-    public function __construct(array $config, Sprache $lang)
+    public function __construct(array $config, LanguageHelper $lang)
     {
         $this->config = $config;
         $this->lang   = $lang;

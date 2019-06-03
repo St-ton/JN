@@ -17,10 +17,10 @@
                         <input type="text" class="form-control" name="cName" id="cName" value="{if isset($Betreff->cName)}{$Betreff->cName}{/if}" tabindex="1" required />
                     </div>
                     {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                        {assign var=cISO value=$sprache->iso}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->getLocalizedName()})</label>
                             </span>
                             <input type="text" class="form-control" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($Betreffname[$cISO])}{$Betreffname[$cISO]}{/if}" tabindex="2" />
                         </div>

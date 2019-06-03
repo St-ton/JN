@@ -16,7 +16,6 @@ use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Tax;
-use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use JTL\Session\Frontend;

@@ -28,7 +28,7 @@
                         <span class="input-group-wrap">
                             <select class="form-control" name="kSprache" id="kSprache">
                                 {foreach $sprachen as $sprache}
-                                    <option value="{$sprache->kSprache}" {if isset($Exportformat->kSprache) && $Exportformat->kSprache == $sprache->kSprache || (isset($cPlausiValue_arr.kSprache) && $cPlausiValue_arr.kSprache == $sprache->kSprache)}selected{/if}>{$sprache->name}</option>
+                                    <option value="{$sprache->getID()}" {if isset($Exportformat->kSprache) && $Exportformat->kSprache == $sprache->getID() || (isset($cPlausiValue_arr.kSprache) && $cPlausiValue_arr.kSprache == $sprache->getID())}selected{/if}>{$sprache->getLocalizedName()}</option>
                                 {/foreach}
                             </select>
                         </span>

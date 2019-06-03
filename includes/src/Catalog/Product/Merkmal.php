@@ -7,8 +7,8 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Merkmal
@@ -127,7 +127,7 @@ class Merkmal
 
             return $this;
         }
-        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = LanguageHelper::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
             $cJoin   = 'INNER JOIN tmerkmalsprache AS standardSprache 
@@ -229,13 +229,13 @@ class Merkmal
         }
         $kSprache = Shop::getLanguage();
         if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage();
+            $oSprache = LanguageHelper::getDefaultLanguage();
             if ($oSprache->kSprache > 0) {
                 $kSprache = $oSprache->kSprache;
             }
         }
         $kSprache         = (int)$kSprache;
-        $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = (int)LanguageHelper::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $select = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
             $join   = 'INNER JOIN tmerkmalsprache AS standardSprache 

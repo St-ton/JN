@@ -8,7 +8,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Customer\Kunde;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
 use JTL\Alert\Alert;

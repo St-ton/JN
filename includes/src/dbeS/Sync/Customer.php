@@ -12,11 +12,11 @@ use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\SimpleMail;
-use JTL\Sprache;
 use JTL\XML;
 use stdClass;
 
@@ -349,7 +349,7 @@ final class Customer extends AbstractSync
                 $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
                 unset($cstmr[0]['cHausnummer']);
                 // Land ausgeschrieben der Wawi geben
-                $cstmr[0]['cLand'] = Sprache::getCountryCodeByCountryName($cstmr[0]['cLand']);
+                $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
                 unset($cstmr[0]['cPasswort']);
                 $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
                 $cstmr[0]['tkundenattribut'] = $this->db->query(

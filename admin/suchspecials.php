@@ -4,14 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
-use JTL\Alert\Alert;
+use JTL\Helpers\Text;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);

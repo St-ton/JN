@@ -11,6 +11,7 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -537,7 +538,7 @@ class CheckBox
      */
     private function getSprachKeyByISO(string $iso): int
     {
-        $lang = Sprache::getLangIDFromIso($iso);
+        $lang = LanguageHelper::getLangIDFromIso($iso);
 
         return (int)($lang->kSprachISO ?? 0);
     }

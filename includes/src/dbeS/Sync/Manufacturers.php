@@ -9,7 +9,7 @@ namespace JTL\dbeS\Sync;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use stdClass;
 use function Functional\flatten;
 
@@ -82,7 +82,7 @@ final class Manufacturers extends AbstractSync
             return;
         }
         $manufacturers = $this->mapper->mapArray($xml['hersteller'], 'thersteller', 'mHersteller');
-        $languages     = Sprache::getAllLanguages();
+        $languages     = LanguageHelper::getAllLanguages();
         $mfCount       = \count($manufacturers);
         $cacheTags     = [];
         for ($i = 0; $i < $mfCount; $i++) {

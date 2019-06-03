@@ -4,16 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
-use JTL\Cron\LegacyCron;
-use JTL\Catalog\Currency;
-use JTL\Customer\Kundengruppe;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
-use JTL\Smarty\JTLSmarty;
 use JTL\Alert\Alert;
-use JTL\Sprache;
+use JTL\Catalog\Currency;
+use JTL\Cron\LegacyCron;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * @return array|bool

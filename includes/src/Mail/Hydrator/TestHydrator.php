@@ -15,6 +15,7 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use stdClass;
 
@@ -31,7 +32,7 @@ class TestHydrator extends DefaultsHydrator
     {
         parent::hydrate($data, $language);
         $lang = Shop::Lang();
-        $all  = \Sprache::getAllLanguages(1);
+        $all  = LanguageHelper::getAllLanguages(1);
         $lang->setzeSprache($all[$language->kSprache]->cISO);
 
         $langID        = (int)$language->kSprache;

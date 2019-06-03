@@ -11,13 +11,13 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Mail\Template\Model;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
-use JTL\Shop;
-use JTL\Sprache;
 use PHPMailer\PHPMailer\Exception;
 use stdClass;
 
@@ -150,10 +150,10 @@ final class Controller
     }
 
     /**
-     * @param Model $model
-     * @param array $availableLanguages
-     * @param array $post
-     * @param array $files
+     * @param Model           $model
+     * @param LanguageModel[] $availableLanguages
+     * @param array           $post
+     * @param array           $files
      * @return int
      */
     private function updateUploads(Model $model, array $availableLanguages, array $post, array $files): int
@@ -161,7 +161,7 @@ final class Controller
         $filenames = [];
         $pdfFiles  = [];
         foreach ($availableLanguages as $lang) {
-            $langID             = $lang->kSprache;
+            $langID             = $lang->getID();
             $filenames[$langID] = [];
             $pdfFiles[$langID]  = [];
             $i                  = 0;
@@ -243,7 +243,7 @@ final class Controller
         if ($this->model === null) {
             throw new InvalidArgumentException('Cannot find model with ID ' . $templateID);
         }
-        $languages = Sprache::getAllLanguages();
+        $languages = LanguageHelper::getAllLanguages();
         foreach ($languages as $lang) {
             $langID = $lang->kSprache;
             foreach ($this->model->getMapping() as $field => $method) {
@@ -306,7 +306,7 @@ final class Controller
         }
         $res  = true;
         $mail = new Mail();
-        foreach (Sprache::getAllLanguages() as $lang) {
+        foreach (LanguageHelper::getAllLanguages() as $lang) {
             try {
                 $mail = $mail->createFromTemplate($template, null, $lang);
             } catch (InvalidArgumentException $e) {
@@ -365,7 +365,7 @@ final class Controller
     private function resetFromFile(int $templateID, stdClass $data): int
     {
         $affected = 0;
-        foreach (Sprache::getAllLanguages() as $lang) {
+        foreach (LanguageHelper::getAllLanguages() as $lang) {
             $base      = \PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->cISO . '/' . $data->cDateiname;
             $fileHtml  = $base . '_html.tpl';
             $filePlain = $base . '_plain.tpl';
@@ -418,7 +418,7 @@ final class Controller
     {
         $templates   = [];
         $templateIDs = $this->db->selectAll('temailvorlage', [], [], 'cModulId, kPlugin');
-        $langID      = Sprache::getDefaultLanguage()->kSprache;
+        $langID      = LanguageHelper::getDefaultLanguage()->kSprache;
         $cgroupID    = Kundengruppe::getDefaultGroupID();
         foreach ($templateIDs as $templateID) {
             $module = $templateID->cModulId;

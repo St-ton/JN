@@ -250,7 +250,7 @@ class Mailer
         if ($template !== null) {
             $template->setConfig($this->config);
             $template->preRender($this->renderer->getSmarty(), $mail->getData());
-            $template->render($this->renderer, $mail->getLanguageID(), $mail->getCustomerGroupID());
+            $template->render($this->renderer, $mail->getLanguage()->getID(), $mail->getCustomerGroupID());
             $mail->setBodyHTML($template->getHTML());
             $mail->setBodyText($template->getText());
             $mail->setSubject($template->getSubject());
@@ -269,7 +269,7 @@ class Mailer
     private function sendViaPHPMailer(MailInterface $mail): bool
     {
         $phpmailer = new PHPMailer();
-        $phpmailer->setLanguage($mail->getLanguageCode6391());
+        $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->CharSet = \JTL_CHARSET;
         $phpmailer->Timeout = \SOCKET_TIMEOUT;
         $phpmailer->Sender  = $mail->getFromMail();
@@ -315,7 +315,7 @@ class Mailer
             'mailsmarty'    => $this->renderer->getSmarty(),
             'mail'          => $mail,
             'kEmailvorlage' => 0,
-            'kSprache'      => $mail->getLanguageID(),
+            'kSprache'      => $mail->getLanguage()->getID(),
             'cPluginBody'   => '',
             'Emailvorlage'  => null,
             'template'      => $mail->getTemplate()

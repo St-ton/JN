@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Admin\Controller;
 use JTL\Mail\Hydrator\TestHydrator;
 use JTL\Mail\Mail\Mail;
@@ -20,7 +21,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
-use JTL\Sprache;
 use function Functional\filter;
 use function Functional\first;
 
@@ -50,7 +50,7 @@ $mailer              = new Mailer($hydrator, $renderer, $settings, $validator);
 $mail                = new Mail();
 $factory             = new TemplateFactory($db);
 $controller          = new Controller($db, $mailer, $factory);
-$availableLanguages  = Sprache::getAllLanguages();
+$availableLanguages  = LanguageHelper::getAllLanguages();
 if ($pluginID > 0) {
     $settingsTableName = 'tpluginemailvorlageeinstellungen';
 }

@@ -5,14 +5,7 @@
             {$jtl_token}
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="input-group p25 left">
-                <span class="input-group-addon"><label for="kSprache">{__('changeLanguage')}</label></span>
-                <span class="input-group-wrap last">
-                    <select id="kSprache" name="kSprache" class="selectBox form-control" onchange="document.sprache.submit();">
-                        {foreach $Sprachen as $sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->name}</option>
-                        {/foreach}
-                    </select>
-                </span>
+                {include file='tpl_inc/language_switcher.tpl'}
             </div>
         </form>
     </div>

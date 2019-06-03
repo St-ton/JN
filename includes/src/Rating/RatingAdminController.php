@@ -17,7 +17,6 @@ use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
-use JTL\Sprache;
 use JTLSmarty;
 use function Functional\map;
 
@@ -211,8 +210,7 @@ class RatingAdminController extends BaseController
             ->assign('oPagiAktiv', $activePagination)
             ->assign('oBewertung_arr', $ratings)
             ->assign('oBewertungLetzten50_arr', $last50ratings)
-            ->assign('oConfig_arr', \getAdminSectionSettings(\CONF_BEWERTUNG))
-            ->assign('Sprachen', Sprache::getAllLanguages());
+            ->assign('oConfig_arr', \getAdminSectionSettings(\CONF_BEWERTUNG));
     }
 
     /**

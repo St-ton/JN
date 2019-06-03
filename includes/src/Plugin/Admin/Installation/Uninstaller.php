@@ -9,12 +9,12 @@ namespace JTL\Plugin\Admin\Installation;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\PluginLoader;
-use JTL\Sprache;
 
 /**
  * Class Uninstaller
@@ -235,7 +235,7 @@ final class Uninstaller
         }
         if (\count($links) === 2) {
             $oldLocalization = $this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink);
-            $languages       = Sprache::getAllLanguages(2);
+            $languages       = LanguageHelper::getAllLanguages(2);
             foreach ($oldLocalization as $item) {
                 $this->db->update(
                     'tlinksprache',

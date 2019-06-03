@@ -4,23 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$step         = 'zusatzverpackung';
-$oSprache_arr = Sprache::getAllLanguages();
-$action       = '';
-$alertHelper  = Shop::Container()->getAlertService();
+$step        = 'zusatzverpackung';
+$languages   = LanguageHelper::getAllLanguages();
+$action      = '';
+$alertHelper = Shop::Container()->getAlertService();
 if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
@@ -39,13 +39,13 @@ if ($action === 'save') {
     $oVerpackung->kSteuerklasse       = isset($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : 0;
     $oVerpackung->nAktiv              = isset($_POST['nAktiv']) ? (int)$_POST['nAktiv'] : 0;
     $oVerpackung->cName               = htmlspecialchars(
-        strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO])),
+        strip_tags(trim($_POST['cName_' . $languages[0]->cISO])),
         ENT_COMPAT | ENT_HTML401,
         JTL_CHARSET
     );
 
-    if (!(isset($_POST['cName_' . $oSprache_arr[0]->cISO])
-        && mb_strlen($_POST['cName_' . $oSprache_arr[0]->cISO]) > 0)
+    if (!(isset($_POST['cName_' . $languages[0]->cISO])
+        && mb_strlen($_POST['cName_' . $languages[0]->cISO]) > 0)
     ) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNameMissing'), 'errorNameMissing');
     }
@@ -77,26 +77,26 @@ if ($action === 'save') {
         } else {
             $kVerpackung = Shop::Container()->getDB()->insert('tverpackung', $oVerpackung);
         }
-        // In tverpackungsprache adden
-        foreach ($oSprache_arr as $oSprache) {
-            $oVerpackungSprache                = new stdClass();
-            $oVerpackungSprache->kVerpackung   = $kVerpackung;
-            $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
-            $oVerpackungSprache->cName         = !empty($_POST['cName_' . $oSprache->cISO])
-                ? htmlspecialchars($_POST['cName_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
-                : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $oVerpackungSprache->cBeschreibung = !empty($_POST['cBeschreibung_' . $oSprache->cISO])
-                ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+        foreach ($languages as $lang) {
+            $langCode                 = $lang->getCode();
+            $localized                = new stdClass();
+            $localized->kVerpackung   = $kVerpackung;
+            $localized->cISOSprache   = $langCode;
+            $localized->cName         = !empty($_POST['cName_' . $langCode])
+                ? htmlspecialchars($_POST['cName_' . $langCode], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
+                : htmlspecialchars($_POST['cName_' . $languages[0]->cISO], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+            $localized->cBeschreibung = !empty($_POST['cBeschreibung_' . $langCode])
+                ? htmlspecialchars($_POST['cBeschreibung_' . $langCode], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                 : htmlspecialchars(
-                    $_POST['cBeschreibung_' . $oSprache_arr[0]->cISO],
+                    $_POST['cBeschreibung_' . $languages[0]->cISO],
                     ENT_COMPAT | ENT_HTML401,
                     JTL_CHARSET
                 );
-            Shop::Container()->getDB()->insert('tverpackungsprache', $oVerpackungSprache);
+            Shop::Container()->getDB()->insert('tverpackungsprache', $localized);
         }
         $alertHelper->addAlert(
             Alert::TYPE_SUCCESS,
-            sprintf(__('successPackagingSave'), $_POST['cName_' . $oSprache_arr[0]->cISO]),
+            sprintf(__('successPackagingSave'), $_POST['cName_' . $languages[0]->cISO]),
             'successPackagingSave'
         );
     }
@@ -181,7 +181,6 @@ $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
        ->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
        ->assign('oVerpackung_arr', $oVerpackung_arr)
        ->assign('step', $step)
-       ->assign('oSprache_arr', $oSprache_arr)
        ->assign('oPagination', $oPagination)
        ->assign('action', $action)
        ->display('zusatzverpackung.tpl');

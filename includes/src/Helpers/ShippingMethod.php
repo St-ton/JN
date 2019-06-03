@@ -6,18 +6,18 @@
 
 namespace JTL\Helpers;
 
-use function Functional\some;
-use JTL\Catalog\Product\Artikel;
 use JTL\Cart\Warenkorb;
-use JTL\DB\ReturnType;
-use JTL\Customer\Kundengruppe;
+use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Versandart;
+use JTL\Country\Country;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Checkout\Versandart;
 use stdClass;
-use JTL\Country\Country;
+use function Functional\some;
 
 /**
  * Class ShippingMethod
@@ -332,7 +332,7 @@ class ShippingMethod
                         Frontend::getCart()->PositionenArr
                     ))
                     ->assign('Versandarten', $shippingMethods)
-                    ->assign('Versandland', Sprache::getCountryCodeByCountryName($country))
+                    ->assign('Versandland', LanguageHelper::getCountryCodeByCountryName($country))
                     ->assign('VersandPLZ', Text::filterXSS($zip));
             } else {
                 $errorMsg = Shop::Lang()->get('noDispatchAvailable');

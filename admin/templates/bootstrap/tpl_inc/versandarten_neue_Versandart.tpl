@@ -99,11 +99,11 @@
                             <input class="form-control" type="text" id="cName" name="cName" value="{if isset($Versandart->cName)}{$Versandart->cName}{/if}" />
                         </li>
                         {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                            {assign var=cISO value=$sprache->getCode()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->name})</label>
+                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->getLocalizedName()})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cName)}{$oVersandartSpracheAssoc_arr[$cISO]->cName}{/if}" />
                                 </li>
@@ -117,11 +117,11 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
                         </li>
                         {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                            {assign var=cISO value=$sprache->getCode()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$sprache->name})</label>
+                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$sprache->getLocalizedName()})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cLieferdauer_{$cISO}" name="cLieferdauer_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer)}{$oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer}{/if}" />
                                 </li>
@@ -231,11 +231,11 @@
                         </li>
 
                         {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                            {assign var=cISO value=$sprache->getCode())}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->name})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->getLocalizedName()})</label>
                                     </span>
                                     <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
                                 </li>
@@ -243,11 +243,11 @@
                         {/foreach}
 
                         {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                            {assign var=cISO value=$sprache->getCode()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->name})</label>
+                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->getLocalizedName()})</label>
                                     </span>
                                     <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>

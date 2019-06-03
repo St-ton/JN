@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class XMLVersion
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class XMLVersion extends AbstractItem
+final class XMLVersion extends AbstractItem
 {
     /**
      * @inheritdoc

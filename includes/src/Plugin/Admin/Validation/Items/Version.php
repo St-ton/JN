@@ -6,13 +6,15 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use InvalidArgumentException;
 use JTL\Plugin\InstallCode;
+use JTLShop\SemVer\Version as SemVer;
 
 /**
- * Class PluginID
+ * Class Version
  * @package JTL\Plugin\Admin\Validation\Items
  */
-final class PluginID extends AbstractItem
+final class Version extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -20,12 +22,13 @@ final class PluginID extends AbstractItem
     public function validate(): int
     {
         $baseNode = $this->getBaseNode();
-        if (!isset($baseNode['PluginID'])) {
-            return InstallCode::INVALID_PLUGIN_ID;
+        if (!isset($baseNode['Version'])) {
+            return InstallCode::INVALID_VERSION_NUMBER;
         }
-        \preg_match('/[\w_]+/', $baseNode['PluginID'], $hits);
-        if (empty($baseNode['PluginID']) || \mb_strlen($hits[0]) !== \mb_strlen($baseNode['PluginID'])) {
-            return InstallCode::INVALID_PLUGIN_ID;
+        try {
+            SemVer::parse($baseNode['Version']);
+        } catch (InvalidArgumentException $e) {
+            return InstallCode::INVALID_VERSION_NUMBER;
         }
 
         return InstallCode::OK;

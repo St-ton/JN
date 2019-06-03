@@ -7,12 +7,14 @@
 namespace JTL\Plugin\Admin\Validation\Items;
 
 use JTL\Plugin\InstallCode;
+use JTL\Plugin\LicenseInterface;
+use JTL\Shop;
 
 /**
- * Class Licence
+ * Class LicenceExtension
  * @package JTL\Plugin\Admin\Validation\Items
  */
-final class Licence extends AbstractItem
+final class LicenceExtension extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -37,19 +39,21 @@ final class Licence extends AbstractItem
             if (!\file_exists($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])) {
                 return InstallCode::MISSING_LICENCE_FILE;
             }
-            if (empty($node['LicenceClass']) || $node['LicenceClass'] !== $node['PluginID'] . \PLUGIN_LICENCE_CLASS) {
+            if (empty($node['LicenceClass'])) {
                 return InstallCode::INVALID_LICENCE_FILE_NAME;
             }
             if ($requiresMissingIoncube) {
                 return InstallCode::IONCUBE_REQUIRED;
             }
+            $licenceClass = \strpos($node['LicenceClass'], 'Plugin\\') !== 0
+                ? 'Plugin\\' . $node['LicenceClass']
+                : $node['LicenceClass'];
             require_once $dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'];
-            if (!\class_exists($node['LicenceClass'])) {
+            if (!\class_exists($licenceClass)) {
                 return InstallCode::MISSING_LICENCE;
             }
-            $classMethods = \get_class_methods($node['LicenceClass']);
-            $bClassMethod = \is_array($classMethods) && \in_array(\PLUGIN_LICENCE_METHODE, $classMethods, true);
-            if (!$bClassMethod) {
+            $concrete = new $licenceClass();
+            if (!$concrete instanceof LicenseInterface) {
                 return InstallCode::MISSING_LICENCE_CHECKLICENCE_METHOD;
             }
         }

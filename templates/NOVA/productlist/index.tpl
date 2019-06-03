@@ -11,30 +11,26 @@
 
     {block name='productlist-index-content'}
         <div id="result-wrapper">
-            {if $opcPageService->getCurPage()->isReplace()}
-                {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
+            {block name='productlist-index-include-productlist-header'}
+                {include file='productlist/header.tpl'}
+            {/block}
+            {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
+            {if (!empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+                && $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1)
+                || (empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+                    && ((!empty($oErweiterteDarstellung->nDarstellung) && $oErweiterteDarstellung->nDarstellung == 1)
+                        || (empty($oErweiterteDarstellung->nDarstellung)
+                            && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht)
+                            && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1))
+            )}
+                {assign var=style value='list'}
+                {assign var=grid value='12'}
             {else}
-                {block name='productlist-index-include-productlist-header'}
-                    {include file='productlist/header.tpl'}
-                {/block}
-                {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
-                {if (!empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
-                    && $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1)
-                    || (empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
-                        && ((!empty($oErweiterteDarstellung->nDarstellung) && $oErweiterteDarstellung->nDarstellung == 1)
-                            || (empty($oErweiterteDarstellung->nDarstellung)
-                                && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht)
-                                && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1))
-                )}
-                    {assign var=style value='list'}
-                    {assign var=grid value='12'}
-                {else}
-                    {assign var=style value='gallery'}
-                    {assign var=grid value='6'}
-                    {assign var=gridmd value='6'}
-                    {if !$bExclusive || empty($boxes.left)}
-                        {assign var=gridmd value='4'}
-                    {/if}
+                {assign var=style value='gallery'}
+                {assign var=grid value='6'}
+                {assign var=gridmd value='6'}
+                {if !$bExclusive || empty($boxes.left)}
+                    {assign var=gridmd value='4'}
                 {/if}
                 {if !empty($Suchergebnisse->getError())}
                     {block name='productlist-index-alert'}
@@ -65,10 +61,10 @@
                         {/foreach}
                     {/row}
                 {/block}
-                {block name='productlist-index-include-productlist-footer'}
-                    {include file='productlist/footer.tpl'}
-                {/block}
             {/if}
+            {block name='productlist-index-include-productlist-footer'}
+                {include file='productlist/footer.tpl'}
+            {/block}
         </div>
     {/block}
 

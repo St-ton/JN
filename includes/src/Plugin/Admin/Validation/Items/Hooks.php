@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Hooks
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Hooks extends AbstractItem
+final class Hooks extends AbstractItem
 {
     /**
      * @inheritdoc

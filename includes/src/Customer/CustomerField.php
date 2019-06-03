@@ -9,6 +9,7 @@
 namespace JTL\Customer;
 
 use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 
@@ -24,6 +25,12 @@ class CustomerField
     public const TYPE_NUMBER = 'zahl';
     public const TYPE_SELECT = 'auswahl';
     public const TYPE_DATE   = 'datum';
+
+    public const VALIDATE_OK           = 0;
+    public const VALIDATE_EMPTY        = 1;
+    public const VALIDATE_WRONG_FORMAT = 2;
+    public const VALIDATE_WRONG_DATE   = 3;
+    public const VALIDATE_NO_NUMBER    = 4;
 
     /** @var int */
     private $ID = 0;
@@ -54,14 +61,15 @@ class CustomerField
 
     /** @var array */
     public static $mapping = [
-        'kKundenfeld' => 'ID',
-        'kSprache'    => 'LangID',
-        'cName'       => 'Label',
-        'cWawi'       => 'Name',
-        'cTyp'        => 'Type',
-        'nSort'       => 'Order',
-        'nPflicht'    => 'Required',
-        'nEditierbar' => 'Editable',
+        'kKundenfeld'         => 'ID',
+        'kSprache'            => 'LangID',
+        'cName'               => 'Label',
+        'cWawi'               => 'Name',
+        'cTyp'                => 'Type',
+        'nSort'               => 'Order',
+        'nPflicht'            => 'Required',
+        'nEditierbar'         => 'Editable',
+        'oKundenfeldWert_arr' => 'Values',
     ];
 
     /**
@@ -91,7 +99,32 @@ class CustomerField
                 'id' => $id,
             ],
             ReturnType::SINGLE_OBJECT
-        ));
+        ))->loadValues();
+
+        return $instance;
+    }
+
+    /**
+     * @param string $name
+     * @param int    $langID
+     * @return self
+     */
+    public static function loadByName(string $name, int $langID): self
+    {
+        $instance = new self();
+        $instance->setRecord(Shop::Container()->getDB()->queryPrepared(
+            'SELECT tkundenfeld.kKundenfeld, tkundenfeld.kSprache, tkundenfeld.cName,
+                   tkundenfeld.cWawi, tkundenfeld.cTyp, tkundenfeld.nSort,
+                   tkundenfeld.nPflicht, tkundenfeld.nEditierbar
+                FROM tkundenfeld
+                WHERE tkundenfeld.cWawi = :name
+                    AND tkundenfeld.kSprache = :langID',
+            [
+                'name'   => $name,
+                'langID' => $langID,
+            ],
+            ReturnType::SINGLE_OBJECT
+        ))->loadValues();
 
         return $instance;
     }
@@ -274,12 +307,12 @@ class CustomerField
     }
 
     /**
-     * @param object|null $record
+     * @param object|array|null $record
      * @return CustomerField
      */
-    public function setRecord(?object $record): self
+    public function setRecord($record): self
     {
-        if ($record === null) {
+        if (!\is_object($record) && !\is_array($record)) {
             $this->setID(0);
             $this->setLangID(0);
             $this->setLabel('');
@@ -306,5 +339,30 @@ class CustomerField
         }
 
         return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return int
+     */
+    public function validate($data): int
+    {
+        if (($data === null || $data === '') && $this->isRequired()) {
+            return self::VALIDATE_EMPTY;
+        }
+        if (!empty($data) && $this->getType() === self::TYPE_DATE) {
+            // check for english date format
+            $enDate = \DateTime::createFromFormat('Y-m-d', $data);
+
+            return Text::checkDate($enDate === false ? $data : $enDate->format('d.m.Y'));
+        }
+        if (!empty($data) && !\is_numeric($data) && $this->getType() === self::TYPE_NUMBER) {
+            return self::VALIDATE_NO_NUMBER;
+        }
+        if (!empty($data) && $this->getType() === self::TYPE_SELECT && !\in_array($data, $this->getValues(), true)) {
+            return self::VALIDATE_EMPTY;
+        }
+
+        return self::VALIDATE_OK;
     }
 }

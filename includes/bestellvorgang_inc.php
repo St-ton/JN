@@ -6,6 +6,7 @@
 
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerAttributes;
+use JTL\Customer\CustomerField;
 use JTL\Customer\CustomerFields;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -2163,68 +2164,15 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
     // Selbstdef. Kundenfelder
     if (isset($conf['kundenfeld']['kundenfeld_anzeigen']) && $conf['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
-        $customerFields = Shop::Container()->getDB()->selectAll(
-            'tkundenfeld',
-            'kSprache',
-            Shop::getLanguage(),
-            'kKundenfeld, cName, cTyp, nPflicht, nEditierbar',
-            'nSort, cName'
-        );
+        $customerFields = new CustomerFields(Shop::getLanguage());
+        /** @var CustomerField $customerField */
         foreach ($customerFields as $customerField) {
             // Kundendaten ändern?
-            if ((int)$data['editRechnungsadresse'] === 1) {
-                if (!isset($data['custom_' . $customerField->kKundenfeld])
-                    && $customerField->nPflicht == 1
-                    && $customerField->nEditierbar == 1
-                ) {
-                    $ret['custom'][$customerField->kKundenfeld] = 1;
-                } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
-                    // Datum
-                    // 1 = leer
-                    // 2 = falsches Format
-                    // 3 = falsches Datum
-                    // 0 = o.k.
-                    if ($customerField->cTyp === 'datum') {
-                        $_dat   = $data['custom_' . $customerField->kKundenfeld];
-                        $_datTs = strtotime($_dat);
-                        $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                        $check  = Text::checkDate($_dat);
-                        if ($check !== 0) {
-                            $ret['custom'][$customerField->kKundenfeld] = $check;
-                        }
-                    } elseif ($customerField->cTyp === 'zahl') {
-                        // Zahl, 4 = keine Zahl
-                        if ($data['custom_' . $customerField->kKundenfeld] !=
-                            (float)$data['custom_' . $customerField->kKundenfeld]
-                        ) {
-                            $ret['custom'][$customerField->kKundenfeld] = 4;
-                        }
-                    }
-                }
-            } elseif (empty($data['custom_' . $customerField->kKundenfeld]) && $customerField->nPflicht == 1) {
-                $ret['custom'][$customerField->kKundenfeld] = 1;
-            } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
-                // Datum
-                // 1 = leer
-                // 2 = falsches Format
-                // 3 = falsches Datum
-                // 0 = o.k.
-                if ($customerField->cTyp === 'datum') {
-                    $_dat   = $data['custom_' . $customerField->kKundenfeld];
-                    $_datTs = strtotime($_dat);
-                    $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                    $check  = Text::checkDate($_dat);
-                    if ($check !== 0) {
-                        $ret['custom'][$customerField->kKundenfeld] = $check;
-                    }
-                } elseif ($customerField->cTyp === 'zahl') {
-                    // Zahl, 4 = keine Zahl
-                    if ($data['custom_' . $customerField->kKundenfeld] !=
-                        (float)$data['custom_' . $customerField->kKundenfeld]
-                    ) {
-                        $ret['custom'][$customerField->kKundenfeld] = 4;
-                    }
-                }
+            $customerFieldIdx = 'custom_' . $customerField->getID();
+            if (isset($data[$customerFieldIdx])
+                && ($check = $customerField->validate($data[$customerFieldIdx])) !== CustomerField::VALIDATE_OK
+            ) {
+                $ret['custom'][$customerField->getID()] = $check;
             }
         }
     }
@@ -2817,31 +2765,9 @@ function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
 /**
  * @return CustomerFields
  */
-function gibSelbstdefKundenfelder(): array
+function gibSelbstdefKundenfelder(): CustomerFields
 {
-    $customerFields = Shop::Container()->getDB()->query(
-        'SELECT *
-            FROM tkundenfeld
-            WHERE kSprache = ' . Shop::getLanguageID(). '
-            ORDER BY nSort ASC',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($customerFields as $customerField) {
-        if ($customerField->cTyp !== 'auswahl') {
-            continue;
-        }
-        $customerField->oKundenfeldWert_arr = Shop::Container()->getDB()->selectAll(
-            'tkundenfeldwert',
-            'kKundenfeld',
-            (int)$customerField->kKundenfeld,
-            '*',
-            '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
-        );
-    }
-    Shop::dbg($customerFields);
-    $ca = new CustomerFields(Shop::getLanguageID());
-    Shop::dbg($ca);
-    return $customerFields;
+    return new CustomerFields(Shop::getLanguageID());
 }
 
 /**

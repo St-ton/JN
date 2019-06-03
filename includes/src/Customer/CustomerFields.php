@@ -23,7 +23,7 @@ use Traversable;
 class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
 {
     /** @var CustomerField[] */
-    private $fields = [];
+    private static $fields = [];
 
     /** @var int */
     private $langID = 0;
@@ -45,23 +45,33 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
 
     public function load(int $langID): self
     {
-        $this->fields = [];
         $this->langID = $langID;
+        if (!isset(self::$fields[$langID])) {
+            self::$fields[$langID] = [];
 
-        foreach (Shop::Container()->getDB()->queryPrepared(
-            'SELECT kKundenfeld, kSprache, cName, cWawi, cTyp, nSort, nPflicht, nEditierbar
+            foreach (Shop::Container()->getDB()->queryPrepared(
+                'SELECT kKundenfeld, kSprache, cName, cWawi, cTyp, nSort, nPflicht, nEditierbar
                 FROM tkundenfeld
                 WHERE kSprache = :langID
                 ORDER BY nSort',
-            [
-                'langID' => $langID,
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
-        ) as $customerField) {
-            $this->fields[$customerField->kKundenfeld] = new CustomerField($customerField);
+                [
+                    'langID' => $langID,
+                ],
+                ReturnType::ARRAY_OF_OBJECTS
+            ) as $customerField) {
+                self::$fields[$langID][$customerField->kKundenfeld] = new CustomerField($customerField);
+            }
         }
 
         return $this;
+    }
+
+    /**
+     * @return CustomerField[]
+     */
+    private function getFields(): array
+    {
+        return self::$fields[$this->langID] ?? [];
     }
 
     /**
@@ -70,7 +80,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     public function getNonEditableFields(): array
     {
         $result = [];
-        foreach ($this->fields as $field) {
+        foreach ($this->getFields() as $field) {
             if (!$field->isEditable()) {
                 $result[] = $field->getID();
             }
@@ -88,7 +98,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function getIterator(): Traversable
     {
-        return new ArrayIterator($this->fields);
+        return new ArrayIterator($this->getFields());
     }
 
     /**
@@ -105,7 +115,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function offsetExists($offset): bool
     {
-        return \array_key_exists($offset, $this->fields);
+        return \array_key_exists($offset, $this->getFields());
     }
 
     /**
@@ -119,15 +129,16 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function offsetGet($offset)
     {
-        if (!isset($this->fields[$offset])) {
+        $fields = $this->getFields();
+        if (!isset($fields[$offset])) {
             return null;
         }
 
-        if (!\is_a($this->fields[$offset], CustomerField::class)) {
-            $this->fields[$offset] = new CustomerField($this->fields[$offset]);
+        if (!\is_a($fields[$offset], CustomerField::class)) {
+            $fields[$offset] = new CustomerField($fields[$offset]);
         }
 
-        return $this->fields[$offset];
+        return $fields[$offset];
     }
 
     /**
@@ -145,9 +156,9 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     public function offsetSet($offset, $value): void
     {
         if (\is_a($value, CustomerField::class)) {
-            $this->fields[$offset] = $value;
+            self::$fields[$this->langID][$offset] = $value;
         } elseif (\is_object($value)) {
-            $this->fields[$offset] = new CustomerField($value);
+            self::$fields[$this->langID][$offset] = new CustomerField($value);
         } else {
             throw new \InvalidArgumentException(
                 self::class . '::' . __METHOD__ . ' - value must be an object, ' . \gettype($value) . ' given.'
@@ -166,7 +177,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function offsetUnset($offset): void
     {
-        unset($this->fields[$offset]);
+        unset(self::$fields[$this->langID][$offset]);
     }
 
     /**
@@ -180,6 +191,22 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function count(): int
     {
-        return \count($this->fields);
+        return \count($this->getFields());
+    }
+
+    /**
+     * This method is called by var_dump() when dumping an object to get the properties that should be shown.
+     * If the method isn't defined on an object, then all public, protected and private properties will be shown.
+     * @return array
+     * @since PHP 5.6.0
+     *
+     * @link  https://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.debuginfo
+     */
+    public function __debugInfo(): array
+    {
+        return [
+            'langID' => $this->langID,
+            'fields' => $this->getFields(),
+        ];
     }
 }

@@ -52,7 +52,8 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
             'SELECT tkundenattribut.kKundenAttribut, COALESCE(tkundenattribut.kKunde, :customerID) kKunde,
                     tkundenfeld.kKundenfeld, tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert,
                     tkundenfeld.nSort,
-                    IF(tkundenattribut.kKundenAttribut IS NULL, 1, tkundenfeld.nEditierbar) nEditierbar
+                    IF(tkundenattribut.kKundenAttribut IS NULL
+                        OR COALESCE(tkundenattribut.cWert, \'\') = \'\', 1, tkundenfeld.nEditierbar) nEditierbar
                 FROM tkundenfeld
                 LEFT JOIN tkundenattribut ON tkundenattribut.kKunde = :customerID
                     AND tkundenattribut.kKundenfeld = tkundenfeld.kKundenfeld
@@ -75,7 +76,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
      */
     public function save(): self
     {
-        $nonEditables = (new CustomerFields)->getNonEditableFields();
+        $nonEditables = (new CustomerFields())->getNonEditableFields();
         $usedIDs      = [];
 
         /** @var CustomerAttribute $attribute */

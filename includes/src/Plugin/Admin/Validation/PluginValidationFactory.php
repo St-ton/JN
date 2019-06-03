@@ -17,7 +17,7 @@ use JTL\Plugin\Admin\Validation\Items\ExtensionDir;
 use JTL\Plugin\Admin\Validation\Items\FrontendLinks;
 use JTL\Plugin\Admin\Validation\Items\Hooks;
 use JTL\Plugin\Admin\Validation\Items\Installation;
-use JTL\Plugin\Admin\Validation\Items\Licence;
+use JTL\Plugin\Admin\Validation\Items\LicenceExtension;
 use JTL\Plugin\Admin\Validation\Items\Localization;
 use JTL\Plugin\Admin\Validation\Items\MailTemplates;
 use JTL\Plugin\Admin\Validation\Items\Menus;
@@ -26,6 +26,7 @@ use JTL\Plugin\Admin\Validation\Items\NoUninstaller;
 use JTL\Plugin\Admin\Validation\Items\PaymentMethods;
 use JTL\Plugin\Admin\Validation\Items\PluginID;
 use JTL\Plugin\Admin\Validation\Items\Portlets;
+use JTL\Plugin\Admin\Validation\Items\Version;
 use JTL\Plugin\Admin\Validation\Items\WidgetsExtension;
 use JTL\Plugin\Admin\Validation\Items\XMLVersion;
 
@@ -45,6 +46,7 @@ class PluginValidationFactory
     public function getValidations($node, $dir, $version, $pluginID): array
     {
         $validation   = [];
+        $validation[] = new Version($node, $dir, $version, $pluginID);
         $validation[] = new Name($node, $dir, $version, $pluginID);
         $validation[] = new ExtensionDir($node, $dir, $version, $pluginID);
         $validation[] = new XMLVersion($node, $dir, $version, $pluginID);
@@ -52,7 +54,7 @@ class PluginValidationFactory
         $validation[] = new PluginID($node, $dir, $version, $pluginID);
         $validation[] = new Installation($node, $dir, $version, $pluginID);
         $validation[] = new Author($node, $dir, $version, $pluginID);
-        $validation[] = new Licence($node, $dir, $version, $pluginID);
+        $validation[] = new LicenceExtension($node, $dir, $version, $pluginID);
         $validation[] = new Hooks($node, $dir, $version, $pluginID);
         $validation[] = new Menus($node, $dir, $version, $pluginID);
         $validation[] = new FrontendLinks($node, $dir, $version, $pluginID);

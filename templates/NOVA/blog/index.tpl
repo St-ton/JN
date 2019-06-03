@@ -8,18 +8,14 @@
     {/block}
 
     {block name='blog-index-content'}
-        {if $opcPageService->getCurPage()->isReplace()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
+        {if JTL\Shop::$AktuelleSeite === 'NEWSDETAIL'}
+            {block name='blog-index-include-details'}
+                {include file='blog/details.tpl'}
+            {/block}
         {else}
-            {if JTL\Shop::$AktuelleSeite === 'NEWSDETAIL'}
-                {block name='blog-index-include-details'}
-                    {include file='blog/details.tpl'}
-                {/block}
-            {else}
-                {block name='blog-index-overview'}
-                    {include file='blog/overview.tpl'}
-                {/block}
-            {/if}
+            {block name='blog-index-overview'}
+                {include file='blog/overview.tpl'}
+            {/block}
         {/if}
     {/block}
 

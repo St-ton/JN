@@ -3,33 +3,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-function Iframe(io, gui, page, shopUrl, templateUrl)
+class Iframe
 {
-    bindProtoOnHandlers(this);
-
-    this.io          = io;
-    this.gui         = gui;
-    this.page        = page;
-    this.shopUrl     = shopUrl;
-    this.templateUrl = templateUrl;
-
-    this.draggedElm         = null;
-    this.hoveredElm         = null;
-    this.selectedElm        = null;
-    this.dropTarget         = null;
-    this.previewMode        = false;
-    this.dragNewPortletCls  = null;
-    this.dragNewBlueprintId = 0;
-}
-
-Iframe.prototype = {
-
-    constructor: Iframe,
-
-    init: function(loadCB, pagetree)
+    constructor(io, gui, page, shopUrl, templateUrl)
     {
-        debuglog('Iframe init');
+        bindProtoOnHandlers(this);
 
+        this.io          = io;
+        this.gui         = gui;
+        this.page        = page;
+        this.shopUrl     = shopUrl;
+        this.templateUrl = templateUrl;
+
+        this.draggedElm         = null;
+        this.hoveredElm         = null;
+        this.selectedElm        = null;
+        this.dropTarget         = null;
+        this.dragNewPortletCls  = null;
+        this.dragNewBlueprintId = 0;
+    }
+
+    init(pagetree)
+    {
         installGuiElements(this, [
             'iframe',
             'portletToolbar',
@@ -44,12 +39,41 @@ Iframe.prototype = {
 
         this.pagetree = pagetree;
 
-        this.iframe
-            .attr('src', this.getIframePageUrl())
-            .on('load', this.onIframeLoad.bind(this, loadCB || noop));
-    },
+        return new Promise(res => {
+            this.iframe
+                .attr('src', this.getIframePageUrl())
+                .on('load', res);
+        }).then(() => {
+            this.ctx  = this.iframe[0].contentWindow;
+            this.jq   = this.ctx.$;
+            this.head = this.jq('head');
+            this.body = this.jq('body');
 
-    getIframePageUrl: function()
+            this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.css');
+
+            this.loadScript(
+                'https://unpkg.com/popper.js/dist/umd/popper.min.js',
+                () => {
+                    this.toolbarPopper      = this.makePopper(this.portletToolbar);
+                    this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
+                }
+            );
+
+            this.jq('a, button')      // disable links and buttons that could change the current iframe page
+                .off('click')
+                .attr('onclick', '')
+                .on('click', e => e.preventDefault());
+
+            this.portletPreviewLabel.appendTo(this.body);
+            this.portletToolbar.appendTo(this.body);
+
+            return this.page.initIframe(this.jq)
+                .catch(er => this.gui.showError('Error while loading draft preview: ' + er.toString()))
+                .then(this.onPageLoad);
+        })
+    }
+
+    getIframePageUrl()
     {
         var pageUrlLink = document.createElement('a');
 
@@ -64,101 +88,60 @@ Iframe.prototype = {
         pageUrlLink.search += '&opcEditedPageKey=' + this.page.key;
 
         return pageUrlLink.href.toString();
-    },
+    }
 
-    onIframeLoad: function(loadCB)
-    {
-        debuglog('Iframe onIframeLoad');
-
-        this.ctx = this.iframe[0].contentWindow;
-        this.jq  = this.ctx.$;
-
-        this.head = this.jq('head');
-        this.body = this.jq('body');
-
-        this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.css');
-        this.loadScript('https://unpkg.com/popper.js/dist/umd/popper.min.js', this.onPopperLoad);
-
-        this.jq('a, button')      // disable links and buttons that could change the current iframe page
-            .off('click')
-            .attr('onclick', '')
-            .on('click', function(e) { e.preventDefault(); });
-
-        this.portletPreviewLabel.appendTo(this.body);
-        this.portletToolbar.appendTo(this.body);
-        this.page.initIframe(
-            this.jq,
-            this.onPageLoad.bind(this,loadCB),
-            er => this.gui.showError('Error while loading draft preview: ' + er.error.message)
-        );
-    },
-
-    onPopperLoad: function()
-    {
-        debuglog('Iframe onPopperLoad');
-
-        this.toolbarPopper      = this.makePopper(this.portletToolbar);
-        this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);
-    },
-
-    makePopper: function(elm)
+    makePopper(elm)
     {
         return new this.ctx.Popper(
             document.body,
             elm[0],
             {placement: 'top-start', modifiers: {computeStyle: {gpuAcceleration: false }}}
         );
-    },
+    }
 
-    onPageLoad: function(loadCB)
+    onPageLoad()
     {
-        debuglog('Iframe onPageLoad');
-
-        loadCB = loadCB || noop;
-
         this.enableEditingEvents();
         this.updateDropTargets();
         this.pagetree.render();
         this.gui.hideLoader();
+    }
 
-        loadCB();
-    },
-
-    updateDropTargets: function()
+    updateDropTargets()
     {
         this.stripDropTargets();
         this.areas().append('<div class="opc-droptarget">');
         this.portlets().before('<div class="opc-droptarget">');
-    },
+    }
 
-    stripDropTargets: function()
+    stripDropTargets()
     {
         this.dropTargets().remove();
-    },
+    }
 
-    areas: function()
+    areas()
     {
         return this.jq('.opc-area');
-    },
+    }
 
-    portlets: function()
+    portlets()
     {
         return this.jq('[data-portlet]');
-    },
+    }
 
-    dropTargets: function()
+    dropTargets()
     {
         return this.jq('.opc-droptarget');
-    },
+    }
 
-    loadStylesheet: function(url, isLess)
+    loadStylesheet(url, isLess)
     {
         this
             .jq('<link rel="stylesheet' + (isLess ? '/less' : '') + '" href="' + url + '">')
             .appendTo(this.head);
-    },
+    }
 
-    loadScript: function(url, callback)
+    loadScript(url, callback)
     {
         var script = this.ctx.document.createElement('script');
 
@@ -166,9 +149,9 @@ Iframe.prototype = {
         script.addEventListener('load', callback || noop);
 
         this.head[0].appendChild(script);
-    },
+    }
 
-    enableEditingEvents: function()
+    enableEditingEvents()
     {
         this.disableEditingEvents();
 
@@ -183,9 +166,9 @@ Iframe.prototype = {
 
         this.jq(this.ctx.document)
             .on('keydown', this.onKeyDown);
-    },
+    }
 
-    disableEditingEvents: function()
+    disableEditingEvents()
     {
         this.page.rootAreas
             .off('mouseover')
@@ -198,47 +181,47 @@ Iframe.prototype = {
 
         this.jq(this.ctx.document)
             .off('keydown');
-    },
+    }
 
-    onPortletMouseOver: function(e)
+    onPortletMouseOver(e)
     {
         this.setHovered(this.findSelectableParent(this.jq(e.target)));
-    },
+    }
 
-    onPortletClick: function(e)
+    onPortletClick(e)
     {
         this.setSelected(this.findSelectableParent(this.jq(e.target)));
-    },
+    }
 
-    onPortletDragStart: function(e)
+    onPortletDragStart(e)
     {
         initDragStart(e);
         this.setDragged(this.findSelectableParent(this.jq(e.target)));
-    },
+    }
 
-    findSelectableParent: function(elm)
+    findSelectableParent(elm)
     {
         while(!this.isSelectable(elm) && !elm.is(this.page.rootAreas)) {
             elm = elm.parent();
         }
 
         return this.isSelectable(elm) ? elm : undefined;
-    },
+    }
 
-    onPortletDragEnd: function(e)
+    onPortletDragEnd(e)
     {
         this.cleanUpDrag();
-    },
+    }
 
-    cleanUpDrag: function()
+    cleanUpDrag()
     {
         this.setDragged();
         this.setDropTarget();
         this.toolbarPopper.update();
         this.previewLabelPopper.update();
-    },
+    }
 
-    onPortletDragOver: function(e)
+    onPortletDragOver(e)
     {
         var elm = this.jq(e.target);
 
@@ -250,12 +233,10 @@ Iframe.prototype = {
         }
 
         e.preventDefault();
-    },
+    }
 
-    onPortletDrop: function(e)
+    onPortletDrop(e)
     {
-        debuglog('Iframe onPortletDrop');
-
         if(this.dropTarget !== null) {
             var oldArea = this.draggedElm.parent();
 
@@ -266,18 +247,17 @@ Iframe.prototype = {
             if(this.dragNewPortletCls) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.createPortlet(
-                    this.dragNewPortletCls,
-                    this.onNewPortletCreated,
-                    er => {
+                this.io.createPortlet(this.dragNewPortletCls)
+                    .catch(er => {
                         this.newPortletDropTarget.remove();
-                        this.gui.showError(er.error.message);
-                    },
-                );
+                        return this.gui.showError(er.error.message);
+                    })
+                    .then(this.onNewPortletCreated);
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
-                this.io.getBlueprintPreview(this.dragNewBlueprintId, this.onNewPortletCreated);
+                this.io.getBlueprintPreview(this.dragNewBlueprintId)
+                    .then(this.onNewPortletCreated);
             } else {
                 this.pagetree.updateArea(oldArea);
                 this.pagetree.updateArea(this.draggedElm.parent());
@@ -287,9 +267,9 @@ Iframe.prototype = {
         }
 
         this.page.updateFlipcards();
-    },
+    }
 
-    onNewPortletCreated: function(data)
+    onNewPortletCreated(data)
     {
         var newElement = this.createPortletElm(data);
 
@@ -302,14 +282,14 @@ Iframe.prototype = {
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
         this.page.updateFlipcards();
-    },
+    }
 
-    createPortletElm: function(previewHtml)
+    createPortletElm(previewHtml)
     {
         return this.jq(previewHtml);
-    },
+    }
 
-    setDragged: function(elm)
+    setDragged(elm)
     {
         elm = elm || null;
 
@@ -322,9 +302,9 @@ Iframe.prototype = {
         }
 
         this.draggedElm = elm;
-    },
+    }
 
-    setHovered: function(elm)
+    setHovered(elm)
     {
         elm = elm || null;
 
@@ -343,9 +323,9 @@ Iframe.prototype = {
         }
 
         this.hoveredElm = elm;
-    },
+    }
 
-    setSelected: function(elm)
+    setSelected(elm)
     {
         elm = elm || null;
 
@@ -369,9 +349,9 @@ Iframe.prototype = {
         }
 
         this.pagetree.setSelected(this.selectedElm);
-    },
+    }
 
-    scrollIntoView: function(elm)
+    scrollIntoView(elm)
     {
         var offsTop    = elm.offset().top;
         var viewTop    = this.jq(this.ctx).scrollTop();
@@ -386,9 +366,9 @@ Iframe.prototype = {
         if(diffBottom > 0) {
             this.ctx.scrollBy(0, diffBottom);
         }
-    },
+    }
 
-    setDropTarget: function(elm)
+    setDropTarget(elm)
     {
         elm = elm || null;
 
@@ -401,51 +381,26 @@ Iframe.prototype = {
         }
 
         this.dropTarget = elm;
-    },
+    }
 
-    dragNewPortlet: function(cls)
+    dragNewPortlet(cls)
     {
         this.dragNewPortletCls = cls || null;
         this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
-    },
+    }
 
-    dragNewBlueprint: function(id)
+    dragNewBlueprint(id)
     {
         this.dragNewBlueprintId = id || 0;
         this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
-    },
+    }
 
-    togglePreview: function()
-    {
-        if (this.previewMode) {
-            this.gui.showLoader();
-            this.page.hideLivePreview(function() {
-                this.enableEditingEvents();
-                this.portlets().removeClass('opc-preview');
-                this.pagetree.render();
-                this.updateDropTargets();
-                this.previewMode = false;
-                this.gui.hideLoader();
-            }.bind(this));
-        } else {
-            this.gui.showLoader();
-            this.page.showLivePreview(function () {
-                this.disableEditingEvents();
-                this.setSelected();
-                this.setHovered();
-                this.portlets().addClass('opc-preview');
-                this.previewMode = true;
-                this.gui.hideLoader();
-            }.bind(this));
-        }
-    },
-
-    onBtnConfig: function()
+    onBtnConfig()
     {
         this.gui.openConfigurator(this.selectedElm);
-    },
+    }
 
-    replaceSelectedPortletHtml: function(html)
+    replaceSelectedPortletHtml(html)
     {
         var newPortlet = this.jq(html);
 
@@ -457,9 +412,9 @@ Iframe.prototype = {
         this.setSelected(newPortlet);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
-    },
+    }
 
-    onBtnClone: function()
+    onBtnClone()
     {
         if(this.selectedElm !== null) {
             var area = this.selectedElm.parent();
@@ -472,16 +427,16 @@ Iframe.prototype = {
             this.updateDropTargets();
             this.gui.setUnsaved(true, true);
         }
-    },
+    }
 
-    onBtnBlueprint: function()
+    onBtnBlueprint()
     {
         if(this.selectedElm !== null) {
             this.gui.blueprintModal.modal('show');
         }
-    },
+    }
 
-    onBtnParent: function()
+    onBtnParent()
     {
         if(this.selectedElm !== null) {
             var elm = this.findSelectableParent(this.selectedElm.parent());
@@ -490,9 +445,9 @@ Iframe.prototype = {
                 this.setSelected(elm);
             }
         }
-    },
+    }
 
-    onBtnTrash: function()
+    onBtnTrash()
     {
         if(this.selectedElm !== null) {
             var area = this.selectedElm.parent();
@@ -503,22 +458,22 @@ Iframe.prototype = {
             this.gui.setUnsaved(true, true);
             this.page.updateFlipcards();
         }
-    },
+    }
 
-    onKeyDown: function(e)
+    onKeyDown(e)
     {
         if(e.key === 'Delete' && this.selectedElm !== null) {
             this.onBtnTrash(e);
         }
-    },
+    }
 
-    isSelectable: function(elm)
+    isSelectable(elm)
     {
         return elm && elm.is('[data-portlet]');
-    },
+    }
 
-    isDescendant: function(descendant, tree)
+    isDescendant(descendant, tree)
     {
         return tree && tree.has(descendant).length > 0;
-    },
-};
+    }
+}

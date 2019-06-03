@@ -4,19 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
-use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Cart;
 use JTL\Alert\Alert;
-use JTL\Checkout\Kupon;
-use JTL\Shop;
-use JTL\Shopsetting;
 use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;
-use JTL\Session\Frontend;
-use JTL\Extensions\Upload;
+use JTL\Checkout\Kupon;
+use JTL\Customer\AccountController;
 use JTL\Extensions\Download;
+use JTL\Extensions\Upload;
+use JTL\Helpers\Cart;
+use JTL\Helpers\Request;
+use JTL\Helpers\ShippingMethod;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -26,18 +26,21 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
 Shop::setPageType(PAGE_BESTELLVORGANG);
-$conf        = Shopsetting::getInstance()->getAll();
-$step        = 'accountwahl';
-$cart        = Frontend::getCart();
-$alertHelper = Shop::Container()->getAlertService();
+$conf         = Shopsetting::getInstance()->getAll();
+$step         = 'accountwahl';
+$cart         = Frontend::getCart();
+$alertService = Shop::Container()->getAlertService();
+$linkService  = Shop::Container()->getLinkService();
+$controller   = new AccountController(Shop::Container()->getDB(), $alertService, $linkService, $smarty);
+
 unset($_SESSION['ajaxcheckout']);
 if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
-    fuehreLoginAus($_POST['email'], $_POST['passwort']);
+    $controller->login($_POST['email'], $_POST['passwort']);
 }
 if (Request::verifyGPCDataInt('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
-    setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
+    $controller->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
     header('Location: bestellvorgang.php?wk=1');
     exit();
 }
@@ -133,7 +136,7 @@ if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {
     // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
     $step = 'accountwahl';
 
-    $alertHelper->addAlert(
+    $alertService->addAlert(
         Alert::TYPE_NOTE,
         Shop::Lang()->get('digitalProductsRegisterInfo', 'checkout'),
         'digitalProductsRegisterInfo'
@@ -211,9 +214,8 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     Warenkorb::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
-$linkHelper = Shop::Container()->getLinkService();
-$kLink      = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
-$link       = $linkHelper->getPageLink($kLink);
+$kLink = $linkService->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
+$link  = $linkService->getPageLink($kLink);
 Cart::addVariationPictures($cart);
 Shop::Smarty()->assign(
     'AGB',
@@ -225,7 +227,7 @@ Shop::Smarty()->assign(
     ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
     ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
     ->assign('Link', $link)
-    ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))
+    ->assign('alertNote', $alertService->alertTypeExists(Alert::TYPE_NOTE))
     ->assign('step', $step)
     ->assign('editRechnungsadresse', Request::verifyGPCDataInt('editRechnungsadresse'))
     ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())

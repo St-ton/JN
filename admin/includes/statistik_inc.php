@@ -206,7 +206,7 @@ function getJSON($stats, $nAnzeigeIntervall, $nTyp)
                 $x_labels_arr[] = (string)$oStat->$cSpalteX;
             }
 
-            return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, 'Besucher');
+            return setDot($data, $x_labels_arr, null, $fMin, $fMax, $fStep, __('visitor'));
             break;
 
         // Kundenherkunft
@@ -358,7 +358,7 @@ function setPie($inputData, $xLabels)
             unset($xLabels[$j]);
         }
     }
-    $xLabels[$nPosSonstiges] = 'Sonstige';
+    $xLabels[$nPosSonstiges] = __('miscellaneous');
     foreach ($inputData as $i => $data) {
         $cLabel      = $xLabels[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
         $merge_arr[] = new pie_value($data, $cLabel);
@@ -439,11 +439,11 @@ function gibMappingDaten($type)
 function GetTypeNameStats($type)
 {
     $names = [
-        1 => 'Besucher',
-        2 => 'Kundenherkunft',
-        3 => 'Suchmaschinen',
-        4 => 'Umsatz',
-        5 => 'Einstiegsseite'
+        1 => __('visitor'),
+        2 => __('customerHeritage'),
+        3 => __('searchEngines'),
+        4 => __('sales'),
+        5 => __('entryPages')
     ];
 
     return $names[$type] ?? '';
@@ -556,7 +556,7 @@ function preparePieChartStats($stats, $name, $axis, $maxEntries = 6)
             $statstmp  = [];
             $other     = new stdClass();
             $other->$y = 0;
-            $other->$x = 'Sonstige';
+            $other->$x = __('miscellaneous');
             foreach ($stats as $i => $stat) {
                 if ($i < $maxEntries) {
                     $statstmp[] = $stat;

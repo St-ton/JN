@@ -55,15 +55,13 @@ if ($opc->isOPCInstalled() === false) {
 } elseif ($action !== '' && Form::validateToken() === false) {
     // OPC action while XSRF validation failed
     $error = __('Wrong XSRF token.');
-} elseif ($action === 'replace' || $action === 'extend') {
+} elseif ($action === 'extend') {
     // Create a new OPC page draft
     try {
-        $newName = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1)
-            . ($action === 'extend' ? ' (' . __('extended') . ')' : ' (' . __('replaced') . ')');
+        $newName = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1);
         $page    = $opcPage
             ->createDraft($pageId)
             ->setUrl($pageUrl)
-            ->setReplace($action === 'replace')
             ->setName($newName);
         $opcPageDB->saveDraft($page);
         $pageKey = $page->getKey();
@@ -77,13 +75,10 @@ if ($opc->isOPCInstalled() === false) {
     // Adopt new draft from another draft
     try {
         $adoptFromDraft = $opcPage->getDraft($adoptFromKey);
-        $isReplace      = $adoptFromDraft->isReplace();
-        $newName        = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1)
-            . ($isReplace ? ' (' . __('extended') . ')' : ' (' . __('replaced') . ')');
+        $newName        = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1);
         $page           = $opcPage
             ->createDraft($pageId)
             ->setUrl($pageUrl)
-            ->setReplace($isReplace)
             ->setName($newName)
             ->setAreaList($adoptFromDraft->getAreaList());
         $opcPageDB->saveDraft($page);

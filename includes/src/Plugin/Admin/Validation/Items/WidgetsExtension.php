@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class WidgetsExtension
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class WidgetsExtension extends AbstractItem
+final class WidgetsExtension extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -24,15 +24,16 @@ class WidgetsExtension extends AbstractItem
         if (!isset($node['AdminWidget']) || !\is_array($node['AdminWidget'])) {
             return InstallCode::OK;
         }
-        if (!isset($node['AdminWidget'][0]['Widget'])
-            || !\is_array($node['AdminWidget'][0]['Widget'])
-            || \count($node['AdminWidget'][0]['Widget']) === 0
-        ) {
+        if (empty($node['AdminWidget'][0]['Widget']) || !\is_array($node['AdminWidget'][0]['Widget'])) {
             return InstallCode::MISSING_WIDGETS;
         }
         $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET;
         foreach ($node['AdminWidget'][0]['Widget'] as $i => $widget) {
-            $i = (string)$i;
+            if (!\is_array($widget)) {
+                continue;
+            }
+            $i      = (string)$i;
+            $widget = $this->sanitizeWidget($widget);
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
@@ -43,11 +44,11 @@ class WidgetsExtension extends AbstractItem
                 $widget['Title'],
                 $hits1
             );
-            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Title'])) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Title'])) {
                 return InstallCode::INVALID_WIDGET_TITLE;
             }
             \preg_match('/[a-zA-Z0-9\/_\-.]+/', $widget['Class'], $hits1);
-            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Class'])) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Class'])) {
                 return InstallCode::INVALID_WIDGET_CLASS;
             }
             if (!\file_exists($base . $widget['Class'] . '.php')) {
@@ -57,19 +58,35 @@ class WidgetsExtension extends AbstractItem
                 return InstallCode::INVALID_WIDGET_CONTAINER;
             }
             \preg_match('/[0-9]+/', $widget['Pos'], $hits1);
-            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Pos'])) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Pos'])) {
                 return InstallCode::INVALID_WIDGET_POS;
             }
             \preg_match('/[0-1]{1}/', $widget['Expanded'], $hits1);
-            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Expanded'])) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Expanded'])) {
                 return InstallCode::INVALID_WIDGET_EXPANDED;
             }
             \preg_match('/[0-1]{1}/', $widget['Active'], $hits1);
-            if (\mb_strlen($hits1[0]) !== \mb_strlen($widget['Active'])) {
+            if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Active'])) {
                 return InstallCode::INVALID_WIDGET_ACTIVE;
             }
         }
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param array $widget
+     * @return array
+     */
+    private function sanitizeWidget(array $widget): array
+    {
+        $widget['Title']     = $widget['Title'] ?? '';
+        $widget['Class']     = $widget['Class'] ?? '';
+        $widget['Container'] = $widget['Container'] ?? '';
+        $widget['Pos']       = $widget['Pos'] ?? '';
+        $widget['Expanded']  = $widget['Expanded'] ?? '';
+        $widget['Active']    = $widget['Active'] ?? '';
+
+        return $widget;
     }
 }

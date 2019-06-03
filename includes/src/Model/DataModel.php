@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use Iterator;
 use JTL\DB\DbInterface;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -46,12 +47,12 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @var array
      * Stores keynames for iterator interface
      */
-    private $iteratorKeys;
+    protected $iteratorKeys;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    protected $db;
 
     /**
      * @inheritDoc

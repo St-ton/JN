@@ -12,6 +12,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageModel;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;
 use JTL\News\Item;
@@ -307,13 +308,13 @@ class Sprache
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
-        $this->byISO = $data->groupBy('cISO')->transform(function ($e) {
+        $this->byISO = $data->groupBy('cISO')->transform(function (Collection $e) {
             $e = $e->first();
 
             return (object)['kSprachISO' => (int)$e->kSprache, 'cISO' => $e->cISO];
         })->toArray();
 
-        $this->byLangID = $data->groupBy('kSprache')->transform(function ($e) {
+        $this->byLangID = $data->groupBy('kSprache')->transform(function (Collection $e) {
             $e = $e->first();
 
             return (object)['cISO' => $e->cISO];
@@ -391,17 +392,16 @@ class Sprache
      */
     public function mappekISO(string $cISO)
     {
-        if (\mb_strlen($cISO) > 0) {
-            if (isset($this->byISO[$cISO]->kSprachISO)) {
-                return (int)$this->byISO[$cISO]->kSprachISO;
-            }
-            $oSprachISO         = $this->mappedGetLangIDFromIso($cISO);
-            $this->byISO[$cISO] = $oSprachISO;
-
-            return isset($oSprachISO->kSprachISO) ? (int)$oSprachISO->kSprachISO : false;
+        if (\mb_strlen($cISO) === 0) {
+            return false;
         }
+        if (isset($this->byISO[$cISO]->kSprachISO)) {
+            return (int)$this->byISO[$cISO]->kSprachISO;
+        }
+        $oSprachISO         = $this->mappedGetLangIDFromIso($cISO);
+        $this->byISO[$cISO] = $oSprachISO;
 
-        return false;
+        return isset($oSprachISO->kSprachISO) ? (int)$oSprachISO->kSprachISO : false;
     }
 
     /**
@@ -561,31 +561,11 @@ class Sprache
     }
 
     /**
-     * @return array
+     * @return LanguageModel[]
      */
     public function gibInstallierteSprachen(): array
     {
-        return map(
-            \array_filter(
-                $this->db->query('SELECT * FROM tsprache', ReturnType::ARRAY_OF_OBJECTS),
-                function ($l) {
-                    return $this->mappekISO($l->cISO) > 0;
-                }
-            ),
-            function ($e) {
-                $e->kSprache = (int)$e->kSprache;
-                $ISO2        = Text::convertISO2ISO639($e->cISO);
-                if (isset($_SESSION['AdminAccount'])) {
-                    $e->name = \Locale::getDisplayLanguage(
-                        $ISO2,
-                        $_SESSION['AdminAccount']->language
-                    );
-                }
-                $e->nameOriginal = \Locale::getDisplayLanguage($ISO2, $ISO2);
-
-                return $e;
-            }
-        );
+        return LanguageModel::loadAll($this->db, [], [])->toArray();
     }
 
     /**
@@ -606,7 +586,7 @@ class Sprache
     /**
      * @return array
      */
-    public function gibSektionen(): array
+    private function gibSektionen(): array
     {
         return $this->db->query(
             'SELECT * FROM tsprachsektion ORDER BY cNAME ASC',
@@ -975,29 +955,8 @@ class Sprache
     {
         $languages = Frontend::getLanguages();
         if (\count($languages) === 0) {
-            $languages = \array_map(
-                function ($s) {
-                    $s->kSprache = (int)$s->kSprache;
-
-                    return $s;
-                },
-                $this->db->query(
-                    'SELECT *
-                        FROM tsprache
-                        ORDER BY cShopStandard DESC, cNameDeutsch',
-                    ReturnType::ARRAY_OF_OBJECTS
-                )
-            );
+            $languages = LanguageModel::loadAll($this->db, [], [])->toArray();
         }
-        if (isset($_SESSION['AdminAccount'])) {
-            foreach ($languages as $language) {
-                $language->name = \Locale::getDisplayLanguage(
-                    Text::convertISO2ISO639($language->cISO),
-                    $_SESSION['AdminAccount']->language
-                );
-            }
-        }
-
         switch ($returnType) {
             case 2:
                 return reindex($languages, function ($e) {

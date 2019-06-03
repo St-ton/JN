@@ -83,6 +83,8 @@ class Frontend extends AbstractSession
         $updateGlobals  = $this->checkGlobals();
         $updateLanguage = $this->checkLanguageUpdate();
         $updateGlobals  = $updateLanguage || $updateGlobals || $this->checkSessionUpdate();
+
+        $updateGlobals=true;
         $lang           = $_GET['lang'] ?? '';
         $checked        = false;
         if (isset($_SESSION['kSprache'])) {
@@ -210,11 +212,11 @@ class Frontend extends AbstractSession
         }, $_SESSION['Sprachen']);
         $defaultLang = '';
         $allowed     = [];
-        foreach ($_SESSION['Sprachen'] as $oSprache) {
-            $cISO              = Text::convertISO2ISO639($oSprache->cISO);
-            $oSprache->cISO639 = $cISO;
+        foreach ($_SESSION['Sprachen'] as $language) {
+            $cISO              = Text::convertISO2ISO639($language->cISO);
+            $language->cISO639 = $cISO;
             $allowed[]         = $cISO;
-            if ($oSprache->cShopStandard === 'Y') {
+            if ($language->cShopStandard === 'Y') {
                 $defaultLang = $cISO;
             }
         }

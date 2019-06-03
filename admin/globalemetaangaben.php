@@ -73,5 +73,4 @@ foreach ($meta as $item) {
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_METAANGABEN))
        ->assign('oMetaangaben_arr', $metaData)
        ->assign('keywords', $excludeKeywords)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->display('globalemetaangaben.tpl');

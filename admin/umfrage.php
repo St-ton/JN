@@ -31,7 +31,6 @@ setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-$Sprachen    = Sprache::getAllLanguages();
 $oSpracheTMP = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 $oNice       = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
@@ -585,7 +584,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     $smarty->assign('noModule', true);
 }
 
-$smarty->assign('Sprachen', $Sprachen)
-       ->assign('kSprache', $_SESSION['kSprache'])
+$smarty->assign('kSprache', $_SESSION['kSprache'])
        ->assign('step', $step)
        ->display('umfrage.tpl');

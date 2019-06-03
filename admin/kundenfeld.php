@@ -152,6 +152,5 @@ $smarty->assign('oKundenfeld_arr', $fields)
        ->assign('nHighestSortValue', $highestSortValue)
        ->assign('nHighestSortDiff', $highestSortDiff)
        ->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENFELD))
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('step', $step)
        ->display('kundenfeld.tpl');

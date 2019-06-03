@@ -224,18 +224,18 @@ class ShippingMethod
             $shippingMethod->angezeigterHinweistext    = [];
             $shippingMethod->cLieferdauer              = [];
             $shippingMethod->specificShippingcosts_arr = null;
-            foreach ($_SESSION['Sprachen'] as $Sprache) {
+            foreach ($_SESSION['Sprachen'] as $language) {
                 $localized = $db->select(
                     'tversandartsprache',
                     'kVersandart',
                     (int)$shippingMethod->kVersandart,
                     'cISOSprache',
-                    $Sprache->cISO
+                    $language->cISO
                 );
                 if (isset($localized->cName)) {
-                    $shippingMethod->angezeigterName[$Sprache->cISO]        = $localized->cName;
-                    $shippingMethod->angezeigterHinweistext[$Sprache->cISO] = $localized->cHinweistextShop;
-                    $shippingMethod->cLieferdauer[$Sprache->cISO]           = $localized->cLieferdauer;
+                    $shippingMethod->angezeigterName[$language->cISO]        = $localized->cName;
+                    $shippingMethod->angezeigterHinweistext[$language->cISO] = $localized->cHinweistextShop;
+                    $shippingMethod->cLieferdauer[$language->cISO]           = $localized->cLieferdauer;
                 }
             }
             if ($shippingMethod->fEndpreis < $minVersand) {
@@ -837,8 +837,8 @@ class ShippingMethod
                             $position = new stdClass();
                             //posname lokalisiert ablegen
                             $position->cName = [];
-                            foreach ($_SESSION['Sprachen'] as $Sprache) {
-                                $position->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
+                            foreach ($_SESSION['Sprachen'] as $language) {
+                                $position->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
                                     ' ' . $product->cName . ' (' . $cLandAttr . ')';
                             }
                             $position->fKosten = $fPreis;
@@ -866,8 +866,8 @@ class ShippingMethod
                     $position = new stdClass();
                     //posname lokalisiert ablegen
                     $position->cName = [];
-                    foreach ($_SESSION['Sprachen'] as $Sprache) {
-                        $position->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
+                    foreach ($_SESSION['Sprachen'] as $language) {
+                        $position->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
                             $product->cName . ' (' . $cLandAttr . ')';
                     }
                     $position->fKosten = (float)\str_replace(',', '.', $fKosten) * $amount;

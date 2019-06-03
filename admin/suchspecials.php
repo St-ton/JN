@@ -261,7 +261,6 @@ foreach ($ssSeoData as $oSuchSpecials) {
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
        ->assign('oSuchSpecials_arr', $searchSpecials)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('step', $step)
        ->display('suchspecials.tpl');
 

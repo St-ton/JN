@@ -71,6 +71,5 @@ if ($step === 'agbwrb_uebersicht') {
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
        ->display('agbwrb.tpl');

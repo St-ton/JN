@@ -46,8 +46,7 @@ if ($template->name === 'Evo' && $template->author === 'JTL-Software-GmbH' && (i
     $smarty->assign('isDeprecated', true);
 }
 
-$smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('cRnd', time())
+$smarty->assign('cRnd', time())
        ->assign('nMaxFileSize', $maxFileSize)
        ->assign('oSuchspecialOverlay_arr', $overlays)
        ->assign('nSuchspecialOverlayAnzahl', count($overlays) + 1)

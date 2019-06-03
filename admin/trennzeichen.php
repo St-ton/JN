@@ -52,6 +52,5 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('oTrennzeichenAssoc_arr', Trennzeichen::getAll($_SESSION['kSprache']))
        ->display('trennzeichen.tpl');

@@ -768,7 +768,6 @@ if ($step === 'uebersicht') {
            ->assign('oPagiHistory', $pagiHistory)
            ->assign('oPagiAlleAbos', $pagiSubscriptions);
 }
-$smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->assign('nRand', time())
        ->display('newsletter.tpl');

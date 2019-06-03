@@ -132,7 +132,6 @@ if ($step === 'kwk_uebersicht') {
            ->assign('oPagiReg', $pagiReg)
            ->assign('oPagiPraemie', $pagiBonus);
 }
-$smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('kSprache', $_SESSION['kSprache'])
+$smarty->assign('kSprache', $_SESSION['kSprache'])
        ->assign('step', $step)
        ->display('kundenwerbenkunden.tpl');

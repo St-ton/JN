@@ -42,5 +42,4 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->display('shopsitemap.tpl');

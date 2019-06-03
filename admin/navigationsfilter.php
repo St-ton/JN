@@ -50,5 +50,4 @@ $priceRangeFilters = $db->query(
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))
        ->assign('oPreisspannenfilter_arr', $priceRangeFilters)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->display('navigationsfilter.tpl');

@@ -581,7 +581,6 @@ $queryMapping   = $db->query(
     ReturnType::ARRAY_OF_OBJECTS
 );
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
-       ->assign('Sprachen', $languages)
        ->assign('Suchanfragen', $searchQueries)
        ->assign('Suchanfragenerfolglos', $failedQueries)
        ->assign('Suchanfragenblacklist', $queryBlacklist)

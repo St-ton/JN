@@ -295,6 +295,5 @@ if ($step === 'freischalten_uebersicht') {
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('cTab', $tab)
        ->display('freischalten.tpl');

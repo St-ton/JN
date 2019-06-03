@@ -1609,24 +1609,24 @@ class Cart
                     $Artikel = new Artikel();
                     $gueltig = true;
                     $Artikel->fuelleArtikel($position->kArtikel, Artikel::getDefaultOptions());
-                    $_POST['anzahl'][$i] = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
-                    if ($Artikel->cTeilbar !== 'Y' && \ceil($_POST['anzahl'][$i]) !== $_POST['anzahl'][$i]) {
-                        $_POST['anzahl'][$i] = \ceil($_POST['anzahl'][$i]);
+                    $quantity = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
+                    if ($Artikel->cTeilbar !== 'Y' && \ceil($quantity) !== $quantity) {
+                        $quantity = \ceil($quantity);
                     }
                     if ($Artikel->fAbnahmeintervall > 0
-                        && !self::isMultiple($_POST['anzahl'][$i], $Artikel->fAbnahmeintervall)
+                        && !self::isMultiple($quantity, $Artikel->fAbnahmeintervall)
                     ) {
                         $gueltig       = false;
                         $cartNotices[] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
                     }
-                    if ($_POST['anzahl'][$i] + $cart->gibAnzahlEinesArtikels(
+                    if ($quantity + $cart->gibAnzahlEinesArtikels(
                         $position->kArtikel,
                         $i
                     ) < $position->Artikel->fMindestbestellmenge) {
                         $gueltig       = false;
                         $cartNotices[] = \lang_mindestbestellmenge(
                             $position->Artikel,
-                            $_POST['anzahl'][$i]
+                            $quantity
                         );
                     }
                     if ($Artikel->cLagerBeachten === 'Y'
@@ -1636,7 +1636,7 @@ class Cart
                         foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
                             /** @var Artikel $product */
                             $product = $dependent->product;
-                            if ($product->fPackeinheit * ($_POST['anzahl'][$i] * $dependent->stockFactor
+                            if ($product->fPackeinheit * ($quantity * $dependent->stockFactor
                                     + Frontend::getCart()->getDependentAmount(
                                         $product->kArtikel,
                                         true,
@@ -1654,13 +1654,13 @@ class Cart
                                 $cartNotices[] = $msg;
                             }
                             $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl =
-                                $_SESSION['Warenkorb']->getMaxAvailableAmount($i, $_POST['anzahl'][$i]);
+                                $_SESSION['Warenkorb']->getMaxAvailableAmount($i, $quantity);
                         }
                     }
                     // maximale Bestellmenge des Artikels beachten
                     if (isset($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE])
                         && $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
-                        && $_POST['anzahl'][$i] > $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE]
+                        && $quantity > $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE]
                     ) {
                         $gueltig       = false;
                         $cartNotices[] = Shop::Lang()->get('wkMaxorderlimit', 'messages');
@@ -1672,7 +1672,7 @@ class Cart
                     ) {
                         foreach ($position->WarenkorbPosEigenschaftArr as $eWert) {
                             $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
-                            if ($EigenschaftWert->fPackeinheit * ($_POST['anzahl'][$i] +
+                            if ($EigenschaftWert->fPackeinheit * ($quantity +
                                     $cart->gibAnzahlEinerVariation(
                                         $position->kArtikel,
                                         $eWert->kEigenschaftWert,
@@ -1690,7 +1690,7 @@ class Cart
                     }
 
                     if ($gueltig) {
-                        $position->nAnzahl = $_POST['anzahl'][$i];
+                        $position->nAnzahl = $quantity;
                         $position->fPreis  = $Artikel->gibPreis(
                             $position->nAnzahl,
                             $position->WarenkorbPosEigenschaftArr

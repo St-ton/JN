@@ -1445,7 +1445,7 @@ class Product
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $prev        = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
-                    FROM tkategorieartikel, tpreise, tartikel
+                    FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
@@ -1453,16 +1453,14 @@ class Product
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
-                        AND tpreise.kArtikel = tartikel.kArtikel
-                        AND tartikel.kArtikel < ' . $productID . '
-                        AND tpreise.kKundengruppe = ' . $customerGroupID . ' ' . $stockFilter . '
+                        AND tartikel.kArtikel < ' . $productID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel DESC
                     LIMIT 1',
                 ReturnType::SINGLE_OBJECT
             );
             $next        = Shop::Container()->getDB()->query(
                 'SELECT tartikel.kArtikel
-                    FROM tkategorieartikel, tpreise, tartikel
+                    FROM tkategorieartikel, tartikel
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
@@ -1470,9 +1468,7 @@ class Product
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kVaterArtikel = 0
                         AND tkategorieartikel.kKategorie = ' . $categoryID . '
-                        AND tpreise.kArtikel = tartikel.kArtikel
-                        AND tartikel.kArtikel > ' . $productID . '
-                        AND tpreise.kKundengruppe = ' . $customerGroupID . ' ' . $stockFilter . '
+                        AND tartikel.kArtikel > ' . $productID . ' ' . $stockFilter . '
                     ORDER BY tartikel.kArtikel
                     LIMIT 1',
                 ReturnType::SINGLE_OBJECT

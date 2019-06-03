@@ -32,7 +32,7 @@ use function Functional\map;
  * Class Controller
  * @package News\Admin
  */
-class Controller
+final class Controller
 {
     public const UPLOAD_DIR = \PFAD_ROOT . \PFAD_NEWSBILDER;
 
@@ -98,7 +98,7 @@ class Controller
      * @param array         $post
      * @param array         $languages
      * @param ContentAuthor $contentAuthor
-     * @throws \Exception
+     * @throws Exception
      */
     public function createOrUpdateNewsItem(array $post, array $languages, ContentAuthor $contentAuthor): void
     {
@@ -110,9 +110,7 @@ class Controller
         $dateValidFrom   = $post['dGueltigVon'];
         $previewImage    = $post['previewImage'];
         $authorID        = (int)($post['kAuthor'] ?? 0);
-
-        $validation = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs);
-
+        $validation      = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs);
         if (\is_array($validation) && \count($validation) === 0) {
             $newsItem                = new stdClass();
             $newsItem->cKundengruppe = ';' . \implode(';', $customerGroups) . ';';
@@ -133,7 +131,6 @@ class Controller
             } else {
                 $contentAuthor->clearAuthor('NEWS', $newsItemID);
             }
-
             $this->db->delete('tnewssprache', 'kNews', $newsItemID);
             $flags = \ENT_COMPAT | \ENT_HTML401;
             foreach ($languages as $language) {
@@ -188,11 +185,7 @@ class Controller
                     $this->db->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
-                        [
-                            'kNewsMonatsUebersicht',
-                            (int)$monthOverview->kNewsMonatsUebersicht,
-                            $langID
-                        ]
+                        ['kNewsMonatsUebersicht', (int)$monthOverview->kNewsMonatsUebersicht, $langID]
                     );
                     $oSeo           = new stdClass();
                     $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($prefix . '-' . $month . '-' . $year));
@@ -227,13 +220,6 @@ class Controller
                     $this->db->insert('tseo', $oSeo);
                 }
             }
-//            if ($update === true) {
-//                $revision = new \Revision();
-//                $revision->addRevision('news', $kNews);
-//                $this->db->delete('tnews', 'kNews', $kNews);
-//                $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $kNews]);
-//            }
-
             $dir = self::UPLOAD_DIR . $newsItemID;
             if (!\is_dir($dir) && !\mkdir(self::UPLOAD_DIR . $newsItemID) && !\is_dir($dir)) {
                 throw new Exception('Cannot create upload dir: ' . $dir);
@@ -325,10 +311,8 @@ class Controller
                 'SELECT kNews
                     FROM tnews
                     WHERE MONTH(dGueltigVon) = :mnth
-                        AND YEAR(dGueltigVon) = :yr
-                        AND kSprache = :lid',
+                        AND YEAR(dGueltigVon) = :yr',
                 [
-                    'lid'  => $langID,
                     'mnth' => $month,
                     'yr'   => $year
                 ],
@@ -588,11 +572,7 @@ class Controller
         if (empty($_FILES['Bilder']['name']) || \count($_FILES['Bilder']['name']) === 0) {
             return 0;
         }
-        $lastImage = \gibLetzteBildNummer($newsItemID);
-        $counter   = 0;
-        if ($lastImage > 0) {
-            $counter = $lastImage;
-        }
+        $counter    = $this->getLastImageNumber($newsItemID);
         $imageCount = \count($_FILES['Bilder']['name']) + $counter;
         for ($i = $counter; $i < $imageCount; ++$i) {
             if (!empty($_FILES['Bilder']['size'][$i - $counter])
@@ -905,7 +885,9 @@ class Controller
 
             \closedir($handle);
         }
-        \usort($images, 'cmp');
+        \usort($images, function ($a, $b) {
+            return \strcmp($a, $b);
+        });
 
         $shopURL = Shop::getURL() . '/';
         $count   = \count($images);
@@ -925,6 +907,33 @@ class Controller
         }
 
         return $text;
+    }
+
+    /**
+     * @param int $kNews
+     * @return int
+     */
+    private function getLastImageNumber(int $kNews): int
+    {
+        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER;
+        $images    = [];
+        if (\is_dir($uploadDir . $kNews)) {
+            $handle = \opendir($uploadDir . $kNews);
+            while (($file = \readdir($handle)) !== false) {
+                if ($file !== '.' && $file !== '..') {
+                    $images[] = $file;
+                }
+            }
+        }
+        $max = 0;
+        foreach ($images as $image) {
+            $num = \mb_substr($image, 4, (\mb_strlen($image) - \mb_strpos($image, '.')) - 3);
+            if ($num > $max) {
+                $max = (int)$num;
+            }
+        }
+
+        return $max;
     }
 
     /**

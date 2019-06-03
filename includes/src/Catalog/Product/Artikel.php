@@ -4205,7 +4205,6 @@ class Artikel
         if ($this->getOption('nWarenlager', 0) === 1) {
             $this->holWarenlager($kSprache);
         }
-        $this->baueLageranzeige();
         if ($this->getOption('nMerkmale', 0) === 1) {
             $this->holeMerkmale();
         }
@@ -4350,6 +4349,10 @@ class Artikel
         if (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_UNVERKAEUFLICH;
         }
+        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+            $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;
+        }
+        $this->baueLageranzeige();
         $this->cUVPLocalized = Preise::getLocalizedPriceString($this->fUVP);
         // Lieferzeit abhaengig vom Session-Lieferland aktualisieren
         if ($this->inWarenkorbLegbar >= 1 && $this->nIstVater !== 1) {
@@ -4729,6 +4732,15 @@ class Artikel
                         : Shop::Lang()->get('ampelGruen');
                     break;
             }
+        }
+        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+            $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
+            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
+            
+            $this->Lageranzeige->nStatus   = 0;
+            $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
+                ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
+                : Shop::Lang()->get('ampelRot');
         }
 
         return $this;
@@ -6795,6 +6807,27 @@ class Artikel
     public function getOption($option, $default = null)
     {
         return $this->options->$option ?? $default;
+    }
+
+    /**
+     * @param string $cISO
+     * @return bool
+     */
+    public function isUsedForShippingCostCalculation(string $cISO): bool
+    {
+        $excludedAttributes = [\FKT_ATTRIBUT_VERSANDKOSTEN, \FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
+
+        foreach ($excludedAttributes as $excludedAttribute) {
+            if (isset($this->FunktionsAttribute[$excludedAttribute])
+                && ($cISO === ''
+                    || (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+                )
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

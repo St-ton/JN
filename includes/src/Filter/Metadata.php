@@ -6,16 +6,16 @@
 
 namespace JTL\Filter;
 
+use Illuminate\Support\Collection;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\MerkmalWert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Text;
-use JTL\Catalog\Hersteller;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
 use JTL\MagicCompatibilityTrait;
-use JTL\Catalog\Product\MerkmalWert;
 use JTL\Shop;
-use Illuminate\Support\Collection;
 use function Functional\group;
 use function Functional\map;
 use function Functional\reduce_left;

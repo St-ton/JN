@@ -245,6 +245,10 @@ class Category implements CategoryInterface
             return $this;
         }
         $this->urls[Shop::getLanguageID()] = Shop::getURL() . '/' . $overview->cSeo;
+        $this->setMetaTitle(
+            Shop::Lang()->get('newsArchiv') . ' - ' . $overview->nMonat . '/' . $overview->nJahr,
+            Shop::getLanguageID()
+        );
 
         $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->queryPrepared(
             'SELECT tnews.kNews

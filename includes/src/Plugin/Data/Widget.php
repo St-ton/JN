@@ -6,8 +6,8 @@
 
 namespace JTL\Plugin\Data;
 
-use stdClass;
 use Illuminate\Support\Collection;
+use stdClass;
 use function Functional\reindex;
 
 /**
@@ -93,7 +93,7 @@ class Widget
      */
     public function addWidget(stdClass $widget): Collection
     {
-        $this->widgets[] = $widget;
+        $this->widgets->push($widget);
 
         return $this->widgets;
     }

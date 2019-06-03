@@ -151,7 +151,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
            'WarenkorbVersandkostenfreiHinweis',
            ShippingMethod::getShippingFreeString(
                ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin),
-               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
+               $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin)
            )
        )
        ->assign('meta_title', $cMetaTitle ?? '')
@@ -186,7 +186,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
-       ->assign('wishlists', Wunschliste::getWishlists());
+       ->assign('wishlists', Wunschliste::getWishlists())
+       ->assign('robotsContent', $smarty->get_template_vars('robotsContent'));
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());
@@ -233,15 +234,15 @@ $debugbar->getTimer()->stopMeasure('init');
 $alertHelper = Shop::Container()->getAlertService();
 if (isset($cFehler)) {
     $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'miscFehler');
-    \trigger_error('global $cFehler is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $cFehler is deprecated.', \E_USER_DEPRECATED);
 }
 if (isset($cHinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'miscCHinweis');
-    \trigger_error('global $cHinweis is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $cHinweis is deprecated.', \E_USER_DEPRECATED);
 }
 if (isset($hinweis)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
-    \trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
+    trigger_error('global $hinweis is deprecated.', \E_USER_DEPRECATED);
 }
 
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))

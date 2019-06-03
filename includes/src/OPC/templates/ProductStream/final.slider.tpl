@@ -35,14 +35,16 @@
             </div>
         </div>
         <script>
-            $(window).on('load.opc', function () {
+            function startSlider() {
                 $('.evo-opc-slider:not(.slick-initialized)').slick({
                     //dots: true,
                     arrows: true,
                     lazyLoad: 'ondemand',
                     slidesToShow: {$instance->getProperty('productCount')},
                 });
-            });
+            }
+            $(window).on('load', startSlider);
+            $(startSlider);
         </script>
     </section>{* /panel *}
 {/if}

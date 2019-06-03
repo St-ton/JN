@@ -7,7 +7,6 @@
 namespace JTL\dbeS\Push;
 
 use JTL\Shop;
-use PclZip;
 use ZipArchive;
 
 /**
@@ -33,25 +32,16 @@ final class MediaFiles extends AbstractPush
         if (!\file_exists(\PFAD_SYNC_TMP . self::XML_FILE)) {
             return $xml;
         }
-        if (\class_exists('ZipArchive')) {
-            $archive = new ZipArchive();
-            if ($archive->open(\PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
-                && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE) !== false
-            ) {
-                $archive->close();
-                \readfile(\PFAD_SYNC_TMP . $zip);
-                exit;
-            }
+        $archive = new ZipArchive();
+        if ($archive->open(\PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
+            && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE) !== false
+        ) {
             $archive->close();
-            \syncException($archive->getStatusString());
-        } else {
-            $archive = new PclZip(\PFAD_SYNC_TMP . $zip);
-            if ($archive->create(\PFAD_SYNC_TMP . self::XML_FILE, \PCLZIP_OPT_REMOVE_ALL_PATH)) {
-                \readfile(\PFAD_SYNC_TMP . $zip);
-                exit;
-            }
-            \syncException($archive->errorInfo(true));
+            \readfile(\PFAD_SYNC_TMP . $zip);
+            exit;
         }
+        $archive->close();
+        \syncException($archive->getStatusString());
 
         return $xml;
     }

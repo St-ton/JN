@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Uninstaller
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Uninstaller extends AbstractItem
+final class Uninstaller extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -21,10 +21,7 @@ class Uninstaller extends AbstractItem
     {
         $node = $this->getBaseNode();
         $dir  = $this->getDir();
-        if (isset($node['Uninstall'])
-            && \mb_strlen($node['Uninstall']) > 0
-            && !\file_exists($dir . \PFAD_PLUGIN_UNINSTALL . $node['Uninstall'])
-        ) {
+        if (!empty($node['Uninstall']) && !\file_exists($dir . \PFAD_PLUGIN_UNINSTALL . $node['Uninstall'])) {
             return InstallCode::MISSING_UNINSTALL_FILE;
         }
 

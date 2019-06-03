@@ -1667,6 +1667,9 @@ msgstr "Aktiv bis"
 msgid "validUntil"
 msgstr "Gültig bis"
 
+msgid "miscellaneous"
+msgstr "Sonstige"
+
 msgid "system"
 msgstr "System"
 

@@ -58,9 +58,9 @@ class Queue
     public function loadQueueFromDB(): array
     {
         $queueData = $this->db->query(
-            'SELECT * 
-                FROM tjobqueue 
-                WHERE isRunning = 0 
+            'SELECT *
+                FROM tjobqueue
+                WHERE isRunning = 0
                     AND startTime <= NOW()',
             ReturnType::ARRAY_OF_OBJECTS
         );

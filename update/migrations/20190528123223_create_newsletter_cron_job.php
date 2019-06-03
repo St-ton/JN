@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20190528123223 extends Migration implements IMigration
 {
     protected $author      = 'Clemens Rudolph';
-    protected $description = 'create newsletter cron job';
+    protected $description = 'Create newsletter cron job';
 
     public function up()
     {

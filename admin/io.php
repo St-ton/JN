@@ -4,12 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Backend\JSONAPI;
-use JTL\Helpers\Form;
 use JTL\Backend\AdminIO;
-use JTL\IO\IOError;
-use JTL\Shop;
+use JTL\Backend\JSONAPI;
 use JTL\Backend\TwoFA;
+use JTL\Helpers\Form;
+use JTL\IO\IOError;
+use JTL\Jtllog;
+use JTL\Link\Admin\LinkAdmin;
+use JTL\Shop;
 
 /** @global \JTL\Backend\AdminAccount $oAccount */
 
@@ -48,6 +50,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getSeos', [$jsonApi, 'getSeos'])
    ->register('getTags', [$jsonApi, 'getTags'])
    ->register('getAttributes', [$jsonApi, 'getAttributes'])
+   ->register('isDuplicateSpecialLink', [LinkAdmin::class, 'isDuplicateSpecialLink'])
    ->register('getCurrencyConversion', 'getCurrencyConversionIO')
    ->register('setCurrencyConversionTooltip', 'setCurrencyConversionTooltipIO')
    ->register('getNotifyDropIO')
@@ -60,7 +63,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('getRemoteData', 'getRemoteDataIO', $dashboardInc, 'DASHBOARD_VIEW')
    ->register('getShopInfo', 'getShopInfoIO', $dashboardInc, 'DASHBOARD_VIEW')
-   ->register('truncateJtllog', [JTL\Jtllog::class, 'truncateLog'], null, 'DASHBOARD_VIEW')
+   ->register('truncateJtllog', [Jtllog::class, 'truncateLog'], null, 'DASHBOARD_VIEW')
    ->register('addFav')
    ->register('reloadFavs')
    ->register('loadStats', 'loadStats', $bilderverwaltungInc, 'DISPLAY_IMAGES_VIEW')

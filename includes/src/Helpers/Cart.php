@@ -141,7 +141,6 @@ class Cart
                     }
                     break;
 
-                case \C_WARENKORBPOS_TYP_TRUSTEDSHOPS:
                 case \C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
                     $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
@@ -428,8 +427,8 @@ class Cart
                     continue;
                 }
                 $oKonfigitem          = new Konfigitem($kKonfigitem);
-                $oKonfigitem->fAnzahl = (float)($configGroupCounts[$oKonfigitem->getKonfiggruppe()]
-                    ?? $oKonfigitem->getInitial());
+                $oKonfigitem->fAnzahl = (float)($configItemCounts[$kKonfigitem]
+                    ?? $configGroupCounts[$oKonfigitem->getKonfiggruppe()] ?? $oKonfigitem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$oKonfigitem->getKonfigitem()])) {
                     $oKonfigitem->fAnzahl = (float)$configItemCounts[$oKonfigitem->getKonfigitem()];
                 }
@@ -1246,125 +1245,123 @@ class Cart
 
     /**
      * @param array $variBoxCounts
-     * @param int   $kArtikel
-     * @param bool  $bIstVater
-     * @param bool  $bExtern
+     * @param int   $productID
+     * @param bool  $isParent
+     * @param bool  $isVariMatrix
      * @former fuegeVariBoxInWK()
      * @since 5.0.0
      */
     public static function addVariboxToCart(
         array $variBoxCounts,
-        int $kArtikel,
-        bool $bIstVater,
-        bool $bExtern = false
+        int $productID,
+        bool $isParent,
+        bool $isVariMatrix = false
     ): void {
-        if (!\is_array($variBoxCounts) || \count($variBoxCounts) === 0) {
+        if (\count($variBoxCounts) === 0) {
             return;
         }
-        $kVaterArtikel = $kArtikel;
-        $attributes    = [];
+        $parentID   = $productID;
+        $attributes = [];
         unset($_SESSION['variBoxAnzahl_arr']);
-        // Es ist min. eine Anzahl vorhanden
-        foreach (\array_keys($variBoxCounts) as $cKeys) {
-            if ((float)$variBoxCounts[$cKeys] <= 0) {
+
+        foreach (\array_keys($variBoxCounts) as $key) {
+            if ((float)$variBoxCounts[$key] <= 0) {
                 continue;
             }
-            // Switch zwischen 1 Vari und 2
-            if ($cKeys[0] === '_') { // 1
-                $cVariation0                         = \mb_substr($cKeys, 1);
-                [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
-                // In die Session einbauen
-                $oVariKombi                                 = new stdClass();
-                $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
-                $oVariKombi->cVariation0                    = Text::filterXSS($cVariation0);
-                $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
-                $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
-                $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
-                $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
-            } elseif ($bExtern) {
-                $oVariKombi                       = new stdClass();
-                $oVariKombi->fAnzahl              = (float)$variBoxCounts[$cKeys];
-                $oVariKombi->kEigenschaft_arr     = [];
-                $oVariKombi->kEigenschaftWert_arr = [];
-                foreach (\explode('_', $cKeys) as $cComb) {
-                    [$kEigenschaft, $kEigenschaftWert]         = \explode(':', $cComb);
-                    $oVariKombi->kEigenschaft_arr[]            = (int)$kEigenschaft;
-                    $oVariKombi->kEigenschaftWert_arr[]        = (int)$kEigenschaftWert;
-                    $_POST['eigenschaftwert_' . $kEigenschaft] = (int)$kEigenschaftWert;
-                }
-                $_SESSION['variBoxAnzahl_arr'][$cKeys] = $oVariKombi;
-            } else {
-                [$cVariation0, $cVariation1]         = \explode('_', $cKeys);
-                [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
-                [$kEigenschaft1, $kEigenschaftWert1] = \explode(':', $cVariation1);
-                // In die Session einbauen
-                $oVariKombi                                 = new stdClass();
-                $oVariKombi->fAnzahl                        = (float)$variBoxCounts[$cKeys];
-                $oVariKombi->cVariation0                    = Text::filterXSS($cVariation0);
-                $oVariKombi->cVariation1                    = Text::filterXSS($cVariation1);
-                $oVariKombi->kEigenschaft0                  = (int)$kEigenschaft0;
-                $oVariKombi->kEigenschaftWert0              = (int)$kEigenschaftWert0;
-                $oVariKombi->kEigenschaft1                  = (int)$kEigenschaft1;
-                $oVariKombi->kEigenschaftWert1              = (int)$kEigenschaftWert1;
-                $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
-                $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
-                $_POST['eigenschaftwert_' . $kEigenschaft1] = $kEigenschaftWert1;
-            }
-            $attributes[$cKeys]                   = new stdClass();
-            $attributes[$cKeys]->oEigenschaft_arr = [];
-            $attributes[$cKeys]->kArtikel         = 0;
+            if ($isVariMatrix) {
+                // varkombi matrix - all keys are IDs of a concrete child
+                $productID                       = (int)$key;
+                $properties                      = Product::getPropertiesForVarCombiArticle($productID, $parentID);
+                $variKombi                       = new stdClass();
+                $variKombi->fAnzahl              = (float)$variBoxCounts[$key];
+                $variKombi->kEigenschaft_arr     = array_keys($properties);
+                $variKombi->kEigenschaftWert_arr = array_values($properties);
 
-            if ($bIstVater) {
-                $kArtikel                             = Product::getArticleForParent($kVaterArtikel);
-                $attributes[$cKeys]->oEigenschaft_arr = Product::getSelectedPropertiesForVarCombiArticle(
-                    $kArtikel
-                );
-                $attributes[$cKeys]->kArtikel         = $kArtikel;
-            } else {
-                $attributes[$cKeys]->oEigenschaft_arr = Product::getSelectedPropertiesForArticle($kArtikel);
-                $attributes[$cKeys]->kArtikel         = $kArtikel;
+                $_POST['eigenschaftwert']            = $properties;
+                $_SESSION['variBoxAnzahl_arr'][$key] = $variKombi;
+                $attributes[$key]                    = new stdClass();
+                $attributes[$key]->kArtikel          = $productID;
+                $attributes[$key]->oEigenschaft_arr  = \array_map(function ($a) use ($properties) {
+                    return (object)[
+                        'kEigenschaft'     => $a,
+                        'kEigenschaftWert' => $properties[$a],
+                    ];
+                }, $variKombi->kEigenschaft_arr);
+            } elseif (preg_match('/([0-9:]+)?_([0-9:]+)/', $key, $hits) && count($hits) === 3) {
+                if (empty($hits[1])) {
+                    // 1-dimensional matrix - key is combination of property id and property value
+                    unset($hits[1]);
+                    $n = 1;
+                } else {
+                    // 2-dimensional matrix - key is set of combinations of property id and property value
+                    $n = 2;
+                }
+                array_shift($hits);
+
+                $variKombi          = new stdClass();
+                $variKombi->fAnzahl = (float)$variBoxCounts[$key];
+                for ($i = 0; $i < $n; $i++) {
+                    [$propertyID, $propertyValue]         = \explode(':', $hits[$i]);
+                    $variKombi->{'cVariation' . $i}       = Text::filterXSS($hits[$i]);
+                    $variKombi->{'kEigenschaft' . $i}     = (int)$propertyID;
+                    $variKombi->{'kEigenschaftWert' . $i} = (int)$propertyValue;
+
+                    $_POST['eigenschaftwert_' . Text::filterXSS($propertyID)] = (int)$propertyValue;
+                }
+
+                $_SESSION['variBoxAnzahl_arr'][$key] = $variKombi;
+                $attributes[$key]                    = new stdClass();
+                $attributes[$key]->oEigenschaft_arr  = [];
+                $attributes[$key]->kArtikel          = 0;
+
+                if ($isParent) {
+                    $productID                          = Product::getArticleForParent($parentID);
+                    $attributes[$key]->oEigenschaft_arr = Product::getSelectedPropertiesForVarCombiArticle($productID);
+                } else {
+                    $attributes[$key]->oEigenschaft_arr = Product::getSelectedPropertiesForArticle($productID);
+                }
+                $attributes[$key]->kArtikel = $productID;
             }
         }
-        $redirectErrors = [];
-        if (!\is_array($attributes) || \count($attributes) === 0) {
+
+        if (\count($attributes) === 0) {
             return;
         }
-        $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($attributes as $i => $oAlleEigenschaftPre) {
+
+        $errors  = [];
+        $options = Artikel::getDefaultOptions();
+        foreach ($attributes as $key => $attribute) {
             // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
             $redirects = self::addToCartCheck(
-                (new Artikel())->fuelleArtikel($oAlleEigenschaftPre->kArtikel, $defaultOptions),
-                (float)$variBoxCounts[$i],
-                $oAlleEigenschaftPre->oEigenschaft_arr
+                (new Artikel())->fuelleArtikel($attribute->kArtikel, $options),
+                (float)$variBoxCounts[$key],
+                $attribute->oEigenschaft_arr
             );
 
-            $_SESSION['variBoxAnzahl_arr'][$i]->bError = false;
+            $_SESSION['variBoxAnzahl_arr'][$key]->bError = false;
             if (\count($redirects) > 0) {
-                foreach ($redirects as $nRedirect) {
-                    $nRedirect = (int)$nRedirect;
-                    if (!\in_array($nRedirect, $redirectErrors, true)) {
-                        $redirectErrors[] = $nRedirect;
+                foreach ($redirects as $redirect) {
+                    $redirect = (int)$redirect;
+                    if (!\in_array($redirect, $errors, true)) {
+                        $errors[] = $redirect;
                     }
                 }
-                $_SESSION['variBoxAnzahl_arr'][$i]->bError = true;
+                $_SESSION['variBoxAnzahl_arr'][$key]->bError = true;
             }
         }
-
-        if (\count($redirectErrors) > 0) {
-            $articleID = $bIstVater
-                ? $kVaterArtikel
-                : $kArtikel;
-            \header('Location: ' . Shop::getURL() . '/?a=' . $articleID .
-                '&r=' . \implode(',', $redirectErrors), true, 302);
+        if (\count($errors) > 0) {
+            \header('Location: ' . Shop::getURL() . '/?a=' . ($isParent ? $parentID : $productID) .
+                '&r=' . \implode(',', $errors), true, 302);
             exit();
         }
-        foreach ($attributes as $i => $oAlleEigenschaftPost) {
-            if (!$_SESSION['variBoxAnzahl_arr'][$i]->bError) {
+
+        foreach ($attributes as $key => $attribute) {
+            if (!$_SESSION['variBoxAnzahl_arr'][$key]->bError) {
                 //#8224, #7482 -> do not call setzePositionsPreise() in loop @ Wanrekob::fuegeEin()
                 self::addProductIDToCart(
-                    $oAlleEigenschaftPost->kArtikel,
-                    (float)$variBoxCounts[$i],
-                    $oAlleEigenschaftPost->oEigenschaft_arr,
+                    $attribute->kArtikel,
+                    (float)$variBoxCounts[$key],
+                    $attribute->oEigenschaft_arr,
                     0,
                     false,
                     0,
@@ -1373,6 +1370,7 @@ class Cart
                 );
             }
         }
+
         Frontend::getCart()->setzePositionsPreise();
         unset($_SESSION['variBoxAnzahl_arr']);
         Frontend::getCart()->redirectTo();
@@ -1460,8 +1458,7 @@ class Cart
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
 
         Kupon::resetNewCustomerCoupon(false);
         if ($setzePositionsPreise) {
@@ -1470,8 +1467,7 @@ class Cart
         unset(
             $_SESSION['VersandKupon'],
             $_SESSION['Versandart'],
-            $_SESSION['Zahlungsart'],
-            $_SESSION['TrustedShops']
+            $_SESSION['Zahlungsart']
         );
         // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neu anlegen
         Kupon::reCheck();
@@ -1492,10 +1488,11 @@ class Cart
 
     /**
      * @param array $positions
+     * @param bool $removeShippingCoupon
      * @former loescheWarenkorbPositionen()
      * @since 5.0.0
      */
-    public static function deleteCartPositions(array $positions): void
+    public static function deleteCartPositions(array $positions, $removeShippingCoupon = true): void
     {
         $cart    = Frontend::getCart();
         $uniques = [];
@@ -1537,7 +1534,7 @@ class Cart
                 }
             }
         }
-        self::deleteAllSpecialPositions();
+        self::deleteAllSpecialPositions($removeShippingCoupon);
         if (!$cart->posTypEnthalten(\C_WARENKORBPOS_TYP_ARTIKEL)) {
             unset($_SESSION['Kupon']);
             $_SESSION['Warenkorb'] = new Warenkorb();
@@ -1852,10 +1849,11 @@ class Cart
     }
 
     /**
+     * @param bool $removeShippingCoupon
      * @former loescheAlleSpezialPos()
      * @since 5.0.0
      */
-    public static function deleteAllSpecialPositions(): void
+    public static function deleteAllSpecialPositions($removeShippingCoupon = true): void
     {
         Frontend::getCart()
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
@@ -1865,17 +1863,19 @@ class Cart
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-               ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERPACKUNG)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS)
+                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERPACKUNG)
                 ->checkIfCouponIsStillValid();
         unset(
             $_SESSION['Versandart'],
-            $_SESSION['VersandKupon'],
-            $_SESSION['oVersandfreiKupon'],
             $_SESSION['Verpackung'],
-            $_SESSION['TrustedShops'],
             $_SESSION['Zahlungsart']
         );
+        if ($removeShippingCoupon) {
+            unset(
+                $_SESSION['VersandKupon'],
+                $_SESSION['oVersandfreiKupon']
+            );
+        }
         Kupon::resetNewCustomerCoupon();
         Kupon::reCheck();
 

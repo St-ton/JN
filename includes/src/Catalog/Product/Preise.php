@@ -11,7 +11,6 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Preise
@@ -183,6 +182,7 @@ class Preise
      */
     public function __construct(int $kKundengruppe, int $kArtikel, int $kKunde = 0, int $kSteuerklasse = 0)
     {
+        $db          = Shop::Container()->getDB();
         $filterKunde = 'AND p.kKundengruppe = ' . $kKundengruppe;
         if ($kKunde > 0 && $this->hasCustomPrice($kKunde)) {
             $filterKunde = 'AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
@@ -190,13 +190,13 @@ class Preise
                             FROM tpreis AS p1
                             WHERE p1.kArtikel = ' . $kArtikel . '
                                 AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = ' . $kKundengruppe . ')
-                                AND (p1.kKunde = ' . $kKunde . ' OR p1.kKunde IS NULL))';
+                                AND (p1.kKunde = 0 OR p1.kKunde = ' . $kKunde . '))';
         }
         $this->kArtikel      = $kArtikel;
         $this->kKundengruppe = $kKundengruppe;
         $this->kKunde        = $kKunde;
 
-        $prices = Shop::Container()->getDB()->query(
+        $prices = $db->query(
             'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
@@ -207,7 +207,7 @@ class Preise
         if (\count($prices) > 0) {
             if ($kSteuerklasse === 0) {
                 $tax           =
-                    Shop::Container()->getDB()->select(
+                    $db->select(
                         'tartikel',
                         'kArtikel',
                         $kArtikel,
@@ -221,7 +221,7 @@ class Preise
                 $kSteuerklasse = (int)$tax->kSteuerklasse;
             }
             $this->fUst        = Tax::getSalesTax($kSteuerklasse);
-            $tmp               = Shop::Container()->getDB()->select(
+            $tmp               = $db->select(
                 'tartikel',
                 'kArtikel',
                 $kArtikel,
@@ -243,21 +243,25 @@ class Preise
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
-                    $specialPrice   = Shop::Container()->getDB()->query(
+                    $specialPrice   = $db->queryPrepared(
                         "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
                             JOIN tartikel 
-                                ON tartikel.kArtikel = " . $kArtikel . '
+                                ON tartikel.kArtikel = :productID
                             JOIN tartikelsonderpreis 
                                 ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tartikelsonderpreis.kArtikel = ' . $kArtikel . "
+                                AND tartikelsonderpreis.kArtikel = :productID
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= CURDATE()
                                 AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) 
                                 AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
                                     OR tartikelsonderpreis.nIstAnzahl = 0)
-                            WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}",
+                            WHERE tsonderpreise.kKundengruppe = :customerGroup",
+                        [
+                            'productID'     => $kArtikel,
+                            'customerGroup' => $kKundengruppe,
+                        ],
                         ReturnType::SINGLE_OBJECT
                     );
 
@@ -367,72 +371,12 @@ class Preise
     }
 
     /**
-     * @param int $kKundengruppe
-     * @param int $kArtikel
      * @return $this
+     * @deprecated since 5.0.0 - removed tpreise
      */
-    public function loadFromDB(int $kKundengruppe, int $kArtikel): self
+    public function loadFromDB(): self
     {
-        $obj = Shop::Container()->getDB()->select(
-            'tpreise',
-            'kArtikel',
-            $kArtikel,
-            'kKundengruppe',
-            $kKundengruppe
-        );
-        if (!empty($obj->kArtikel)) {
-            $members = \array_keys(\get_object_vars($obj));
-            foreach ($members as $member) {
-                $this->$member = $obj->$member;
-            }
-            $ust_obj    = Shop::Container()->getDB()->query(
-                'SELECT kSteuerklasse 
-                    FROM tartikel 
-                    WHERE kArtikel = ' . $kArtikel,
-                ReturnType::SINGLE_OBJECT
-            );
-            $this->fUst = Tax::getSalesTax($ust_obj->kSteuerklasse);
-            //hat dieser Artikel fuer diese Kundengruppe einen Sonderpreis?
-            $sonderpreis = Shop::Container()->getDB()->query(
-                'SELECT tsonderpreise.fNettoPreis
-                    FROM tsonderpreise
-                    JOIN tartikel 
-                        ON tartikel.kArtikel = ' . $kArtikel . '
-                    JOIN tartikelsonderpreis 
-                        ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                        AND tartikelsonderpreis.kArtikel = ' . $kArtikel . "
-                        AND tartikelsonderpreis.cAktiv = 'Y'
-                        AND tartikelsonderpreis.dStart <= CURDATE()
-                        AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
-                        AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
-                            OR tartikelsonderpreis.nIstAnzahl = 0)
-                    WHERE tsonderpreise.kKundengruppe = " . $kKundengruppe,
-                ReturnType::SINGLE_OBJECT
-            );
-            if (isset($sonderpreis->fNettoPreis)) {
-                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fVKNetto) {
-                    $this->alterVKNetto      = $this->fVKNetto;
-                    $this->fVKNetto          = $sonderpreis->fNettoPreis;
-                    $this->Sonderpreis_aktiv = 1;
-                }
-                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis1) {
-                    $this->fPreis1 = $sonderpreis->fNettoPreis;
-                }
-                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis2) {
-                    $this->fPreis2 = $sonderpreis->fNettoPreis;
-                }
-                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis3) {
-                    $this->fPreis3 = $sonderpreis->fNettoPreis;
-                }
-                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis4) {
-                    $this->fPreis4 = $sonderpreis->fNettoPreis;
-                }
-                if ($sonderpreis->fNettoPreis && $sonderpreis->fNettoPreis < $this->fPreis5) {
-                    $this->fPreis5 = $sonderpreis->fNettoPreis;
-                }
-            }
-            $this->berechneVKs();
-        }
+        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
         return $this;
     }
@@ -527,25 +471,13 @@ class Preise
 
     /**
      * @retun int
+     * @deprecated since 5.0.0 - removed tpreise
      */
     public function insertInDB(): int
     {
-        $obj                = new stdClass();
-        $obj->kKundengruppe = $this->kKundengruppe;
-        $obj->kArtikel      = $this->kArtikel;
-        $obj->fVKNetto      = $this->fVKNetto;
-        $obj->nAnzahl1      = $this->nAnzahl1;
-        $obj->nAnzahl2      = $this->nAnzahl2;
-        $obj->nAnzahl3      = $this->nAnzahl3;
-        $obj->nAnzahl4      = $this->nAnzahl4;
-        $obj->nAnzahl5      = $this->nAnzahl5;
-        $obj->fPreis1       = $this->fPreis1;
-        $obj->fPreis2       = $this->fPreis2;
-        $obj->fPreis3       = $this->fPreis3;
-        $obj->fPreis4       = $this->fPreis4;
-        $obj->fPreis5       = $this->fPreis5;
+        \trigger_error(__FUNCTION__ . ' is deprecated.', \ E_USER_DEPRECATED);
 
-        return Shop::Container()->getDB()->insert('tpreise', $obj);
+        return 0;
     }
 
     /**

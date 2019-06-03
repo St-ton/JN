@@ -93,8 +93,8 @@ class Alert
     public const FADE_NEVER  = 0;
 
     public const ICON_WARNING = 'warning';
-    public const ICON_INFO    = 'info';
-    public const ICON_CHECK   = 'check';
+    public const ICON_INFO    = 'info-circle';
+    public const ICON_CHECK   = 'check-circle';
 
     /**
      * @return array

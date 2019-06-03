@@ -3,17 +3,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-var log = console.log;
-var debugging = false;
 var localDateFormat = 'DD.MM.YYYY HH:mm';
 var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
-
-function debuglog()
-{
-    if(debugging) {
-        console.log.apply(console.log, arguments);
-    }
-}
 
 function noop() {}
 
@@ -46,8 +37,9 @@ function installJqueryFixes()
     $.fn.serializeControls = function()
     {
         var data = {};
+        var arr = this.serializeArray();
 
-        $.each(this.serializeArray(), function(i, item) {
+        arr.forEach(function(item, i) {
             var path   = item.name.split('[');
             var value  = item.value;
             var target = data;
@@ -91,7 +83,7 @@ function capitalize(str)
 function bindProtoOnHandlers(obj)
 {
     var proto = obj.constructor.prototype;
-    var keys  = Object.keys(proto);
+    var keys  = Object.getOwnPropertyNames(proto);
 
     for(var i=0; i<keys.length; i++) {
         var key    = keys[i];
@@ -121,7 +113,7 @@ function installGuiElements(obj, elmIds)
         }
 
         if (elm.length === 0) {
-            log('warning: ' + elmId + ' could not be found');
+            console.log('warning: ' + elmId + ' could not be found');
             return;
         }
 

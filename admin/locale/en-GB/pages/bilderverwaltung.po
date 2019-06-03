@@ -1,0 +1,69 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "bilderverwaltung"
+msgstr "Image administration"
+
+msgid "bilderverwaltungURL"
+msgstr "https://jtl-url.de/v4jwa"
+
+msgid "bilderverwaltungDesc"
+msgstr "This is an overview of all existing item images and, if applicable, errors. The different sizes of the item images in JTL-Shop are only generated when the images are opened in the front end for the first time. This may lead to longer loading times in some cases. By selecting \"Generate\", you create all images that have not yet been generated. By selecting \"Empty cache\", you delete all existing images."
+
+msgid "headlineTyp"
+msgstr "Type"
+
+msgid "headlineTotal"
+msgstr "Total number"
+
+msgid "headlineCache"
+msgstr "In cache (fallback *)"
+
+msgid "headlineSize"
+msgstr "Size"
+
+msgid "deleteCachedPics"
+msgstr " Empty cache"
+
+msgid "generatePics"
+msgstr " Generate"
+
+msgid "currentCorruptedPics"
+msgstr "Currently faulty images:"
+
+msgid "articlenr"
+msgstr "SKU"
+
+msgid "articlePic"
+msgstr "Item image"
+
+msgid "corruptedPicsNote"
+msgstr "Faulty images are images with an entry in the database for which no file exists on the server. A maximum of 50 results is shown."
+
+msgid "fallbackNote"
+msgstr "*Fallback: images that are in the folder \"images/\" instead of the folder \"media\"."
+
+msgid "successCacheReset"
+msgstr "Cache deleted successfully."
+
+msgid "successImageCleanup"
+msgstr "Images cleared successfully."
+
+msgid "pendingImageCleanup"
+msgstr "Clearing images…"
+
+msgid "successImageDelete"
+msgstr "Images deleted successfully."
+
+msgid "successImageGenerate"
+msgstr "Images generated successfully."
+
+msgid "pendingImageDelete"
+msgstr "Deleting images…"
+
+msgid "pendingStatisticCalc"
+msgstr "Calculating reports…"
+
+msgid "pendingImageGenerate"
+msgstr "Generating images…"

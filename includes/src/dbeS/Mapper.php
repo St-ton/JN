@@ -1,11 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
-<<<<<<< HEAD:includes/src/dbeS/TableMapper.php
  * @license http://jtl-url.de/jtlshoplicense
-=======
- * @license       http://jtl-url.de/jtlshoplicense
->>>>>>> dbeS-oo:includes/src/dbeS/Mapper.php
  */
 
 namespace JTL\dbeS;
@@ -725,7 +721,7 @@ final class Mapper
      * @param string $toMap
      * @return array
      */
-    public function mapArray($xml, $name, $toMap): array
+    public function mapArray(array $xml, string $name, string $toMap): array
     {
         $objects = [];
         $idx     = $name . ' attr';

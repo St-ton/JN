@@ -9,7 +9,7 @@ msgid "shippingmethodsURL"
 msgstr "https://jtl-url.de/dlkpz"
 
 msgid "documentationHint"
-msgstr "Hier sehen Sie eine Übersicht über alle Versandarten, die aktuell in JTL-Shop zur Verfügung stehen. Wenn Sie auf eines der Bestimmungsländer einer Versandart klicken, können Sie Zuschläge für bestimmte Postleitzahlen hinterlegen (z. B. Inselzuschläge). Außerdem können Sie neue Versandarten anlegen und bestehende bearbeiten. Dokumentation und Beispiele zu diesem Thema finden Sie auf &lt;i class=\"fa fa-external-link\"&gt;</i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.de</a>"
+msgstr "Hier sehen Sie eine Übersicht über alle Versandarten, die aktuell in JTL-Shop zur Verfügung stehen. Wenn Sie auf eines der Bestimmungsländer einer Versandart klicken, können Sie Zuschläge für bestimmte Postleitzahlen hinterlegen (z. B. Inselzuschläge). Außerdem können Sie neue Versandarten anlegen und bestehende bearbeiten. Dokumentation und Beispiele zu diesem Thema finden Sie auf <i class=\"fa fa-external-link\"></i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.de</a>"
 
 msgid "isleListsHint"
 msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z.B. Inselzuschläge) zu definieren. Ein (Zuschlag) deutet darauf hin, dass das Lieferland Zuschlagslisten für die jeweilige Versandart definiert hat."

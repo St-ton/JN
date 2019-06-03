@@ -30,7 +30,7 @@ msgid "errorDate"
 msgstr "Ihre Eingabe für das Feld „Aktiv von Datum“ konnte nicht verarbeitet werden."
 
 msgid "errorDateActiveToGreater"
-msgstr "Das Datum, bis wann ein Banner aktiv ist, muss später liegen als das Feld „Aktiv von Datum“."
+msgstr "Das Datum im Feld „Aktiv bis“ muss nach dem Datum im Feld „Aktiv von“ liegen."
 
 msgid "chooseBanner"
 msgstr "Banner wählen"
@@ -48,4 +48,4 @@ msgid "saveBanner"
 msgstr "Banner speichern"
 
 msgid "addBanner"
-msgstr "Banner hinzufügen"
+msgstr "Banner anlegen"

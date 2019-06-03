@@ -6,17 +6,23 @@
 
 namespace JTL\dbeS\Sync;
 
-use JTL\Catalog\Product\Artikel;
+use DateTime;
+use Exception;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Mapper;
 use JTL\dbeS\Starter;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\EmptyResultSetException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
-use JTL\Customer\Kundengruppe;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Optin\Optin;
+use JTL\Optin\OptinAvailAgain;
 use JTL\Redirect;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
@@ -84,6 +90,23 @@ abstract class AbstractSync
     }
 
     /**
+     * @param array  $xml
+     * @param string $table
+     * @param string $toMap
+     * @param array  $pks
+     * @return array
+     */
+    protected function insertOnExistsUpdateXMLinDB(array $xml, string $table, string $toMap, array $pks): array
+    {
+        $idx = $table . ' attr';
+        if ((isset($xml[$table]) && \is_array($xml[$table])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
+            return $this->insertOnExistUpdate($table, $this->mapper->mapArray($xml, $table, $toMap), $pks);
+        }
+
+        return \array_fill_keys($pks, []);
+    }
+
+    /**
      * @param string     $tablename
      * @param array      $objects
      * @param string     $pk1
@@ -102,6 +125,76 @@ abstract class AbstractSync
             if (!$key) {
                 $this->logger->error('Failed upsert@' . $tablename . ' with data: ' . \print_r($object, true));
             }
+        }
+    }
+
+    /**
+     * @param string $tableName
+     * @param array  $objects
+     * @param array  $pks
+     * @return array
+     */
+    protected function insertOnExistUpdate(string $tableName, array $objects, array $pks): array
+    {
+        $result = \array_fill_keys($pks, []);
+        if (!\is_array($objects)) {
+            return $result;
+        }
+        if (!\is_array($pks)) {
+            $pks = [(string)$pks];
+        }
+
+        foreach ($objects as $object) {
+            foreach ($pks as $pk) {
+                if (!isset($object->$pk)) {
+                    $this->logger->error(
+                        'PK not set on insertOnExistUpdate@' . $tableName . ' with data: ' . \print_r($object, true)
+                    );
+
+                    continue 2;
+                }
+                $result[$pk][] = $object->$pk;
+            }
+
+            if ($this->db->upsert($tableName, $object, $pks)) {
+                $this->logger->error(
+                    'Failed insertOnExistUpdate@' . $tableName . ' with data: ' . \print_r($object, true)
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $tableName
+     * @param array  $pks
+     * @param string $excludeKey
+     * @param array  $excludeValues
+     * @return void
+     */
+    protected function deleteByKey(
+        string $tableName,
+        array $pks,
+        string $excludeKey = '',
+        array $excludeValues = []
+    ): void {
+        $whereKeys = [];
+        $params    = [];
+        foreach ($pks as $name => $value) {
+            $whereKeys[]   = $name . ' = :' . $name;
+            $params[$name] = $value;
+        }
+        if (empty($excludeKey) || !\is_array($excludeValues)) {
+            $excludeValues = [];
+        }
+        $stmt = 'DELETE FROM ' . $tableName . '
+                WHERE ' . \implode(' AND ', $whereKeys) . (\count($excludeValues) > 0 ? '
+                    AND ' . $excludeKey . ' NOT IN (' . \implode(', ', $excludeValues) . ')' : '');
+        if (!$this->db->queryPrepared($stmt, $params, ReturnType::DEFAULT)) {
+            $this->logger->error(
+                'DBDeleteByKey fehlgeschlagen! Tabelle: ' . $tableName . ', PK: ' . \print_r($pks, true)
+            );
         }
     }
 
@@ -203,8 +296,11 @@ abstract class AbstractSync
     /**
      * @param object $product
      * @param array  $conf
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     * @throws EmptyResultSetException
      */
-    protected function versendeVerfuegbarkeitsbenachrichtigung($product, array $conf): void
+    protected function sendAvailabilityMails($product, array $conf): void
     {
         if ($product->kArtikel <= 0) {
             return;
@@ -224,7 +320,6 @@ abstract class AbstractSync
         ) {
             return;
         }
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
 
         $options                             = Artikel::getDefaultOptions();
@@ -239,20 +334,27 @@ abstract class AbstractSync
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
-            $obj                                   = new stdClass();
-            $obj->tverfuegbarkeitsbenachrichtigung = $msg;
-            $obj->tartikel                         = $product;
-            $obj->tartikel->cName                  = Text::htmlentitydecode($obj->tartikel->cName);
-            $mail                                  = new stdClass();
-            $mail->toEmail                         = $msg->cMail;
-            $mail->toName                          = ($msg->cVorname || $msg->cNachname)
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
+            if (!$availAgainOptin->isActive()) {
+                continue;
+            }
+            $availAgainOptin->finishOptin();
+            $tplData                                   = new stdClass();
+            $tplData->tverfuegbarkeitsbenachrichtigung = $msg;
+            $tplData->tartikel                         = $product;
+            $tplData->tartikel->cName                  = Text::htmlentitydecode($tplData->tartikel->cName);
+            $tplMail                                   = new stdClass();
+            $tplMail->toEmail                          = $msg->cMail;
+            $tplMail->toName                           = ($msg->cVorname || $msg->cNachname)
                 ? ($msg->cVorname . ' ' . $msg->cNachname)
                 : $msg->cMail;
-            $obj->mail                             = $mail;
+            $tplData->mail                             = $tplMail;
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
-            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj));
+            $mail->setToMail($tplMail->toEmail);
+            $mail->setToName($tplMail->toName);
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
 
             $upd                    = new stdClass();
             $upd->nStatus           = 1;
@@ -269,74 +371,174 @@ abstract class AbstractSync
 
     /**
      * @param int   $productID
-     * @param int   $customerGroupID
-     * @param float $fVKNetto
+     * @param array $xml
+     * @throws Exception
      */
-    protected function setzePreisverlauf(int $productID, int $customerGroupID, float $fVKNetto): void
+    protected function handlePriceHistory(int $productID, array $xml): void
     {
-        $history = $this->db->queryPrepared(
-            'SELECT kPreisverlauf, fVKNetto, dDate, IF(dDate = CURDATE(), 1, 0) bToday
-            FROM tpreisverlauf
-            WHERE kArtikel = :kArtikel
-	            AND kKundengruppe = :kKundengruppe
-            ORDER BY dDate DESC LIMIT 2',
-            [
-                'kArtikel'      => $productID,
-                'kKundengruppe' => $customerGroupID,
-            ],
-            ReturnType::ARRAY_OF_OBJECTS
+        if (!\is_array($xml)) {
+            return;
+        }
+        // Delete price history from not existing customer groups
+        $this->db->queryPrepared(
+            'DELETE tpreisverlauf
+                FROM tpreisverlauf
+                    LEFT JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tpreisverlauf.kKundengruppe
+                WHERE tpreisverlauf.kArtikel = :productID
+                    AND tkundengruppe.kKundengruppe IS NULL',
+            ['productID' => $productID],
+            ReturnType::DEFAULT
         );
+        // Insert new base price for each customer group - update existing history for today
+        $this->db->queryPrepared(
+            'INSERT INTO tpreisverlauf (kArtikel, kKundengruppe, fVKNetto, dDate)
+                SELECT :productID, kKundengruppe, :nettoPrice, CURDATE()
+                FROM tkundengruppe
+                ON DUPLICATE KEY UPDATE
+                    fVKNetto = :nettoPrice',
+            [
+                'productID'  => $productID,
+                'nettoPrice' => (float)$xml['fStandardpreisNetto'],
+            ],
+            ReturnType::DEFAULT
+        );
+        // Handle price details from xml...
+        $this->handlePriceDetails($productID, $xml);
+        // Handle special prices from xml...
+        $this->handleSpecialPrices($productID, $xml);
+        // Delete last price history if price is same as next to last
+        $this->db->queryPrepared(
+            'DELETE FROM tpreisverlauf
+                WHERE tpreisverlauf.kArtikel = :productID
+                    AND (tpreisverlauf.kKundengruppe, tpreisverlauf.dDate) IN (SELECT * FROM (
+                        SELECT tpv1.kKundengruppe, MAX(tpv1.dDate)
+                        FROM tpreisverlauf tpv1
+                        LEFT JOIN tpreisverlauf tpv2 ON tpv2.dDate > tpv1.dDate
+                            AND tpv2.kArtikel = tpv1.kArtikel
+                            AND tpv2.kKundengruppe = tpv1.kKundengruppe
+                            AND tpv2.dDate < (
+                                SELECT MAX(tpv3.dDate)
+                                FROM tpreisverlauf tpv3
+                                WHERE tpv3.kArtikel = tpv1.kArtikel
+                                    AND tpv3.kKundengruppe = tpv1.kKundengruppe
+                            )
+                        WHERE tpv1.kArtikel = :productID
+                            AND tpv2.kPreisverlauf IS NULL
+                        GROUP BY tpv1.kKundengruppe
+                        HAVING COUNT(DISTINCT tpv1.fVKNetto) = 1
+                            AND COUNT(tpv1.kPreisverlauf) > 1
+                    ) i)',
+            ['productID' => $productID],
+            ReturnType::DEFAULT
+        );
+    }
 
-        if (!empty($history[0]) && (int)$history[0]->bToday === 1) {
-            // price for today exists
-            if (\round($history[0]->fVKNetto * 100) === \round($fVKNetto * 100)) {
-                // return if there is no difference
-                return;
-            }
-            if (!empty($history[1]) && \round($history[1]->fVKNetto * 100) === \round($fVKNetto * 100)) {
-                // delete todays price if the new price for today is the same as the latest price
-                $this->db->delete('tpreisverlauf', 'kPreisverlauf', (int)$history[0]->kPreisverlauf);
-            } else {
-                // update if prices are different
-                $this->db->update(
-                    'tpreisverlauf',
-                    'kPreisverlauf',
-                    (int)$history[0]->kPreisverlauf,
-                    (object)['fVKNetto' => $fVKNetto]
+    /**
+     * @param int   $productID
+     * @param array $xml
+     */
+    private function handlePriceDetails(int $productID, array $xml): void
+    {
+        $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
+        foreach ($prices as $i => $price) {
+            $details = empty($xml['tpreis'][$i])
+                ? $this->mapper->mapArray($xml['tpreis'], 'tpreisdetail', 'mPreisDetail')
+                : $this->mapper->mapArray($xml['tpreis'][$i], 'tpreisdetail', 'mPreisDetail');
+            if (\count($details) > 0 && (int)$details[0]->nAnzahlAb === 0) {
+                $this->db->queryPrepared(
+                    'UPDATE tpreisverlauf SET
+                        fVKNetto = :nettoPrice
+                        WHERE kArtikel = :productID
+                            AND kKundengruppe = :customerGroupID
+                            AND dDate = CURDATE()',
+                    [
+                        'nettoPrice'      => $details[0]->fNettoPreis,
+                        'productID'       => $productID,
+                        'customerGroupID' => $price->kKundenGruppe,
+                    ],
+                    ReturnType::DEFAULT
                 );
             }
-        } else {
-            // no price for today exists
-            if (!empty($history[0]) && \round($history[0]->fVKNetto * 100) === \round($fVKNetto * 100)) {
-                // return if there is no difference
-                return;
-            }
-            $this->db->insert('tpreisverlauf', (object)[
-                'kArtikel'      => $productID,
-                'kKundengruppe' => $customerGroupID,
-                'fVKNetto'      => $fVKNetto,
-                'dDate'         => 'NOW()',
-            ]);
         }
     }
 
     /**
-     * @param int      $kArtikel
-     * @param int      $kKundengruppe
-     * @param int|null $kKunde
+     * @param int   $productID
+     * @param array $xml
+     * @throws Exception
+     */
+    private function handleSpecialPrices(int $productID, array $xml): void
+    {
+        $prices = isset($xml['tartikelsonderpreis'])
+            ? $this->mapper->mapArray($xml, 'tartikelsonderpreis', 'mArtikelSonderpreis')
+            : [];
+        foreach ($prices as $i => $price) {
+            if ($price->cAktiv !== 'Y') {
+                continue;
+            }
+            try {
+                $startDate = new DateTime($price->dStart);
+            } catch (Exception $e) {
+                $startDate = (new DateTime())->setTime(0, 0);
+            }
+            try {
+                $endDate = new DateTime($price->dEnde);
+            } catch (Exception $e) {
+                $endDate = (new DateTime())->setTime(0, 0);
+            }
+            $today = (new DateTime())->setTime(0, 0);
+            if ($startDate <= $today
+                && $endDate >= $today
+                && ((int)$price->nIstAnzahl === 0 || (int)$price->nAnzahl < (int)$xml['fLagerbestand'])
+            ) {
+                $specialPrices = empty($xml['tartikelsonderpreis'][$i])
+                    ? $this->mapper->mapArray($xml['tartikelsonderpreis'], 'tsonderpreise', 'mSonderpreise')
+                    : $this->mapper->mapArray($xml['tartikelsonderpreis'][$i], 'tsonderpreise', 'mSonderpreise');
+
+                foreach ($specialPrices as $specialPrice) {
+                    $this->db->queryPrepared(
+                        'UPDATE tpreisverlauf SET
+                            fVKNetto = :nettoPrice
+                            WHERE kArtikel = :productID
+                                AND kKundengruppe = :customerGroupID
+                                AND dDate = CURDATE()',
+                        [
+                            'nettoPrice'      => $specialPrice->fNettoPreis,
+                            'productID'       => $productID,
+                            'customerGroupID' => $specialPrice->kKundengruppe,
+                        ],
+                        ReturnType::DEFAULT
+                    );
+                }
+            }
+        }
+    }
+
+
+    /**
+     * @param int $productID
+     * @param int $customerGroupID
+     * @param int $customerID
      * @return mixed
      */
-    protected function handlePriceFormat(int $kArtikel, int $kKundengruppe, int $kKunde = null)
+    protected function handlePriceFormat(int $productID, int $customerGroupID, int $customerID = 0)
     {
-        $ins                = new stdClass();
-        $ins->kArtikel      = $kArtikel;
-        $ins->kKundengruppe = $kKundengruppe;
-        if ($kKunde !== null && $kKunde > 0) {
-            $ins->kKunde = $kKunde;
-            $this->flushCustomerPriceCache($ins->kKunde);
+        if ($customerID > 0) {
+            $this->flushCustomerPriceCache($customerID);
         }
 
-        return $this->db->insert('tpreis', $ins);
+        return $this->db->queryPrepared(
+            'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde)
+                VALUES (:productID, :customerGroup, :customerID)
+                ON DUPLICATE KEY UPDATE
+                    kKunde = :customerID',
+            [
+                'productID'     => $productID,
+                'customerGroup' => $customerGroupID,
+                'customerID'    => $customerID,
+            ],
+            ReturnType::DEFAULT
+        );
     }
 
     /**
@@ -374,134 +576,93 @@ abstract class AbstractSync
      *      </tpreisdetail>
      *  </tpreis>
      *
+     * @param int   $productID
      * @param array $xml
      */
-    protected function handleNewPriceFormat(array $xml): void
+    protected function handleNewPriceFormat(int $productID, array $xml): void
     {
-        if (!\is_array($xml) || !isset($xml['tpreis'])) {
+        if (!\is_array($xml)) {
             return;
         }
-        $prices = $this->mapper->mapArray($xml, 'tpreis', 'mPreis');
-        if (\count($prices) === 0) {
-            return;
-        }
-        $productID = (int)$prices[0]->kArtikel;
-        $customers = $this->db->selectAll(
-            'tpreis',
-            ['kArtikel', 'kKundengruppe'],
-            [$productID, 0],
-            'kKunde'
-        );
-        foreach ($customers as $customer) {
-            $customerID = (int)$customer->kKunde;
-            if ($customerID > 0) {
-                $this->flushCustomerPriceCache($customerID);
-            }
-        }
-        $this->db->query(
-            'DELETE p, d
-            FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
-                ON d.kPreis = p.kPreis
-            WHERE p.kArtikel = ' . $productID,
+
+        $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
+
+        // Delete prices and price details from not existing customer groups
+        $this->db->queryPrepared(
+            'DELETE tpreis, tpreisdetail
+                FROM tpreis
+                    INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                    LEFT JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tpreis.kKundengruppe
+                WHERE tpreis.kArtikel = :productID
+                    AND tkundengruppe.kKundengruppe IS NULL',
+            [
+                'productID' => $productID,
+            ],
             ReturnType::DEFAULT
         );
-        $customerGroupHandled = [];
+        // Delete all prices who are not base prices
+        $this->db->queryPrepared(
+            'DELETE tpreisdetail
+                FROM tpreis
+                    INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                WHERE tpreis.kArtikel = :productID
+                    AND tpreisdetail.nAnzahlAb > 0',
+            [
+                'productID' => $productID,
+            ],
+            ReturnType::DEFAULT
+        );
+        // Insert price record for each customer group - ignore existing
+        $this->db->queryPrepared(
+            'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
+                SELECT :productID, kKundengruppe, 0
+                FROM tkundengruppe',
+            [
+                'productID' => $productID,
+            ],
+            ReturnType::DEFAULT
+        );
+        // Insert base price for each price record - update existing
+        $this->db->queryPrepared(
+            'INSERT INTO tpreisdetail (kPreis, nAnzahlAb, fVKNetto)
+                SELECT tpreis.kPreis, 0, :basePrice
+                FROM tpreis
+                WHERE tpreis.kArtikel = :productID
+                ON DUPLICATE KEY UPDATE
+                    tpreisdetail.fVKNetto = :basePrice',
+            [
+                'basePrice' => $xml['fStandardpreisNetto'],
+                'productID' => $productID,
+            ],
+            ReturnType::DEFAULT
+        );
+        // Handle price details from xml...
         foreach ($prices as $i => $price) {
-            $priceID         = $this->handlePriceFormat($price->kArtikel, $price->kKundenGruppe, (int)$price->kKunde);
-            $details         = empty($xml['tpreis'][$i])
+            $this->handlePriceFormat($price->kArtikel, $price->kKundenGruppe, (int)$price->kKunde);
+            $details = empty($xml['tpreis'][$i])
                 ? $this->mapper->mapArray($xml['tpreis'], 'tpreisdetail', 'mPreisDetail')
                 : $this->mapper->mapArray($xml['tpreis'][$i], 'tpreisdetail', 'mPreisDetail');
-            $hasDefaultPrice = false;
+
             foreach ($details as $preisdetail) {
-                $ins = (object)[
-                    'kPreis'    => $priceID,
-                    'nAnzahlAb' => $preisdetail->nAnzahlAb,
-                    'fVKNetto'  => $preisdetail->fNettoPreis
-                ];
-                $this->db->insert('tpreisdetail', $ins);
-                if ((int)$ins->nAnzahlAb === 0) {
-                    $hasDefaultPrice = true;
-                }
+                $this->db->queryPrepared(
+                    'INSERT INTO tpreisdetail (kPreis, nAnzahlAb, fVKNetto)
+                        SELECT tpreis.kPreis, :countingFrom, :nettoPrice
+                        FROM tpreis
+                        WHERE tpreis.kArtikel = :productID
+                            AND tpreis.kKundengruppe = :customerGroup
+                            AND tpreis.kKunde = :customerPrice
+                        ON DUPLICATE KEY UPDATE
+                            tpreisdetail.fVKNetto = :nettoPrice',
+                    [
+                        'countingFrom'  => $preisdetail->nAnzahlAb,
+                        'nettoPrice'    => $preisdetail->fNettoPreis,
+                        'productID'     => $productID,
+                        'customerGroup' => $price->kKundenGruppe,
+                        'customerPrice' => (int)$price->kKunde,
+                    ],
+                    ReturnType::DEFAULT
+                );
             }
-            // default price for customergroup set?
-            if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) {
-                $ins = (object)[
-                    'kPreis'    => $priceID,
-                    'nAnzahlAb' => 0,
-                    'fVKNetto'  => $xml['fStandardpreisNetto']
-                ];
-                $this->db->insert('tpreisdetail', $ins);
-            }
-            $customerGroupHandled[] = (int)$price->kKundenGruppe;
-        }
-        // any customergroups with missing tpreis node left?
-        foreach (Kundengruppe::getGroups() as $customergroup) {
-            $id = $customergroup->getID();
-            if (isset($xml['fStandardpreisNetto']) && !\in_array($id, $customerGroupHandled, true)) {
-                $priceID = $this->handlePriceFormat($productID, $id);
-                $ins     = (object)[
-                    'kPreis'    => $priceID,
-                    'nAnzahlAb' => 0,
-                    'fVKNetto'  => $xml['fStandardpreisNetto']
-                ];
-                $this->db->insert('tpreisdetail', $ins);
-            }
-        }
-    }
-
-    /**
-     * @param array $objs
-     */
-    protected function handleOldPriceFormat($objs): void
-    {
-        if (!\is_array($objs) || \count($objs) === 0) {
-            return;
-        }
-        $productID = (int)$objs[0]->kArtikel;
-        $customers = $this->db->selectAll(
-            'tpreis',
-            ['kArtikel', 'kKundengruppe'],
-            [$productID, 0],
-            'kKunde'
-        );
-        foreach ($customers as $customer) {
-            $this->flushCustomerPriceCache((int)$customer->kKunde);
-        }
-        $this->db->query(
-            'DELETE p, d
-            FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d 
-                ON d.kPreis = p.kPreis
-            WHERE p.kArtikel = ' . $productID,
-            ReturnType::DEFAULT
-        );
-        foreach ($objs as $obj) {
-            $priceID = $this->handlePriceFormat((int)$obj->kArtikel, (int)$obj->kKundengruppe);
-            $this->insertPriceDetail($obj, 0, $priceID);
-            for ($i = 1; $i <= 5; $i++) {
-                $this->insertPriceDetail($obj, $i, $priceID);
-            }
-        }
-    }
-
-    /**
-     * @param object $obj
-     * @param int    $index
-     * @param int    $priceId
-     */
-    protected function insertPriceDetail($obj, $index, $priceId): void
-    {
-        $count = 'nAnzahl' . $index;
-        $price = 'fPreis' . $index;
-
-        if ((isset($obj->{$count}) && (int)$obj->{$count} > 0) || $index === 0) {
-            $ins            = new stdClass();
-            $ins->kPreis    = $priceId;
-            $ins->nAnzahlAb = $index === 0 ? 0 : $obj->{$count};
-            $ins->fVKNetto  = $index === 0 ? $obj->fVKNetto : $obj->{$price};
-
-            $this->db->insert('tpreisdetail', $ins);
         }
     }
 
@@ -634,8 +795,7 @@ abstract class AbstractSync
     protected function handlePriceRange(array $productIDs): void
     {
         $this->db->executeQuery(
-            'DELETE FROM tpricerange
-            WHERE kArtikel IN (' . \implode(',', $productIDs) . ')',
+            'DELETE FROM tpricerange WHERE kArtikel IN (' . \implode(',', $productIDs) . ')',
             ReturnType::DEFAULT
         );
         $uniqueProductIDs = \implode(',', \array_unique($productIDs));
@@ -664,15 +824,12 @@ abstract class AbstractSync
                     tpreisdetail.fVKNetto,
                     null dStart, null dEnde
                 FROM tartikel
-                INNER JOIN tpreis 
-                    ON tpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tpreisdetail 
-                    ON tpreisdetail.kPreis = tpreis.kPreis
-                WHERE IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
+                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                WHERE tartikel.nIstVater = 0
+                    AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
             . $uniqueProductIDs . ')
-
                 UNION ALL
-
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                     tartikel.kArtikel kKindArtikel,
                     tartikel.nIstVater,
@@ -680,23 +837,20 @@ abstract class AbstractSync
                     null kKunde,
                     IF(tartikelsonderpreis.nIstAnzahl = 0 AND tartikelsonderpreis.nIstDatum = 0, 5, 3) nRangeType,
                     IF(tartikelsonderpreis.nIstAnzahl = 0, null, tartikelsonderpreis.nAnzahl) nLagerAnzahlMax,
-                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto, 
+                    IF(tsonderpreise.fNettoPreis < tpreisdetail.fVKNetto,
                         tsonderpreise.fNettoPreis, tpreisdetail.fVKNetto) fVKNetto,
                     tartikelsonderpreis.dStart dStart,
                     IF(tartikelsonderpreis.nIstDatum = 0, null, tartikelsonderpreis.dEnde) dEnde
                 FROM tartikel
-                INNER JOIN tpreis 
-                    ON tpreis.kArtikel = tartikel.kArtikel
-	            INNER JOIN tpreisdetail 
-	                ON tpreisdetail.kPreis = tpreis.kPreis
-                INNER JOIN tartikelsonderpreis 
-                    ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                INNER JOIN tsonderpreise 
+                INNER JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+	            INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                INNER JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                INNER JOIN tsonderpreise
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                    AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
                 WHERE tartikelsonderpreis.cAktiv = \'Y\'
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $uniqueProductIDs . ')
-            ) baseprice
+            . $uniqueProductIDs . ')) baseprice
             LEFT JOIN (
                 SELECT variations.kArtikel, variations.kKundengruppe,
                     SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
@@ -705,22 +859,23 @@ abstract class AbstractSync
                     SELECT teigenschaft.kArtikel,
                         tkundengruppe.kKundengruppe,
                         teigenschaft.kEigenschaft,
-                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                        MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
                             teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
-                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto, 
+                        MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
                             teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
                     FROM teigenschaft
                     INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
                     JOIN tkundengruppe
-                    LEFT JOIN teigenschaftwertaufpreis 
+                    LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
                     WHERE teigenschaft.kArtikel IN (' . $uniqueProductIDs . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
-            ) varaufpreis 
-                ON varaufpreis.kArtikel = baseprice.kKindArtikel 
+            ) varaufpreis
+                ON varaufpreis.kArtikel = baseprice.kKindArtikel
+                AND varaufpreis.kKundengruppe = baseprice.kKundengruppe
                 AND baseprice.nIstVater = 0
             WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
             GROUP BY baseprice.kArtikel,

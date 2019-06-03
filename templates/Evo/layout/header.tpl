@@ -14,7 +14,7 @@
         <meta name="keywords" itemprop="keywords" content="{block name='head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
+        <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
 
         <meta itemprop="url" content="{$cCanonicalURL}"/>
         <meta property="og:type" content="website" />
@@ -123,7 +123,7 @@
     {/if}
 
     {block name='header'}
-        {if \JTL\Shop::isAdmin()}
+        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
             {include file='layout/header_composer_menu.tpl'}
         {/if}
         <header class="hidden-print {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'}container-block{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">

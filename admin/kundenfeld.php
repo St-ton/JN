@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\CustomerFields;
+use JTL\Backend\CustomerFields;
 use JTL\PlausiKundenfeld;
 use JTL\Sprache;
 use JTL\Helpers\Text;
@@ -67,14 +67,14 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         if ($success) {
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                __('successCustomerFieldRefresh'),
-                'successCustomerFieldRefresh'
+                __('successCustomerFieldUpdate'),
+                'successCustomerFieldUpdate'
             );
         } else {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
-                __('errorCustomerFieldRefresh'),
-                'errorCustomerFieldRefresh'
+                __('errorCustomerFieldUpdate'),
+                'errorCustomerFieldUpdate'
             );
         }
     } else { // Speichern

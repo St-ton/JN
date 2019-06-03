@@ -12,13 +12,13 @@ msgid "rssDescription"
 msgstr "Sie können automatisch einen RSS-Feed für Ihren JTL-Shop erstellen lassen. In diesem Feed können neue Artikel, News-Einträge und Bewertungen angezeigt werden. Sie können den RSS-Feed manuell erstellen oder mit jedem Abgleich mit JTL-Wawi generieren lassen."
 
 msgid "successRSSCreate"
-msgstr "RSS Feed wurde erstellt."
+msgstr "RSS-Feed wurde erfolgreich erstellt."
 
 msgid "errorRSSCreate"
-msgstr "RSS Feed konnte nicht erstellt werden."
+msgstr "RSS-Feed konnte nicht erstellt werden."
 
 msgid "errorRSSCreatePermissions"
-msgstr "Datei %s kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine XML-Datei für den RSS-Feed erstellt werden."
+msgstr "Datei %s kann nicht geschrieben werden. Die Datei besitzt keine ausreichenden Schreibrechte, um eine XML-Datei für den RSS-Feed zu erstellen. Bitte überprüfen Sie die Schreibrechte."
 
 msgid "xmlCreate"
 msgstr "XML-Datei für RSS-Feed erstellen"

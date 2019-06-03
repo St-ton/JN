@@ -10,7 +10,8 @@ ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
 ini_set('default_charset', JTL_CHARSET);
 mb_internal_encoding(strtoupper(JTL_CHARSET));
-date_default_timezone_set('Europe/Berlin');
+ifndef('SHOP_TIMEZONE', 'Europe/Berlin');
+date_default_timezone_set(SHOP_TIMEZONE);
 ifndef('DS', DIRECTORY_SEPARATOR);
 // Log-Levels
 ifndef('SYNC_LOG_LEVEL', E_ERROR | E_PARSE);
@@ -49,6 +50,9 @@ ini_set('session.use_trans_sid', 0);
 // Logging (in logs/) 0 => aus, 1 => nur errors, 2 => errors, notifications, 3 => errors, notifications, debug
 ifndef('ES_LOGGING', 1);
 ifndef('ES_DB_LOGGING', 0);
+ifndef('DEBUG_LEVEL', 0);
+ifndef('NICEDB_EXCEPTION_ECHO', false);
+ifndef('NICEDB_EXCEPTION_BACKTRACE', false);
 // PHP Error Handler
 ifndef('PHP_ERROR_HANDLER', false);
 ifndef('DEBUG_FRAME', false);
@@ -92,7 +96,6 @@ ifndef('PFAD_CLASSES_CORE', PFAD_CLASSES . 'core/');  // DEPRECATED
 ifndef('PFAD_OBJECT_CACHING', 'caching/');
 ifndef('PFAD_GFX', 'gfx/');
 ifndef('PFAD_GFX_AMPEL', PFAD_GFX . 'ampel/');
-ifndef('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX . 'bewertung_sterne/');
 ifndef('PFAD_DBES', 'dbeS/');
 ifndef('PFAD_DBES_TMP', PFAD_DBES . 'tmp/');
 ifndef('PFAD_BILDER', 'bilder/');
@@ -107,7 +110,6 @@ ifndef('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
 ifndef('PFAD_ADMIN', 'admin/');
 ifndef('PFAD_EMAILVORLAGEN', PFAD_ADMIN . 'mailtemplates/');
 ifndef('PFAD_MEDIAFILES', 'mediafiles/');
-ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
 ifndef('IMAGE_SIZE_XS', 'xs');
 ifndef('IMAGE_SIZE_SM', 'sm');
 ifndef('IMAGE_SIZE_MD', 'md');
@@ -153,7 +155,6 @@ ifndef('PFAD_DOWNLOADS_REL', 'downloads/');
 ifndef('PFAD_DOWNLOADS_PREVIEW_REL', PFAD_DOWNLOADS_REL . 'vorschau/');
 ifndef('PFAD_DOWNLOADS', PFAD_ROOT . PFAD_DOWNLOADS_REL);
 ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
-ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
 ifndef('PFAD_UPLOAD_CALLBACK', PFAD_INCLUDES_EXT . 'uploads_cb.php');
 ifndef('PFAD_IMAGEMAP', PFAD_BILDER . 'banner/');
 ifndef('PFAD_EMAILTEMPLATES', 'templates_mail/');
@@ -216,6 +217,8 @@ ifndef('ES_SESSIONS', 0);
 ifndef('MAX_REVISIONS', 5);
 
 ifndef('SHOW_DEBUG_BAR', false);
+
+ifndef('ART_MATRIX_MAX', 250);
 
 // security
 ifndef('EXPORTFORMAT_ALLOW_PHP', false);

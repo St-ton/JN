@@ -14,8 +14,6 @@ use JTL\Helpers\Seo;
 use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-
 $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step        = 'suchspecials';

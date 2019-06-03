@@ -14,7 +14,7 @@
                 .on('click', function() {
                     addKundenfeldWert();
                 })
-                .append('<i class="fa fa-plus-square-o"></i>&nbsp;' + {/literal}{__('addValue')}{literal}))
+                .append('<i class="fa fa-plus-square-o"></i>&nbsp;' + '{/literal}{__('addValue')}{literal}'))
         );
         addKundenfeldWert();
     }
@@ -65,19 +65,19 @@
         }
 
         $('#formtable tbody').append($('<tr class="kundenfeld_wert"></tr>').append(
-                '<td class="kundenfeld_wert_label">Wert ' + (countKundenfeldwert() + 1) + ':</td>',
+                '<td class="kundenfeld_wert_label">' + '{/literal}{__('value')}{literal} '  + (countKundenfeldwert() + 1) + ':</td>',
                 $('<td class="row"></td>').append(
                     $('<div class="col-lg-3 jtl-list-group"></div>').append(
                         '<input name="cfValues[' + key + '][cWert]" type="text" class="field form-control" value="" />'),
                     $('<div class="col-lg-2 jtl-list-group"></div>').append($('<div class="input-group" title="' + kundenfeldSortDesc + '"></div>').append(
-                        '<span class="input-group-addon">Sort.</span>'
-                        +'<input name="cfValues[' + key + '][nSort]" type="text" class="field form-control" value="' + recommendSort() + '" />')),
+                        '<span class="input-group-addon">' + '{/literal}{__('sortShort')}{literal}' + '</span>'
+                        + '<input name="cfValues[' + key + '][nSort]" type="text" class="field form-control" value="' + recommendSort() + '" />')),
                     $('<div class="btn-group"></div>').append(
                         $('<button name="delete" type="button" class="btn btn-danger" value="Entfernen"></button>')
                             .on('click', function() {
                                 delKundenfeldWert(this);
                             })
-                            .append('<i class="fa fa-trash"></i>&nbsp;'  + {/literal}{__('remove')}{literal})
+                            .append('<i class="fa fa-trash"></i>&nbsp;'  + '{/literal}{__('remove')}{literal}')
                         )
                     )
                 )
@@ -155,7 +155,7 @@
                 {/if}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('kundenfeldEdit')}{else}{__('kundenfeldCreate')}{/if}</h3>
+                        <h3 class="panel-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('headingKundenfeldEdit')}{else}{__('headingKundenfeldCreate')}{/if}</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="table list table-bordered" id="formtable">
@@ -305,7 +305,7 @@
                                     <th class="tleft">{__('kundenfeldWawiShort')}</th>
                                     <th class="tleft">{__('kundenfeldTyp')}</th>
                                     <th class="tleft">{__('values')}</th>
-                                    <th class="th-6">{__('kundenfeldEdit')}</th>
+                                    <th class="th-6">{__('headingKundenfeldEdit')}</th>
                                     <th class="th-7">{__('sorting')}</th>
                                     <th class="th-8"></th>
                                 </tr>
@@ -346,7 +346,7 @@
                         </div>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button name="aktualisieren" type="submit" value="{__('refresh')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('refresh')}</button>
+                                <button name="aktualisieren" type="submit" value="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                                 <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger">
                                     <i class="fa fa-trash"></i> {__('deleteSelected')}
                                 </button>
@@ -361,7 +361,7 @@
             </div>
         </div>
         <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenfeld.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenfeld.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>
 </div>

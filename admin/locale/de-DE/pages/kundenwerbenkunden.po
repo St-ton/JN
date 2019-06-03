@@ -9,7 +9,7 @@ msgid "kundenwerbenkundenURL"
 msgstr "https://jtl-url.de/l0if2"
 
 msgid "kundenwerbenkundenDesc"
-msgstr "Über die Funktion \"Kunden werben Kunden\" können Kunden Ihres Onlineshops in ihrem Kundenkonto E-Mail-Einladungen an Dritte senden, damit diese sich in Ihrem Onlineshop anmelden. Sie können sowohl dem werbenden Kunden sowie dem geworbenen potenziellen Kunden ein Guthaben für erfolgreiches Werben zuschreiben lassen. Bitte überprüfen Sie die rechtlichen Bedingungen der Funktion \"Kunden werben Kunden\" für Ihr Land, bevor Sie diese Funktion aktivieren."
+msgstr "Über die Funktion „Kunden werben Kunden“ können Kunden Ihres Onlineshops in ihrem Kundenkonto E-Mail-Einladungen an Dritte senden, damit diese sich in Ihrem Onlineshop anmelden. Sie können sowohl dem werbenden Kunden als auch dem geworbenen potenziellen Kunden ein Guthaben für erfolgreiches Werben zuschreiben lassen. Bitte überprüfen Sie die rechtlichen Bedingungen der Funktion „Kunden werben Kunden“ für Ihr Land, bevor Sie diese Funktion aktivieren."
 
 msgid "kundenwerbenkundenFromReg"
 msgstr "Geworben von"
@@ -33,10 +33,10 @@ msgid "kundenwerbenkundenBonis"
 msgstr "Kunden, die erfolgreich geworben haben"
 
 msgid "kundenwerbenkundenDateBoni"
-msgstr "Guthaben erhalten"
+msgstr "Guthaben erhalten am"
 
 msgid "successNewCustomerDelete"
 msgstr "Die markierten Neukunden wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewCustomer"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Neukunden."
+msgstr "Bitte markieren Sie mindestens einen Neukunden."

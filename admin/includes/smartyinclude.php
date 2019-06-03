@@ -28,13 +28,6 @@ $resourcePaths      = $template->getResources(isset($config['template']['general
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
     ? (int)$oAccount->account()->oGroup->kAdminlogingruppe
     : -1;
-$mainGroups         = $db->selectAll(
-    'tadminmenugruppe',
-    'kAdminmenueOberGruppe',
-    0,
-    '*',
-    'nSort'
-);
 
 // JTL Search Plugin aktiv?
 $oPluginSearch = $db->query(

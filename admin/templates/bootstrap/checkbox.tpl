@@ -52,7 +52,7 @@
                         <input type="hidden" name="tab" value="uebersicht" />
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{__('AvailableCheckboxes')}</h3>
+                                <h3 class="panel-title">{__('availableCheckboxes')}</h3>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
@@ -215,7 +215,7 @@
 
                             <div class="input-group{if isset($cPlausi_arr.cAnzeigeOrt)} error{/if}">
                                 <span class="input-group-addon">
-                                    <label for="cAnzeigeOrt">Anzeigeort{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                    <label for="cAnzeigeOrt">{__('checkboxLocation')}{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                 </span>
                                 <select id="cAnzeigeOrt" name="cAnzeigeOrt[]" class="form-control{if isset($cPlausi_arr.cAnzeigeOrt)} fieldfillout{/if}" multiple onClick="checkFunctionDependency();">
                                     {foreach name=anzeigeortarr from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
@@ -320,7 +320,7 @@
                             {if isset($oKundengruppe_arr) && $oKundengruppe_arr|@count > 0}
                                 <div class="input-group{if isset($cPlausi_arr.kKundengruppe)} error{/if}">
                                     <span class="input-group-addon">
-                                        <label for="kKundengruppe">Kundengruppe{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                        <label for="kKundengruppe">{__('customerGroup')}{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                     </span>
                                     <select id="kKundengruppe" name="kKundengruppe[]" class="form-control{if isset($cPlausi_arr.kKundengruppe)} fieldfillout{/if}" multiple>
                                         {foreach name=kundengruppen from=$oKundengruppe_arr key=key item=oKundengruppe}

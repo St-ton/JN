@@ -62,7 +62,7 @@
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">
-                            <label for="bControlNav">{__('kenBurnsEffect')}</label>
+                            <label for="bUseKB">{__('kenBurnsEffect')}</label>
                         </div>
                         <div class="for">
                             <select class="form-control" id="bUseKB" name="bUseKB">
@@ -70,10 +70,7 @@
                                 <option value="1"{if $oSlider->getUseKB() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
                         </div>
-                        <p><i class="fa fa-warning"></i> {__('overridesOther')} <a
-                                    href="#" data-toggle="tooltip"
-                                    title="{__('willOverride')}">{__('settings')}</a>.
-                        </p>
+                        <p><i class="fa fa-warning"></i> {__('overrideDescription')}</p>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
@@ -264,7 +261,10 @@
                             <div class="name"><label for="article_name">{__('product')}</label></div>
                             <input type="hidden" name="article_key" id="article_key"
                                    value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="article_name" id="article_name">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="article_name" id="article_name">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadProduct')}</span>
+                            </div>
                             <script>
                                 enableTypeahead('#article_name', 'getProducts', 'cName', null, function(e, item) {
                                     $('#article_name').val(item.cName);
@@ -281,7 +281,10 @@
                             <div class="name"><label for="link_name">{__('pageSelf')}</label></div>
                             <input type="hidden" name="link_key" id="link_key"
                                    value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="link_name" id="link_name">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="link_name" id="link_name">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadPages')}</span>
+                            </div>
                             <script>
                                 enableTypeahead('#link_name', 'getPages', 'cName', null, function(e, item) {
                                     $('#link_name').val(item.cName);
@@ -298,7 +301,10 @@
                             <div class="name"><label for="tag_name">Tag</label></div>
                             <input type="hidden" name="tag_key" id="tag_key"
                                    value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="tag_name" id="tag_name">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="tag_name" id="tag_name">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadTag')}</span>
+                            </div>
                             <script>
                                 enableTypeahead('#tag_name', 'getTags', 'cName', null, function(e, item) {
                                     $('#tag_name').val(item.cName);
@@ -315,7 +321,10 @@
                             <div class="name"><label for="attribute_name">{__('attribute')}</label></div>
                             <input type="hidden" name="attribute_key" id="attribute_key"
                                    value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="attribute_name" id="attribute_name">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="attribute_name" id="attribute_name">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadAttribute')}</span>
+                            </div>
                             <script>
                                 enableTypeahead('#attribute_name', 'getAttributes', 'cWert', null, function(e, item) {
                                     $('#attribute_name').val(item.cWert);
@@ -328,13 +337,22 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykKategorie" class="input-group key">
+                        <div id="keykKategorie" class="key">
                             <div class="name"><label for="categories_name">{__('category')}</label></div>
                             <input type="hidden" name="categories_key" id="categories_key"
                                    value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="categories_name" id="categories_name">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="categories_name" id="categories_name">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadCategory')}</span>
+                            </div>
                             <script>
-                                enableTypeahead('#categories_name', 'getCategories', 'cName', null, function(e, item) {
+                                enableTypeahead('#categories_name', 'getCategories', function(item) {
+                                    var parentName = '';
+                                    if (item.parentName !== null) {
+                                        parentName = ' (' + item.parentName + ')';
+                                    }
+                                    return item.cName + parentName;
+                                }, null, function(e, item) {
                                     $('#categories_name').val(item.cName);
                                     $('#categories_key').val(item.kKategorie);
                                 });
@@ -349,7 +367,10 @@
                             <div class="name"><label for="manufacturer_name">{__('manufacturer')}</label></div>
                             <input type="hidden" name="manufacturer_key" id="manufacturer_key"
                                    value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadAttribute')}</span>
+                            </div>
                             <script>
                                 enableTypeahead('#manufacturer_name', 'getManufacturers', 'cName', null, function(e, item) {
                                     $('#manufacturer_name').val(item.cName);
@@ -364,9 +385,12 @@
                         </div>
                         <div id="keycSuche" class="key input-group">
                             <div class="name"><label for="ikeycSuche">{__('searchTerm')}</label></div>
-                            <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
-                                   value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}">
-                        </div>
+                            <div class="input-group">
+                                <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
+                                       value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('enterSearchTerm')}</span>
+                            </div>
+                            </div>
                     </li>
                 </ul>
             </div>

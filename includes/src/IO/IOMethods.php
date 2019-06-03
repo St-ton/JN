@@ -218,15 +218,13 @@ class IOMethods
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
+             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
 
         unset(
             $_SESSION['VersandKupon'],
             $_SESSION['NeukundenKupon'],
             $_SESSION['Versandart'],
-            $_SESSION['Zahlungsart'],
-            $_SESSION['TrustedShops']
+            $_SESSION['Zahlungsart']
         );
         // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb,
         // dann verwerfen und neu anlegen
@@ -254,7 +252,7 @@ class IOMethods
             'WarenkorbVersandkostenfreiHinweis',
             ShippingMethod::getShippingFreeString(
                 ShippingMethod::getFreeShippingMinimum($kKundengruppe),
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true)
             )
         )
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
@@ -338,8 +336,9 @@ class IOMethods
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
 
-        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
-                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
+                                      ->fetch('layout/header_shop_nav_compare.tpl');
+
         $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
@@ -386,12 +385,13 @@ class IOMethods
         $_GET['vlplo']           = $kArtikel;
 
         Frontend::getInstance()->setStandardSessionVars();
-        $response->nType       = 2;
-        $response->nCount      = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
+        $response->nType     = 2;
+        $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
             \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
-        $response->cTitle      = Shop::Lang()->get('compare');
-        $response->cNavBadge   = $smarty->assign('Einstellungen', $conf)
-                                        ->fetch('layout/header_shop_nav_compare.tpl');
+        $response->cTitle    = Shop::Lang()->get('compare');
+        $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
+                                      ->fetch('layout/header_shop_nav_compare.tpl');
+
         $response->navDropdown = $smarty->fetch('snippets/comparelist_dropdown.tpl');
 
         foreach (Shop::Container()->getBoxService()->buildList() as $boxes) {
@@ -634,7 +634,7 @@ class IOMethods
                        ->assign('FavourableShipping', $cart->getFavourableShipping())
                        ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                            $versandkostenfreiAb,
-                           $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
+                           $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $cLand)
                        ))
                        ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages());
 
@@ -674,11 +674,20 @@ class IOMethods
             $variationValues,
             $items,
             $quantities,
-            $itemQuantities
+            $itemQuantities,
+            true
         );
         $net             = Frontend::getCustomerGroup()->getIsMerchant();
         $Artikel->fuelleArtikel($productID);
-        $Artikel->Preise->cVKLocalized[$net] = Preise::getLocalizedPriceString($Artikel->Preise->fVK[$net] * $amount);
+        $fVKNetto                      = $Artikel->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
+        $fVK                           = [
+            Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$Artikel->kSteuerklasse]),
+            $fVKNetto
+        ];
+        $Artikel->Preise->cVKLocalized = [
+            0 => Preise::getLocalizedPriceString($fVK[0]),
+            1 => Preise::getLocalizedPriceString($fVK[1])
+        ];
 
         $smarty->assign('oKonfig', $oKonfig)
                ->assign('NettoPreise', $net)
@@ -778,6 +787,15 @@ class IOMethods
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
+
+        // Alle Variationen ohne Freifeld
+        $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
+        foreach ($valueIDs as $kKey => $cVal) {
+            if (!isset($keyValueVariations[$kKey])) {
+                unset($valueIDs[$kKey]);
+            }
+        }
+
         foreach ($valueIDs as $valueID) {
             $currentValue = new EigenschaftWert((int)$valueID);
             $weightDiff  += $currentValue->fGewichtDiff;
@@ -796,13 +814,6 @@ class IOMethods
             $product->fArtikelgewicht + $weightDiff
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
-        // Alle Variationen ohne Freifeld
-        $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
-        foreach ($valueIDs as $kKey => $cVal) {
-            if (!isset($keyValueVariations[$kKey])) {
-                unset($valueIDs[$kKey]);
-            }
-        }
 
         $nNettoPreise = Frontend::getCustomerGroup()->getIsMerchant();
         $fVKNetto     = $product->gibPreis($fAnzahl, $valueIDs, Frontend::getCustomerGroup()->getID());

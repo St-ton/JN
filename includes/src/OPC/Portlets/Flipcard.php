@@ -8,7 +8,6 @@ namespace JTL\OPC\Portlets;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Flipcard
@@ -17,40 +16,11 @@ use JTL\OPC\PortletInstance;
 class Flipcard extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        $instance->setProperty('uid', \uniqid('flp-', false));
-        $instance->addClass('flip');
-        $instance->addClass($instance->getProperty('flip-style'));
-        $instance->addClass($instance->getProperty('class'));
-
-        return $this->getPreviewHtmlFromTpl($instance);
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     * @throws \Exception
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        $instance->addClass('flip');
-        $instance->addClass($instance->getProperty('flip-style'));
-        $instance->addClass($instance->getProperty('class'));
-
-        return $this->getFinalHtmlFromTpl($instance);
-    }
-
-    /**
      * @return string
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-clone"></i><br/> Flipcard';
+        return $this->getFontAwesomeButtonHtml('clone');
     }
 
     /**
@@ -59,20 +29,14 @@ class Flipcard extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'class'      => [
-                'label'      => 'CSS Klasse',
-                'dspl_width' => 50,
-            ],
-            'flip-style' => [
-                'label'      => 'Richtung',
-                'type'       => InputType::RADIO,
-                'inline'     => true,
-                'options'    => [
-                    'flip_v' => 'vertical',
-                    'flip_h' => 'horizontal',
+            'flip-dir' => [
+                'type'    => InputType::RADIO,
+                'label'   => 'Richtung',
+                'options' => [
+                    'flipcard-v' => 'vertikal',
+                    'flipcard-h' => 'horizontal',
                 ],
-                'default'    => 'flip_v',
-                'dspl_width' => 50,
+                'default' => 'flipcard-v',
             ],
         ];
     }

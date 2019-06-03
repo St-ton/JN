@@ -183,10 +183,18 @@ body {
 }
 #sidebarPanel #displayPreviews ul {
   padding: 0;
+  margin: 0;
+  display: inline-block;
 }
 #sidebarPanel #displayPreviews li {
   display: inline-block;
-  padding: 15px 10px 5px 10px;
+  padding: 15px 10px 10px 10px;
+}
+#sidebarPanel #displayPreviews li.active {
+  background-color: #d1d1d1;
+}
+#sidebarPanel #displayPreviews li.active a {
+  color: #435A6B;
 }
 #sidebarPanel #displayPreviews a {
   color: #d1d1d1;
@@ -197,13 +205,15 @@ body {
 #sidebarPanel #displayPreviews a.active {
   color: #435A6B;
 }
-#iframePanel {
+#iframePanel,
+#previewPanel {
   height: 100%;
   text-align: center;
   background: #ddd;
   margin-left: 380px;
 }
-#iframePanel iframe {
+#iframePanel iframe,
+#previewPanel iframe {
   border: 0;
   width: 100%;
   height: 100%;
@@ -228,7 +238,7 @@ body {
   border: none;
   border-radius: 5px;
   padding: 8px 16px;
-  font-size: 1.1em;
+  font-size: 16px;
 }
 .modal .modal-content .btn-danger {
   background-color: #bbb;
@@ -240,6 +250,15 @@ body {
   padding: 1px 5px;
   font-size: 12px;
   border-radius: 0;
+}
+.modal .modal-content .btn-sm {
+  padding: 5px 10px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.modal .modal-content .input-group-addon {
+  min-width: 128px;
+  text-align: left;
 }
 #tourForm .tour-label {
   padding-left: 0;
@@ -315,5 +334,36 @@ body {
 .popover[class*="tour-"] .popover-title {
   color: #fff;
   background-color: #5cbcf6;
+}
+#configModalBody {
+  overflow: initial;
+}
+.banner-zones {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+.banner-zones > .banner-zone {
+  position: absolute;
+  background-color: rgba(192, 192, 192, 0.5);
+  cursor: grabbing;
+  overflow: hidden;
+}
+.banner-zones > .banner-zone > .zone-resizer {
+  position: absolute;
+  background-color: rgba(192, 192, 192, 0.5);
+  width: 16px;
+  height: 16px;
+  right: 0;
+  bottom: 0;
+  cursor: se-resize;
+}
+.banner-zones > .banner-zone.selected {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+.banner-zones > .banner-zone.selected > .zone-resizer {
+  background-color: rgba(255, 0, 0, 0.5);
 }
 /*# sourceMappingURL=host.css.map */

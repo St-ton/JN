@@ -347,35 +347,6 @@ function setzeSprache()
 }
 
 /**
- *
- */
-function setzeSpracheTrustedShops()
-{
-    $cISOSprache_arr = [
-        'de' => 'Deutsch',
-        'en' => 'Englisch',
-        'fr' => 'Französisch',
-        'pl' => 'Polnisch',
-        'es' => 'Spanisch'
-    ];
-    if (!isset($_SESSION['TrustedShops']->oSprache->cISOSprache)) {
-        if (!isset($_SESSION['TrustedShops'])) {
-            $_SESSION['TrustedShops']           = new stdClass();
-            $_SESSION['TrustedShops']->oSprache = new stdClass();
-        }
-        $_SESSION['TrustedShops']->oSprache->cISOSprache  = 'de';
-        $_SESSION['TrustedShops']->oSprache->cNameSprache = $cISOSprache_arr['de'];
-    }
-    // setze explizit ausgewählte Sprache
-    if (isset($_POST['sprachwechsel']) && (int)$_POST['sprachwechsel'] === 1 && mb_strlen($_POST['cISOSprache']) > 0) {
-        $_SESSION['TrustedShops']->oSprache->cISOSprache  =
-            Text::htmlentities(Text::filterXSS($_POST['cISOSprache']));
-        $_SESSION['TrustedShops']->oSprache->cNameSprache =
-            $cISOSprache_arr[Text::htmlentities(Text::filterXSS($_POST['cISOSprache']))];
-    }
-}
-
-/**
  * @param int $month
  * @param int $year
  * @return int
@@ -622,6 +593,13 @@ function getFrontendSmarty()
 
     if ($frontendSmarty === null) {
         $frontendSmarty = new JTLSmarty();
+        $frontendSmarty
+            ->assign('imageBaseURL', \Shop::getImageBaseURL())
+            ->assign('NettoPreise', \JTL\Session\Frontend::getCustomerGroup()->getIsMerchant())
+            ->assign('ShopURL', \Shop::getURL())
+            ->assign('Suchergebnisse', new \JTL\Filter\SearchResults())
+            ->assign('NaviFilter', \Shop::getProductFilter())
+            ->assign('Einstellungen', \Shopsetting::getInstance()->getAll());
     }
 
     return $frontendSmarty;

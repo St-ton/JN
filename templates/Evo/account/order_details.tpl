@@ -61,7 +61,7 @@
             {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
                 {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
             {else}
-                {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_billpay_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
+                {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
                     <a href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}">{lang key='payNow' section='global'}</a>
                 {else}
                     {lang key='notPayedYet' section='login'}
@@ -153,15 +153,52 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>{lang key='partialShippedPosition' section='order'}</th>
-                            <th>{lang key='partialShippedCount' section='order'}</th>
+                            <th>{lang key="partialShippedPosition" section="order"}</th>
+                            <th>{lang key="partialShippedCount" section="order"}</th>
+                            <th>{lang key='productNo' section='global'}</th>
+                            <th>{lang key='product' section='global'}</th>
+                            <th>{lang key="order" section="global"}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {foreach $oLieferschein->oLieferscheinPos_arr as $oLieferscheinpos}
                             <tr>
-                                <td>{include file='account/order_item.tpl' Position=$oLieferscheinpos->oPosition bPreis=false bKonfig=false}</td>
+                                <td>{$oLieferscheinpos@iteration}</td>
                                 <td>{$oLieferscheinpos->getAnzahl()}</td>
+                                <td>{$oLieferscheinpos->oPosition->cArtNr}</td>
+                                <td>
+                                    {$oLieferscheinpos->oPosition->cName}
+                                    <ul class="list-unstyled text-muted small">
+                                        {if !empty($oLieferscheinpos->oPosition->cHinweis)}
+                                            <li class="text-info notice">{$oLieferscheinpos->oPosition->cHinweis}</li>
+                                        {/if}
+
+                                        {* eindeutige Merkmale *}
+                                        {if $oLieferscheinpos->oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
+                                            <li class="manufacturer">
+                                                <strong>{lang key='manufacturer' section='productDetails'}</strong>:
+                                                <span class="values">
+                                                   {$oLieferscheinpos->oPosition->Artikel->cHersteller}
+                                                </span>
+                                            </li>
+                                        {/if}
+
+                                        {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oLieferscheinpos->oPosition->Artikel->oMerkmale_arr)}
+                                            {foreach $oLieferscheinpos->oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                <li class="characteristic">
+                                                    <strong>{$oMerkmale_arr->cName}</strong>:
+                                                    <span class="values">
+                                                        {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
+                                                            {if !$oWert@first}, {/if}
+                                                            {$oWert->cWert}
+                                                        {/foreach}
+                                                    </span>
+                                                </li>
+                                            {/foreach}
+                                        {/if}
+                                    </ul>
+                                </td>
+                                <td>{$Bestellung->cBestellNr}</td>
                             </tr>
                         {/foreach}
                     </tbody>
@@ -176,8 +213,4 @@
 {if $Bestellung->cKommentar}
     <h3>{lang key='yourOrderComment' section='login'}</h3>
     <p>{$Bestellung->cKommentar}</p>
-{/if}
-
-{if !empty($oTrustedShopsBewertenButton->cPicURL)}
-    <a href="{$oTrustedShopsBewertenButton->cURL}" target="_blank"><img src="{$oTrustedShopsBewertenButton->cPicURL}" /></a>
 {/if}

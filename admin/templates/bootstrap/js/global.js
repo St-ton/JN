@@ -609,6 +609,9 @@ function ioCall(name, args, success, error, context)
             success(data, context);
         },
         error: function (jqXHR, textStatus, errorThrown) {
+            if (!jqXHR.responseJSON) {
+                throw 'ioCall response failed: ' + jqXHR.responseText;
+            }
             error(jqXHR.responseJSON);
         }
     });

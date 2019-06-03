@@ -20,12 +20,13 @@ class Container extends Portlet
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getPreviewHtml(PortletInstance $instance): string
     {
-        $instance->setProperty('uid', \uniqid('cntr-', false));
         $instance->setStyle('min-height', $instance->getProperty('min-height'));
         $instance->setStyle('position', 'relative');
+
         if ($instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))) {
             $name = \explode('/', $instance->getProperty('src'));
             $name = \end($name);
@@ -38,6 +39,7 @@ class Container extends Portlet
             $instance->setStyle('background-size', 'cover');
             $instance->getImageAttributes(Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
+
         if ($instance->getProperty('background-flag') === 'video') {
             $instance->setStyle('overflow', 'hidden');
             $instance->setStyle('position', 'relative');
@@ -50,10 +52,10 @@ class Container extends Portlet
                 Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name
             );
         }
+
         if (!empty($instance->getProperty('class'))) {
             $instance->addClass($instance->getProperty('class'));
         }
-
 
         return $this->getPreviewHtmlFromTpl($instance);
     }
@@ -62,24 +64,28 @@ class Container extends Portlet
     /**
      * @param PortletInstance $instance
      * @return string
+     * @throws \Exception
      */
     public function getFinalHtml(PortletInstance $instance): string
     {
         $instance->setStyle('min-height', $instance->getProperty('min-height'));
         $instance->setStyle('position', 'relative');
+
         if ($instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))) {
             $name = \explode('/', $instance->getProperty('src'));
             $name = \end($name);
+
             $instance->addClass('parallax-window');
             $instance->setAttribute('data-parallax', 'scroll');
             $instance->setAttribute('data-z-index', '1');
             $instance->setAttribute('data-image-src', Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.lg/' . $name);
-
             $instance->getImageAttributes(Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.xs/' . $name);
         }
+
         if (!empty($instance->getProperty('class'))) {
             $instance->addClass($instance->getProperty('class'));
         }
+
         if ($instance->getProperty('background-flag') === 'video') {
             $instance->setStyle('overflow', 'hidden');
 
@@ -118,13 +124,15 @@ class Container extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'class'           => [
-                'label'      => 'CSS Klasse',
-                'dspl_width' => 50,
+            'min-height'      => [
+                'type'               => InputType::NUMBER,
+                'label'              => 'Mindesthöhe in px',
+                'default'            => 300,
+                'width'         => 50,
             ],
             'background-flag' => [
-                'label'   => 'Hintergrund nutzen?',
                 'type'    => InputType::RADIO,
+                'label'   => 'Hintergrund nutzen?',
                 'options' => [
                     'image' => 'mitlaufendes Bild (parallax)',
                     'video' => 'Hintergrundvideo',
@@ -132,34 +140,27 @@ class Container extends Portlet
                 ],
                 'default' => 'false',
                 'inline'  => true,
-            ],
-            'src'             => [
-                'type'                 => InputType::IMAGE,
-                'collapseControlStart' => true,
-                'showOnProp'           => 'background-flag',
-                'showOnPropValue'      => 'image',
-                'dspl_width'           => 50,
-                'collapseControlEnd'   => true,
-            ],
-            'min-height'      => [
-                'label'              => 'Mindesthöhe in px',
-                'type'               => InputType::NUMBER,
-                'default'            => 300,
-                'dspl_width'         => 50,
-            ],
-            'video-src'       => [
-                'label'                => 'Video',
-                'type'                 => InputType::VIDEO,
-                'collapseControlStart' => true,
-                'showOnProp'           => 'background-flag',
-                'showOnPropValue'      => 'video',
-                'dspl_width'           => 100,
-            ],
-            'video-poster'    => [
-                'label'              => 'Platzhalterbild',
-                'type'               => InputType::IMAGE,
-                'dspl_width'         => 100,
-                'collapseControlEnd' => true,
+                'width'         => 50,
+                'childrenFor' => [
+                    'image' => [
+                        'src'  => [
+                            'label' => 'Hintergrundbild',
+                            'type'  => InputType::IMAGE,
+                        ],
+                    ],
+                    'video' => [
+                        'video-src'       => [
+                            'type'  => InputType::VIDEO,
+                            'label' => 'Video',
+                            'width' => 50,
+                        ],
+                        'video-poster'    => [
+                            'type'  => InputType::IMAGE,
+                            'label' => 'Platzhalterbild',
+                            'width' => 50,
+                        ],
+                    ],
+                ],
             ],
         ];
     }

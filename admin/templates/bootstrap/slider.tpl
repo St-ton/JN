@@ -11,14 +11,15 @@
     {else}
         <div id="settings">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('slider')}</h3>
-                </div>
                 {if $oSlider_arr|@count == 0}
                     <div class="panel-body">
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     </div>
                 {else}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$pagination}
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{__('slider')}</h3>
+                    </div>
                     <table class="table">
                         <thead>
                         <tr>
@@ -53,7 +54,7 @@
                     </table>
                 {/if}
                 <div class="panel-footer">
-                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderAdd')}</a>
+                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderCreate')}</a>
                 </div>
             </div>
         </div>

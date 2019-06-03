@@ -21,7 +21,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'parameterhandler.php';
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
 /**
@@ -50,7 +49,7 @@ function handleError($output)
     $error = error_get_last();
     if ($error['type'] === 1) {
         $error  = translateError($error['message']) . "\n";
-        $error .= 'Datei: ' . $error['file'];
+        $error .= 'Datei: ' . $error['file'] ?? '';
         Shop::Container()->getLogService()->error($error);
 
         return $error;

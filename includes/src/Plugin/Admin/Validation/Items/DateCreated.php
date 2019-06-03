@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class DateCreated
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class DateCreated extends AbstractItem
+final class DateCreated extends AbstractItem
 {
     /**
      * @inheritdoc

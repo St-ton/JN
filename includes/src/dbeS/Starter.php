@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license       http://jtl-url.de/jtlshoplicense
@@ -10,35 +10,35 @@ use Generator;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\dbeS\Push\AbstractPush;
+use JTL\dbeS\Push\Customers;
+use JTL\dbeS\Push\Data as PushData;
 use JTL\dbeS\Push\ImageAPI;
 use JTL\dbeS\Push\Invoice;
 use JTL\dbeS\Push\MediaFiles;
+use JTL\dbeS\Push\Orders as PushOrders;
 use JTL\dbeS\Push\Payments;
 use JTL\dbeS\Sync\AbstractSync;
 use JTL\dbeS\Sync\Attributes;
 use JTL\dbeS\Sync\Brocken;
+use JTL\dbeS\Sync\Categories;
+use JTL\dbeS\Sync\ConfigGroups;
+use JTL\dbeS\Sync\Customer;
 use JTL\dbeS\Sync\Data;
+use JTL\dbeS\Sync\DeliverySlips;
 use JTL\dbeS\Sync\Downloads;
 use JTL\dbeS\Sync\Globals;
+use JTL\dbeS\Sync\ImageCheck;
+use JTL\dbeS\Sync\ImageLink;
 use JTL\dbeS\Sync\Images;
-use JTL\dbeS\Sync\ConfigGroups;
+use JTL\dbeS\Sync\ImageUpload;
 use JTL\dbeS\Sync\Manufacturers;
 use JTL\dbeS\Sync\Orders;
 use JTL\dbeS\Sync\Products;
-use JTL\dbeS\Sync\ImageCheck;
-use JTL\dbeS\Sync\ImageLink;
-use JTL\dbeS\Sync\ImageUpload;
-use JTL\dbeS\Sync\Categories;
-use JTL\dbeS\Sync\Customer;
-use JTL\dbeS\Sync\DeliverySlips;
 use JTL\dbeS\Sync\QuickSync;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\XML;
 use Psr\Log\LoggerInterface;
-use JTL\dbeS\Push\Orders as PushOrders;
-use JTL\dbeS\Push\Data as PushData;
-use JTL\dbeS\Push\Customers;
 
 /**
  * Class Starter
@@ -262,7 +262,6 @@ class Starter
         if ($mapping === null) {
             return;
         }
-        require_once \PFAD_ROOT . \PFAD_DBES . 'NetSync_inc.php';
         NetSyncHandler::create($mapping, $this->db, $this->logger);
         exit();
     }

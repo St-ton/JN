@@ -82,28 +82,29 @@ class PluginLoader extends AbstractLoader
         $id        = (int)$obj->kPlugin;
         $paths     = $this->loadPaths($obj->cVerzeichnis);
         $extension = new Plugin();
+        $getText   = Shop::Container()->getGetText();
+
+        $getText->setLanguage($_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage());
+        $extension->setID($id);
         $extension->setIsExtension(true);
         $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
+        $getText->loadPluginLocale('base', $extension);
         $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
+        $this->loadAdminMenu($extension);
         $extension->setState((int)$obj->nStatus);
-        $extension->setID($id);
         $extension->setBootstrap(true);
         $extension->setLinks($this->loadLinks($id));
         $extension->setPluginID($obj->cPluginID);
         $extension->setPriority((int)$obj->nPrio);
         $extension->setLicense($this->loadLicense($obj));
         $extension->setCache($this->loadCacheData($extension));
-        $getText = Shop::Container()->getGetText();
-        $getText->setLanguage($_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage());
-        $getText->loadPluginLocale('base', $extension);
         $extension->setConfig($this->loadConfig($paths->getAdminPath(), $extension->getID()));
         $extension->setLocalization($this->loadLocalization($id, $currentLanguageCode));
         $extension->setWidgets($this->loadWidgets($extension));
         $extension->setMailTemplates($this->loadMailTemplates($extension));
         $extension->setPaymentMethods($this->loadPaymentMethods($extension));
 
-        $this->loadAdminMenu($extension);
         $this->saveToCache($extension);
 
         return $extension;

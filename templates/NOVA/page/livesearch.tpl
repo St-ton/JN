@@ -2,42 +2,45 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
-    {include file='snippets/opc_mount_point.tpl' id='opc_livesearch_prepend'}
-    {row id="livesearch"}
-        {col cols=12 sm=6}
-            {card title="{lang key='topsearch'}{$Einstellungen.sonstiges.sonstiges_livesuche_all_top_count}"}
-                {listgroup}
-                    {if count($LivesucheTop) > 0}
-                        {foreach $LivesucheTop as $suche}
-                            {listgroupitem class="tag"}
-                                {link href=$suche->cURL}{$suche->cSuche}{/link}
-                                <span class="badge-pill badge-primary float-right">{$suche->nAnzahlTreffer}</span>
-                            {/listgroupitem}
-                        {/foreach}
-                    {else}
-                        {listgroupitem}{lang key='noDataAvailable'}{/listgroupitem}
-                    {/if}
-                {/listgroup}
-            {/card}
-        {/col}
-
-        {col cols=12 sm=6}
-            {card title="{lang key='lastsearch'}"}
-                {listgroup}
-                    {if count($LivesucheLast) > 0}
-                        {foreach $LivesucheLast as $suche}
-                            {listgroupitem class="tag"}
-                                {link href=$suche->cURL}{$suche->cSuche}{/link}
-                                <span class="badge-pill badge-primary float-right">{$suche->nAnzahlTreffer}</span>
-                            {/listgroupitem}
-                        {/foreach}
-                    {else}
-                        {listgroupitem}{lang key='noDataAvailable'}{/listgroupitem}
-                    {/if}
-                {/listgroup}
-            {/card}
-        {/col}
-    {/row}
-    {include file='snippets/opc_mount_point.tpl' id='opc_livesearch_append'}
-{/if}
+{block name='page-livesearch'}
+    {if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
+        {include file='snippets/opc_mount_point.tpl' id='opc_livesearch_prepend'}
+        {row id="livesearch" class="mt-4"}
+            {block name='page-livesearch-top-searches'}
+                {col}
+                    <div class="h2 font-weight-bold">{lang key='topsearch'}{$Einstellungen.sonstiges.sonstiges_livesuche_all_top_count}</div>
+                    <ul class="list-unstyled">
+                        {if count($LivesucheTop) > 0}
+                            {foreach $LivesucheTop as $suche}
+                                <li class="my-2">
+                                    {link href=$suche->cURL}{$suche->cSuche}{/link}, {lang key='matches'}:
+                                    <span class="badge-pill badge-primary">{$suche->nAnzahlTreffer}</span>
+                                </li>
+                            {/foreach}
+                        {else}
+                            <li class="my-2">{lang key='noDataAvailable'}</li>
+                        {/if}
+                    </ul>
+                {/col}
+            {/block}
+            {block name='page-livesearch-latest-searches'}
+                {col}
+                    <div class="h2 font-weight-bold">{lang key='lastsearch'}</div>
+                    <ul class="list-unstyled">
+                        {if count($LivesucheLast) > 0}
+                            {foreach $LivesucheLast as $suche}
+                                <li class="my-2">
+                                    {link href=$suche->cURL}{$suche->cSuche}{/link}, {lang key='matches'}:
+                                    <span class="badge-pill badge-primary">{$suche->nAnzahlTreffer}</span>
+                                </li>
+                            {/foreach}
+                        {else}
+                            <li class="my-2">{lang key='noDataAvailable'}</li>
+                        {/if}
+                    </ul>
+                {/col}
+            {/block}
+        {/row}
+        {include file='snippets/opc_mount_point.tpl' id='opc_livesearch_append'}
+    {/if}
+{/block}

@@ -12,7 +12,7 @@ use JTL\DB\DbInterface;
  * Class TemplateFactory
  * @package JTL\Mail\Template
  */
-class TemplateFactory
+final class TemplateFactory
 {
     /**
      * @var DbInterface
@@ -26,6 +26,22 @@ class TemplateFactory
     public function __construct(DbInterface $db)
     {
         $this->db = $db;
+    }
+
+    /**
+     * @param int      $id
+     * @return TemplateInterface|null
+     */
+    public function getTemplateByID(int $id): ?TemplateInterface
+    {
+        $data = $this->db->select('temailvorlage', 'kEmailvorlage', $id);
+        if ($data === null) {
+            return null;
+        }
+
+        return $data->kPlugin > 0
+            ? $this->getTemplate('kPlugin_' . $data->kPlugin . '_' . $data->cModulId)
+            : $this->getTemplate($data->cModulId);
     }
 
     /**
@@ -77,6 +93,8 @@ class TemplateFactory
                 return new OrderUpdated($this->db);
             case \MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR:
                 return new ProductAvailable($this->db);
+            case \MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR_OPTIN:
+                return new ProductAvailableOptin($this->db);
             case \MAILTEMPLATE_PRODUKTANFRAGE:
                 return new ProductInquiry($this->db);
             case \MAILTEMPLATE_BEWERTUNG_GUTHABEN:
@@ -87,6 +105,12 @@ class TemplateFactory
                 return new StatusMail($this->db);
             case \MAILTEMPLATE_WUNSCHLISTE:
                 return new Wishlist($this->db);
+            case \MAILTEMPLATE_HEADER:
+                return new Header($this->db);
+            case \MAILTEMPLATE_FOOTER:
+                return new Footer($this->db);
+            case \MAILTEMPLATE_AKZ:
+                return new AKZ($this->db);
             case \strpos($templateID, 'kPlugin') !== false:
                 $tpl = new Plugin($this->db);
                 $tpl->setID($templateID);

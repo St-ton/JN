@@ -2,18 +2,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{block name='header'}
-    {if !isset($bAjaxRequest) || !$bAjaxRequest}
-        {include file='layout/header.tpl'}
-    {/if}
-{/block}
+{block name='productlist-index'}
+    {block name='productlist-index-include-header'}
+        {if !isset($bAjaxRequest) || !$bAjaxRequest}
+            {include file='layout/header.tpl'}
+        {/if}
+    {/block}
 
-{block name='content'}
-    <div id="result-wrapper">
-        {if $opcPageService->getCurPage()->isReplace()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-        {else}
-            {block name='productlist-header'}
+    {block name='productlist-index-content'}
+        <div id="result-wrapper">
+            {block name='productlist-index-include-productlist-header'}
                 {include file='productlist/header.tpl'}
             {/block}
             {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
@@ -36,37 +34,43 @@
                 {/if}
             {/if}
             {if !empty($Suchergebnisse->getError())}
-                {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}
+                {block name='productlist-index-alert'}
+                    {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}
+                {/block}
             {/if}
             {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
-                {block name='productlist-bestseller'}
-                {lang key='bestseller' section='global' assign='slidertitle'}
-                {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
+                {block name='productlist-index-include-product-slider'}
+                    {lang key='bestseller' section='global' assign='slidertitle'}
+                    {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
                 {/block}
             {/if}
 
-            {block name='productlist-results'}
-            {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
-                {foreach $Suchergebnisse->getProducts() as $Artikel}
-                    {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper mb-5" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
-                        {if $style === 'list'}
-                            {include file='productlist/item_list.tpl' tplscope=$style}
-                        {else}
-                            {include file='productlist/item_box.tpl' tplscope=$style}
-                        {/if}
-                    {/col}
-                {/foreach}
-            {/row}
+            {block name='productlist-index-products'}
+                {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
+                    {foreach $Suchergebnisse->getProducts() as $Artikel}
+                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper mb-5" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
+                            {if $style === 'list'}
+                                {block name='productlist-index-include-item-list'}
+                                    {include file='productlist/item_list.tpl' tplscope=$style}
+                                {/block}
+                            {else}
+                                {block name='productlist-index-include-item-box'}
+                                    {include file='productlist/item_box.tpl' tplscope=$style}
+                                {/block}
+                            {/if}
+                        {/col}
+                    {/foreach}
+                {/row}
             {/block}
-            {block name='productlist-footer'}
+            {block name='productlist-index-include-productlist-footer'}
                 {include file='productlist/footer.tpl'}
             {/block}
-        {/if}
-    </div>
-{/block}
+        </div>
+    {/block}
 
-{block name='footer'}
-    {if !isset($bAjaxRequest) || !$bAjaxRequest}
-        {include file='layout/footer.tpl'}
-    {/if}
+    {block name='productlist-index-include-footer'}
+        {if !isset($bAjaxRequest) || !$bAjaxRequest}
+            {include file='layout/footer.tpl'}
+        {/if}
+    {/block}
 {/block}

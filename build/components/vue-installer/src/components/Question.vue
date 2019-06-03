@@ -16,18 +16,18 @@
 </template>
 
 <script>
-    export default {
-        name:    'question',
-        props:   ['text', 'qval', 'type', 'qid'],
-        methods: {
-            test() {
-                console.log(this.selected);
-            }
-        },
-        data() {
-            return {
-                selected: []
-            };
+export default {
+    name:    'question',
+    props:   ['text', 'qval', 'type', 'qid'],
+    methods: {
+        test() {
+            console.log(this.selected);
         }
-    };
+    },
+    data() {
+        return {
+            selected: []
+        };
+    }
+};
 </script>

@@ -23,13 +23,13 @@ if (!file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && is_writable(P
 if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
     $alertHelper->addAlert(
         Alert::TYPE_ERROR,
-        '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' . __('errorSitemapCreatePermission'),
+        sprintf(__('errorSitemapCreatePermission'), '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>'),
         'errorSitemapCreatePermission'
     );
 } elseif (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
-        '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' . __('successSave'),
+        sprintf(__('successSave'), '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>'),
         'successSubjectDelete'
     );
 }

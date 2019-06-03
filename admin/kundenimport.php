@@ -18,9 +18,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     && (int)$_POST['kundenimport'] === 1
@@ -161,7 +158,7 @@ function processImport($fmt, $data)
         }
     }
     if (Text::filterEmailAddress($kunde->cMail) === false) {
-        return __('errorInvalidEmail');
+        return sprintf(__('errorInvalidEmail'), $kunde->cMail);
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
         && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')

@@ -11,6 +11,9 @@ use function Functional\map;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Download;
 use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Konfigitem;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Filter\Metadata;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -1594,8 +1597,8 @@ class Artikel
      * @param int  $kKundengruppe
      * @param bool $bGetInvisibleParts
      * @return $this
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeStueckliste(int $kKundengruppe = 0, bool $bGetInvisibleParts = false): self
     {
@@ -1629,8 +1632,8 @@ class Artikel
 
     /**
      * @return $this
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeProductBundle(): self
     {
@@ -2615,7 +2618,10 @@ class Artikel
                         // Lagerbestand beachten?
                         if ($oVariationsWert->oVariationsKombi->cLagerBeachten === 'Y'
                             && $oVariationsWert->oVariationsKombi->cLagerKleinerNull === 'N'
-                            && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                            && ($oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
+                                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                                \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                            )
                             && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
                         ) {
                             $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
@@ -2623,7 +2629,10 @@ class Artikel
                     } elseif ($this->cLagerVariation === 'Y'
                         && $this->cLagerBeachten === 'Y'
                         && $this->cLagerKleinerNull === 'N'
-                        && $oVariationsWert->fLagerbestand <= 0
+                        && ($oVariationsWert->fLagerbestand <= 0
+                            || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                            \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                        )
                         && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_lagerbeachten'] === 'Y'
                     ) {
                         $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
@@ -3004,8 +3013,8 @@ class Artikel
      * @param int $kKundengruppe
      * @param int $kSprache
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeVariationKombiKinderAssoc(int $kKundengruppe, int $kSprache): array
     {
@@ -3098,7 +3107,10 @@ class Artikel
                 }
                 // Lieferbar?
                 if ($varCombChildren[$i]->cLagerBeachten === 'Y'
-                    && $varCombChildren[$i]->cLagerKleinerNull === 'N'
+                    && ($varCombChildren[$i]->cLagerKleinerNull === 'N'
+                        || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                        \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+                    )
                     && $varCombChildren[$i]->fLagerbestand <= 0
                 ) {
                     $varCombChildren[$i]->nNichtLieferbar = 1;
@@ -3715,8 +3727,8 @@ class Artikel
      * @param int      $kSprache
      * @param bool     $noCache
      * @return null|$this
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @throws \Exception
      */
     public function fuelleArtikel(
@@ -4048,7 +4060,11 @@ class Artikel
         $this->fUVP                              = $oArtikelTMP->fUVP;
         $this->fUVPBrutto                        = $oArtikelTMP->fUVP;
         $this->fVPEWert                          = $oArtikelTMP->fVPEWert;
-        $this->cName                             = $oArtikelTMP->cName;
+        $this->cName                             = \htmlspecialchars(
+            $oArtikelTMP->cName,
+            \ENT_COMPAT | \ENT_HTML401,
+            \JTL_CHARSET
+        );
         $this->cSeo                              = $oArtikelTMP->cSeo;
         $this->cBeschreibung                     = Text::parseNewsText($oArtikelTMP->cBeschreibung);
         $this->cAnmerkung                        = $oArtikelTMP->cAnmerkung;
@@ -4189,7 +4205,6 @@ class Artikel
         if ($this->getOption('nWarenlager', 0) === 1) {
             $this->holWarenlager($kSprache);
         }
-        $this->baueLageranzeige();
         if ($this->getOption('nMerkmale', 0) === 1) {
             $this->holeMerkmale();
         }
@@ -4316,7 +4331,10 @@ class Artikel
         }
         if ($this->fLagerbestand <= 0
             && $this->cLagerBeachten === 'Y'
-            && $this->cLagerKleinerNull !== 'Y'
+            && ($this->cLagerKleinerNull !== 'Y'
+                || (int)$this->conf['global']['artikel_artikelanzeigefilter'] ===
+                \EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER
+            )
             && $this->cLagerVariation !== 'Y'
         ) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;
@@ -4331,6 +4349,10 @@ class Artikel
         if (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_UNVERKAEUFLICH;
         }
+        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+            $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;
+        }
+        $this->baueLageranzeige();
         $this->cUVPLocalized = Preise::getLocalizedPriceString($this->fUVP);
         // Lieferzeit abhaengig vom Session-Lieferland aktualisieren
         if ($this->inWarenkorbLegbar >= 1 && $this->nIstVater !== 1) {
@@ -4710,6 +4732,15 @@ class Artikel
                         : Shop::Lang()->get('ampelGruen');
                     break;
             }
+        }
+        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+            $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
+            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
+            
+            $this->Lageranzeige->nStatus   = 0;
+            $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
+                ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
+                : Shop::Lang()->get('ampelRot');
         }
 
         return $this;
@@ -5402,7 +5433,7 @@ class Artikel
     /**
      * @param string $countryCode ISO Alpha-2 Country-Code e.g. DE
      * @param int    $shippingID  special shippingID, if null will select cheapest
-     * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment
+     * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment or that are excluded
      */
     public function getFavourableShipping($countryCode, $shippingID = null)
     {
@@ -5564,7 +5595,7 @@ class Artikel
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
             foreach ($this->oKonfig_arr as $gruppe) {
-                /** @var \JTL\Extensions\Konfigitem $piece */
+                /** @var Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
                     $konfigItemArticle = $piece->getArtikel();
                     if (!empty($konfigItemArticle)) {
@@ -5745,8 +5776,8 @@ class Artikel
 
     /**
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function holeAehnlicheArtikel(): array
     {
@@ -5757,8 +5788,8 @@ class Artikel
      * build actual similar products
      *
      * @return array
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     private function buildProductsFromSimilarArticles(): array
     {
@@ -6565,23 +6596,23 @@ class Artikel
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt
-            && (\is_array($this->Variationen)
-                && ($this->nVariationOhneFreifeldAnzahl === 2
-                    || $this->nVariationOhneFreifeldAnzahl === 1
-                    || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
-                        && $this->nVariationOhneFreifeldAnzahl > 1)))
+            && $this->nVariationOhneFreifeldAnzahl === count($this->Variationen)
+            && (count($this->Variationen) <= 2
+                || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
+                    && $this->nIstVater === 1)
+            )
             && ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y'
                 || (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX])
                     && $this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX] === '1'))
         ) {
             //the cart matrix cannot deal with those different kinds of variations..
             //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
-            $gesamt_anz = 1;
-            foreach ($this->Variationen as $_variation) {
-                if ($_variation->cTyp === 'FREIFELD' || $_variation->cTyp === 'PFLICHT-FREIFELD') {
+            $total = 1;
+            foreach ($this->Variationen as $variation) {
+                if ($variation->cTyp === 'FREIFELD' || $variation->cTyp === 'PFLICHT-FREIFELD') {
                     return false;
                 }
-                $gesamt_anz *= $_variation->nLieferbareVariationswerte;
+                $total *= $variation->nLieferbareVariationswerte;
             }
             foreach ($this->oKonfig_arr as $_oKonfig) {
                 if (isset($_oKonfig)) {
@@ -6589,9 +6620,7 @@ class Artikel
                 }
             }
 
-            return !($gesamt_anz > \ART_MATRIX_MAX
-                && $this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
-            );
+            return $total <= \ART_MATRIX_MAX;
         }
 
         return false;
@@ -6781,11 +6810,32 @@ class Artikel
     }
 
     /**
+     * @param string $cISO
+     * @return bool
+     */
+    public function isUsedForShippingCostCalculation(string $cISO): bool
+    {
+        $excludedAttributes = [\FKT_ATTRIBUT_VERSANDKOSTEN, \FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
+
+        foreach ($excludedAttributes as $excludedAttribute) {
+            if (isset($this->FunktionsAttribute[$excludedAttribute])
+                && ($cISO === ''
+                    || (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+                )
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @since 4.06.10
      * @param bool $onlyStockRelevant
      * @return object[]
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function getAllDependentProducts(bool $onlyStockRelevant = false): array
     {

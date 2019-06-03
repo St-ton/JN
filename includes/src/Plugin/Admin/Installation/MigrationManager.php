@@ -12,8 +12,8 @@ use Exception;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Update\IMigration;
 use JTL\Plugin\MigrationHelper;
+use JTL\Update\IMigration;
 use JTLShop\SemVer\Version;
 use PDOException;
 

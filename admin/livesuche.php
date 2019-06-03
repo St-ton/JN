@@ -17,7 +17,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 setzeSprache();
 
@@ -268,7 +267,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 
                                     $alertHelper->addAlert(
                                         Alert::TYPE_SUCCESS,
-                                        __('successSearchMapMultiple'),
+                                        sprintf(__('successSearchMapMultiple'), $queryMapping->cSucheNeu),
                                         'successSearchMapMultiple'
                                     );
                                 }
@@ -497,7 +496,11 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                         'successSearchMapDelete'
                     );
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchMapNotFound'), 'errorSearchMapNotFound');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorSearchMapNotFound'), $mappingID),
+                        'errorSearchMapNotFound'
+                    );
                 }
             }
         } else {

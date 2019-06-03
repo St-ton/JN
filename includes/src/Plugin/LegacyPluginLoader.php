@@ -11,6 +11,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Data\Hook;
+use JTL\Plugin\Data\License;
 use JTL\Plugin\Data\Links;
 use JTL\Plugin\Data\Paths;
 use JTL\Plugin\Data\Widget;
@@ -73,7 +74,7 @@ class LegacyPluginLoader extends AbstractLoader
         if ($invalidateCache === true) {
             $this->cache->flush('hook_list');
             $this->cache->flushTags([\CACHING_GROUP_PLUGIN, \CACHING_GROUP_PLUGIN . '_' . $id]);
-        } elseif (($plugin = $this->loadFromCache()) !== null) {
+        } elseif (false && ($plugin = $this->loadFromCache()) !== null) {
             $this->plugin = $plugin;
 
             return $this->plugin;
@@ -84,6 +85,19 @@ class LegacyPluginLoader extends AbstractLoader
         }
 
         return $this->loadFromObject($obj, $languageCode);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function loadLicense($data): License
+    {
+        $license = new License();
+        $license->setClass($data->cLizenzKlasse);
+        $license->setClassName($data->cLizenzKlasseName);
+        $license->setKey($data->cLizenz);
+
+        return $license;
     }
 
     /**

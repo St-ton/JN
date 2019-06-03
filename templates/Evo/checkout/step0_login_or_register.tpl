@@ -34,7 +34,6 @@
     </div>
     <div id="customer" class="col-xs-12 {if $withSidebar === 0}col-md-8{else}col-md-12 top30{/if}">
         <div>
-            {include file='register/inc_vcard_upload.tpl' id='bestellvorgang.php'}
             <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate" id="form-register">
                 {block name='checkout-register'}
                     <div class="panel-wrap">

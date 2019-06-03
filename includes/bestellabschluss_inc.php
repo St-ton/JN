@@ -16,6 +16,8 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
+use JTL\Customer\CustomerAttribute;
+use JTL\Customer\CustomerAttributes;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Upload;
@@ -31,7 +33,6 @@ use JTL\Plugin\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Sprache;
-use JTL\TrustedShops;
 
 /**
  * @return int
@@ -102,7 +103,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $db                = Shop::Container()->getDB();
     $cart              = Frontend::getCart();
     if (Frontend::getCustomer()->getID() <= 0) {
-        $customerAttributes      = $customer->cKundenattribut_arr;
+        $customerAttributes      = $customer->getCustomerAttributes();
         $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
         $customer->kSprache      = Shop::getLanguageID();
         $customer->cAbgeholt     = 'N';
@@ -120,17 +121,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
 
         $customer->kKunde = $cart->kKunde;
         $customer->cLand  = $customer->pruefeLandISO($customer->cLand);
-        if (is_array($customerAttributes)) {
-            foreach (array_keys($customerAttributes) as $kKundenfeld) {
-                $oKundenattribut              = new stdClass();
-                $oKundenattribut->kKunde      = $cart->kKunde;
-                $oKundenattribut->kKundenfeld = $customerAttributes[$kKundenfeld]->kKundenfeld;
-                $oKundenattribut->cName       = $customerAttributes[$kKundenfeld]->cWawi;
-                $oKundenattribut->cWert       = $customerAttributes[$kKundenfeld]->cWert;
-
-                $db->insert('tkundenattribut', $oKundenattribut);
-            }
-        }
+        $customerAttributes->save();
 
         if (!empty($customer->cPasswort)) {
             $customer->cPasswortKlartext = $cPasswortKlartext;
@@ -163,7 +154,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
         $cart->kLieferadresse = $_SESSION['Bestellung']->kLieferadresse;
     }
-    $conf = Shop::getSettings([CONF_GLOBAL, CONF_TRUSTEDSHOPS]);
+    $conf = Shop::getSettings([CONF_GLOBAL]);
     //füge Warenkorb ein
     executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart]);
     $cart->kWarenkorb = $cart->insertInDB();
@@ -334,35 +325,6 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->withName('kBestellung')->debug('Bestellung gespeichert: ' . print_r($order, true), [$kBestellung]);
-    }
-    // TrustedShops buchen
-    if (isset($_SESSION['TrustedShops']->cKaeuferschutzProdukt)
-        && $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
-        && $conf['trustedshops']['trustedshops_nutzen'] === 'Y'
-        && mb_strlen($_SESSION['TrustedShops']->cKaeuferschutzProdukt) > 0
-    ) {
-        $ts                    = new TrustedShops(-1, Text::convertISO2ISO639($_SESSION['cISOSprache']));
-        $ts->tsProductId       = $_SESSION['TrustedShops']->cKaeuferschutzProdukt;
-        $ts->amount            = Frontend::getCurrency()->getConversionFactor() *
-            Frontend::getCart()->gibGesamtsummeWaren(true);
-        $ts->currency          = Frontend::getCurrency()->getCode();
-        $ts->paymentType       = $_SESSION['Zahlungsart']->cTSCode;
-        $ts->buyerEmail        = $customer->cMail;
-        $ts->shopCustomerID    = $customer->kKunde;
-        $ts->shopOrderID       = $order->cBestellNr;
-        $ts->orderDate         = date('Y-m-d') . 'T' . date('H:i:s');
-        $ts->shopSystemVersion = 'JTL-Shop ' . APPLICATION_VERSION;
-
-        if (mb_strlen($ts->tsProductId) > 0
-            && mb_strlen($ts->amount) > 0
-            && mb_strlen($ts->currency) > 0
-            && mb_strlen($ts->paymentType) > 0
-            && mb_strlen($ts->buyerEmail) > 0
-            && mb_strlen($ts->shopCustomerID) > 0
-            && mb_strlen($ts->shopOrderID) > 0
-        ) {
-            $ts->sendeBuchung();
-        }
     }
     //BestellID füllen
     $bestellid              = new stdClass();
@@ -542,8 +504,7 @@ function unhtmlSession(): void
     $customer->cUSTID        = Text::unhtmlentities($sessionCustomer->cUSTID);
     $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
     $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
-
-    $customer->cKundenattribut_arr = $sessionCustomer->cKundenattribut_arr;
+    $customer->getCustomerAttributes()->load($customer->getID());
 
     $_SESSION['Kunde'] = $customer;
 
@@ -1055,16 +1016,6 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
             $paymentMethod->preparePaymentProcess($bestellung);
             Shop::Smarty()->assign('oPlugin', $oPlugin);
         }
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl') {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'sofortueberweisung/SofortUeberweisung.class.php';
-        $paymentMethod           = new SofortUeberweisung($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
-    } elseif (mb_strpos($_SESSION['Zahlungsart']->cModulId, 'za_billpay') === 0) {
-        require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        $paymentMethod           = PaymentMethod::create($_SESSION['Zahlungsart']->cModulId);
-        $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-        $paymentMethod->preparePaymentProcess($bestellung);
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_kreditkarte_jtl'
         || $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
     ) {

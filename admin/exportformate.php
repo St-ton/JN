@@ -48,8 +48,9 @@ if (isset($_GET['kExportformat'])
 }
 if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::validateToken()) {
     $ef          = new Exportformat(0, $db);
-    $checkResult = $ef->check($_POST);
+    $checkResult = $ef->check(StringHandler::filterXSS($_POST));
     if ($checkResult === true) {
+        unset($_SESSION['exportSyntaxErrorCount']);
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
             $kExportformat = (int)$_POST['kExportformat'];
@@ -107,8 +108,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         }
     } else {
         $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
-        $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
+        $_POST['cKopfzeile'] = isset($_POST['cKopfzeile']) ? str_replace('<tab>', "\t", $_POST['cKopfzeile']) : '';
+        $_POST['cFusszeile'] = isset($_POST['cFusszeile']) ? str_replace('<tab>', "\t", $_POST['cFusszeile']) : '';
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', Text::filterXSS($_POST));
         $step = 'neuer Export';
@@ -163,14 +164,14 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
                    LEFT JOIN tcron 
-                      ON tcron.kKey = texportformat.kExportformat
-                      AND tcron.cKey = 'kExportformat'
-                      AND tcron.cTabelle = 'texportformat'
+                      ON tcron.foreignKeyID = texportformat.kExportformat
+                      AND tcron.foreignKey = 'kExportformat'
+                      AND tcron.tableName = 'texportformat'
                    LEFT JOIN tjobqueue 
-                      ON tjobqueue.kKey = texportformat.kExportformat
-                      AND tjobqueue.cKey = 'kExportformat'
-                      AND tjobqueue.cTabelle = 'texportformat'
-                      AND tjobqueue.cJobArt = 'exportformat'
+                      ON tjobqueue.foreignKeyID = texportformat.kExportformat
+                      AND tjobqueue.foreignKey = 'kExportformat'
+                      AND tjobqueue.tableName = 'texportformat'
+                      AND tjobqueue.jobType = 'exportformat'
                    LEFT JOIN texportqueue 
                       ON texportqueue.kExportformat = texportformat.kExportformat
                    WHERE texportformat.kExportformat = " . $kExportformat,
@@ -264,7 +265,7 @@ if ($step === 'neuer Export') {
                     ORDER BY cStandard DESC',
                ReturnType::ARRAY_OF_OBJECTS
            ))
-           ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
+           ->assign('oKampagne_arr', holeAlleKampagnen());
 
     $exportformat = null;
     if (isset($_POST['kExportformat']) && (int)$_POST['kExportformat'] > 0) {
@@ -283,7 +284,7 @@ if ($step === 'neuer Export') {
         }
         $smarty->assign('Exportformat', $exportformat);
     }
-    $gettext = JTL\Shop::Container()->getGetText();
+    $gettext = Shop::Container()->getGetText();
     $configs = getAdminSectionSettings(CONF_EXPORTFORMATE);
     $gettext->localizeConfigs($configs);
 

@@ -9,16 +9,10 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/dq1g2"
 
 msgid "shoptemplatesDesc"
-msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Shop-Wurzelverzeichnis befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per &lt;abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\"&gt;FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
-
-msgid "admintemplatesDesc"
-msgstr "Die Möglichkeit, Admin-Templates umzustellen, wird in der finalen Version 4.00 entfernt! Sie dient nur internen Testzwecken."
+msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Shop-Wurzelverzeichnis befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
 
 msgid "templateName"
 msgstr "Templatename"
-
-msgid "shoplogouploader"
-msgstr "Laden Sie hier Ihr Shop-Logo hoch."
 
 msgid "warning_responsive_mobile"
 msgstr "Responsive Templates sind für alle Auflösungen geeignet und sollten nicht explizit als Template für mobile Endgeräte ausgewiesen werden."
@@ -27,25 +21,25 @@ msgid "successTemplateSave"
 msgstr "Template und Einstellungen wurden erfolgreich geändert."
 
 msgid "errorTemplateSave"
-msgstr "Template bzw. Einstellungen konnten nicht geändert werden."
+msgstr "Template bzw. Einstellungen konnten nicht geändert werden. Falls das Template ein Child-Template ist, stellen Sie sicher, dass ein entsprechendes Parent-Template existiert. Sollte das Problem dennoch weiterhin bestehen, wenden Sie sich bitte an den Support."
 
 msgid "errorFileUpload"
-msgstr "Datei-Upload konnte nicht ausgeführt werden - bitte Schreibrechte des Ordners \"%s\" überprüfen."
+msgstr "Datei-Upload konnte nicht ausgeführt werden – bitte überprüfen Sie die Schreibrechte des Ordners „%s“."
 
 msgid "successLayoutReset"
 msgstr "Layout wurde erfolgreich zurückgesetzt."
 
 msgid "errorLayoutReset"
-msgstr "Layout konnte nicht zurückgesetzt werden."
+msgstr "Layout konnte nicht zurückgesetzt werden. Die Datei %s existiert nicht oder hat nicht genügend Schreibrechte."
 
 msgid "errorStyleFilePermission"
-msgstr "Style-Datei konnte nicht geschrieben werden. Überprüfen Sie die Dateirechte von "
+msgstr "Style-Datei konnte nicht geschrieben werden. Die Datei %s existiert nicht oder hat nicht genügend Schreibrechte."
 
 msgid "successLayoutSave"
 msgstr "Layout wurde erfolgreich angepasst."
 
 msgid "standardTemplateMobil"
-msgstr "Standard-Template für mobile Endgeräte?"
+msgstr "Template für mobile Endgeräte"
 
 msgid "optimizeBrowser"
 msgstr "Nein (optimiert für Standard-Browser)"
@@ -57,7 +51,7 @@ msgid "activateTemplate"
 msgstr "Template aktivieren"
 
 msgid "inheritsFrom"
-msgstr "Erbt von"
+msgstr "Erbt von %s"
 
 msgid "originalExists"
 msgstr "Originalversion vorhanden"
@@ -69,4 +63,4 @@ msgid "parentTemplateMissing"
 msgstr "Parent-Template fehlt"
 
 msgid "errorOverlayWritePermissions"
-msgstr "Overlays konnten nicht erzeugt werden - bitte Schreibrechte des Ordners \"%s\" prüfen und das Template erneut aktivieren."
+msgstr "Overlays konnten nicht erzeugt werden - bitte Schreibrechte des Ordners „%s“ prüfen und das Template erneut aktivieren."

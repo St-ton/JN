@@ -216,7 +216,7 @@ msgid "successNewsletterPrepared"
 msgstr "Newsletter %s is ready to be sent."
 
 msgid "newsletterCronjobNotFound"
-msgstr "Newsletter cron job not found! Sending of newsletters is not possioble."
+msgstr "Newsletter cron job not found! Sending of newsletters is not possible."
 
 msgid "errorTestTemplateEmpty"
 msgstr "Empty recipient address for the trial newsletter."

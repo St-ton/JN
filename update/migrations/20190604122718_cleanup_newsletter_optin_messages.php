@@ -3,19 +3,19 @@
  * cleanup newsletter optin messages
  *
  * @author Clemens Rudolph
- * @created Wed, 24 Apr 2019 09:35:17 +0200
+ * @created Tue, 04 Jun 2019 12:27:18 +0200
  */
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Class Migration_20190424093517
+ * Class Migration_20190604122718
  */
-class Migration_20190424093517 extends Migration implements IMigration
+class Migration_20190604122718 extends Migration implements IMigration
 {
     protected $author      = 'Clemens Rudolph';
-    protected $description = 'cleanup newsletter optin messages';
+    protected $description = 'Cleanup newsletter optin messages';
 
     public function up()
     {

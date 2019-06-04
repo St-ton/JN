@@ -3,16 +3,16 @@
  * create newsletter cron job
  *
  * @author Clemens Rudolph
- * @created Tue, 28 May 2019 12:32:23 +0200
+ * @created Tue, 04 Jun 2019 12:27:58 +0200
  */
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Class Migration_20190528123223
+ * Class Migration_20190604122758
  */
-class Migration_20190528123223 extends Migration implements IMigration
+class Migration_20190604122758 extends Migration implements IMigration
 {
     protected $author      = 'Clemens Rudolph';
     protected $description = 'Create newsletter cron job';

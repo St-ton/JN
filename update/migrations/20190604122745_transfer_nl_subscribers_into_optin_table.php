@@ -3,7 +3,7 @@
  * transfer nl subscribers into optin table
  *
  * @author Clemens Rudolph
- * @created Tue, 30 Apr 2019 12:23:42 +0200
+ * @created Tue, 04 Jun 2019 12:27:45 +0200
  */
 
 use JTL\Optin\OptinNewsletter;
@@ -12,11 +12,11 @@ use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
 /**
- * Class Migration_20190430122342
+ * Class Migration_20190604122745
  */
-class Migration_20190430122342 extends Migration implements IMigration
+class Migration_20190604122745 extends Migration implements IMigration
 {
-    protected $author = 'Clemens Rudolph';
+    protected $author      = 'Clemens Rudolph';
     protected $description = 'Transfer NL subscribers into optin table';
 
     public function up()
@@ -61,6 +61,6 @@ class Migration_20190430122342 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute('TRUNCATE toptin');
+        $this->execute("DELETE FROM toptin WHERE kOptinClass = '" . quotemeta(OptinNewsletter::class) . "'");
     }
 }

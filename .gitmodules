@@ -1,31 +1,30 @@
 [submodule "includes/plugins/jtl_debug"]
 	path = includes/plugins/jtl_debug
-	url = https://gitlab.jtl-software.de/jtlshop/jtldebug.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/debug.git
 [submodule "includes/plugins/jtl_widgets"]
 	path = includes/plugins/jtl_widgets
-	url = https://gitlab.jtl-software.de/jtlshop/JTLWidgets.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/widgets.git
 [submodule "includes/plugins/jtl_haendlerbund"]
 	path = includes/plugins/jtl_haendlerbund
-	url = https://gitlab.jtl-software.de/jtlshop/Haendlerbund.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/haendlerbund.git
 [submodule "includes/plugins/jtl_search"]
 	path = includes/plugins/jtl_search
-	url = https://gitlab.jtl-software.de/jtlshop/JTLSearch.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/Search.git
 [submodule "includes/plugins/jtl_google_shopping"]
 	path = includes/plugins/jtl_google_shopping
-	url = https://gitlab.jtl-software.de/jtlshop/GoogleShopping.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/google-shopping.git
 [submodule "includes/plugins/evo_editor"]
 	path = includes/plugins/evo_editor
-	url = https://gitlab.jtl-software.de/jtlshop/evo-editor.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/evo-editor.git
 [submodule "includes/plugins/s360_amazon_lpa_shop4"]
 	path = includes/plugins/s360_amazon_lpa_shop4
-	url = https://gitlab.jtl-software.de/jtlshop/s360-amazon-payments.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/s360-amazon-payments.git
 [submodule "includes/plugins/agws_ts_features"]
 	path = includes/plugins/agws_ts_features
 	url = https://git.lilfoot.de/plugins/agws_ts_features.git
 [submodule "includes/plugins/jtl_themebar"]
 	path = includes/plugins/jtl_themebar
-	url = https://gitlab.jtl-software.de/jtlshop/jtl_themebar.git
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/themebar.git
 [submodule "includes/plugins/jtl_paypal"]
 	path = includes/plugins/jtl_paypal
-	url = https://gitlab.jtl-software.de/jtlshop/paypal.git
-	branch = master
+	url = https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/paypal.git

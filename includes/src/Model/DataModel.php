@@ -128,26 +128,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @param DbInterface|null $db
-     */
-    public function prepare(DbInterface $db = null): void
-    {
-        $this->db           = $db;
-        $this->iteratorKeys = \array_keys($this->getAttributes());
-        $this->onRegisterHandlers();
-    }
-
-    /**
-     * @param null|array|object $attributes
-     * @param DbInterface|null  $db
-     * @return static
-     */
-    public static function newInstance($attributes = null, DbInterface $db = null): self
-    {
-        return new static($attributes, $db);
-    }
-
-    /**
      * @param string $name - name of the property
      * @return mixed
      */
@@ -184,12 +164,31 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function __debugInfo()
     {
         $result = [];
-
         foreach ($this->iteratorKeys as $key) {
             $result[$key] = $this->$key;
         }
 
         return $result;
+    }
+
+    /**
+     * @param DbInterface|null $db
+     */
+    public function prepare(DbInterface $db = null): void
+    {
+        $this->db           = $db;
+        $this->iteratorKeys = \array_keys($this->getAttributes());
+        $this->onRegisterHandlers();
+    }
+
+    /**
+     * @param null|array|object $attributes
+     * @param DbInterface|null  $db
+     * @return static
+     */
+    public static function newInstance($attributes = null, DbInterface $db = null): self
+    {
+        return new static($attributes, $db);
     }
 
     /**
@@ -369,26 +368,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     protected static function cast($value, $type)
     {
         $result = null;
-        $type   = \strtolower($type);
-        if (\strpos($type, 'app\\models\\') !== false || \strpos($type, 'jtl\\') === 0) {
-            return $value;
-        }
-
-        $typeMap = [
-            'bool|boolean',
-            'int|tinyint|smallint|mediumint|integer|bigint|decimal|dec',
-            'float|double',
-            'string|date|time|year|datetime|timestamp|char|varchar|tinytext|text|mediumtext|enum',
-        ];
-        $phpType = \array_reduce($typeMap, function ($carry, $item) use ($type) {
-            if (!isset($carry) && \preg_match("/{$item}/", $type)) {
-                $carry = \explode('|', $item, 2)[0];
-            }
-
-            return $carry;
-        });
-
-        switch ($phpType) {
+        switch (self::getType(\strtolower($type))) {
             case 'bool':
                 $result = (bool)$value;
                 break;
@@ -407,11 +387,38 @@ abstract class DataModel implements DataModelInterface, Iterator
                     $result = (string)$value;
                 }
                 break;
+            case 'model':
+                return $value;
             default:
                 throw new Exception(__METHOD__ . ': unsupported data type(' . $type . ')', self::ERR_INVALID_PARAM);
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $type
+     * @return mixed
+     */
+    private static function getType(string $type)
+    {
+        if (\strpos($type, 'app\\models\\') !== false || \strpos($type, 'jtl\\') === 0) {
+            return 'model';
+        }
+        $typeMap = [
+            'bool|boolean',
+            'int|tinyint|smallint|mediumint|integer|bigint|decimal|dec',
+            'float|double',
+            'string|date|time|year|datetime|timestamp|char|varchar|tinytext|text|mediumtext|enum',
+        ];
+
+        return \array_reduce($typeMap, function ($carry, $item) use ($type) {
+            if (!isset($carry) && \preg_match("/{$item}/", $type)) {
+                $carry = \explode('|', $item, 2)[0];
+            }
+
+            return $carry;
+        });
     }
 
     protected function onInstanciation(): void
@@ -855,22 +862,6 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
 
         return $result;
-    }
-
-    /**
-     * @param Request $request
-     * @return $this
-     */
-    public function updateFromRequest(Request $request): self
-    {
-        foreach (\array_keys($this->getAttributes()) as $attr) {
-            if ($request->has($attr)) {
-                $value       = $request->get($attr);
-                $this->$attr = $value;
-            }
-        }
-
-        return $this;
     }
 
     /**

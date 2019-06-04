@@ -118,18 +118,26 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
         $kKundengruppe = Frontend::getCustomerGroup()->getID();
 
-        $shippingMethods  = ShippingMethod::getPossibleShippingMethods(
+        $shippingMethods = ShippingMethod::getPossibleShippingMethods(
             $land,
             $plz,
             ShippingMethod::getShippingClasses($cart),
             $kKundengruppe
         );
-        $activeVersandart = gibAktiveVersandart($shippingMethods);
 
-        pruefeVersandartWahl(
-            $activeVersandart,
-            ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($kKundengruppe)))]
-        );
+        if (empty($shippingMethods)) {
+            $alertHelper->addAlert(
+                Alert::TYPE_DANGER,
+                Shop::Lang()->get('noShippingAvailable', 'checkout'),
+                'noShippingAvailable'
+            );
+        } else {
+            $activeVersandart = gibAktiveVersandart($shippingMethods);
+            pruefeVersandartWahl(
+                $activeVersandart,
+                ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($kKundengruppe)))]
+            );
+        }
     }
 }
 if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {

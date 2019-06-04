@@ -3,40 +3,40 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "statusemail"
-msgstr "E-Mail-Berichte"
+msgstr "Email reports"
 
 msgid "statusemailURL"
-msgstr "https://jtl-url.de/b15ip"
+msgstr "https://jtl-url.de/4oqs8"
 
 msgid "statusemailDesc"
-msgstr "Mithilfe von E-Mail-Berichten erhalten Sie automatisch eine Übersicht aller Aktivitäten im Shop. Der E-Mail-Bericht kann 1x am Tag, 1x in der Woche und/oder 1x im Monat an Sie verschickt werden."
+msgstr "You can have reports containing information on all online shop activities emailed to you on a regular basis. The reports can be sent to you daily, weekly, and/or monthly."
 
 msgid "statusemailUse"
-msgstr "E-Mail-Berichte nutzen"
+msgstr "Use email reports"
 
 msgid "statusemailUseDesc"
-msgstr "Möchten Sie das E-Mail-Berichte Modul nutzen?"
+msgstr "Here you can activate the \"Email reports\" function."
 
 msgid "statusemailEmail"
-msgstr "Empfänger E-Mail-Adresse"
+msgstr "Send email to"
 
 msgid "statusemailEmailDesc"
-msgstr "An diese E-Mail-Adresse wird der E-Mail-Bericht gesendet."
+msgstr "Enter the email address to which the report is to be sent."
 
 msgid "statusemailIntervall"
-msgstr "Berichtintervall"
+msgstr "Period covered by report"
 
 msgid "statusemailIntervallDesc"
-msgstr "&Uumlber welchen Zeitraum möchten Sie Informationen im E-Mail-Bericht erhalten? Mehrfachauswahl möglich."
+msgstr "Specify the intervals in which reports are to be sent. Multiple selection is possible."
 
 msgid "statusemailContent"
-msgstr "Berichtsinhalt"
+msgstr "Content of report"
 
 msgid "statusemailContentDesc"
-msgstr "Welchen Inhalt soll der E-Mail-Bericht enthalten? Mehrfachauswahl möglich."
+msgstr "Specify which information is included in the email reports. Multiple selection is possible. "
 
 msgid "sendEmail"
-msgstr "E-Mail-Berichte jetzt senden"
+msgstr "Send email report now"
 
 msgid "contentTypeCountItemCustomerGroup"
 msgstr "Count items per customer group"

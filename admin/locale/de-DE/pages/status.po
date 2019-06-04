@@ -45,7 +45,7 @@ msgid "expiresInXDays"
 msgstr "Läuft in %s Tagen ab"
 
 msgid "paymentTypesWithError"
-msgstr "Folgende Zahlungsarten beinhalten Protokolle mit dem Status 'Fehler'."
+msgstr "Folgende Zahlungsarten beinhalten Protokolle mit dem Status „Fehler“."
 
 msgid "pluginsWithSameHook"
 msgstr "Folgende Plugins benutzen einen identischen Hook."

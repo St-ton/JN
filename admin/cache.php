@@ -53,7 +53,6 @@ if (is_object($deactivated) && isset($deactivated->cWert)) {
 if ($action !== null && isset($_POST['cache-action'])) {
     $cacheAction = $_POST['cache-action'];
 }
-Shop::dbg(Shop::Lang()->gibInstallierteSprachen());
 switch ($action) {
     case 'cacheMassAction':
         //mass action cache flush

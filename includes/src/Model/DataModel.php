@@ -21,6 +21,8 @@ use stdClass;
  */
 abstract class DataModel implements DataModelInterface, Iterator
 {
+    use IteratorTrait;
+
     /**
      * @var array
      * Stores the property values
@@ -46,12 +48,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     protected $loaded = false;
 
     /**
-     * @var array
-     * Stores keynames for iterator interface
-     */
-    protected $iteratorKeys;
-
-    /**
      * @var DbInterface
      */
     private $db;
@@ -70,6 +66,14 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function setDB(DbInterface $db): void
     {
         $this->db = $db;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function wasLoaded(): void
+    {
+        $this->loaded = true;
     }
 
     /**
@@ -156,19 +160,6 @@ abstract class DataModel implements DataModelInterface, Iterator
 
         return (\array_key_exists($name, $attributes) && $this->getAttribValue($name) !== null)
             || ($this->hasMapping($name) && $this->getAttribValue($this->getMapping($name)) !== null);
-    }
-
-    /**
-     * @return array
-     */
-    public function __debugInfo()
-    {
-        $result = [];
-        foreach ($this->iteratorKeys as $key) {
-            $result[$key] = $this->$key;
-        }
-
-        return $result;
     }
 
     /**
@@ -483,22 +474,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * Add a key to the internal iterator array - this will be used to iterate over all public propertys of this model.
-     * Basically the DataModel will only iterate over database attributes. If a persistent class property is defined in
-     * descendents, this property must be added if it should be used for iteration. A good place to use this function
-     * is {@link onRegisterHandlers}.
-     *
-     * @param string $keyName - the property/key to add to the list of iteratorkeys
-     */
-    protected function addIteratorKey($keyName): void
-    {
-        if (!\in_array($keyName, $this->iteratorKeys, true)) {
-            $this->iteratorKeys[] = $keyName;
-            \reset($this->iteratorKeys);
-        }
-    }
-
-    /**
      * @inheritDoc
      */
     public function fill($attributes): DataModelInterface
@@ -572,28 +547,7 @@ abstract class DataModel implements DataModelInterface, Iterator
                 throw $e;
             }
         }
-
-        if (\is_array($partial) && \count($partial)) {
-            foreach ($this->getAttributes() as $attributeName => $attribute) {
-                if (!\in_array($attributeName, $partial, true) && !\in_array($attribute->name, $partial, true)) {
-                    $memberName = $attribute->name;
-                    unset($members->$memberName);
-                }
-            }
-        }
-        $definedMembers = \array_keys(\get_object_vars($members));
-        foreach ($this->getAttributes() as $attributeName => $attribute) {
-            if ($attribute->foreignKey !== null || $attribute->foreignKeyChild !== null) {
-                continue;
-            }
-            $mapping = $attribute->name;
-            if ($attribute->nullable === true
-                && \in_array($mapping, $definedMembers, true)
-                && $members->$mapping === null
-            ) {
-                $members->$mapping = '_DBNULL_';
-            }
-        }
+        $members = $this->getMembersToSave($members, $partial);
         if (!$this->loaded || $noPrimaryKey || $keyValue === null) {
             $pkValue = $this->db->insert($this->getTableName(), $members);
             $this->updateChildModels();
@@ -618,6 +572,38 @@ abstract class DataModel implements DataModelInterface, Iterator
         $this->updateChildModels();
 
         return $res;
+    }
+
+    /**
+     * @param stdClass   $members
+     * @param array|null $partial
+     * @return stdClass
+     */
+    private function getMembersToSave(stdClass $members, array $partial = null): stdClass
+    {
+        if (\is_array($partial) && \count($partial)) {
+            foreach ($this->getAttributes() as $attributeName => $attribute) {
+                if (!\in_array($attributeName, $partial, true) && !\in_array($attribute->name, $partial, true)) {
+                    $memberName = $attribute->name;
+                    unset($members->$memberName);
+                }
+            }
+        }
+        $definedMembers = \array_keys(\get_object_vars($members));
+        foreach ($this->getAttributes() as $attributeName => $attribute) {
+            if ($attribute->foreignKey !== null || $attribute->foreignKeyChild !== null) {
+                continue;
+            }
+            $mapping = $attribute->name;
+            if ($attribute->nullable === true
+                && \in_array($mapping, $definedMembers, true)
+                && $members->$mapping === null
+            ) {
+                $members->$mapping = '_DBNULL_';
+            }
+        }
+
+        return $members;
     }
 
     /**
@@ -661,7 +647,10 @@ abstract class DataModel implements DataModelInterface, Iterator
             throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
         }
 
-        return $this->fill($record);
+        $this->fill($record);
+        $this->onInstanciation();
+
+        return $this;
     }
 
     /**
@@ -670,7 +659,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function getMapping($attribName): string
     {
         static $nameMapping = [];
-
         if (!isset($nameMapping[$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
@@ -690,7 +678,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     private function hasMapping(string $attribName): bool
     {
         static $mapping = [];
-
         if (!isset($mapping[$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
@@ -727,8 +714,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function getKeyName(bool $realName = false): string
     {
         static $keyName = null;
-
-        if (!isset($keyName)) {
+        if ($keyName === null) {
             foreach ($this->getAttributes() as $attribute) {
                 if ($attribute->isPrimaryKey) {
                     $keyName = $attribute->name;
@@ -750,7 +736,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function getAllKeyNames(bool $realName = false): array
     {
         static $keyNames = null;
-
         if ($keyNames === null) {
             foreach ($this->getAttributes() as $attribute) {
                 if ($attribute->isPrimaryKey) {
@@ -772,7 +757,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function getAttribValue($attribName, $default = null)
     {
         $attribName = $this->getMapping($attribName);
-
         if (!\array_key_exists($attribName, $this->members)) {
             if (\array_key_exists($attribName, $this->getAttributes())) {
                 return $default;
@@ -794,7 +778,6 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         $attribName = $this->getMapping($attribName);
         $attributes = $this->getAttributes();
-
         if (!\array_key_exists($attribName, $attributes)) {
             throw new Exception(__METHOD__ . ': invalid attribute(' . $attribName . ')', self::ERR_INVALID_PARAM);
         }
@@ -883,6 +866,24 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
+     * @inheritDoc
+     */
+    public function replicate(array $except = null)
+    {
+        $members = $this->rawObject();
+        if (\is_array($except) && \count($except)) {
+            foreach ($this->getAttributes() as $attributeName => $attribute) {
+                if (\in_array($attributeName, $except, true) || \in_array($attribute->name, $except, true)) {
+                    $memberName = $attribute->name;
+                    unset($members->$memberName);
+                }
+            }
+        }
+
+        return static::newInstance($members, $this->db);
+    }
+
+    /**
      * @return $this
      */
     protected function updateChildModels(): self
@@ -932,73 +933,5 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
 
         return $result;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function replicate(array $except = null)
-    {
-        $members = $this->rawObject();
-        if (\is_array($except) && \count($except)) {
-            foreach ($this->getAttributes() as $attributeName => $attribute) {
-                if (\in_array($attributeName, $except, true) || \in_array($attribute->name, $except, true)) {
-                    $memberName = $attribute->name;
-                    unset($members->$memberName);
-                }
-            }
-        }
-
-        return static::newInstance($members, $this->db);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function wasLoaded(): void
-    {
-        $this->loaded = true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function current()
-    {
-        $key = \current($this->iteratorKeys);
-
-        return $this->$key;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function next()
-    {
-        \next($this->iteratorKeys);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function key()
-    {
-        return \current($this->iteratorKeys);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function valid()
-    {
-        return \key($this->iteratorKeys) !== null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function rewind()
-    {
-        \reset($this->iteratorKeys);
     }
 }

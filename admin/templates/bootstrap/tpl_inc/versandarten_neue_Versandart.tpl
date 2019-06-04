@@ -112,10 +112,54 @@
                             {/foreach}
                             <li class="input-group">
                                 <span class="input-group-addon">
+                                    <label for="nSort">{__('sortnr')}</label>
+                                </span>
+                                <input class="form-control" type="text" id="nSort" name="nSort" value="{if isset($Versandart->nSort)}{$Versandart->nSort}{/if}" />
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('versandartenSortDesc')}</span>
+                            </li>
+                            <li class="input-group">
+                                <span class="input-group-addon">
                                     <label for="cBild">{__('pictureURL')}</label>
                                 </span>
                                 <input class="form-control" type="text" id="cBild" name="cBild" value="{if isset($Versandart->cBild)}{$Versandart->cBild}{/if}" />
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
+                            </li>
+                            {foreach $sprachen as $sprache}
+                                {assign var=cISO value=$sprache->cISO}
+                                {if isset($oVersandartSpracheAssoc_arr[$cISO])}
+                                    <li class="input-group">
+                                        <span class="input-group-addon">
+                                            <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->cNameDeutsch})</label>
+                                        </span>
+                                        <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
+                                    </li>
+                                {/if}
+                            {/foreach}
+
+                            {foreach $sprachen as $sprache}
+                                {assign var=cISO value=$sprache->cISO}
+                                {if isset($oVersandartSpracheAssoc_arr[$cISO])}
+                                    <li class="input-group">
+                                        <span class="input-group-addon">
+                                            <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->cNameDeutsch})</label>
+                                        </span>
+                                        <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
+                                    </li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                        <ul class="jtl-list-group">
+                            <li class="input-group">
+                                <span class="input-group-addon">
+                                    <label for="nMinLiefertage">{__('minLiefertage')}</label>
+                                </span>
+                                <input class="form-control" type="text" id="nMinLiefertage" name="nMinLiefertage" value="{if isset($Versandart->nMinLiefertage)}{$Versandart->nMinLiefertage}{/if}" />
+                            </li>
+                            <li class="input-group">
+                                <span class="input-group-addon">
+                                    <label for="nMaxLiefertage">{__('maxLiefertage')}</label>
+                                </span>
+                                <input class="form-control" type="text" id="nMaxLiefertage" name="nMaxLiefertage" value="{if isset($Versandart->nMaxLiefertage)}{$Versandart->nMaxLiefertage}{/if}" />
                             </li>
                             {foreach $sprachen as $sprache}
                                 {assign var=cISO value=$sprache->cISO}
@@ -128,21 +172,8 @@
                                     </li>
                                 {/if}
                             {/foreach}
-
-                            <li class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="nMinLiefertage">{__('minLiefertage')}</label>
-                                </span>
-                                <input class="form-control" type="text" id="nMinLiefertage" name="nMinLiefertage" value="{if isset($Versandart->nMinLiefertage)}{$Versandart->nMinLiefertage}{/if}" />
-                            </li>
-
-                            <li class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="nMaxLiefertage">{__('maxLiefertage')}</label>
-                                </span>
-                                <input class="form-control" type="text" id="nMaxLiefertage" name="nMaxLiefertage" value="{if isset($Versandart->nMaxLiefertage)}{$Versandart->nMaxLiefertage}{/if}" />
-                            </li>
-
+                        </ul>
+                        <ul class="jtl-list-group">
                             <li class="input-group">
                                 <span class="input-group-addon">
                                     <label for="cAnzeigen">{__('showShippingMethod')}</label>
@@ -206,15 +237,8 @@
                                 </span>
                                 {*<span class="input-group-addon">{getHelpDesc cDesc=''}</span>*}
                             </li>
-
-                            <li class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="nSort">{__('sortnr')}</label>
-                                </span>
-                                <input class="form-control" type="text" id="nSort" name="nSort" value="{if isset($Versandart->nSort)}{$Versandart->nSort}{/if}" />
-                                <span class="input-group-addon">{getHelpDesc cDesc=__('versandartenSortDesc')}</span>
-                            </li>
-
+                        </ul>
+                        <ul class="jtl-list-group">
                             <li class="input-group">
                                 <span class="input-group-addon">
                                     <label for="kKundengruppe">{__('customerclass')}</label>
@@ -230,36 +254,113 @@
                                 </span>
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('customerclassDesc')}</span>
                             </li>
-
-                            {foreach $sprachen as $sprache}
-                                {assign var=cISO value=$sprache->cISO}
-                                {if isset($oVersandartSpracheAssoc_arr[$cISO])}
-                                    <li class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->cNameDeutsch})</label>
-                                        </span>
-                                        <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
-                                    </li>
-                                {/if}
-                            {/foreach}
-
-                            {foreach $sprachen as $sprache}
-                                {assign var=cISO value=$sprache->cISO}
-                                {if isset($oVersandartSpracheAssoc_arr[$cISO])}
-                                    <li class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->cNameDeutsch})</label>
-                                        </span>
-                                        <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
-                                    </li>
-                                {/if}
-                            {/foreach}
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="panel panel-default">
+                {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
+                    <h3 class="panel-title">{__('priceScale')}</h3>
+                    <ul class="jtl-list-group">
+                        <li class="input-group">
+                            <table id="price_range" class="table">
+                                <thead>
+                                <tr>
+                                    <th class="p50"></th>
+                                    <th>{__('amount')}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}
+                                    {foreach $VersandartStaffeln as $oPreisstaffel}
+                                        {if $oPreisstaffel->fBis != 999999999}
+                                            <tr>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon"><label>{__('upTo')}</label></span>
+                                                        <input type="text" id="bis{$oPreisstaffel@index}" name="bis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fBis)}{$VersandartStaffeln[$oPreisstaffel@index]->fBis}{/if}" class="form-control kilogram" />
+                                                        <span class="input-group-addon"><label>{$einheit}</label></span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon"><label>{__('amount')}:</label></span>
+                                                        <input type="text" id="preis{$oPreisstaffel@index}" name="preis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fPreis)}{$VersandartStaffeln[$oPreisstaffel@index]->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreisstaffel{$oPreisstaffel@index}', this)" /> <span id="ajaxpreisstaffel{$oPreisstaffel@index}"></span>*}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {/if}
+                                    {/foreach}
+                                {else}
+                                    <tr>
+                                        <td>
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><label>{__('upTo')}</label></span>
+                                                <input type="text" id="bis1" name="bis[]" value="" class="form-control kilogram" />
+                                                <span class="input-group-addon"><label>{$einheit}</label></span>
+                                            </div>
+                                        </td>
+                                        <td class="tcenter">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><label>{__('amount')}:</label></span>
+                                                <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/if}
+
+                                </tbody>
+                            </table>
+                            <div class="btn-group">
+                                <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary"><i class="fa fa-share"></i> {__('addPriceScale')}</button>
+                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delPriceScale')}</button>
+                            </div>
+                        </li>
+                    </ul>
+                {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{__('shippingPrice')}</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            {__('shippingPrice')} {__('amount')}
+                        </div>
+                        <div class="col-md-8">
+                            <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
+                        </div>
+                    </div>
+                {/if}
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            {__('freeShipping')}
+                        </div>
+                        <div class="col-md-3">
+                            <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="combo form-control">
+                                <option value="0">{__('no')}</option>
+                                <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-right">
+                            {__('maxCosts')}
+                        </div>
+                        <div class="col-md-3">
+                            <select id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="combo form-control">
+                                <option value="0">{__('no')}</option>
+                                <option value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}selected{/if}>{__('yes')}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" id="fDeckelung" name="fDeckelung" value="{if isset($Versandart->fDeckelung)}{$Versandart->fDeckelung}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxdeckelung', this)" /> <span id="ajaxdeckelung"></span>*}
+                        </div>
+                    </div>
+
                     <div class="panel-heading">
                         <h3 class="panel-title">{__('validOnShippingClasses')}</h3>
                     </div>
@@ -332,186 +433,34 @@
                             {/if}
                         </ul>
                     </div>
-                    <div class="panel-footer">
-                        <div class="btn-group" role="group">
-                            <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
-                                    onclick="addShippingCombination();$('.select2').select2();">
-                                <span class="glyphicon glyphicon-plus"></span> {__('addShippingClass')}
-                            </button>
-                            {if !empty($missingShippingClassCombis)}
-                                <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
-                                    {__('showMissingCombinations')}
-                                </button>
-                            {/if}
-                        </div>
+                    <div class="btn-group" role="group">
+                        <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
+                                onclick="addShippingCombination();$('.select2').select2();">
+                            <span class="glyphicon glyphicon-plus"></span> {__('addShippingClass')}
+                        </button>
                         {if !empty($missingShippingClassCombis)}
-                            <div class="collapse" id="collapseShippingClasses">
-                                <div class="row">
-                                    {if $missingShippingClassCombis === -1}
-                                        <div class="col-xs-12">
-                                            {__('coverageShippingClassCombination')}
-                                            {__('noShipClassCombiValidation')|replace:'%s':$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}
-                                        </div>
-                                    {else}
-                                        {foreach $missingShippingClassCombis as $mscc}
-                                            <div class="col-xs-12 col-sm-6">[{$mscc}]</div>
-                                        {/foreach}
-                                    {/if}
-                                </div>
-                            </div>
+                            <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
+                                {__('showMissingCombinations')}
+                            </button>
                         {/if}
                     </div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('freeShipping')}</h3>
-                    </div>
-                    <div class="panel-body">
-                        <ul class="jtl-list-group">
-                            <li class="input-group">
-                                <span class="input-group-addon"><label for="versandkostenfreiAktiv">{__('activate')}</label></span>
-                                <span class="input-group-wrap">
-                                <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="combo form-control">
-                                    <option value="0">{__('no')}</option>
-                                    <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
-                                </select>
-                            </span>
-                            </li>
-                            <li class="input-group">
-                                <span class="input-group-addon"><label>{__('amount')}</label></span>
-                                <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('maxCosts')}</h3>
-                    </div>
-                    <div class="panel-body">
-                        <ul class="jtl-list-group">
-                            <li class="input-group2 table-responsive">
-                                <table class="list table">
-                                    <thead>
-                                    <tr>
-                                        <th class="check"></th>
-                                        <th></th>
-                                        <th>{__('amount')}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="check">
-                                            <input type="checkbox" id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="boxen" value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}checked{/if} />
-                                        </td>
-                                        <td><label for="versanddeckelungAktiv">{__('activate')}</label></td>
-                                        <td class="tcenter">
-                                            <input type="text" id="fDeckelung" name="fDeckelung" value="{if isset($Versandart->fDeckelung)}{$Versandart->fDeckelung}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxdeckelung', this)" /> <span id="ajaxdeckelung"></span>*}
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('priceScale')}</h3>
-                        </div>
-                        <div class="panel-body">
-                            <ul class="jtl-list-group">
-                                <li class="input-group2 table-responsive">
-                                    <table id="price_range" class="table">
-                                        <thead>
-                                        <tr>
-                                            <th class="p50"></th>
-                                            <th>{__('amount')}</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-
-                                        {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}
-                                            {foreach $VersandartStaffeln as $oPreisstaffel}
-                                                {if $oPreisstaffel->fBis != 999999999}
-                                                    <tr>
-                                                        <td>
-                                                            <div class="input-group">
-                                                                <span class="input-group-addon"><label>{__('upTo')}</label></span>
-                                                                <input type="text" id="bis{$oPreisstaffel@index}" name="bis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fBis)}{$VersandartStaffeln[$oPreisstaffel@index]->fBis}{/if}" class="form-control kilogram" />
-                                                                <span class="input-group-addon"><label>{$einheit}</label></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="input-group">
-                                                                <span class="input-group-addon"><label>{__('amount')}:</label></span>
-                                                                <input type="text" id="preis{$oPreisstaffel@index}" name="preis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fPreis)}{$VersandartStaffeln[$oPreisstaffel@index]->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreisstaffel{$oPreisstaffel@index}', this)" /> <span id="ajaxpreisstaffel{$oPreisstaffel@index}"></span>*}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                {/if}
-                                            {/foreach}
-                                        {else}
-                                            <tr>
-                                                <td>
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon"><label>{__('upTo')}</label></span>
-                                                        <input type="text" id="bis1" name="bis[]" value="" class="form-control kilogram" />
-                                                        <span class="input-group-addon"><label>{$einheit}</label></span>
-                                                    </div>
-                                                </td>
-                                                <td class="tcenter">
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon"><label>{__('amount')}:</label></span>
-                                                        <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {/if}
-
-                                        </tbody>
-                                    </table>
-                                    <div class="btn-group">
-                                        <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary"><i class="fa fa-share"></i> {__('addPriceScale')}</button>
-                                        <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delPriceScale')}</button>
+                    {if !empty($missingShippingClassCombis)}
+                        <div class="collapse" id="collapseShippingClasses">
+                            <div class="row">
+                                {if $missingShippingClassCombis === -1}
+                                    <div class="col-xs-12">
+                                        {__('coverageShippingClassCombination')}
+                                        {__('noShipClassCombiValidation')|replace:'%s':$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}
                                     </div>
-                                </li>
-                            </ul>
+                                {else}
+                                    {foreach $missingShippingClassCombis as $mscc}
+                                        <div class="col-xs-12 col-sm-6">[{$mscc}]</div>
+                                    {/foreach}
+                                {/if}
+                            </div>
                         </div>
-                    </div>
-                {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('shippingPrice')}</h3>
-                        </div>
-                        <div class="panel-body">
-                            <ul class="jtl-list-group">
-                                <li class="input-group2 table-responsive">
-                                    <table class="list table">
-                                        <thead>
-                                        <tr>
-                                            <th class="check"></th>
-                                            <th></th>
-                                            <th>{__('amount')}</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td class="check"></td>
-                                            <td></td>
-                                            <td class="tcenter">
-                                                <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                {/if}
+                    {/if}
+                </div>
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -573,39 +522,43 @@
                 <h3 class="panel-title">{__('shipToCountries')}</h3>
             </div>
             {foreach $continents as $continentKey => $continent}
-                <div class="row">
-                    <div class="col-md-6 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
-                        {$continent->name}
+                <div class="country-collapse">
+                    <div class="row">
+                        <div class="col-xs-5 col-md-6 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
+                            {$continent->name}
+                        </div>
+                        <div class="col-xs-3 col-md-2 collapsed text-muted" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
+                            {$continent->countriesCount} {__('countries')}
+                        </div>
+                        <div class="col-xs-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
+                            {$continent->countriesSelectedCount} {__('countriesSelected')}
+                        </div>
+                        <div class="col-xs-2 select-all-continent" data-continent="continent-{$continentKey}">
+                            <div class="btn btn-link">
+                                {__('selectAll')}
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
-                        {$continent->countriesCount} {__('countries')}
-                    </div>
-                    <div class="col-md-2 collapsed" data-toggle="collapse" data-target="#collapse-continent-{$continentKey}">
-                        {$continent->countriesSelectedCount} {__('countriesSelected')}
-                    </div>
-                    <div class="col-md-2 select-all-continent" data-continent="continent-{$continentKey}">
-                        {__('selectAll')}
-                    </div>
-                </div>
-                <div class="row collapse in" id="collapse-continent-{$continentKey}">
-                    <div class="col-md-12">
-                        <table class="table">
-                            <tbody>
-                            <tr>
-                                {foreach $continent->countries as $country}
-                                {if $country@index % 5 === 0}
-                                <td style="height:0;border:0 none;" colspan="2"></td>
-                            </tr>
-                            <tr>
-                                {/if}
-                                <td>
-                                    <input type="checkbox" name="land[]" data-id="country_{$country->getISO()}" value="{$country->getISO()}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($country->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
-                                    <label for="country_{$country->getISO()}">{$country->getName()}</label>
-                                </td>
-                                {/foreach}
-                            </tr>
-                            </tbody>
-                        </table>
+                    <div class="row collapse in" id="collapse-continent-{$continentKey}">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tbody>
+                                <tr>
+                                    {foreach $continent->countries as $country}
+                                    {if $country@index % 5 === 0}
+                                    <td style="height:0;border:0 none;" colspan="2"></td>
+                                </tr>
+                                <tr>
+                                    {/if}
+                                    <td>
+                                        <input type="checkbox" name="land[]" data-id="country_{$country->getISO()}" value="{$country->getISO()}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($country->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
+                                        <label for="country_{$country->getISO()}">{$country->getName()}</label>
+                                    </td>
+                                    {/foreach}
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             {/foreach}
@@ -614,6 +567,9 @@
         {literal}
             <script type="text/javascript">
                 <!--
+                $('.country-collapse [data-toggle="collapse"]').click(function () {
+                   $(this).closest('.country-collapse').toggleClass('active');
+                });
                 $('.select-all-continent').click(function(){
                     $(this).toggleClass('all-selected');
                     var continent = $(this).data('continent');

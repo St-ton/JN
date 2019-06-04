@@ -4,10 +4,14 @@
         $('#clock_time').jclock({ldelim}
             format: '%H:%M:%S',
         {rdelim});
-        $('#clock_date').jclock({ldelim}
-            format: '%A, %d. %B %Y',
-        {rdelim});
     {rdelim});
+    {literal}
+        $(document).ready(function(){
+            var dateLong = new Date();
+            var dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            $('#clock_date').html(dateLong.toLocaleDateString('{/literal}{$language}{literal}', dateOptions));
+        });
+    {/literal}
 </script>
 <div class="widget-custom-data nospacing">
     <div class="clock">

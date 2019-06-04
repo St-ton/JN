@@ -12,7 +12,6 @@ namespace JTL\Model;
  */
 trait IteratorTrait
 {
-
     /**
      * @var array
      * Stores keynames for iterator interface

@@ -75,7 +75,7 @@
 
         getCurrent: function($item) {
             var $current = $item.hasClass('variation') ? $item : $item.closest('.variation');
-            if ($current.context.tagName === 'SELECT') {
+            if ($current.tagName === 'SELECT') {
                 $current = $item.find('option:selected');
             }
 
@@ -119,7 +119,7 @@
                 config.on('change', function() {
                     that.configurator();
                 })
-                    .keypress(function (e) {
+                    .on('keypress', function (e) {
                         if (e.which === 13) {
                             return false;
                         }
@@ -267,7 +267,7 @@
             }
 
             $('.variations .bootstrap-select select', $wrapper)
-                .change(function() {
+                .on('change', function() {
                     var sel  = $(this).find('[value=' + this.value + ']'),
                         cont = $(this).closest('.variations');
 
@@ -307,7 +307,7 @@
             }
 
             $('.variations.simple-variations .variation', $wrapper)
-                .click(function () {
+                .on('click', function () {
                     imgSwitch(this, false);
                 });
 
@@ -334,7 +334,7 @@
         },
 
         registerFinish: function($wrapper) {
-            $('#jump-to-votes-tab', $wrapper).click(function () {
+            $('#jump-to-votes-tab', $wrapper).on('click', function () {
                 $('#content a[href="#tab-votes"]').tab('show');
             });
 
@@ -1195,7 +1195,7 @@
         });
     }
 
-    $(window).resize(
+    $(window).on('resize',
         viewport.changed(function(){
             $v.configurator();
         })

@@ -33,12 +33,12 @@
         }
 
         $(document).ready(function () {
-            $('#nSeitenTyp').change(filterConfigUpdate);
-            $('#cKey').change(filterConfigUpdate);
+            $('#nSeitenTyp').on('change', filterConfigUpdate);
+            $('#cKey').on('change', filterConfigUpdate);
 
             filterConfigUpdate();
 
-            $('form #oFile').change(function(e){
+            $('form #oFile').on('change', function(e){
                 $('form div.alert').slideUp();
                 var filesize= this.files[0].size;
                 var maxsize = {$nMaxFileSize};
@@ -345,7 +345,7 @@
     <script type="text/javascript">
         {literal}
         $(document).ready(function () {
-            $('#article_unlink').click(function () {
+            $('#article_unlink').on('click', function () {
                 $('#article_id').val(0);
                 $('#article_name').val('');
                 return false;

@@ -3,7 +3,7 @@
         var file_input = $('<input type="file" name="Bilder[]" maxlength="2097152" accept="image/*" />');
         var container = $('<p class="multi_input vmiddle"><a href="#" title="Entfernen"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
         $('#file_input_wrapper').append(container);
-        $(container).find('img').bind('click', function () {ldelim}
+        $(container).find('img').on('click', function () {ldelim}
             $(file_input).parent().remove();
             return false;
         {rdelim});
@@ -13,14 +13,14 @@
 
     {literal}
     $(function () {
-        $('#lang').change(function () {
+        $('#lang').on('change', function () {
             var iso = $('#lang option:selected').val();
             $('.iso_wrapper').slideUp();
             $('#iso_' + iso).slideDown();
             return false;
         });
 
-        $('input[name="nLinkart"]').change(function () {
+        $('input[name="nLinkart"]').on('change', function () {
             var lnk = $('input[name="nLinkart"]:checked').val();
             if (lnk == '1') {
                 $('#option_isActive').slideDown("slow");
@@ -30,7 +30,7 @@
             }
         }).trigger('change');
 
-        $('#content_template_type ul li a').click(function () {
+        $('#content_template_type ul li a').on('click', function () {
 
             $('#content_template_type ul li a').parent().removeClass('active');
             $(this).parent().addClass('active');

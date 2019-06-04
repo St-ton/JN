@@ -260,7 +260,7 @@
             {assign var="backstretchImgPath" value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
         {/if}
         <script>
-            $(window).load(function() {
+            $(window).on('load', function() {
                 $.backstretch('{$backstretchImgPath}');
             });
         </script>

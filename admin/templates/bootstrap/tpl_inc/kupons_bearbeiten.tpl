@@ -20,7 +20,7 @@
             makeCurrencyTooltip('fWert');
         {/if}
         makeCurrencyTooltip('fMindestbestellwert');
-        $('#bOpenEnd').change(onEternalCheckboxChange);
+        $('#bOpenEnd').on('change', onEternalCheckboxChange);
         onEternalCheckboxChange();
     });
 

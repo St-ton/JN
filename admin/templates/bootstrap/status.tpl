@@ -11,7 +11,7 @@ $(function() {
             },
             function(){
                 $(this).removeClass('active');
-            }).click( function(){
+            }).on('click', function(){
                 document.location = $(this).attr('data-href');
             }
         );

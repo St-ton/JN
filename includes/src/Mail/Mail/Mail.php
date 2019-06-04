@@ -139,16 +139,16 @@ class Mail implements MailInterface
         $this->setTemplate($template);
         $this->language        = $language ?? $this->detectLanguage();
         $this->customerGroupID = Frontend::getCustomer()->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
-        $template->load($this->language->getID(), $this->customerGroupID);
+        $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {
             throw new InvalidArgumentException('Cannot parse model for ' . $template->getID());
         }
-        $names = $model->getAttachmentNames($this->language->getID());
-        foreach ($model->getAttachments($this->language->getID()) as $i => $attachment) {
+        $names = $model->getAttachmentNames($this->language->getId());
+        foreach ($model->getAttachments($this->language->getId()) as $i => $attachment) {
             $this->addPdfFile($names[$i], $attachment);
         }
-        $this->setSubject($model->getSubject($this->language->getID()));
+        $this->setSubject($model->getSubject($this->language->getId()));
         $this->fromName       = $template->getFromName() ?? $this->fromName;
         $this->fromMail       = $template->getFromMail() ?? $this->fromMail;
         $this->copyRecipients = $template->getCopyTo() ?? $this->copyRecipients;

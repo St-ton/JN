@@ -48,7 +48,7 @@
                             <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
                                 <td colspan="4">
                                 {foreach $sprachen as $language}
-                                    {assign var=kSprache value=$language->getID()}
+                                    {assign var=kSprache value=$language->getId()}
                                     <div class="input-group">
                                         <span class="input-group-addon">
                                             <label for="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}</label>

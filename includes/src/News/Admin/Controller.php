@@ -461,13 +461,13 @@ final class Controller
         }
         $newsCategory->kNewsKategorie = $categoryID;
         foreach ($languages as $language) {
-            $iso   = $language->getCode();
+            $iso   = $language->getIso();
             $cSeo  = $this->getSeo($post, $languages, $iso);
             $cName = \htmlspecialchars($post['cName_' . $iso] ?? '', $flag, \JTL_CHARSET);
 
             $loc                  = new stdClass();
             $loc->kNewsKategorie  = $categoryID;
-            $loc->languageID      = $language->getID();
+            $loc->languageID      = $language->getId();
             $loc->languageCode    = $iso;
             $loc->name            = $cName;
             $loc->description     = $post['cBeschreibung_' . $iso];
@@ -487,7 +487,7 @@ final class Controller
                 $this->db->update(
                     'tnewskategoriesprache',
                     ['kNewsKategorie', 'languageID'],
-                    [$categoryID, $language->getID()],
+                    [$categoryID, $language->getId()],
                     $loc
                 );
             } else {

@@ -38,8 +38,8 @@ use function Functional\reindex;
  * @method array getLogs()
  * @method array getSections()
  * @method array getSectionValues(string $cSektion, int | null $kSektion = null)
- * @method array getInstalled()
- * @method array getAvailable()
+ * @method LanguageModel[] getInstalled()
+ * @method LanguageModel[] getAvailable()
  * @method string getIso()
  * @method bool valid()
  * @method bool isValid()
@@ -565,11 +565,16 @@ class LanguageHelper
      */
     public function gibInstallierteSprachen(): array
     {
-        return LanguageModel::loadAll($this->db, [], [])->toArray();
+        return \array_filter(
+            LanguageModel::loadAll($this->db, [], [])->toArray(),
+            function (LanguageModel $l) {
+                return $this->mappekISO($l->getIso()) > 0;
+            }
+        );
     }
 
     /**
-     * @return array
+     * @return LanguageModel[]
      */
     public function gibVerfuegbareSprachen(): array
     {
@@ -1005,10 +1010,10 @@ class LanguageHelper
     private function mappedGetDefaultLanguage(bool $shop = true): LanguageModel
     {
         foreach (Frontend::getLanguages() as $language) {
-            if ($language->default === 'Y' && !$shop) {
+            if ($language->isDefault() && !$shop) {
                 return $language;
             }
-            if ($language->shopDefault === 'Y' && $shop) {
+            if ($language->isShopDefault() && $shop) {
                 return $language;
             }
         }
@@ -1053,10 +1058,10 @@ class LanguageHelper
                 $AktuellerArtikel->baueArtikelSprachURL();
             }
             foreach (Frontend::getLanguages() as $lang) {
-                $langID  = $lang->getID();
-                $langISO = $lang->getCode();
+                $langID  = $lang->getId();
+                $langISO = $lang->getIso();
                 if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
-                    $lang->url = $shopURL . $AktuellerArtikel->cSprachURL_arr[$langISO];
+                    $lang->setUrl($shopURL . $AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($specialPage !== null) {
                     if (Shop::getPageType() === \PAGE_STARTSEITE) {
                         $url = $shopURL . '?lang=' . $langISO;
@@ -1082,14 +1087,14 @@ class LanguageHelper
                     } else {
                         $url = $specialPage->getURL($langID);
                     }
-                    $lang->url = $url;
+                    $lang->setUrl($url);
                     \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
                 } elseif ($page !== null) {
-                    $lang->url = $page->getURL($langID);
-                    if (\mb_strpos($lang->cURL, '/?s=') !== false) {
-                        $lang->url = \rtrim($shopURL, '/') . $lang->url;
+                    $url = $page->getURL($langID);
+                    if (\mb_strpos($url, '/?s=') !== false) {
+                        $lang->setUrl(\rtrim($shopURL, '/') . $url);
                     } else {
-                        $lang->url = $lang->cURL;
+                        $lang->setURL($url);
                     }
                 } else {
                     $originalLanguage = $productFilter->getFilterConfig()->getLanguageID();
@@ -1103,7 +1108,7 @@ class LanguageHelper
                             $url .= \SEP_SEITE . $productFilter->getPage();
                         }
                     }
-                    $lang->url = $url;
+                    $lang->setUrl($url);
                 }
             }
         }
@@ -1192,22 +1197,11 @@ class LanguageHelper
 
     /**
      * @param int $langID
-     * @return stdClass|null
+     * @return LanguageModel
+     * @throws \Exception
      */
-    public function getLanguageByID(int $langID): ?stdClass
+    public function getLanguageByID(int $langID): LanguageModel
     {
-        $lang = Shop::Container()->getDB()->select(
-            'tsprache',
-            'kSprache',
-            $langID
-        );
-        if ($lang !== null && isset($_SESSION['AdminAccount'])) {
-            $lang->name = \Locale::getDisplayLanguage(
-                Text::convertISO2ISO639($lang->cISO),
-                $_SESSION['AdminAccount']->language
-            );
-        }
-
-        return $lang;
+        return LanguageModel::loadByAttributes(['id' => $langID], $this->db);
     }
 }

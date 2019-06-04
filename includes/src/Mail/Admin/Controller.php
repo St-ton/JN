@@ -161,7 +161,7 @@ final class Controller
         $filenames = [];
         $pdfFiles  = [];
         foreach ($availableLanguages as $lang) {
-            $langID             = $lang->getID();
+            $langID             = $lang->getId();
             $filenames[$langID] = [];
             $pdfFiles[$langID]  = [];
             $i                  = 0;

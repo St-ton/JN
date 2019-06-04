@@ -57,7 +57,7 @@
                     </span>
                 </div>
                 {foreach $sprachen as $language}
-                    {assign var=langCode value=$language->getCode()}
+                    {assign var=langCode value=$language->getIso()}
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cName_{$langCode}">{__('showedName')} ({$language->getLocalizedName()})</label>

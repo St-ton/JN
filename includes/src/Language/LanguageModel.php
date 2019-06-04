@@ -19,20 +19,39 @@ use Locale;
  * @package JTL\Language
  * @property int    $kSprache
  * @property int    $id
+ * @method int getId()
+ * @method void setId(int $id)
  * @property string $cNameEnglisch
  * @property string $nameEN
+ * @method string getNameEN()
+ * @method void setNameEN(string $name)
  * @property string $cNameDeutsch
  * @property string $nameDE
+ * @method void setNameDE(string $name)
  * @property string $cStandard
  * @property string $default
+ * @method string getDefault()
+ * @method void setDefault(string $default)
  * @property string $cISO
  * @property string $iso
+ * @method string getIso()
+ * @method void setIso(string $iso)
  * @property string $cShopStandard
  * @property string $shopDefault
+ * @method string getShopDefault()
+ * @method void setShopDefault(string $default)
  * @property string $iso639
+ * @method string getIso639()
+ * @method void setIso639(string $iso)
  * @property string $displayLanguage
+ * @method string getDisplayLanguage()
+ * @method void setDisplayLanguage(string $lang)
  * @property string $localizedName
+ * @method string getLocalizedName()
+ * @method void setLocalizedName(string $name)
  * @property string $url
+ * @method string getUrl()
+ * @method void setUrl(string $url)
  * @property string $urlFull
  */
 final class LanguageModel extends DataModel
@@ -40,49 +59,9 @@ final class LanguageModel extends DataModel
     /**
      * @return string
      */
-    public function getLocalizedName(): string
+    public function getCode(): string
     {
-        return $this->localizedName;
-    }
-
-    /**
-     * @param string $localizedName
-     */
-    public function setLocalizedName(string $localizedName): void
-    {
-        $this->localizedName = $localizedName;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDisplayLanguage(): string
-    {
-        return $this->displayLanguage;
-    }
-
-    /**
-     * @param string $displayLanguage
-     */
-    public function setDisplayLanguage(string $displayLanguage): void
-    {
-        $this->displayLanguage = $displayLanguage;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIso639(): string
-    {
-        return $this->iso639;
-    }
-
-    /**
-     * @param string $iso639
-     */
-    public function setIso639(string $iso639): void
-    {
-        $this->iso639 = $iso639;
+        return $this->iso;
     }
 
     /**
@@ -95,19 +74,19 @@ final class LanguageModel extends DataModel
     }
 
     /**
-     * @return int
+     * @return bool
      */
-    public function getID(): int
+    public function isShopDefault(): bool
     {
-        return $this->id;
+        return $this->shopDefault === 'Y';
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getCode(): string
+    public function isDefault(): bool
     {
-        return $this->iso;
+        return $this->default === 'Y';
     }
 
     /**

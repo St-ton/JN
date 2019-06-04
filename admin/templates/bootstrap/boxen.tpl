@@ -178,15 +178,15 @@
                                 <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel}" />
                             </div>
                             {if $oEditBox->eTyp === 'text'}
-                                {foreach $oSprachen_arr as $oSprache}
+                                {foreach $oSprachen_arr as $language}
                                     <div class="input-group">
                                         <span class="input-group-addon">
-                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->name}</label>
+                                            <label for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
                                         </span>
-                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                     </div>
-                                    <textarea id="text-{$oSprache->cISO}" name="text[{$oSprache->cISO}]" class="form-control ckeditor" rows="15" cols="60">
-                                        {foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}
+                                    <textarea id="text-{$language->getIso()}" name="text[{$language->getIso()}]" class="form-control ckeditor" rows="15" cols="60">
+                                        {foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}
                                     </textarea>
                                     <hr>
                                 {/foreach}
@@ -204,14 +204,14 @@
                                         </button>
                                     </span>
                                 </div>
-                                {foreach $oSprachen_arr as $oSprache}
+                                {foreach $oSprachen_arr as $language}
                                     <div class="input-group">
                                         <span class="input-group-addon">
-                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->name}:</label>
+                                            <label for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
                                         </span>
-                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text"
-                                               name="title[{$oSprache->cISO}]"
-                                               value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}">
+                                        <input class="form-control" id="title-{$language->getIso()}" type="text"
+                                               name="title[{$language->getIso()}]"
+                                               value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}">
                                     </div>
                                 {/foreach}
                             {elseif $oEditBox->eTyp === 'link'}
@@ -230,12 +230,12 @@
                                         </select>
                                     </span>
                                 </div>
-                                {foreach $oSprachen_arr as $oSprache}
+                                {foreach $oSprachen_arr as $language}
                                     <div class="input-group">
                                         <span class="input-group-addon">
-                                            <label for="title-{$oSprache->cISO}">{__('boxTitle')} {$oSprache->name}</label>
+                                            <label for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
                                         </span>
-                                        <input class="form-control" id="title-{$oSprache->cISO}" type="text" name="title[{$oSprache->cISO}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $oSprache->cISO == $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                     </div>
                                 {/foreach}
                             {/if}

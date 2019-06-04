@@ -250,7 +250,7 @@ class Mailer
         if ($template !== null) {
             $template->setConfig($this->config);
             $template->preRender($this->renderer->getSmarty(), $mail->getData());
-            $template->render($this->renderer, $mail->getLanguage()->getID(), $mail->getCustomerGroupID());
+            $template->render($this->renderer, $mail->getLanguage()->getId(), $mail->getCustomerGroupID());
             $mail->setBodyHTML($template->getHTML());
             $mail->setBodyText($template->getText());
             $mail->setSubject($template->getSubject());
@@ -315,7 +315,7 @@ class Mailer
             'mailsmarty'    => $this->renderer->getSmarty(),
             'mail'          => $mail,
             'kEmailvorlage' => 0,
-            'kSprache'      => $mail->getLanguage()->getID(),
+            'kSprache'      => $mail->getLanguage()->getId(),
             'cPluginBody'   => '',
             'Emailvorlage'  => null,
             'template'      => $mail->getTemplate()

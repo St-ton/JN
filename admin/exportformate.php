@@ -4,14 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Backend\Revision;
-use JTL\Helpers\Form;
-use JTL\Exportformat;
-use JTL\Language\LanguageHelper;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
+use JTL\Backend\Revision;
+use JTL\DB\ReturnType;
+use JTL\Exportformat;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
@@ -224,27 +223,32 @@ if ($step === 'uebersicht') {
             ORDER BY cName',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $eCount        = count($exportformate);
-    for ($i = 0; $i < $eCount; $i++) {
-        $exportformate[$i]->Sprache              = LanguageHelper::getLanguageByID(
-            (int)$exportformate[$i]->kSprache
-        );
-        $exportformate[$i]->Waehrung             = $db->select(
+    foreach ($exportformate as $item) {
+        $item->kExportformat        = (int)$item->kExportformat;
+        $item->kKundengruppe        = (int)$item->kKundengruppe;
+        $item->kSprache             = (int)$item->kSprache;
+        $item->kWaehrung            = (int)$item->kWaehrung;
+        $item->kKampagne            = (int)$item->kKampagne;
+        $item->kPlugin              = (int)$item->kPlugin;
+        $item->nUseCache            = (int)$item->nUseCache;
+        $item->nFehlerhaft          = (int)$item->nFehlerhaft;
+        $item->nSplitgroesse        = (int)$item->nSplitgroesse;
+        $item->nVarKombiOption      = (int)$item->nVarKombiOption;
+        $item->nSpecial             = (int)$item->nSpecial;
+        $item->Sprache              = Shop::Lang()->getLanguageByID($item->kSprache);
+        $item->Waehrung             = $db->select(
             'twaehrung',
             'kWaehrung',
-            (int)$exportformate[$i]->kWaehrung
+            $item->kWaehrung
         );
-        $exportformate[$i]->Kundengruppe         = $db->select(
+        $item->Kundengruppe         = $db->select(
             'tkundengruppe',
             'kKundengruppe',
-            (int)$exportformate[$i]->kKundengruppe
+            $item->kKundengruppe
         );
-        $exportformate[$i]->bPluginContentExtern = false;
-        if ($exportformate[$i]->kPlugin > 0
-            && mb_strpos($exportformate[$i]->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
-        ) {
-            $exportformate[$i]->bPluginContentExtern = true;
-        }
+        $item->bPluginContentExtern = $item->kPlugin > 0
+            && mb_strpos($item->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false;
+
     }
     $smarty->assign('exportformate', $exportformate);
 }
@@ -252,8 +256,8 @@ if ($step === 'uebersicht') {
 if ($step === 'neuer Export') {
     $smarty->assign('kundengruppen', $db->query(
         'SELECT * 
-                    FROM tkundengruppe 
-                    ORDER BY cName',
+            FROM tkundengruppe 
+            ORDER BY cName',
         ReturnType::ARRAY_OF_OBJECTS
     ))
            ->assign('waehrungen', $db->query(
@@ -271,9 +275,20 @@ if ($step === 'neuer Export') {
             'kExportformat',
             (int)$_POST['kExportformat']
         );
-        $exportformat->cKopfzeile = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
-        $exportformat->cContent   = str_replace("\t", '<tab>', $exportformat->cContent);
-        $exportformat->cFusszeile = str_replace("\t", '<tab>', $exportformat->cFusszeile);
+        $exportformat->cKopfzeile      = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
+        $exportformat->cContent        = str_replace("\t", '<tab>', $exportformat->cContent);
+        $exportformat->cFusszeile      = str_replace("\t", '<tab>', $exportformat->cFusszeile);
+        $exportformat->kExportformat   = (int)$exportformat->kExportformat;
+        $exportformat->kKundengruppe   = (int)$exportformat->kKundengruppe;
+        $exportformat->kSprache        = (int)$exportformat->kSprache;
+        $exportformat->kWaehrung       = (int)$exportformat->kWaehrung;
+        $exportformat->kKampagne       = (int)$exportformat->kKampagne;
+        $exportformat->kPlugin         = (int)$exportformat->kPlugin;
+        $exportformat->nUseCache       = (int)$exportformat->nUseCache;
+        $exportformat->nFehlerhaft     = (int)$exportformat->nFehlerhaft;
+        $exportformat->nSplitgroesse   = (int)$exportformat->nSplitgroesse;
+        $exportformat->nVarKombiOption = (int)$exportformat->nVarKombiOption;
+        $exportformat->nSpecial        = (int)$exportformat->nSpecial;
         if ($exportformat->kPlugin > 0
             && mb_strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
         ) {

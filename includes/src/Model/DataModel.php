@@ -9,6 +9,7 @@ namespace JTL\Model;
 use Exception;
 use function Functional\select;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use Iterator;
 use JTL\DB\DbInterface;
 use JTL\Shop;
@@ -103,6 +104,27 @@ abstract class DataModel implements DataModelInterface, Iterator
     public function __wakeup()
     {
         $this->onRegisterHandlers();
+    }
+
+    /**
+     * @param string $name
+     * @param array  $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        $attribute = \lcfirst(\substr($name, 3));
+        if (\array_key_exists($attribute, $this->members)) {
+            if (\strpos($name, 'get') === 0) {
+                return $this->$attribute;
+            }
+            if (\strpos($name, 'set') === 0) {
+                $this->$attribute = $arguments[0];
+
+                return null;
+            }
+        }
+        throw new InvalidArgumentException('Call to undefined method ' . $name);
     }
 
     /**
@@ -308,8 +330,10 @@ abstract class DataModel implements DataModelInterface, Iterator
                     throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
             }
         }
+        $instance->fill($record);
+        $instance->onInstanciation();
 
-        return $instance->fill($record);
+        return $instance;
     }
 
     /**
@@ -765,10 +789,6 @@ abstract class DataModel implements DataModelInterface, Iterator
         $attributes = $this->getAttributes();
 
         if (!\array_key_exists($attribName, $attributes)) {
-            Shop::dbg($attribName, false, '$attribName:');
-            Shop::dbg($this->members, false, '$members:');
-            Shop::dbg(\get_object_vars($this), false, 'get_object_vars:');
-            Shop::dbg($this, true, '$attributes:', 6);
             throw new Exception(__METHOD__ . ': invalid attribute(' . $attribName . ')', self::ERR_INVALID_PARAM);
         }
         if (isset($this->setters[$attribName])) {

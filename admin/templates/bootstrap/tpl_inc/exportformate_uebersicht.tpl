@@ -98,7 +98,7 @@
                                 <p>{$exportformat->cDateiname}</p>
                                 <div></div>
                             </td>
-                            <td class="tcenter">{$exportformat->Sprache->name}</td>
+                            <td class="tcenter">{$exportformat->Sprache->getLocalizedName()}</td>
                             <td class="tcenter">{$exportformat->Waehrung->cName}</td>
                             <td class="tcenter">{$exportformat->Kundengruppe->cName}</td>
                             <td class="tcenter">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>

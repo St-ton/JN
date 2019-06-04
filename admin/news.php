@@ -66,15 +66,15 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $db->query('TRUNCATE tnewsmonatspraefix', ReturnType::AFFECTED_ROWS);
             foreach ($languages as $lang) {
                 $monthPrefix           = new stdClass();
-                $monthPrefix->kSprache = $lang->getID();
-                if (mb_strlen($_POST['praefix_' . $lang->getCode()]) > 0) {
+                $monthPrefix->kSprache = $lang->getId();
+                if (mb_strlen($_POST['praefix_' . $lang->getIso()]) > 0) {
                     $monthPrefix->cPraefix = htmlspecialchars(
-                        $_POST['praefix_' . $lang->getCode()],
+                        $_POST['praefix_' . $lang->getIso()],
                         ENT_COMPAT | ENT_HTML401,
                         JTL_CHARSET
                     );
                 } else {
-                    $monthPrefix->cPraefix = $lang->getCode() === 'ger'
+                    $monthPrefix->cPraefix = $lang->getIso() === 'ger'
                         ? 'Newsuebersicht'
                         : 'Newsoverview';
                 }
@@ -268,11 +268,11 @@ if ($controller->getStep() === 'news_uebersicht') {
     $prefixes  = [];
     foreach ($languages as $i => $lang) {
         $item                = new stdClass();
-        $item->kSprache      = $lang->getID();
-        $item->cNameEnglisch = $lang->nameEN;
-        $item->cNameDeutsch  = $lang->nameDE;
+        $item->kSprache      = $lang->getId();
+        $item->cNameEnglisch = $lang->getNameEN();
+        $item->cNameDeutsch  = $lang->getNameDE();
         $item->name          = $lang->getLocalizedName();
-        $item->cISOSprache   = $lang->getCode();
+        $item->cISOSprache   = $lang->getIso();
         $monthPrefix         = $db->select(
             'tnewsmonatspraefix',
             'kSprache',

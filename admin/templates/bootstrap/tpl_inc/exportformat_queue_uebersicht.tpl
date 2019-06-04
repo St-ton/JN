@@ -38,7 +38,7 @@
                                                 <input name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
                                             </td>
                                             <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
-                                            <td class="tleft">{$oExportformatCron->Sprache->name}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
+                                            <td class="tleft">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="tcenter">{$oExportformatCron->dStart_de}</td>
                                             <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
                                             <td class="tcenter">

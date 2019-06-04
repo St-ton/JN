@@ -193,7 +193,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         $db->delete(
             'tzahlungsartsprache',
             ['kZahlungsart', 'cISOSprache'],
-            [(int)$_POST['kZahlungsart'], $$langCode]
+            [(int)$_POST['kZahlungsart'], $langCode]
         );
         $db->insert('tzahlungsartsprache', $zahlungsartSprache);
     }

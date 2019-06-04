@@ -194,7 +194,7 @@ class SmartyRenderer implements RendererInterface
             $mail->setBodyHTML($this->smarty->fetch('string:' . $mail->getBodyHTML()));
             $mail->setSubject($this->smarty->fetch('string:' . $mail->getSubject()));
         } else {
-            $this->renderTemplate($template, $mail->getLanguage()->getID());
+            $this->renderTemplate($template, $mail->getLanguage()->getId());
         }
     }
 

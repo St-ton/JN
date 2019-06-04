@@ -9,7 +9,7 @@
         <div class="table-responsive">
             <table class="kundenfeld table">
                 {foreach $sprachen as $key => $language}
-                    {assign var=cISO value=$language->getCode()}
+                    {assign var=cISO value=$language->getIso()}
                     <tr>
                         <td><label for="cName_{$cISO}">{__('name')} ({$language->getLocalizedName()})</label></td>
                         <td>
@@ -39,7 +39,7 @@
                     </td>
                 </tr>
                 {foreach $sprachen as $language}
-                    {assign var=cISO value=$language->getCode()}
+                    {assign var=cISO value=$language->getIso()}
                     <tr>
                         <td><label for="cBeschreibung_{$cISO}">{__('description')} ({$language->getLocalizedName()})</label></td>
                         <td>

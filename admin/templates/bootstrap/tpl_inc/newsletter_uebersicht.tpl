@@ -233,7 +233,7 @@
                             <span class="input-group-wrap">
                                 <select class="form-control" name="kSprache" id="kSprache">
                                     {foreach $sprachen as $language}
-                                        <option value="{$language->getID()}">{$language->getLocalizedName()}</option>
+                                        <option value="{$language->getId()}">{$language->getLocalizedName()}</option>
                                     {/foreach}
                                 </select>
                             </span>

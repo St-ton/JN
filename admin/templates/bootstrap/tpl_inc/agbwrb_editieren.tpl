@@ -12,7 +12,7 @@
             {/if}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{__('agbwrb')} {foreach $sprachen as $lang}{if $lang->getID() === $smarty.session.kSprache}({$lang->getLocalizedName()}){/if}{/foreach}{if isset($kKundengruppe)} {__('forCustomerGroup')} {$kKundengruppe} {__('edit')}{/if}</h3>
+                    <h3 class="panel-title">{__('agbwrb')} {foreach $sprachen as $language}{if $language->getId() === $smarty.session.kSprache}({$language->getLocalizedName()}){/if}{/foreach}{if isset($kKundengruppe)} {__('forCustomerGroup')} {$kKundengruppe} {__('edit')}{/if}</h3>
                 </div>
                 <table class="list table" id="formtable">
                     <tr>

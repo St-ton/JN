@@ -156,7 +156,7 @@
                             {if $sprachen|@count > 0}
                                 {foreach $sprachen as $language}
                                     {assign var=cISO value=$language->getCode()}
-                                    {assign var=kSprache value=$language->getID()}
+                                    {assign var=kSprache value=$language->getId()}
                                     {assign var=cISOText value="cText_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cText)} error{/if}">
                                         <span class="input-group-addon">
@@ -169,7 +169,7 @@
 
                                 {foreach $sprachen as $language}
                                     {assign var=cISO value=$language->getCode()}
-                                    {assign var=kSprache value=$language->getID()}
+                                    {assign var=kSprache value=$language->getId()}
                                     {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cBeschreibung)} error{/if}">
                                         <span class="input-group-addon">

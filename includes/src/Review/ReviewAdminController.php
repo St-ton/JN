@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Rating;
+namespace JTL\Review;
 
 use Exception;
 use JTL\Alert\Alert;
@@ -21,10 +21,10 @@ use JTLSmarty;
 use function Functional\map;
 
 /**
- * Class RatingAdminController
- * @package JTL\Rating
+ * Class ReviewAdminController
+ * @package JTL\Review
  */
-class RatingAdminController extends BaseController
+class ReviewAdminController extends BaseController
 {
     /**
      * RatingController constructor.
@@ -251,12 +251,12 @@ class RatingAdminController extends BaseController
 
     /**
      * @param int $id
-     * @return RatingModel|null
+     * @return ReviewModel|null
      */
-    public function getRating(int $id): ?RatingModel
+    public function getRating(int $id): ?ReviewModel
     {
         try {
-            return new RatingModel(['id' => $id], $this->db);
+            return new ReviewModel(['id' => $id], $this->db);
         } catch (Exception $e) {
             return null;
         }
@@ -270,7 +270,7 @@ class RatingAdminController extends BaseController
     {
         $id = Request::verifyGPCDataInt('kBewertung');
         try {
-            $rating = new RatingModel(['id' => $id], $this->db);
+            $rating = new ReviewModel(['id' => $id], $this->db);
         } catch (Exception $e) {
             return false;
         }
@@ -309,7 +309,7 @@ class RatingAdminController extends BaseController
         $affected  = 0;
         foreach (\array_map('\intval', $ids) as $id) {
             try {
-                $model = new RatingModel(['id' => $id], $this->db);
+                $model = new ReviewModel(['id' => $id], $this->db);
             } catch (Exception $e) {
                 continue;
             }
@@ -336,7 +336,7 @@ class RatingAdminController extends BaseController
         $affected  = 0;
         foreach (\array_map('\intval', $ids) as $i => $id) {
             try {
-                $model = new RatingModel(['id' => $id], $this->db);
+                $model = new ReviewModel(['id' => $id], $this->db);
             } catch (Exception $e) {
                 continue;
             }
@@ -360,7 +360,7 @@ class RatingAdminController extends BaseController
     private function removeReply(int $id): void
     {
         try {
-            $model = new RatingModel(['id' => $id], $this->db);
+            $model = new ReviewModel(['id' => $id], $this->db);
         } catch (Exception $e) {
             return;
         }
@@ -370,14 +370,14 @@ class RatingAdminController extends BaseController
     }
 
     /**
-     * @param RatingModel $rating
+     * @param ReviewModel $rating
      * @return int
      */
-    private function deleteRatingReward(RatingModel $rating): int
+    private function deleteRatingReward(ReviewModel $rating): int
     {
         $affected = 0;
         foreach ($rating->bonus as $bonusItem) {
-            /** @var RatingBonusModel $bonusItem */
+            /** @var ReviewBonusModel $bonusItem */
             $customer = $this->db->select('tkunde', 'kKunde', $bonusItem->customerID);
             if ($customer !== null && $customer->kKunde > 0) {
                 $balance = $customer->fGuthaben - $bonusItem->bonus;

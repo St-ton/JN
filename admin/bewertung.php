@@ -5,7 +5,7 @@
  */
 
 use JTL\Helpers\Request;
-use JTL\Rating\RatingAdminController;
+use JTL\Review\ReviewAdminController;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -18,7 +18,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 $cache       = Shop::Container()->getCache();
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
-$controller  = new RatingAdminController($db, $cache, $alertHelper, $smarty);
+$controller  = new ReviewAdminController($db, $cache, $alertHelper, $smarty);
 $tab         = mb_strlen(Request::verifyGPDataString('tab')) > 0 ? Request::verifyGPDataString('tab') : 'freischalten';
 
 setzeSprache();

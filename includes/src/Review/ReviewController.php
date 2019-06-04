@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Rating;
+namespace JTL\Review;
 
 use Exception;
 use JTL\Alert\Alert;
@@ -21,10 +21,10 @@ use JTL\Shop;
 use JTLSmarty;
 
 /**
- * Class RatingController
- * @package JTL\Rating
+ * Class ReviewController
+ * @package JTL\Review
  */
-class RatingController extends BaseController
+class ReviewController extends BaseController
 {
     /**
      * RatingController constructor.
@@ -136,8 +136,8 @@ class RatingController extends BaseController
         if ($this->checkProductWasPurchased($productID, Frontend::getCustomer()) === false) {
             return $url . 'bewertung_anzeigen=1&cFehler=f03';
         }
-        $rating = RatingModel::loadByAttributes(['productID' => $productID, 'customerID' => $customerID], $this->db);
-        /** @var RatingModel $rating */
+        $rating = ReviewModel::loadByAttributes(['productID' => $productID, 'customerID' => $customerID], $this->db);
+        /** @var ReviewModel $rating */
         $rating->productID  = $productID;
         $rating->customerID = $customerID;
         $rating->languageID = $langID;
@@ -216,7 +216,7 @@ class RatingController extends BaseController
             ->assign('ratingAllowed', $ratingAllowed)
             ->assign(
                 'oBewertung',
-                RatingModel::loadByAttributes(
+                ReviewModel::loadByAttributes(
                     ['productID' => $product->kArtikel, 'customerID' => $customer->getID()],
                     $this->db
                 )
@@ -287,18 +287,18 @@ class RatingController extends BaseController
             return;
         }
         try {
-            $rating = new RatingModel(['id' => $ratingID], $this->db);
+            $rating = new ReviewModel(['id' => $ratingID], $this->db);
         } catch (Exception $e) {
             return;
         }
         if ($rating->customerID === $customerID) {
             return;
         }
-        $helpfulRating = RatingHelpfulModel::loadByAttributes(
+        $helpfulRating = ReviewHelpfulModel::loadByAttributes(
             ['ratingID' => $ratingID, 'customerID' => $customerID],
             $this->db
         );
-        /** @var $helpfulRating RatingHelpfulModel */
+        /** @var $helpfulRating ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;
         // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
         if ($helpfulRating->id === null) {

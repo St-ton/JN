@@ -4,21 +4,23 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Rating;
+namespace JTL\Review;
 
+use DateTime;
 use Exception;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 
 /**
- * Class RatingHelpfulModel
- * @package JTL\Rating
- * @property int $id
- * @property int $ratingID
- * @property int $customerID
- * @property int $rating
+ * Class ReviewBonusModel
+ *
+ * @property int      $id
+ * @property int      $ratingID
+ * @property int      $customerID
+ * @property float    $bonus
+ * @property DateTime $date
  */
-final class RatingHelpfulModel extends DataModel
+final class ReviewBonusModel extends DataModel
 {
     /**
      * @return string
@@ -26,7 +28,7 @@ final class RatingHelpfulModel extends DataModel
      */
     public function getTableName(): string
     {
-        return 'tbewertunghilfreich';
+        return 'tbewertungguthabenbonus';
     }
 
     /**
@@ -43,8 +45,6 @@ final class RatingHelpfulModel extends DataModel
 
     /**
      * @return DataAttribute[]
-     * @see IDataModel::getAttributes()
-     *
      */
     public function getAttributes(): array
     {
@@ -52,10 +52,11 @@ final class RatingHelpfulModel extends DataModel
 
         if ($attr === null) {
             $attr               = [];
-            $attr['id']         = DataAttribute::create('kBewertungHilfreich', 'int', null, false, true);
-            $attr['ratingID']   = DataAttribute::create('kBewertung', 'int', self::cast('0', 'int'), false);
-            $attr['customerID'] = DataAttribute::create('kKunde', 'int', self::cast('0', 'int'), false);
-            $attr['rating']     = DataAttribute::create('nBewertung', 'int', null, false);
+            $attr['id']         = DataAttribute::create('kBewertungGuthabenBonus', 'int', null, false, true);
+            $attr['ratingID']   = DataAttribute::create('kBewertung', 'int', null, false);
+            $attr['customerID'] = DataAttribute::create('kKunde', 'int', null, false);
+            $attr['bonus']      = DataAttribute::create('fGuthabenBonus', 'double', null, false);
+            $attr['date']       = DataAttribute::create('dDatum', 'datetime', null, false);
         }
 
         return $attr;

@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Rating;
+namespace JTL\Review;
 
 use DateTime;
 use Exception;
@@ -13,9 +13,9 @@ use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 
 /**
- * Class RatingModel
+ * Class ReviewModel
  *
- * @package JTL\Rating
+ * @package JTL\Review
  * @property int        $id
  * @property int        $productID
  * @property int        $customerID
@@ -33,7 +33,7 @@ use JTL\Model\DataModel;
  * @property Collection $votes
  * @property Collection $bonus
  */
-final class RatingModel extends DataModel
+final class ReviewModel extends DataModel
 {
     /**
      * @return string
@@ -83,7 +83,7 @@ final class RatingModel extends DataModel
             $attr['answerDate'] = DataAttribute::create('dAntwortDatum', 'date');
             $attr['votes']      = DataAttribute::create(
                 'votes',
-                RatingHelpfulModel::class,
+                ReviewHelpfulModel::class,
                 null,
                 true,
                 false,
@@ -91,7 +91,7 @@ final class RatingModel extends DataModel
             );
             $attr['bonus']      = DataAttribute::create(
                 'bonus',
-                RatingBonusModel::class,
+                ReviewBonusModel::class,
                 null,
                 true,
                 false,

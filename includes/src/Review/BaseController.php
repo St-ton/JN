@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Rating;
+namespace JTL\Review;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\Customer\Kunde;
@@ -19,7 +19,7 @@ use stdClass;
 
 /**
  * Class BaseController
- * @package JTL\Rating
+ * @package JTL\Review
  */
 abstract class BaseController
 {
@@ -89,10 +89,10 @@ abstract class BaseController
     }
 
     /**
-     * @param RatingModel $rating
+     * @param ReviewModel $rating
      * @return float
      */
-    public function addReward(RatingModel $rating): float
+    public function addReward(ReviewModel $rating): float
     {
         $reward = 0.0;
         if ($this->config['bewertung']['bewertung_guthaben_nutzen'] !== 'Y') {
@@ -130,11 +130,11 @@ abstract class BaseController
         }
         $this->increaseCustomerBalance($rating->customerID, $reward);
 
-        $ratingBonus = RatingBonusModel::loadByAttributes(
+        $ratingBonus = ReviewBonusModel::loadByAttributes(
             ['customerID' => $rating->customerID, 'ratingID' => $rating->id],
             $this->db
         );
-        /** @var $ratingBonus RatingBonusModel */
+        /** @var $ratingBonus ReviewBonusModel */
         $ratingBonus->bonus      = $reward;
         $ratingBonus->ratingID   = $rating->id;
         $ratingBonus->customerID = $rating->customerID;
@@ -162,10 +162,10 @@ abstract class BaseController
     }
 
     /**
-     * @param RatingBonusModel $ratingBonus
+     * @param ReviewBonusModel $ratingBonus
      * @return bool
      */
-    public function sendRewardMail(RatingBonusModel $ratingBonus): bool
+    public function sendRewardMail(ReviewBonusModel $ratingBonus): bool
     {
         $obj                          = new stdClass();
         $obj->tkunde                  = new Kunde($ratingBonus->customerID);

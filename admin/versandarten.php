@@ -684,7 +684,7 @@ if ($step === 'uebersicht') {
         );
         foreach ($kKundengruppe_arr as $kKundengruppe) {
             if ((int)$kKundengruppe === -1) {
-                $method->cKundengruppenName_arr[] = __('all');
+                $method->cKundengruppenName_arr[] = __('allCustomerGroups');
             } else {
                 foreach ($oKundengruppen_arr as $oKundengruppen) {
                     if ((int)$oKundengruppen->kKundengruppe === (int)$kKundengruppe) {

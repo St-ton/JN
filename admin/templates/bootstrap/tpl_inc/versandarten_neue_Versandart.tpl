@@ -220,7 +220,7 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select name="kKundengruppe[]" id="kKundengruppe" multiple="multiple" class="combo form-control">
-                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
+                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('allCustomerGroups')}</option>
                                     {foreach $kundengruppen as $oKundengruppe}
                                         {assign var=klasse value=$oKundengruppe->kKundengruppe}
                                         <option value="{$oKundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen.$klasse) && $gesetzteKundengruppen.$klasse}selected{/if}>{$oKundengruppe->cName}</option>

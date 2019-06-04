@@ -3,55 +3,55 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "suchspecialoverlay"
-msgstr "Bildoverlay von besonderen Produkten"
+msgstr "Image overlays for special items"
 
 msgid "suchspecialoverlayDesc"
-msgstr "Bilder von besonderen Produkte können mit einem zusätzlichen Bild, das über das Produktbild gelegt wird, optisch hervorgehoben werden."
+msgstr "Special items can also be visually set off by adding an overlay graphic to the item image. Here you can manage the graphics for the different types of special items."
 
 msgid "suchspecialoverlayUrl"
-msgstr "https://jtl-url.de/538df"
+msgstr "https://jtl-url.de/q6a35"
 
 msgid "suchspecial"
-msgstr "Suchspecial"
+msgstr "Overlay for item type"
 
 msgid "suchspecialoverlayActive"
-msgstr "Overlay-Funktion aktiv"
+msgstr "Overlay function active"
 
 msgid "suchspecialoverlayActiveDesc"
-msgstr "Hiermit können Sie all Ihre Bilder automatisch mit einem Overlay versehen"
+msgstr "Specify whether the overlay graphic will be displayed for the item type indicated in the field \"Overlay for item type\"."
 
 msgid "suchspecialoverlayFileName"
-msgstr "Overlaybild"
+msgstr "Overlay graphic"
 
 msgid "suchspecialoverlayFileNameDesc"
-msgstr "Wählen Sie die Overlay-Grafik aus"
+msgstr "Select the image used for the overlay graphic."
 
 msgid "suchspecialoverlayPrio"
-msgstr "Priorität (1 = sehr unwichtig)"
+msgstr "Priority (1 = low priority)"
 
 msgid "suchspecialoverlayMargin"
-msgstr "Randabstand vom Artikelbild"
+msgstr "Distance from edge of item image"
 
 msgid "suchspecialoverlayMarginDesc"
-msgstr "Wieviele Pixel Randabstand soll das innere Overlaybild zum Artikelbild haben?"
+msgstr "Specify the distance in pixels between the overlay graphic and the edge of the item image."
 
 msgid "suchspecialoverlayClarityDesc"
-msgstr "Wieviel Prozent Transparenz soll das Overlaybild haben?"
+msgstr "Specify the transparency of the overlay in percent. If you use the EVO template of JTL-Shop 4 or the NOVA template of JTL-Shop 5, this setting is changed by adjusting the template."
 
 msgid "suchspecialoverlaySize"
-msgstr "Größe des Overlays in Pixel (px)"
+msgstr "Overlay size in pixels (px)"
 
 msgid "suchspecialoverlaySizeDesc"
-msgstr "Wie groß soll das Overlaybild Overlaybild sein? Z.B. 50px"
+msgstr "Specify the size of the overlay in relation to the item image. If you use the EVO template of JTL-Shop 4 or the NOVA template of JTL-Shop 5, this setting is changed by adjusting the template."
 
 msgid "suchspecialoverlayPositionDesc"
-msgstr "Position vom Overlaybild im Artikelbild-Container. Diese Funktion ist veraltet und wird in aktuellen JTL-Shop 4-Templates nicht länger unterstützt."
+msgstr "Specify where in the item image the overlay will be placed. If you use the EVO template of JTL-Shop 4 or the NOVA template of JTL-Shop 5, this setting is changed by adjusting the template."
 
 msgid "suchspecialoverlayPrioDesc"
-msgstr "Pro Artikelbild kann immer nur ein einziges Overlaybild angezeigt werden. Wenn mehrere Kriterien für Overlays auf einen Artikel zutreffen, wird durch Prioritäten geregelt, welches Overlay davon angezeigt wird. 10 = höchste Priorität"
+msgstr "If several overlays apply to an item, you can specify which one will be displayed. The overlay with the highest priority will be displayed."
 
 msgid "errorOverlayWritePermissions"
-msgstr "Overlays could not be created - please check write permissions of folder \"%s\"."
+msgstr "Could not save overlay. Please check the write access of the folder \"%s\"."
 
 msgid "invalidOverlay"
-msgstr "Invalid overlay"
+msgstr "Unknown overlay"

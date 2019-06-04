@@ -3,28 +3,28 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "systemcheck"
-msgstr "Systemcheck"
+msgstr "System check"
 
 msgid "systemcheckURL"
-msgstr "https://jtl-url.de/njc39"
+msgstr "https://jtl-url.de/og4rq"
 
 msgid "systemcheckDesc"
-msgstr "Überprüft relevante serverseitige Einstellungen"
+msgstr "With the system check, you can review server-related settings."
 
 msgid "noteImportantCheckSettings"
-msgstr "Um einen einwandfreien Betrieb gewährleisten zu können ist es zwingend erforderlich, alle <code>markierten</code> Eigeschaften zu überprüfen."
+msgstr "In order to ensure smooth operation, all <code>marked</code> properties must be checked."
 
 msgid "suggestedAdjustments"
-msgstr "Empfohlene Anpassungen"
+msgstr "Recommended adjustments"
 
 msgid "suggestedValue"
-msgstr "Empfohlener Wert"
+msgstr "Recommended value"
 
 msgid "neededPHPExtensions"
-msgstr "Benötigte PHP-Erweiterungen und -Funktionen"
+msgstr "Required php extensions and functions"
 
 msgid "needPHPSetting"
-msgstr "Benötigte PHP-Einstellungen"
+msgstr "Required PHP settings"
 
 msgid "neededValue"
-msgstr "Benötigter Wert"
+msgstr "Required value"

@@ -174,7 +174,7 @@ $(document).ready(function() {
                         <div class="item">
                             <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="tmp_check">{__('timelyAccess')}</label>
+                                <label for="tmp_check">{__('temporaryAccess')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <span class="input-group-checkbox-wrap">

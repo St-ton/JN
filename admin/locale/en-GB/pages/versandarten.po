@@ -3,337 +3,328 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "shippingmethods"
-msgstr "Versandarten"
+msgstr "Shipping methods"
 
 msgid "shippingmethodsURL"
-msgstr "https://jtl-url.de/dlkpz"
+msgstr "https://jtl-url.de/kbw2p"
 
 msgid "documentationHint"
-msgstr "Dokumentation und Beispiele zu diesem Thema finden Sie auf <i class=\"fa fa-external-link\"></i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.de</a>"
+msgstr "Here you can view all shipping methods that are currently available for JTL-Shop. If you click on one of the destination countries of a shipping method, you can enter surcharges for special postal codes (e.g.&nbsp;surcharges for islands). You can also create new shipping methods and edit existing ones. For technical instructions and examples regarding this topic, please see <i class=\"fa fa-external-link\"></i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.com</a>."
 
 msgid "isleListsHint"
-msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z.B. Inselzuschläge) zu definieren. Ein (Zuschlag) deutet darauf hin, dass das Lieferland Zuschlagslisten für die jeweilige Versandart definiert hat."
+msgstr "Click on the respective destination country to enter surcharges (e.g.&nbsp;for islands). When there are surcharge lists saved for the destination country and shipping method, this is indicated by the respective marking."
 
 msgid "activeShippingmethods"
-msgstr "Ihre aktiven Versandarten"
+msgstr "Active shipping methods"
 
 msgid "createShippingMethod"
-msgstr "Neue Versandart anlegen"
+msgstr "Create shipping method"
 
 msgid "createShippingMethodDesc"
-msgstr "Hier erstellen Sie eine neue Versandart für den Shop."
+msgstr "Create a new shipping method for JTL-Shop. You can later map it to one of the shipping methods in JTL-Wawi."
 
 msgid "shippingMethodName"
-msgstr "Name der Versandart"
+msgstr "Name of shipping method"
 
 msgid "shipToCountries"
-msgstr "Versand nach"
+msgstr "Destination country"
 
 msgid "shippingTime"
-msgstr "Lieferdauer"
+msgstr "Free text for delivery time"
 
 msgid "shippingNote"
-msgstr "Hinweistext"
+msgstr "Note"
 
 msgid "shippingNoteShop"
-msgstr "Hinweistext Shop"
+msgstr "Note (online shop)"
 
 msgid "shippingNoteEmail"
-msgstr "Hinweistext Email"
+msgstr "Note (email)"
 
 msgid "trackingLink"
-msgstr "Tracking Link"
+msgstr "Tracking link"
 
 msgid "priceGross"
-msgstr "Preis Brutto"
+msgstr "Price (gross)"
 
 msgid "gross"
-msgstr "Brutto (Fixer Versandkostenpreis)"
+msgstr "Gross (fixed shipping costs)"
 
 msgid "grossValue"
 msgstr "19%"
 
 msgid "amount"
-msgstr "Betrag"
+msgstr "Amount"
 
 msgid "taxshippingcosts"
-msgstr "Steuerberechnung Versandpreis und Versandkostenfrei-Grenze"
+msgstr "Taxes for shipping costs and threshold for free shipping"
 
 msgid "shippingtime"
-msgstr "Lieferzeit"
+msgstr "Delivery time"
 
 msgid "taxshippingcostsDesc"
-msgstr "Bei Netto wird der Warenkorb-Steuersatz (abhängig von Einstellung Nr. 1132) auf die Netto-Versandkosten aufaddiert. Für den Käufer ergibt sich ein Versandpreis inkl. USt., abhängig vom Warenkorb-Steuersatz und dem Lieferland. Bei Brutto wird der Versandpreis 1:1 als fixer Versandpreis inkl. USt. übernommen, egal ob Brutto- oder Nettopreise für die Kundengruppe aktiv sind und egal, ob der Versand in das Ausland umsatzsteuerbefreit erfolgt. Weiterhin regelt diese Einstellung, ob sich die Versandkostenfreigrenze auf den Brutto- oder den Netto-Warenkorbwert bezieht."
+msgstr "Specify whether the shipping costs are indicated as a fixed gross price. If the option \"Gross (fixed shipping costs)\" is selected, customers always pay the same shipping costs since different VAT rates do not affect the total costs of shipping. This also means that the threshold for free shipping refers to the gross basket value. If the option \"Net (automatic VAT addition)\" is selected, the respective VAT rate charged for the current basket is added to the net shipping costs. This may lead to varying shipping costs due to different VAT rates. This also means that the threshold for free shipping refers to the net basket value."
 
 msgid "net"
-msgstr "Netto (Automatischer USt-Aufschlag)"
+msgstr "Net (automatic VAT addition)"
 
 msgid "upTo"
-msgstr "bis"
+msgstr "up to"
 
 msgid "priceScale"
-msgstr "Preisstaffel"
+msgstr "Price scales"
 
 msgid "showShippingMethod"
-msgstr "Versandart anbieten"
+msgstr "Shipping method is available"
 
 msgid "excludeShippingProposal"
-msgstr "Für Kalkulation der günstigsten Versandkosten ignorieren"
+msgstr "Ignore when calculating the cheapest shipping costs"
 
 msgid "excludeShippingProposalDesc"
-msgstr "Setzen Sie ein Häkchen, um diese Versandart bei der Berechnung der günstigsten Versandkosten zu überspringen (z.B. beim Export). Unabhängig von dieser Einstellung wird die Versandart im Bestellvorgang und in der Warenkorb-Versandkostenermittlung als Option angeboten, sofern die sonstigen Kriterien erfüllt sind."
+msgstr "Specify whether this shipping method is to be ignored when calculating the cheapest shipping costs. Irrespective of what is specified in this setting, the shipping method will be listed during the ordering process and in the shipping cost determination of the basket when the other criteria are met."
 
 msgid "tax"
-msgstr "USt."
+msgstr "VAT"
 
 msgid "sortnr"
-msgstr "Sortiernummer"
+msgstr "Sort number"
 
 msgid "minLiefertage"
-msgstr "Min. Liefertage"
+msgstr "Shipping days min."
 
 msgid "maxLiefertage"
-msgstr "Max. Liefertage"
+msgstr "Shipping days max."
 
 msgid "acceptedPaymentMethods"
-msgstr "Akzeptierte Zahlungsarten"
+msgstr "Accepted payment methods"
 
 msgid "createShippingType"
-msgstr "Versandart erstellen"
+msgstr "Create shipping method"
 
 msgid "modifyedShippingType"
-msgstr "Versandart ändern"
+msgstr "Save changes"
 
 msgid "shippingTypeName"
-msgstr "Versandart"
+msgstr "Shipping method"
 
 msgid "countries"
-msgstr "Versandländer"
+msgstr "Destination countries"
 
 msgid "paymentMethods"
-msgstr "Zahlungsarten"
+msgstr "Payment methods"
 
 msgid "shippingPrice"
-msgstr "Versandpreis"
-
-msgid "deleteShippingType"
-msgstr "löschen"
-
-msgid "modifyShippingType"
-msgstr "ändern"
-
-msgid "cloneShippingType"
-msgstr "duplizieren"
+msgstr "Shipping costs"
 
 msgid "isleListFor"
-msgstr "Zuschlagslisten für"
+msgstr "Surcharge lists for"
 
 msgid "isleListsDesc"
-msgstr "Hier können Sie Zuschlagslisten (z.b. Inselzuschlag) auf PLZ-Basis definieren. Die Zuschlagsliste gilt nur für die ausgewählte Versandart und das ausgewählte Lieferland."
+msgstr "Here you can define surcharge lists such&nbsp;as extra charges for islands on the basis of postal codes. The surcharge list is only valid for the respective shipping method and the selected destination country."
 
 msgid "isleList"
-msgstr "Zuschlagsliste"
+msgstr "Surcharge list"
 
 msgid "additionalFee"
-msgstr "Zuschlag"
+msgstr "Surcharge"
 
 msgid "plz"
-msgstr "PLZ"
+msgstr "Postal code"
 
 msgid "additionalFeeDelete"
-msgstr "Zuschlag löschen"
+msgstr "Delete surcharge list"
 
 msgid "additionalFeeEdit"
-msgstr "Zuschlag editieren"
+msgstr "Edit surcharge list"
 
 msgid "createNewList"
-msgstr "Neue Zuschlagsliste erstellen"
+msgstr "Create new surcharge list"
 
 msgid "createEditList"
-msgstr "Zuschlagsliste editieren"
+msgstr "Edit surcharge list"
 
 msgid "orPlzRange"
-msgstr "oder PLZ-Bereich"
+msgstr "or postal code area"
 
 msgid "add"
-msgstr "hinzufügen"
+msgstr "Add"
 
 msgid "freeShipping"
-msgstr "Versandkostenfrei ab X"
+msgstr "Free shipping threshold"
 
 msgid "maxCosts"
-msgstr "Deckelung"
+msgstr "Capping"
 
 msgid "maxCostsUpTo"
-msgstr "Deckelung auf"
+msgstr "Capped to"
 
 msgid "activate"
-msgstr "aktivieren"
+msgstr "enable"
 
 msgid "freeFrom"
-msgstr "frei ab"
+msgstr "free from"
 
 msgid "checkEU"
-msgstr "Europäische Union"
+msgstr "European Union"
 
 msgid "checkNonEU"
-msgstr "Nicht Europäische Union in Europa"
+msgstr "Europe, non-EU countries"
 
 msgid "checkEurope"
-msgstr "Europa"
+msgstr "Europe"
 
 msgid "checkWorld"
-msgstr "Welt"
+msgstr "World"
 
 msgid "checkNA"
-msgstr "Nordamerika"
+msgstr "North America"
 
 msgid "checkAsia"
-msgstr "Asien"
+msgstr "Asia"
 
 msgid "checkAllOff"
-msgstr "Alle Haken entfernen"
+msgstr "Uncheck all"
 
 msgid "checkAllOn"
-msgstr "Alle Haken setzen"
+msgstr "Check all"
 
 msgid "pictureURL"
-msgstr "Bild-URL"
+msgstr "Image URL"
 
 msgid "pictureDesc"
-msgstr "Geben Sie hier den Pfad oder URL zu einem Bild an, das statt des anzuzeigenden Namens in der Kaufabwicklung bei dieser Versandart angezeigt werden soll"
+msgstr "Here you can save a path or URL to an image, e.g. the logo of a shipping service provider. The image will be displayed instead of the name of the shipping method during the checkout."
 
 msgid "shippingclass"
-msgstr "Versandklasse"
+msgstr "Shipping class"
 
 msgid "shippingclasses"
-msgstr "Versandklassen"
+msgstr "Shipping classes"
 
 msgid "shippingclassDesc"
-msgstr "Hier können Sie die erlaubten Versandklassen für diese Versandart einschränken. Fügen Sie dazu jede Kombination von Versandklassen, die sich für diese Versandart im Warenkorb befinden darf, über die Schaltfläche \"Kombination hinzufügen\" hinzu. <br/>BEISPIEL: Sie haben 3 Versandklassen (A, B und C) und möchten nun alle möglichen Kombinationen erlauben, die Versandklasse A enthalten. Fügen Sie also hinzu: <br/>1. A, 2. A und B, 3. A und C und 4. A, B und C. <br/>Nur Artikel mit den Versandklassen B und C bzw. nur B oder nur C wären in diesem Beispiel für diese Versandart nicht erlaubt."
+msgstr "Here you can limit the shipping classes that can be combined with this shipping method. Click \"Add combinations\" to add all shipping classes that are to be available for this shipping method. <br/>EXAMPLE: There are 3 shipping classes (A, B, and C), and you want to allow all possible combinations with shipping class A. So, you add: <br/>1) A, 2) A and B, 3) A and C, and 4) A, B, and C. <br/>Only items with the shipping classes B and C or B only or C only would not be allowed in this example."
 
 msgid "addShippingClass"
-msgstr "Kombination hinzufügen"
+msgstr "Add combination"
 
 msgid "validOnShippingClasses"
-msgstr "Gültig für folgende Versandklassen-Kombinationen im Warenkorb"
+msgstr "Valid for the following combinations of shipping classes in the basket"
 
-msgid "all"
-msgstr "Alle"
+msgid "allCustomerGroups"
+msgstr "All"
 
 msgid "allCombinations"
-msgstr "Alle Kombinationen"
+msgstr "All combinations"
 
 msgid "shippingConfirm"
-msgstr "Wenn Sie alle Kombinationen nutzen, werden bereits erstellte Kombinationen verworfen. Fortfahren?"
+msgstr "When you select all combinations, the combinations that were entered before will be deleted. Continue?"
 
 msgid "delData"
-msgstr "Daten löschen"
+msgstr "Delete data"
 
 msgid "always"
-msgstr "Immer anbieten"
+msgstr "Always"
 
 msgid "lowest"
-msgstr "Nur, wenn diese Versandart die günstigste ist"
+msgstr "Only if this shipping method is the cheapest"
 
 msgid "discount"
-msgstr "Aufpreis/Rabatt"
+msgstr "Extra charge/Discount"
 
 msgid "onlyForOwnShippingPrices"
-msgstr "Artikelabhängige Versandart"
+msgstr "Item-specific shipping method"
 
 msgid "ownShippingPricesDesc"
-msgstr "Wenn Sie dies anhaken, gilt diese Versandart nur bei Bestellungen, deren sämliche Artikel artikelabhängige Versandkosten pro Lieferland als Funktionsattribut gesetzt haben."
+msgstr "Specify whether this shipping method is to be available only for purchase orders solely containing items for which item-specific shipping costs per destination country were set via function attributes."
 
 msgid "customerclass"
-msgstr "Kundengruppe"
+msgstr "Customer group"
 
 msgid "customerclassDesc"
-msgstr "Diese Versandart gilt nur für Bestellungen dieser Kundengruppe. Mehrfachauswahl mit Hilfe gedrückter SHIFT/STRG Taste möglich."
+msgstr "Specify to which customer groups this shipping method will be visible. You can select several customer groups by holding the Ctrl or Shift key."
 
 msgid "addPriceScale"
-msgstr "weitere Preisstaffel"
+msgstr "Add another price scale"
 
 msgid "delPriceScale"
-msgstr "letzte Preisstaffel löschen"
+msgstr "Delete last price scale"
 
 msgid "versandklassenExceeded"
-msgstr "Sie haben mehr als 5 Versandklassen. Bitte reduzieren Sie die Anzahl in der JTL-WaWi."
+msgstr "There are more than 5 shipping classes. Please reduce the number of classes in JTL-Wawi."
 
 msgid "back2shippingtypes"
-msgstr "Zurück zu Versandarten"
+msgstr "Go back to shipping methods"
 
 msgid "coverageShippingClassCombination"
-msgstr "Es sind nicht alle Versandklassenkombinationen von den Versandarten abgedeckt."
+msgstr "Not all shipping class combinations are covered by the shipping methods."
 
 msgid "noShipClassCombiValidation"
-msgstr "Eine genaue Aufstellung der fehlenden Kombinationen ist aufgrund der Anzahl an Möglichkeiten nicht möglich (Max. \"%s\" Versandklassen)."
+msgstr "A complete list of the missing combinations is not available due to the number of possible combinations (maximum of %s shipping classes)."
 
 msgid "showMissingCombinations"
-msgstr "Fehlende Klassen anzeigen"
+msgstr "Show missing shipping classes"
 
 msgid "versandartenSortDesc"
-msgstr "Je niedriger die Priorität, desto weiter oben diese Versandart."
+msgstr "The lower the priority, the higher up a shipping method is listed."
 
 msgid "successShippingMethodDelete"
-msgstr "Versandart erfolgreich gelöscht!"
+msgstr "Shipping method deleted successfully."
 
 msgid "successShippingMethodDuplicated"
-msgstr "Versandart wurde erfolgreich dupliziert."
+msgstr "Shipping method duplicated successfully."
 
 msgid "errorShippingMethodDuplicated"
-msgstr "Versandart konnte nicht dupliziert werden!"
+msgstr "Could not duplicate shipping method."
 
 msgid "errorZIPOverlap"
-msgstr "Die PLZ %s überschneidet sich mit %s.<br />Bitte geben Sie eine andere PLZ an."
+msgstr "Postal code %s overlaps with %s.<br/>Please enter a different postal code."
 
 msgid "errorZIPAreaOverlap"
-msgstr "Der PLZ-Bereich %s überschneidet sich mit %s.<br />Bitte geben Sie einen anderen PLZ Bereich an."
+msgstr "Postal code area %s overlaps with %s.<br/>Please enter a different postal code area."
 
 msgid "successZIPAdd"
-msgstr "PLZ wurde erfolgreich hinzugefügt."
+msgstr "Postal code added successfully."
 
 msgid "errorZIPMissing"
-msgstr "Sie müssen eine PLZ oder einen PLZ-Bereich angeben!"
+msgstr "You need to enter a postal code or a postal code area."
 
 msgid "successListAdd"
-msgstr "Zuschlagsliste wurde erfolgreich hinzugefügt."
+msgstr "Surcharge list added successfully."
 
 msgid "errorListNameMissing"
-msgstr "Bitte geben Sie der Zuschlagsliste einen Namen!"
+msgstr "Please enter a name for the surcharge list."
 
 msgid "errorListPriceMissing"
-msgstr "Bitte geben Sie einen Preis für den Zuschlag ein!"
+msgstr "Please enter a price for the surcharge."
 
 msgid "successShippingMethodCreate"
-msgstr "Die Versandart <strong>%s</strong> wurde erfolgreich hinzugefügt."
+msgstr "Shipping method <strong>%s</strong> added successfully."
 
 msgid "successShippingMethodChange"
-msgstr "Die Versandart <strong>%s</strong> wurde erfolgreich geändert."
+msgstr "Shipping method <strong>%s</strong> edited successfully."
 
 msgid "errorShippingMethodNameMissing"
-msgstr "Bitte geben Sie dieser Versandart einen Namen!"
+msgstr "Please enter a name for this shipping method."
 
 msgid "errorShippingMethodCountryMissing"
-msgstr "Bitte mindestens ein Versandland ankreuzen!"
+msgstr "Please select at least one destination country."
 
 msgid "errorShippingMethodPaymentMissing"
-msgstr "Bitte mindestens eine akzeptierte Zahlungsart auswählen!"
+msgstr "Please select at least one acceptable payment method."
 
 msgid "errorShippingMethodPriceMissing"
-msgstr "Bitte mindestens einen Staffelpreis angeben!"
+msgstr "Please enter at least one price."
 
 msgid "errorShippingFreeMax"
-msgstr "Ihr Versandkostenfrei Wert darf maximal %s sein!"
+msgstr "The free shipping threshold may only amount to %s max."
 
 msgid "sendShippingNotification"
-msgstr "Versandbestätigung senden?"
+msgstr "Send shipping confirmation"
 
 msgid "deleteShippingMethod"
-msgstr "Versandart löschen: "
+msgstr "Delete shipping method: "
 
 msgid "successDeleteSurchargeList"
-msgstr "Surcharge list deleted."
+msgstr "Surcharge list deleted successfully."
 
 msgid "successDeleteZIP"
-msgstr "ZIP / ZIP-area deleted."
+msgstr "Postal code/postal code area deleted successfully."

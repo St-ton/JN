@@ -12,13 +12,13 @@ msgid "trennzeichenDesc"
 msgstr " "
 
 msgid "errorWeightDecimals"
-msgstr "Fehler: Die Anzahl an Dezimalstellen für das Gewicht darf nicht größer als 4 sein."
+msgstr "Das Gewicht darf maximal mit 4 Nachkommastellen angegeben werden."
 
 msgid "errorAmountDecimals"
-msgstr "Fehler: Die Anzahl an Dezimalstellen für die Menge darf nicht größer als 2 sein."
+msgstr "Die Menge darf maximal mit 2 Nachkommastellen angegeben werden."
 
 msgid "countDecimals"
-msgstr "Anzahl Dezimalstellen"
+msgstr "Anzahl der Dezimalstellen"
 
 msgid "thousandDivider"
 msgstr "Tausendertrennzeichen"

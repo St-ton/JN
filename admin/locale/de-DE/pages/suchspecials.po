@@ -45,4 +45,4 @@ msgid "errorTopRatingExistRename"
 msgstr "Die Top-Bewertet-Seite %s war bereits vorhanden und wurde in %s umbenannt."
 
 msgid "successSeoSave"
-msgstr "Ihre Seitennamen wurden erfolgreich gepeichert bzw. aktualisiert."
+msgstr "Die Seitennamen wurden erfolgreich gespeichert bzw. aktualisiert."

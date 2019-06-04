@@ -1,24 +1,18 @@
-function GUI(io, page)
+class GUI
 {
-    debuglog('construct GUI');
-
-    bindProtoOnHandlers(this);
-
-    this.io            = io;
-    this.page          = page;
-    this.configSaveCb  = noop;
-    this.imageSelectCB = noop;
-    this.inPreviewMode = false;
-}
-
-GUI.prototype = {
-
-    constructor: GUI,
-
-    init: function(iframe, previewFrame, tutorial, error)
+    constructor(io, page)
     {
-        debuglog('GUI init');
+        bindProtoOnHandlers(this);
 
+        this.io            = io;
+        this.page          = page;
+        this.configSaveCb  = noop;
+        this.imageSelectCB = noop;
+        this.inPreviewMode = false;
+    }
+
+    init(iframe, previewFrame, tutorial, error)
+    {
         this.iframe       = iframe;
         this.previewFrame = previewFrame;
         this.tutorial     = tutorial;
@@ -76,90 +70,87 @@ GUI.prototype = {
         this.missingConfigButtons.hide();
 
         if(typeof error === 'string' && error.length > 0) {
-            this.showError(error);
+            return this.showError(error);
         } else {
             this.showLoader();
             this.publishFrom.datetimepicker({locale: 'de', useCurrent: false});
             this.publishTo.datetimepicker({locale: 'de', useCurrent: false});
-            this.publishFrom.on("dp.change", function (e) {
+
+            this.publishFrom.on("dp.change", e => {
                 this.publishTo.data("DateTimePicker").minDate(e.date);
-            }.bind(this));
-            this.publishTo.on("dp.change", function (e) {
+            });
+
+            this.publishTo.on("dp.change", e => {
                 this.publishFrom.data("DateTimePicker").maxDate(e.date);
-            }.bind(this));
+            });
+
             this.collapseGroups.first().click();
             this.updateBlueprintList();
             this.updateRevisionList();
         }
-    },
+    }
 
-    showLoader: function()
+    showLoader()
     {
         this.loaderModal.modal('show');
-    },
+    }
 
-    hideLoader: function()
+    hideLoader()
     {
         this.loaderModal.modal('hide');
-    },
+    }
 
-    showRestoreUnsaved: function()
+    showRestoreUnsaved()
     {
         this.restoreUnsavedModal.modal('show');
-    },
+    }
 
-    showError: function(msg)
+    showError(msg)
     {
         this.loaderModal.modal('hide');
         this.errorAlert.html(msg);
         this.errorModal.modal('show');
-        throw msg;
-    },
+        return Promise.reject(msg);
+    }
 
-    updateBlueprintList: function()
+    updateBlueprintList()
     {
-        this.io.getBlueprints(this.onGetBlueprintList);
-    },
+        this.io.getBlueprints().then(blueprints => {
+            this.blueprintList.empty();
 
-    onGetBlueprintList: function(blueprints)
+            blueprints.forEach(blueprint => {
+                var newBtn = this.blueprintBtnBlueprint.clone()
+                    .attr('id', '').css('display', '')
+                    .appendTo(this.blueprintList);
+
+                newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.id);
+                newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
+                newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
+                newBtn.find('span').html(blueprint.name);
+            });
+
+            this.updateDynamicGui();
+        });
+    }
+
+    updateRevisionList()
     {
-        this.blueprintList.empty();
+        this.page.getRevisionList().then(revisions => {
+            this.revisionList.empty();
 
-        blueprints.forEach(function(blueprint) {
-            var newBtn = this.blueprintBtnBlueprint.clone()
-                .attr('id', '').css('display', '')
-                .appendTo(this.blueprintList);
+            revisions.forEach(rev => {
+                this.revisionBtnBlueprint.clone()
+                    .attr('id', '').css('display', '')
+                    .attr('data-revision-id', rev.id)
+                    .html(rev.timestamp)
+                    .appendTo(this.revisionList);
+            });
 
-            newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.id);
-            newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
-            newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
-            newBtn.find('span').html(blueprint.name);
-        }, this);
+            this.updateDynamicGui();
+        });
+    }
 
-        this.updateDynamicGui();
-    },
-
-    updateRevisionList: function()
-    {
-        this.page.getRevisionList(this.onGetRevisions);
-    },
-
-    onGetRevisions: function(revisions)
-    {
-        this.revisionList.empty();
-
-        revisions.forEach(function(rev) {
-            this.revisionBtnBlueprint.clone()
-                .attr('id', '').css('display', '')
-                .attr('data-revision-id', rev.id)
-                .html(rev.timestamp)
-                .appendTo(this.revisionList);
-        }, this);
-
-        this.updateDynamicGui();
-    },
-
-    updateDynamicGui: function()
+    updateDynamicGui()
     {
         installGuiElements(this, [
             'blueprintButton',
@@ -167,27 +158,26 @@ GUI.prototype = {
             'blueprintDelete',
             'revisionBtn',
         ]);
-    },
+    }
 
-    onBtnImport: function()
+    onBtnImport()
     {
-        this.page.loadFromImport(
-            this.iframe.onPageLoad,
-            er => this.showError('Could not import OPC page JSON: ' + er.error.message)
-        );
-    },
+        this.page.loadFromImport()
+            .catch(er => this.showError('Could not import OPC page JSON: ' + er.error.message))
+            .then(this.iframe.onPageLoad);
+    }
 
-    onBtnExport: function()
+    onBtnExport()
     {
         this.page.exportAsDownload();
-    },
+    }
 
-    onBtnHelp: function(e)
+    onBtnHelp(e)
     {
         this.tutorial.start();
-    },
+    }
 
-    onBtnPreview: function(e)
+    onBtnPreview(e)
     {
         if (this.inPreviewMode) {
             this.iframePanel.show();
@@ -200,27 +190,21 @@ GUI.prototype = {
             this.inPreviewMode = true;
             this.btnPreview.parent().addClass('active');
         }
-    },
+    }
 
-    onBtnSave: function(e)
+    onBtnSave(e)
     {
         this.showLoader();
-        this.page.save(this.onSavePageDone, this.onSavePageError);
-    },
+        this.page.save()
+            .catch(error => this.showError('Page could not be saved: ' + error.error.message))
+            .then(() => {
+                this.hideLoader();
+                this.updateRevisionList();
+                this.setUnsaved(false, true);
+            });
+    }
 
-    onSavePageDone: function()
-    {
-        this.hideLoader();
-        this.updateRevisionList();
-        this.setUnsaved(false, true);
-    },
-
-    onSavePageError: function(error)
-    {
-        this.showError('Page could not be saved: ' + error.error.message);
-    },
-
-    setUnsaved: function(enable, record)
+    setUnsaved(enable, record)
     {
         record = record || false;
 
@@ -237,104 +221,96 @@ GUI.prototype = {
                 this.unsavedRevision.hide();
             }
         }
-    },
+    }
 
-    onBtnClose: function(e)
+    onBtnClose(e)
     {
-        this.page.unlock(this.onUnlockedPage);
-    },
+        this.page.unlock().then(() => {
+            window.location = this.page.fullUrl;
+        });
+    }
 
-    onUnlockedPage: function()
-    {
-        window.location = this.page.fullUrl;
-    },
-
-    onCollapseGroup: function(e)
+    onCollapseGroup(e)
     {
         $(e.target)
             .find('i.fa')
             .toggleClass('fa-plus-circle fa-minus-circle');
-    },
+    }
 
-    onPortletButtonDragStart: function(e)
+    onPortletButtonDragStart(e)
     {
         initDragStart(e);
 
         var portletBtn = $(e.target).closest('.portletButton');
 
         this.iframe.dragNewPortlet(portletBtn.data('portlet-class'));
-    },
+    }
 
-    onPortletButtonDragEnd: function(e)
+    onPortletButtonDragEnd(e)
     {
         this.iframe.dragNewPortlet();
         this.iframe.cleanUpDrag();
-    },
+    }
 
-    onBlueprintButtonDragStart: function(e)
+    onBlueprintButtonDragStart(e)
     {
         initDragStart(e);
 
         var blueprintBtn = $(e.target).closest('.blueprintButton');
 
         this.iframe.dragNewBlueprint(blueprintBtn.data('blueprint-id'));
-    },
+    }
 
-    onBlueprintButtonDragEnd: function(e)
+    onBlueprintButtonDragEnd(e)
     {
         this.iframe.dragNewBlueprint();
         this.iframe.cleanUpDrag();
-    },
+    }
 
-    onRevisionBtn: function(e)
+    onRevisionBtn(e)
     {
         var elm   = $(e.target).closest('a');
         var revId = elm.data('revision-id');
 
         this.showLoader();
-        this.page.loadRev(
-            revId,
-            this.iframe.onPageLoad,
-            er => this.showError('Error while loading draft preview: ' + er.error.message),
-        );
-        this.setUnsaved(revId !== 0);
-    },
 
-    openConfigurator: function(portlet)
+        this.page.loadRev(revId)
+            .catch(er => this.showError('Error while loading draft preview: ' + er.error.message))
+            .then(this.iframe.onPageLoad);
+
+        this.setUnsaved(revId !== 0);
+    }
+
+    openConfigurator(portlet)
     {
         var portletData = portlet.data('portlet');
 
         this.setConfigSaveCallback(noop);
         this.setImageSelectCallback(noop);
 
+        this.curPortlet = portlet;
+
         this.io.getConfigPanelHtml(
             portletData.class,
             portletData.missingClass,
-            portletData.properties,
-            this.onGetConfigPanelHtml
-        );
+            portletData.properties
+        ).then(html => {
+            if (portletData.class === 'MissingPortlet') {
+                this.stdConfigButtons.hide();
+                this.missingConfigButtons.show();
+            } else {
+                this.stdConfigButtons.show();
+                this.missingConfigButtons.hide();
+            }
 
-        this.curPortlet = portlet;
-    },
+            this.configModalBody.html(html);
+            this.configModalTitle.html(portletData.title + ' bearbeiten');
+            this.configModal.modal('show');
+        });
 
-    onGetConfigPanelHtml: function(html)
-    {
-        var portletData = this.curPortlet.data('portlet');
+    }
 
-        if (portletData.class === 'MissingPortlet') {
-            this.stdConfigButtons.hide();
-            this.missingConfigButtons.show();
-        } else {
-            this.stdConfigButtons.show();
-            this.missingConfigButtons.hide();
-        }
-
-        this.configModalBody.html(html);
-        this.configModalTitle.html(portletData.title + ' bearbeiten');
-        this.configModal.modal('show');
-    },
-
-    onConfigForm: function(e)
+    onConfigForm(e)
     {
         e.preventDefault();
 
@@ -364,20 +340,19 @@ GUI.prototype = {
 
         portletData.properties = configObject;
 
-        this.io.getPortletPreviewHtml(portletData, this.onPortletPreviewHtml, er => {
-            this.configModal.modal('hide');
-            this.showError('Error while saving Portlet configuration: ' + er.error.message);
-        });
-    },
+        this.io.getPortletPreviewHtml(portletData)
+            .catch(er => {
+                this.configModal.modal('hide');
+                return this.showError('Error while saving Portlet configuration: ' + er.error.message);
+            })
+            .then(preview => {
+                this.iframe.replaceSelectedPortletHtml(preview);
+                this.configModal.modal('hide');
+                this.page.updateFlipcards();
+            });
+    }
 
-    onPortletPreviewHtml: function(preview)
-    {
-        this.iframe.replaceSelectedPortletHtml(preview);
-        this.configModal.modal('hide');
-        this.page.updateFlipcards();
-    },
-
-    onBlueprintForm: function(e)
+    onBlueprintForm(e)
     {
         e.preventDefault();
 
@@ -385,72 +360,61 @@ GUI.prototype = {
             var blueprintName = this.blueprintName.val();
             var blueprintData = this.page.portletToJSON(this.iframe.selectedElm);
 
-            this.io.saveBlueprint(blueprintName, blueprintData, this.onBlueprintSaved);
+            this.io.saveBlueprint(blueprintName, blueprintData).then(() => {
+                this.updateBlueprintList();
+            });
+
             this.blueprintModal.modal('hide');
         }
-    },
+    }
 
-    onBlueprintSaved: function()
-    {
-        this.updateBlueprintList();
-    },
-
-    onBlueprintDelete: function(e)
+    onBlueprintDelete(e)
     {
         var elm = $(e.target).closest('.blueprintDelete');
 
         this.blueprintDeleteId.val(elm.data('blueprint-id'));
         this.blueprintDeleteModal.modal('show');
-    },
+    }
 
-    onBlueprintExport: function(e)
+    onBlueprintExport(e)
     {
         var elm         = $(e.target).closest('.blueprintExport');
         var blueprintId = elm.data('blueprint-id');
 
-        this.io.getBlueprint(blueprintId, this.onGetExportBlueprint);
-    },
+        this.io.getBlueprint(blueprintId).then(blueprint => {
+            download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
+        });
+    }
 
-    onGetExportBlueprint: function(blueprint)
+    onBtnImportBlueprint()
     {
-        download(JSON.stringify(blueprint), blueprint.name + '.json', 'application/json');
-    },
+        $('<input type="file" accept=".json">')
+            .on(
+                'change',
+                e => {
+                    this.importReader = new FileReader();
+                    this.importReader.onload = () => {
+                        let blueprint = JSON.parse(this.importReader.result);
+                        this.io.saveBlueprint(blueprint.name, blueprint.instance)
+                            .then(() => this.updateBlueprintList());
+                    };
+                    this.importReader.readAsText(e.target.files[0]);
+                }
+            )
+            .click();
+    }
 
-    onBtnImportBlueprint: function()
-    {
-        $('<input type="file" accept=".json">').on('change', this.onBlueprintImportChosen.bind(this)).click();
-    },
-
-    onBlueprintImportChosen: function(e)
-    {
-        this.importReader = new FileReader();
-        this.importReader.onload = this.onBlueprintReaderLoad.bind(this);
-        this.importReader.readAsText(e.target.files[0]);
-    },
-
-    onBlueprintReaderLoad: function()
-    {
-        var blueprint = JSON.parse(this.importReader.result);
-
-        this.io.saveBlueprint(blueprint.name, blueprint.instance, this.onBlueprintSaved);
-    },
-
-    onBlueprintDeleteForm: function (e)
+    onBlueprintDeleteForm (e)
     {
         var blueprintId = this.blueprintDeleteId.val();
 
-        this.io.deleteBlueprint(blueprintId, this.onBlueprintDeleted);
+        this.io.deleteBlueprint(blueprintId).then(() => this.updateBlueprintList());
         this.blueprintDeleteModal.modal('hide');
 
         e.preventDefault();
-    },
+    }
 
-    onBlueprintDeleted: function()
-    {
-        this.updateBlueprintList();
-    },
-
-    onBtnPublish: function(e)
+    onBtnPublish(e)
     {
         if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
             this.publishFrom.val(this.page.publishFrom);
@@ -474,9 +438,9 @@ GUI.prototype = {
 
         this.draftName.val(this.page.name);
         this.publishModal.modal('show');
-    },
+    }
 
-    onPublishForm: function (e)
+    onPublishForm (e)
     {
         e.preventDefault();
 
@@ -484,12 +448,11 @@ GUI.prototype = {
         this.page.publishFrom = this.publishFromEnabled.prop('checked') ? this.publishFrom.val() : null;
         this.page.publishTo   = this.publishToEnabled.prop('checked') ? this.publishTo.val() : null;
 
-        this.page.publicate(noop, er => this.showError(er.error.message));
-
+        this.page.publicate().catch(er => this.showError(er.error.message));
         this.publishModal.modal('hide');
-    },
+    }
 
-    onPublishFromEnabled: function (e)
+    onPublishFromEnabled (e)
     {
         if(this.publishFromEnabled.prop('checked')) {
             this.publishFrom.val(moment().format(localDateFormat));
@@ -499,9 +462,9 @@ GUI.prototype = {
             this.publishFrom.prop('disabled', true);
             this.publishTo.data("DateTimePicker").minDate(false);
         }
-    },
+    }
 
-    onPublishToEnabled: function (e)
+    onPublishToEnabled (e)
     {
         if(this.publishToEnabled.prop('checked')) {
             if(this.publishFromEnabled.prop('checked')) {
@@ -513,80 +476,80 @@ GUI.prototype = {
         } else {
             this.publishTo.val('Auf unbestimmte Zeit öffentlich');
             this.publishTo.prop('disabled', true);
-            this.publishFrom.data("DateTimePicker").maxDate(false);
+            this.publishFrom.data('DateTimePicker').maxDate(false);
         }
-    },
+    }
 
-    selectImageProp: function(propName)
+    selectImageProp(propName)
     {
-        this.openElFinder(function(url) {
+        this.openElFinder(url => {
             this.imageSelectCB(url, propName);
             this.configForm.find('[name="' + propName + '"]').val(url);
             this.configForm.find('#preview-img-' + propName).attr('src', url);
-        }.bind(this), 'image');
-    },
+        }, 'image');
+    }
 
-    selectVideoProp: function(propName)
+    selectVideoProp(propName)
     {
-         this.openElFinder(function(url) {
+         this.openElFinder(url => {
              this.configForm.find('[name="' + propName + '"]').val(url);
              this.configForm.find('#preview-vid-' + propName).attr('src', url);
              this.configForm.find('#cont-preview-vid-' + propName)[0].load();
-         }.bind(this),'video');
-    },
+         }, 'video');
+    }
 
-    openElFinder: function (callback, type)
+    openElFinder (callback, type)
     {
         openElFinder(callback, type);
-    },
+    }
 
-    onRestoreUnsavedForm: function (e)
+    onRestoreUnsavedForm (e)
     {
         e.preventDefault();
 
         this.unsavedRevision.click();
         this.restoreUnsavedModal.modal('hide');
-    },
+    }
 
-    setConfigSaveCallback: function(callback)
+    setConfigSaveCallback(callback)
     {
         this.configSaveCb = callback;
-    },
+    }
 
-    setImageSelectCallback: function(callback)
+    setImageSelectCallback(callback)
     {
         this.imageSelectCB = callback;
-    },
+    }
 
-    onBtnDisplayWidthMobile: function(e)
+    onBtnDisplayWidthMobile(e)
     {
         this.iframe.iframe.width('375px');
         this.previewFrame.previewFrame.width('375px');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthMobile.parent().addClass('active');
-    },
+    }
 
-    onBtnDisplayWidthTablet: function(e)
+    onBtnDisplayWidthTablet(e)
     {
         this.iframe.iframe.width('768px');
         this.previewFrame.previewFrame.width('768px');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthTablet.parent().addClass('active');
-    },
+    }
 
-    onBtnDisplayWidthLaptop: function(e)
+    onBtnDisplayWidthLaptop(e)
     {
         this.iframe.iframe.width('992px');
         this.previewFrame.previewFrame.width('992px');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthLaptop.parent().addClass('active');
-    },
+    }
 
-    onBtnDisplayWidthDesktop: function(e)
+    onBtnDisplayWidthDesktop(e)
     {
         this.iframe.iframe.width('100%');
         this.previewFrame.previewFrame.width('100%');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthDesktop.parent().addClass('active');
-    },
-};
+    }
+}

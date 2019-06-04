@@ -136,7 +136,6 @@
                                     </script>
                                 {/block}
                             </p>
-                            <p><label>Neuer Entwurf:</label></p>
                         {/if}
                         {block name='layout-header-composer-menu-form-edit'}
                             {form method="post" action="admin/onpage-composer.php" addtoken=false}
@@ -146,11 +145,7 @@
                                 <div class="btn-group">
                                     {button type="submit" name="action" value="extend" variant="primary"}
                                         <i class="fas fa-plus-circle"></i>
-                                        Seite erweitern
-                                    {/button}
-                                    {button type="submit" name="action" value="replace" variant="primary"}
-                                        <i class="fas fa-file"></i>
-                                        Seite ersetzen
+                                        Neuer Entwurf
                                     {/button}
                                 </div>
                             {/form}

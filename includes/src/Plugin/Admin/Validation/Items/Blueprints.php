@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Blueprints
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Blueprints extends AbstractItem
+final class Blueprints extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -33,6 +33,12 @@ class Blueprints extends AbstractItem
         $base = $dir . \PFAD_PLUGIN_BLUEPRINTS;
         foreach ($node['Blueprints'][0]['Blueprint'] as $i => $blueprint) {
             $i = (string)$i;
+            if (!isset($blueprint['Name'])) {
+                return InstallCode::INVALID_BLUEPRINT_NAME;
+            }
+            if (!isset($blueprint['JSONFile'])) {
+                return InstallCode::INVALID_BLUEPRINT_FILE;
+            }
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {

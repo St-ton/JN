@@ -248,7 +248,6 @@ if ($step === 'uebersicht') {
         );
         $item->bPluginContentExtern = $item->kPlugin > 0
             && mb_strpos($item->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false;
-
     }
     $smarty->assign('exportformate', $exportformate);
 }
@@ -270,7 +269,7 @@ if ($step === 'neuer Export') {
 
     $exportformat = null;
     if (isset($_POST['kExportformat']) && (int)$_POST['kExportformat'] > 0) {
-        $exportformat             = $db->select(
+        $exportformat                  = $db->select(
             'texportformat',
             'kExportformat',
             (int)$_POST['kExportformat']

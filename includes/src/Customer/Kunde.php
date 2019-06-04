@@ -345,31 +345,15 @@ class Kunde
      */
     public function holLoginKunde($username, $password): int
     {
-        $passwordService = Shop::Container()->getPasswordService();
         if ($username === '' || $password === '') {
             return self::ERROR_INVALID_DATA;
         }
         $user = $this->checkCredentials($username, $password);
-        if ($user === false) {
-            return self::ERROR_INVALID_DATA;
+        if (($state = $this->validateCustomerData($user)) !== self::OK) {
+            return $state;
         }
-        if (isset($user->cSperre) && $user->cSperre === 'Y') {
-            return self::ERROR_LOCKED;
-        }
-        if (isset($user->cAktiv) && $user->cAktiv === 'N') {
-            return self::ERROR_INACTIVE;
-        }
-        if (isset($user->kKunde) && $user->kKunde > 0) {
-            foreach (\get_object_vars($user) as $k => $v) {
-                $this->$k = $v;
-            }
-            $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
-            // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-            if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
-                $_upd            = new stdClass();
-                $_upd->cPasswort = $passwordService->hash($password);
-                Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $_upd);
-            }
+        if ($user->kKunde > 0) {
+            $this->initCustomer($user);
         }
         \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
             'oKunde'        => &$this,
@@ -379,7 +363,6 @@ class Kunde
         ]);
         if ($this->kKunde > 0) {
             $this->entschluesselKundendaten();
-            // Anrede mappen
             $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
 
@@ -387,6 +370,44 @@ class Kunde
         }
 
         return self::ERROR_INVALID_DATA;
+    }
+
+    /**
+     * @param mixed $user
+     * @return int
+     */
+    private function validateCustomerData($user): int
+    {
+        if ($user === false) {
+            return self::ERROR_INVALID_DATA;
+        }
+        if ($user->cSperre === 'Y') {
+            return self::ERROR_LOCKED;
+        }
+        if ($user->cAktiv === 'N') {
+            return self::ERROR_INACTIVE;
+        }
+
+        return self::OK;
+    }
+
+    /**
+     * @param stdClass $user
+     * @throws Exception
+     */
+    private function initCustomer(stdClass $user): void
+    {
+        $passwordService = Shop::Container()->getPasswordService();
+        foreach (\get_object_vars($user) as $k => $v) {
+            $this->$k = $v;
+        }
+        $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
+        // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
+        if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
+            $upd            = new stdClass();
+            $upd->cPasswort = $passwordService->hash($password);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
+        }
     }
 
     /**
@@ -846,7 +867,7 @@ class Kunde
      */
     public function isLoggedIn(): bool
     {
-        return $this->kKunde > 0;
+        return $this->kKunde > 0 && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde === $this->kKunde;
     }
 
     /**

@@ -110,16 +110,16 @@
                 {/block}
 
                 {block name='productdetails-info-description-wrapper'}
-                {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
-                    {block name='productdetails-info-description'}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_short_desc'}
-                        <div class="shortdesc" itemprop="description">
-                            {$Artikel->cKurzBeschreibung}
-                        </div>
-                        {include file='snippets/opc_mount_point.tpl' id='opc_after_short_desc'}
-                    {/block}
-                    <div class="clearfix top10"></div>
-                {/if}
+                    {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
+                        {block name='productdetails-info-description'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_short_desc'}
+                            <div class="shortdesc" itemprop="description">
+                                {$Artikel->cKurzBeschreibung}
+                            </div>
+                        {/block}
+                        <div class="clearfix top10"></div>
+                    {/if}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_after_short_desc'}
                 {/block}
 
                 {block name='productdetails-info-category-wrapper'}

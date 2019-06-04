@@ -8,15 +8,17 @@
 
 {block name='content'}
     {if !empty($Spezialcontent->titel)}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
         <div class="title text-center">
             <h2>{$Spezialcontent->titel}</h2>
         </div>
     {/if}
 
     {include file='snippets/extension.tpl'}
-    {include file='snippets/opc_mount_point.tpl' id='opc_contact_prepend'}
+
     {if isset($step)}
         {if $step === 'formular'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_form'}
             {if !empty($Spezialcontent->oben)}
                 <div class="custom_content">
                     {$Spezialcontent->oben}
@@ -187,7 +189,7 @@
                         </div>
                     {/if}
                     <input type="hidden" name="kontakt" value="1" />
-                    {include file='snippets/opc_mount_point.tpl' id='opc_contact_form_submit_prepend'}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
                     <button type="submit" class="btn btn-primary">{lang key='sendMessage' section='contact'}</button>
                 </form>
             </div>
@@ -199,7 +201,6 @@
             {/if}
         {/if}
     {/if}
-    {include file='snippets/opc_mount_point.tpl' id='opc_contact_append'}
 {/block}
 
 {block name='footer'}

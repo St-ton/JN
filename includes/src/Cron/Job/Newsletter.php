@@ -126,11 +126,8 @@ final class Newsletter extends Job
             $currentCron               = $this->db->select('tcron', 'cronID', $this->getCronID());
             $currentCron->foreignKeyID = 0;
             $currentCron->lastStart    = '_DBNULL_';
-            $currentCron->lastFinish   = '_DBNULL_';
             $this->db->update('tcron', 'cronID', $this->getCronID(), $currentCron);
-            // write the history
-            // --TODO-- ...
-
+            // cleanup `tnewsletterqueue`
             $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
         }
 

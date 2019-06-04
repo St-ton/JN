@@ -426,6 +426,10 @@ if (Form::validateToken()) {
                 $cronTabEntry->lastStart    = '_DBNULL_';
                 $cronTabEntry->lastFinish   = '_DBNULL_';
                 $db->update('tcron', 'cronID', $cronTabEntry->cronID, $cronTabEntry);
+                // update `tjobqueue` too (if exists)
+                $jobQueue               = new stdClass();
+                $jobQueue->foreignKeyID = $oNewsletter->kNewsletter;
+                $db->update('tjobqueue', 'jobType', Type::NEWSLETTER, $jobQueue);
                 // Baue Arrays mit kKeys
                 $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
                 $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);

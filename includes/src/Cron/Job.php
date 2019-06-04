@@ -327,7 +327,7 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
-    public function getStartDate(): DateTime
+    public function getStartDate(): ?DateTime
     {
         return $this->startDate;
     }

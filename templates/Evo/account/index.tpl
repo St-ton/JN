@@ -67,7 +67,9 @@
         {/if}
     
         <div class="col-xs-12 {if !$showLoginPanel}col-md-12{else}col-md-9{/if}">
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_account_page'}
+            {if $showLoginPanel}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_account_page'}
+            {/if}
             {if $step === 'login'}
                 {include file='account/login.tpl'}
             {elseif $step === 'mein Konto'}
@@ -93,7 +95,9 @@
             {elseif $step === 'bewertungen'}
                 {include file='account/feedback.tpl'}
             {/if}
-            {include file='snippets/opc_mount_point.tpl' id='opc_after_account_page'}
+            {if $showLoginPanel}
+                {include file='snippets/opc_mount_point.tpl' id='opc_after_account_page'}
+            {/if}
         </div>
     </div>
 {/block}

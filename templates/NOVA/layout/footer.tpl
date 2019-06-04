@@ -70,15 +70,17 @@
                                     {/form}
                                 {/block}
                             {/row}
-                            <hr>
                         {/block}
                     {/if}
+                {/container}
+                {container fluid=true class="d-print-none pt-4"}
                     {block name='layout-footer-boxes'}
+                        <hr>
                         {getBoxesByPosition position='bottom' assign='footerBoxes'}
                         {if isset($footerBoxes) && count($footerBoxes) > 0}
                             {row id="footer-boxes" class="text-center text-md-left"}
                                 {foreach $footerBoxes as $box}
-                                    {col cols=12 sm=6 md=3}
+                                    {col cols=12 sm=6 md=4 lg=3}
                                         {$box->getRenderedContent()}
                                     {/col}
                                 {/foreach}

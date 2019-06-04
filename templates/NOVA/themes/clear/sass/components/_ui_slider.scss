@@ -1,13 +1,19 @@
 .ui-slider-horizontal {
-  height: 0.5em;
+  height: 0.3em;
   .ui-widget-header{
     background: $primary;
   }
+  &.ui-widget-content {
+    border: 0;
+    background: $sand;
+  }
   .ui-slider-handle {
-    top: -0.4em;
+    top: -0.2em;
     border-radius: 50%;
     background: $primary;
     border: 0;
-    box-shadow: 0px 0px 0px 2px rgba(248,191,0,0.5);
+    width: 0.7em;
+    height: 0.7em;
+    box-shadow: 0px 0px 0px 5px rgba(248,191,0,0.5);
   }
 }

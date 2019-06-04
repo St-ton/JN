@@ -1704,6 +1704,10 @@ msgstr "Active until"
 msgid "validUntil"
 msgstr "Valid until"
 
+
+msgid "miscellaneous"
+msgstr "miscellaneous"
+
 msgid "system"
 msgstr "System"
 

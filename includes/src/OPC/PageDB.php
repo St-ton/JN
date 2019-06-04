@@ -132,6 +132,7 @@ class PageDB
     /**
      * @param string $id
      * @return Page[]
+     * @throws Exception
      */
     public function getDrafts(string $id): array
     {
@@ -243,7 +244,6 @@ class PageDB
             'dLastModified' => $page->getLastModified() ?? '_DBNULL_',
             'cLockedBy'     => $page->getLockedBy(),
             'dLockedAt'     => $page->getLockedAt() ?? '_DBNULL_',
-            'bReplace'      => (int)$page->isReplace(),
         ];
 
         if ($page->getKey() > 0) {
@@ -349,8 +349,7 @@ class PageDB
             ->setUrl($row->cPageUrl)
             ->setLastModified($row->dLastModified)
             ->setLockedBy($row->cLockedBy)
-            ->setLockedAt($row->dLockedAt)
-            ->setReplace($row->bReplace);
+            ->setLockedAt($row->dLockedAt);
 
         $areaData = \json_decode($row->cAreasJson, true);
 

@@ -6,13 +6,14 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Plugin\BootstrapperInterface;
 use JTL\Plugin\InstallCode;
 
 /**
  * Class Bootstrapper
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Bootstrapper extends AbstractItem
+final class Bootstrapper extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -20,7 +21,7 @@ class Bootstrapper extends AbstractItem
     public function validate(): int
     {
         $namespace = $this->getPluginID();
-        $classFile = $this->getBaseDir() . \PLUGIN_BOOTSTRAPPER;
+        $classFile = $this->getBaseDir() . \DIRECTORY_SEPARATOR . \PLUGIN_BOOTSTRAPPER;
         if (!\is_file($classFile)) {
             return InstallCode::OK;
         }
@@ -34,7 +35,7 @@ class Bootstrapper extends AbstractItem
 
         $bootstrapper = new $class((object)['cPluginID' => $namespace], null, null);
 
-        return \is_subclass_of($bootstrapper, \JTL\Plugin\Bootstrapper::class)
+        return $bootstrapper instanceof BootstrapperInterface
             ? InstallCode::OK
             : InstallCode::INVALID_BOOTSTRAP_IMPLEMENTATION;
     }

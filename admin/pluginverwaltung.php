@@ -117,7 +117,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     if (isset($_POST['lizenzkey']) && (int)$_POST['lizenzkey'] > 0) {
         $kPlugin = (int)$_POST['lizenzkey'];
         $step    = 'pluginverwaltung_lizenzkey';
-        $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
+        $loader  = Helper::getLoaderByPluginID($kPlugin, $db, $cache);
+        $oPlugin = $loader->init($kPlugin, true);
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
@@ -136,9 +137,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             $oPluginLicence = new $class();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(Text::filterXSS($_POST['cKey']))) {
-                $oPlugin->setState(State::ACTIVATED);
+                Helper::updateStatusByID(State::ACTIVATED, $oPlugin->getID());
                 $oPlugin->getLicense()->setKey(Text::filterXSS($_POST['cKey']));
-                $oPlugin->updateInDB();
+                $db->update('tplugin', 'kPlugin', $oPlugin->getID(), (object)['cLizenz' => $_POST['cKey']]);
                 $notice = __('successPluginKeySave');
                 $step   = 'pluginverwaltung_uebersicht';
                 $reload = true;

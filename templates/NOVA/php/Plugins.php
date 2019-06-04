@@ -728,6 +728,8 @@ class Plugins
      */
     public function getDecimalLength($params): int
     {
-        return \strlen(\substr(\strrchr(\str_replace(',', '.', $params['quantity']), '.'), 1));
+        $quantity = \str_replace(',', '.', $params['quantity']);
+
+        return (float)$quantity > 0 ? \strlen(\strrchr($quantity, '.')) - 1 : 0;
     }
 }

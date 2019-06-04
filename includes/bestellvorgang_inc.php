@@ -2764,7 +2764,7 @@ function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
 
 /**
  * @return CustomerFields
- * @deprecated since 5.0.0 - use CustomerFields class instead
+ * @deprecated since 5.0.0 - use @see CustomerFields class instead
  */
 function gibSelbstdefKundenfelder(): CustomerFields
 {

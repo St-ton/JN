@@ -51,9 +51,9 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
 
             foreach (Shop::Container()->getDB()->queryPrepared(
                 'SELECT kKundenfeld, kSprache, cName, cWawi, cTyp, nSort, nPflicht, nEditierbar
-                FROM tkundenfeld
-                WHERE kSprache = :langID
-                ORDER BY nSort',
+                    FROM tkundenfeld
+                    WHERE kSprache = :langID
+                    ORDER BY nSort',
                 [
                     'langID' => $langID,
                 ],
@@ -90,11 +90,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Retrieve an external iterator
-     * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function getIterator(): Traversable
     {
@@ -102,16 +98,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Whether a offset exists
-     * @link  https://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     * @return boolean true on success or false on failure.
-     *                      </p>
-     *                      <p>
-     *                      The return value will be casted to boolean if non-boolean was returned.
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetExists($offset): bool
     {
@@ -119,13 +106,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Offset to retrieve
-     * @link  https://php.net/manual/en/arrayaccess.offsetget.php
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     * @return mixed Can return all value types.
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetGet($offset)
     {
@@ -142,16 +123,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Offset to set
-     * @link  https://php.net/manual/en/arrayaccess.offsetset.php
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     * @return void
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetSet($offset, $value): void
     {
@@ -167,13 +139,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Offset to unset
-     * @link  https://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     * @return void
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetUnset($offset): void
     {
@@ -181,13 +147,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Count elements of an object
-     * @link  https://php.net/manual/en/countable.count.php
-     * @return int The custom count as an integer.
-     * </p>
-     * <p>
-     * The return value is cast to an integer.
-     * @since 5.1.0
+     * @inheritDoc
      */
     public function count(): int
     {
@@ -195,12 +155,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * This method is called by var_dump() when dumping an object to get the properties that should be shown.
-     * If the method isn't defined on an object, then all public, protected and private properties will be shown.
-     * @return array
-     * @since PHP 5.6.0
-     *
-     * @link  https://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.debuginfo
+     * @inheritDoc
      */
     public function __debugInfo(): array
     {

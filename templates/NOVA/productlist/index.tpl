@@ -32,36 +32,38 @@
                 {if !$bExclusive || empty($boxes.left)}
                     {assign var=gridmd value='4'}
                 {/if}
-                {if !empty($Suchergebnisse->getError())}
-                    {block name='productlist-index-alert'}
-                        {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}
-                    {/block}
-                {/if}
-                {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
-                    {block name='productlist-index-include-product-slider'}
-                        {lang key='bestseller' section='global' assign='slidertitle'}
-                        {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
-                    {/block}
-                {/if}
+            {/if}
 
-                {block name='productlist-index-products'}
-                    {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
-                        {foreach $Suchergebnisse->getProducts() as $Artikel}
-                            {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-8{/if}" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
-                                {if $style === 'list'}
-                                    {block name='productlist-index-include-item-list'}
-                                        {include file='productlist/item_list.tpl' tplscope=$style}
-                                    {/block}
-                                {else}
-                                    {block name='productlist-index-include-item-box'}
-                                        {include file='productlist/item_box.tpl' tplscope=$style}
-                                    {/block}
-                                {/if}
-                            {/col}
-                        {/foreach}
-                    {/row}
+            {if !empty($Suchergebnisse->getError())}
+                {block name='productlist-index-alert'}
+                    {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}
                 {/block}
             {/if}
+            {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
+                {block name='productlist-index-include-product-slider'}
+                    {lang key='bestseller' section='global' assign='slidertitle'}
+                    {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
+                {/block}
+            {/if}
+
+            {block name='productlist-index-products'}
+                {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
+                    {foreach $Suchergebnisse->getProducts() as $Artikel}
+                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-8{/if}" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
+                            {if $style === 'list'}
+                                {block name='productlist-index-include-item-list'}
+                                    {include file='productlist/item_list.tpl' tplscope=$style}
+                                {/block}
+                            {else}
+                                {block name='productlist-index-include-item-box'}
+                                    {include file='productlist/item_box.tpl' tplscope=$style}
+                                {/block}
+                            {/if}
+                        {/col}
+                    {/foreach}
+                {/row}
+            {/block}
+
             {block name='productlist-index-include-productlist-footer'}
                 {include file='productlist/footer.tpl'}
             {/block}

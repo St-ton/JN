@@ -169,7 +169,7 @@ $pagination->create($pages);
 
 $priceRanges = $NaviFilter->getPriceRangeFilter()->getOptions();
 if (($priceRangesCount = count($priceRanges)) > 0) {
-    $priceRangeMax = (int)explode(' ', end($priceRanges)->getName())[3];
+    $priceRangeMax = end($priceRanges)->getData('nBis');
 }
 
 $smarty->assign('NaviFilter', $NaviFilter)

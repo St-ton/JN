@@ -12,12 +12,13 @@
             <div class="h4">
                 {button
                 variant="link"
-                class="text-decoration-none"
+                class="text-decoration-none pl-0 text-left"
+                block=true
                 role="button"
                 data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}"]
                 }
-                {$ssf->getFrontendName()}
-                +{/button}
+                    {$ssf->getFrontendName()}
+                    <i class="fas fa-plus float-right"></i>{/button}
             </div>
             {collapse class="box box-filter-special" id="sidebox{$oBox->getID()}" visible=$ssf->isActive()}
                 {block name='boxes-box-filter-search-special-content'}

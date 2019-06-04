@@ -81,7 +81,7 @@
                     {tabs id="product-tabs" swipeable=true}
                     {if $useDescription}
                         {block name='productdetails-tabs-tab-description'}
-                            {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc" class="nav-item" swipeable=true}
+                            {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc"}
                                 <div id="tab-description">
                                     {block name='productdetails-tabs-tab-content'}
                                         {block name='tab-description-media-types'}
@@ -109,7 +109,7 @@
 
                     {if $useDownloads}
                         {block name='productdetails-tabs-tab-downloads'}
-                            {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="tb-dwnld" class="nav-item" swipeable=true}
+                            {tab title="{lang section="productDownloads" key="downloadSection"}" active=$setActiveClass.downloads id="tb-dwnld"}
                                 <div id="tab-downloads">
                                     {include file='productdetails/download.tpl'}
                                 </div>
@@ -120,7 +120,7 @@
                     {if !empty($separatedTabs)}
                         {block name='productdetails-tabs-tab-separated-tabs'}
                             {foreach $separatedTabs as $separatedTab}
-                                {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="tb-sprtd-{{$separatedTab.id}}" class="nav-item" swipeable=true}
+                                {tab title=$separatedTab.name active=$setActiveClass.separatedTabs && $separatedTab@first id="tb-sprtd-{{$separatedTab.id}}"}
                                     <div id="tab-{$separatedTab.id}">
                                         {$separatedTab.content}
                                     </div>
@@ -141,7 +141,7 @@
 
                     {if $useQuestionOnItem}
                         {block name='productdetails-tabs-tab-question-on-item'}
-                            {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="tb-qstn" class="nav-item" swipeable=true}
+                            {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="tb-qstn"}
                                 <div id="tab-questionOnItem">
                                     {include file='productdetails/question_on_item.tpl' position="tab"}
                                 </div>
@@ -151,7 +151,7 @@
 
                     {if $usePriceFlow}
                         {block name='productdetails-tabs-tab-price-flow'}
-                            {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="tb-prcFlw" class="nav-item" swipeable=true}
+                            {tab title="{lang key='priceFlow' section='productDetails'}" active=$setActiveClass.priceFlow id="tb-prcFlw"}
                                 <div id="tab-priceFlow">
                                     {include file='productdetails/price_history.tpl'}
                                 </div>
@@ -161,7 +161,7 @@
 
                     {if $useAvailabilityNotification}
                         {block name='productdetails-tabs-tab-availability-notification'}
-                            {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tb-vlbltNtfctn" class="nav-item" swipeable=true}
+                            {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="tb-vlbltNtfctn"}
                                 <div id="tab-availabilityNotification">
                                     {include file='productdetails/availability_notification_form.tpl' position='tab' tplscope='artikeldetails'}
                                 </div>
@@ -173,7 +173,7 @@
                         {block name='productdetails-tabs-tab-mediagroup'}
                             {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
                                 {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
-                                {tab title=$cMedienTyp active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
+                                {tab title=$cMedienTyp active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}"}
                                     <div id="tab-{$cMedienTypId}">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
@@ -184,7 +184,7 @@
 
                     {if $useTags}
                         {block name='productdetails-tabs-tab-tags'}
-                            {tab title="{lang key='productTags' section='productDetails'}" active=$setActiveClass.tags id="tb-tgs" class="nav-item" swipeable=true}
+                            {tab title="{lang key='productTags' section='productDetails'}" active=$setActiveClass.tags id="tb-tgs"}
                                 <div id="tab-tags">
                                     {include file='productdetails/tags.tpl'}
                                 </div>

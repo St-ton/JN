@@ -12138,6 +12138,10 @@ button.bg-info:focus {
   transform: rotate(180deg);
 }
 
+aside button[data-toggle=collapse][aria-expanded=true] i.fa-plus:before {
+  content: "";
+}
+
 header > [class*=container],
 #main-wrapper #content-wrapper {
   background: #fff;
@@ -12268,6 +12272,7 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
 @media (min-width: 768px) {
   #evo-main-nav-wrapper .nav-item {
     display: inline-table;
+    padding: 1.2rem 0;
   }
 }
 @media (max-width: 991.98px) {
@@ -12276,7 +12281,7 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
   }
 }
 #evo-main-nav-wrapper .nav-link {
-  padding: 0.5rem 0.5rem;
+  padding: 1.2rem 0.5rem;
   text-decoration: none;
   display: flex;
   align-items: center;

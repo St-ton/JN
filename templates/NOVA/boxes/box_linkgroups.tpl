@@ -14,7 +14,6 @@
             {$oBox->getTitle()}<span class="ml-3 float-right"><i class="fas fa-chevron-down"></i></span>
         {/link}
         <div class="h4 font-weight-bold mb-2 d-none d-md-flex">{$oBox->getTitle()}</div>
-        <hr class="mt-0 mb-4 d-none d-md-flex">
         {block name='boxes-box-linkgroups-content'}
             {collapse
                 class="d-md-flex"

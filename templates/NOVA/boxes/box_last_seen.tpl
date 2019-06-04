@@ -5,7 +5,6 @@
 {block name='boxes-box-last-seen'}
     {lang key='lastViewed' assign='boxtitle'}
     {card class="box box-last-seen mb-7" id="sidebox{$oBox->getID()}" title="{$boxtitle}"}
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-last-seen-content'}
             {foreach $oBox->getProducts() as $product}
                 {block name='boxes-box-last-seen-image-link'}

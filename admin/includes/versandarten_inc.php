@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
-use JTL\Helpers\Text;
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
-use function Functional\map;
+use JTL\Helpers\Text;
+use JTL\Shop;
 
 /**
  * @param float $fPreis
@@ -326,8 +326,8 @@ function getCombinations(array $shipClasses, int $length)
 function getMissingShippingClassCombi()
 {
     $shippingClasses         = Shop::Container()->getDB()->selectAll('tversandklasse', [], [], 'kVersandklasse');
-    $shipClasses             = [];
     $combinationsInShippings = Shop::Container()->getDB()->selectAll('tversandart', [], [], 'cVersandklassen');
+    $shipClasses             = [];
     $combinationInUse        = [];
 
     foreach ($shippingClasses as $sc) {
@@ -381,16 +381,15 @@ function getShippingTypes(int $shippingTypeID = null)
     $shippingTypes = Shop::Container()->getDB()->queryPrepared(
         'SELECT *
             FROM tversandberechnung'
-                . ($shippingTypeID ? ' WHERE kVersandberechnung = :shippingTypeID' : '')
-                . ' ORDER BY cName',
+        . ($shippingTypeID ? ' WHERE kVersandberechnung = :shippingTypeID' : '')
+        . ' ORDER BY cName',
         ['shippingTypeID' => $shippingTypeID],
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $shippingTypes = map($shippingTypes, function ($shippingType) {
-        $shippingType->cName = __('shippingType_' . $shippingType->cModulId);
-
-        return $shippingType;
+        ReturnType::COLLECTION
+    )->each(function ($e) {
+        $e->kVersandberechnung = (int)$e->kVersandberechnung;
+        $e->cName              = __('shippingType_' . $e->cModulId);
     });
+    /** @var Collection $shippingTypes */
 
-    return $shippingTypeID === null ? $shippingTypes : ($shippingTypes[0] ?? null);
+    return $shippingTypeID === null ? $shippingTypes->toArray() : $shippingTypes->first();
 }

@@ -6,9 +6,6 @@
 
 namespace JTL\Services\JTL;
 
-use function Functional\first;
-use function Functional\group;
-use function Functional\map;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Factory;
 use JTL\Boxes\FactoryInterface;
@@ -28,6 +25,9 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template;
+use function Functional\first;
+use function Functional\group;
+use function Functional\map;
 use function Functional\tail;
 
 /**
@@ -345,7 +345,7 @@ class BoxService implements BoxServiceInterface
     public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array
     {
         $boxAdmin          = new BoxAdmin(Shop::Container()->getDB());
-        $validPages        = implode(',', $boxAdmin->getValidPageTypes());
+        $validPages        = \implode(',', $boxAdmin->getValidPageTypes());
         $cacheID           = 'bx_' . $pageType .
             '_' . (int)$active .
             '_' . (int)$visible .
@@ -408,6 +408,17 @@ class BoxService implements BoxServiceInterface
                     return $box;
                 });
             }
+            $boxData = map($boxData, function ($box) {
+                $box->kBox        = (int)$box->kBox;
+                $box->kBoxvorlage = (int)$box->kBoxvorlage;
+                $box->kCustomID   = (int)$box->kCustomID;
+                $box->kContainer  = (int)$box->kContainer;
+                $box->kSeite      = (int)$box->kSeite;
+                $box->nSort       = (int)$box->nSort;
+                $box->kSprache    = $box->kSprache === null ? null : (int)$box->kSprache;
+
+                return $box;
+            });
             $grouped = group($boxData, function ($e) {
                 return (int)$e->kBox;
             });

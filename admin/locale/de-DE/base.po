@@ -1678,3 +1678,60 @@ msgstr "Suche nach Seitennamen"
 
 msgid "titleChoosePage"
 msgstr "Eigene Seiten auswählen"
+
+msgid "datepickerCustom"
+msgstr "Benutzerdefiniert"
+
+msgid "datepickerToday"
+msgstr "Heute"
+
+msgid "datepickerYesterday"
+msgstr "Gestern"
+
+msgid "datepickerThisWeek"
+msgstr "Diese Woche"
+
+msgid "datepickerLastWeek"
+msgstr "Letzte Woche"
+
+msgid "datepickerThisMonth"
+msgstr "Dieser Monat"
+
+msgid "datepickerLastMonth"
+msgstr "Letzter Monat"
+
+msgid "datepickerThisYear"
+msgstr "Dieses Jahr"
+
+msgid "datepickerLastYear"
+msgstr "Letztes Jahr"
+
+msgid "datepickerSeparator"
+msgstr " - "
+
+msgid "mondayShort"
+msgstr "Mo"
+
+msgid "tuesdayShort"
+msgstr "Di"
+
+msgid "wednesdayShort"
+msgstr "Mi"
+
+msgid "thursdayShort"
+msgstr "Do"
+
+msgid "fridayShort"
+msgstr "Fr"
+
+msgid "saturdayShort"
+msgstr "Sa"
+
+msgid "sundayShort"
+msgstr "So"
+
+msgid "Zeitraum"
+msgstr "Zeitraum"
+
+msgid "directEntry"
+msgstr "Direkter Einstieg"

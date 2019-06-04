@@ -9,7 +9,7 @@ msgid "warenkorbpersURL"
 msgstr "https://jtl-url.de/mntv5"
 
 msgid "warenkorbpersDesc"
-msgstr "Hier finden Sie alle Warenkörbe, die von angemeldeten Kunden gefüllt, aber (noch) nicht bestellt wurden. Unter \"Einstellungen\" schalten Sie die Option, Warenkörbe zu speichern, aus."
+msgstr "Hier finden Sie alle Warenkörbe, die von angemeldeten Kunden gefüllt, aber (noch) nicht bestellt wurden. Unter „Einstellungen“ schalten Sie die Option, Warenkörbe zu speichern, aus."
 
 msgid "warenkorbpersCompany"
 msgstr "Firma"

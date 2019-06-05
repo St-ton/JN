@@ -6,11 +6,14 @@
 
 namespace JTL\Filesystem;
 
+use Exception;
 use Generator;
+use JTL\Path;
 use SplFileInfo;
 use FilesystemIterator;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class LocalFilesystem
@@ -288,7 +291,7 @@ class LocalFilesystem extends AbstractFilesystem
      */
     protected function mapFileInfo(SplFileInfo $file) : FileInfo
     {
-        $location = $this->removePathPrefix($file->getPath());
+        $location = $this->removePathPrefix($file->getPathname());
 
         $options = [
             'path' => (string)$location,
@@ -321,7 +324,7 @@ class LocalFilesystem extends AbstractFilesystem
 
     /**
      * @param string $path
-     * @param int    $mode
+     * @param int $mode
      *
      * @return RecursiveIteratorIterator
      */
@@ -343,5 +346,38 @@ class LocalFilesystem extends AbstractFilesystem
     protected function getDirectoryIterator($path)
     {
         return new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
+    }
+
+    /**
+     * @param Finder $finder
+     * @param string $archivePath
+     * @param callable|null $callback
+     * @return bool
+     * @throws Exception
+     */
+    public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
+    {
+        $zipArchive = new \ZipArchive();
+        $count      = $finder->count();
+        $index      = 0;
+        $basePath   = rtrim($finder->getIterator()->getPath(), '/').'/';
+
+        if (($code = $zipArchive->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
+            throw new Exception('Archive file could not be created.', $code);
+        }
+
+        foreach ($finder->files() as $file) {
+            if (!$file->isDir()) {
+                $zipArchive->addFile($file->getRealpath(), str_replace($basePath, '', $file->getRealpath()));
+                if (is_callable($callback)) {
+                    $callback($count, $index);
+                    ++$index;
+                }
+            }
+        }
+
+        $zipArchive->close();
+
+        return true;
     }
 }

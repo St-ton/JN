@@ -25,7 +25,7 @@ setzeSprache();
 $step = $controller->handleRequest();
 if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_editieren') {
     $step = 'bewertung_editieren';
-    $smarty->assign('oBewertung', $controller->getRating(Request::verifyGPCDataInt('kBewertung')));
+    $smarty->assign('oBewertung', $controller->getReview(Request::verifyGPCDataInt('kBewertung')));
     if (Request::verifyGPCDataInt('nFZ') === 1) {
         $smarty->assign('nFZ', 1);
     }

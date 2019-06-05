@@ -89,10 +89,10 @@ abstract class BaseController
     }
 
     /**
-     * @param ReviewModel $rating
+     * @param ReviewModel $review
      * @return float
      */
-    public function addReward(ReviewModel $rating): float
+    public function addReward(ReviewModel $review): float
     {
         $reward = 0.0;
         if ($this->config['bewertung']['bewertung_guthaben_nutzen'] !== 'Y') {
@@ -101,7 +101,7 @@ abstract class BaseController
         $maxBalance    = (float)$this->config['bewertung']['bewertung_max_guthaben'];
         $level2balance = (float)$this->config['bewertung']['bewertung_stufe2_guthaben'];
         $level1balance = (float)$this->config['bewertung']['bewertung_stufe1_guthaben'];
-        $ratingBonus   = $this->db->queryPrepared(
+        $reviewBonus   = $this->db->queryPrepared(
             'SELECT SUM(fGuthabenBonus) AS fGuthabenProMonat
             FROM tbewertungguthabenbonus
             WHERE kKunde = :cid
@@ -109,38 +109,38 @@ abstract class BaseController
                 AND YEAR(dDatum) = :dyear
                 AND MONTH(dDatum) = :dmonth',
             [
-                'cid'    => $rating->customerID,
-                'rid'    => $rating->id,
+                'cid'    => $review->customerID,
+                'rid'    => $review->id,
                 'dyear'  => \date('Y'),
                 'dmonth' => \date('m')
             ],
             ReturnType::SINGLE_OBJECT
         );
-        if ((float)$ratingBonus->fGuthabenProMonat > $maxBalance) {
+        if ((float)$reviewBonus->fGuthabenProMonat > $maxBalance) {
             return $reward;
         }
-        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($rating->content)) {
-            $reward = ((float)$ratingBonus->fGuthabenProMonat + $level2balance) > $maxBalance
-                ? $maxBalance - (float)$ratingBonus->fGuthabenProMonat
+        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($review->content)) {
+            $reward = ((float)$reviewBonus->fGuthabenProMonat + $level2balance) > $maxBalance
+                ? $maxBalance - (float)$reviewBonus->fGuthabenProMonat
                 : $level2balance;
         } else {
-            $reward = ((float)$ratingBonus->fGuthabenProMonat + $level1balance) > $maxBalance
-                ? $maxBalance - (float)$ratingBonus->fGuthabenProMonat
+            $reward = ((float)$reviewBonus->fGuthabenProMonat + $level1balance) > $maxBalance
+                ? $maxBalance - (float)$reviewBonus->fGuthabenProMonat
                 : $level1balance;
         }
-        $this->increaseCustomerBalance($rating->customerID, $reward);
+        $this->increaseCustomerBalance($review->customerID, $reward);
 
-        $ratingBonus = ReviewBonusModel::loadByAttributes(
-            ['customerID' => $rating->customerID, 'ratingID' => $rating->id],
+        $reviewBonus = ReviewBonusModel::loadByAttributes(
+            ['customerID' => $review->customerID, 'reviewID' => $review->id],
             $this->db
         );
-        /** @var $ratingBonus ReviewBonusModel */
-        $ratingBonus->bonus      = $reward;
-        $ratingBonus->ratingID   = $rating->id;
-        $ratingBonus->customerID = $rating->customerID;
-        $ratingBonus->date       = 'NOW()';
-        $ratingBonus->save();
-        $this->sendRewardMail($ratingBonus);
+        /** @var $reviewBonus ReviewBonusModel */
+        $reviewBonus->bonus      = $reward;
+        $reviewBonus->reviewID   = $review->id;
+        $reviewBonus->customerID = $review->customerID;
+        $reviewBonus->date       = 'NOW()';
+        $reviewBonus->save();
+        $this->sendRewardMail($reviewBonus);
 
         return $reward;
     }
@@ -162,14 +162,14 @@ abstract class BaseController
     }
 
     /**
-     * @param ReviewBonusModel $ratingBonus
+     * @param ReviewBonusModel $reviewBonus
      * @return bool
      */
-    public function sendRewardMail(ReviewBonusModel $ratingBonus): bool
+    public function sendRewardMail(ReviewBonusModel $reviewBonus): bool
     {
         $obj                          = new stdClass();
-        $obj->tkunde                  = new Kunde($ratingBonus->customerID);
-        $obj->oBewertungGuthabenBonus = $ratingBonus->rawObject();
+        $obj->tkunde                  = new Kunde($reviewBonus->customerID);
+        $obj->oBewertungGuthabenBonus = $reviewBonus->rawObject();
         $mailer                       = Shop::Container()->get(Mailer::class);
         $mail                         = new Mail();
 

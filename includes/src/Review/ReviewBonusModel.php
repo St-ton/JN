@@ -15,7 +15,7 @@ use JTL\Model\DataModel;
  * Class ReviewBonusModel
  *
  * @property int      $id
- * @property int      $ratingID
+ * @property int      $reviewID
  * @property int      $customerID
  * @property float    $bonus
  * @property DateTime $date
@@ -53,7 +53,7 @@ final class ReviewBonusModel extends DataModel
         if ($attr === null) {
             $attr               = [];
             $attr['id']         = DataAttribute::create('kBewertungGuthabenBonus', 'int', null, false, true);
-            $attr['ratingID']   = DataAttribute::create('kBewertung', 'int', null, false);
+            $attr['reviewID']   = DataAttribute::create('kBewertung', 'int', null, false);
             $attr['customerID'] = DataAttribute::create('kKunde', 'int', null, false);
             $attr['bonus']      = DataAttribute::create('fGuthabenBonus', 'double', null, false);
             $attr['date']       = DataAttribute::create('dDatum', 'datetime', null, false);

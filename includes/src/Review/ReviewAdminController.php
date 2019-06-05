@@ -27,7 +27,7 @@ use function Functional\map;
 class ReviewAdminController extends BaseController
 {
     /**
-     * RatingController constructor.
+     * ReviewAdminController constructor.
      * @param DbInterface                $db
      * @param JTLCacheInterface          $cache
      * @param AlertServiceInterface|null $alertService
@@ -182,8 +182,7 @@ class ReviewAdminController extends BaseController
         }
         $activePagination   = $this->getActivePagination();
         $inactivePagination = $this->getInactivePagination();
-
-        $ratings       = $this->db->query(
+        $reviews            = $this->db->query(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -194,7 +193,7 @@ class ReviewAdminController extends BaseController
             LIMIT ' . $inactivePagination->getLimitSQL(),
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $last50ratings = $this->db->query(
+        $last50reviews      = $this->db->query(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -208,8 +207,8 @@ class ReviewAdminController extends BaseController
 
         $this->smarty->assign('oPagiInaktiv', $inactivePagination)
             ->assign('oPagiAktiv', $activePagination)
-            ->assign('oBewertung_arr', $ratings)
-            ->assign('oBewertungLetzten50_arr', $last50ratings)
+            ->assign('oBewertung_arr', $reviews)
+            ->assign('oBewertungLetzten50_arr', $last50reviews)
             ->assign('oConfig_arr', \getAdminSectionSettings(\CONF_BEWERTUNG));
     }
 
@@ -253,7 +252,7 @@ class ReviewAdminController extends BaseController
      * @param int $id
      * @return ReviewModel|null
      */
-    public function getRating(int $id): ?ReviewModel
+    public function getReview(int $id): ?ReviewModel
     {
         try {
             return new ReviewModel(['id' => $id], $this->db);
@@ -270,11 +269,11 @@ class ReviewAdminController extends BaseController
     {
         $id = Request::verifyGPCDataInt('kBewertung');
         try {
-            $rating = new ReviewModel(['id' => $id], $this->db);
+            $review = new ReviewModel(['id' => $id], $this->db);
         } catch (Exception $e) {
             return false;
         }
-        if ($rating->id === null
+        if ($review->id === null
             || empty($data['cName'])
             || empty($data['cTitel'])
             || !isset($data['nSterne'])
@@ -282,19 +281,19 @@ class ReviewAdminController extends BaseController
         ) {
             return false;
         }
-        if ($data['cAntwort'] !== $rating->answer) {
-            $rating->answerDate = !empty($data['cAntwort']) ? \date('Y-m-d') : null;
+        if ($data['cAntwort'] !== $review->answer) {
+            $review->answerDate = !empty($data['cAntwort']) ? \date('Y-m-d') : null;
         }
-        $rating->name    = $data['cName'];
-        $rating->title   = $data['cTitel'];
-        $rating->content = $data['cText'];
-        $rating->stars   = (int)$data['nSterne'];
-        $rating->answer  = !empty($data['cAntwort']) ? $data['cAntwort'] : null;
+        $review->name    = $data['cName'];
+        $review->title   = $data['cTitel'];
+        $review->content = $data['cText'];
+        $review->stars   = (int)$data['nSterne'];
+        $review->answer  = !empty($data['cAntwort']) ? $data['cAntwort'] : null;
 
-        $rating->save();
-        $this->updateAverage($rating->productID, $this->config['bewertung']['bewertung_freischalten']);
+        $review->save();
+        $this->updateAverage($review->productID, $this->config['bewertung']['bewertung_freischalten']);
 
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $rating->productID]);
+        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->productID]);
 
         return true;
     }
@@ -314,7 +313,7 @@ class ReviewAdminController extends BaseController
                 continue;
             }
             $this->updateAverage($model->productID, $this->config['bewertung']['bewertung_freischalten']);
-            $this->deleteRatingReward($model);
+            $this->deleteReviewReward($model);
             $model->delete();
             $cacheTags[] = $model->productID;
             ++$affected;
@@ -370,13 +369,13 @@ class ReviewAdminController extends BaseController
     }
 
     /**
-     * @param ReviewModel $rating
+     * @param ReviewModel $review
      * @return int
      */
-    private function deleteRatingReward(ReviewModel $rating): int
+    private function deleteReviewReward(ReviewModel $review): int
     {
         $affected = 0;
-        foreach ($rating->bonus as $bonusItem) {
+        foreach ($review->bonus as $bonusItem) {
             /** @var ReviewBonusModel $bonusItem */
             $customer = $this->db->select('tkunde', 'kKunde', $bonusItem->customerID);
             if ($customer !== null && $customer->kKunde > 0) {

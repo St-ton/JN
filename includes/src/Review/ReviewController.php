@@ -27,7 +27,7 @@ use JTLSmarty;
 class ReviewController extends BaseController
 {
     /**
-     * RatingController constructor.
+     * ReviewController constructor.
      * @param DbInterface                $db
      * @param JTLCacheInterface          $cache
      * @param AlertServiceInterface|null $alertService
@@ -55,7 +55,7 @@ class ReviewController extends BaseController
         $params   = Shop::getParameters();
         $customer = Frontend::getCustomer();
         if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
-            $messageSaveRating = $this->save(
+            $message = $this->save(
                 $params['kArtikel'],
                 $customer->getID(),
                 Shop::getLanguageID(),
@@ -63,7 +63,7 @@ class ReviewController extends BaseController
                 Request::verifyGPDataString('cText'),
                 $params['nSterne']
             );
-            \header('Location: ' . $messageSaveRating . '#alert-list', true, 303);
+            \header('Location: ' . $message . '#alert-list', true, 303);
             exit;
         }
         if (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
@@ -75,7 +75,7 @@ class ReviewController extends BaseController
             );
         }
         if (Request::verifyGPCDataInt('bfa') === 1) {
-            return $this->ratingPreCheck($customer, $params);
+            return $this->reviewPreCheck($customer, $params);
         }
     }
 
@@ -136,26 +136,26 @@ class ReviewController extends BaseController
         if ($this->checkProductWasPurchased($productID, Frontend::getCustomer()) === false) {
             return $url . 'bewertung_anzeigen=1&cFehler=f03';
         }
-        $rating = ReviewModel::loadByAttributes(['productID' => $productID, 'customerID' => $customerID], $this->db);
-        /** @var ReviewModel $rating */
-        $rating->productID  = $productID;
-        $rating->customerID = $customerID;
-        $rating->languageID = $langID;
-        $rating->name       = $_SESSION['Kunde']->cVorname . ' ' . mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
-        $rating->title      = $title;
-        $rating->content    = \strip_tags($text);
-        $rating->helpful    = 0;
-        $rating->notHelpful = 0;
-        $rating->stars      = $stars;
-        $rating->active     = (int)($this->config['bewertung']['bewertung_freischalten'] === 'N');
-        $rating->date       = \date('Y-m-d H:i:s');
+        $review = ReviewModel::loadByAttributes(['productID' => $productID, 'customerID' => $customerID], $this->db);
+        /** @var ReviewModel $review */
+        $review->productID  = $productID;
+        $review->customerID = $customerID;
+        $review->languageID = $langID;
+        $review->name       = $_SESSION['Kunde']->cVorname . ' ' . mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
+        $review->title      = $title;
+        $review->content    = \strip_tags($text);
+        $review->helpful    = 0;
+        $review->notHelpful = 0;
+        $review->stars      = $stars;
+        $review->active     = (int)($this->config['bewertung']['bewertung_freischalten'] === 'N');
+        $review->date       = \date('Y-m-d H:i:s');
 
-        \executeHook(\HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$rating]);
+        \executeHook(\HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$review]);
 
-        $rating->save();
+        $review->save();
         if ($this->config['bewertung']['bewertung_freischalten'] === 'N') {
             $this->updateAverage($productID, $this->config['bewertung']['bewertung_freischalten']);
-            $reward = $this->addReward($rating);
+            $reward = $this->addReward($review);
             $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $productID]);
 
             return $url . (($reward > 0)
@@ -171,9 +171,9 @@ class ReviewController extends BaseController
      * @param array $params
      * @return bool|void
      */
-    private function ratingPreCheck(Kunde $customer, array $params): bool
+    private function reviewPreCheck(Kunde $customer, array $params): bool
     {
-        $ratingAllowed = true;
+        $reviewAllowed = true;
         if (!$customer->isLoggedIn()) {
             $helper = Shop::Container()->getLinkService();
             \header(
@@ -209,11 +209,11 @@ class ReviewController extends BaseController
                 'productNotBuyed',
                 ['showInAlertListTemplate' => false]
             );
-            $ratingAllowed = false;
+            $reviewAllowed = false;
         }
 
         $this->smarty->assign('Artikel', $product)
-            ->assign('ratingAllowed', $ratingAllowed)
+            ->assign('ratingAllowed', $reviewAllowed)
             ->assign(
                 'oBewertung',
                 ReviewModel::loadByAttributes(
@@ -265,80 +265,80 @@ class ReviewController extends BaseController
     private function updateWasHelpful(int $productID, int $customerID, int $page = 1, int $stars = 0): void
     {
         $helpful  = 0;
-        $ratingID = 0;
+        $reviewID = 0;
         foreach (\array_keys($_POST) as $key) {
             \preg_match('/^(nichthilfreich_)(\d*)/', $key, $hits);
             if (\count($hits) === 3) {
-                $ratingID = (int)$hits[2];
+                $reviewID = (int)$hits[2];
                 break;
             }
             \preg_match('/^(hilfreich_)(\d*)/', $key, $hits);
             if (\count($hits) === 3) {
-                $ratingID = (int)$hits[2];
+                $reviewID = (int)$hits[2];
                 $helpful  = 1;
                 break;
             }
         }
         if ($customerID <= 0
-            || $ratingID === 0
+            || $reviewID === 0
             || $this->config['bewertung']['bewertung_anzeigen'] !== 'Y'
             || $this->config['bewertung']['bewertung_hilfreich_anzeigen'] !== 'Y'
         ) {
             return;
         }
         try {
-            $rating = new ReviewModel(['id' => $ratingID], $this->db);
+            $review = new ReviewModel(['id' => $reviewID], $this->db);
         } catch (Exception $e) {
             return;
         }
-        if ($rating->customerID === $customerID) {
+        if ($review->customerID === $customerID) {
             return;
         }
-        $helpfulRating = ReviewHelpfulModel::loadByAttributes(
-            ['ratingID' => $ratingID, 'customerID' => $customerID],
+        $helpfulReview = ReviewHelpfulModel::loadByAttributes(
+            ['reviewID' => $reviewID, 'customerID' => $customerID],
             $this->db
         );
-        /** @var $helpfulRating ReviewHelpfulModel */
+        /** @var $helpfulReview ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;
         // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
-        if ($helpfulRating->id === null) {
-            $helpfulRating->ratingID   = $ratingID;
-            $helpfulRating->customerID = $customerID;
-            $helpfulRating->rating     = 0;
+        if ($helpfulReview->id === null) {
+            $helpfulReview->reviewID   = $reviewID;
+            $helpfulReview->customerID = $customerID;
+            $helpfulReview->rating     = 0;
             // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
             if ($helpful === 1) {
-                $helpfulRating->rating = 1;
-                ++$rating->helpful;
-                $rating->save(['helpful']);
+                $helpfulReview->rating = 1;
+                ++$review->helpful;
+                $review->save(['helpful']);
             } else {
                 // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese negativ ist
-                ++$rating->notHelpful;
-                $rating->save(['notHelpful']);
+                ++$review->notHelpful;
+                $review->save(['notHelpful']);
             }
 
-            \executeHook(\HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$helpfulRating]);
+            \executeHook(\HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$helpfulReview]);
 
-            $helpfulRating->save();
-            $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $rating->productID]);
+            $helpfulReview->save();
+            $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->productID]);
             \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
             exit;
         }
         // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
-        if ($helpful === 1 && $helpfulRating->rating !== $helpful) {
-            ++$rating->helpful;
-            --$rating->notHelpful;
-            $rating->save(['helpful', 'notHelpful']);
-        } elseif ($helpful === 0 && $helpfulRating->rating !== $helpful) {
+        if ($helpful === 1 && $helpfulReview->rating !== $helpful) {
+            ++$review->helpful;
+            --$review->notHelpful;
+            $review->save(['helpful', 'notHelpful']);
+        } elseif ($helpful === 0 && $helpfulReview->rating !== $helpful) {
             // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
-            --$rating->helpful;
-            ++$rating->notHelpful;
-            $rating->save(['helpful', 'notHelpful']);
+            --$review->helpful;
+            ++$review->notHelpful;
+            $review->save(['helpful', 'notHelpful']);
         }
-        $helpfulRating->rating     = $helpful;
-        $helpfulRating->ratingID   = $ratingID;
-        $helpfulRating->customerID = $customerID;
-        $helpfulRating->save();
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $rating->productID]);
+        $helpfulReview->rating     = $helpful;
+        $helpfulReview->reviewID   = $reviewID;
+        $helpfulReview->customerID = $customerID;
+        $helpfulReview->save();
+        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->productID]);
         \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
         exit;
     }

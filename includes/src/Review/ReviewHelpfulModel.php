@@ -14,7 +14,7 @@ use JTL\Model\DataModel;
  * Class ReviewHelpfulModel
  * @package JTL\Review
  * @property int $id
- * @property int $ratingID
+ * @property int $reviewID
  * @property int $customerID
  * @property int $rating
  */
@@ -53,7 +53,7 @@ final class ReviewHelpfulModel extends DataModel
         if ($attr === null) {
             $attr               = [];
             $attr['id']         = DataAttribute::create('kBewertungHilfreich', 'int', null, false, true);
-            $attr['ratingID']   = DataAttribute::create('kBewertung', 'int', self::cast('0', 'int'), false);
+            $attr['reviewID']   = DataAttribute::create('kBewertung', 'int', self::cast('0', 'int'), false);
             $attr['customerID'] = DataAttribute::create('kKunde', 'int', self::cast('0', 'int'), false);
             $attr['rating']     = DataAttribute::create('nBewertung', 'int', null, false);
         }

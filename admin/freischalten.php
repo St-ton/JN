@@ -276,12 +276,12 @@ if ($step === 'freischalten_uebersicht') {
         ->setItemCount(gibMaxNewsletterEmpfaenger())
         ->assemble();
 
-    $ratings      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
+    $reviews      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
     $queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
     $tags         = gibTagFreischalten(' LIMIT ' . $pagiTags->getLimitSQL(), $tagsSQL);
     $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
     $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
-    $smarty->assign('oBewertung_arr', $ratings)
+    $smarty->assign('oBewertung_arr', $reviews)
            ->assign('oSuchanfrage_arr', $queries)
            ->assign('oTag_arr', $tags)
            ->assign('oNewsKommentar_arr', $newsComments)

@@ -141,7 +141,7 @@ class ReviewController extends BaseController
         $review->productID  = $productID;
         $review->customerID = $customerID;
         $review->languageID = $langID;
-        $review->name       = $_SESSION['Kunde']->cVorname . ' ' . mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
+        $review->name       = $_SESSION['Kunde']->cVorname . ' ' . \mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
         $review->title      = $title;
         $review->content    = \strip_tags($text);
         $review->helpful    = 0;
@@ -291,7 +291,7 @@ class ReviewController extends BaseController
         } catch (Exception $e) {
             return;
         }
-        if ($review->customerID === $customerID) {
+        if ($review->getCustomerID() === $customerID) {
             return;
         }
         $helpfulReview = ReviewHelpfulModel::loadByAttributes(
@@ -319,7 +319,7 @@ class ReviewController extends BaseController
             \executeHook(\HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$helpfulReview]);
 
             $helpfulReview->save();
-            $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->productID]);
+            $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
             \header('Location: ' . $baseURL . '&cHinweis=h02', true, 303);
             exit;
         }
@@ -338,7 +338,7 @@ class ReviewController extends BaseController
         $helpfulReview->reviewID   = $reviewID;
         $helpfulReview->customerID = $customerID;
         $helpfulReview->save();
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->productID]);
+        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $review->getProductID()]);
         \header('Location: ' . $baseURL . '&cHinweis=h03', true, 303);
         exit;
     }

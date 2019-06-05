@@ -109,8 +109,8 @@ abstract class BaseController
                 AND YEAR(dDatum) = :dyear
                 AND MONTH(dDatum) = :dmonth',
             [
-                'cid'    => $review->customerID,
-                'rid'    => $review->id,
+                'cid'    => $review->getCustomerID(),
+                'rid'    => $review->getId(),
                 'dyear'  => \date('Y'),
                 'dmonth' => \date('m')
             ],
@@ -119,7 +119,7 @@ abstract class BaseController
         if ((float)$reviewBonus->fGuthabenProMonat > $maxBalance) {
             return $reward;
         }
-        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($review->content)) {
+        if ((int)$this->config['bewertung']['bewertung_stufe2_anzahlzeichen'] <= mb_strlen($review->getContent())) {
             $reward = ((float)$reviewBonus->fGuthabenProMonat + $level2balance) > $maxBalance
                 ? $maxBalance - (float)$reviewBonus->fGuthabenProMonat
                 : $level2balance;
@@ -128,17 +128,17 @@ abstract class BaseController
                 ? $maxBalance - (float)$reviewBonus->fGuthabenProMonat
                 : $level1balance;
         }
-        $this->increaseCustomerBalance($review->customerID, $reward);
+        $this->increaseCustomerBalance($review->getCustomerID(), $reward);
 
         $reviewBonus = ReviewBonusModel::loadByAttributes(
-            ['customerID' => $review->customerID, 'reviewID' => $review->id],
+            ['customerID' => $review->getCustomerID(), 'reviewID' => $review->getId()],
             $this->db
         );
         /** @var $reviewBonus ReviewBonusModel */
-        $reviewBonus->bonus      = $reward;
-        $reviewBonus->reviewID   = $review->id;
-        $reviewBonus->customerID = $review->customerID;
-        $reviewBonus->date       = 'NOW()';
+        $reviewBonus->setBonus($reward);
+        $reviewBonus->setReviewID($review->getId());
+        $reviewBonus->setCustomerID($review->getCustomerID());
+        $reviewBonus->setDate('NOW()');
         $reviewBonus->save();
         $this->sendRewardMail($reviewBonus);
 

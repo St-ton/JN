@@ -27,6 +27,36 @@ use JTL\Model\DataModel;
  * @property int        $notHelpful
  * @property int        $stars
  * @property int        $active
+ * @method void setActive(int $active)
+ * @method void setStars(int $stars)
+ * @method void setHelpful(int $count)
+ * @method void setNotHelpful(int $count)
+ * @method void setContent(string $content)
+ * @method void setTitle(string $title)
+ * @method void setName(string $name)
+ * @method void setDate(string $date)
+ * @method void setLanguageID(int $langID)
+ * @method void setCustomerID(int $customerID)
+ * @method void setProductID(int $productID)
+ * @method void setId(int $id)
+ * @method void setAnswer(?string $answer)
+ * @method void setAnswerDate(?string $date)
+ * @method int getActive()
+ * @method int getStars()
+ * @method int getHelpful()
+ * @method int getNotHelpful()
+ * @method string getContent()
+ * @method string getTitle()
+ * @method string getName()
+ * @method string getDate()
+ * @method string getAnswer()
+ * @method string getAnswerDate()
+ * @method int getLanguageID()
+ * @method int getCustomerID()
+ * @method int getProductID()
+ * @method int getId()
+ * @method Collection getVotes()
+ * @method Collection getBonus()
  * @property DateTime   $date
  * @property string     $answer
  * @property DateTime   $answerDate

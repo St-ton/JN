@@ -17,6 +17,14 @@ use JTL\Model\DataModel;
  * @property int $reviewID
  * @property int $customerID
  * @property int $rating
+ * @method int getRating()
+ * @method int getCustomerID()
+ * @method int getReviewID()
+ * @method int getId()
+ * @method void setRating(int $rating)
+ * @method void setCustomerID(int $customerID)
+ * @method void setReviewID(int $reviewID)
+ * @method void setId(int $id)
  */
 final class ReviewHelpfulModel extends DataModel
 {

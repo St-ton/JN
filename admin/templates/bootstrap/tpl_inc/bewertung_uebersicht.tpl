@@ -25,7 +25,7 @@
     </ul>
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active in{/if}">
-            {if $oBewertung_arr && $oBewertung_arr|@count > 0}
+            {if $inactiveReviews|count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiInaktiv cAnchor='freischalten'}
                 <form method="post" action="bewertung.php">
                     {$jtl_token}
@@ -49,22 +49,22 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
+                                    {foreach $inactiveReviews as $review}
                                         <tr>
                                             <td class="check">
-                                                <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}"/>
-                                                <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" id="inactive-{$oBewertung->kBewertung}" />
+                                                <input type="hidden" name="kArtikel[{$review@index}]" value="{$review->kArtikel}"/>
+                                                <input name="kBewertung[{$review@index}]" type="checkbox" value="{$review->kBewertung}" id="inactive-{$review->kBewertung}" />
                                             </td>
                                             <td>
-                                                <label for="inactive-{$oBewertung->kBewertung}">{$oBewertung->ArtikelName}</label>
-                                                &nbsp;<a href="{$shopURL}/index.php?a={$oBewertung->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                                <label for="inactive-{$review->kBewertung}">{$review->ArtikelName}</label>
+                                                &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                             </td>
-                                            <td>{$oBewertung->cName}.</td>
-                                            <td><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
-                                            <td class="tcenter">{$oBewertung->nSterne}</td>
-                                            <td class="tcenter">{$oBewertung->Datum}</td>
+                                            <td>{$review->cName}.</td>
+                                            <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
+                                            <td class="tcenter">{$review->nSterne}</td>
+                                            <td class="tcenter">{$review->Datum}</td>
                                             <td class="tcenter">
-                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
@@ -93,7 +93,7 @@
             {/if}
         </div>
         <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active in{/if}">
-            {if $oBewertungLetzten50_arr && $oBewertungLetzten50_arr|@count > 0}
+            {if $activeReviews|count > 0}
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='letzten50'}
                 <form name="letzten50" method="post" action="bewertung.php">
                     {$jtl_token}
@@ -117,38 +117,38 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach $oBewertungLetzten50_arr as $oBewertungLetzten50}
+                                {foreach $activeReviews as $review}
                                     <tr>
                                         <td class="check">
-                                            <input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}" id="l50-{$oBewertungLetzten50->kBewertung}">
-                                            <input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}">
+                                            <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="l50-{$review->kBewertung}">
+                                            <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
                                         </td>
                                         <td>
-                                            <label for="l50-{$oBewertungLetzten50->kBewertung}">{$oBewertungLetzten50->ArtikelName}</label>
-                                            &nbsp;<a href="{$shopURL}/index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                            <label for="l50-{$review->kBewertung}">{$review->ArtikelName}</label>
+                                            &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                         </td>
-                                        <td>{$oBewertungLetzten50->cName}.</td>
+                                        <td>{$review->cName}.</td>
                                         <td>
-                                            <strong>{$oBewertungLetzten50->cTitel}</strong><br>
-                                            {$oBewertungLetzten50->cText}
-                                            {if !empty($oBewertungLetzten50->cAntwort)}
+                                            <strong>{$review->cTitel}</strong><br>
+                                            {$review->cText}
+                                            {if !empty($review->cAntwort)}
                                                 <blockquote class="review-reply">
                                                     <strong>{__('ratingReply')}</strong><br>
-                                                    {$oBewertungLetzten50->cAntwort}
+                                                    {$review->cAntwort}
                                                 </blockquote>
                                             {/if}
                                         </td>
-                                        <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
-                                        <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
+                                        <td class="tcenter">{$review->nSterne}</td>
+                                        <td class="tcenter">{$review->Datum}</td>
                                         <td class="tcenter7 tright" style="min-width: 100px;">
                                             <div class="btn-group">
-                                                {if !empty($oBewertungLetzten50->cAntwort)}
-                                                    <a href="bewertung.php?a=delreply&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                {if !empty($review->cAntwort)}
+                                                    <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                        class="btn btn-danger" title="{__('removeReply')}">
                                                         <i class="fa fa-times-circle-o"></i>
                                                     </a>
                                                 {/if}
-                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
@@ -192,7 +192,7 @@
                 {if isset($cArtNr) && $cArtNr|strlen > 0}
                     <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                 {/if}
-                {if isset($filteredRatings) && $filteredRatings|@count > 0}
+                {if isset($filteredReviews) && $filteredReviews|@count > 0}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{$cArtNr}</h3>
@@ -211,22 +211,22 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach $filteredRatings as $rating}
+                                {foreach $filteredReviews as $review}
                                     <tr>
                                         <td>
-                                            <input name="kBewertung[]" type="checkbox" value="{$rating->kBewertung}" id="filtered-{$rating->kBewertung}">
-                                            <input type="hidden" name="kArtikel[]" value="{$rating->kArtikel}">
+                                            <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="filtered-{$review->kBewertung}">
+                                            <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
                                         </td>
                                         <td>
-                                            <label for="filtered-{$rating->kBewertung}">{$rating->ArtikelName}</label>
-                                            &nbsp;<a href="{$shopURL}/index.php?a={$rating->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                            <label for="filtered-{$review->kBewertung}">{$review->ArtikelName}</label>
+                                            &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                         </td>
-                                        <td>{$rating->cName}.</td>
-                                        <td><b>{$rating->cTitel}</b><br />{$rating->cText}</td>
-                                        <td class="tcenter">{$rating->nSterne}</td>
-                                        <td class="tcenter">{$rating->Datum}</td>
+                                        <td>{$review->cName}.</td>
+                                        <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
+                                        <td class="tcenter">{$review->nSterne}</td>
+                                        <td class="tcenter">{$review->Datum}</td>
                                         <td class="tcenter">
-                                            <a href="bewertung.php?a=editieren&kBewertung={$rating->kBewertung}&tab=artikelbewertung"
+                                            <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
                                                class="btn btn-default" title="{__('modify')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>

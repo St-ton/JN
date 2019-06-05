@@ -19,6 +19,16 @@ use JTL\Model\DataModel;
  * @property int      $customerID
  * @property float    $bonus
  * @property DateTime $date
+ * @method int getId()
+ * @method int getReviewID()
+ * @method int getCustomerID()
+ * @method float getBonus()
+ * @method string getDate()
+ * @method void setId(int $id)
+ * @method void setReviewID(int $reviewID)
+ * @method void setCustomerID(int $customerID)
+ * @method void setBonus(float $bonus)
+ * @method void setDate(string $date)
  */
 final class ReviewBonusModel extends DataModel
 {

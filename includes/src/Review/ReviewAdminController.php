@@ -161,7 +161,7 @@ class ReviewAdminController extends BaseController
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $this->smarty->assign('cArtNr', Text::filterXSS($data['cArtNr']))
-                ->assign('filteredRatings', $filtered ?? []);
+                ->assign('filteredReviews', $filtered ?? []);
         }
 
         return true;
@@ -182,7 +182,17 @@ class ReviewAdminController extends BaseController
         }
         $activePagination   = $this->getActivePagination();
         $inactivePagination = $this->getInactivePagination();
-        $reviews            = $this->db->query(
+        $sanitize           = function ($e) {
+            $e->kBewertung      = (int)$e->kBewertung;
+            $e->kArtikel        = (int)$e->kArtikel;
+            $e->kKunde          = (int)$e->kKunde;
+            $e->kSprache        = (int)$e->kSprache;
+            $e->nHilfreich      = (int)$e->nHilfreich;
+            $e->nNichtHilfreich = (int)$e->nNichtHilfreich;
+            $e->nSterne         = (int)$e->nSterne;
+            $e->nAktiv          = (int)$e->nAktiv;
+        };
+        $inactiveReviews = $this->db->query(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -191,9 +201,9 @@ class ReviewAdminController extends BaseController
                 AND tbewertung.nAktiv = 0
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
             LIMIT ' . $inactivePagination->getLimitSQL(),
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $last50reviews      = $this->db->query(
+            ReturnType::COLLECTION
+        )->each($sanitize)->toArray();
+        $activeReviews = $this->db->query(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -202,13 +212,13 @@ class ReviewAdminController extends BaseController
                 AND tbewertung.nAktiv = 1
             ORDER BY tbewertung.dDatum DESC
             LIMIT ' . $activePagination->getLimitSQL(),
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+            ReturnType::COLLECTION
+        )->each($sanitize)->toArray();
 
         $this->smarty->assign('oPagiInaktiv', $inactivePagination)
             ->assign('oPagiAktiv', $activePagination)
-            ->assign('oBewertung_arr', $reviews)
-            ->assign('oBewertungLetzten50_arr', $last50reviews)
+            ->assign('inactiveReviews', $inactiveReviews)
+            ->assign('activeReviews', $activeReviews)
             ->assign('oConfig_arr', \getAdminSectionSettings(\CONF_BEWERTUNG));
     }
 
@@ -282,13 +292,13 @@ class ReviewAdminController extends BaseController
             return false;
         }
         if ($data['cAntwort'] !== $review->answer) {
-            $review->answerDate = !empty($data['cAntwort']) ? \date('Y-m-d') : null;
+            $review->setAnswerDate(!empty($data['cAntwort']) ? \date('Y-m-d') : null);
         }
-        $review->name    = $data['cName'];
-        $review->title   = $data['cTitel'];
-        $review->content = $data['cText'];
-        $review->stars   = (int)$data['nSterne'];
-        $review->answer  = !empty($data['cAntwort']) ? $data['cAntwort'] : null;
+        $review->setName($data['cName']);
+        $review->setTitle($data['cTitel']);
+        $review->setContent($data['cText']);
+        $review->setStars((int)$data['nSterne']);
+        $review->setAnswer(!empty($data['cAntwort']) ? $data['cAntwort'] : null);
 
         $review->save();
         $this->updateAverage($review->productID, $this->config['bewertung']['bewertung_freischalten']);
@@ -312,10 +322,10 @@ class ReviewAdminController extends BaseController
             } catch (Exception $e) {
                 continue;
             }
-            $this->updateAverage($model->productID, $this->config['bewertung']['bewertung_freischalten']);
+            $this->updateAverage($model->getProductID(), $this->config['bewertung']['bewertung_freischalten']);
             $this->deleteReviewReward($model);
             $model->delete();
-            $cacheTags[] = $model->productID;
+            $cacheTags[] = $model->getProductID();
             ++$affected;
         }
         $this->cache->flushTags(map($cacheTags, function ($e) {
@@ -339,11 +349,11 @@ class ReviewAdminController extends BaseController
             } catch (Exception $e) {
                 continue;
             }
-            $model->active = 1;
+            $model->setActive(1);
             $model->save(['active']);
-            $this->updateAverage($model->productID, $this->config['bewertung']['bewertung_freischalten']);
+            $this->updateAverage($model->getProductID(), $this->config['bewertung']['bewertung_freischalten']);
             $this->addReward($model);
-            $cacheTags[] = $model->productID;
+            $cacheTags[] = $model->getProductID();
             ++$affected;
         }
         $this->cache->flushTags(map($cacheTags, function ($e) {
@@ -363,8 +373,8 @@ class ReviewAdminController extends BaseController
         } catch (Exception $e) {
             return;
         }
-        $model->answer     = null;
-        $model->answerDate = null;
+        $model->setAnswer(null);
+        $model->setAnswerDate(null);
         $model->save(['answer', 'answerDate']);
     }
 
@@ -375,13 +385,13 @@ class ReviewAdminController extends BaseController
     private function deleteReviewReward(ReviewModel $review): int
     {
         $affected = 0;
-        foreach ($review->bonus as $bonusItem) {
+        foreach ($review->getBonus() as $bonusItem) {
             /** @var ReviewBonusModel $bonusItem */
-            $customer = $this->db->select('tkunde', 'kKunde', $bonusItem->customerID);
+            $customer = $this->db->select('tkunde', 'kKunde', $bonusItem->getCustomerID());
             if ($customer !== null && $customer->kKunde > 0) {
-                $balance = $customer->fGuthaben - $bonusItem->bonus;
+                $balance = $customer->fGuthaben - $bonusItem->getBonus();
                 $upd     = (object)['fGuthaben' => $balance > 0 ? $balance : 0];
-                $this->db->update('tkunde', 'kKunde', $bonusItem->customerID, $upd);
+                $this->db->update('tkunde', 'kKunde', $bonusItem->getCustomerID(), $upd);
                 ++$affected;
             }
         }

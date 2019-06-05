@@ -5,34 +5,34 @@
         <input type="hidden" name="bewertung_editieren" value="1" />
         <input type="hidden" name="tab" value="{$cTab}" />
         {if isset($nFZ) && $nFZ == 1}<input name="nFZ" type="hidden" value="1">{/if}
-        <input type="hidden" name="kBewertung" value="{$oBewertung->kBewertung}" />
+        <input type="hidden" name="kBewertung" value="{$review->getId()}" />
 
         <table class="kundenfeld table" id="formtable">
             <tr>
-                <td><label for="cName">{__('customerName')}:</label></td>
-                <td><input class="form-control" id="cName" name="cName" type="text" value="{$oBewertung->cName}" /></td>
+                <td><label for="name">{__('customerName')}:</label></td>
+                <td><input class="form-control" id="name" name="cName" type="text" value="{$review->getName()}" /></td>
             </tr>
             <tr>
-                <td><label for="cTitel">{__('name')}:</label></td>
-                <td><input class="form-control" id="cTitel" name="cTitel" type="text" value="{$oBewertung->cTitel}" /></td>
+                <td><label for="title">{__('name')}:</label></td>
+                <td><input class="form-control" id="title" name="cTitel" type="text" value="{$review->getTitle()}" /></td>
             </tr>
             <tr>
-                <td><label for="nSterne">{__('ratingStars')}:</label></td>
+                <td><label for="stars">{__('ratingStars')}:</label></td>
                 <td>
-                    <select id="nSterne" name="nSterne" class="form-controlcombo">
+                    <select id="stars" name="nSterne" class="form-controlcombo">
                         {for $i=1 to 5}
-                            <option value="{$i}"{if (int)$oBewertung->nSterne === $i} selected{/if}>{$i}</option>
+                            <option value="{$i}"{if $review->getStars() === $i} selected{/if}>{$i}</option>
                         {/for}
                     </select>
                 </td>
             </tr>
             <tr>
-                <td><label for="cText">{__('ratingText')}:</label></td>
-                <td><textarea id="cText" class="ckeditor" name="cText" rows="15" cols="60">{$oBewertung->cText}</textarea></td>
+                <td><label for="content">{__('ratingText')}:</label></td>
+                <td><textarea id="content" class="ckeditor" name="cText" rows="15" cols="60">{$review->getContent()}</textarea></td>
             </tr>
             <tr>
-                <td><label for="cAntwort">{__('ratingReply')}</label></td>
-                <td><textarea id="cAntwort" class="ckeditor" name="cAntwort" rows="15" cols="60">{$oBewertung->cAntwort}</textarea></td>
+                <td><label for="answer">{__('ratingReply')}</label></td>
+                <td><textarea id="answer" class="ckeditor" name="cAntwort" rows="15" cols="60">{$review->getAnswer()}</textarea></td>
             </tr>
         </table>
         <div class="save_wrapper">

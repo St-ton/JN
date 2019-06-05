@@ -192,7 +192,7 @@ final class ReviewAdminController extends BaseController
             $e->nSterne         = (int)$e->nSterne;
             $e->nAktiv          = (int)$e->nAktiv;
         };
-        $inactiveReviews = $this->db->query(
+        $inactiveReviews    = $this->db->query(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 
@@ -203,7 +203,7 @@ final class ReviewAdminController extends BaseController
             LIMIT ' . $inactivePagination->getLimitSQL(),
             ReturnType::COLLECTION
         )->each($sanitize)->toArray();
-        $activeReviews = $this->db->query(
+        $activeReviews      = $this->db->query(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel 

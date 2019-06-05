@@ -834,7 +834,7 @@ class Kunde
             [
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
-                'dExpires' => $expires->format(DateTime::ATOM),
+                'dExpires' => $expires->format('Y-m-d H:i:s'),
             ],
             ReturnType::AFFECTED_ROWS
         );

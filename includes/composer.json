@@ -36,7 +36,7 @@
                 "name": "jtlshop/shop4-systemcheck",
                 "version": "1.1.0",
                 "source": {
-                    "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
+                    "url": "https://gitlab.com/jtl-software/jtl-shop/tools/systemcheck.git",
                     "type": "git",
                     "reference": "1.1.0"
                 }
@@ -44,7 +44,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator.git"
         }
     ],
     "autoload": {

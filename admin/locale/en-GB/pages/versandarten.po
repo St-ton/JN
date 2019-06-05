@@ -328,3 +328,19 @@ msgstr "Surcharge list deleted successfully."
 
 msgid "successDeleteZIP"
 msgstr "Postal code/postal code area deleted successfully."
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandkosten_pauschale_jtl"
+msgstr "Standard shipping costs according to destination country"
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandberechnung_artikelanzahl_jtl"
+msgstr "Shipping costs according to item quantity and destination country"
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandberechnung_warenwert_jtl"
+msgstr "Shipping costs according to product value and destination country"
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandberechnung_gewicht_jtl"
+msgstr "Shipping costs according to weight and destination country"

@@ -172,7 +172,7 @@
                     {if $useMediaGroup}
                         {block name='productdetails-tabs-tab-mediagroup'}
                             {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                                {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                                {$cMedienTypId = $cMedienTyp|@seofy}
                                 {tab title=$cMedienTyp active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
                                     <div id="tab-{$cMedienTypId}">
                                         {include file='productdetails/mediafile.tpl'}
@@ -421,7 +421,7 @@
                         {if $useMediaGroup}
                             {block name='productdetails-tabs-media-gorup'}
                                 {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                                    {$cMedienTypId = $cMedienTyp|@seofy}
                                     {card no-body=true class="mb-3"}
                                         {cardheader id="tab-{$cMedienTypId}-head"
                                             class="h6 mb-0"

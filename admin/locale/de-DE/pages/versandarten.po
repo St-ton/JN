@@ -328,3 +328,19 @@ msgstr "Die Zuschlagsliste wurde erfolgreich gelöscht."
 
 msgid "successDeleteZIP"
 msgstr "Der PLZ/PLZ-Bereich wurde erfolgreich gelöscht."
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandkosten_pauschale_jtl"
+msgstr "Pauschale Versandkosten nach Lieferland"
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandberechnung_artikelanzahl_jtl"
+msgstr "Versandkosten nach Artikelanzahl und Lieferland"
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandberechnung_warenwert_jtl"
+msgstr "Versandkosten nach Warenwert und Lieferland"
+
+# shipping types (tversandberechnung)
+msgid "shippingType_vm_versandberechnung_gewicht_jtl"
+msgstr "Versandkosten nach Gewicht und Lieferland"

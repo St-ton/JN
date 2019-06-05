@@ -301,13 +301,13 @@ class ReviewController extends BaseController
         /** @var $helpfulReview ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;
         // Hat der Kunde für diese Bewertung noch keine hilfreich flag gesetzt?
-        if ($helpfulReview->id === null) {
-            $helpfulReview->reviewID   = $reviewID;
-            $helpfulReview->customerID = $customerID;
-            $helpfulReview->rating     = 0;
+        if ($helpfulReview->getId() === null) {
+            $helpfulReview->setReviewID($reviewID);
+            $helpfulReview->setCustomerID($customerID);
+            $helpfulReview->setRating(0);
             // Wenn Hilfreich neu für eine Bewertung eingetragen wird und diese positiv ist
             if ($helpful === 1) {
-                $helpfulReview->rating = 1;
+                $helpfulReview->setRating(1);
                 ++$review->helpful;
                 $review->save(['helpful']);
             } else {
@@ -324,11 +324,11 @@ class ReviewController extends BaseController
             exit;
         }
         // Wenn Hilfreich nicht neu (wechsel) für eine Bewertung eingetragen wird und diese positiv ist
-        if ($helpful === 1 && $helpfulReview->rating !== $helpful) {
+        if ($helpful === 1 && $helpfulReview->getRating() !== $helpful) {
             ++$review->helpful;
             --$review->notHelpful;
             $review->save(['helpful', 'notHelpful']);
-        } elseif ($helpful === 0 && $helpfulReview->rating !== $helpful) {
+        } elseif ($helpful === 0 && $helpfulReview->getRating() !== $helpful) {
             // Wenn Hilfreich neu für (wechsel) eine Bewertung eingetragen wird und diese negativ ist
             --$review->helpful;
             ++$review->notHelpful;

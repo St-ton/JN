@@ -20,7 +20,7 @@ use JTL\Model\DataModel;
  * @method int getRating()
  * @method int getCustomerID()
  * @method int getReviewID()
- * @method int getId()
+ * @method int|null getId()
  * @method void setRating(int $rating)
  * @method void setCustomerID(int $customerID)
  * @method void setReviewID(int $reviewID)

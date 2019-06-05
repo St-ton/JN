@@ -24,7 +24,7 @@ use function Functional\map;
  * Class ReviewAdminController
  * @package JTL\Review
  */
-class ReviewAdminController extends BaseController
+final class ReviewAdminController extends BaseController
 {
     /**
      * ReviewAdminController constructor.

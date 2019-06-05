@@ -255,6 +255,7 @@
             $('[data-toggle="popover"]').popover({
                 trigger: 'hover',
                 html: true,
+                sanitize: false,
                 content: function() {
                     var ref = $(this).attr('data-ref');
                     return $(ref).html();

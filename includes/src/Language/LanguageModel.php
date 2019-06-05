@@ -183,7 +183,6 @@ final class LanguageModel extends DataModel
                 ->setNullable(false)
                 ->setDynamic(true);
 
-
             $url = new DataAttribute();
             $url->setName('cURL')
                 ->setDataType('varchar')

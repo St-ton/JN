@@ -15,6 +15,8 @@ use IteratorAggregate;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use Traversable;
+use function Functional\map;
+use function Functional\select;
 
 /**
  * Class CustomerFields
@@ -22,10 +24,14 @@ use Traversable;
  */
 class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
 {
-    /** @var CustomerField[] */
+    /**
+     * @var CustomerField[]
+     */
     private static $fields = [];
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $langID = 0;
 
     /**
@@ -43,24 +49,24 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
         }
     }
 
+    /**
+     * @param int $langID
+     * @return CustomerFields
+     */
     public function load(int $langID): self
     {
         $this->langID = $langID;
         if (!isset(self::$fields[$langID])) {
-            self::$fields[$langID] = [];
-
-            foreach (Shop::Container()->getDB()->queryPrepared(
+            self::$fields[$langID] = Shop::Container()->getDB()->queryPrepared(
                 'SELECT kKundenfeld, kSprache, cName, cWawi, cTyp, nSort, nPflicht, nEditierbar
                     FROM tkundenfeld
                     WHERE kSprache = :langID
                     ORDER BY nSort',
-                [
-                    'langID' => $langID,
-                ],
-                ReturnType::ARRAY_OF_OBJECTS
-            ) as $customerField) {
-                self::$fields[$langID][$customerField->kKundenfeld] = new CustomerField($customerField);
-            }
+                ['langID' => $langID],
+                ReturnType::COLLECTION
+            )->mapInto(CustomerField::class)->keyBy(function (CustomerField $field) {
+                return $field->getID();
+            })->toArray();
         }
 
         return $this;
@@ -79,14 +85,11 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function getNonEditableFields(): array
     {
-        $result = [];
-        foreach ($this->getFields() as $field) {
-            if (!$field->isEditable()) {
-                $result[] = $field->getID();
-            }
-        }
-
-        return $result;
+        return map(select($this->getFields(), function (CustomerField $e) {
+            return !$e->isEditable();
+        }), function (CustomerField $e) {
+            return $e->getID();
+        });
     }
 
     /**

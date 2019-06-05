@@ -282,15 +282,15 @@ class ReviewAdminController extends BaseController
         ) {
             return false;
         }
+        if ($data['cAntwort'] !== $rating->answer) {
+            $rating->answerDate = !empty($data['cAntwort']) ? \date('Y-m-d') : null;
+        }
         $rating->name    = $data['cName'];
         $rating->title   = $data['cTitel'];
         $rating->content = $data['cText'];
         $rating->stars   = (int)$data['nSterne'];
         $rating->answer  = !empty($data['cAntwort']) ? $data['cAntwort'] : null;
 
-        if ($data['cAntwort'] !== $rating->answer) {
-            $rating->answerDate = !empty($data['cAntwort']) ? \date('Y-m-d') : null;
-        }
         $rating->save();
         $this->updateAverage($rating->productID, $this->config['bewertung']['bewertung_freischalten']);
 

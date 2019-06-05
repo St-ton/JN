@@ -123,10 +123,8 @@ final class Newsletter extends Job
         } else {
             $this->setFinished(true);
             // reset the cron job to defaults
-            $currentCron               = $this->db->select('tcron', 'cronID', $this->getCronID());
-            $currentCron->foreignKeyID = 0;
-            $currentCron->lastStart    = '_DBNULL_';
-            $this->db->update('tcron', 'cronID', $this->getCronID(), $currentCron);
+            $this->oLogger->debug('reset newsletter cron...'); // --DEBUG--
+            $this->db->delete('tcron', 'cronID', $this->getCronID());
             // cleanup `tnewsletterqueue`
             $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
         }

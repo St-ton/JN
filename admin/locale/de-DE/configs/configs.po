@@ -2414,6 +2414,12 @@ msgstr "Spamschutz aktivieren"
 msgid "newsletter_sicherheitscode_desc"
 msgstr "Hier legen Sie fest, ob für das Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
 
+msgid "newsletter_send_delay_name"
+msgstr "Newsletter Sendeverzögerung"
+
+msgid "newsletter_send_delay_desc"
+msgstr "Legt die Wartezeit zwischen den Newsletter-Sendungen fest."
+
 msgid "kundenfeld_anzeigen_name"
 msgstr "Eigene Formularfelder anzeigen"
 

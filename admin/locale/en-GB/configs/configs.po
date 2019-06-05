@@ -2414,6 +2414,12 @@ msgstr "Enable spam protection"
 msgid "newsletter_sicherheitscode_desc"
 msgstr "Specify whether to enable the spam protection for this form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
+msgid "newsletter_send_delay_name"
+msgstr "Newsletter send delay"
+
+msgid "newsletter_send_delay_desc"
+msgstr "Defines the waiting time between newsletter broadcasts."
+
 msgid "kundenfeld_anzeigen_name"
 msgstr "Show custom form fields"
 

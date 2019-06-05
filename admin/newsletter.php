@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Cron\JobQueue;
+use JTL\Cron\Admin\NewsletterDefault;
 use JTL\Cron\Type;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundengruppe;
@@ -392,10 +392,8 @@ if (Form::validateToken()) {
             }
         } elseif (isset($_POST['speichern_und_senden'])) { // Vorlage speichern und senden
             unset($newsletterTPL, $oNewsletter, $oKunde, $oEmailempfaenger);
-
-            $cronTabEntry  = $db->select('tcron', 'jobType', Type::NEWSLETTER);
             $newsletterTPL = $admin->saveTemplate($_POST);
-            if ($newsletterTPL !== false && !empty($cronTabEntry)) {
+            if ($newsletterTPL !== false) {
                 // baue tnewsletter Objekt
                 $oNewsletter                = new stdClass();
                 $oNewsletter->kSprache      = $newsletterTPL->kSprache;
@@ -411,6 +409,10 @@ if (Form::validateToken()) {
                 $oNewsletter->cInhaltText   = $newsletterTPL->cInhaltText;
                 $oNewsletter->dStartZeit    = $newsletterTPL->dStartZeit;
                 $oNewsletter->kNewsletter   = $db->insert('tnewsletter', $oNewsletter);
+                // create a crontab entry
+                $db->insert('tcron', (new NewsletterDefault())->setForeignKeyID($oNewsletter->kNewsletter));
+
+                // --TODO-- maybe we kick this table completely ...
                 // baue tnewsletterqueue Objekt
                 $tnewsletterqueue                    = new stdClass();
                 $tnewsletterqueue->kNewsletter       = $oNewsletter->kNewsletter;
@@ -418,18 +420,9 @@ if (Form::validateToken()) {
                 $tnewsletterqueue->dStart            = $oNewsletter->dStartZeit;
                 // tnewsletterqueue fuellen
                 $db->insert('tnewsletterqueue', $tnewsletterqueue);
+
                 $nLimitM = JOBQUEUE_LIMIT_M_NEWSLETTER;
-                // update cron table and let do cron package the job
-                $cronTabEntry->foreignKeyID = $oNewsletter->kNewsletter;
-                $cronTabEntry->startDate    = 'NOW()';
-                $cronTabEntry->startTime    = 'NOW()';
-                $cronTabEntry->lastStart    = '_DBNULL_';
-                $cronTabEntry->lastFinish   = '_DBNULL_';
-                $db->update('tcron', 'cronID', $cronTabEntry->cronID, $cronTabEntry);
-                // update `tjobqueue` too (if exists)
-                $jobQueue               = new stdClass();
-                $jobQueue->foreignKeyID = $oNewsletter->kNewsletter;
-                $db->update('tjobqueue', 'jobType', Type::NEWSLETTER, $jobQueue);
+
                 // Baue Arrays mit kKeys
                 $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
                 $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);
@@ -519,14 +512,13 @@ if (Form::validateToken()) {
                 $hist->cKundengruppe    = $cKundengruppe;
                 $hist->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
                 $hist->dStart           = $newsletterTPL->dStartZeit;
-                $db->insert('tnewsletterhistory', $hist);
+                $db->insert('tnewsletterhistory', $hist);                // --TODO-- why already history here ?!?!
+
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
                     sprintf(__('successNewsletterPrepared'), $oNewsletter->cName),
                     'successNewsletterPrepared'
                 );
-            } elseif (empty($cronTabEntry)) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('newsletterCronjobNotFound'), 'errorNewsletter');
             } elseif ($newsletterTPL === false) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('newsletterCronjobNotFound'), 'errorNewsletter');
             }

@@ -112,3 +112,33 @@ msgstr "Der angegebene Kampagnenname ist bereits vergeben."
 
 msgid "errorCampaignParameterDuplicate"
 msgstr "Der angegebene Kampagnenparameter ist bereits vergeben."
+
+msgid "Hit"
+msgstr "Hit"
+
+msgid "Verkauf"
+msgstr "Verkauf"
+
+msgid "Anmeldung"
+msgstr "Anmeldung"
+
+msgid "Verkaufssumme"
+msgstr "Verkaufssumme"
+
+msgid "Frage zum Produkt"
+msgstr "Frage zum Produkt"
+
+msgid "Verfügbarkeits-Anfrage"
+msgstr "Verfügbarkeitsanfrage"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Produkt auf Wunschliste"
+msgstr "Produkt auf Wunschliste"
+
+msgid "Produkt in den Warenkorb"
+msgstr "Produkt in den Warenkorb"
+
+msgid "Angeschaute Newsletter"
+msgstr "Angeschaute Newsletter"

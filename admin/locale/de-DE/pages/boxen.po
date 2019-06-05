@@ -51,7 +51,7 @@ msgid "new"
 msgstr "Neue Box"
 
 msgid "inContainer"
-msgstr "in Container"
+msgstr "In Container"
 
 msgid "newContainer"
 msgstr "Neuer Container"

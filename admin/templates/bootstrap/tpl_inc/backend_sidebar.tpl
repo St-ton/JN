@@ -5,7 +5,7 @@
         }
     </script>
     <div class="backend-brandbar">
-        <a class="backend-brand" href="index.php" title="Dashboard">
+        <a class="backend-brand" href="index.php" title="{__('dashboard')}">
             <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
         </a>
         <button type="button" class="backend-sidebar-toggle"

@@ -1772,3 +1772,48 @@ msgstr "Zeitraum"
 
 msgid "directEntry"
 msgstr "Direkter Einstieg"
+
+msgid "goToDocu"
+msgstr "Zur Dokumentation"
+
+msgid "addToFavourites"
+msgstr "Zu Favoriten hinzufügen"
+
+msgid "length"
+msgstr "Länge"
+
+msgid "foundEntries"
+msgstr "Gefundene Einträge: "
+
+msgid "noEntriesSelected"
+msgstr "Bisher sind keine Einträge ausgewählt. Nutzen Sie die Suche!"
+
+msgid "allSelectedEntries"
+msgstr "Alle ausgewählten Einträge: "
+
+msgid "deleteInput"
+msgstr "Eingabe löschen"
+
+msgid "searchPending"
+msgstr "Suche…"
+
+msgid "searchResultsFor"
+msgstr "Suchergebnisse für: %s"
+
+msgid "pagesMenu"
+msgstr "Seiten / Menüpunkte"
+
+msgid "redirection"
+msgstr "Umleitung"
+
+msgid "missing"
+msgstr "Fehlend"
+
+msgid "useFilter"
+msgstr "Filter anwenden"
+
+msgid "resetFilter"
+msgstr "Filter zurücksetzen"
+
+msgid "passwordGenerate"
+msgstr "Passwort generieren"

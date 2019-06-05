@@ -1520,16 +1520,16 @@ function mappeENGMonat($cMonat)
 function GetTypes()
 {
     $Serienames = [
-        1  => 'Hit',
-        2  => 'Verkauf',
-        3  => 'Anmeldung',
-        4  => 'Verkaufssumme',
-        5  => 'Frage zum Produkt',
-        6  => 'Verfügbarkeitsanfrage',
-        7  => 'Login',
-        8  => 'Produkt auf Wunschliste',
-        9  => 'Produkt in den Warenkorb',
-        10 => 'Angeschaute Newsletter'
+        1  => __('globalReportHit'),
+        2  => __('globalReportSale'),
+        3  => __('globalReportRegister'),
+        4  => __('globalReportAmount'),
+        5  => __('globalReportProductQuestion'),
+        6  => __('globalReportAvailabilityRequest'),
+        7  => __('globalReportLogin'),
+        8  => __('globalReportWishlistProducts'),
+        9  => __('globalReportComaprelistProducts'),
+        10 => __('globalReportNewsletterViewed')
     ];
 
     return $Serienames;

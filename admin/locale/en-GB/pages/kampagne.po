@@ -112,3 +112,33 @@ msgstr "The entered campaign name already exists."
 
 msgid "errorCampaignParameterDuplicate"
 msgstr "The entered campaign parameters is already in use."
+
+msgid "Hit"
+msgstr "Hit"
+
+msgid "Verkauf"
+msgstr "Sales"
+
+msgid "Anmeldung"
+msgstr "Registrations"
+
+msgid "Verkaufssumme"
+msgstr "Amount"
+
+msgid "Frage zum Produkt"
+msgstr "Product question"
+
+msgid "Verfügbarkeits-Anfrage"
+msgstr "Availability notification"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Produkt auf Wunschliste"
+msgstr "Items to wishlist"
+
+msgid "Produkt in den Warenkorb"
+msgstr "Items to cart"
+
+msgid "Angeschaute Newsletter"
+msgstr "Newsletters viewed"

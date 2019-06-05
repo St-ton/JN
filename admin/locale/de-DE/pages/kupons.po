@@ -223,3 +223,6 @@ msgstr "Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des Gültigkeit
 
 msgid "searchNameZipEmail"
 msgstr "Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl"
+
+msgid "lastUsed"
+msgstr "Zuletzt verwendet"

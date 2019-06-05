@@ -497,7 +497,7 @@
             {/if}
         </div>
         <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='newsletter.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
+            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='newsletter.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div><!-- .tab-content-->
 </div><!-- #content -->

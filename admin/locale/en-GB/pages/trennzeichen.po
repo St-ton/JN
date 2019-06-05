@@ -24,4 +24,4 @@ msgid "thousandDivider"
 msgstr "Thousands separator"
 
 msgid "decimalsDivider"
-msgstr "Dezimaltrennzeichen"
+msgstr "Decimals separator"

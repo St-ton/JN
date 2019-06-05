@@ -49,3 +49,6 @@ msgstr "Banner speichern"
 
 msgid "addBanner"
 msgstr "Banner anlegen"
+
+msgid "actionLink"
+msgstr "Verlinken"

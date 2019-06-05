@@ -462,9 +462,9 @@
                                     {$jtl_token}
                                     <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
                                     <div class="btn-group">
-                                        <button class="btn btn-default" name="action" value="area" title="verlinken"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-default" name="action" value="edit" title="bearbeiten"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-danger" name="action" value="delete" title="entfernen"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
+                                        <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>

@@ -136,7 +136,7 @@ if ($step === 'uebersicht') {
     for ($i = 0; $i < $nCount; $i++) {
         $kunden = '';
         if (!$neuerBetreffs[$i]->cKundengruppen) {
-            $kunden = 'alle';
+            $kunden = __('allCustomerGroups');
         } else {
             $kKundengruppen = explode(';', $neuerBetreffs[$i]->cKundengruppen);
             foreach ($kKundengruppen as $kKundengruppe) {

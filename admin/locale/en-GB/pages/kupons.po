@@ -223,3 +223,6 @@ msgstr "The end date of the validity period must be after the start date of the 
 
 msgid "searchNameZipEmail"
 msgstr "Search for first name, email address, place of residence or postal code"
+
+msgid "lastUsed"
+msgstr "Last used"

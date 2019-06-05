@@ -49,3 +49,6 @@ msgstr "Save banner"
 
 msgid "addBanner"
 msgstr "Create banner"
+
+msgid "actionLink"
+msgstr "Link"

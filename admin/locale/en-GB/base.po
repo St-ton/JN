@@ -1772,3 +1772,48 @@ msgstr "Period of time"
 
 msgid "directEntry"
 msgstr "Direct entry"
+
+msgid "goToDocu"
+msgstr "Documentation"
+
+msgid "addToFavourites"
+msgstr "Add to favourites"
+
+msgid "length"
+msgstr "Length"
+
+msgid "foundEntries"
+msgstr "Entries found: "
+
+msgid "noEntriesSelected"
+msgstr "No entries selected at the moment."
+
+msgid "allSelectedEntries"
+msgstr "Selected entries: "
+
+msgid "deleteInput"
+msgstr "Delete input"
+
+msgid "searchPending"
+msgstr "Search…"
+
+msgid "searchResultsFor"
+msgstr "Search results for: %s"
+
+msgid "pagesMenu"
+msgstr "Pages / Menu items"
+
+msgid "redirection"
+msgstr "Redirection"
+
+msgid "missing"
+msgstr "Missing"
+
+msgid "useFilter"
+msgstr "Use filter"
+
+msgid "resetFilter"
+msgstr "Reset filter"
+
+msgid "passwordGenerate"
+msgstr "Generate password"

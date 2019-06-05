@@ -88,11 +88,11 @@
         {foreach $oPagination->getSortByOptions() as $i => $cSortByOption}
             <option value="{$i * 2}"
                     {if $i * 2 == $oPagination->getSortByDir()} selected="selected"{/if}>
-                {$cSortByOption[1]} {__('entriesPerPage')}
+                {$cSortByOption[1]} {__('ascending')}
             </option>
             <option value="{$i * 2 + 1}"
                     {if $i * 2 + 1 == $oPagination->getSortByDir()} selected="selected"{/if}>
-                {$cSortByOption[1]} {__('entriesPerPage')}
+                {$cSortByOption[1]} {__('descending')}
             </option>
         {/foreach}
     </select>

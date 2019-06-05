@@ -9,6 +9,7 @@
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",
+        "ext-ftp": "*",
         "ext-gd": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
@@ -16,6 +17,7 @@
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
+        "ext-posix": "*",
         "ext-simplexml": "*",
         "ext-soap": "*",
         "ext-xml": "*",
@@ -24,7 +26,7 @@
         "intervention/image": "^2.4",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^4.2",
-        "jtlshop/shop4-systemcheck": "^1.1",
+        "jtlshop/shop4-systemcheck": "^1.2",
         "jtlshop/sccbs3": "dev-master",
         "jtlshop/scc": "dev-master",
         "smarty/smarty": "~3.1",
@@ -47,12 +49,13 @@
         "gettext/gettext": "^4.6",
         "jtl/oauth2-client": "^1.0",
         "squizlabs/php_codesniffer": "^3.4",
-        "illuminate/container": "^5.7"
+        "illuminate/container": "^5.7",
+        "symfony/console": "^4.2",
+        "symfony/finder": "^4.2"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
         "nikic/php-parser": "^2.1",
-        "symfony/finder": "^4.0",
         "phpmd/phpmd": "@stable",
         "phpunit/phpunit": "^7.3",
         "sensiolabs/security-checker": "^5.0",
@@ -68,29 +71,29 @@
             "type": "package",
             "package": {
                 "name": "jtlshop/shop4-systemcheck",
-                "version": "1.1.2",
+                "version": "1.2.0",
                 "source": {
-                    "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
+                    "url": "https://gitlab.com/jtl-software/jtl-shop/tools/systemcheck.git",
                     "type": "git",
-                    "reference": "1.1.2"
+                    "reference": "1.2.0"
                 }
             }
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator.git"
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/sccbs3.git"
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/scc.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git"
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtl/oauth2-client.git"
+            "url": "https://gitlab.com/jtl-software/oauth2/client.git"
         }        
 
     ],

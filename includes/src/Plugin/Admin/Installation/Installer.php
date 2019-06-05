@@ -224,7 +224,7 @@ final class Installer
      */
     private function installSQL(stdClass $plugin, array $versionNode, $version, string $versionedDir): int
     {
-        $loader       = $plugin->bExtension === 1
+        $loader      = $plugin->bExtension === 1
             ? new PluginLoader($this->db, Shop::Container()->getCache())
             : new LegacyPluginLoader($this->db, Shop::Container()->getCache());
         $hasSQLError = false;
@@ -285,16 +285,16 @@ final class Installer
      */
     private function addLicenseData(array $baseNode, stdClass $plugin): stdClass
     {
-        $plugin->cLizenz              = '';
-        $plugin->cLizenzKlasse        = '';
-        $plugin->cLizenzKlasseName    = '';
+        $plugin->cLizenz           = '';
+        $plugin->cLizenzKlasse     = '';
+        $plugin->cLizenzKlasseName = '';
         if (isset($baseNode['LicenceClass'], $baseNode['LicenceClassFile'])
             && \mb_strlen($baseNode['LicenceClass']) > 0
             && \mb_strlen($baseNode['LicenceClassFile']) > 0
         ) {
             $plugin->cLizenzKlasse     = $baseNode['LicenceClass'];
             $plugin->cLizenzKlasseName = $baseNode['LicenceClassFile'];
-            $plugin->nStatus            = State::LICENSE_KEY_MISSING;
+            $plugin->nStatus           = State::LICENSE_KEY_MISSING;
         }
 
         return $plugin;

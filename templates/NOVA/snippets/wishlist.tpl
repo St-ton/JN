@@ -410,7 +410,7 @@
                                                             class="wishlist-pos-delete float-right text-decoration-none mb-2 fs-large"
                                                             data=["toggle"=>"tooltip"]
                                                         }
-                                                            &times;
+                                                            <i class="fas fa-times"></i>
                                                         {/button}
                                                     {/block}
                                                 {/if}

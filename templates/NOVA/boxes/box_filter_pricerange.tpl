@@ -18,9 +18,9 @@
             </div>
 
             {collapse class="box box-filter-price pb-4" id="sidebox{$oBox->getID()}" visible=true}
-                {inputgroup class="mb-3"}
-                    {input id="price-range-from" class="price-range-input mr-4"}
-                    {input id="price-range-to" class="price-range-input ml-4"}
+                {inputgroup class="mb-3" size="sm"}
+                    {input id="price-range-from" class="price-range-input mr-4" placeholder=0}
+                    {input id="price-range-to" class="price-range-input ml-4" placeholder=$priceRangeMax}
                 {/inputgroup}
                 <div id="price-range-slider" class="mx-3"></div>
                {* <div id="amount">0 {$smarty.session.Waehrung->getHtmlEntity()} - {$priceRangeMax} {$smarty.session.Waehrung->getHtmlEntity()}</div>*}

@@ -85,8 +85,11 @@
                                     <div class="stretched">
                                         <div>
                                             <div class="text-right">
-                                                {link href=$oArtikel->cURLDEL class="text-decoration-none"}
-                                                    &times;
+                                                {link href=$oArtikel->cURLDEL
+                                                    class="text-decoration-none"
+                                                    title="{lang key='removeFromCompareList' section='comparelist'}"
+                                                    data=["toggle"=>"tooltip"]}
+                                                    <i class="fas fa-times"></i>
                                                 {/link}
                                             </div>
                                             {link href=$oArtikel->cURLFull}

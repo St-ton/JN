@@ -72,7 +72,7 @@
                                     {foreach $Artikel->Bilder as $image}
                                         {strip}
                                             <div>
-                                                {image src="{$imageBaseURL}gfx/trans.png" data=["lazy"=>"{$image->cURLMini}"]
+                                                {image src="{$imageBaseURL}gfx/trans.png" data=["lazy"=>"{$image->cURLKlein}"]
                                                      alt="{$image->cAltAttribut|escape:"html"}"}
                                             </div>
                                         {/strip}

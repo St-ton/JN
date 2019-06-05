@@ -10,7 +10,7 @@
             {col}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0"}
                     {block name='layout-breadcrumb-xs-back'}
-                        {$parent = $Brotnavi[$Brotnavi|count -2]}
+                        {$parent = $Brotnavi[$Brotnavi|count -2|max:0]}
                         {breadcrumbitem class="d-xs-flex d-sm-none back"
                             href=$parent->getURLFull()
                             title=$parent->getName()|escape:'html'

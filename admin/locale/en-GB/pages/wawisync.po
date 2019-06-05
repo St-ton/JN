@@ -3,11 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "wawisync"
-msgstr "Wawi-Syncdaten"
+msgstr "Data for the synchronisation with JTL-Wawi"
 
 msgid "wawisyncDesc"
-msgstr "Hinterlegen Sie hier Benutzernamen und Passwort für Ihren JTL-Wawi-Abgleich."
+msgstr "Enter a user name and a password for the synchronisation with JTL-Wawi. You need to enter the same data in JTL-Wawi into the dialogue box \"Online shop connection\". User name and password may contain uppercase and lowercase letters, numbers, and the following special characters: !\"#$%&'()*+,-./:;=>?@[\\]^_`|}~"
 
 msgid "wawisyncURL"
-msgstr "https://jtl-url.de/gvca6"
-
+msgstr "https://jtl-url.de/vdh3z"

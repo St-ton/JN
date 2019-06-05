@@ -219,7 +219,7 @@ msgid "global_wunschliste_max_email_desc"
 msgstr "Hier legen Sie fest, an wie viele Empfänger Wunschzettel per E-Mail versendet werden können."
 
 msgid "global_wunschliste_artikel_loeschen_nach_kauf_name"
-msgstr "Gekaufte Artikel nach Bestellung von Wunschliste löschen"
+msgstr "Gekaufte Artikel nach Bestellung von Wunschzettel löschen"
 
 msgid "global_wunschliste_artikel_loeschen_nach_kauf_desc"
 msgstr "Hier legen Sie fest, ob Artikel, nachdem sie gekauft wurden, vom Wunschzettel gelöscht werden sollen."

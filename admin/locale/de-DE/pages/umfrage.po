@@ -30,7 +30,7 @@ msgid "umfrageExtraPoints"
 msgstr "Bonuspunkte"
 
 msgid "umfrageNoCoupon"
-msgstr "Keinen"
+msgstr "Keinen Coupon"
 
 msgid "umfrageType"
 msgstr "Typ"
@@ -39,13 +39,13 @@ msgid "umfrageAnotherQ"
 msgstr "Weitere Frage"
 
 msgid "umfrageSaveQ"
-msgstr "Fertig"
+msgstr "Speichern und beenden"
 
 msgid "umfrageEnterQ"
 msgstr "Fragen hinzufügen"
 
 msgid "umfrageEnter"
-msgstr "Umfrage hinzufügen"
+msgstr "Umfrage erstellen"
 
 msgid "umfrageQ"
 msgstr "Frage"
@@ -72,13 +72,13 @@ msgid "umfrageQFreeField"
 msgstr "Freifeld hinzufügen"
 
 msgid "umfrageQEssential"
-msgstr "Notwendig"
+msgstr "Pflichtfrage"
 
 msgid "umfrageStats"
 msgstr "Statistik"
 
 msgid "umfrageStatsView"
-msgstr "Statistik anschauen"
+msgstr "Statistik aufrufen"
 
 msgid "umfrageQResPercent"
 msgstr "Antworten (Prozent)"
@@ -90,7 +90,7 @@ msgid "umfrageQMax"
 msgstr "Gesamtanzahl"
 
 msgid "umfrageTryCount"
-msgstr "Anzahl Durchläufe"
+msgstr "Anzahl vollständiger Durchläufe"
 
 msgid "umfrageQCount"
 msgstr "Anzahl Fragen"
@@ -105,31 +105,31 @@ msgid "umfrageQSort"
 msgstr "Sortierung"
 
 msgid "errorPollNotFound"
-msgstr "Fehler: Die Umfrage konnte nicht gefunden werden."
+msgstr "Die Umfrage konnte nicht gefunden werden."
 
 msgid "successPollCreateNextSteps"
 msgstr "Die Umfrage wurde erfolgreich gespeichert. Bitte folgen Sie nun den weiteren Schritten."
 
 msgid "errorRewardMissing"
-msgstr "Fehler: Bitte geben Sie nur eine Belohnungsart an."
+msgstr "Bitte geben Sie nur eine Belohnungsart an."
 
 msgid "errorDataMissing"
-msgstr "Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein."
+msgstr "Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein."
 
 msgid "errorQuestionTypeNotCompatible"
-msgstr "Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem vorherigen. Um den Fragetyp zu ändern, setzen Sie bitte die Frage zurück."
+msgstr "Der gewählte Fragentyp ist leider nicht kompatibel mit dem vorherigen. Um den Fragetyp zu ändern, setzen Sie bitte die Frage zurück."
 
 msgid "successQuestionSave"
-msgstr "Ihre Frage wurde erfolgreich gespeichert."
+msgstr "Die Frage wurde erfolgreich gespeichert."
 
 msgid "errorMinNameTypeMissing"
-msgstr "Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein."
+msgstr "Bitte tragen Sie mindestens eine Frage und einen Typ ein."
 
 msgid "successPollDelete"
 msgstr "Die markierten Umfragen wurden erfolgreich gelöscht."
 
 msgid "successAtLeastOnePoll"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Umfrage."
+msgstr "Bitte markieren Sie mindestens eine Umfrage."
 
 msgid "successQuestionDelete"
 msgstr "Die markierten Fragen wurden erfolgreich gelöscht."
@@ -141,22 +141,22 @@ msgid "successOptionDelete"
 msgstr "Die markierten Optionen wurden erfolgreich gelöscht."
 
 msgid "errorNoStatistic"
-msgstr "Fehler: Für diese Umfrage gibt es noch keine Statistik."
+msgstr "Für diese Umfrage gibt es noch keine Statistik."
 
 msgid "errorPollSelect"
-msgstr "Fehler: Bitte wählen Sie eine korrekte Umfrage aus."
+msgstr "Die von Ihnen gewählte Umfrage existiert nicht."
 
 msgid "questionTypeMultipleChoiceOne"
-msgstr "Multiple Choice (Eine Antwort)"
+msgstr "Radiobutton (eine Antwort wählbar)"
 
 msgid "questionTypeMultipleChoiceMany"
-msgstr "Multiple Choice (Mehrere Antworten)"
+msgstr "Mehrfachauswahl (mehrere Antworten wählbar)"
 
 msgid "questionTypeSelectboxOne"
-msgstr "Selectbox (Eine Antwort)"
+msgstr "Selectbox (eine Antwort wählbar)"
 
 msgid "questionTypeSelectboxMany"
-msgstr "Selectbox (Mehrere Antworten)"
+msgstr "Multiselectbox (mehrere Antworten wählbar)"
 
 msgid "questionTypeTextSmall"
 msgstr "Textfeld (klein)"
@@ -171,10 +171,10 @@ msgid "questionTypeMatrixMany"
 msgstr "Matrix (Mehrere Antworten pro Zeile)"
 
 msgid "questionTypeDivider"
-msgstr "Statischer Trenntext"
+msgstr "Strukturelement: statischer Text"
 
 msgid "questionTypeDividerNewPage"
-msgstr "Statischer Trenntext und Seitenwechsel"
+msgstr "Strukturelement: statischer Text"
 
 msgid "addAnswer"
 msgstr "Antwort hinzufügen"
@@ -184,3 +184,6 @@ msgstr "Option hinzufügen"
 
 msgid "activePolls"
 msgstr "Aktive Umfragen"
+
+msgid "pollSortHint"
+msgstr "Hier wird eine Nummer für die Sortierung der Fragen angegeben. Je kleiner die Zahl, desto höher liegt die Frage in der Liste."

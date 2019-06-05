@@ -32,9 +32,6 @@ msgstr "Möchten Sie wirklich alle Entwürfe für die Seite löschen?"
 msgid "sureDelete"
 msgstr "Möchten Sie diesen Entwurf wirklich löschen?"
 
-msgid "replaceExtend"
-msgstr "Ersetzt / Erweitert"
-
 msgid "lastChange"
 msgstr "Letzte Änderung am"
 

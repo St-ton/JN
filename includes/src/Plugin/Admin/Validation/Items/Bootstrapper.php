@@ -13,7 +13,7 @@ use JTL\Plugin\InstallCode;
  * Class Bootstrapper
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class Bootstrapper extends AbstractItem
+final class Bootstrapper extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -21,7 +21,7 @@ class Bootstrapper extends AbstractItem
     public function validate(): int
     {
         $namespace = $this->getPluginID();
-        $classFile = $this->getBaseDir() . \PLUGIN_BOOTSTRAPPER;
+        $classFile = $this->getBaseDir() . \DIRECTORY_SEPARATOR . \PLUGIN_BOOTSTRAPPER;
         if (!\is_file($classFile)) {
             return InstallCode::OK;
         }

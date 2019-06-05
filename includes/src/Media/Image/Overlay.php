@@ -180,7 +180,7 @@ class Overlay
                 ->setTransparence($overlay->nTransparenz)
                 ->setSize($overlay->nGroesse)
                 ->setImageName($overlay->cBildPfad)
-                ->setName($overlay->cSuchspecial);
+                ->setName(isset($_SESSION['AdminAccount']) ? __($overlay->cSuchspecial) : $overlay->cSuchspecial);
 
             if ($setFallbackPath) {
                 $this->setFallbackPath($overlay->cTemplate);

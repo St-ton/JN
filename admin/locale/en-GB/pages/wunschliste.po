@@ -3,40 +3,40 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "wishlistName"
-msgstr "Wunschzettel"
+msgstr "Wish list"
 
 msgid "wishlistURL"
-msgstr "https://jtl-url.de/rj0qk"
+msgstr "https://jtl-url.de/fj5ov"
 
-msgid "wishlistReceiverCount"
-msgstr "Anzahl Empfänger"
+msgid "wishlistRecipientCount"
+msgstr "Number of recipients"
 
 msgid "wishlistPosCount"
-msgstr "Anzahl Artikel"
+msgstr "Number of items"
 
 msgid "wishlistDesc"
-msgstr "Hier erhalten Sie einen Überblick über die Nutzung der Wunzettelfunktion. Einstellungen zur Wunschliste finden Sie unter Einstellungen -> Globale Einstellungen."
+msgstr "This page provides an overview of the wish lists created by your customers. You can configure the wish list function in the \"Settings\"."
 
 msgid "wishlistSend"
-msgstr "An Freunde versendete Wunschzettel"
+msgstr "Wish lists sent to friends"
 
 msgid "wishlistTop100"
-msgstr "Wunschzettel mit mindestens einer Position"
+msgstr "Wish lists with at least one line item"
 
 msgid "wishlistPosTop100"
-msgstr "Gewünschte Artikel"
+msgstr "Items on wish lists"
 
 msgid "wishlistPosName"
-msgstr "Artikel"
+msgstr "Item"
 
 msgid "wishlisteSave"
-msgstr "Speichern"
+msgstr "Save"
 
 msgid "wishlistPrevious"
-msgstr "Vorherige"
+msgstr "Previous"
 
 msgid "wishlistNext"
-msgstr "Nächster"
+msgstr "Next"
 
 msgid "wishlistLastAdded"
-msgstr "Zuletzt hinzugefügt"
+msgstr "Recently added"

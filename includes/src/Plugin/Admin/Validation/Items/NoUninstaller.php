@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class Uninstaller
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class NoUninstaller extends AbstractItem
+final class NoUninstaller extends AbstractItem
 {
     /**
      * @inheritdoc

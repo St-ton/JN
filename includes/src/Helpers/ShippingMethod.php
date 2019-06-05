@@ -188,7 +188,10 @@ class ShippingMethod
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $netPricesActive          = Frontend::getCustomerGroup()->isMerchant();
+        if (empty($methods)) {
+            return [];
+        }
+        $netPricesActive = Frontend::getCustomerGroup()->isMerchant();
 
         foreach ($methods as $i => $shippingMethod) {
             $bSteuerPos = $shippingMethod->eSteuer !== 'netto';

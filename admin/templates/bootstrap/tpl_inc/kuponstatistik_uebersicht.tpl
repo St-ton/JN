@@ -7,26 +7,13 @@
                 <input type="hidden" name="formFilter" value="1" class="form-control"/>
                 <label for="SelectFromDay">{__('fromUntilDate')}:</label>
                 <input type="text" size="21" name="daterange" class="form-control"/>
-                <script type="text/javascript">
-                    {literal}
-                    $(function() {
-                        $('input[name="daterange"]').daterangepicker(
-                            {
-                                locale: {
-                                    format: 'YYYY-MM-DD'
-                                },
-                                parentEl: 'html',
-                                {/literal}
-                                startDate: '{$startDate}',
-                                endDate: '{$endDate}',
-                                minDate: '{$startDateShop}',
-                                maxDate: '{$smarty.now|date_format:"%Y%m%d"}'
-                                {literal}
-                            }
-                        );
-                    });
-                    {/literal}
-                </script>
+                {include
+                    file="snippets/daterange_picker.tpl"
+                    datepickerID='input[name="daterange"]'
+                    currentDate="{$startDate} - {$endDate}"
+                    format="YYYY-MM-DD"
+                    separator=" - "
+                }
             </div>
             <div class="form-group">
                 <select id="kKupon" name="kKupon" class="combo form-control">

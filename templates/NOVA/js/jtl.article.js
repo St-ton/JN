@@ -15,6 +15,7 @@
     ArticleClass.DEFAULTS = {
         input: {
             id: 'a',
+            childId: 'VariKindArtikel',
             quantity: 'anzahl'
         },
         action: {
@@ -652,6 +653,10 @@
 
         addToComparelist: function(data) {
             var productId = parseInt(data[this.options.input.id]);
+            var childId = parseInt(data[this.options.input.childId]);
+            if (childId > 0) {
+                productId = childId;
+            }
             if (productId > 0) {
                 var that = this;
                 $.evo.io().call('pushToComparelist', [productId], that, function(error, data) {
@@ -772,7 +777,11 @@
 
         addToWishlist: function(data) {
             var productId = parseInt(data[this.options.input.id]);
+            var childId = parseInt(data[this.options.input.childId]);
             var qty =  parseInt(data[this.options.input.quantity]);
+            if (childId > 0) {
+                productId = childId;
+            }
             if (productId > 0) {
                 var that = this;
                 $.evo.io().call('pushToWishlist', [productId, qty], that, function(error, data) {

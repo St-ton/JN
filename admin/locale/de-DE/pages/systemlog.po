@@ -6,7 +6,7 @@ msgid "systemlog"
 msgstr "System-Log"
 
 msgid "systemlogDesc"
-msgstr "Im System-Log finden Sie sämtliche Fehlermeldungen und Hinweise, die JTL-Shop produziert. Unter \"Einstellungen\" legen Sie fest, was genau festgehalten werden soll."
+msgstr "Im System-Log finden Sie sämtliche Fehlermeldungen und Hinweise, die JTL-Shop produziert. Unter „Einstellungen“ legen Sie fest, was genau festgehalten werden soll."
 
 msgid "systemlogURL"
 msgstr "https://jtl-url.de/3tvdu"
@@ -48,22 +48,13 @@ msgid "systemlogReset"
 msgstr "Log zurücksetzen"
 
 msgid "successSystemLogReset"
-msgstr "Ihr System-Log wurde erfolgreich gelöscht."
+msgstr "Der System-Log wurde erfolgreich zurückgesetzt."
 
 msgid "successEntriesDelete"
-msgstr " Markierte Log-Einträge wurden gelöscht."
+msgstr " Markierte Log-Einträge wurden erfolgreich gelöscht."
 
 msgid "minLogLevel"
-msgstr "Min. Log-Level"
-
-msgid "logLevelEmergency"
-msgstr "Emergency"
-
-msgid "logLevelAlert"
-msgstr "Alert"
-
-msgid "logLevelCritical"
-msgstr "Critical"
+msgstr "Log-Eintrag erstellen ab Level"
 
 msgid "logLevelError"
 msgstr "Error"
@@ -73,9 +64,6 @@ msgstr "Warning"
 
 msgid "logLevelNotice"
 msgstr "Notice"
-
-msgid "logLevelInfo"
-msgstr "Info"
 
 msgid "logLevelDebug"
 msgstr "Debug"

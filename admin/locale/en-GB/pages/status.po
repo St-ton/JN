@@ -6,53 +6,52 @@ msgid "status"
 msgstr "Status"
 
 msgid "statusURL"
-msgstr "https://jtl-url.de/njc39"
+msgstr "https://jtl-url.de/og4rq"
 
 msgid "systemCache"
-msgstr "System-Cache"
+msgstr "System cache"
 
 msgid "imageCache"
-msgstr "Bilder-Cache"
+msgstr "Image cache"
 
 msgid "imagesInCache"
-msgstr "Bilder im Cache"
+msgstr "Images in cache"
 
 msgid "fileStructure"
-msgstr "Dateistruktur"
+msgstr "File structure"
 
 msgid "directoryPermissions"
-msgstr "Verzeichnisrechte"
+msgstr "Directory permissions"
 
 msgid "openUpdates"
-msgstr "Ausstehende Updates"
+msgstr "Updates due"
 
 msgid "installDirectory"
-msgstr "Installationsverzeichnis"
+msgstr "Installation directory"
 
 msgid "profilerActive"
-msgstr "Profiler aktiv"
+msgstr "Profiler active"
 
 msgid "orphanedCategories"
-msgstr "Verwaiste Kategorien"
+msgstr "Orphan categories"
 
 msgid "newPluginVersions"
-msgstr "Neue Plugin-Versionen"
+msgstr "New versions of plug-ins"
 
 msgid "atmNoInfo"
-msgstr "Vorübergehend keine Informationen verfügbar."
+msgstr "Currently no information available."
 
 msgid "expiresInXDays"
-msgstr "Läuft in %s Tagen ab"
+msgstr "Expires in %s days"
 
 msgid "paymentTypesWithError"
-msgstr "Folgende Zahlungsarten beinhalten Protokolle mit Status 'Fehler'"
+msgstr "The following payment methods contain protocols with the status \"Error\"."
 
 msgid "pluginsWithSameHook"
-msgstr "Folgende Plugins benutzen einen identischen Hook."
+msgstr "The following plug-ins use an identical hook."
 
 msgid "recommendedValue"
-msgstr "Empfohlener Wert"
+msgstr "Recommended value"
 
 msgid "requirementsMet"
-msgstr "Alle Vorraussetzungen wurden erfüllt."
-
+msgstr "All requirements are met."

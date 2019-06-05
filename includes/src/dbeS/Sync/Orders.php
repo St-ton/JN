@@ -14,7 +14,6 @@ use JTL\Customer\Kunde;
 use JTL\Customer\KundenwerbenKunden;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
-use JTL\Emailvorlage;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -469,11 +468,11 @@ final class Orders extends AbstractSync
         // wenn es auch wirklich für den kunden interessant ist
         // ab JTL-Wawi 099781 wird das Flag immer gesendet und ist entweder "Y" oder "N"
         // bei JTL-Wawi Version <= 099780 ist dieses Flag nicht gesetzt, Mail soll hier immer versendet werden.
-        $mailTPL  = Emailvorlage::load(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         $customer = new Kunde((int)$oldOrder->kKunde);
-
-        if ($mailTPL !== null
-            && $mailTPL->getAktiv() === 'Y'
+        $mail     = new Mail();
+        $test     = $mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
+        if ($test->getTemplate() !== null
+            && $test->getTemplate()->getModel()->getActive() === true
             && ($order->cSendeEMail === 'Y' || !isset($order->cSendeEMail))
         ) {
             if ($module) {
@@ -484,7 +483,6 @@ final class Orders extends AbstractSync
                 $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
 
                 $mailer = Shop::Container()->get(Mailer::class);
-                $mail   = new Mail();
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $data));
             }
         }

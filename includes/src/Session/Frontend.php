@@ -157,7 +157,8 @@ class Frontend extends AbstractSession
     private function checkSessionUpdate(): bool
     {
         return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
-            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass'));
+            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass')
+            || (isset($_SESSION['Sprachen']) && \get_class($_SESSION['Sprachen'][0]) === 'stdClass'));
     }
 
     /**

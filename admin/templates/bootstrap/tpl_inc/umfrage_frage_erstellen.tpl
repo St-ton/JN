@@ -627,7 +627,12 @@ function checkSelect(selectBox) {ldelim}
 
                         <tr>
                             <td><label for="nSort">{__('sorting')}</label></td>
-                            <td><input class="form-control" id="nSort" name="nSort" type="text"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" /></td>
+                            <td>
+                                <div class="input-group">
+                                    <input class="form-control" id="nSort" name="nSort" type="text"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" />
+                                    <span class="input-group-addon">{getHelpDesc cDesc=__('pollSortHint')}</span>
+                                </div>
+                             </td>
                         </tr>
 
                         <tr>

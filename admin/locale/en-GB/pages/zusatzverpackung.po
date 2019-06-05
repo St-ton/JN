@@ -3,58 +3,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "zusatzverpackung"
-msgstr "Zusatzverpackung"
+msgstr "Additional packaging"
 
 msgid "zusatzverpackungURL"
-msgstr "https://jtl-url.de/0hqn3"
+msgstr "https://jtl-url.de/5no62"
 
 msgid "zusatzverpackungDesc"
-msgstr "Zusatzverpackungsoptionen werden in der Kaufabwicklung im Schritt der Versandartauswahl angezeigt und abgefragt. Mit Hilfe der Zusatzverpackungen können z.B. Geschenkverpackungen oder Versicherungen als optionale Zusatzleistungen definiert werden."
-
-msgid "zusatzverpackungISOLang"
-msgstr "SprachISO"
+msgstr "Here you can manage fee-based packaging options such as gift wrapping or insurance. Additional packaging options are displayed during the checkout in the shipping method selection step."
 
 msgid "zusatzverpackungExemptFromCharge"
-msgstr "Kostenfrei ab"
+msgstr "Free from"
 
 msgid "zusatzverpackungTaxClass"
-msgstr "Steuerklasse"
+msgstr "Tax class"
 
 msgid "zusatzverpackungSave"
-msgstr "Zusatzverpackung speichern"
+msgstr "Save additional packaging"
 
 msgid "zusatzverpackungAutoTax"
-msgstr "automatisch berechnen"
-
-msgid "zusatzverpackungAdd"
-msgstr "Zusatzverpackung anlegen"
-
-msgid "zusatzverpackungEdit"
-msgstr "Zusatzverpackung editieren"
-
-msgid "zusatzverpackungAdded"
-msgstr "Angelegte Zusatzverpackungen"
+msgstr "Calculate automatically"
 
 msgid "zusatzverpackungCreate"
-msgstr "'Neue Zusatzverpackung anlegen'"
+msgstr "Create additional packaging"
+
+msgid "zusatzverpackungEdit"
+msgstr "Edit additional packaging"
+
+msgid "zusatzverpackungAdded"
+msgstr "Available additional packaging"
 
 msgid "zusatzverpackungAddedNone"
-msgstr "Keine Zusatzverpackung angelegt"
+msgstr "No additional packaging available yet"
 
 msgid "errorNameMissing"
-msgstr "Fehler: Bitte geben Sie der Verpackung einen Namen."
+msgstr "Please enter a name for the packaging."
 
 msgid "errorCustomerGroupMissing"
-msgstr "Fehler: Bitte wählen Sie mindestens eine Kundengruppe aus."
+msgstr "Please select at least one customer group."
 
 msgid "successPackagingSave"
-msgstr "Die Verpackung %s wurde erfolgreich gespeichert."
+msgstr "Packaging %s saved successfully."
 
 msgid "successPackagingDelete"
-msgstr "Die markierten Verpackungen wurden erfolgreich gelöscht."
+msgstr "Selected packaging options deleted successfully."
 
 msgid "errorAtLeastOnePackaging"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Verpackung."
+msgstr "Please select at least one packaging."
 
 msgid "successPackagingSaveMultiple"
-msgstr "Ihre markierten Verpackungen wurden erfolgreich aktualisiert."
+msgstr "Selected packaging options updated successfully."

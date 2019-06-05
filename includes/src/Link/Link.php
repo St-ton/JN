@@ -199,7 +199,7 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
-    private $currentLanguageID = 1;
+    private $currentLanguageID;
 
     /**
      * Link constructor.
@@ -209,6 +209,14 @@ final class Link extends AbstractLink
     {
         $this->db                = $db;
         $this->childLinks        = new Collection();
+        $this->currentLanguageID = Shop::getLanguageID();
+    }
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
         $this->currentLanguageID = Shop::getLanguageID();
     }
 

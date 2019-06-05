@@ -832,12 +832,14 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         IF(tartikel.fLagerbestand IS NULL, 'n.v.', tartikel.fLagerbestand) AS fLagerbestand,
                         IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
                         IF(tartikel.fMwSt IS NULL, 'n.v.', tartikel.fMwSt) AS fMwSt,
-                        IF(tpreise.fVKNetto IS NULL, 'n.v.', tpreise.fVKNetto) AS fVKNetto,
+                        IF(tpreisdetail.fVKNetto IS NULL, 'n.v.', tpreisdetail.fVKNetto) AS fVKNetto,
                         DATE_FORMAT(tartikel.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_DE
                         FROM tkampagnevorgang
                         LEFT JOIN tartikel ON tartikel.kArtikel = tkampagnevorgang.kKey
-                        LEFT JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                            AND kKundengruppe = " . $kKundengruppe . '
+                        LEFT JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                            AND tpreis.kKundengruppe = " . $kKundengruppe . '
+                        LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                            AND tpreisdetail.nAnzahlAb = 0
                         ' . $cSQLWHERE . '
                             AND tkampagnevorgang.kKampagne = ' . (int)$kKampagne . '
                             AND tkampagnevorgang.kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '

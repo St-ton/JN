@@ -42,7 +42,7 @@ if (isset($_POST['neu'], $_POST['kVersandberechnung'])
     $step = 'neue Versandart';
 }
 if (isset($_POST['kVersandberechnung']) && (int)$_POST['kVersandberechnung'] > 0 && Form::validateToken()) {
-    $versandberechnung = $db->select('tversandberechnung', 'kVersandberechnung', (int)$_POST['kVersandberechnung']);
+    $versandberechnung = getShippingTypes(Request::verifyGPCDataInt('kVersandberechnung'));
 }
 
 if (isset($_POST['del'])
@@ -70,11 +70,7 @@ if (isset($_POST['edit']) && (int)$_POST['edit'] > 0 && Form::validateToken()) {
         '*',
         'fBis'
     );
-    $versandberechnung           = $db->select(
-        'tversandberechnung',
-        'kVersandberechnung',
-        (int)$Versandart->kVersandberechnung
-    );
+    $versandberechnung           = getShippingTypes((int)$Versandart->kVersandberechnung);
     $Versandart->cVersandklassen = trim($Versandart->cVersandklassen);
 
     $smarty->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))
@@ -586,15 +582,11 @@ if ($step === 'neue Versandart') {
 }
 
 if ($step === 'uebersicht') {
-    $oKundengruppen_arr  = $db->query(
+    $oKundengruppen_arr = $db->query(
         'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $versandberechnungen = $db->query(
-        'SELECT * FROM tversandberechnung ORDER BY cName',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $versandarten        = $db->query(
+    $versandarten       = $db->query(
         'SELECT * FROM tversandart ORDER BY nSort, cName',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -645,11 +637,7 @@ if ($step === 'uebersicht') {
             );
         }
 
-        $method->versandberechnung = $db->select(
-            'tversandberechnung',
-            'kVersandberechnung',
-            (int)$method->kVersandberechnung
-        );
+        $method->versandberechnung = getShippingTypes((int)$method->kVersandberechnung);
         $method->versandklassen    = gibGesetzteVersandklassenUebersicht($method->cVersandklassen);
         if ($method->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
             $method->einheit = 'kg';
@@ -685,7 +673,7 @@ if ($step === 'uebersicht') {
         );
         foreach ($kKundengruppe_arr as $kKundengruppe) {
             if ((int)$kKundengruppe === -1) {
-                $method->cKundengruppenName_arr[] = __('all');
+                $method->cKundengruppenName_arr[] = __('allCustomerGroups');
             } else {
                 foreach ($oKundengruppen_arr as $oKundengruppen) {
                     if ((int)$oKundengruppen->kKundengruppe === (int)$kKundengruppe) {
@@ -703,7 +691,7 @@ if ($step === 'uebersicht') {
         $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
     }
 
-    $smarty->assign('versandberechnungen', $versandberechnungen)
+    $smarty->assign('versandberechnungen', getShippingTypes())
            ->assign('versandarten', $versandarten)
            ->assign('waehrung', $standardwaehrung->cName);
 }

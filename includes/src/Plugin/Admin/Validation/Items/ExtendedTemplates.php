@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class ExtendedTemplates
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class ExtendedTemplates extends AbstractItem
+final class ExtendedTemplates extends AbstractItem
 {
     /**
      * @inheritdoc

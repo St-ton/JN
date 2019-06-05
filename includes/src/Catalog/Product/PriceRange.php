@@ -110,13 +110,10 @@ class PriceRange
                     AND (
                         (kKundengruppe = 0 AND kKunde = :customerID)
                         OR
-                        (kKundengruppe = :customerGroup AND (
-                            nLagerAnzahlMax IS NULL OR (nLagerAnzahlMax <= :stock AND dStart <= NOW())
-                            OR
-                            (dStart IS NULL AND dEnde IS NULL)
-                            OR
-                            (NOW() BETWEEN dStart AND dEnde)
-                        ))
+                        (kKundengruppe = :customerGroup
+                            AND COALESCE(nLagerAnzahlMax, :stock) <= :stock
+                            AND CURDATE() BETWEEN COALESCE(dStart, CURDATE()) AND COALESCE(dEnde, CURDATE())
+                        )
                     )
                 ORDER BY nRangeType ASC LIMIT 1',
             [

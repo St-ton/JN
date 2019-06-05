@@ -73,7 +73,7 @@
                 "name": "jtlshop/shop4-systemcheck",
                 "version": "1.2.0",
                 "source": {
-                    "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
+                    "url": "https://gitlab.com/jtl-software/jtl-shop/tools/systemcheck.git",
                     "type": "git",
                     "reference": "1.2.0"
                 }
@@ -81,19 +81,19 @@
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator.git"
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/sccbs3.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/sccbs3.git"
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtlshop/scc.git"
+            "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git"
         },
         {
             "type": "vcs",
-            "url": "https://gitlab.jtl-software.de/jtl/oauth2-client.git"
+            "url": "https://gitlab.com/jtl-software/oauth2/client.git"
         }        
 
     ],

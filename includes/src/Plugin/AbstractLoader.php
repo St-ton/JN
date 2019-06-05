@@ -201,6 +201,9 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadLicense($data): License
     {
         $license = new License();
+        if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
+            $data->cLizenzKlasse = 'Plugin\\' . $data->cLizenzKlasse;
+        }
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);
         $license->setKey($data->cLizenz);

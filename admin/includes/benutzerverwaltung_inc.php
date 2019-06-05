@@ -12,6 +12,7 @@ use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Alert\Alert;
+use function Functional\map;
 
 /**
  * @param int $kAdminlogin
@@ -63,7 +64,12 @@ function getAdminDefPermissions(): array
     foreach ($groups as $group) {
         $group->kAdminrechtemodul = (int)$group->kAdminrechtemodul;
         $group->nSort             = (int)$group->nSort;
-        $group->oPermission_arr   = $perms[$group->kAdminrechtemodul] ?? [];
+        $group->cName             = __($group->cName);
+        $group->oPermission_arr   = map($perms[$group->kAdminrechtemodul] ?? [], function ($permission) {
+            $permission->cBeschreibung = __('permission_' . $permission->cRecht);
+
+            return $permission;
+        });
     }
 
     return $groups;
@@ -187,7 +193,7 @@ function benutzerverwaltungSaveAttributes(stdClass $account, array $extAttribs, 
                 ],
                 ReturnType::DEFAULT
             ) === 0) {
-                $messages['error'] .= $key . __('errorKeyChange');
+                $messages['error'] .= sprintf(__('errorKeyChange'), $key);
             }
             $handledKeys[] = $key;
         }

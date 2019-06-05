@@ -90,7 +90,7 @@ msgid "no"
 msgstr "No"
 
 msgid "update"
-msgstr "Update"
+msgstr "Refresh"
 
 msgid "from"
 msgstr "from"
@@ -219,7 +219,7 @@ msgid "confirm"
 msgstr "Confirm"
 
 msgid "wantToConfirm"
-msgstr "Would you like to continue?"
+msgstr "Continue?"
 
 msgid "reloadCaptcha"
 msgstr "Reload Captcha"
@@ -231,13 +231,13 @@ msgid "allPages"
 msgstr "All pages"
 
 msgid "errorFillRequired"
-msgstr "Error: Please complete all mandatory fields."
+msgstr "Please complete all mandatory fields."
 
 msgid "successConfigSave"
 msgstr "Settings saved successfully."
 
 msgid "errorConfigSave"
-msgstr "Error saving the settings."
+msgstr "Could not save settings."
 
 msgid "errorIsNoDir"
 msgstr " is not a directory."
@@ -249,7 +249,7 @@ msgid "errorUnknown"
 msgstr "Unknown error"
 
 msgid "errorUnknownLong"
-msgstr "Error: An unknown error occurred."
+msgstr "An unknown error occurred."
 
 msgid "year"
 msgstr " Year"
@@ -276,13 +276,13 @@ msgid "hours"
 msgstr " Hours"
 
 msgid "errorEnterValidDate"
-msgstr "Error: Please enter a valid date."
+msgstr "Please enter a valid date."
 
 msgid "smartySyntaxError"
 msgstr "Smarty syntax error"
 
 msgid "errorCheckInput"
-msgstr "Error: Please check your entries."
+msgstr "Please check your inputs."
 
 msgid "lockForMinutes"
 msgstr "Blocked for %s minutes"
@@ -306,7 +306,7 @@ msgid "row"
 msgstr "Row"
 
 msgid "errorLangVarNotFound"
-msgstr "Error: Could not find the selected language variable."
+msgstr "Could not find the selected language variable."
 
 msgid "successChangesSave"
 msgstr "Changes applied successfully."
@@ -354,7 +354,7 @@ msgid "customerGroup"
 msgstr "Customer group"
 
 msgid "titleChooseCategory"
-msgstr "Select category"
+msgstr "Select categories"
 
 msgid "labelSearchCategory"
 msgstr "Search for categories"
@@ -411,13 +411,13 @@ msgid "product"
 msgstr "Item"
 
 msgid "titleChooseProducts"
-msgstr "Select items"
+msgstr "Selecting items"
 
 msgid "chooseProduct"
-msgstr "Select item"
+msgstr "Select items"
 
 msgid "deleteProduct"
-msgstr "Delete item"
+msgstr "Delete items"
 
 msgid "filter"
 msgstr "Filters"
@@ -639,7 +639,7 @@ msgid "indices"
 msgstr "Indices"
 
 msgid "count"
-msgstr "Number"
+msgstr "Count"
 
 msgid "showData"
 msgstr "View data"
@@ -885,7 +885,7 @@ msgid "labelSearchManufacturer"
 msgstr "Search for manufacturer names"
 
 msgid "titleChooseManufacturer"
-msgstr "Select manufacturer"
+msgstr "Selecting a manufacturer"
 
 msgid "chooseCatgeory"
 msgstr "Select category"
@@ -1451,107 +1451,132 @@ msgstr "Account"
 msgid "shop"
 msgstr "Online shop"
 
-msgid "pageHome"
-msgstr "Home"
+# page type (tspezialseite)
+msgid "Startseite"
+msgstr "Start page"
 
-msgid "pageShipping"
-msgstr "Shipping"
+# page type (tspezialseite)
+msgid "Informationen zum Versand"
+msgstr "Shipping information"
 
-msgid "pageWRB"
-msgstr "Cancellation"
+# page type (tspezialseite)
+msgid "WRB"
+msgstr "Withdrawal"
 
-msgid "pageAGB"
-msgstr "Conditions"
+# page type (tspezialseite)
+msgid "AGB"
+msgstr "Terms and conditions"
 
-msgid "pageTagging"
+# page type (tspezialseite)
+msgid "Tagging Übersicht"
 msgstr "Tagging"
 
-msgid "pageLiveSearch"
-msgstr "Livesearch"
+# page type (tspezialseite)
+msgid "Livesuche"
+msgstr "Live search"
 
-msgid "pageDataProtection"
-msgstr "Data protection"
+# page type (tspezialseite)
+msgid "Datenschutz"
+msgstr "Data privacy"
 
-msgid "pageManufacturer"
+# page type (tspezialseite)
+msgid "Hersteller Übersicht"
 msgstr "Manufacturer"
 
-msgid "pageSitemap"
+# page type (tspezialseite)
+msgid "Sitemap"
 msgstr "Sitemap"
 
-msgid "pageGifts"
-msgstr "Gifts"
+# page type (tspezialseite)
+msgid "Gratis Geschenk"
+msgstr "Free gifts"
 
-msgid "pageSelectionAssitant"
-msgstr "Selection assitant"
+# page type (tspezialseite)
+msgid "Auswahlassistent"
+msgstr "Selection Wizard"
 
 msgid "pageCustom"
-msgstr "Custom Page"
+msgstr "Custom page"
 
 msgid "pageAccount"
-msgstr "Account"
+msgstr "My account"
 
-msgid "pageLogin"
+# page type (tspezialseite)
+msgid "Login"
 msgstr "Login"
 
-msgid "pageRegister"
+# page type (tspezialseite)
+msgid "Registrieren"
 msgstr "Register"
 
-msgid "pageCart"
-msgstr "Cart"
+# page type (tspezialseite)
+msgid "Warenkorb"
+msgstr "Basket"
 
-msgid "pageForgotPassword"
-msgstr "Forgot Password"
+# page type (tspezialseite)
+msgid "Passwort vergessen"
+msgstr "Forgot password"
 
-msgid "pageContact"
+# page type (tspezialseite)
+msgid "Kontakt"
 msgstr "Contact"
 
-msgid "pageNewsletter"
+# page type (tspezialseite)
+msgid "Newsletter"
 msgstr "Newsletter"
 
-msgid "pageNewsletterArchive"
-msgstr "Newsletterarchive"
+# page type (tspezialseite)
+msgid "Newsletterarchiv"
+msgstr "Newsletter archive"
 
-msgid "pageNews"
+# page type (tspezialseite)
+msgid "News"
 msgstr "News"
 
 msgid "pageNewsMonth"
-msgstr "Newsmonth"
+msgstr "Monthly overview of newsletters"
 
 msgid "pageNewsCategory"
-msgstr "Newscategory"
+msgstr "News category"
 
 msgid "pageNewsDetail"
-msgstr "Newsdetail"
+msgstr "Detailed news posting page"
 
-msgid "pagePoll"
-msgstr "Poll"
+# page type (tspezialseite)
+msgid "Umfrage"
+msgstr "Survey"
 
 msgid "pagePlugin"
-msgstr "Plugin"
+msgstr "Plug-in"
 
-msgid "page404"
+# page type (tspezialseite)
+msgid "404"
 msgstr "404"
 
-msgid "pageOrderProcess"
+# page type (tspezialseite)
+msgid "Bestellvorgang"
 msgstr "Order process"
 
-msgid "pageOrderFinalize"
-msgstr "Order finalize"
+# page type (tspezialseite)
+msgid "Bestellabschluss"
+msgstr "Order completion"
 
-msgid "pageWishList"
-msgstr "wishlist"
+# page type (tspezialseite)
+msgid "Wunschliste"
+msgstr "Wish list"
 
-msgid "pageCompareList"
-msgstr "Comparelist"
+# page type (tspezialseite)
+msgid "Vergleichsliste"
+msgstr "Comparison list"
 
 msgid "pageProduct"
-msgstr "Product"
+msgstr "Item"
 
 msgid "pageProductList"
-msgstr "Prroduclist"
+msgstr "Item overview"
 
 msgid "pageRating"
-msgstr "Rating"
+msgstr "Review"
 
 msgid "pageMaintenance"
 msgstr "Maintenance"
@@ -1562,17 +1587,29 @@ msgstr "Order status"
 msgid "pageUnknown"
 msgstr "Unknown"
 
+# page type (tspezialseite)
+msgid "Impressum"
+msgstr "Legal notice"
+
+# page type (tspezialseite)
+msgid "Batteriegesetzhinweise"
+msgstr "Note on battery law"
+
+# page type (tspezialseite)
+msgid "WRB-Formular"
+msgstr "Instructions on withdrawal"
+
 msgid "exception"
 msgstr "Exception"
 
 msgid "errorDirCreate"
-msgstr "Error: Directory not created."
+msgstr "Could not create directory: "
 
 msgid "unknown"
 msgstr "Unknown"
 
 msgid "userAgent"
-msgstr "Useragent"
+msgstr "User agent"
 
 msgid "host"
 msgstr "Host"
@@ -1581,7 +1618,7 @@ msgid "warning"
 msgstr "Warning"
 
 msgid "moreInfo"
-msgstr "More information"
+msgstr "Further information"
 
 msgid "info"
 msgstr "Info"
@@ -1590,16 +1627,16 @@ msgid "guests"
 msgstr "Guests"
 
 msgid "overall"
-msgstr "Overall"
+msgstr "Total number"
 
 msgid "entryPage"
-msgstr "Entry page"
+msgstr "Start page"
 
 msgid "origin"
 msgstr "Origin"
 
 msgid "errorFileUploadGeneral"
-msgstr "An error occurred while uploading the file."
+msgstr "Could not upload file."
 
 msgid "Europa"
 msgstr "Europe"
@@ -1629,31 +1666,31 @@ msgid "syntax"
 msgstr "Syntax"
 
 msgid "typeAheadCategory"
-msgstr "Enter the title of the category. After a short time you will get suggestions from which you can choose one."
+msgstr "Please enter the category name. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadPage"
-msgstr "Enter the title of the page. After a short time you will get suggestions from which you can choose one."
+msgstr "Please enter the page name. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadTag"
-msgstr "Enter the name of the tag. After a short time you will get suggestions from which you can choose one."
+msgstr "Please enter the tag name. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadManufacturer"
-msgstr "Enter the name of the manufacturer. After a short time you will get suggestions from which you can choose one."
+msgstr "Please enter the manufacturer name. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadAttribute"
-msgstr "Enter the name of the attribute. After a short time you will get suggestions from which you can choose one."
+msgstr "Please enter the name of the characteristic. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "typeAheadProduct"
-msgstr "Enter the name of the product. After a short time you will get suggestions from which you can choose one."
+msgstr "Please enter the item name. You will shortly be offered different suggestions from which you can choose one."
 
 msgid "enterSearchTerm"
-msgstr "Enter a search term."
+msgstr "Please enter a search term."
 
 msgid "errorKeyMissing"
-msgstr "The input with key \"%s\" could not be created."
+msgstr "The input field with the key \"%s\" could not be created."
 
 msgid "statisticNoData"
-msgstr "No statistics at the moment."
+msgstr "No reports available."
 
 msgid "of"
 msgstr "of"
@@ -1662,16 +1699,76 @@ msgid "activeFrom"
 msgstr "Active from"
 
 msgid "activeTo"
-msgstr "Active to"
+msgstr "Active until"
 
 msgid "validUntil"
 msgstr "Valid until"
+
+msgid "miscellaneous"
+msgstr "miscellaneous"
 
 msgid "system"
 msgstr "System"
 
 msgid "labelSearchPage"
-msgstr "Search for own page"
+msgstr "Search for page names"
 
 msgid "titleChoosePage"
-msgstr "Choose own page"
+msgstr "Selecting custom pages"
+
+msgid "datepickerCustom"
+msgstr "Custom"
+
+msgid "datepickerToday"
+msgstr "Today"
+
+msgid "datepickerYesterday"
+msgstr "Yesterday"
+
+msgid "datepickerThisWeek"
+msgstr "This week"
+
+msgid "datepickerLastWeek"
+msgstr "Last week"
+
+msgid "datepickerThisMonth"
+msgstr "This month"
+
+msgid "datepickerLastMonth"
+msgstr "Last month"
+
+msgid "datepickerThisYear"
+msgstr "This year"
+
+msgid "datepickerLastYear"
+msgstr "Last year"
+
+msgid "datepickerSeparator"
+msgstr " - "
+
+msgid "mondayShort"
+msgstr "Mo"
+
+msgid "tuesdayShort"
+msgstr "Tu"
+
+msgid "wednesdayShort"
+msgstr "We"
+
+msgid "thursdayShort"
+msgstr "Th"
+
+msgid "fridayShort"
+msgstr "Fr"
+
+msgid "saturdayShort"
+msgstr "Sa"
+
+msgid "sundayShort"
+msgstr "Su"
+
+msgid "Zeitraum"
+msgstr "Period of time"
+
+msgid "directEntry"
+msgstr "Direct entry"

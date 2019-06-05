@@ -15,6 +15,7 @@
     ArticleClass.DEFAULTS = {
         input: {
             id: 'a',
+            childId: 'VariKindArtikel',
             quantity: 'anzahl'
         },
         action: {

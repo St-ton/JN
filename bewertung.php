@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/globalinclude.php';
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $smarty     = Shop::Smarty();
-$controller = new ReviewController(Shop::Container()->getDB(), Shop::Container()->getCache(), $smarty);
+$controller = new ReviewController(Shop::Container()->getDB(), Shop::Container()->getCache(), null, $smarty);
 if ($controller->handleRequest() === true) {
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     $smarty->display('productdetails/review_form.tpl');

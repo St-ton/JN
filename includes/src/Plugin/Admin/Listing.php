@@ -196,7 +196,7 @@ final class Listing
                 $plugin->setInstalled(true);
                 $plugin->setHasError(false);
                 $plugin->setIsShop4Compatible(true);
-            } elseif ($code === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE || $code === InstallCode::OK) {
+            } elseif ($code === InstallCode::OK_LEGACY || $code === InstallCode::OK) {
                 $plugin->setAvailable(true);
                 $plugin->setHasError(false);
                 $plugin->setIsShop4Compatible($code === InstallCode::OK);

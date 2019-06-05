@@ -25,7 +25,7 @@ class DataAttribute
     /**
      * @var bool
      */
-    public $nullable;
+    public $nullable = true;
 
     /**
      * @var mixed
@@ -35,7 +35,7 @@ class DataAttribute
     /**
      * @var bool
      */
-    public $isPrimaryKey;
+    public $isPrimaryKey = false;
 
     /**
      * @var string|null
@@ -50,38 +50,164 @@ class DataAttribute
     /**
      * @var bool
      */
-    public $dynamic;
+    public $dynamic = false;
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return DataAttribute
+     */
+    public function setName(string $name): DataAttribute
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataType(): string
+    {
+        return $this->dataType;
+    }
+
+    /**
+     * @param string $dataType
+     * @return DataAttribute
+     */
+    public function setDataType(string $dataType): DataAttribute
+    {
+        $this->dataType = $dataType;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    /**
+     * @param bool $nullable
+     * @return DataAttribute
+     */
+    public function setNullable(bool $nullable): DataAttribute
+    {
+        $this->nullable = $nullable;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $default
+     * @return DataAttribute
+     */
+    public function setDefault($default): DataAttribute
+    {
+        $this->default = $default;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPrimaryKey(): bool
+    {
+        return $this->isPrimaryKey;
+    }
+
+    /**
+     * @param bool $isPrimaryKey
+     * @return DataAttribute
+     */
+    public function setIsPrimaryKey(bool $isPrimaryKey): DataAttribute
+    {
+        $this->isPrimaryKey = $isPrimaryKey;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getForeignKey(): ?string
+    {
+        return $this->foreignKey;
+    }
+
+    /**
+     * @param string|null $foreignKey
+     * @return DataAttribute
+     */
+    public function setForeignKey(?string $foreignKey): DataAttribute
+    {
+        $this->foreignKey = $foreignKey;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getForeignKeyChild(): ?string
+    {
+        return $this->foreignKeyChild;
+    }
+
+    /**
+     * @param string|null $foreignKeyChild
+     * @return DataAttribute
+     */
+    public function setForeignKeyChild(?string $foreignKeyChild): DataAttribute
+    {
+        $this->foreignKeyChild = $foreignKeyChild;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDynamic(): bool
+    {
+        return $this->dynamic;
+    }
+
+    /**
+     * @param bool $dynamic
+     * @return DataAttribute
+     */
+    public function setDynamic(bool $dynamic): DataAttribute
+    {
+        $this->dynamic = $dynamic;
+
+        return $this;
+    }
 
     /**
      * DataAttribute constructor.
-     *
-     * @param string      $name - name of the attribute
-     * @param string      $dataType - type of the attribute
-     * @param null|mixed  $default - default value of the attribute
-     * @param bool        $nullable - true if the attribute is nullable, false otherwise
-     * @param bool        $isPrimaryKey - true if the attribute is the primary key, false otherwise
-     * @param string      $foreignKey
-     * @param string|null $foreignKeyChild
-     * @param bool        $dynamic
      */
-    public function __construct(
-        string $name,
-        string $dataType,
-        $default = null,
-        bool $nullable = true,
-        bool $isPrimaryKey = false,
-        string $foreignKey = null,
-        $foreignKeyChild = null,
-        bool $dynamic = false
-    ) {
-        $this->name            = $name;
-        $this->dataType        = $dataType;
-        $this->default         = $default;
-        $this->nullable        = $nullable;
-        $this->isPrimaryKey    = $isPrimaryKey;
-        $this->foreignKey      = $foreignKey;
-        $this->foreignKeyChild = $foreignKeyChild;
-        $this->dynamic         = $dynamic;
+    public function __construct()
+    {
     }
 
     /**
@@ -107,6 +233,16 @@ class DataAttribute
         $foreignKeyChild = null,
         bool $dynamic = false
     ): self {
-        return new self($name, $dataType, $default, $nullable, $isPrimaryKey, $foreignKey, $foreignKeyChild, $dynamic);
+        $item = new self();
+        $item->setName($name)
+            ->setDataType($dataType)
+            ->setDefault($default)
+            ->setNullable($nullable)
+            ->setIsPrimaryKey($isPrimaryKey)
+            ->setForeignKey($foreignKey)
+            ->setForeignKeyChild($foreignKeyChild)
+            ->setDynamic($dynamic);
+
+        return $item;
     }
 }

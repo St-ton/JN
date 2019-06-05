@@ -148,18 +148,61 @@ final class LanguageModel extends DataModel
         static $attributes = null;
 
         if (!isset($attributes)) {
-            $attributes                    = [];
-            $attributes['id']              = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
-            $attributes['nameEN']          = DataAttribute::create('cNameEnglisch', 'varchar');
-            $attributes['nameDE']          = DataAttribute::create('cNameDeutsch', 'varchar');
-            $attributes['default']         = DataAttribute::create('cStandard', 'char', self::cast('N', 'char'));
-            $attributes['iso']             = DataAttribute::create('cISO', 'varchar', null, false);
-            $attributes['shopDefault']     = DataAttribute::create('cShopStandard', 'char', self::cast('N', 'char'));
-            $attributes['iso639']          = DataAttribute::create('cISO639', 'varchar', '', false, false, null, null, true);
-            $attributes['displayLanguage'] = DataAttribute::create('displayLanguage', 'varchar', '', false, false, null, null, true);
-            $attributes['localizedName']   = DataAttribute::create('localizedName', 'varchar', '', false, false, null, null, true);
-            $attributes['url']             = DataAttribute::create('cURL', 'varchar', '', false, false, null, null, true);
-            $attributes['urlFull']         = DataAttribute::create('cURLFull', 'varchar', '', false, false, null, null, true);
+            $attributes                = [];
+            $attributes['id']          = DataAttribute::create(
+                'kSprache',
+                'tinyint',
+                self::cast('0', 'tinyint'),
+                false,
+                true
+            );
+            $attributes['nameEN']      = DataAttribute::create('cNameEnglisch', 'varchar');
+            $attributes['nameDE']      = DataAttribute::create('cNameDeutsch', 'varchar');
+            $attributes['default']     = DataAttribute::create('cStandard', 'char', self::cast('N', 'char'));
+            $attributes['iso']         = DataAttribute::create('cISO', 'varchar', null, false);
+            $attributes['shopDefault'] = DataAttribute::create('cShopStandard', 'char', self::cast('N', 'char'));
+
+            $iso = new DataAttribute();
+            $iso->setName('cISO639')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+
+            $displayLang = new DataAttribute();
+            $displayLang->setName('displayLanguage')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+
+            $localizedName = new DataAttribute();
+            $localizedName->setName('localizedName')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+
+
+            $url = new DataAttribute();
+            $url->setName('cURL')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['url'] = $url;
+
+            $urlFull = new DataAttribute();
+            $urlFull->setName('cURLFull')
+                ->setDataType('varchar')
+                ->setDefault('')
+                ->setNullable(false)
+                ->setDynamic(true);
+
+            $attributes['iso639']          = $iso;
+            $attributes['displayLanguage'] = $displayLang;
+            $attributes['localizedName']   = $localizedName;
+            $attributes['urlFull']         = $urlFull;
         }
 
         return $attributes;

@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa3c5b0a1c1656ae0e46442f486dcca8",
+    "content-hash": "de037f4b46841eb6719575f52fa63d0e",
     "packages": [
         {
             "name": "andyftw/ssllabs-php",
@@ -550,8 +550,14 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git",
+                "url": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator.git",
                 "reference": "db1522971ac4376a4217173c2247ebe094cb670f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fqrcodegenerator/repository/archive.zip?sha=db1522971ac4376a4217173c2247ebe094cb670f",
+                "reference": "db1522971ac4376a4217173c2247ebe094cb670f",
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.4.45"
@@ -585,11 +591,11 @@
         },
         {
             "name": "jtlshop/shop4-systemcheck",
-            "version": "1.1.2",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
-                "reference": "1.1.2"
+                "reference": "1.2.0"
             },
             "type": "library"
         },
@@ -1074,7 +1080,7 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v3.4.27",
+            "version": "v3.4.28",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",

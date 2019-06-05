@@ -74,8 +74,8 @@ class CustomerAttribute
         $instance = new self();
         $instance->setRecord(Shop::Container()->getDB()->queryPrepared(
             'SELECT tkundenattribut.kKundenAttribut, tkundenattribut.kKunde, tkundenattribut.kKundenfeld,
-                   tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert,
-                   tkundenfeld.nSort, tkundenfeld.nEditierbar
+                   tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert, tkundenfeld.nSort,
+                   IF(COALESCE(tkundenattribut.cWert, \'\') = \'\', 1, tkundenfeld.nEditierbar) nEditierbar
                 FROM tkundenattribut
                 INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
                 WHERE tkundenattribut.kKundenAttribut = :id',
@@ -254,12 +254,12 @@ class CustomerAttribute
     }
 
     /**
-     * @param object|null $record
+     * @param object|array|null $record
      * @return CustomerAttribute
      */
-    public function setRecord(?object $record): self
+    public function setRecord($record): self
     {
-        if ($record === null) {
+        if (!\is_object($record) && !\is_array($record)) {
             $this->setId(0);
             $this->setCustomerFieldID(0);
             $this->setCustomerID(0);

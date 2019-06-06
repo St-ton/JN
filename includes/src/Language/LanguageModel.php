@@ -27,6 +27,7 @@ use Locale;
  * @method void setNameEN(string $name)
  * @property string $cNameDeutsch
  * @property string $nameDE
+ * @method string getNameDE()
  * @method void setNameDE(string $name)
  * @property string $cStandard
  * @property string $default

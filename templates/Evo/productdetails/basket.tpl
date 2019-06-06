@@ -20,7 +20,11 @@
                 {block name='basket-form-inline'}
                 <div class="form-inline">
                     <div id="quantity-grp" class="choose_quantity input-group">
-                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if}
+                        <input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                               min="0"
+                               {if $Artikel->fAbnahmeintervall > 0}
+                                   step="{$Artikel->fAbnahmeintervall}"
+                                {/if}
                                id="quantity" class="quantity form-control text-right" name="anzahl"
                                aria-label="{lang key='quantity'}"
                                value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />

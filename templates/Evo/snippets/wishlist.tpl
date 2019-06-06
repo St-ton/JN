@@ -143,9 +143,15 @@
                                 {else}
                                     <td>
                                         <input{if $isCurrenctCustomer !== true} readonly="readonly"{/if}
+                                                type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                                 name="Anzahl_{$wlPosition->kWunschlistePos}"
-                                                class="wunschliste_anzahl form-control" type="text" size="1"
-                                                value="{$wlPosition->fAnzahl|replace_delim}"><br/>{$wlPosition->Artikel->cEinheit}
+                                                class="wunschliste_anzahl form-control" type="text"
+                                                size="1"
+                                                min="0"
+                                                {if $wlPosition->Artikel->fAbnahmeintervall > 0}
+                                                    step="{$wlPosition->Artikel->fAbnahmeintervall}"
+                                                {/if}
+                                                value="{$wlPosition->fAnzahl}"><br/>{$wlPosition->Artikel->cEinheit}
                                     </td>
                                     <td class="text-right">
                                         <div class="btn-group-vertical">

@@ -268,6 +268,7 @@
                                                                     class="quantity text-right"
                                                                     name="anzahl"
                                                                     autocomplete="off"
+                                                                    data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                                                     value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
                                                             }
                                                             {inputgroupaddon append=true}

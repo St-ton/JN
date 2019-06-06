@@ -216,9 +216,10 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container mt-0 pt-4 px-md-4">
+            <div id="content-wrapper" class="container-fluid mt-0 pt-4 px-md-4">
         {/block}
 
+{*
         {block name='layout-header-product-pagination'}
             {if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
                 <div class="d-none d-lg-block product-pagination next">
@@ -233,9 +234,12 @@
                 </div>
             {/if}
         {/block}
+*}
 
         {block name='layout-header-breadcrumb'}
-            {include file='layout/breadcrumb.tpl'}
+            {container}
+                {include file='layout/breadcrumb.tpl'}
+            {/container}
         {/block}
 
         {block name='layout-header-content-row-starttag'}
@@ -248,7 +252,9 @@
         {/block}
 
         {block name='layout-header-alert'}
-            {include file='snippets/alert_list.tpl'}
+            {container}
+                {include file='snippets/alert_list.tpl'}
+            {/container}
         {/block}
 
     {/block}{* /content-all-starttags *}

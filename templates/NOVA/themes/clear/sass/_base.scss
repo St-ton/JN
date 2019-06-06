@@ -1075,7 +1075,12 @@ ul.partlist-items {
 
 @include media-breakpoint-up(lg) {
   #content.col-lg-9.order-lg-1 {
-    padding-left: $grid-gutter-width;
+    padding-left: map_get($spacers, 4);
+  }
+}
+@include media-breakpoint-up(xl) {
+  #content.col-lg-9.order-lg-1 {
+    padding-left: map_get($spacers, 7);
   }
 }
 

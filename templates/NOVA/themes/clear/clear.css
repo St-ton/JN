@@ -13141,7 +13141,12 @@ ul.partlist-items {
 
 @media (min-width: 992px) {
   #content.col-lg-9.order-lg-1 {
-    padding-left: 32px;
+    padding-left: 1.5rem;
+  }
+}
+@media (min-width: 1200px) {
+  #content.col-lg-9.order-lg-1 {
+    padding-left: 4rem;
   }
 }
 .attr-group {

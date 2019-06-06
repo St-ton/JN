@@ -1829,7 +1829,7 @@ class Artikel
      */
     public function getMediaTypeArr(): array
     {
-        return array_keys($this->mediaTypes);
+        return array_keys($this->getMediaTypes());
     }
 
     /**

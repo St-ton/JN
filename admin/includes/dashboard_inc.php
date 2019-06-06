@@ -153,7 +153,7 @@ function addWidget(int $kWidget)
  */
 function expandWidget(int $kWidget, int $bExpand)
 {
-    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bExpand' => $bExpand]);
+    Shop::Container()->getDB()->update('tadminwidgets', 'kWidget', $kWidget, (object)['bExpanded' => $bExpand]);
 }
 
 /**

@@ -139,7 +139,7 @@ final class LinkAdmin
         foreach (LanguageHelper::getAllLanguages() as $language) {
             $localized->cISOSprache = $language->getIso();
             $localized->cName       = $linkGroup->cName;
-            $idx                            = 'cName_' . $language->getIso();
+            $idx                    = 'cName_' . $language->getIso();
             if (isset($post[$idx])) {
                 $localized->cName = $this->specialChars($post[$idx]);
             }

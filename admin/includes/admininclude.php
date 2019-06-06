@@ -59,8 +59,8 @@ $db       = Shop::Container()->getDB();
 $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
-$lang     = LanguageHelper::getInstance($db, $cache);
 $session  = Backend::getInstance();
+$lang     = LanguageHelper::getInstance($db, $cache);
 $oAccount = Shop::Container()->getAdminAccount();
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';

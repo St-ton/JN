@@ -116,20 +116,25 @@ if (Form::validateToken()) {
         }
     } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
         if (isset($_POST['loeschen'])) {
-            if (is_array($_POST['kNewsletterQueue'])) {
+            if (!empty($_POST['kNewsletterQueue']) && is_array($_POST['kNewsletterQueue'])) {
                 $noticeTMP = '';
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
-                    $entry = $db->query(
-                        'SELECT tnewsletterqueue.kNewsletter, tnewsletter.cBetreff
-                            FROM tnewsletterqueue
-                            JOIN tnewsletter
-                                ON tnewsletter.kNewsletter = tnewsletterqueue.kNewsletter
-                            WHERE tnewsletterqueue.kNewsletterQueue = ' . (int)$kNewsletterQueue,
+                    $entry = $db->queryPrepared(
+                        'SELECT
+                            q.foreignKeyID,
+                            q.cronID,
+                            l.cBetreff
+                        FROM
+                            tjobqueue q
+                            LEFT JOIN tnewsletter l ON l.kNewsletter = q.foreignKeyID
+                        WHERE
+                            q.jobQueueID = :jobQueueID',
+                        ['jobQueueID' => $kNewsletterQueue],
                         ReturnType::SINGLE_OBJECT
                     );
-                    $db->delete('tnewsletter', 'kNewsletter', (int)$entry->kNewsletter);
-                    $db->delete('tjobqueue', ['cKey', 'kKey'], ['kNewsletter', (int)$entry->kNewsletter]);
-                    $db->delete('tnewsletterqueue', 'kNewsletterQueue', (int)$kNewsletterQueue);
+                    $db->delete('tnewsletter', 'kNewsletter', (int)$entry->foreignKeyID);
+                    $db->delete('tjobqueue', ['foreignKey', 'foreignKeyID'], ['kNewsletter', (int)$entry->foreignKeyID]);
+                    $db->delete('tcron', 'cronID', $entry->cronID);
 
                     $noticeTMP .= $entry->cBetreff . '", ';
                 }
@@ -412,7 +417,6 @@ if (Form::validateToken()) {
                 // create a crontab entry
                 $db->insert('tcron', (new NewsletterDefault())->setForeignKeyID($oNewsletter->kNewsletter));
 
-                // --TODO-- maybe we kick this table completely ...
                 // baue tnewsletterqueue Objekt
                 $tnewsletterqueue                    = new stdClass();
                 $tnewsletterqueue->kNewsletter       = $oNewsletter->kNewsletter;
@@ -420,8 +424,6 @@ if (Form::validateToken()) {
                 $tnewsletterqueue->dStart            = $oNewsletter->dStartZeit;
                 // tnewsletterqueue fuellen
                 $db->insert('tnewsletterqueue', $tnewsletterqueue);
-
-                $nLimitM = JOBQUEUE_LIMIT_M_NEWSLETTER;
 
                 // Baue Arrays mit kKeys
                 $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
@@ -621,13 +623,11 @@ if ($step === 'uebersicht') {
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
     $queueCount        = (int)$db->query(
-        'SELECT COUNT(*) AS nAnzahl
-            FROM tnewsletterqueue
-            JOIN tnewsletter
-                ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
-            WHERE tnewsletter.kSprache = ' . (int)$_SESSION['kSprache'],
+        "SELECT COUNT(*) AS jobQueueCount
+            FROM tjobqueue
+            WHERE jobType = 'newsletter'",
         ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+    )->jobQueueCount;
     $templateCount     = (int)$db->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewslettervorlage
@@ -662,32 +662,35 @@ if ($step === 'uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     $queue             = $db->queryPrepared(
-        "SELECT tnewsletter.cBetreff, tnewsletterqueue.kNewsletterQueue, tnewsletterqueue.kNewsletter,
-            DATE_FORMAT(tnewsletterqueue.dStart, '%d.%m.%Y %H:%i') AS Datum
-            FROM tnewsletterqueue
-            JOIN tnewsletter
-                ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
-            WHERE tnewsletter.kSprache = :lid
-            ORDER BY tnewsletterqueue.dStart DESC
-            LIMIT " . $pagiQueue->getLimitSQL(),
-        ['lid' => (int)$_SESSION['kSprache']],
+        "SELECT
+            l.cBetreff,
+            q.jobQueueID,
+            q.foreignKeyID,
+            q.tasksExecuted,
+            c.startDate as 'Datum'
+        FROM
+            tjobqueue q
+            LEFT JOIN tnewsletter l ON l.kNewsletter = q.foreignKeyID
+            LEFT JOIN tcron c ON q.cronID = c.cronID
+        WHERE
+            q.jobType = 'newsletter'
+            AND l.kSprache = :langID
+        ORDER BY
+            c.startDate DESC
+        LIMIT " . $pagiQueue->getLimitSQL(),
+        [
+            'langID'    => (int)$_SESSION['kSprache'],
+        ],
         ReturnType::ARRAY_OF_OBJECTS
     );
     if (!($instance instanceof Newsletter)) {
         $instance = new Newsletter($db, $conf);
     }
     foreach ($queue as $entry) {
-        $entry->kNewsletter       = (int)$entry->kNewsletter;
-        $jobQueue                 = $db->queryPrepared(
-            "SELECT tasksExecuted as 'nLimitN'
-                FROM tjobqueue
-                WHERE jobType = 'newsletter'
-                    AND foreignKeyID = :nlid",
-            ['nlid' => $entry->kNewsletter],
-            ReturnType::SINGLE_OBJECT
-        );
+        $entry->kNewsletter       = (int)$entry->foreignKeyID;
+        $entry->nLimitN           = (int)$entry->tasksExecuted;
+        $entry->kNewsletterQueue  = (int)$entry->jobQueueID;
         $recipient                = $instance->getRecipients($entry->kNewsletter);
-        $entry->nLimitN           = $jobQueue->nLimitN ?? 0;
         $entry->nAnzahlEmpfaenger = $recipient->nAnzahl;
         $entry->cKundengruppe_arr = $recipient->cKundengruppe_arr;
     }

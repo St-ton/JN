@@ -36,7 +36,7 @@
                             <label for="cKundengruppen">{__('restrictedToCustomerGroups')}</label>
                         </span>
                         <select class="form-control" name="cKundengruppen[]" multiple="multiple" id="cKundengruppen">
-                            <option value="0" {if $gesetzteKundengruppen[0]}selected{/if}>{__('allCustomerGroups')}</option>
+                            <option value="0" {if isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0] === true}selected{/if}>{__('allCustomerGroups')}</option>
                             {foreach $kundengruppen as $kundengruppe}
                                 {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
                                 <option value="{$kundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen[$kKundengruppe])}selected{/if}>{$kundengruppe->cName}</option>

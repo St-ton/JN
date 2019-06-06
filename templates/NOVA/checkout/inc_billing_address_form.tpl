@@ -519,26 +519,26 @@
                             {/if}
                             {foreach $oKundenfeld_arr as $oKundenfeld}
                                 {block name='checkout-inc-billing-address-form-custom-field'}
-                                    {assign var="kKundenfeld" value=$oKundenfeld->kKundenfeld}
+                                    {assign var="kKundenfeld" value=$oKundenfeld->getID()}
                                     {if isset($customerAttributes[$kKundenfeld])}
                                         {assign var="cKundenattributWert" value=$customerAttributes[$kKundenfeld]->getValue()}
-                                        {assign var="isKundenattributEditable" value=($oKundenfeld->nEditierbar > 0 || $customerAttributes[$kKundenfeld]->getId() === 0)}
+                                        {assign var="isKundenattributEditable" value=$customerAttributes[$kKundenfeld]->isEditable()}
                                     {else}
                                         {assign var="cKundenattributWert" value=''}
                                         {assign var="isKundenattributEditable" value=true}
                                     {/if}
                                     {formgroup class="{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}"
                                         label-for="custom_{$kKundenfeld}"
-                                        label="{$oKundenfeld->cName}{if $oKundenfeld->nPflicht != 1}<span class='optional'> - {lang key='optional'}</span>{/if}"
+                                        label="{$oKundenfeld->getLabel()}{if !$oKundenfeld->isRequired()}<span class='optional'> - {lang key='optional'}</span>{/if}"
                                     }
-                                        {if $oKundenfeld->cTyp !== 'auswahl'}
+                                        {if $oKundenfeld->getType() !== \JTL\Customer\CustomerField::TYPE_SELECT}
                                             {input
-                                                type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
+                                                type="{if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}number{elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_DATE}date{else}text{/if}"
                                                 name="custom_{$kKundenfeld}"
                                                 id="custom_{$kKundenfeld}"
                                                 value="{$cKundenattributWert}"
-                                                placeholder=$oKundenfeld->cName
-                                                required=(($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && empty($cKundenattributWert)))
+                                                placeholder=$oKundenfeld->getLabel()
+                                                required=$oKundenfeld->isRequired()
                                                 data-toggle="floatLabel"
                                                 data-value="no-js"
                                                 readonly=(!$isKundenattributEditable)
@@ -546,12 +546,12 @@
                                         {else}
                                             {select
                                                 name="custom_{$kKundenfeld}"
-                                                disabled=(!$isKundenattributEditable)
-                                                required=($oKundenfeld->nPflicht == 1)
+                                                disabled=!$isKundenattributEditable
+                                                required=$oKundenfeld->isRequired()
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
-                                                {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
-                                                    <option value="{$oKundenfeldWert->cWert}" {if ($oKundenfeldWert->cWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                                {foreach $oKundenfeld->getValues() as $oKundenfeldWert}
+                                                    <option value="{$oKundenfeldWert}" {if ($oKundenfeldWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert}</option>
                                                 {/foreach}
                                             {/select}
                                         {/if}

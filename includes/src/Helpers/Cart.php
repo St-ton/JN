@@ -1091,7 +1091,7 @@ class Cart
                     AND fMindestbestellwert <= :minAmount
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = :cgid)
+                        OR kKundengruppe = :cgID)
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' OR FIND_IN_SET(:artNO, REPLACE(cArtikel, ';', ',')) > 0)
@@ -1206,7 +1206,7 @@ class Cart
                     AND fMindestbestellwert <= :minAmount
                     AND (kKundengruppe = -1
                         OR kKundengruppe = 0
-                        OR kKundengruppe = :cgid)
+                        OR kKundengruppe = :cgID)
                     AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' OR FIND_IN_SET(:artNo, REPLACE(cArtikel, ';', ',')) > 0)
                     AND (cHersteller = '-1' OR FIND_IN_SET(:manuf, REPLACE(cHersteller, ';', ',')) > 0)

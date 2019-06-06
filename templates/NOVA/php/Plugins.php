@@ -16,6 +16,7 @@ use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Seo;
 use JTL\Helpers\Tax;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupInterface;
@@ -729,5 +730,15 @@ class Plugins
     public function getDecimalLength($params): int
     {
         return \max(\strlen(\strrchr(\str_replace(',', '.', $params['quantity']), '.')) - 1, 0);
+    }
+
+    /**
+     * prepares a string optimized for SEO
+     * @param String $optStr
+     * @return String SEO optimized String
+     */
+    public function seofy($optStr = ''): string
+    {
+        return Seo::sanitizeSeoSlug($optStr);
     }
 }

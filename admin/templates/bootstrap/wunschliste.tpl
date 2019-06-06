@@ -81,7 +81,7 @@
                         <tr>
                             <th class="tleft">{__('wishlistName')}</th>
                             <th class="tleft">{__('customer')}</th>
-                            <th class="th-3">{__('wishlistReceiverCount')}</th>
+                            <th class="th-3">{__('wishlistRecipientCount')}</th>
                             <th class="th-4">{__('wishlistPosCount')}</th>
                             <th class="th-5">{__('date')}</th>
                         </tr>

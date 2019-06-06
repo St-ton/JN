@@ -5,7 +5,7 @@
 {block name='page-sitemap'}
     {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
         {block name='page-sitemap-pages'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_linkgroups_prepend'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_pages'}
             {card header={lang key='sitemapSites'} class="mb-5"}
                 {block name='page-sitemap-pages-content'}
                     {row}
@@ -23,12 +23,11 @@
                     {/row}
                 {/block}
             {/card}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_linkgroups_append'}
         {/block}
     {/if}
     {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
         {block name='page-sitemap-categories'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_categories_prepend'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_categories'}
             {card header={lang key='sitemapKats'} class="mb-5"}
                 {block name='page-sitemap-categories-content'}
                     {row}
@@ -83,12 +82,11 @@
                     {/row}
                 {/block}
             {/card}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_categories_append'}
         {/block}
     {/if}
     {if $Einstellungen.sitemap.sitemap_globalemerkmale_anzeigen === 'Y' && $oGlobaleMerkmale_arr|@count > 0}
         {block name='page-sitemap-global-attributes'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_attributes_prepend'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_attributes'}
             {card header={lang key='sitemapGlobalAttributes'} class="mb-5"}
                 {block name='page-sitemap-global-attributes-content'}
                     {row}
@@ -107,12 +105,11 @@
                     {/row}
                 {/block}
             {/card}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_attributes_append'}
         {/block}
     {/if}
     {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
         {block name='page-sitemap-manufacturer'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_manufactutrers_prepend'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}
             {card header={lang key='sitemapNanufacturer'} class="mb-5"}
                 {block name='page-sitemap-manufacturer-content'}
                     {row}
@@ -124,12 +121,11 @@
                     {/row}
                 {/block}
             {/card}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_manufactutrers_append'}
         {/block}
     {/if}
     {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
         {block name='page-sitemap-news'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_prepend'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
             {card header={lang key='sitemapNews'} class="mb-5"}
                 {block name='page-sitemap-news-content'}
                     {row}
@@ -149,7 +145,6 @@
                     {/row}
                 {/block}
             {/card}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_append'}
         {/block}
     {/if}
     {if $Einstellungen.news.news_benutzen === 'Y'
@@ -158,7 +153,7 @@
         && $oNewsKategorie_arr|@count > 0
     }
         {block name='page-sitemap-news-categories'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_cat_prepend'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_news_categories'}
             {card header={lang key='sitemapNewsCats'} class="mb-5"}
                 {block name='page-sitemap-news-categories-content'}
                     {row}
@@ -179,7 +174,6 @@
                     {/row}
                 {/block}
             {/card}
-            {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_cat_append'}
         {/block}
     {/if}
 {/block}

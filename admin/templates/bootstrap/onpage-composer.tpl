@@ -42,13 +42,15 @@
     <script src="{$templateUrl}js/onpage-composer/PreviewFrame.js"></script>
 
     <script>
-        var opc = new OPC({
+        let opc = new OPC({
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
             pageKey:     {$pageKey},
             error:       {$error|json_encode},
         });
+
+        opc.init();
     </script>
 </head>
 <body>

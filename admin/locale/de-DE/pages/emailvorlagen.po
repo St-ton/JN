@@ -81,7 +81,7 @@ msgid "errorEmailSend"
 msgstr "E-Mail konnte nicht versendet werden."
 
 msgid "errorFileName"
-msgstr "Ihr Dateiname %s enthält unzulässige Zeichen (Erlaubt sind A–Z, a–z, 0–9, _ und -)."
+msgstr "Der Dateiname %s enthält unzulässige Zeichen (erlaubt sind A–Z, a–z, 0–9, _ und -)."
 
 msgid "errorFileSave"
 msgstr "Die Dateien konnten nicht geschrieben werden. Prüfen Sie bitte, ob für das PDF-Verzeichnis Schreibrechte gesetzt sind."
@@ -90,10 +90,10 @@ msgid "errorFileNameMissing"
 msgstr "Bitte geben Sie zu jeder Datei auch einen Dateinamen ein."
 
 msgid "errorFileSizeType"
-msgstr "Fehler: Die Datei muss ein PDF sein und darf maximal 2MB groß sein."
+msgstr "Die Datei muss ein PDF sein und darf maximal 2 MB groß sein."
 
 msgid "errorFileNamePdfMissing"
-msgstr "Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben."
+msgstr "Sie haben zu einem PDF keinen Dateinamen angegeben."
 
 msgid "successTemplateEdit"
 msgstr "E-Mail-Vorlage erfolgreich geändert."
@@ -112,3 +112,127 @@ msgstr "Möchten Sie die E-Mail-Vorlage „<b>%s</b>“ wirklich zurücksetzen?"
 
 msgid "pluginTemplates"
 msgstr "Plugin-Vorlagen"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_kupon"
+msgstr "Coupon (Standard / Versandcoupon)"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_gutschein"
+msgstr "Kunde erhält Guthaben"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bestellbestaetigung"
+msgstr "Bestellbestätigung"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_passwort_vergessen"
+msgstr "Passwort vergessen"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_neukundenregistrierung"
+msgstr "Neukundenregistrierung"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_accounterstellung_durch_betreiber"
+msgstr "Erstellung eines Benutzerkontos durch Shopbetreiber"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bestellung_bezahlt"
+msgstr "Bestellung bezahlt"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bestellung_versandt"
+msgstr "Bestellung versandt"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_account_geloescht"
+msgstr "Löschung eines Benutzerkontos"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_kdgrp_zuweisung"
+msgstr "Kundengruppenzuweisung durch Shopbetreiber"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_kontaktformular"
+msgstr "Kontaktformular"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_produktanfrage"
+msgstr "Frage zum Artikel"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung"
+msgstr "Benachrichtigung, wenn Produkt wieder verfügbar"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_wunschliste"
+msgstr "Wunschzettelversand an Freunde"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bewertungerinnerung"
+msgstr "Bewertungserinnerung nach Artikelkauf"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bestellung_aktualisiert"
+msgstr "Bestellung aktualisiert"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bestellung_storno"
+msgstr "Bestellung storniert"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bestellung_restorno"
+msgstr "Bestellung reaktiviert"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bestellung_teilversandt"
+msgstr "Bestellung teilversandt"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_footer"
+msgstr "Footer"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_header"
+msgstr "Header"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_newsletteranmelden"
+msgstr "Freischalt-E-Mail nach Newsletter-Anmeldung"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_kundenwerbenkunden"
+msgstr "Kunden werben Kunden"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_kundenwerbenkundenboni"
+msgstr "Kunden werben Kunden – Belohnung"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_artikelweiterempfehlen"
+msgstr "Artikel weiterempfehlen"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_bewertung_guthaben"
+msgstr "Bonusguthaben für Bewertung"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_anbieterkennzeichnung"
+msgstr "Anbieterkennzeichnung"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_checkbox_shopbetreiber"
+msgstr "Auswahl einer Checkboxoption"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_admin_passwort_vergessen"
+msgstr "Passwort vergessen (Administrator)"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_statusemail"
+msgstr "E-Mail-Bericht"
+
+# email name (temailvorlage)
+msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung_optin"
+msgstr "E-Mail-Benachrichtigung, wenn Artikel wieder verfügbar (Bestätigung nach Double-Opt-In-Verfahren)"

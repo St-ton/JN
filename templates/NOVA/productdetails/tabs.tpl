@@ -78,6 +78,7 @@
         || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
             {if $tabanzeige}
                 {block name='productdetails-tabs-tabs'}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_tabs'}
                     {tabs id="product-tabs" swipeable=true}
                     {if $useDescription}
                         {block name='productdetails-tabs-tab-description'}
@@ -85,6 +86,7 @@
                                 <div id="tab-description">
                                     {block name='productdetails-tabs-tab-content'}
                                         {block name='tab-description-media-types'}
+                                            {include file='snippets/opc_mount_point.tpl' id='opc_before_desc'}
                                             <div class="desc">
                                                 {$Artikel->cBeschreibung}
                                                 {if $useDescriptionWithMediaGroup}
@@ -95,6 +97,7 @@
                                                     {/foreach}
                                                 {/if}
                                             </div>
+                                            {include file='snippets/opc_mount_point.tpl' id='opc_after_desc'}
                                         {/block}
                                         {block name='productdetails-tabs-tab-description-include-attributes'}
                                             {include file='productdetails/attributes.tpl' tplscope='details'
@@ -172,7 +175,7 @@
                     {if $useMediaGroup}
                         {block name='productdetails-tabs-tab-mediagroup'}
                             {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                                {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                                {$cMedienTypId = $cMedienTyp|@seofy}
                                 {tab title=$cMedienTyp active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
                                     <div id="tab-{$cMedienTypId}">
                                         {include file='productdetails/mediafile.tpl'}
@@ -217,6 +220,7 @@
                                         {cardbody}
                                             {block name='productdetails-tabs-card-description'}
                                                 {block name='productdetails-tabs-card-description-content'}
+                                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_desc'}
                                                     <div class="desc">
                                                         {$Artikel->cBeschreibung}
                                                         {if $useDescriptionWithMediaGroup}
@@ -232,6 +236,7 @@
                                                             {/foreach}
                                                         {/if}
                                                     </div>
+                                                    {include file='snippets/opc_mount_point.tpl' id='opc_after_desc'}
                                                 {/block}
                                                 {block name='productdetails-tabs-card-description-attributes'}
                                                     {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
@@ -421,7 +426,7 @@
                         {if $useMediaGroup}
                             {block name='productdetails-tabs-media-gorup'}
                                 {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                                    {$cMedienTypId = $cMedienTyp|regex_replace:"/[\'\"\/ ]/":""}
+                                    {$cMedienTypId = $cMedienTyp|@seofy}
                                     {card no-body=true class="mb-3"}
                                         {cardheader id="tab-{$cMedienTypId}-head"
                                             class="h6 mb-0"

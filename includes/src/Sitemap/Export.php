@@ -128,10 +128,6 @@ final class Export
         $itemCount  = 1;
         $urlCounts  = [0 => 0];
         $res        = '';
-
-        foreach ($languages as $language) {
-            $language->setIso639(Text::convertISO2ISO639($language->cISO));
-        }
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
 

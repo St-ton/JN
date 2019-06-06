@@ -3121,3 +3121,15 @@ msgstr "Encryption (SSL)"
 
 msgid "ftp_path_name"
 msgstr "Path to shop"
+
+msgid "cron_type_name"
+msgstr "Pseudo cron method"
+
+msgid "cron_freq_name"
+msgstr "Server-to-Server start each x-th call"
+
+msgid "cron_type_desc"
+msgstr "Which method should be used?"
+
+msgid "cron_freq_desc"
+msgstr "Start a pseudo cron on each x-th page call"

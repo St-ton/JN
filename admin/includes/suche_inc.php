@@ -26,7 +26,7 @@ function adminSearch($query, $standalonePage = false): ?string
 
     $groupedSettings = [];
     $currentGroup    = null;
-//    Shop::dbg($settings);
+
     foreach ($settings->oEinstellung_arr as $setting) {
         if ($setting->cConf === 'N') {
             $currentGroup                   = $setting;

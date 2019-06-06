@@ -2479,3 +2479,12 @@ msgstr "Yes"
 
 msgid "ftp_ssl_value(0)"
 msgstr "No"
+
+msgid "cron_type_value(N)"
+msgstr "deactivated"
+
+msgid "cron_type_value(tpl)"
+msgstr "controlled by template"
+
+msgid "cron_type_value(s2s)"
+msgstr "Curl Server-to-Server"

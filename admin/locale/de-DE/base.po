@@ -1817,3 +1817,6 @@ msgstr "Filter zurücksetzen"
 
 msgid "passwordGenerate"
 msgstr "Passwort generieren"
+
+msgid "shopTitle"
+msgstr "JTL-Shop Administration"

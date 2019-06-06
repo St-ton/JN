@@ -17,7 +17,7 @@
         {if $bMultiplePages}
             {__('entries')} {$oPagination->getFirstPageItem() + 1}
             - {$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}
-            von {$oPagination->getItemCount()}
+            {__('of')} {$oPagination->getItemCount()}
         {else}
             {__('allEntries')}
         {/if}

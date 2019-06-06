@@ -40,3 +40,6 @@ msgstr "The full-text search requires MySQL version 5.6. or higher."
 
 msgid "useFulltextSearch"
 msgstr "Use full-text search"
+
+msgid "Sucheinstellungen"
+msgstr "Search settings"

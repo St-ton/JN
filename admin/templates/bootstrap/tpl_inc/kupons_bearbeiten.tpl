@@ -5,11 +5,11 @@
 {/if}
 
 {if $oKupon->cKuponTyp === $couponTypes.standard}
-    {assign var=cTitel value="$cTitel : Standardkupon"}
+    {assign var=cTitel value="$cTitel : {__('standardCoupon')}"}
 {elseif $oKupon->cKuponTyp === $couponTypes.shipping}
-    {assign var=cTitel value="$cTitel : Versandkostenfrei-Kupon"}
+    {assign var=cTitel value="$cTitel : {__('shippingCoupon')}"}
 {elseif $oKupon->cKuponTyp === $couponTypes.newCustomer}
-    {assign var=cTitel value="$cTitel : Neukunden-/Begrüßungskupon"}
+    {assign var=cTitel value="$cTitel : {__('newCustomerCoupon')}"}
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('couponsDesc') cDokuURL=__('couponsURL')}
@@ -30,7 +30,7 @@
         $('#dGueltigBis').prop('disabled', bOpenEnd);
         $('#dDauerTage').prop('disabled', bOpenEnd);
         if ($('#bOpenEnd').prop('checked')) {
-            $('#dDauerTage').val('Ende offen');
+            $('#dDauerTage').val('{__('openEnd')}');
             $('#dGueltigBis').val('');
         } else {
             $('#dDauerTage').val('');

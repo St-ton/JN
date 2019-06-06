@@ -15,6 +15,7 @@ use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigitemsprache;
 use JTL\Extensions\Download;
+use JTL\GlobalSetting;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -361,7 +362,7 @@ class Warenkorb
         $pos->kVersandklasse    = $pos->Artikel->kVersandklasse;
         $pos->kSteuerklasse     = $pos->Artikel->kSteuerklasse;
         $pos->fPreisEinzelNetto = $pos->Artikel->gibPreis($pos->nAnzahl, []);
-        $pos->fPreis            = $pos->Artikel->gibPreis($anzahl, []);
+        $pos->fPreis            = $pos->fPreisEinzelNetto;
         $pos->cArtNr            = $pos->Artikel->cArtNr;
         $pos->nPosTyp           = $nPosTyp;
         $pos->cEinheit          = $pos->Artikel->cEinheit;
@@ -881,18 +882,25 @@ class Warenkorb
 
     /**
      * gibt Gesamtanzahl eines bestimmten Artikels im Warenkorb zurueck
-     * @param int $kArtikel
-     * @param int $excludePos
+     * @param int  $kArtikel
+     * @param int  $excludePos
+     * @param bool $countParentProducts
      * @return int
      */
-    public function gibAnzahlEinesArtikels(int $kArtikel, int $excludePos = -1)
+    public function gibAnzahlEinesArtikels(int $kArtikel, int $excludePos = -1, bool $countParentProducts = false): int
     {
         if (!$kArtikel) {
             return 0;
         }
         $anz = 0;
         foreach ($this->PositionenArr as $i => $pos) {
-            if ($pos->kArtikel == $kArtikel && $excludePos !== $i) {
+            if ($excludePos === $i) {
+                continue;
+            }
+            $productID = $countParentProducts && isset($pos->Artikel) && $pos->Artikel->kVaterArtikel > 0
+                ? (int)$pos->Artikel->kVaterArtikel
+                : (int)$pos->kArtikel;
+            if ($productID === $kArtikel) {
                 $anz += $pos->nAnzahl;
             }
         }
@@ -937,7 +945,14 @@ class Warenkorb
                         }
                     }
                 }
-                $anz                    = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
+                if ($oArtikel->kVaterArtikel > 0 && GlobalSetting::getInstance()->getValue(
+                    GlobalSetting::CHILD_ITEM_BULK_PRICING,
+                    DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING
+                )) {
+                    $anz = $this->gibAnzahlEinesArtikels($oArtikel->kVaterArtikel, -1, true);
+                } else {
+                    $anz = $this->gibAnzahlEinesArtikels($oArtikel->kArtikel);
+                }
                 $pos->Artikel           = $oArtikel;
                 $pos->fPreisEinzelNetto = $oArtikel->gibPreis($anz, []);
                 $pos->fPreis            = $oArtikel->gibPreis($anz, $pos->WarenkorbPosEigenschaftArr);

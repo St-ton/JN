@@ -6,6 +6,8 @@
 
 namespace JTL\Filesystem;
 
+use JTL\Path;
+
 /**
  * Class FileInfo
  * @package JTL\Filesystem

@@ -67,11 +67,11 @@ final class Uninstaller
             $loader = new LegacyPluginLoader($this->db, $this->cache);
             $plugin = $loader->init($pluginID);//
         }
-        if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
-            $p->uninstalled();
-        }
         if (!$update) {
             // Plugin wird vollständig deinstalliert
+            if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
+                $p->uninstalled();
+            }
             $this->executeMigrations($plugin);
             if (isset($plugin->oPluginUninstall->kPluginUninstall)
                 && (int)$plugin->oPluginUninstall->kPluginUninstall > 0

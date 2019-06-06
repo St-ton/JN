@@ -11,6 +11,8 @@ use Exception;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
 use PDOException;
@@ -111,6 +113,7 @@ class MigrationManager
      * @param int $id MigrationId
      * @return IMigration
      * @throws InvalidArgumentException
+     * @throws Exception
      */
     public function getMigrationById($id): IMigration
     {
@@ -155,9 +158,11 @@ class MigrationManager
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
             Shop::Container()->getDB()->rollback();
+            $migrationFile = new \ReflectionClass($migration->getName());
+
             throw new \Exception(
-                $migration->getName() . ' ' . $migration->getDescription() . ' | ' . $e->getMessage(),
-                $e->getCode()
+                '"'.$e->getMessage().'" in: '.$migrationFile->getFileName(),
+                (int)$e->getCode()
             );
         }
     }
@@ -179,6 +184,7 @@ class MigrationManager
      * Has valid migrations.
      *
      * @return bool
+     * @throws Exception
      */
     public function hasMigrations(): bool
     {
@@ -189,6 +195,7 @@ class MigrationManager
      * Gets an array of the database migrations.
      *
      * @throws \InvalidArgumentException
+     * @throws Exception
      * @return IMigration[]
      */
     public function getMigrations(): array
@@ -255,6 +262,7 @@ class MigrationManager
 
     /**
      * @return array
+     * @throws Exception
      */
     public function getExecutedMigrations(): array
     {
@@ -268,6 +276,7 @@ class MigrationManager
 
     /**
      * @return array
+     * @throws Exception
      */
     public function getPendingMigrations(): array
     {
@@ -281,6 +290,7 @@ class MigrationManager
 
     /**
      * @return array|int
+     * @throws Exception
      */
     protected function _getExecutedMigrations()
     {
@@ -301,14 +311,15 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param string     $direction
-     * @param string     $state
-     * @param string     $message
+     * @param string $direction
+     * @param string $state
+     * @param string $message
+     * @throws Exception
      */
     public function log(IMigration $migration, $direction, $state, $message): void
     {
         $sql = \sprintf(
-            "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) VALUES ('%s', %s, %s, %s, '%s');",
+            "INSERT INTO tmigrationlog (kMigration, cDir, cState, cLog, dCreated) VALUES ('%s', '%s', '%s', '%s', '%s');",
             $migration->getId(),
             Shop::Container()->getDB()->pdoEscape($direction),
             Shop::Container()->getDB()->pdoEscape($state),

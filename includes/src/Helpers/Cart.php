@@ -2020,6 +2020,6 @@ class Cart
         $eps      = 1E-10;
         $residual = $quantity / $multiple;
 
-        return \abs($residual - \round($residual, $eps)) < $eps;
+        return \abs($residual - \round($residual)) < $eps;
     }
 }

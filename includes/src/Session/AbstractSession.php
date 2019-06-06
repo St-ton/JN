@@ -106,14 +106,15 @@ abstract class AbstractSession
             return $domain;
         }
         foreach (LanguageHelper::getAllLanguages() as $language) {
-            if (!\defined('URL_SHOP_' . \mb_convert_case($language->cISO, \MB_CASE_UPPER))) {
+            $code = $language->cISO;
+            if (!\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
                 continue;
             }
-            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($language->cISO, \MB_CASE_UPPER));
+            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
             if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
-                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($language->cISO, \MB_CASE_UPPER))
+                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER))
             ) {
-                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($language->cISO, \MB_CASE_UPPER));
+                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER));
             }
         }
 

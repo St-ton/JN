@@ -199,7 +199,7 @@ if ($action !== '' && Form::validateToken()) {
         case 'create-or-update-link':
             $hasHTML_arr = [];
             foreach (LanguageHelper::getAllLanguages() as $lang) {
-                $hasHTML_arr[] = 'cContent_' . $lang->cISO;
+                $hasHTML_arr[] = 'cContent_' . $lang->getIso();
             }
             $checks = new PlausiCMS();
             $checks->setPostVar($_POST, $hasHTML_arr, true);

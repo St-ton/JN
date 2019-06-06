@@ -21,6 +21,7 @@ $step        = 'zusatzverpackung';
 $languages   = LanguageHelper::getAllLanguages();
 $action      = '';
 $alertHelper = Shop::Container()->getAlertService();
+$db          = Shop::Container()->getDB();
 if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
@@ -64,7 +65,7 @@ if ($action === 'save') {
         }
         // Update?
         if ($kVerpackung > 0) {
-            Shop::Container()->getDB()->query(
+            $db->query(
                 'DELETE tverpackung, tverpackungsprache
                     FROM tverpackung
                     LEFT JOIN tverpackungsprache 
@@ -73,9 +74,9 @@ if ($action === 'save') {
                 ReturnType::AFFECTED_ROWS
             );
             $oVerpackung->kVerpackung = $kVerpackung;
-            Shop::Container()->getDB()->insert('tverpackung', $oVerpackung);
+            $db->insert('tverpackung', $oVerpackung);
         } else {
-            $kVerpackung = Shop::Container()->getDB()->insert('tverpackung', $oVerpackung);
+            $kVerpackung = $db->insert('tverpackung', $oVerpackung);
         }
         foreach ($languages as $lang) {
             $langCode                 = $lang->getCode();
@@ -92,7 +93,7 @@ if ($action === 'save') {
                     ENT_COMPAT | ENT_HTML401,
                     JTL_CHARSET
                 );
-            Shop::Container()->getDB()->insert('tverpackungsprache', $localized);
+            $db->insert('tverpackungsprache', $localized);
         }
         $alertHelper->addAlert(
             Alert::TYPE_SUCCESS,
@@ -102,11 +103,11 @@ if ($action === 'save') {
     }
 } elseif ($action === 'edit' && Request::verifyGPCDataInt('kVerpackung') > 0) { // Editieren
     $kVerpackung = Request::verifyGPCDataInt('kVerpackung');
-    $oVerpackung = Shop::Container()->getDB()->select('tverpackung', 'kVerpackung', $kVerpackung);
+    $oVerpackung = $db->select('tverpackung', 'kVerpackung', $kVerpackung);
 
     if (isset($oVerpackung->kVerpackung) && $oVerpackung->kVerpackung > 0) {
         $oVerpackung->oSprach_arr = [];
-        $oVerpackungSprach_arr    = Shop::Container()->getDB()->selectAll(
+        $oVerpackungSprach_arr    = $db->selectAll(
             'tverpackungsprache',
             'kVerpackung',
             $kVerpackung,
@@ -120,15 +121,14 @@ if ($action === 'save') {
         $oVerpackung->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
     }
     $smarty->assign('kVerpackung', $oVerpackung->kVerpackung)
-           ->assign('oVerpackungEdit', $oVerpackung);
+        ->assign('oVerpackungEdit', $oVerpackung);
 } elseif ($action === 'delete') {
     if (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
         foreach ($_POST['kVerpackung'] as $kVerpackung) {
             $kVerpackung = (int)$kVerpackung;
             // tverpackung loeschen
-            Shop::Container()->getDB()->delete('tverpackung', 'kVerpackung', $kVerpackung);
-            // tverpackungsprache loeschen
-            Shop::Container()->getDB()->delete('tverpackungsprache', 'kVerpackung', $kVerpackung);
+            $db->delete('tverpackung', 'kVerpackung', $kVerpackung);
+            $db->delete('tverpackungsprache', 'kVerpackung', $kVerpackung);
         }
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingDelete'), 'successPackagingDelete');
     } else {
@@ -139,51 +139,51 @@ if ($action === 'save') {
         foreach ($_POST['nAktivTMP'] as $kVerpackung) {
             $upd         = new stdClass();
             $upd->nAktiv = isset($_POST['nAktiv']) && in_array($kVerpackung, $_POST['nAktiv'], true) ? 1 : 0;
-            Shop::Container()->getDB()->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);
+            $db->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);
         }
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successPackagingSaveMultiple'), 'successPackagingSaveMultiple');
     }
 }
 
-$oKundengruppe_arr = Shop::Container()->getDB()->query(
+$customerGroups = $db->query(
     'SELECT kKundengruppe, cName FROM tkundengruppe',
     ReturnType::ARRAY_OF_OBJECTS
 );
-$oSteuerklasse_arr = Shop::Container()->getDB()->query(
+$taxClasses     = $db->query(
     'SELECT * FROM tsteuerklasse',
     ReturnType::ARRAY_OF_OBJECTS
 );
 
-$oVerpackungCount = Shop::Container()->getDB()->query(
+$packagingCount = $db->query(
     'SELECT count(kVerpackung) AS count
             FROM tverpackung',
     ReturnType::SINGLE_OBJECT
 );
-$itemsPerPage     = 10;
-$oPagination      = (new Pagination('standard'))
+$itemsPerPage   = 10;
+$oPagination    = (new Pagination('standard'))
     ->setItemsPerPageOptions([$itemsPerPage, $itemsPerPage * 2, $itemsPerPage * 5])
-    ->setItemCount($oVerpackungCount->count)
+    ->setItemCount($packagingCount->count)
     ->assemble();
-$oVerpackung_arr  = Shop::Container()->getDB()->query(
+$packagings     = $db->query(
     'SELECT * FROM tverpackung 
        ORDER BY cName' .
     ($oPagination->getLimitSQL() !== '' ? ' LIMIT ' . $oPagination->getLimitSQL() : ''),
     ReturnType::ARRAY_OF_OBJECTS
 );
 
-foreach ($oVerpackung_arr as $i => $oVerpackung) {
-    $oKundengruppe                          = gibKundengruppeObj($oVerpackung->cKundengruppe);
-    $oVerpackung_arr[$i]->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
-    $oVerpackung_arr[$i]->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
+foreach ($packagings as $i => $oVerpackung) {
+    $oKundengruppe                  = gibKundengruppeObj($oVerpackung->cKundengruppe);
+    $oVerpackung->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
+    $oVerpackung->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
 }
 
-$smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
-       ->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
-       ->assign('oVerpackung_arr', $oVerpackung_arr)
-       ->assign('step', $step)
-       ->assign('oPagination', $oPagination)
-       ->assign('action', $action)
-       ->display('zusatzverpackung.tpl');
+$smarty->assign('oKundengruppe_arr', $customerGroups)
+    ->assign('oSteuerklasse_arr', $taxClasses)
+    ->assign('oVerpackung_arr', $packagings)
+    ->assign('step', $step)
+    ->assign('oPagination', $oPagination)
+    ->assign('action', $action)
+    ->display('zusatzverpackung.tpl');
 
 /**
  * @param string $cKundengruppe
@@ -229,36 +229,36 @@ function gibKundengruppeObj($cKundengruppe)
 }
 
 /**
- * @param object $oVerpackung
- * @param array  $kKundengruppe_arr
+ * @param object $packaging
+ * @param array  $customerGroupIDs
  * @param int    $kVerpackung
  * @param object $smarty
  * @return void
  */
-function holdInputOnError($oVerpackung, $kKundengruppe_arr, $kVerpackung, &$smarty)
+function holdInputOnError($packaging, $customerGroupIDs, $kVerpackung, &$smarty)
 {
-    $oVerpackung->oSprach_arr = [];
+    $packaging->oSprach_arr = [];
     foreach ($_POST as $key => $value) {
         if (mb_strpos($key, 'cName') !== false) {
-            $cISO                                   = explode('cName_', $key)[1];
-            $idx                                    = 'cBeschreibung_' . $cISO;
-            $oVerpackung->oSprach_arr[$cISO]        = new stdClass();
-            $oVerpackung->oSprach_arr[$cISO]->cName = $value;
+            $cISO                                 = explode('cName_', $key)[1];
+            $idx                                  = 'cBeschreibung_' . $cISO;
+            $packaging->oSprach_arr[$cISO]        = new stdClass();
+            $packaging->oSprach_arr[$cISO]->cName = $value;
             if (isset($_POST[$idx])) {
-                $oVerpackung->oSprach_arr[$cISO]->cBeschreibung = $_POST[$idx];
+                $packaging->oSprach_arr[$cISO]->cBeschreibung = $_POST[$idx];
             }
         }
     }
 
-    if ($kKundengruppe_arr && $kKundengruppe_arr[0] !== '-1') {
-        $oVerpackung->cKundengruppe     = ';' . implode(';', $kKundengruppe_arr) . ';';
-        $oKundengruppe                  = gibKundengruppeObj($oVerpackung->cKundengruppe);
-        $oVerpackung->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
-        $oVerpackung->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
+    if ($customerGroupIDs && $customerGroupIDs[0] !== '-1') {
+        $packaging->cKundengruppe     = ';' . implode(';', $customerGroupIDs) . ';';
+        $oKundengruppe                = gibKundengruppeObj($packaging->cKundengruppe);
+        $packaging->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
+        $packaging->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
     } else {
-        $oVerpackung->cKundengruppe = '-1';
+        $packaging->cKundengruppe = '-1';
     }
 
-    $smarty->assign('oVerpackungEdit', $oVerpackung)
-           ->assign('kVerpackung', $kVerpackung);
+    $smarty->assign('oVerpackungEdit', $packaging)
+        ->assign('kVerpackung', $kVerpackung);
 }

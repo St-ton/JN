@@ -51,6 +51,7 @@ use function Functional\reindex;
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static LanguageModel getDefaultLanguage(bool $shop = true)
  * @method static LanguageModel[] getAllLanguages(int $returnType = 0)
+ * @method static bool isShopLanguage(int $languageID, array $languages = [])
  */
 class LanguageHelper
 {

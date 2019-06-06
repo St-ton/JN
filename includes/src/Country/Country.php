@@ -185,7 +185,7 @@ class Country
      */
     public function setName(LanguageModel $lang): self
     {
-        $this->names[$lang->id] = $this->getNameForLangISO(Text::convertISO2ISO639($lang->iso));
+        $this->names[$lang->getId()] = $this->getNameForLangISO($lang->getIso639());
 
         return $this;
     }

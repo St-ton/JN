@@ -114,7 +114,7 @@ final class Manufacturers extends AbstractSync
             foreach ($languages as $language) {
                 $baseSeo = $manufacturers[$i]->cSeo;
                 foreach ($mfSeo as $mf) {
-                    if (isset($mf->kSprache) && (int)$mf->kSprache === (int)$language->kSprache && !empty($mf->cSeo)) {
+                    if (isset($mf->kSprache) && (int)$mf->kSprache === $language->getId() && !empty($mf->cSeo)) {
                         $baseSeo = Seo::getSeo($mf->cSeo);
                         break;
                     }
@@ -123,7 +123,7 @@ final class Manufacturers extends AbstractSync
                 $oSeo->cSeo     = Seo::checkSeo($baseSeo);
                 $oSeo->cKey     = 'kHersteller';
                 $oSeo->kKey     = $id;
-                $oSeo->kSprache = (int)$language->kSprache;
+                $oSeo->kSprache = $language->getId();
                 $this->db->insert('tseo', $oSeo);
             }
             $this->db->delete('therstellersprache', 'kHersteller', $id);

@@ -165,8 +165,8 @@ final class Controller
             $filenames[$langID] = [];
             $pdfFiles[$langID]  = [];
             $i                  = 0;
-            foreach ($model->getAttachments($langID) as $cPDFSTMP) {
-                $pdfFiles[$langID][] = $cPDFSTMP;
+            foreach ($model->getAttachments($langID) as $tmpPFDs) {
+                $pdfFiles[$langID][] = $tmpPFDs;
                 $postIndex           = $post['cPDFNames_' . $langID][$i];
                 if (\mb_strlen($postIndex) > 0) {
                     $regs = [];
@@ -245,7 +245,7 @@ final class Controller
         }
         $languages = LanguageHelper::getAllLanguages();
         foreach ($languages as $lang) {
-            $langID = $lang->kSprache;
+            $langID = $lang->getId();
             foreach ($this->model->getMapping() as $field => $method) {
                 $method         = 'set' . $method;
                 $localizedIndex = $field . '_' . $langID;
@@ -310,7 +310,7 @@ final class Controller
             try {
                 $mail = $mail->createFromTemplate($template, null, $lang);
             } catch (InvalidArgumentException $e) {
-                $this->addErrorMessage(__('errorTemplateMissing') . $lang->cNameDeutsch);
+                $this->addErrorMessage(__('errorTemplateMissing') . $lang->getLocalizedName());
                 $res = self::ERROR_NO_TEMPLATE;
                 continue;
             }
@@ -366,7 +366,7 @@ final class Controller
     {
         $affected = 0;
         foreach (LanguageHelper::getAllLanguages() as $lang) {
-            $base      = \PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->cISO . '/' . $data->cDateiname;
+            $base      = \PFAD_ROOT . \PFAD_EMAILVORLAGEN . $lang->getIso() . '/' . $data->cDateiname;
             $fileHtml  = $base . '_html.tpl';
             $filePlain = $base . '_plain.tpl';
             if (!\file_exists($fileHtml) || !\file_exists($filePlain)) {
@@ -376,7 +376,7 @@ final class Controller
             $upd->cContentHtml  = \file_get_contents($fileHtml);
             $upd->cContentText  = \file_get_contents($filePlain);
             $upd->kEmailvorlage = $templateID;
-            $upd->kSprache      = (int)$lang->kSprache;
+            $upd->kSprache      = $lang->getId();
             $convertHTML        = \mb_detect_encoding($upd->cContentHtml, ['UTF-8'], true) !== 'UTF-8';
             $convertText        = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
             $upd->cContentHtml  = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
@@ -384,7 +384,7 @@ final class Controller
             $this->db->delete(
                 'temailvorlagesprache',
                 ['kEmailVorlage', 'kSprache'],
-                [$templateID, (int)$lang->kSprache]
+                [$templateID, $lang->getId()]
             );
             if ($this->db->insert('temailvorlagesprache', $upd)) {
                 ++$affected;

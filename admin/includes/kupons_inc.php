@@ -12,6 +12,7 @@ use JTL\Checkout\Kupon;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageModel;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
@@ -531,7 +532,7 @@ function validateCoupon($coupon)
  * Save a new or already existing coupon in the DB
  *
  * @param Kupon $coupon
- * @param array $languages
+ * @param LanguageModel[] $languages
  * @return int - 0 on failure ; kKupon on success
  */
 function saveCoupon($coupon, $languages)
@@ -578,14 +579,15 @@ function saveCoupon($coupon, $languages)
             foreach ($coupon->kKupon as $kKupon) {
                 $db->delete('tkuponsprache', 'kKupon', $kKupon);
                 foreach ($languages as $language) {
-                    $postVarName       = 'cName_' . $language->cISO;
+                    $code              = $language->getIso();
+                    $postVarName       = 'cName_' . $code;
                     $cKuponSpracheName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
                         ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                         : $coupon->cName;
 
                     $localized              = new stdClass();
                     $localized->kKupon      = $kKupon;
-                    $localized->cISOSprache = $language->cISO;
+                    $localized->cISOSprache = $code;
                     $localized->cName       = $cKuponSpracheName;
                     $db->insert('tkuponsprache', $localized);
                 }
@@ -593,14 +595,15 @@ function saveCoupon($coupon, $languages)
         } else {
             $db->delete('tkuponsprache', 'kKupon', $coupon->kKupon);
             foreach ($languages as $language) {
-                $postVarName       = 'cName_' . $language->cISO;
+                $code              = $language->getIso();
+                $postVarName       = 'cName_' . $code;
                 $cKuponSpracheName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
                     ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                     : $coupon->cName;
 
                 $localized              = new stdClass();
                 $localized->kKupon      = $coupon->kKupon;
-                $localized->cISOSprache = $language->cISO;
+                $localized->cISOSprache = $code;
                 $localized->cName       = $cKuponSpracheName;
                 $db->insert('tkuponsprache', $localized);
             }
@@ -657,8 +660,8 @@ function informCouponCustomers($coupon)
             return (int)$e->kArtikel;
         }, $productData);
     }
-    foreach ($customerData as $oKundeDB) {
-        $customer = new Kunde($oKundeDB->kKunde);
+    foreach ($customerData as $item) {
+        $customer = new Kunde((int)$item->kKunde);
         $language = Shop::Lang()->getIsoFromLangID($customer->kSprache);
         if (!$language) {
             $language = $defaultLang;

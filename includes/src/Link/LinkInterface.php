@@ -217,6 +217,16 @@ interface LinkInterface
     /**
      * @return int
      */
+    public function getReference(): int;
+
+    /**
+     * @param int $reference
+     */
+    public function setReference(int $reference): void;
+
+    /**
+     * @return int
+     */
     public function getSort(): int;
 
     /**

@@ -203,6 +203,7 @@ function getRemoteData($url, $timeout = 15)
  */
 function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callback = null, $decodeUTF8 = false)
 {
+    Shop::Container()->getGetText()->loadAdminLocale('widgets');
     $response    = new IOResponse();
     $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
     if (in_array($dataName, $urlsToCache, true)) {

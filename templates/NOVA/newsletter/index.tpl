@@ -17,6 +17,7 @@
         {if $cOption === 'eintragen'}
             {if empty($bBereitsAbonnent)}
                 {block name='newsletter-index-newsletter-subscribe-form'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter_subscribe'}
                 {card id="newsletter-subscribe"}
                     {block name='newsletter-index-newsletter-subscribe-subheading'}
                         <div class="h3">{lang key='newsletterSubscribe' section='newsletter'}</div>
@@ -77,6 +78,7 @@
             {/if}
 
             {block name='newsletter-index-newsletter-unsubscribe-form'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter_unsubscribe'}
             {card id="newsletter-unsubscribe" class="mt-3"}
                 {block name='newsletter-index-newsletter-unsubscribe-subheading'}
                     <div class="h3">{lang key='newsletterUnsubscribe' section='newsletter'}</div>

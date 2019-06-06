@@ -369,7 +369,7 @@
                         }
 
                         .backend-search-item {
-                            padding: 0.25em 2em;
+                            margin: 0.25em 2em;
 
                             &.selected {
                                 background: #abd1f6;
@@ -406,6 +406,10 @@
             flex: auto;
         }
     }
+}
+
+.backend-search-item {
+    margin-bottom: 0.5em;
 }
 
 .panel.widget {
@@ -1909,80 +1913,78 @@ span.success {
     text-decoration: inherit;
 }
 
-#widget-besucher-aktueller-monat .widget-head h4:before {
+#widget-Visitors .widget-head h4:before {
     content: "\f0c0";
 }
 
-#widget-umsatz .widget-head h4:before,#widget-shop-statistiken .widget-head h4:before {
+#widget-SalesVolume .widget-head h4:before,
+#widget-ShopStats .widget-head h4:before {
     content: "\f080";
 }
 
-#widget-uhr .widget-head h4:before {
+#widget-Clock .widget-head h4:before {
     content: "\f017";
 }
 
-#widget-patches .widget-head h4:before {
+#widget-Patch .widget-head h4:before {
     content: "\f0ad";
 }
 
-#widget-hilfe .widget-head h4:before {
+#widget-Help .widget-head h4:before {
     content: "\f059";
 }
 
-#widget-marktplatz .widget-head h4:before {
-    content: "\f0f7";
-}
-
-#widget-server-konfiguration .widget-head h4:before {
+#widget-ServerSettings .widget-head h4:before {
     content: "\f1c0";
 }
 
-#widget-shop-informationen .widget-head h4:before {
+#widget-Shopinfo .widget-head h4:before {
     content: "\f07a";
 }
 
-#widget-wussten-sie-schon .widget-head h4:before {
+#widget-Duk .widget-head h4:before {
     content: "\f0eb";
 }
 
-#widget-letzte-bestellungen .widget-head h4:before {
+#widget-LastOrders .widget-head h4:before {
     content: "\f022";
 }
 
-#widget-kampagnen .widget-head h4:before {
+#widget-Campaigns .widget-head h4:before {
     content: "\f1a0";
 }
 
-#widget-anfragen-fr-freischaltungen .widget-head h4:before {
+#widget-UnlockRequestNotifier .widget-head h4:before {
     content: "\f164";
 }
 
-#widget-letzte-suchanfragen .widget-head h4:before,#widget-top10-suchanfragen .widget-head h4:before {
+#widget-LastSearch .widget-head h4:before,
+#widget-Top10Search .widget-head h4:before {
     content: "\f002";
 }
 
-#widget-server-informationen .widget-head h4:before {
+#widget-Serverinfo .widget-head h4:before {
     content: "\f05a";
 }
 
-#widget-erweiterungen .widget-head h4:before {
+#widget-ExtensionViewer .widget-head h4:before {
     content: "\f1e6";
 }
 
-#widget-besucher-online .widget-head h4:before {
+#widget-VisitorsOnline .widget-head h4:before {
     content: "\f21b";
 }
 
-#widget-news .widget-head h4:before {
+#widget-News .widget-head h4:before {
     content: "\f1ea";
 }
 
-#widget-webcrawler-top10-monat .widget-head h4:before {
+#widget-Bots .widget-head h4:before {
     content: "\f188";
 }
 
 /* Widgets */
-#widget-uhr .widget-head {
+#widget-Clock .widget-head {
     display: none;
 }
 
@@ -3334,7 +3336,7 @@ h2 .btn-group {
 }
 
 div.markdown {
- padding: 0px 10px;
+    padding: 0px 10px;
 }
 
 div.markdown ul li {
@@ -3380,4 +3382,9 @@ div.markdown tfoot tr td {
 div.markdown thead tr th,
 div.markdown thead tr td {
     border-bottom-width: 2px;
+}
+
+.alert-default {
+    color: #666;
+    background-color: #f0f0f0;
 }

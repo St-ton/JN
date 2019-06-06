@@ -37,6 +37,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php'
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
 $errorCount      = 0;
+$pluginUploaded  = false;
 $reload          = false;
 $notice          = '';
 $errorMsg        = '';
@@ -50,16 +51,35 @@ $modernValidator = new PluginValidator($db, $parser);
 $listing         = new Listing($db, $cache, $validator, $modernValidator);
 $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
 $updater         = new Updater($db, $installer);
-$extractor       = new Extractor();
+$extractor       = new Extractor($parser);
 $stateChanger    = new StateChanger(
     $db,
     $cache,
     $validator,
     $modernValidator
 );
+if (isset($_SESSION['plugin_msg'])) {
+    $notice = $_SESSION['plugin_msg'];
+    unset($_SESSION['plugin_msg']);
+} elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
+    $notice = Text::filterXSS(base64_decode(Request::verifyGPDataString('h')));
+}
 
-$pluginsInstalled = $listing->getInstalled();
-$pluginsAll       = $listing->getAll($pluginsInstalled);
+
+if (!empty($_FILES['file_data'])) {
+    $response       = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
+    $pluginUploaded = true;
+}
+$pluginsInstalled        = $listing->getInstalled();
+$pluginsAll              = $listing->getAll($pluginsInstalled);
+$pluginsInstalledByState = [
+    'status_1' => [],
+    'status_2' => [],
+    'status_3' => [],
+    'status_4' => [],
+    'status_5' => [],
+    'status_6' => []
+];
 foreach ($pluginsInstalled as $_plugin) {
     $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
 }
@@ -69,30 +89,12 @@ $pluginsAvailable = $pluginsAll->filter(function (ListingItem $item) {
 $pluginsErroneous = $pluginsAll->filter(function (ListingItem $item) {
     return $item->isHasError() === true && $item->isInstalled() === false;
 });
-if (isset($_SESSION['plugin_msg'])) {
-    $notice = $_SESSION['plugin_msg'];
-    unset($_SESSION['plugin_msg']);
-} elseif (mb_strlen(Request::verifyGPDataString('h')) > 0) {
-    $notice = Text::filterXSS(base64_decode(Request::verifyGPDataString('h')));
-}
-if (!empty($_FILES['file_data'])) {
-    $response                = $extractor->extractPlugin($_FILES['file_data']['tmp_name']);
-    $pluginsInstalledByState = [
-        'status_1' => [],
-        'status_2' => [],
-        'status_3' => [],
-        'status_4' => [],
-        'status_5' => [],
-        'status_6' => []
-    ];
-    foreach ($pluginsInstalled as $_plugin) {
-        $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
-    }
-    $errorCount = count($pluginsInstalledByState['status_3'])
-        + count($pluginsInstalledByState['status_4'])
-        + count($pluginsInstalledByState['status_5'])
-        + count($pluginsInstalledByState['status_6']);
+$errorCount       = count($pluginsInstalledByState['status_3'])
+    + count($pluginsInstalledByState['status_4'])
+    + count($pluginsInstalledByState['status_5'])
+    + count($pluginsInstalledByState['status_6']);
 
+if ($pluginUploaded === true) {
     $smarty->configLoad('german.conf', 'pluginverwaltung')
            ->assign('pluginsByState', $pluginsInstalledByState)
            ->assign('PluginErrorCount', $errorCount)
@@ -110,19 +112,18 @@ if (!empty($_FILES['file_data'])) {
 
 if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
-    $kPlugin_arr = $_POST['kPlugin'] ?? [];
+    $pluginIDs = array_map('\intval', $_POST['kPlugin'] ?? []);
     // Lizenzkey eingeben
     if (isset($_POST['lizenzkey']) && (int)$_POST['lizenzkey'] > 0) {
         $kPlugin = (int)$_POST['lizenzkey'];
         $step    = 'pluginverwaltung_lizenzkey';
-        $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
+        $loader  = Helper::getLoaderByPluginID($kPlugin, $db, $cache);
+        $oPlugin = $loader->init($kPlugin, true);
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
-    } elseif (isset($_POST['lizenzkeyadd'])
-        && (int)$_POST['lizenzkeyadd'] === 1
-        && (int)$_POST['kPlugin'] > 0
-    ) { // Lizenzkey eingeben
+    } elseif (isset($_POST['lizenzkeyadd']) && (int)$_POST['lizenzkeyadd'] === 1 && (int)$_POST['kPlugin'] > 0) {
+        // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
         $data    = $db->select('tplugin', 'kPlugin', $kPlugin);
@@ -134,9 +135,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             $oPluginLicence = new $class();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(Text::filterXSS($_POST['cKey']))) {
-                $oPlugin->setState(State::ACTIVATED);
+                Helper::updateStatusByID(State::ACTIVATED, $oPlugin->getID());
                 $oPlugin->getLicense()->setKey(Text::filterXSS($_POST['cKey']));
-                $oPlugin->updateInDB();
+                $db->update('tplugin', 'kPlugin', $oPlugin->getID(), (object)['cLizenz' => $_POST['cKey']]);
                 $notice = __('successPluginKeySave');
                 $step   = 'pluginverwaltung_uebersicht';
                 $reload = true;
@@ -151,9 +152,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         $smarty->assign('kPlugin', $kPlugin)
                ->assign('oPlugin', $oPlugin);
-    } elseif (is_array($kPlugin_arr) && count($kPlugin_arr) > 0) {
-        foreach ($kPlugin_arr as $kPlugin) {
-            $kPlugin = (int)$kPlugin;
+    } elseif (is_array($pluginIDs) && count($pluginIDs) > 0) {
+        foreach ($pluginIDs as $kPlugin) {
             if (isset($_POST['aktivieren'])) {
                 $res = $stateChanger->activate($kPlugin);
                 switch ($res) {
@@ -218,13 +218,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             } elseif (isset($_POST['reload'])) { // Reload
                 $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
-
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $res = $stateChanger->reload($oPlugin, true);
-
-                    if ($res === InstallCode::OK
-                        || $res === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
-                    ) {
+                    if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                         $notice = __('successPluginRefresh');
                         $reload = true;
                     } else {
@@ -236,11 +232,12 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             }
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
-    } elseif (Request::verifyGPCDataInt('updaten') === 1) { // Updaten
+    } elseif (Request::verifyGPCDataInt('updaten') === 1) {
+        // Updaten
         $kPlugin = Request::verifyGPCDataInt('kPlugin');
         $res     = $updater->update($kPlugin);
         if ($res === InstallCode::OK) {
-            $notice .= __('successPlguinUpdate');
+            $notice .= __('successPluginUpdate');
             $reload  = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         } else {
@@ -254,11 +251,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
                 $res = $installer->prepare();
-                if ($res === InstallCode::OK || $res === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
+                if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                     $notice = __('successPluginInstall');
                     $reload = true;
-                } elseif ($res > InstallCode::OK
-                    && $res !== InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
+                } elseif ($res > InstallCode::OK && $res !== InstallCode::OK_LEGACY) {
                     $errorMsg = __('errorPluginInstall') . $res;
                 }
             }
@@ -353,19 +349,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
 }
 
 if ($step === 'pluginverwaltung_uebersicht') {
-    $pluginsInstalledByState = [
-        'status_1' => [],
-        'status_2' => [],
-        'status_3' => [],
-        'status_4' => [],
-        'status_5' => [],
-        'status_6' => []
-    ];
-    foreach ($pluginsInstalled as $_plugin) {
-        $pluginsInstalledByState['status_' . $_plugin->getState()][] = $_plugin;
-    }
     foreach ($pluginsAvailable as $available) {
-        /** @var \JTL\Plugin\Admin\ListingItem $available */
+        /** @var ListingItem $available */
         $szFolder = $available->getPath() . '/';
         $files    = [
             'license.md',
@@ -382,10 +367,6 @@ if ($step === 'pluginverwaltung_uebersicht') {
     if (!empty($vLicenseFiles)) {
         $smarty->assign('szLicenses', json_encode($vLicenseFiles));
     }
-    $errorCount = count($pluginsInstalledByState['status_3'])
-        + count($pluginsInstalledByState['status_4'])
-        + count($pluginsInstalledByState['status_5'])
-        + count($pluginsInstalledByState['status_6']);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
     $kPlugin   = Request::verifyGPCDataInt('kPlugin');
     $loader    = Helper::getLoaderByPluginID($kPlugin, $db);
@@ -404,7 +385,10 @@ if ($reload === true) {
     exit();
 }
 
-$hasAuth = !!$db->query('SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL', 3);
+$hasAuth = (bool)$db->query(
+    'SELECT access_token FROM tstoreauth WHERE access_token IS NOT NULL',
+    ReturnType::AFFECTED_ROWS
+);
 
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');

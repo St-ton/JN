@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "statisticTitle"
+msgstr "Reports"
+
+msgid "statisticBesucherURL"
+msgstr "https://jtl-url.de/rk925"
+
+msgid "statisticKundenherkunft"
+msgstr "Origins of shop visitors"
+
+msgid "statisticKundenherkunftURL"
+msgstr "https://jtl-url.de/fzxua"
+
+msgid "statisticSuchmaschine"
+msgstr "Search engines"
+
+msgid "statisticSuchmaschineURL"
+msgstr "https://jtl-url.de/hrkb3"
+
+msgid "statisticUmsatz"
+msgstr "Sales revenues"
+
+msgid "statisticUmsatzURL"
+msgstr "https://jtl-url.de/39h7w"
+
+msgid "statisticEinstiegsseite"
+msgstr "Start page"
+
+msgid "statisticEinstiegsseiteURL"
+msgstr "https://jtl-url.de/8bs5u"
+
+msgid "statisticDesc"
+msgstr "Here you can find detailed reports regarding your online shop. Select the period for which you want to view the reports."
+
+msgid "sales"
+msgstr "Sales revenues"
+
+msgid "statisticType"
+msgstr "Report type"

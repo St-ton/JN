@@ -9,10 +9,11 @@ namespace JTL\Backend;
 use ArrayIterator;
 use Countable;
 use Exception;
-use function Functional\pluck;
 use IteratorAggregate;
+use JTL\Link\Admin\LinkAdmin;
 use JTL\Shop;
 use JTL\SingletonTrait;
+use function Functional\pluck;
 
 /**
  * Class Notification
@@ -91,22 +92,28 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault(): self
     {
-        $status = Status::getInstance();
+        $status    = Status::getInstance();
+        $db        = Shop::Container()->getDB();
+        $cache     = Shop::Container()->getCache();
+        $linkAdmin = new LinkAdmin($db, $cache);
+
+        Shop::Container()->getGetText()->loadAdminLocale('notifications');
 
         if ($status->hasPendingUpdates()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Systemupdate',
-                'Ein Datenbank-Update ist zwingend notwendig',
+                __('hasPendingUpdatesTitle'),
+                __('hasPendingUpdatesMessage'),
                 'dbupdater.php'
             );
+            return $this;
         }
 
         if (!$status->validFolderPermissions()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Dateisystem',
-                'Es sind Verzeichnisse nicht beschreibbar.',
+                __('validFolderPermissionsTitle'),
+                __('validFolderPermissionsMessage'),
                 'permissioncheck.php'
             );
         }
@@ -114,16 +121,16 @@ class Notification implements IteratorAggregate, Countable
         if ($status->hasInstallDir()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'System',
-                'Bitte löschen Sie das Installationsverzeichnis "/install/" im Shop-Wurzelverzeichnis.'
+                __('hasInstallDirTitle'),
+                __('hasInstallDirMessage')
             );
         }
 
         if (!$status->validDatabaseStruct()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Datenbankstruktur',
-                'Es liegen Fehler in der Datenbankstruktur vor.',
+                __('validDatabaseStructTitle'),
+                __('validDatabaseStructMessage'),
                 'dbcheck.php'
             );
         }
@@ -131,8 +138,8 @@ class Notification implements IteratorAggregate, Countable
         if (!$status->validModifiedFileStruct() || !$status->validOrphanedFilesStruct()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Dateistruktur',
-                'Es liegen Fehler in der Dateistruktur vor.',
+                __('validModifiedFileStructTitle'),
+                __('validModifiedFileStructMessage'),
                 'filecheck.php'
             );
         }
@@ -140,9 +147,8 @@ class Notification implements IteratorAggregate, Countable
         if ($status->hasMobileTemplateIssue()) {
             $this->add(
                 NotificationEntry::TYPE_INFO,
-                'Template',
-                'Sie nutzen ein Full-Responsive-Template. ' .
-                'Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig.',
+                __('hasMobileTemplateIssueTitle'),
+                __('hasMobileTemplateIssueMessage'),
                 'shoptemplate.php'
             );
         }
@@ -150,8 +156,8 @@ class Notification implements IteratorAggregate, Countable
         if ($status->hasStandardTemplateIssue()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Template',
-                'Sie haben kein Standard-Template aktiviert!',
+                __('hasStandardTemplateIssueTitle'),
+                __('hasStandardTemplateIssueMessage'),
                 'shoptemplate.php'
             );
         }
@@ -159,16 +165,16 @@ class Notification implements IteratorAggregate, Countable
         if ($status->hasActiveProfiler()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Plugin',
-                'Der Profiler ist aktiv. Dies kann zu starken Leistungseinbußen im Shop führen.'
+                __('hasActiveProfilerTitle'),
+                __('hasActiveProfilerMessage')
             );
         }
 
         if ($status->hasNewPluginVersions()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Plugin',
-                'Es sind neue Plugin-Versionen vorhanden.',
+                __('hasNewPluginVersionsTitle'),
+                __('hasNewPluginVersionsMessage'),
                 'pluginverwaltung.php'
             );
         }
@@ -198,16 +204,16 @@ class Notification implements IteratorAggregate, Countable
         if ($status->hasInvalidPollCoupons()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Umfrage',
-                'In einer Umfrage wird ein Kupon verwendet, welcher inaktiv ist oder nicht mehr existiert.'
+                __('hasInvalidPollCouponsTitle'),
+                __('hasInvalidPollCouponsMessage')
             );
         }
 
         if ($status->hasFullTextIndexError()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Volltextsuche',
-                'Der Volltextindex ist nicht vorhanden!',
+                __('hasFullTextIndexErrorTitle'),
+                __('hasFullTextIndexErrorMessage'),
                 'sucheinstellungen.php'
             );
         }
@@ -215,20 +221,16 @@ class Notification implements IteratorAggregate, Countable
         if ($status->hasInvalidPasswordResetMailTemplate()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'E-Mail-Vorlage defekt',
-                'Die E-Mail-Vorlage "Passwort Vergessen" ist veraltet.<br>' .
-                'Die Variable $neues_passwort ist nicht mehr verfügbar.<br>' .
-                'Bitte ersetzen Sie diese durch $passwordResetLink oder setzen Sie die Vorlage zurück.'
+                __('hasInvalidPasswordResetMailTemplateTitle'),
+                __('hasInvalidPasswordResetMailTemplateMessage')
             );
         }
 
         if ($status->hasInsecureMailConfig()) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Unsichere SMTP-Verbindung',
-                'Sie haben SMTP als Mail-Methode gewählt, allerdings keine Verschlüsselungsmethode ausgewählt.<br>' .
-                'Wir empfehlen Ihnen dringend, Ihre Mail-Einstellungen anzupassen.<br>' .
-                'Sie finden die Optionen unter "System &gt; E-Mails &gt; Emaileinstellungen &gt; SMTP Security".',
+                __('hasInsecureMailConfigTitle'),
+                __('hasInsecureMailConfigMessage'),
                 Shop::getURL() . '/' . \PFAD_ADMIN . 'einstellungen.php?kSektion=3'
             );
         }
@@ -237,18 +239,16 @@ class Notification implements IteratorAggregate, Countable
             if ($status->needPasswordRehash2FA()) {
                 $this->add(
                     NotificationEntry::TYPE_DANGER,
-                    'Benutzerverwaltung',
-                    'Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>' .
-                    'Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung.',
+                    __('needPasswordRehash2FATryTitle'),
+                    __('needPasswordRehash2FATryMessage'),
                     'benutzerverwaltung.php'
                 );
             }
         } catch (Exception $e) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Datenbank-Update',
-                'Die Methode needPasswordRehash2FA hat eine Exception geworfen.<br/>' .
-                'Bitte führen Sie die Migration 20170306130802_create_emergency_code_table aus.',
+                __('needPasswordRehash2FACatchTitle'),
+                __('needPasswordRehash2FACatchMessage'),
                 'dbupdater.php'
             );
         }
@@ -256,9 +256,20 @@ class Notification implements IteratorAggregate, Countable
         if (\count($status->getDuplicateLinkGroupTemplateNames()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,
-                'Ungültige Linkgruppen',
-                'Eine oder mehrere Linkgruppen nutzen nicht-eindeutige Template-Namen: ' .
-                \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName')),
+                __('getDuplicateLinkGroupTemplateNamesTitle'),
+                sprintf(
+                    __('getDuplicateLinkGroupTemplateNamesMessage'),
+                    \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName'))
+                ),
+                'links.php'
+            );
+        }
+
+        if ($linkAdmin->getDuplicateSpecialLinks()->count() > 0) {
+            $this->add(
+                NotificationEntry::TYPE_DANGER,
+                __('duplicateSpecialLinkTitle'),
+                __('duplicateSpecialLinkDesc'),
                 'links.php'
             );
         }
@@ -266,8 +277,8 @@ class Notification implements IteratorAggregate, Countable
         if (($exportSyntaxErrorCount = $status->getExportFormatErrorCount()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Fehler in Exportvorlage',
-                \sprintf('%d Exportvorlage(n) enthalten Syntax-Fehler.', $exportSyntaxErrorCount),
+                __('getExportFormatErrorCountTitle'),
+                \sprintf(__('getExportFormatErrorCountMessage'), $exportSyntaxErrorCount),
                 'exportformate.php'
             );
         }
@@ -275,8 +286,8 @@ class Notification implements IteratorAggregate, Countable
         if (($emailSyntaxErrorCount = $status->getEmailTemplateSyntaxErrorCount()) > 0) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
-                'Fehler in Emailvorlage',
-                \sprintf('%d Emailvorlage(n) enthalten Syntax-Fehler.', $emailSyntaxErrorCount),
+                __('getEmailTemplateSyntaxErrorCountTitle'),
+                \sprintf(__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrorCount),
                 'emailvorlagen.php'
             );
         }

@@ -23,9 +23,9 @@ final class Downloads extends AbstractSync
     {
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_hersteller.xml') !== false) {
+            if (\strpos($file, 'del_download.xml') !== false) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'hersteller.xml') !== false) {
+            } else {
                 $this->handleInserts($xml);
             }
         }
@@ -56,28 +56,28 @@ final class Downloads extends AbstractSync
         $downloads = $this->mapper->mapArray($xml['tDownloads'], 'tDownload', 'mDownload');
         if (isset($xml['tDownloads']['tDownload attr']) && \is_array($xml['tDownloads']['tDownload attr'])) {
             if ($downloads[0]->kDownload > 0) {
-                $this->handleDownload($xml, $downloads);
+                $this->handleDownload($xml['tDownloads']['tDownload'], $downloads[0]);
             }
         } else {
-            foreach ($downloads as $i => $oDownload) {
-                if ($oDownload->kDownload > 0) {
-                    $this->handleDownload($xml, $downloads);
+            foreach ($downloads as $i => $download) {
+                if ($download->kDownload > 0) {
+                    $this->handleDownload($xml['tDownloads']['tDownload'][$i], $download);
                 }
             }
         }
     }
 
     /**
-     * @param array $xml
-     * @param array $downloads
+     * @param array  $xml
+     * @param object $download
      */
-    private function handleDownload($xml, $downloads): void
+    private function handleDownload(array $xml, $download): void
     {
-        $localized = $this->mapper->mapArray($xml['tDownloads']['tDownload'], 'tDownloadSprache', 'mDownloadSprache');
+        $localized = $this->mapper->mapArray($xml, 'tDownloadSprache', 'mDownloadSprache');
         if (\count($localized) > 0) {
-            $this->upsert('tdownload', $downloads, 'kDownload');
+            $this->upsert('tdownload', [$download], 'kDownload');
             foreach ($localized as $item) {
-                $item->kDownload = $downloads[0]->kDownload;
+                $item->kDownload = $download->kDownload;
                 $this->upsert('tdownloadsprache', [$item], 'kDownload', 'kSprache');
             }
         }

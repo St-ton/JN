@@ -595,7 +595,7 @@ function mappeFragenTyp(string $cTyp): string
 {
     switch ($cTyp) {
         case QuestionType::MULTI_SINGLE:
-            return __('questionTypeMultipleChoice');
+            return __('questionTypeMultipleChoiceOne');
 
         case QuestionType::MULTI:
             return __('questionTypeMultipleChoiceMany');

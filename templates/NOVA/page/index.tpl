@@ -10,7 +10,9 @@
     {if isset($StartseiteBoxen) && $StartseiteBoxen|@count > 0}
         {assign var=moreLink value=null}
         {assign var=moreTitle value=null}
-        {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_prepend'}
+
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_boxes'}
+
         {block name='page-index-boxes'}
             {foreach $StartseiteBoxen as $Box}
                 {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente) > 0 && isset($Box->cURL)}
@@ -34,13 +36,14 @@
                 {/if}
             {/foreach}
         {/block}
-        {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_apppend'}
     {/if}
 
     {block name='page-index-additional-content'}
         {if isset($oNews_arr) && $oNews_arr|@count > 0}
             <hr>
-            {include file='snippets/opc_mount_point.tpl' id='opc_home_news_prepend'}
+
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
+
             {block name='page-index-subheading-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
             {/block}
@@ -55,7 +58,6 @@
                     {/foreach}
                 {/row}
             {/block}
-            {include file='snippets/opc_mount_point.tpl' id='opc_home_news_append'}
         {/if}
     {/block}
 {/block}

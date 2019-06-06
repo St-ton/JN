@@ -252,6 +252,14 @@ class Service
     }
 
     /**
+     * @return bool
+     */
+    public function isPreviewMode(): bool
+    {
+        return Request::verifyGPDataString('opcPreviewMode') === 'yes';
+    }
+
+    /**
      * @return int
      */
     public function getEditedPageKey(): int

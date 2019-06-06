@@ -11,7 +11,6 @@ use JTL\DB\DbInterface;
 use JTL\dbeS\Mapper;
 use JTL\Helpers\Text;
 use JTL\XML;
-use PclZip;
 use Psr\Log\LoggerInterface;
 use ZipArchive;
 
@@ -94,25 +93,16 @@ abstract class AbstractPush
         \fwrite($xmlfile, strtr(Text::convertISO(XML::serialize($xml)), "\0", ' '));
         \fclose($xmlfile);
         if (\file_exists(\PFAD_SYNC_TMP . self::XML_FILE)) {
-            if (\class_exists('ZipArchive')) {
-                $archive = new ZipArchive();
-                if ($archive->open(\PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
-                    && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE)
-                ) {
-                    $archive->close();
-                    \readfile(\PFAD_SYNC_TMP . $zip);
-                    exit;
-                }
+            $archive = new ZipArchive();
+            if ($archive->open(\PFAD_SYNC_TMP . $zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== false
+                && $archive->addFile(\PFAD_SYNC_TMP . self::XML_FILE)
+            ) {
                 $archive->close();
-                \syncException($archive->getStatusString());
-            } else {
-                $archive = new PclZip(\PFAD_SYNC_TMP . $zip);
-                if ($archive->create(\PFAD_SYNC_TMP . self::XML_FILE, \PCLZIP_OPT_REMOVE_ALL_PATH)) {
-                    \readfile(\PFAD_SYNC_TMP . $zip);
-                    exit;
-                }
-                \syncException($archive->errorInfo(true));
+                \readfile(\PFAD_SYNC_TMP . $zip);
+                exit;
             }
+            $archive->close();
+            \syncException($archive->getStatusString());
         }
     }
 }

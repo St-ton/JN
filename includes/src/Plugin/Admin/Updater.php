@@ -49,14 +49,13 @@ class Updater
             return InstallCode::WRONG_PARAM;
         }
         $loader = Helper::getLoaderByPluginID($pluginID, $this->db);
-        if ($loader !== null) {
-            $plugin = $loader->init($pluginID, true);
-            $this->installer->setPlugin($plugin);
-            $this->installer->setDir($plugin->getPaths()->getBaseDir());
-
-            return $this->installer->prepare();
+        if ($loader === null) {
+            return InstallCode::NO_PLUGIN_FOUND;
         }
+        $plugin = $loader->init($pluginID, true);
+        $this->installer->setPlugin($plugin);
+        $this->installer->setDir($plugin->getPaths()->getBaseDir());
 
-        return InstallCode::NO_PLUGIN_FOUND;
+        return $this->installer->prepare();
     }
 }

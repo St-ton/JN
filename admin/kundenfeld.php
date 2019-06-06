@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\CustomerFields;
+use JTL\Backend\CustomerFields;
 use JTL\PlausiKundenfeld;
 use JTL\Sprache;
 use JTL\Helpers\Text;

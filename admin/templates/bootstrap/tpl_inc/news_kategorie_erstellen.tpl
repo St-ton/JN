@@ -52,7 +52,7 @@
         <div class="settings">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatNew')} ({__('id')} {$oNewsKategorie->getID()}){else}{__('newsCatAdd')}{/if}</h3>
+                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatEdit')} ({__('id')} {$oNewsKategorie->getID()}){else}{__('newsCatCreate')}{/if}</h3>
                 </div>
                 <div class="table-responsive">
                     <div class="panel-body" id="formtable">

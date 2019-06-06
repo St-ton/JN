@@ -78,8 +78,11 @@ final class LegacyPluginValidator extends AbstractValidator
         $isShop4Compatible    = false;
         $parsedXMLShopVersion = null;
         $parsedVersion        = null;
-        $baseNode             = $xml['jtlshop3plugin'][0];
-        $parsedVersion        = Version::parse(\APPLICATION_VERSION);
+        $baseNode             = $xml['jtlshop3plugin'][0] ?? null;
+        if ($baseNode === null) {
+            return InstallCode::INVALID_XML_VERSION;
+        }
+        $parsedVersion = Version::parse(\APPLICATION_VERSION);
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;
         }
@@ -127,7 +130,7 @@ final class LegacyPluginValidator extends AbstractValidator
             }
         }
 
-        return $isShop4Compatible ? InstallCode::OK : InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE;
+        return $isShop4Compatible ? InstallCode::OK : InstallCode::OK_LEGACY;
     }
 
     /**

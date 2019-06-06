@@ -14,7 +14,7 @@
         <meta name="keywords" itemprop="keywords" content="{block name='head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
+        <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
 
         <meta itemprop="url" content="{$cCanonicalURL}"/>
         <meta property="og:type" content="website" />
@@ -203,7 +203,7 @@
     {/block}
 
     {block name='content-container-starttag'}
-    <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}{/if}">
+    <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}"{/if}>
     {/block}
 
     {block name='content-container-block-starttag'}

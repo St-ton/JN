@@ -13,13 +13,9 @@
                 {include file='poll/overview.tpl'}
             {/block}
         {elseif $step === 'umfrage_durchfuehren'}
-            {if $opcPageService->getCurPage()->isReplace()}
-                {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-            {else}
-                {block name='poll-index-include-progress'}
-                    {include file='poll/progress.tpl'}
-                {/block}
-            {/if}
+            {block name='poll-index-include-progress'}
+                {include file='poll/progress.tpl'}
+            {/block}
         {elseif $step === 'umfrage_ergebnis'}
             {block name='poll-index-include-result'}
                 {include file='poll/result.tpl'}

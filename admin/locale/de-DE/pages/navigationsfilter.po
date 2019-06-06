@@ -11,11 +11,8 @@ msgstr "Hier stellen Sie die verschiedenen Filtermöglichkeiten in JTL-Shop ein,
 msgid "navigationsfilterUrl"
 msgstr "https://jtl-url.de/5u1xg"
 
-msgid "thePriceRange"
-msgstr "Die Preisspanne "
+msgid "thePriceRangeIsInvalid"
+msgstr "Die Preisspanne ist ungültig"
 
-msgid "isInvalid"
-msgstr " ist ungültig."
-
-msgid "overlapps"
-msgstr " überschneidet sich mit anderen."
+msgid "thePriceRangeOverlapps"
+msgstr "Die Preisspanne überschneidet sich mit anderen"

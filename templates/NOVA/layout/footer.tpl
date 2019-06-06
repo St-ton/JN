@@ -5,6 +5,7 @@
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
         {block name='layout-footer-content-closingtag'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_content'}
             </div>{* /content *}
         {/block}
 
@@ -249,10 +250,10 @@
         {$isFluidContent|@var_dump}*}
         {if !$bExclusive && !$isFluidTemplate && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
             {if $Einstellungen.template.theme.background_image === 'custom'}
-                {assign var=backstretchImgPath value=$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
-            {else}
-                {assign var=backstretchImgPath value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
-            {/if}
+            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
+        {else}
+            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
+        {/if}
             {block name='layout-footer-script-backstretch'}
                 <script>
                     $(window).on("load", function (e) {

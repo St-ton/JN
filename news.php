@@ -13,6 +13,7 @@ use JTL\Session\Frontend;
 use JTL\News\Controller;
 use JTL\News\Item;
 use JTL\News\ViewType;
+use JTL\News\Category;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
@@ -34,6 +35,7 @@ $linkService      = Shop::Container()->getLinkService();
 $link             = $linkService->getPageLink($linkService->getSpecialPageLinkKey(LINKTYP_NEWS));
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
+$smarty           = Shop::Smarty();
 
 switch ($controller->getPageType($params)) {
     case ViewType::NEWS_DETAIL:
@@ -67,12 +69,13 @@ switch ($controller->getPageType($params)) {
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
         $breadCrumbName = $overview->getName();
-        $newsCategory   = new \News\Category($db);
+        $newsCategory   = new Category($db);
         $newsCategory->load($kNewsKategorie);
 
         $cMetaTitle       = $newsCategory->getMetaTitle();
         $cMetaDescription = $newsCategory->getMetaDescription();
         $cMetaKeywords    = $newsCategory->getMetaKeyword();
+        $smarty->assign('robotsContent', 'noindex, follow');
         break;
     case ViewType::NEWS_OVERVIEW:
         Shop::setPageType(PAGE_NEWS);
@@ -86,7 +89,8 @@ switch ($controller->getPageType($params)) {
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
         $breadCrumbName = $overview->getName();
-
+        $cMetaTitle     = $overview->getMetaTitle();
+        $smarty->assign('robotsContent', 'noindex, follow');
         break;
     case ViewType::NEWS_DISABLED:
     default:
@@ -110,9 +114,9 @@ if ($controller->getNoticeMsg() !== '') {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $controller->getNoticeMsg(), 'newsNote');
 }
 
-Shop::Smarty()->assign('oPagination', $pagination)
+$smarty->assign('oPagination', $pagination)
     ->assign('code_news', false);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-Shop::Smarty()->display('blog/index.tpl');
+$smarty->display('blog/index.tpl');
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

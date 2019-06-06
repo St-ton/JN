@@ -267,7 +267,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 
                                     $alertHelper->addAlert(
                                         Alert::TYPE_SUCCESS,
-                                        __('successSearchMapMultiple'),
+                                        sprintf(__('successSearchMapMultiple'), $queryMapping->cSucheNeu),
                                         'successSearchMapMultiple'
                                     );
                                 }
@@ -496,7 +496,11 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                         'successSearchMapDelete'
                     );
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchMapNotFound'), 'errorSearchMapNotFound');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorSearchMapNotFound'), $mappingID),
+                        'errorSearchMapNotFound'
+                    );
                 }
             }
         } else {

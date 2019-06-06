@@ -250,9 +250,11 @@ function baueArtikelExportSQL(&$export)
     }
 
     if (isset($conf['exportformate_preis_ueber_null']) && $conf['exportformate_preis_ueber_null'] === 'Y') {
-        $sql['Join'] .= ' JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                                AND tpreise.kKundengruppe = ' . (int)$export->kKundengruppe . '
-                                AND tpreise.fVKNetto > 0';
+        $sql['Join'] .= ' JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                                AND tpreis.kKundengruppe = ' . (int)$export->kKundengruppe . '
+                          JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                                AND tpreisdetail.nAnzahlAb = 0
+                                AND tpreisdetail.fVKNetto > 0';
     }
 
     if (isset($conf['exportformate_beschreibung']) && $conf['exportformate_beschreibung'] === 'Y'

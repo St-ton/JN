@@ -4,7 +4,8 @@
  *}
 {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
     {block name='sitemap-pages'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_linkgroups_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_pages'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-pages-title'}{lang key='sitemapSites'}{/block}</h3>
@@ -25,12 +26,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_linkgroups_append'}
     {/block}
 {/if}
 {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
     {block name='sitemap-categories'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_categories_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_categories'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-categories-title'}{lang key='sitemapKats'}{/block}</h3>
@@ -95,12 +96,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_categories_append'}
     {/block}
 {/if}
 {if $Einstellungen.sitemap.sitemap_globalemerkmale_anzeigen === 'Y' && $oGlobaleMerkmale_arr|@count > 0}
     {block name='sitemap-global-attributes'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_attributes_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_attributes'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-global-attributes-title'}{lang key='sitemapGlobalAttributes'}{/block}</h3></div>
@@ -119,12 +120,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_attributes_append'}
     {/block}
 {/if}
 {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
     {block name='sitemap-manufacturer'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_manufactutrers_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-manufacturer-title'}{lang key='sitemapNanufacturer'}{/block}</h3>
@@ -139,12 +140,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_manufactutrers_append'}
     {/block}
 {/if}
 {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
     {block name='sitemap-news'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-news-title'}{lang key='sitemapNews'}{/block}</h3>
@@ -169,12 +170,12 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_append'}
     {/block}
 {/if}
 {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_newskategorien_anzeigen === 'Y' && !empty($oNewsKategorie_arr) && $oNewsKategorie_arr|@count > 0}
     {block name='sitemap-news-categories'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_cat_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_news_categories'}
+
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{block name='sitemap-news-categories-title'}{lang key='sitemapNewsCats'}{/block}</h3>
@@ -198,6 +199,5 @@
                 {/block}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_sitemap_news_cat_append'}
     {/block}
 {/if}

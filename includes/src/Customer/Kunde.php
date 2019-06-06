@@ -16,6 +16,7 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\MagicCompatibilityTrait;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
@@ -29,6 +30,18 @@ use stdClass;
  */
 class Kunde
 {
+    use MagicCompatibilityTrait;
+
+    public const OK = 1;
+
+    public const ERROR_LOCKED = 2;
+
+    public const ERROR_INACTIVE = 3;
+
+    public const ERROR_CAPTCHA = 4;
+
+    public const ERROR_INVALID_DATA = 0;
+
     /**
      * @var int
      */
@@ -210,11 +223,6 @@ class Kunde
     public $dVeraendert;
 
     /**
-     * @var array
-     */
-    public $cKundenattribut_arr;
-
-    /**
      * @var string
      */
     public $cZusatz;
@@ -245,6 +253,13 @@ class Kunde
     public $nLoginversuche = 0;
 
     /**
+     * @var array
+     */
+    public static $mapping = [
+        'cKundenattribut_arr' => 'CustomerAttributes'
+    ];
+
+    /**
      * @param int $kKunde
      */
     public function __construct(int $kKunde = null)
@@ -262,7 +277,7 @@ class Kunde
      */
     public function holRegKundeViaEmail($cEmail): ?Kunde
     {
-        if (\mb_strlen($cEmail) > 0) {
+        if ($cEmail !== '') {
             $oKundeTMP = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail',
@@ -289,17 +304,17 @@ class Kunde
      */
     public function verifyLoginCaptcha($post)
     {
-        $conf          = Shop::getSettings([\CONF_KUNDEN]);
-        $cBenutzername = $post['email'];
-        if (isset($conf['kunden']['kundenlogin_max_loginversuche'])
+        $conf = Shop::getSettings([\CONF_KUNDEN]);
+        $name = $post['email'];
+        if ($name !== ''
+            && isset($conf['kunden']['kundenlogin_max_loginversuche'])
             && $conf['kunden']['kundenlogin_max_loginversuche'] !== ''
             && $conf['kunden']['kundenlogin_max_loginversuche'] > 1
-            && \mb_strlen($cBenutzername) > 0
         ) {
             $attempts = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail',
-                Text::filterXSS($cBenutzername),
+                Text::filterXSS($name),
                 'nRegistriert',
                 1,
                 null,
@@ -323,55 +338,55 @@ class Kunde
     }
 
     /**
-     * @param string $cBenutzername
-     * @param string $cPasswort
+     * @param string $username
+     * @param string $password
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
      * @throws Exception
      */
-    public function holLoginKunde($cBenutzername, $cPasswort): int
+    public function holLoginKunde($username, $password): int
     {
         $passwordService = Shop::Container()->getPasswordService();
-        if (\mb_strlen($cBenutzername) > 0 && \mb_strlen($cPasswort) > 0) {
-            $oUser = $this->checkCredentials($cBenutzername, $cPasswort);
-            if ($oUser === false) {
-                return 0;
+        if ($username === '' || $password === '') {
+            return self::ERROR_INVALID_DATA;
+        }
+        $user = $this->checkCredentials($username, $password);
+        if ($user === false) {
+            return self::ERROR_INVALID_DATA;
+        }
+        if (isset($user->cSperre) && $user->cSperre === 'Y') {
+            return self::ERROR_LOCKED;
+        }
+        if (isset($user->cAktiv) && $user->cAktiv === 'N') {
+            return self::ERROR_INACTIVE;
+        }
+        if (isset($user->kKunde) && $user->kKunde > 0) {
+            foreach (\get_object_vars($user) as $k => $v) {
+                $this->$k = $v;
             }
-            if (isset($oUser->cSperre) && $oUser->cSperre === 'Y') {
-                return 2; // Kunde ist gesperrt
-            }
-            if (isset($oUser->cAktiv) && $oUser->cAktiv === 'N') {
-                return 3; // Kunde ist nicht aktiv
-            }
-            if (isset($oUser->kKunde) && $oUser->kKunde > 0) {
-                foreach (\get_object_vars($oUser) as $k => $v) {
-                    $this->$k = $v;
-                }
-                $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
-                $this->holeKundenattribute();
-                // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-                if (isset($oUser->cPasswort) && $passwordService->needsRehash($oUser->cPasswort)) {
-                    $_upd            = new stdClass();
-                    $_upd->cPasswort = $passwordService->hash($cPasswort);
-                    Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
-                }
-            }
-            \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
-                'oKunde'        => &$this,
-                'oUser'         => $oUser,
-                'cBenutzername' => $cBenutzername,
-                'cPasswort'     => $cPasswort
-            ]);
-            if ($this->kKunde > 0) {
-                $this->entschluesselKundendaten();
-                // Anrede mappen
-                $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
-                $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-
-                return 1;
+            $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
+            // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
+            if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
+                $_upd            = new stdClass();
+                $_upd->cPasswort = $passwordService->hash($password);
+                Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $_upd);
             }
         }
+        \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
+            'oKunde'        => &$this,
+            'oUser'         => $user,
+            'cBenutzername' => $username,
+            'cPasswort'     => $password
+        ]);
+        if ($this->kKunde > 0) {
+            $this->entschluesselKundendaten();
+            // Anrede mappen
+            $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
+            $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
 
-        return 0;
+            return self::OK;
+        }
+
+        return self::ERROR_INVALID_DATA;
     }
 
     /**
@@ -458,7 +473,7 @@ class Kunde
             $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
-            $this->holeKundenattribute()->entschluesselKundendaten();
+            $this->entschluesselKundendaten();
             $this->kKunde         = (int)$this->kKunde;
             $this->kKundengruppe  = (int)$this->kKundengruppe;
             $this->kSprache       = (int)$this->kSprache;
@@ -586,10 +601,7 @@ class Kunde
         $this->verschluesselKundendaten();
         $obj = GeneralObject::copyMembers($this);
 
-        $customerAttributes = \is_array($obj->cKundenattribut_arr) ? $obj->cKundenattribut_arr : [];
-
         unset(
-            $obj->cKundenattribut_arr,
             $obj->cPasswort,
             $obj->angezeigtesLand,
             $obj->dGeburtstag_formatted,
@@ -606,9 +618,7 @@ class Kunde
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
         $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
-        if (\is_array($customerAttributes) && \count($customerAttributes) > 0) {
-            $obj->cKundenattribut_arr = $customerAttributes;
-        }
+
         if ($obj->dGeburtstag === '_DBNULL_') {
             $obj->dGeburtstag = '';
         }
@@ -626,24 +636,11 @@ class Kunde
      * get customer attributes
      *
      * @return $this
+     * @deprecated since 5.0.0 - use getCustomerAttributes instead
      */
     public function holeKundenattribute(): self
     {
-        $this->cKundenattribut_arr = [];
-        $customerAttributes        = Shop::Container()->getDB()->selectAll(
-            'tkundenattribut',
-            'kKunde',
-            (int)$this->kKunde,
-            '*',
-            'kKundenAttribut'
-        );
-        foreach ($customerAttributes as $attribute) {
-            $attribute->kKundenAttribut = (int)$attribute->kKundenAttribut;
-            $attribute->kKunde          = (int)$attribute->kKunde;
-            $attribute->kKundenfeld     = (int)$attribute->kKundenfeld;
-
-            $this->cKundenattribut_arr[$attribute->kKundenfeld] = $attribute;
-        }
+        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
         return $this;
     }
@@ -659,7 +656,7 @@ class Kunde
         \preg_match('/[a-zA-Z]{2}/', $iso, $hits);
         if (\mb_strlen($hits[0]) !== \mb_strlen($iso)) {
             $cISO = Sprache::getIsoCodeByCountryName($iso);
-            if ($cISO !== 'noISO' && \mb_strlen($cISO) > 0) {
+            if ($cISO !== 'noISO' && $cISO !== '') {
                 $iso = $cISO;
             }
         }
@@ -861,7 +858,7 @@ class Kunde
      */
     public static function mapSalutation($cAnrede, int $kSprache, int $kKunde = 0)
     {
-        if (($kSprache > 0 || $kKunde > 0) && \mb_strlen($cAnrede) > 0) {
+        if (($kSprache > 0 || $kKunde > 0) && $cAnrede !== '') {
             if ($kSprache === 0 && $kKunde > 0) {
                 $oKunde = Shop::Container()->getDB()->queryPrepared(
                     'SELECT kSprache
@@ -897,7 +894,7 @@ class Kunde
                 ['ciso' => $cISOSprache, 'cname' => $cName],
                 ReturnType::SINGLE_OBJECT
             );
-            if (isset($oSprachWert->cWert) && \mb_strlen($oSprachWert->cWert) > 0) {
+            if (isset($oSprachWert->cWert) && $oSprachWert->cWert !== '') {
                 $cAnrede = $oSprachWert->cWert;
             }
         }
@@ -1010,6 +1007,21 @@ class Kunde
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $force
+     * @return CustomerAttributes
+     */
+    public function getCustomerAttributes(bool $force = false): CustomerAttributes
+    {
+        static $customerAttributes = null;
+
+        if ($customerAttributes === null || $force) {
+            $customerAttributes = new CustomerAttributes($this->getID());
+        }
+
+        return $customerAttributes;
     }
 
     /**

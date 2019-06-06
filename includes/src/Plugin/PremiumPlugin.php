@@ -6,7 +6,6 @@
 
 namespace JTL\Plugin;
 
-use JTL\Plugin;
 use JTL\Shop;
 use stdClass;
 
@@ -112,7 +111,7 @@ class PremiumPlugin
     {
         $plugin            = Helper::getPluginById($pluginID);
         $this->pluginID    = $pluginID;
-        $this->exists      = \file_exists(\PFAD_ROOT . \PFAD_PLUGIN . $pluginID . '/info.xml');
+        $this->exists      = \file_exists(\PFAD_ROOT . \PFAD_PLUGIN . $pluginID . '/' . \PLUGIN_INFO_FILE);
         $this->isInstalled = $plugin !== null && $plugin->kPlugin > 0;
         $this->isActivated = $this->isInstalled && (int)$plugin->nStatus === State::ACTIVATED;
         $this->kPlugin     = $this->isInstalled ? (int)$plugin->kPlugin : 0;

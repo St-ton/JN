@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin;
 
+use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -22,7 +23,6 @@ use JTL\Plugin\Data\PaymentMethods;
 use JTL\Plugin\Data\Widget;
 use JTL\Shop;
 use stdClass;
-use Illuminate\Support\Collection;
 
 /**
  * Class AbstractLoader
@@ -201,6 +201,9 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadLicense($data): License
     {
         $license = new License();
+        if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
+            $data->cLizenzKlasse = 'Plugin\\' . $data->cLizenzKlasse;
+        }
         $license->setClass($data->cLizenzKlasse);
         $license->setClassName($data->cLizenzKlasseName);
         $license->setKey($data->cLizenz);

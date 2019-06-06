@@ -1,6 +1,6 @@
 <script type="text/javascript">
     function confirmDelete() {ldelim}
-        return confirm('{__('sureDeleteLink')}');
+        return confirm('{__('sureDeleteLink')|replace:"\n":' '}');
     {rdelim}
 </script>
 
@@ -9,7 +9,7 @@
     <div class="block container2">
         <form action="links.php" method="post">
             {$jtl_token}
-            <button class="btn btn-primary add" name="neuelinkgruppe" value="1"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
+            <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
         </form>
     </div>
     <div class="panel-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
@@ -38,9 +38,16 @@
                         {$jtl_token}
                         <span class="btn-group pull-right">
                             {if $linkgruppe->getID() > 0}
-                                <button name="kLinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-primary" title="{__('modify')}"><i class="fa fa-edit"></i></button>
-                                <button name="addlink" value="{$linkgruppe->getID()}" class="btn btn-default add" title="{__('addLink')}">{__('addLink')}</button>
-                                <button name="delconfirmlinkgruppe" value="{$linkgruppe->getID()}" class="btn btn-danger" title="{__('linkGroup')} {__('delete')}"><i class="fa fa-trash"></i></button>
+                                <input type="hidden" name="kLinkgruppe" value="{$linkgruppe->getID()}">
+                                <button name="action" value="edit-linkgroup" class="btn btn-primary" title="{__('modify')}">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button name="action" value="add-link-to-linkgroup" class="btn btn-default add" title="{__('addLink')}">
+                                    {__('addLink')}
+                                </button>
+                                <button name="action" value="delete-linkgroup" class="btn btn-danger" title="{__('linkGroup')} {__('delete')}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
                             {/if}
                         </span>
                     </form>
@@ -70,7 +77,7 @@
     <div class="block container2">
         <form action="links.php" method="post">
             {$jtl_token}
-            <button class="btn btn-primary add" name="neuelinkgruppe" value="1"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
+            <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
         </form>
     </div>
 </div>

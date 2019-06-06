@@ -202,7 +202,7 @@
     {/block}
 
     {block name="content-container-starttag"}
-    <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}{/if}">
+    <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}"{/if}>
     {/block}
 
     {block name="content-container-block-starttag"}

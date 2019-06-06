@@ -19,8 +19,10 @@
         {block name='layout-index-content'}
             {block name='layout-index-heading'}
                 {if !empty($Link->getTitle())}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
                     <h1>{$Link->getTitle()}</h1>
                 {elseif isset($bAjaxRequest) && $bAjaxRequest}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
                     <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
                 {/if}
             {/block}
@@ -28,20 +30,17 @@
                 {include file='snippets/extension.tpl'}
             {/block}
 
-            {*{include file='snippets/opc_mount_point.tpl' id='opc_link_content_prepend'}*}
-
             {block name='layout-index-link-content'}
                 {if !empty($Link->getContent())}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_content'}
                     {$Link->getContent()}
                 {/if}
             {/block}
 
-            {*{include file='snippets/opc_mount_point.tpl' id='opc_link_content_append'}*}
-
             {block name='layout-index-link-types'}
                 {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}
                     <div id="tos" class="well well-sm">
-                        {*{include file='snippets/opc_mount_point.tpl' id='opc_tos_prepend'}*}
+                        {include file='snippets/opc_mount_point.tpl' id='opc_before_tos'}
                         {if $AGB !== false}
                             {if $AGB->cAGBContentHtml}
                                 {$AGB->cAGBContentHtml}
@@ -49,11 +48,11 @@
                                 {$AGB->cAGBContentText|nl2br}
                             {/if}
                         {/if}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_tos_append'}
+                        {include file='snippets/opc_mount_point.tpl' id='opc_after_tos'}
                     </div>
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB}
                     <div id="revocation-instruction" class="well well-sm">
-                        {include file='snippets/opc_mount_point.tpl' id='opc_revocation_prepend'}
+                        {include file='snippets/opc_mount_point.tpl' id='opc_before_revocation'}
                         {if $WRB !== false}
                             {if $WRB->cWRBContentHtml}
                                 {$WRB->cWRBContentHtml}
@@ -61,7 +60,7 @@
                                 {$WRB->cWRBContentText|nl2br}
                             {/if}
                         {/if}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_revocation_append'}
+                        {include file='snippets/opc_mount_point.tpl' id='opc_after_revocation'}
                     </div>
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}
                     {include file='page/index.tpl'}

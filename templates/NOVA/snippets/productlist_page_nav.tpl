@@ -4,6 +4,7 @@
  *}
 {block name='snippets-productlist-page-nav'}
     {if $Suchergebnisse->getProductCount() > 0}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_page_nav_'|cat:$navid}
         {row class="no-gutters productlist-page-nav"}
             {block name='snippets-productlist-page-nav-current-page-count'}
                 {col cols=12 md="auto" class="productlist-item-info"}

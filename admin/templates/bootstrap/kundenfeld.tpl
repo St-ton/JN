@@ -122,7 +122,7 @@
                 <span class="input-group-wrap last">
                     <select id="kSprache" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
                         {foreach $sprachen as $language}
-                            <option value="{$language->getId()}" {if $sprache->getId() === $smarty.session.kSprache}selected{/if}>{$sprache->getLocalizedName()}</option>
+                            <option value="{$language->getId()}" {if $language->getId() === $smarty.session.kSprache}selected{/if}>{$language->getLocalizedName()}</option>
                         {/foreach}
                     </select>
                 </span>

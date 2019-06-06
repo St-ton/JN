@@ -196,8 +196,8 @@
                         <div class="for">
                             <select id="kSprache" name="kSprache" class="form-control">
                                 <option value="0">{__('all')}</option>
-                                {foreach $oSprachen_arr as $oSprache}
-                                    <option value="{$oSprache->kSprache}" {if isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->name}</option>
+                                {foreach $oSprachen_arr as $language}
+                                    <option value="{$language->getId()}" {if isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
                                 {/foreach}
                             </select>
                         </div>

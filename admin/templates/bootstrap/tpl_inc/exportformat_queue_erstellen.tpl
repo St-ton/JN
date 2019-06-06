@@ -35,7 +35,7 @@
                                 <option value="-1"></option>
                                 {foreach $oExportformat_arr as $oExportformat}
                                     <option value="{$oExportformat->kExportformat}"{if (isset($oFehler->kExportformat) && $oFehler->kExportformat == $oExportformat->kExportformat) || (isset($oCron->foreignKeyID) && $oCron->foreignKeyID == $oExportformat->kExportformat)} selected{/if}>{$oExportformat->cName}
-                                        ({$oExportformat->Sprache->name} / {$oExportformat->Waehrung->getName()}
+                                        ({$oExportformat->Sprache->getLocalizedName()} / {$oExportformat->Waehrung->getName()}
                                         / {$oExportformat->Kundengruppe->getName()})
                                     </option>
                                 {/foreach}

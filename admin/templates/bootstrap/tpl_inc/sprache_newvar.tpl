@@ -31,45 +31,46 @@
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oVariable->cName}">
                     </span>
                 </div>
-                {foreach $oSprache_arr as $oSprache}
-                    {if isset($oVariable->cWertAlt_arr[$oSprache->cISO])}
+                {foreach $oSprache_arr as $language}
+                    {assign var=langCode value=$language->getIso()}
+                    {if isset($oVariable->cWertAlt_arr[$langCode])}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="bOverwrite_{$oSprache->cISO}_yes">
-                                    <input type="radio" id="bOverwrite_{$oSprache->cISO}_yes"
-                                           name="bOverwrite_arr[{$oSprache->cISO}]" value="1">
-                                    {$oSprache->name} ({__('new')})
+                                <label for="bOverwrite_{$langCode}_yes">
+                                    <input type="radio" id="bOverwrite_{$langCode}_yes"
+                                           name="bOverwrite_arr[{$langCode}]" value="1">
+                                    {$language->getLocalizedName()} ({__('new')})
                                 </label>
                             </span>
                             <span class="input-group-wrap">
-                                <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{if !empty($oVariable->cWert_arr[$oSprache->cISO])}{$oVariable->cWert_arr[$oSprache->cISO]}{/if}">
+                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
+                                       id="cWert_{$langCode}" value="{if !empty($oVariable->cWert_arr[$langCode])}{$oVariable->cWert_arr[$langCode]}{/if}">
                             </span>
                         </div>
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="bOverwrite_{$oSprache->cISO}_no">
-                                    <input type="radio" id="bOverwrite_{$oSprache->cISO}_no"
-                                           name="bOverwrite_arr[{$oSprache->cISO}]" value="0" checked>
-                                    {$oSprache->name} ({__('current')})
+                                <label for="bOverwrite_{$langCode}_no">
+                                    <input type="radio" id="bOverwrite_{$langCode}_no"
+                                           name="bOverwrite_arr[{$langCode}]" value="0" checked>
+                                    {$language->getLocalizedName()} ({__('current')})
                                 </label>
                             </span>
                                 <span class="input-group-wrap">
-                                <input type="text" class="form-control" name="cWertAlt_arr[{$oSprache->cISO}]" disabled
-                                       id="cWertAlt_{$oSprache->cISO}"
-                                       value="{if !empty($oVariable->cWertAlt_arr[$oSprache->cISO])}{$oVariable->cWertAlt_arr[$oSprache->cISO]}{/if}">
+                                <input type="text" class="form-control" name="cWertAlt_arr[{$langCode}]" disabled
+                                       id="cWertAlt_{$langCode}"
+                                       value="{if !empty($oVariable->cWertAlt_arr[$langCode])}{$oVariable->cWertAlt_arr[$langCode]}{/if}">
                             </span>
                         </div>
                     {else}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cWert_{$oSprache->cISO}">
-                                    {$oSprache->name}
+                                <label for="cWert_{$langCode}">
+                                    {$language->getLocalizedName()}
                                 </label>
                             </span>
                             <span class="input-group-wrap">
-                                <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
-                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]|default:''}">
+                                <input type="text" class="form-control" name="cWert_arr[{$langCode}]"
+                                       id="cWert_{$langCode}" value="{$oVariable->cWert_arr[$langCode]|default:''}">
                             </span>
                         </div>
                     {/if}

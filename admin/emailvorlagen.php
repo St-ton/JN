@@ -50,7 +50,6 @@ $mailer              = new Mailer($hydrator, $renderer, $settings, $validator);
 $mail                = new Mail();
 $factory             = new TemplateFactory($db);
 $controller          = new Controller($db, $mailer, $factory);
-$availableLanguages  = LanguageHelper::getAllLanguages();
 if ($pluginID > 0) {
     $settingsTableName = 'tpluginemailvorlageeinstellungen';
 }
@@ -165,7 +164,7 @@ if ((($emailTemplateID > 0 && $continue === true)
         $configAssoc[$item->cKey] = $item->cValue;
     }
     $mailTemplate = $mailTemplate ?? $controller->getTemplateByID($emailTemplateID);
-    $smarty->assign('availableLanguages', $availableLanguages)
+    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages())
            ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);
 }

@@ -260,7 +260,15 @@
                         <label for="dGueltigAb">{__('validFrom')}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="datetime" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
+                        <input type="text" class="form-control" name="dGueltigAb" id="dGueltigAb" >
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#dGueltigAb"
+                            currentDate="{$oKupon->cGueltigAbLong}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </span>
                     <span class="input-group-addon">{getHelpDesc cDesc=__('validFromHelp')}</span>
                 </div>
@@ -269,7 +277,15 @@
                         <label for="dGueltigBis">{__('validUntil')}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="datetime" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->cGueltigBisLong}">
+                        <input type="datetime" class="form-control" name="dGueltigBis" id="dGueltigBis">
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#dGueltigBis"
+                            currentDate="{if $oKupon->cGueltigBisLong !== 'open-end'}{$oKupon->cGueltigBisLong}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </span>
                     <span class="input-group-addon">{getHelpDesc cDesc=__('validUntilHelp')}</span>
                 </div>

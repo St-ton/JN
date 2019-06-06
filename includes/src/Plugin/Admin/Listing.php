@@ -183,13 +183,12 @@ final class Listing
 
             if ($isExtension) {
                 Shop::Container()->getGetText()->loadPluginItemLocale('base', $item);
-            }
+                $msgid = $item->getID() . '_desc';
+                $desc  = __($msgid);
 
-            $msgid = $item->getID() . '_desc';
-            $desc  = __($msgid);
-
-            if ($desc !== $msgid) {
-                $item->setDescription($desc);
+                if ($desc !== $msgid) {
+                    $item->setDescription($desc);
+                }
             }
 
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {

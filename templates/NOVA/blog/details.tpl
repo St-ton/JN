@@ -15,7 +15,6 @@
         {/block}
     {else}
         {block name='blog-details-article'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_news_article_prepend'}
             <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
                 {container}
                     <meta itemprop="mainEntityOfPage" content="{$oNewsArchiv->getURL()}">
@@ -52,20 +51,21 @@
                         {/block}
 
                         {block name='blog-details-heading'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
                             <h1 itemprop="headline">
                                 {$oNewsArchiv->getTitle()}
                             </h1>
                         {/block}
 
-                        {include file='snippets/opc_mount_point.tpl' id='opc_news_content_prepend'}
                         {block name='blog-details-article-content'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_content'}
                             {row itemprop="articleBody" class="mb-4"}
                                 {col cols=12 class="blog-content"}
                                     {$oNewsArchiv->getContent()}
                                 {/col}
                             {/row}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_after_content'}
                         {/block}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_news_content_append'}
 
                         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
                             {block name='blog-details-sub-news'}
@@ -215,7 +215,6 @@
                         {/block}
                     {/if}
                 {/container}
-                {include file='snippets/opc_mount_point.tpl' id='opc_news_comments_append'}
             </article>
         {/block}
     {/if}

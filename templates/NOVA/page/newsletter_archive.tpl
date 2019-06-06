@@ -3,11 +3,10 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='page-newsletter-archive'}
-    {include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_toptags_prepend'}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter'}
     {block name='page-newsletter-archive-toptags'}
         <div id="toptags">{lang key='newsletterhistory'}</div>
     {/block}
-    {include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_toptags_append'}
     {block name='page-newsletter-archive-content'}
     {card class="newsletter"}
         {row class="font-weight-bold border-bottom"}
@@ -24,5 +23,4 @@
         {/foreach}
     {/card}
     {/block}
-    {include file='snippets/opc_mount_point.tpl' id='opc_nl_archive_append'}
 {/block}

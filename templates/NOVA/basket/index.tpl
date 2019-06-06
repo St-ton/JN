@@ -10,6 +10,7 @@
     {block name='basket-index-content'}
         {container}
             {block name='basket-index-heading'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
                 <h1>{lang key='basket'}</h1>
             {/block}
             {block name='basket-index-include-extension'}
@@ -26,6 +27,7 @@
 
             {if ($Warenkorb->PositionenArr|@count > 0)}
                 {block name='basket-index-basket'}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_basket'}
                     <div class="basket_wrapper">
                         {block name='basket-index-basket-items'}
                             {block name='basket-index-form-cart'}
@@ -44,6 +46,7 @@
 
                             {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                 {block name='basket-index-form-shipping-calc'}
+                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_shipping_calculator'}
                                     {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}"}
                                         {block name='basket-index-include-shipping-calculator'}
                                             {include file='snippets/shipping_calculator.tpl' checkout=true}
@@ -56,9 +59,9 @@
                                     {row class="apply-coupon"}
                                         {col cols=12 md=4 class="text-left"}
                                             {block name='basket-index-coupon-heading'}
-                                            <p>
-                                                <strong class="mb-2">{lang key='couponCode' section='account data'}:</strong>
-                                            </p>
+                                                <p>
+                                                    <strong class="mb-2">{lang key='couponCode' section='account data'}:</strong>
+                                                </p>
                                             {/block}
                                         {/col}
                                         {col cols=12 md=8}
@@ -99,21 +102,21 @@
                                                     {row}
                                                         {block name='basket-index-freegifts'}
                                                             {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
-                                                                    {col cols=6 md=4}
-                                                                        <div class="freegift mb-4">
-                                                                            <div class="custom-control custom-radio pl-0">
-                                                                                <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
-                                                                                <label for="gift{$oArtikelGeschenk->kArtikel}" class="custom-control-label">
-                                                                                    {if $selectedFreegift===$oArtikelGeschenk->kArtikel}<div class="text-success text-right"><i class="fa fa-check"></i></div>{/if}
-                                                                                    {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" alt=$oArtikelGeschenk->cName}
-                                                                                    <div class="caption">
-                                                                                        <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
-                                                                                        <p>{$oArtikelGeschenk->cName}</p>
-                                                                                    </div>
-                                                                                </label>
-                                                                            </div>
+                                                                {col cols=6 md=4}
+                                                                    <div class="freegift mb-4">
+                                                                        <div class="custom-control custom-radio pl-0">
+                                                                            <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
+                                                                            <label for="gift{$oArtikelGeschenk->kArtikel}" class="custom-control-label">
+                                                                                {if $selectedFreegift===$oArtikelGeschenk->kArtikel}<div class="text-success text-right"><i class="fa fa-check"></i></div>{/if}
+                                                                                {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" alt=$oArtikelGeschenk->cName}
+                                                                                <div class="caption">
+                                                                                    <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
+                                                                                    <p>{$oArtikelGeschenk->cName}</p>
+                                                                                </div>
+                                                                            </label>
                                                                         </div>
-                                                                    {/col}
+                                                                    </div>
+                                                                {/col}
                                                             {/foreach}
                                                         {/block}
                                                     {/row}

@@ -5,6 +5,7 @@
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
         {block name='layout-footer-content-closingtag'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_content'}
             </div>{* /content *}
         {/block}
 

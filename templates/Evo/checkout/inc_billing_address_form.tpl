@@ -478,37 +478,37 @@
                     {assign var="customerAttributes" value=$Kunde->getCustomerAttributes()}
                 {/if}
                 {foreach $oKundenfeld_arr as $oKundenfeld}
-                    {assign var="kKundenfeld" value=$oKundenfeld->kKundenfeld}
+                    {assign var="kKundenfeld" value=$oKundenfeld->getID()}
                     {if isset($customerAttributes[$kKundenfeld])}
                         {assign var="cKundenattributWert" value=$customerAttributes[$kKundenfeld]->getValue()}
-                        {assign var="isKundenattributEditable" value=($oKundenfeld->nEditierbar > 0 || $customerAttributes[$kKundenfeld]->getId() === 0)}
+                        {assign var="isKundenattributEditable" value=$customerAttributes[$kKundenfeld]->isEditable()}
                     {else}
                         {assign var="cKundenattributWert" value=''}
                         {assign var="isKundenattributEditable" value=true}
                     {/if}
                     <div class="form-group float-label-control{if isset($fehlendeAngaben.custom[$kKundenfeld])} has-error{/if}">
-                        <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->cName}
-                            {if $oKundenfeld->nPflicht != 1}
+                        <label class="control-label" for="custom_{$kKundenfeld}">{$oKundenfeld->getLabel()}
+                            {if !$oKundenfeld->isRequired()}
                                 <span class="optional"> - {lang key='optional'}</span>
                             {/if}
                         </label>
-                        {if $oKundenfeld->cTyp !== 'auswahl'}
+                        {if $oKundenfeld->getType() !== \JTL\Customer\CustomerField::TYPE_SELECT}
                             <input
-                            type="{if $oKundenfeld->cTyp === 'zahl'}number{elseif $oKundenfeld->cTyp === 'datum'}date{else}text{/if}"
+                            type="{if $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_NUMBER}number{elseif $oKundenfeld->getType() === \JTL\Customer\CustomerField::TYPE_DATE}date{else}text{/if}"
                             name="custom_{$kKundenfeld}"
                             id="custom_{$kKundenfeld}"
                             value="{$cKundenattributWert}"
                             class="form-control"
-                            placeholder="{$oKundenfeld->cName}"
-                            {if ($oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) || ($oKundenfeld->nEditierbar == 0 && empty($cKundenattributWert))} required{/if}
+                            placeholder="{$oKundenfeld->getLabel()}"
+                            {if $oKundenfeld->isRequired()} required{/if}
                             data-toggle="floatLabel"
                             data-value="no-js"
                             {if !$isKundenattributEditable}readonly{/if}/>
                         {else}
-                            <select name="custom_{$kKundenfeld}" class="form-control" {if !$isKundenattributEditable}disabled{/if}{if $oKundenfeld->nPflicht == 1} required{/if}>
+                            <select name="custom_{$kKundenfeld}" class="form-control" {if !$isKundenattributEditable}disabled{/if}{if $oKundenfeld->isRequired()} required{/if}>
                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
-                                {foreach $oKundenfeld->oKundenfeldWert_arr as $oKundenfeldWert}
-                                    <option value="{$oKundenfeldWert->cWert}" {if ($oKundenfeldWert->cWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert->cWert}</option>
+                                {foreach $oKundenfeld->getValues() as $oKundenfeldWert}
+                                    <option value="{$oKundenfeldWert}" {if ($oKundenfeldWert == $cKundenattributWert)}selected{/if}>{$oKundenfeldWert}</option>
                                 {/foreach}
                             </select>
                         {/if}

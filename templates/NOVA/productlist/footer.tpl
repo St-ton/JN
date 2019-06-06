@@ -32,7 +32,7 @@
     {/if}*}
     {block name='productlist-footer-include-productlist-page-nav'}
         {if $style === 'list'}
-            {include file='snippets/productlist_page_nav.tpl'}
+            {include file='snippets/productlist_page_nav.tpl' navid='footer'}
         {/if}
     {/block}
 {/block}

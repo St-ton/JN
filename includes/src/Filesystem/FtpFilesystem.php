@@ -293,6 +293,14 @@ class FtpFilesystem extends AbstractFilesystem
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
+    {
+        throw new RuntimeException();
+    }
+
     protected function isDir($directory)
     {
         $location = $this->applyPathPrefix($directory);
@@ -408,10 +416,11 @@ class FtpFilesystem extends AbstractFilesystem
     }
 
     /**
-     * @param array  $listing
+     * @param array $listing
      * @param string $prefix
      *
      * @return \Generator
+     * @throws Exception
      */
     protected function normalizeListing(array $listing, $prefix = '')
     {

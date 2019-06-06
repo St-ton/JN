@@ -8,47 +8,42 @@
     {/block}
 
     {if isset($StartseiteBoxen) && $StartseiteBoxen|@count > 0}
-                </div> {*closes content*}
-            </div> {*closes row*}
-        </div> {*closes content-wrapper*}
-        {container fluid=true}
-            {assign var=moreLink value=null}
-            {assign var=moreTitle value=null}
-            {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_prepend'}
-            {block name='page-index-boxes'}
-                {foreach $StartseiteBoxen as $Box}
-                    {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente) > 0 && isset($Box->cURL)}
-                        {if $Box->name === 'TopAngebot'}
-                            {lang key='topOffer' assign='title'}
-                            {lang key='showAllTopOffers' assign='moreTitle'}
-                        {elseif $Box->name === 'Sonderangebote'}
-                            {lang key='specialOffer' assign='title'}
-                            {lang key='showAllSpecialOffers' assign='moreTitle'}
-                        {elseif $Box->name === 'NeuImSortiment'}
-                            {lang key='newProducts' assign='title'}
-                            {lang key='showAllNewProducts'  assign='moreTitle'}
-                        {elseif $Box->name === 'Bestseller'}
-                            {lang key='bestsellers' assign='title'}
-                            {lang key='showAllBestsellers' assign='moreTitle'}
-                        {/if}
-                        {assign var=moreLink value=$Box->cURL}
-                        {block name='page-index-include-product-slider'}
-                            {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
-                        {/block}
+        {assign var=moreLink value=null}
+        {assign var=moreTitle value=null}
+
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_boxes'}
+
+        {block name='page-index-boxes'}
+            {foreach $StartseiteBoxen as $Box}
+                {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente) > 0 && isset($Box->cURL)}
+                    {if $Box->name === 'TopAngebot'}
+                        {lang key='topOffer' assign='title'}
+                        {lang key='showAllTopOffers' assign='moreTitle'}
+                    {elseif $Box->name === 'Sonderangebote'}
+                        {lang key='specialOffer' assign='title'}
+                        {lang key='showAllSpecialOffers' assign='moreTitle'}
+                    {elseif $Box->name === 'NeuImSortiment'}
+                        {lang key='newProducts' assign='title'}
+                        {lang key='showAllNewProducts'  assign='moreTitle'}
+                    {elseif $Box->name === 'Bestseller'}
+                        {lang key='bestsellers' assign='title'}
+                        {lang key='showAllBestsellers' assign='moreTitle'}
                     {/if}
-                {/foreach}
-            {/block}
-            {include file='snippets/opc_mount_point.tpl' id='opc_home_boxes_apppend'}
-        {/container}
-        <div class="container mt-0 mt-md-6 pt-4 px-md-4"> {*reopens content-wrapper container*}
-            <div class="row"> {*reopens row*}
-                <div class="col-12"> {*reopens content col*}
+                    {assign var=moreLink value=$Box->cURL}
+                    {block name='page-index-include-product-slider'}
+                        {include file='snippets/product_slider.tpl' productlist=$Box->Artikel->elemente title=$title hideOverlays=true moreLink=$moreLink moreTitle=$moreTitle}
+                    {/block}
+                {/if}
+            {/foreach}
+        {/block}
     {/if}
 
     {block name='page-index-additional-content'}
         {if isset($oNews_arr) && $oNews_arr|@count > 0}
             <hr>
-            {include file='snippets/opc_mount_point.tpl' id='opc_home_news_prepend'}
+
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
+
             {block name='page-index-subheading-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
             {/block}
@@ -63,7 +58,6 @@
                     {/foreach}
                 {/row}
             {/block}
-            {include file='snippets/opc_mount_point.tpl' id='opc_home_news_append'}
         {/if}
     {/block}
 {/block}

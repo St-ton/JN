@@ -4,6 +4,7 @@
  *}
 {block name='snippets-productlist-page-nav'}
     {if $Suchergebnisse->getProductCount() > 0}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_page_nav_'|cat:$navid}
         {row class="no-gutters productlist-page-nav"}
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
                 {block name='snippets-productlist-page-nav-result-options-sort'}

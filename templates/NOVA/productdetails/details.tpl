@@ -15,15 +15,16 @@
         {/block}
     {/if}
 
-    {include file='snippets/opc_mount_point.tpl' id='opc_article_content_prepend'}
-
     {block name='productdetails-details-form'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_buy_form'}
         {container}
             {form id="buy_form" action=$Artikel->cURLFull class="evo-validate"}
                 {row id="product-offer"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 md=6 class="product-gallery"}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_gallery'}
                             {include file='productdetails/image.tpl'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_after_gallery'}
                             {*{image src=$Artikel->Bilder[0]->cURLNormal fluid=true class="mx-auto d-block" alt="Responsive image"}*}
                         {/col}
                     {/block}
@@ -35,6 +36,7 @@
                         <div class="product-info-inner">
                             <div class="product-headline d-none d-sm-block">
                                 {block name='productdetails-details-info-product-title'}
+                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_headline'}
                                     <h1 class="product-title mb-3" itemprop="name">{$Artikel->cName}</h1>
                                 {/block}
                             </div>
@@ -133,11 +135,13 @@
                             {block name='productdetails-details-info-description-wrapper'}
                             {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                                 {block name='productdetails-details-info-description'}
+                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_short_desc'}
                                     <div class="shortdesc mb-2 d-none d-md-flex" itemprop="description">
                                         {$Artikel->cKurzBeschreibung}
                                     </div>
                                 {/block}
                             {/if}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_after_short_desc'}
                             {/block}
 
                             <div class="product-offer mb-5" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
@@ -201,6 +205,7 @@
                             </div>
                         </div>{* /product-info-inner *}
                         {/block}{* productdetails-info *}
+                        {include file='snippets/opc_mount_point.tpl' id='opc_after_product_info'}
                     {/col}
                     {if $Artikel->bHasKonfig}
                         {block name='productdetails-details-include-config-container'}
@@ -219,19 +224,13 @@
         {/container}
     {/block}
 
-    {include file='snippets/opc_mount_point.tpl' id='opc_article_content_append'}
-
     {if !isset($smarty.get.quickView) || $smarty.get.quickView != 1}
         {block name='productdetails-details-content-not-quickview'}
             <div class="clearfix"></div>
                 {block name='details-tabs'}
-                    {container}
-                        {include file='productdetails/tabs.tpl'}
-                    {/container}
+                    {include file='productdetails/tabs.tpl'}
                 {/block}
             <div class="clearfix"></div>
-
-            {include file='snippets/opc_mount_point.tpl' id='opc_article_tabs_prepend'}
 
             {*SLIDERS*}
             {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0

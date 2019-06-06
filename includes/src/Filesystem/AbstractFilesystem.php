@@ -74,7 +74,7 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @return string prefixed path
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function applyPathPrefix(string $path) : string
     {
@@ -87,7 +87,7 @@ abstract class AbstractFilesystem implements IFilesystem
         $rooted = Path::combine($this->getPathPrefix(), $path);
 
         if (!$this->hasPathPrefix($rooted)) {
-            throw new Exception(sprintf("Path '%s' is not within defined root", $rooted));
+            throw new \Exception(sprintf("Path '%s' is not within defined root", $rooted));
         }
 
         return $rooted;
@@ -119,7 +119,7 @@ abstract class AbstractFilesystem implements IFilesystem
      *
      * @return bool
      */
-    public function hasPathPrefix(string $path) : string
+    public function hasPathPrefix(string $path) : bool
     {
         $prefix = $this->getPathPrefix();
 

@@ -64,20 +64,28 @@
                 <span id="opc-start-label">OnPage Composer</span>
             </button>
         </nav>
-        <div id="opc-sidebar">
-        <header id="opc-header">
-            {*<button>*}
-                {*<i class="fas fa-ellipsis-v"></i>*}
-            {*</button>*}
-            <h1 id="opc-sidebar-title">
-                Seite bearbeiten
-            </h1>
-            <button onclick="closeOpcStartMenu()" class="float-right">
-                <i class="fas fa-times"></i>
-            </button>
-        </header>
-        <div id="opc-sidebar-content">
-            <h2 id="opc-sidebar-second-title">Alle Entwürfe</h2>
+        <div id="opc-sidebar" class="opc-open">
+            <header id="opc-header">
+                {*<button>*}
+                    {*<i class="fas fa-ellipsis-v"></i>*}
+                {*</button>*}
+                <h1 id="opc-sidebar-title">
+                    Seite bearbeiten
+                </h1>
+                <button onclick="closeOpcStartMenu()" class="float-right">
+                    <i class="fas fa-times"></i>
+                </button>
+            </header>
+            <div id="opc-sidebar-tools">
+                <h2 id="opc-sidebar-second-title">Alle Entwürfe</h2>
+                <input type="text" class="opc-filter-control opc-filter-search" placeholder="Suche">
+                <input type="text" class="opc-filter-control opc-filter-status">
+                <button type="button" id="opc-bulk-actions">
+                    <span id="opc-bulk-actions-label">Bulk Actions</span>
+                    <i class="fas fa-fw fa-chevron-down"></i>
+                </button>
+            </div>
+            <div id="opc-sidebar-content">
                 <ul id="opc-draft-list">
                     {foreach $pageDrafts as $i => $draft}
                         <li class="opc-draft" id="opc-draft-{$draft->getKey()}">
@@ -98,16 +106,21 @@
                                         published
                                     </div>
                                     <div class="opc-draft-actions">
-                                        <button type="submit" name="action" value="edit">
+                                        <button type="submit" name="action" value="edit" data-toggle="tooltip"
+                                                title="Bearbeiten" data-placement="bottom" data-container="#opc">
                                             <i class="fa-lg fa-fw fas fa-pencil-alt"></i>
                                         </button>
-                                        <button>
+                                        <button data-toggle="tooltip" title="Duplizieren" data-placement="bottom"
+                                                data-container="#opc">
                                             <i class="fa-lg fa-fw far fa-clone"></i>
                                         </button>
-                                        <button>
+                                        <button data-toggle="tooltip" title="Für andere Sprache übernehmen"
+                                                data-placement="bottom" data-container="#opc">
                                             <i class="fa-lg fa-fw fas fa-language"></i>
                                         </button>
-                                        <button type="button" onclick="deleteOpcDraft({$draft->getKey()})">
+                                        <button type="button" onclick="deleteOpcDraft({$draft->getKey()})"
+                                                data-toggle="tooltip" title="Löschen"
+                                                data-placement="bottom" data-container="#opc">
                                             <i class="fa-lg fa-fw fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -116,17 +129,17 @@
                         </li>
                     {/foreach}
                 </ul>
+            </div>
+            <div id="opc-sidebar-footer">
+                <form method="post" action="admin/onpage-composer.php">
+                    <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
+                    <input type="hidden" name="pageId" value="{$curPage->getId()}">
+                    <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
+                    <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
+                        Neuer Entwurf
+                    </button>
+                </form>
+            </div>
         </div>
-        <div id="opc-sidebar-footer">
-            <form method="post" action="admin/onpage-composer.php">
-                <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                <input type="hidden" name="pageId" value="{$curPage->getId()}">
-                <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
-                <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
-                    Neuer Entwurf
-                </button>
-            </form>
-        </div>
-    </div>
     {/if}
 </div>

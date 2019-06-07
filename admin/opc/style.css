@@ -21,6 +21,19 @@
 #opc button.opc-btn-link:hover {
   text-decoration: underline;
 }
+#opc .tooltip {
+  border: none;
+  padding: 0;
+}
+#opc .tooltip .arrow {
+  display: none;
+}
+#opc .tooltip .tooltip-inner {
+  background-color: #435A6B;
+  color: #F5F7FA;
+  font-size: 14px;
+  border-radius: 5px;
+}
 #opc #opc-startmenu {
   position: fixed;
   left: 0;
@@ -68,6 +81,9 @@
   font-size: 14px;
   color: #435A6B;
 }
+#opc #opc-sidebar button, #opc #opc-sidebar input {
+  outline: none;
+}
 #opc #opc-sidebar a {
   color: inherit;
   text-decoration: none;
@@ -93,22 +109,54 @@
 #opc #opc-sidebar #opc-header button {
   padding: 0 4px;
 }
-#opc #opc-sidebar #opc-sidebar-content {
-  padding: 24px;
-  padding-bottom: 92px;
-  color: #435a6b;
-  max-height: calc(100vh - 52px);
-  overflow: auto;
+#opc #opc-sidebar #opc-sidebar-tools {
+  margin: 24px;
+  margin-bottom: 16px;
 }
-#opc #opc-sidebar #opc-sidebar-content #opc-sidebar-second-title {
+#opc #opc-sidebar #opc-sidebar-tools #opc-sidebar-second-title {
   margin: 0;
   margin-bottom: 16px;
   font-size: 14px;
   font-weight: 600;
   color: inherit;
 }
+#opc #opc-sidebar #opc-sidebar-tools .opc-filter-control {
+  border: 1px solid #435A6B;
+  border-radius: 5px;
+  display: block;
+  height: 38px;
+  color: inherit;
+  padding: 8px;
+  float: left;
+  margin-bottom: 24px;
+}
+#opc #opc-sidebar #opc-sidebar-tools ::placeholder {
+  color: #BDBDBD;
+}
+#opc #opc-sidebar #opc-sidebar-tools .opc-filter-search {
+  width: 191px;
+  margin-right: 16px;
+}
+#opc #opc-sidebar #opc-sidebar-tools .opc-filter-status {
+  width: 125px;
+}
+#opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions {
+  color: #BDBDBD;
+}
+#opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions #opc-bulk-actions-label {
+  margin-right: 8px;
+}
+#opc #opc-sidebar #opc-sidebar-content {
+  margin: 24px 0;
+  margin-top: 16px;
+  padding: 0 24px;
+  overflow: auto;
+  max-height: calc(100vh - 216px);
+  color: #435a6b;
+}
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list {
-  margin: 16px 0;
+  margin: 0;
+  margin-bottom: 90px;
   padding: 0;
   list-style: none;
 }
@@ -117,6 +165,9 @@
   border-radius: 5px;
   padding: 16px;
   margin: 16px 0;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:first-child, #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:last-child {
+  margin: 0;
 }
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:hover .opc-draft-info .opc-draft-actions {
   visibility: visible;
@@ -158,7 +209,7 @@
   background-color: #dfe1e2;
   border-radius: 100%;
 }
-#opc #opc-sidebar-footer {
+#opc #opc-sidebar #opc-sidebar-footer {
   position: absolute;
   bottom: 0;
   width: 100%;

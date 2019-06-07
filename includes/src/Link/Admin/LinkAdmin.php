@@ -432,10 +432,7 @@ final class LinkAdmin
                 $ins              = new stdClass();
                 $ins->linkGroupID = $new;
                 $ins->linkID      = $childLink->getID();
-                $this->db->insert(
-                    'tlinkgroupassociations',
-                    $ins
-                );
+                $this->db->insert('tlinkgroupassociations', $ins);
             } else {
                 $this->db->update(
                     'tlinkgroupassociations',
@@ -559,20 +556,17 @@ final class LinkAdmin
                 ? $localized->cSeo
                 : Seo::getSeo($localized->cSeo);
             $this->db->insert('tlinksprache', $localized);
-            $tmpLang = $this->db->select('tsprache', 'cISO', $localized->cISOSprache);
-            if (isset($tmpLang->kSprache) && $tmpLang->kSprache > 0) {
-                $this->db->delete(
-                    'tseo',
-                    ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', (int)$localized->kLink, (int)$tmpLang->kSprache]
-                );
-                $seo           = new stdClass();
-                $seo->cSeo     = Seo::checkSeo($localized->cSeo);
-                $seo->kKey     = $localized->kLink;
-                $seo->cKey     = 'kLink';
-                $seo->kSprache = $tmpLang->kSprache;
-                $this->db->insert('tseo', $seo);
-            }
+            $this->db->delete(
+                'tseo',
+                ['cKey', 'kKey', 'kSprache'],
+                ['kLink', $localized->kLink, $language->getId()]
+            );
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo($localized->cSeo);
+            $seo->kKey     = $localized->kLink;
+            $seo->cKey     = 'kLink';
+            $seo->kSprache = $language->getId();
+            $this->db->insert('tseo', $seo);
         }
         $linkInstance = new Link($this->db);
         $linkInstance->load($kLink);
@@ -651,14 +645,12 @@ final class LinkAdmin
      */
     public function getSpecialPageTypes(): Collection
     {
-        $links = $this->db->query(
+        return $this->db->query(
             'SELECT *
                 FROM tspezialseite
                 ORDER BY nSort',
             ReturnType::COLLECTION
-        );
-
-        return $links->map(function ($link) {
+        )->map(function ($link) {
             $link->kSpezialseite = (int)$link->kSpezialseite;
             $link->kPlugin       = (int)$link->kPlugin;
             $link->nLinkart      = (int)$link->nLinkart;

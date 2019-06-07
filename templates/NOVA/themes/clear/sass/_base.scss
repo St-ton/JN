@@ -779,6 +779,14 @@ ul.partlist-items {
     }
   }
 }
+
+.card-columns {
+  column-count: 2;
+  @include media-breakpoint-up(lg) {
+    column-count: 3;
+  }
+}
+
 .overlay-img {
   position: absolute;
   z-index: ($zindex-dropdown - 2);
@@ -1214,10 +1222,11 @@ hr {
 }
 
 .product-pagination {
+  margin-top: 10px;
   a {
-    display: block;
-    padding: 80px 15px;
-    background: $gray-lighter;
+    padding: ($spacer * 0.7) ($spacer / 2);
+    background: $sand;
+    opacity: 0.8;
     color: $primary;
     &:hover {
       background: $primary;

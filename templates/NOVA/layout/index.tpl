@@ -17,20 +17,24 @@
         {/block}
 
         {block name='layout-index-content'}
-            {container}
-                {block name='layout-index-heading'}
-                    {if !empty($Link->getTitle())}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+            {block name='layout-index-heading'}
+                {if !empty($Link->getTitle())}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {container}
                         <h1>{$Link->getTitle()}</h1>
-                    {elseif isset($bAjaxRequest) && $bAjaxRequest}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {/container}
+                {elseif isset($bAjaxRequest) && $bAjaxRequest}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {container}
                         <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
-                    {/if}
-                {/block}
-                {block name='layout-index-include-extension'}
+                    {/container}
+                {/if}
+            {/block}
+            {block name='layout-index-include-extension'}
+                {container}
                     {include file='snippets/extension.tpl'}
-                {/block}
-            {/container}
+                {/container}
+            {/block}
 
             {block name='layout-index-link-content'}
                 {if !empty($Link->getContent())}

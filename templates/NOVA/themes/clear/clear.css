@@ -12830,6 +12830,15 @@ ul.partlist-items {
   background-color: transparent;
 }
 
+.card-columns {
+  column-count: 2;
+}
+@media (min-width: 992px) {
+  .card-columns {
+    column-count: 3;
+  }
+}
+
 .overlay-img {
   position: absolute;
   z-index: 998;
@@ -13260,10 +13269,13 @@ hr {
   box-shadow: none;
 }
 
+.product-pagination {
+  margin-top: 10px;
+}
 .product-pagination a {
-  display: block;
-  padding: 80px 15px;
-  background: #f5f7fa;
+  padding: 0.7rem 0.5rem;
+  background: #ebebeb;
+  opacity: 0.8;
   color: #F8BF00;
 }
 .product-pagination a:hover {

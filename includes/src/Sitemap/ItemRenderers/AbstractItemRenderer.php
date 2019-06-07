@@ -22,7 +22,7 @@ abstract class AbstractItemRenderer implements RendererInterface
     /**
      * @var ItemInterface[]
      */
-    protected $queue =  [];
+    protected $queue = [];
 
     /**
      * @var array

@@ -93,8 +93,7 @@ final class Export
         RendererInterface $renderer,
         SchemaRendererInterface $schemaRenderer,
         array $config
-    )
-    {
+    ) {
         $this->db             = $db;
         $this->logger         = $logger;
         $this->renderer       = $renderer;

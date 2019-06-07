@@ -210,7 +210,7 @@ class WarenkorbPos
             'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
             'kKundengruppe',  (int)$_SESSION['Kundengruppe']->kKundengruppe
         );
-if (isset($Aufpreis_obj) && $Aufpreis_obj->fAufpreisNetto) {
+        if (isset($Aufpreis_obj) && $Aufpreis_obj->fAufpreisNetto) {
             $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
         }
         if ($this->Artikel->Preise->rabatt > 0) {

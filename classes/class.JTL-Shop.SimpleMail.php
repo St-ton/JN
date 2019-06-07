@@ -241,7 +241,7 @@ class SimpleMail
     public function send(array $cEmpfaenger_arr, $cCC_arr = [], $cBCC_arr = [], $cReply_arr = [])
     {
         if ($this->validate() === true) {
-            $oPHPMailer            = new PHPMailer();
+            $oPHPMailer            = new \PHPMailer\PHPMailer\PHPMailer();
             $oPHPMailer->Timeout   = SOCKET_TIMEOUT;
             $oPHPMailer->PluginDir = PFAD_ROOT . PFAD_PHPMAILER;
             $oPHPMailer->From      = $this->cVerfasserMail;

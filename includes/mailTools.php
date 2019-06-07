@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
-require_once PFAD_ROOT . PFAD_PHPMAILER . 'PHPMailerAutoload.php';
+require_once PFAD_ROOT . PFAD_PHPMAILER . 'PHPMailer.php';
 
 /**
  * @param array $params
@@ -688,7 +688,7 @@ function verschickeMail($mail)
         );
     } else {
         //phpmailer
-        $phpmailer = new PHPMailer();
+        $phpmailer = new \PHPMailer\PHPMailer\PHPMailer();
         $lang      = ($mail->lang === 'DE' || $mail->lang === 'ger') ? 'de' : 'end';
         $phpmailer->setLanguage($lang, PFAD_ROOT . PFAD_PHPMAILER . 'language/');
         $phpmailer->Timeout  = SOCKET_TIMEOUT;

@@ -6,12 +6,11 @@
 
 namespace JTL\Sitemap;
 
-use function Functional\some;
+use JTL\Customer\Kundengruppe;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
-use JTL\Customer\Kundengruppe;
+use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Sitemap\Factories\FactoryInterface;
 use JTL\Sitemap\ItemRenderers\RendererInterface;
@@ -21,6 +20,7 @@ use JTL\Sprache;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use function Functional\first;
+use function Functional\some;
 
 /**
  * Class Export
@@ -93,7 +93,8 @@ final class Export
         RendererInterface $renderer,
         SchemaRendererInterface $schemaRenderer,
         array $config
-    ) {
+    )
+    {
         $this->db             = $db;
         $this->logger         = $logger;
         $this->renderer       = $renderer;
@@ -110,6 +111,7 @@ final class Export
             'registrieren.php',
             'warenkorb.php',
         ];
+        \executeHook(\HOOK_SITEMAP_EXPORT_INIT, ['instance' => $this]);
         $this->schemaRenderer->setConfig($config);
         $this->renderer->setConfig($config);
     }
@@ -126,7 +128,7 @@ final class Export
         $fileNumber = 0;
         $itemCount  = 1;
         $urlCounts  = [0 => 0];
-        $res        = '';
+        $markup     = '';
 
         foreach ($languages as $language) {
             $language->cISO639 = Text::convertISO2ISO639($language->cISO);
@@ -134,9 +136,9 @@ final class Export
         $this->setSessionData($customerGroupIDs);
         $this->deleteFiles();
 
-        \executeHook(\HOOK_SITEMAP_EXPORT_GET_FACTORIES, [
+        \executeHook(\HOOK_SITEMAP_EXPORT_GENERATE, [
             'factories' => &$factories,
-            'exporter'  => $this
+            'instance'  => $this
         ]);
         foreach ($factories as $factory) {
             /** @var FactoryInterface $factory */
@@ -147,20 +149,20 @@ final class Export
                 }
                 if ($itemCount > \SITEMAP_ITEMS_LIMIT) {
                     $itemCount = 1;
-                    $this->buildFile($fileNumber, $res);
+                    $this->buildFile($fileNumber, $markup);
                     ++$fileNumber;
                     $urlCounts[$fileNumber] = 0;
-                    $res                    = '';
+                    $markup                 = '';
                 }
                 if (!$this->isURLBlocked($item->getLocation())) {
-                    $res .= $this->renderer->renderItem($item);
+                    $markup .= $this->renderer->renderItem($item);
                     ++$itemCount;
                     ++$urlCounts[$fileNumber];
                 }
             }
         }
-        $res .= $this->renderer->flush();
-        $this->buildFile($fileNumber, $res);
+        $markup .= $this->renderer->flush();
+        $this->buildFile($fileNumber, $markup);
         $this->writeIndexFile($fileNumber);
         $timeTotal = \microtime(true) - $timeStart;
         \executeHook(\HOOK_SITEMAP_EXPORT_GENERATED, [

@@ -6,12 +6,24 @@
 
 namespace JTL\Sitemap\ItemRenderers;
 
+use JTL\Sitemap\Items\ItemInterface;
+
 /**
  * Class AbstractItemRenderer
  * @package JTL\Sitemap\ItemRenderers
  */
 abstract class AbstractItemRenderer implements RendererInterface
 {
+    /**
+     * @var int
+     */
+    protected $lastID;
+
+    /**
+     * @var ItemInterface[]
+     */
+    protected $queue =  [];
+
     /**
      * @var array
      */

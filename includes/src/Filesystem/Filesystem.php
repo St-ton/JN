@@ -6,7 +6,11 @@
 
 namespace JTL\Filesystem;
 
+use Exception;
 use Generator;
+use JTL\Path;
+use Symfony\Component\Finder\Finder;
+use ZipArchive;
 
 /**
  * Class Filesystem
@@ -311,6 +315,11 @@ class Filesystem implements IFilesystem
         $zipArchive->close();
 
         return true;
+    }
+
+    public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
+    {
+        return $this->getAdapter()->zip($finder, $archivePath, $callback);
     }
 
     public function getOwner($identity)

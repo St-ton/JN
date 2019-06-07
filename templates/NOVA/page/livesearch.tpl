@@ -4,7 +4,8 @@
  *}
 {block name='page-livesearch'}
     {if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
-        {include file='snippets/opc_mount_point.tpl' id='opc_livesearch_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_livesearch'}
+
         {row id="livesearch" class="mt-4"}
             {block name='page-livesearch-top-searches'}
                 {col}
@@ -41,6 +42,5 @@
                 {/col}
             {/block}
         {/row}
-        {include file='snippets/opc_mount_point.tpl' id='opc_livesearch_append'}
     {/if}
 {/block}

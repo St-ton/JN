@@ -472,7 +472,7 @@
                                                                             class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
                                                                             aria=["label"=>"{lang key='quantity'}"]
                                                                             value="{$wlPosition->fAnzahl}"
-                                                                            data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                                                            data=["decimals"=>{getDecimalLength quantity=$wlPosition->Artikel->fAbnahmeintervall}]
                                                                         }
                                                                     {/block}
                                                                     {if $wlPosition->Artikel->cEinheit}

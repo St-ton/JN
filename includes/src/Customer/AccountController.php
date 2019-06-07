@@ -1227,27 +1227,8 @@ class AccountController
                 $_SESSION['Kunde']->kKundengruppe,
                 false,
                 true
-            ));
-        $customerFields = $this->db->selectAll(
-            'tkundenfeld',
-            'kSprache',
-            Shop::getLanguageID(),
-            '*',
-            'nSort, cName'
-        );
-        foreach ($customerFields as $field) {
-            if ($field->cTyp !== 'auswahl') {
-                continue;
-            }
-            $field->oKundenfeldWert_arr = $this->db->selectAll(
-                'tkundenfeldwert',
-                'kKundenfeld',
-                (int)$field->kKundenfeld,
-                '*',
-                '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
-            );
-        }
-        $this->smarty->assign('oKundenfeld_arr', $customerFields);
+            ))
+            ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()));
     }
 
     /**

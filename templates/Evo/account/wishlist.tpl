@@ -80,7 +80,17 @@
                         </td>
                     {else}
                         <td>
-                            <input name="Anzahl_{$CWunschlistePos->kWunschlistePos}" class="wunschliste_anzahl form-control" type="text" size="1" value="{$CWunschlistePos->fAnzahl|replace_delim}"><br />{$CWunschlistePos->Artikel->cEinheit}
+                            <input name="Anzahl_{$CWunschlistePos->kWunschlistePos}"
+                                   type="{if $CWunschlistePos->Artikel->cTeilbar === 'Y' && $CWunschlistePos->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                   class="wunschliste_anzahl form-control"
+                                   type="text"
+                                   size="1"
+                                   min="0"
+                                    {if $CWunschlistePos->Artikel->fAbnahmeintervall > 0}
+                                        step="{$CWunschlistePos->Artikel->fAbnahmeintervall}"
+                                    {/if}
+                                   value="{$CWunschlistePos->fAnzahl}">
+                            <br />{$CWunschlistePos->Artikel->cEinheit}
                         </td>
                         <td class="text-right">
                             <div class="btn-group-vertical">

@@ -20,7 +20,8 @@
                         {/if}
                         {block name='productlist-item-list-include-searchspecials'}
                             {if isset($Artikel->oSuchspecialBild)}
-                                {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
+                                {include file='snippets/ribbon.tpl'}
+                                {*{include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}*}
                             {/if}
                         {/block}
 
@@ -268,6 +269,7 @@
                                                                     class="quantity"
                                                                     name="anzahl"
                                                                     autocomplete="off"
+                                                                    data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                                                     value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
                                                             }
                                                             {inputgroupaddon append=true}

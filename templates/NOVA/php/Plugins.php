@@ -724,11 +724,20 @@ class Plugins
     }
 
     /**
+     * @param $params
+     * @return int
+     */
+    public function getDecimalLength($params): int
+    {
+        return \max(\strlen(\strrchr(\str_replace(',', '.', $params['quantity']), '.')) - 1, 0);
+    }
+
+    /**
      * prepares a string optimized for SEO
      * @param String $optStr
      * @return String SEO optimized String
      */
-    public function seofy ($optStr = ''): string
+    public function seofy($optStr = ''): string
     {
         return Seo::sanitizeSeoSlug($optStr);
     }

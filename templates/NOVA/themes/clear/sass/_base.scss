@@ -894,9 +894,10 @@ ul.partlist-items {
   @include media-breakpoint-up(md) {
     &.hover-enabled {
       position: relative;
-      overflow: hidden;
+      /*overflow: hidden;*/
       .expandable {
         opacity: 0;
+        visibility: hidden;
         position: absolute;
         top: 100%;
         width: 110%;
@@ -945,7 +946,7 @@ ul.partlist-items {
         .form-basket .delivery-status,
         .wishlist-pos-delete,
         .product-characteristics{ position: relative; }
-        .expandable { opacity: 1; }
+        .expandable { opacity: 1; visibility: visible;}
       }
     }
 
@@ -1051,10 +1052,14 @@ ul.partlist-items {
 .gallery,
 .list {
   align-items: flex-end;
-  .image-wrapper .yousave{
-    position: absolute;
-    padding: $pagination-padding-y $pagination-padding-x;
-    left: ($grid-gutter-width / 2);
+  .image-wrapper {
+    display: block;
+    position: relative;
+    .yousave{
+      position: absolute;
+      padding: $pagination-padding-y $pagination-padding-x;
+      left: ($grid-gutter-width / 2);
+    }
   }
 }
 .gallery .image-wrapper .yousave {

@@ -121,21 +121,29 @@ if (Form::validateToken()) {
                 foreach ($_POST['kNewsletterQueue'] as $kNewsletterQueue) {
                     $entry = $db->queryPrepared(
                         'SELECT
-                            q.foreignKeyID,
-                            q.cronID,
+                            c.foreignKeyID AS newsletterID,
+                            c.cronID AS cronID,
                             l.cBetreff
                         FROM
-                            tjobqueue q
-                            LEFT JOIN tnewsletter l ON l.kNewsletter = q.foreignKeyID
+                            tcron c
+                            LEFT JOIN tjobqueue j ON j.cronID = c.cronID
+                            LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
                         WHERE
-                            q.jobQueueID = :jobQueueID',
-                        ['jobQueueID' => $kNewsletterQueue],
+                            c.cronID = :cronID',
+                        [
+                            'cronID' => $kNewsletterQueue
+                        ],
                         ReturnType::SINGLE_OBJECT
                     );
-                    $db->delete('tnewsletter', 'kNewsletter', (int)$entry->foreignKeyID);
-                    $db->delete('tjobqueue', ['foreignKey', 'foreignKeyID'], ['kNewsletter', (int)$entry->foreignKeyID]);
+                    $db->delete('tnewsletter', 'kNewsletter', (int)$entry->newsletterID);
                     $db->delete('tcron', 'cronID', $entry->cronID);
-
+                    if (!empty($entry->foreignKeyID)) {
+                        $db->delete(
+                            'tjobqueue',
+                            ['foreignKey', 'foreignKeyID'],
+                            ['kNewsletter', (int)$entry->foreignKeyID]
+                        );
+                    }
                     $noticeTMP .= $entry->cBetreff . '", ';
                 }
                 $alertHelper->addAlert(
@@ -416,15 +424,6 @@ if (Form::validateToken()) {
                 $oNewsletter->kNewsletter   = $db->insert('tnewsletter', $oNewsletter);
                 // create a crontab entry
                 $db->insert('tcron', (new NewsletterDefault())->setForeignKeyID($oNewsletter->kNewsletter));
-
-                // baue tnewsletterqueue Objekt
-                $tnewsletterqueue                    = new stdClass();
-                $tnewsletterqueue->kNewsletter       = $oNewsletter->kNewsletter;
-                $tnewsletterqueue->nAnzahlEmpfaenger = 0;
-                $tnewsletterqueue->dStart            = $oNewsletter->dStartZeit;
-                // tnewsletterqueue fuellen
-                $db->insert('tnewsletterqueue', $tnewsletterqueue);
-
                 // Baue Arrays mit kKeys
                 $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
                 $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);
@@ -664,22 +663,21 @@ if ($step === 'uebersicht') {
     $queue             = $db->queryPrepared(
         "SELECT
             l.cBetreff,
-            q.jobQueueID,
-            q.foreignKeyID,
             q.tasksExecuted,
+            c.cronID,
+            c.foreignKeyID,
             c.startDate as 'Datum'
         FROM
-            tjobqueue q
-            LEFT JOIN tnewsletter l ON l.kNewsletter = q.foreignKeyID
-            LEFT JOIN tcron c ON q.cronID = c.cronID
+            tcron c
+            LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+            LEFT JOIN tnewsletter l ON c.foreignKeyID = l.kNewsletter
         WHERE
-            q.jobType = 'newsletter'
-            AND l.kSprache = :langID
+            c.jobType = 'newsletter'
         ORDER BY
             c.startDate DESC
         LIMIT " . $pagiQueue->getLimitSQL(),
         [
-            'langID'    => (int)$_SESSION['kSprache'],
+            'langID' => (int)$_SESSION['kSprache'],
         ],
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -689,7 +687,7 @@ if ($step === 'uebersicht') {
     foreach ($queue as $entry) {
         $entry->kNewsletter       = (int)$entry->foreignKeyID;
         $entry->nLimitN           = (int)$entry->tasksExecuted;
-        $entry->kNewsletterQueue  = (int)$entry->jobQueueID;
+        $entry->kNewsletterQueue  = (int)$entry->cronID;
         $recipient                = $instance->getRecipients($entry->kNewsletter);
         $entry->nAnzahlEmpfaenger = $recipient->nAnzahl;
         $entry->cKundengruppe_arr = $recipient->cKundengruppe_arr;

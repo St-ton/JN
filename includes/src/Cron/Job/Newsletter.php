@@ -59,7 +59,6 @@ final class Newsletter extends Job
         $campaign        = new Kampagne($oNewsletter->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
 
             return $this;
         }
@@ -122,11 +121,8 @@ final class Newsletter extends Job
             $this->setFinished(false);
         } else {
             $this->setFinished(true);
-            // reset the cron job to defaults
-            $this->oLogger->debug('reset newsletter cron...'); // --DEBUG--
+            // reset the cron job
             $this->db->delete('tcron', 'cronID', $this->getCronID());
-            // cleanup `tnewsletterqueue`
-            $this->db->delete('tnewsletterqueue', 'kNewsletter', $queueEntry->foreignKeyID);
         }
 
         return $this;

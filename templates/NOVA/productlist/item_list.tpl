@@ -20,7 +20,8 @@
                         {/if}
                         {block name='productlist-item-list-include-searchspecials'}
                             {if isset($Artikel->oSuchspecialBild)}
-                                {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
+                                {include file='snippets/ribbon.tpl'}
+                                {*{include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}*}
                             {/if}
                         {/block}
 

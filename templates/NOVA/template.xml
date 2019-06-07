@@ -136,6 +136,18 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
+            <Setting Description="Overlays in Listenansichten" Key="ribbon_type" Type="select" Value="a">
+                <Option Value="a">Variante A</Option>
+                <Option Value="b">Variante B</Option>
+                <Option Value="c">Variante C</Option>
+                <Option Value="custom">custom (eigenes CSS)</Option>
+            </Setting>
+            <Setting Description="Position des Overlays" Key="ribbon_position" Type="select" Value="top-left">
+                <Option Value="top-left">oben links</Option>
+                <Option Value="top-right">oben rechts</Option>
+                <Option Value="bottom-left">unten links</Option>
+                <Option Value="bottom-right">unten rechts</Option>
+            </Setting>
         </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">

@@ -306,6 +306,12 @@
         {/block}
         {captchaMarkup getBody=false}
     {/block}
+
+    {if !$bExclusive}
+        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
+            </div>{* .opc-page-wrapper *}
+        {/if}
+    {/if}
     </body>
     </html>
 {/block}

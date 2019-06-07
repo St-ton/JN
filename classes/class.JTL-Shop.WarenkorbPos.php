@@ -210,17 +210,11 @@ class WarenkorbPos
             'kEigenschaftWert',  (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert,
             'kKundengruppe',  (int)$_SESSION['Kundengruppe']->kKundengruppe
         );
-        if (isset($Aufpreis_obj->fAufpreisNetto) && $Aufpreis_obj->fAufpreisNetto) {
-            if ($this->Artikel->Preise->rabatt > 0) {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto - (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
-                $Aufpreis_obj->fAufpreisNetto           = $NeueWarenkorbPosEigenschaft->fAufpreis;
-            } else {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
-            }
-        } else {
-            if ($this->Artikel->Preise->rabatt > 0) {
-                $NeueWarenkorbPosEigenschaft->fAufpreis = $EigenschaftWert->fAufpreisNetto - (($this->Artikel->Preise->rabatt / 100) * $EigenschaftWert->fAufpreisNetto);
-            }
+if (isset($Aufpreis_obj) && $Aufpreis_obj->fAufpreisNetto) {
+            $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
+        }
+        if ($this->Artikel->Preise->rabatt > 0) {
+            $NeueWarenkorbPosEigenschaft->fAufpreis *= (1 - $this->Artikel->Preise->rabatt / 100);
         }
         $NeueWarenkorbPosEigenschaft->cTyp               = $Eigenschaft->cTyp;
         $NeueWarenkorbPosEigenschaft->cAufpreisLocalized = gibPreisStringLocalized($NeueWarenkorbPosEigenschaft->fAufpreis);

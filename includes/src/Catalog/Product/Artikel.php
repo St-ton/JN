@@ -5567,9 +5567,9 @@ class Artikel
         if ((!empty($this->kStueckliste) && empty($this->oStueckliste_arr)) ||
             (!empty($this->oStueckliste_arr) && \count($this->oStueckliste_arr) !== $nAllPieces)
         ) {
-            $resetArray = true;
-            $partList   = $this->oStueckliste_arr;
-            unset($this->oStueckliste_arr);
+            $resetArray             = true;
+            $partList               = $this->oStueckliste_arr;
+            $this->oStueckliste_arr = [];
             $this->holeStueckliste(Frontend::getCustomerGroup()->getID(), true);
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
@@ -5610,7 +5610,6 @@ class Artikel
                 }
             }
             if (!empty($resetArray)) {
-                unset($this->oStueckliste_arr);
                 $this->oStueckliste_arr = $partList;
             }
         }

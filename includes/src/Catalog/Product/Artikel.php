@@ -1823,6 +1823,7 @@ class Artikel
     }
 
     /**
+     * used for MagicCompatibilityTrait
      * @return array
      */
     public function getMediaTypeArr(): array
@@ -1830,6 +1831,14 @@ class Artikel
         return map($this->getMediaTypes(), function ($mediaType) {
             return $mediaType->name;
         });
+    }
+
+    /**
+     * used for MagicCompatibilityTrait
+     */
+    public function setMediaTypeArr(): void
+    {
+        trigger_error('cMedienTyp_arr should not be set explicitly.', E_USER_DEPRECATED);
     }
 
     /**

@@ -50,12 +50,12 @@ final class PluginValidator extends AbstractValidator
             return InstallCode::SHOP_VERSION_COMPATIBILITY;
         }
 
-        $cVersionsnummer = $this->getVersion($baseNode);
-        if (!\is_string($cVersionsnummer)) {
-            return $cVersionsnummer;
+        $version = $this->getVersion($baseNode);
+        if (!\is_string($version)) {
+            return $version;
         }
         $validation = new PluginValidationFactory();
-        $checks     = $validation->getValidations($baseNode, $this->dir, $cVersionsnummer, $baseNode['PluginID']);
+        $checks     = $validation->getValidations($baseNode, $this->dir, $version, $baseNode['PluginID']);
         foreach ($checks as $check) {
             $check->setDir($this->dir . \DIRECTORY_SEPARATOR); // override versioned dir from base validator
             $res = $check->validate();

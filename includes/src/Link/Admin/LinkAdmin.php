@@ -648,6 +648,28 @@ final class LinkAdmin
     }
 
     /**
+     * @return Collection
+     */
+    public function getSpecialPageTypes(): Collection
+    {
+        $links = $this->db->query(
+            'SELECT *
+                FROM tspezialseite
+                ORDER BY nSort',
+            ReturnType::COLLECTION
+        );
+
+        return $links->map(function ($link) {
+            $link->kSpezialseite = (int)$link->kSpezialseite;
+            $link->kPlugin       = (int)$link->kPlugin;
+            $link->nLinkart      = (int)$link->nLinkart;
+            $link->nSort         = (int)$link->nSort;
+
+            return $link;
+        });
+    }
+
+    /**
      * @param int $linkID
      * @return int|string
      */

@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='register-form'}
-    {form action="{get_static_route id='registrieren.php'}" class="evo-validate"}
+    {form action="{get_static_route id='registrieren.php'}" class="evo-validate clearfix"}
         {block name='register-form-content'}
             {block name='register-form-include-customer-account'}
                 {include file='register/form/customer_account.tpl'}
@@ -18,6 +18,7 @@
                 {input type="hidden" name="checkout" value=$checkout|default:''}
                 {input type="hidden" name="form" value="1"}
                 {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
                 {button type="submit" value="1" variant="primary" size="lg" class="float-right submit_once"}
                     {lang key='sendCustomerData' section='account data'}
                 {/button}

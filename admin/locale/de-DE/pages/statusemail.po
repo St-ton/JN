@@ -15,7 +15,7 @@ msgid "statusemailUse"
 msgstr "E-Mail-Berichte nutzen"
 
 msgid "statusemailUseDesc"
-msgstr "Hier aktivieren Sie die Funktion \"E-Mail-Berichte\"."
+msgstr "Hier aktivieren Sie die Funktion „E-Mail-Berichte“."
 
 msgid "statusemailEmail"
 msgstr "Empfänger-E-Mail-Adresse"
@@ -27,16 +27,16 @@ msgid "statusemailIntervall"
 msgstr "Berichtszeitraum"
 
 msgid "statusemailIntervallDesc"
-msgstr "Hier legen Sie fest, wie oft ein Bericht erstellt werden soll. Mehrfachauswahl möglich."
+msgstr "Hier legen Sie fest, wie oft ein Bericht erstellt werden soll. Eine Mehrfachauswahl ist möglich."
 
 msgid "statusemailContent"
 msgstr "Berichtsinhalt"
 
 msgid "statusemailContentDesc"
-msgstr "Hier legen Sie fest, welche Informationen die E-Mail-Berichte beinhalten sollen. Mehrfachauswahl möglich. "
+msgstr "Hier legen Sie fest, welche Informationen die E-Mail-Berichte beinhalten sollen. Eine Mehrfachauswahl ist möglich."
 
 msgid "sendEmail"
-msgstr "E-Mail-Berichte jetzt senden"
+msgstr "E-Mail-Bericht jetzt senden"
 
 msgid "contentTypeCountItemCustomerGroup"
 msgstr "Anzahl Produkte pro Kundengruppe"
@@ -87,7 +87,7 @@ msgid "contentTypeCountCustomerRecruitedOrdered"
 msgstr "Anzahl geworbener Kunden, die gekauft haben"
 
 msgid "contentTypeCountSentWishlists"
-msgstr "Anzahl versendeter Wunschlisten"
+msgstr "Anzahl versendeter Wunschzettel"
 
 msgid "contentTypeCountPolls"
 msgstr "Anzahl durchgeführter Umfragen"

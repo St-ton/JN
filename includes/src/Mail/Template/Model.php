@@ -708,6 +708,7 @@ final class Model
                 $this->$method($value);
             }
         }
+        $this->setName(__('name_' . $this->getModuleID()));
 
         return $this;
     }

@@ -6,8 +6,10 @@
 
 namespace JTL\Filter;
 
-use JTL\Catalog\Product\Artikel;
+use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Filter\Items\Attribute;
@@ -29,11 +31,9 @@ use JTL\Filter\States\BaseSearchSpecial;
 use JTL\Filter\States\DummyState;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Catalog\Category\Kategorie;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
 use stdClass;
-use Illuminate\Support\Collection;
 use function Functional\first;
 use function Functional\flatten;
 use function Functional\group;

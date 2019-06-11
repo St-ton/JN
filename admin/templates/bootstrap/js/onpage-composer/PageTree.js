@@ -1,22 +1,20 @@
-function PageTree(page, iframe)
+class PageTree
 {
-    bindProtoOnHandlers(this);
+    constructor(page, iframe)
+    {
+        bindProtoOnHandlers(this);
 
-    this.page     = page;
-    this.iframe   = iframe;
-    this.selected = undefined;
-}
+        this.page     = page;
+        this.iframe   = iframe;
+        this.selected = undefined;
+    }
 
-PageTree.prototype = {
-
-    constructor: PageTree,
-
-    init: function()
+    init()
     {
         installGuiElements(this, ['pageTreeView']);
-    },
+    }
 
-    setSelected: function(portlet)
+    setSelected(portlet)
     {
         if(this.selected) {
             $(this.selected[0].treeItem).removeClass('selected');
@@ -28,9 +26,9 @@ PageTree.prototype = {
             $(this.selected[0].treeItem).addClass('selected');
             this.expandTo(portlet);
         }
-    },
+    }
 
-    expandTo: function(portlet)
+    expandTo(portlet)
     {
         var treeItem = $(portlet[0].treeItem);
 
@@ -38,27 +36,22 @@ PageTree.prototype = {
             treeItem = treeItem.parent().closest('li');
             treeItem.addClass('expanded');
         }
-    },
+    }
 
-    render: function()
+    render()
     {
-        debuglog('PageTree render');
-
         var rootAreas = this.page.rootAreas;
         var jq        = rootAreas.constructor;
         var ul        = $('<ul>');
 
-        rootAreas.each(function(i, area)
-        {
-            area = jq(area);
-            ul.append(this.renderArea(area));
-
-        }.bind(this));
+        rootAreas.each((i, area) => {
+            ul.append(this.renderArea(jq(area)));
+        });
 
         this.pageTreeView.empty().append(ul);
-    },
+    }
 
-    renderBaseItem: function(text, click)
+    renderBaseItem(text, click)
     {
         var expander = $('<a href="#">');
         var item     = $('<a href="#" class="item-label">');
@@ -76,7 +69,7 @@ PageTree.prototype = {
         expander.on('click', expand);
         item.dblclick(expand);
 
-        item.on('click', function(e) {
+        item.on('click', e => {
             e.preventDefault();
 
             if(click) {
@@ -85,9 +78,9 @@ PageTree.prototype = {
         });
 
         return li.append(expander).append(item);
-    },
+    }
 
-    renderArea: function(area, expanded)
+    renderArea(area, expanded)
     {
         var portlets = area.children('[data-portlet]');
         var jq       = area.constructor;
@@ -97,17 +90,14 @@ PageTree.prototype = {
 
         expanded = expanded || false;
 
-        portlets.each(function(i, portlet)
-        {
+        portlets.each((i, portlet) => {
             portlet = jq(portlet);
             ul.append(this.renderPortlet(portlet));
-
-        }.bind(this));
+        });
 
         if(portlets.length === 0) {
             li.addClass('leaf');
-        }
-        else if(expanded) {
+        } else if(expanded) {
             li.addClass('expanded');
         }
 
@@ -115,27 +105,23 @@ PageTree.prototype = {
         li[0].area       = area[0];
 
         return li.append(ul);
-    },
+    }
 
-    renderPortlet: function(portlet)
+    renderPortlet(portlet)
     {
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
         var jq       = portlet.constructor;
         var data     = portlet.data('portlet');
         var ul       = $('<ul>');
 
-        var li = this.renderBaseItem(data.class, function()
-        {
+        var li = this.renderBaseItem(data.class, () => {
             this.iframe.setSelected(portlet);
+        });
 
-        }.bind(this));
-
-        subareas.each(function(i, area)
-        {
+        subareas.each((i, area) => {
             area = jq(area);
             ul.append(this.renderArea(area));
-
-        }.bind(this));
+        });
 
         if(subareas.length === 0) {
             li.addClass('leaf');
@@ -145,14 +131,13 @@ PageTree.prototype = {
         li[0].portlet       = portlet[0];
 
         return li.append(ul);
-    },
+    }
 
-    updateArea: function(area)
+    updateArea(area)
     {
         var treeItem = $(area[0].treeItem);
         var expanded = treeItem.hasClass('expanded');
 
         $(area[0].treeItem).replaceWith(this.renderArea(area, expanded));
-    },
-
-};
+    }
+}

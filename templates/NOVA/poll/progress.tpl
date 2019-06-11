@@ -4,6 +4,7 @@
  *}
 {block name='poll-progress'}
     {block name='poll-progress-heading'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
         {if !empty($oUmfrage->getName())}
             <h1>{$oUmfrage->getName()}</h1>
         {else}
@@ -11,10 +12,9 @@
         {/if}
     {/block}
 
-    {include file='snippets/opc_mount_point.tpl' id='opc_poll_content_prepend'}
-
     {if $oUmfrage->getQuestionCount() > 0}
         {block name='poll-progress-form'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_questions'}
             {form method="post" action="{if empty($oUmfrage->getURL())}{get_static_route id='umfrage.php'}{else}{$ShopURL}/{$oUmfrage->getURL()}{/if}" class="evo-validate"}
                 {block name='poll-progress-form-content'}
                     {input name="u" type="hidden" value=$oUmfrage->getID()}
@@ -99,14 +99,14 @@
                                             {/if}
 
                                             {if $question->getType() === \JTL\Survey\QuestionType::SELECT_SINGLE}
-                                                <option value=$answer->getID()
+                                                <option value={$answer->getID()}
                                                     {if $nSessionFragenWerte_arr[$questionID]->isActive($answer->getID())} selected{/if}>
                                                     {$answer->getName()}
                                                 </option>
                                             {/if}
 
                                             {if $question->getType() === \JTL\Survey\QuestionType::SELECT_MULTI}
-                                                <option value=$answer->getID()
+                                                <option value={$answer->getID()}
                                                     {if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == $answer->getID()} selected{/if}{/foreach}{/if}>
                                                     {$answer->getName()}
                                                 </option>
@@ -220,6 +220,7 @@
                     {block name='poll-progress-fomr-submit'}
                         {input name="s" type="hidden" value=$nAktuelleSeite}
                         {if $nAktuelleSeite == $nAnzahlSeiten}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
                             {button type="submit" name="end" value="1" variant="primary" class="mt-3"}
                                 {lang key='umfrageSubmit' section='umfrage'}
                             {/button}

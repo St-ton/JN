@@ -10,11 +10,7 @@
     {if $step === 'umfrage_uebersicht'}
         {include file='poll/overview.tpl'}
     {elseif $step === 'umfrage_durchfuehren'}
-        {if $opcPageService->getCurPage()->isReplace()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-        {else}
-            {include file='poll/progress.tpl'}
-        {/if}
+        {include file='poll/progress.tpl'}
     {elseif $step === 'umfrage_ergebnis'}
         {include file='poll/result.tpl'}
     {/if}

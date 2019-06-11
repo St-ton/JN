@@ -1,29 +1,27 @@
-function Tutorial(gui, iframe)
+class Tutorial
 {
-    bindProtoOnHandlers(this);
+    constructor(gui, iframe)
+    {
+        bindProtoOnHandlers(this);
 
-    this.gui    = gui;
-    this.iframe = iframe;
-}
+        this.gui    = gui;
+        this.iframe = iframe;
+    }
 
-Tutorial.prototype = {
-
-    constructor: Tutorial,
-
-    init: function()
+    init()
     {
         installGuiElements(this, [
             'tourModal',
             'tourForm'
         ]);
-    },
+    }
 
-    start: function()
+    start()
     {
         this.tourModal.modal('show');
-    },
+    }
 
-    onTourForm: function(e)
+    onTourForm(e)
     {
         var tourId = this.tourForm.find('input[name="help-tour"]:checked').val();
 
@@ -31,17 +29,17 @@ Tutorial.prototype = {
         this['startTour_' + tourId]();
 
         e.preventDefault();
-    },
+    }
 
-    fixIframePos: function(element)
+    fixIframePos(element)
     {
         var off   = element.offset();
         var pLeft = this.gui.sidebarPanel.outerWidth();
 
         element.offset({left: off.left + pLeft});
-    },
+    }
 
-    fixBackdrop: function()
+    fixBackdrop()
     {
         var backdropTop    = $('.tour-backdrop.top');
         var backdropLeft   = $('.tour-backdrop.left');
@@ -65,9 +63,9 @@ Tutorial.prototype = {
 
         // off = backdropBottom.offset();
         // backdropBottom.offset({top: off.top + pTop});
-    },
+    }
 
-    startTour_ht1: function()
+    startTour_ht1()
     {
         var confModal = this.gui.configModal;
 
@@ -112,10 +110,10 @@ Tutorial.prototype = {
                     placement: "top",
                     title: "Portlets",
                     content: "Die grauen Bereiche auf dieser Seite zeigen dir wo du Portlets ablegen kannst.",
-                    onShown: function (tour) {
+                    onShown: tour => {
                         this.fixIframePos($('#step-4'));
                         this.fixBackdrop();
-                    }.bind(this),
+                    },
                 },
                 {
                     element: "#portlets",
@@ -129,12 +127,12 @@ Tutorial.prototype = {
                     element: this.iframe.portletToolbar,
                     placement: "right",
                     title: "Einstellungen",
-                    onShown: function (tour) {
+                    onShown: tour => {
                         this.fixIframePos($('#step-6'));
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
+                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                     content: "An diesem Portlet siehst du eine Leiste mit verschiedenen Icons. Klicke auf den Stift" +
                         " um die Einstellungen zu öffnen."
                 },
@@ -185,14 +183,14 @@ Tutorial.prototype = {
 
         // Initialize the tour
         tour.init();
-        $('.tour-tAllgemein-5-element').on('dragend', function () {
+        $('.tour-tAllgemein-5-element').on('dragend', () => {
             tour.next();
         });
         // Initialize the tour
         tour.start(true);
-    },
+    }
 
-    startTour_ht2: function()
+    startTour_ht2()
     {
         var confModal = this.gui.configModal;
 
@@ -221,11 +219,11 @@ Tutorial.prototype = {
                 {
                     title: "Animationen",
                     content: "Ziehe zunächst einen Button in deine Seite und öffne die Einstellungen.",
-                    onShown: function (tour) {
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
+                    onShown: tour => {
+                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     element: "#configModalBody .nav-tabs a[href='#Animation']",
@@ -237,110 +235,110 @@ Tutorial.prototype = {
                     title: "Animationen",
                     content: "Die Einstellung 'animation-style' enthält viele verschiedene Typen." +
                              " Bitte wähle einen Animationsstil aus und speichere die Einstellungen.",
-                    onShown: function (tour) {
-                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', function () {
+                    onShown: tour => {
+                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "Hier siehts du deine erste einfache Animation. Wenden wir uns einer etwas umfangreicheren Aufgabe zu. Lösche dazu den erstellten Button.",
-                    onShown: function (tour) {
-                        this.iframe.btnTrash.off('click.tour').on('click.tour', function () {
+                    onShown: tour => {
+                        this.iframe.btnTrash.off('click.tour').on('click.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "Erstelle nun ein Spaltenportlet (in der Sidebar unter 'LAYOUT') und öffne die Einstellungen.",
-                    onShown: function (tour) {
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
+                    onShown: tour => {
+                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "Setze das Layout auf die volle Breite (12). Im Tab 'Styles' änderst du 'margin-bottom' auf 50, wählst eine Hintergrundfarbe und wechselst zu Animationen.",
-                    onShown: function (tour) {
-                        $('#configModalBody .nav-tabs a[href="#Animation"]').off('click.tour').on('click.tour', function () {
+                    onShown: tour => {
+                        $('#configModalBody .nav-tabs a[href="#Animation"]').off('click.tour').on('click.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "Wähle 'fade-in' als Animationsstil und gibt bei 'offset' 150 ein. Nun Kannst du die Einstellungen schließen.",
-                    onShown: function (tour) {
-                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', function () {
+                    onShown: tour => {
+                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "Füge in das Spaltenportlet eine Überschrift ein und öffne auch hier die Einstellungen.",
-                    onShown: function (tour) {
-                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
+                    onShown: tour => {
+                        confModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "Im Styles-tab gibst du unter 'margin-bottom' 250 ein und speicherst die Einstellungen.",
-                    onShown: function (tour) {
-                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', function () {
+                    onShown: tour => {
+                        confModal.off('hide.bs.modal.tour').on('hide.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "Kopiere nun das Spaltenportlet ein paar mal.",
-                    onShown: function (tour) {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                    onShown: tour => {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "1x",
-                    onShown: function (tour) {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                    onShown: tour => {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "2x",
-                    onShown: function (tour) {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                    onShown: tour => {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "3x",
-                    onShown: function (tour) {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                    onShown: tour => {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
                     content: "einmal noch!",
-                    onShown: function (tour) {
-                        this.iframe.btnClone.off('click.tour').on('click.tour', function () {
+                    onShown: tour => {
+                        this.iframe.btnClone.off('click.tour').on('click.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                 },
                 {
                     title: "Animationen",
@@ -355,9 +353,9 @@ Tutorial.prototype = {
         });
         tour2.init();
         tour2.start(true);
-    },
+    }
 
-    startTour_ht3: function()
+    startTour_ht3()
     {
         var tour3 = new Tour({
             name: "tBlueprint",
@@ -376,22 +374,22 @@ Tutorial.prototype = {
                              "Drücke dann auf 'Next' um fortzufahren."
                 },
                 {
-                    onShown: function (tour) {
-                        this.gui.blueprintModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
+                    onShown: tour => {
+                        this.gui.blueprintModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                     title: "Blueprints",
                     content: "Selektiere das umschließende Spaltenportlet und klicke auf den Stern in der Toolbar um deine Auswahl als Vorlage zu speichern."
                 },
                 {
                     element: this.gui.blueprintForm,
                     backdrop: true,
-                    onShown: function (tour) {
-                        this.gui.blueprintForm.off('submit.tour').on('submit.tour', function () {
+                    onShown: tour => {
+                        this.gui.blueprintForm.off('submit.tour').on('submit.tour', () => {
                             tour.next();
                         });
-                    }.bind(this),
+                    },
                     title: "Blueprints",
                     content: "<p>Trage hier einen aussagekräftigen Namen ein. Anhand dieses Bezeichners solltest du in Zukunft den Inhalt erkennen können.</p>" +
                              "<p>Bsp.:<br/>'Produkttabelle', 'Video und Beschreibungstext' oder '3-spaltiger Text'</p>"
@@ -413,132 +411,131 @@ Tutorial.prototype = {
         });
         tour3.init();
         tour3.start(true);
-    },
+    }
 
-    startTour_ht4: function()
-       {
-           console.log(this.iframe);
-           console.log(this.gui);
+    startTour_ht4()
+    {
+        console.log(this.iframe);
+        console.log(this.gui);
 
-           var tour4 = new Tour({
-               name: "tSettings",
-               debug: true,
-               orphan: true,
-               template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>" +
-                     "<div class='popover-content'></div><div class='popover-navigation'>" +
-                     "<button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span>" +
-                     "<button class='btn btn-default' data-role='next'>Next »</button>" +
-                     "<button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button>" +
-                     "</div></div>",
-               steps: [
-                   {
-                       title: "Settings",
-                       onShown: function (tour) {
-                           this.gui.configModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       content: "Du möchtest auf unterschiedlichen Endgeräten das Design abwandeln?<br/>" +
-                                "Hier erfährst du wie du über die Portleteinstellungen Einfluss auf das Aussehen nehmen kannst.<br/>" +
-                                "Beginne damit ein neues Spaltenportlet in die Seite zu ziehen und die Einstellungen zu öffnen."
+        var tour4 = new Tour({
+           name: "tSettings",
+           debug: true,
+           orphan: true,
+           template: "<div class='popover tour'><div class='arrow'></div><h3 class='popover-title'></h3>" +
+                 "<div class='popover-content'></div><div class='popover-navigation'>" +
+                 "<button class='btn btn-default' data-role='prev'>« Prev</button><span data-role='separator'>|</span>" +
+                 "<button class='btn btn-default' data-role='next'>Next »</button>" +
+                 "<button class='btn btn-primary' data-role='end' style='margin-left: 15px;'>End tour</button>" +
+                 "</div></div>",
+           steps: [
+               {
+                   title: "Settings",
+                   onShown: tour => {
+                       this.gui.configModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       onShown: function (tour) {
-                           $('#Allgemein a[href="#collapseContainerlayout-xs"]').off('click.tour').on('click.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       title: "Blueprints",
-                       content: "<p>Die Einstellung 'Layout XS' definiert die Aufteilung der Spalten für z.B. Smartphones. " +
-                                "Soll dieses Layout für alle Gerätegrößen verwendet werden, so sind keine weiteren Änderungen notwendig. " +
-                                "Die definierte Aufteilung wird für alle Größen übernommen sofern keine weiteren Einstellungen vorgenommen werden.</p>" +
-                                "<p>Schauen wir uns diese ominösen 'weiteren Einstellungen' einmal an. Klicke dazu auf die Zahnräder an der Einstellung 'Layout XS'. </p>"
+                   content: "Du möchtest auf unterschiedlichen Endgeräten das Design abwandeln?<br/>" +
+                            "Hier erfährst du wie du über die Portleteinstellungen Einfluss auf das Aussehen nehmen kannst.<br/>" +
+                            "Beginne damit ein neues Spaltenportlet in die Seite zu ziehen und die Einstellungen zu öffnen."
+               },
+               {
+                   onShown: tour => {
+                       $('#Allgemein a[href="#collapseContainerlayout-xs"]').off('click.tour').on('click.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       onShown: function (tour) {
-                           this.gui.configForm.off('submit.tour').on('submit.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       title: "Settings",
-                       content: "<p>Hier siehst du die Spaltendefinitionen für weitere Größen. Die Einstellungen basieren auf dem Bootstrap-grid. " +
-                                "Stell dir einfach vor, dass die Gesamtbreite 12 Spalten entspricht. Diese kannst du frei einteilen:</p>" +
-                                "<p>Bsp.:<br/>" +
-                                "'4+4+4', erzeugt drei gleichbreite Spalten<br/>" +
-                                "8+4, erzeugt eine Breite und eine schmale Spalte</p>" +
-                                "<p>Gib nun für das Smartphone den Wert '6+6+12+6+6' ein und speichere die Einstellungen.</p>"
+                   title: "Blueprints",
+                   content: "<p>Die Einstellung 'Layout XS' definiert die Aufteilung der Spalten für z.B. Smartphones. " +
+                            "Soll dieses Layout für alle Gerätegrößen verwendet werden, so sind keine weiteren Änderungen notwendig. " +
+                            "Die definierte Aufteilung wird für alle Größen übernommen sofern keine weiteren Einstellungen vorgenommen werden.</p>" +
+                            "<p>Schauen wir uns diese ominösen 'weiteren Einstellungen' einmal an. Klicke dazu auf die Zahnräder an der Einstellung 'Layout XS'. </p>"
+               },
+               {
+                   onShown: tour => {
+                       this.gui.configForm.off('submit.tour').on('submit.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       title: "Settings",
-                       onShown: function (tour) {
-                           this.gui.configModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       content: "<p>Du wunderst dich vielleicht warum wir soviele Werte eingetragen haben.<br/>" +
-                                "Immer wenn wir in der Summe auf oder über 12 kommen wird eine neue Zeile erstellt. Du solltest fünf Bereiche innerhalb des Portlets sehen." +
-                                "Wir haben noch mehr mit diesen Spalten vor. " +
-                                "Öffne dazu wieder die Einstellungen.</p>"
+                   title: "Settings",
+                   content: "<p>Hier siehst du die Spaltendefinitionen für weitere Größen. Die Einstellungen basieren auf dem Bootstrap-grid. " +
+                            "Stell dir einfach vor, dass die Gesamtbreite 12 Spalten entspricht. Diese kannst du frei einteilen:</p>" +
+                            "<p>Bsp.:<br/>" +
+                            "'4+4+4', erzeugt drei gleichbreite Spalten<br/>" +
+                            "8+4, erzeugt eine Breite und eine schmale Spalte</p>" +
+                            "<p>Gib nun für das Smartphone den Wert '6+6+12+6+6' ein und speichere die Einstellungen.</p>"
+               },
+               {
+                   title: "Settings",
+                   onShown: tour => {
+                       this.gui.configModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       onShown: function (tour) {
-                           this.gui.configForm.off('submit.tour').on('submit.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       title: "Settings",
-                       content: "<p>Klappe bitte wieder die Einstellungen für alle Gerätegrößen aus.</p>" +
-                                "Auf größeren Displays erscheint uns diese Aufteilung vielleicht eher ungeeignet.<br/>" +
-                                "Trage in 'Layout M' bitte '3+3+6+4+8' ein.</p>" +
-                                "<p>Wir verschieben also die ersten drei Spalten in eine Zeile und teilen die letzten Beiden etwas anders auf.<br/>" +
-                                "Wieder gilt, dass die Einstellung für alle größeren Displays gelten (in dem Fall für 'Layout L'), auch wenn dort nichts definiert wurde.</p>" +
-                                "<p>Kleiner Hinweis: Es empfiehlt sich immer die gleiche Anzahl an Spalten in jedes Einstellungsfeld einzutragen.</p>" +
-                                "<p>Speichere die Einstellungen.</p>"
+                   content: "<p>Du wunderst dich vielleicht warum wir soviele Werte eingetragen haben.<br/>" +
+                            "Immer wenn wir in der Summe auf oder über 12 kommen wird eine neue Zeile erstellt. Du solltest fünf Bereiche innerhalb des Portlets sehen." +
+                            "Wir haben noch mehr mit diesen Spalten vor. " +
+                            "Öffne dazu wieder die Einstellungen.</p>"
+               },
+               {
+                   onShown: tour => {
+                       this.gui.configForm.off('submit.tour').on('submit.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       element: '#displayPreviews',
-                       backdrop: true,
-                       title: "Settings",
-                       content: "<p>Die Spaltenaufteilung passt sich nun den Gerätegrößen an. " +
-                                "Du kannst über die Vorschau die unterschiedlichen Displaybreiten simulieren um deine Einstellungen zu überprüfen.</p>" +
-                                "<p>Wenn du bereit bist klicke auf 'Next'.</p>",
+                   title: "Settings",
+                   content: "<p>Klappe bitte wieder die Einstellungen für alle Gerätegrößen aus.</p>" +
+                            "Auf größeren Displays erscheint uns diese Aufteilung vielleicht eher ungeeignet.<br/>" +
+                            "Trage in 'Layout M' bitte '3+3+6+4+8' ein.</p>" +
+                            "<p>Wir verschieben also die ersten drei Spalten in eine Zeile und teilen die letzten Beiden etwas anders auf.<br/>" +
+                            "Wieder gilt, dass die Einstellung für alle größeren Displays gelten (in dem Fall für 'Layout L'), auch wenn dort nichts definiert wurde.</p>" +
+                            "<p>Kleiner Hinweis: Es empfiehlt sich immer die gleiche Anzahl an Spalten in jedes Einstellungsfeld einzutragen.</p>" +
+                            "<p>Speichere die Einstellungen.</p>"
+               },
+               {
+                   element: '#displayPreviews',
+                   backdrop: true,
+                   title: "Settings",
+                   content: "<p>Die Spaltenaufteilung passt sich nun den Gerätegrößen an. " +
+                            "Du kannst über die Vorschau die unterschiedlichen Displaybreiten simulieren um deine Einstellungen zu überprüfen.</p>" +
+                            "<p>Wenn du bereit bist klicke auf 'Next'.</p>",
+               },
+               {
+                   onShown: tour => {
+                       this.gui.configModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       onShown: function (tour) {
-                           this.gui.configModal.off('shown.bs.modal.tour').on('shown.bs.modal.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       content: "<p>Ziehe nun eine Überschrift in die Seite und öffne die Einstellungen.</p>",
+                   content: "<p>Ziehe nun eine Überschrift in die Seite und öffne die Einstellungen.</p>",
+               },
+               {
+                   title: "Settings",
+                   onShown: tour => {
+                       $('#configModalBody .nav-tabs a[href="#Styles"]').off('click.tour').on('click.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       title: "Settings",
-                       onShown: function (tour) {
-                           $('#configModalBody .nav-tabs a[href="#Styles"]').off('click.tour').on('click.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       content: "<p>Wechsel in den Reiter 'Styles'.</p>",
+                   content: "<p>Wechsel in den Reiter 'Styles'.</p>",
+               },
+               {
+                   title: "Settings",
+                   onShown: tour => {
+                       this.gui.configForm.off('submit.tour').on('submit.tour', () => {
+                           tour.next();
+                       });
                    },
-                   {
-                       title: "Settings",
-                       onShown: function (tour) {
-                           this.gui.configForm.off('submit.tour').on('submit.tour', function () {
-                               tour.next();
-                           });
-                       }.bind(this),
-                       content: "<p>Hier hast du die Möglichkeit das gesamte Portlet für bestimmte Displaygrößen auszublenden. " +
-                                "Schalte die Sichtbarkeit des Portlets für Tablets aus und speichere.</p>",
-                   },
-                   {
-                       title: "Settings",
-                       content: "<p>Du kannst nun wieder über die Vorschau deine Einstellungen prüfen. </p>" +
-                                "<p>Damit hast du das Tutorial 'Einstellungen' abgeschlossen. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!</p>"
-                   },
-               ]
-           });
-           tour4.init();
-           tour4.start(true);
-       },
-
-};
+                   content: "<p>Hier hast du die Möglichkeit das gesamte Portlet für bestimmte Displaygrößen auszublenden. " +
+                            "Schalte die Sichtbarkeit des Portlets für Tablets aus und speichere.</p>",
+               },
+               {
+                   title: "Settings",
+                   content: "<p>Du kannst nun wieder über die Vorschau deine Einstellungen prüfen. </p>" +
+                            "<p>Damit hast du das Tutorial 'Einstellungen' abgeschlossen. Wir wünschen dir weiterhin viel Spaß mit dem OnPage Composer!</p>"
+               },
+           ]
+        });
+        tour4.init();
+        tour4.start(true);
+    }
+}

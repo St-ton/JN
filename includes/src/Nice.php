@@ -143,43 +143,45 @@ class Nice
      */
     public function gibAlleMoeglichenModule(): array
     {
+        Shop::Container()->getGetText()->loadAdminLocale('widgets');
+
         $modules = [];
         if (!\defined(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $this->initConstants();
         }
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_UMFRAGE;
-        $module->cName    = 'Umfragen Modul';
+        $module->cName    = __('moduleSurvey');
         $module->cDefine  = 'SHOP_ERWEITERUNG_UMFRAGE';
         $module->cURL     = 'https://jtl-url.de/ykepb';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_AUSWAHLASSISTENT;
-        $module->cName    = 'Auswahlassistent Modul';
+        $module->cName    = __('moduleSelectionWizard');
         $module->cDefine  = 'SHOP_ERWEITERUNG_AUSWAHLASSISTENT';
         $module->cURL     = 'https://jtl-url.de/q6tox';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_UPLOADS;
-        $module->cName    = 'Upload Modul';
+        $module->cName    = __('moduleUpload');
         $module->cDefine  = 'SHOP_ERWEITERUNG_UPLOADS';
         $module->cURL     = 'https://jtl-url.de/7-cop';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_DOWNLOADS;
-        $module->cName    = 'Download Modul';
+        $module->cName    = __('moduleDownload');
         $module->cDefine  = 'SHOP_ERWEITERUNG_DOWNLOADS';
         $module->cURL     = 'https://jtl-url.de/i0zvj';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_KONFIGURATOR;
-        $module->cName    = 'Konfigurator Modul';
+        $module->cName    = __('moduleConfigurator');
         $module->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
         $module->cURL     = 'https://jtl-url.de/ni9f5';
         $modules[]        = $module;
         $module           = new stdClass();
         $module->kModulId = \SHOP_ERWEITERUNG_BRANDFREE;
-        $module->cName    = 'Brandfree Option';
+        $module->cName    = __('moduleBrandFree');
         $module->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
         $module->cURL     = 'https://jtl-url.de/t4egb';
         $modules[]        = $module;

@@ -197,31 +197,32 @@ class Helper
     public static function licenseCheck(PluginInterface $plugin, array $params = []): bool
     {
         $license = $plugin->getLicense();
-        if ($license->hasLicenseCheck()) {
-            require_once $plugin->getPaths()->getLicencePath() . $license->getClassName();
-            $class    = $license->getClass();
-            $instance = new $class();
-            $method   = \PLUGIN_LICENCE_METHODE;
+        if (!$license->hasLicenseCheck()) {
+            return true;
+        }
+        require_once $plugin->getPaths()->getLicencePath() . $license->getClassName();
+        $class    = $license->getClass();
+        $instance = new $class();
+        $method   = \PLUGIN_LICENCE_METHODE;
 
-            if (!$instance->$method($license->getKey())) {
-                $upd          = new stdClass();
-                $upd->nStatus = State::LICENSE_KEY_INVALID;
-                $upd->cFehler = 'Lizenzschlüssel ist ungültig';
-                Shop::Container()->getDB()->update('tplugin', 'kPlugin', $plugin->getID(), $upd);
-                Shop::Container()->getLogService()->withName('kPlugin')->error(
-                    'Plugin Lizenzprüfung: Das Plugin "' . $plugin->getMeta()->getName() .
-                    '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
-                    [$plugin->getID()]
-                );
-                if (isset($params['cModulId']) && \mb_strlen($params['cModulId']) > 0) {
-                    self::updatePaymentMethodState($plugin, 0);
-                }
-                Shop::Container()->getCache()->flush('hook_list');
-                self::$hookList = null;
-                Shop::set('oplugin_' . $plugin->getID(), null);
-
-                return false;
+        if (!$instance->$method($license->getKey())) {
+            $upd          = new stdClass();
+            $upd->nStatus = State::LICENSE_KEY_INVALID;
+            $upd->cFehler = 'Lizenzschlüssel ist ungültig';
+            Shop::Container()->getDB()->update('tplugin', 'kPlugin', $plugin->getID(), $upd);
+            Shop::Container()->getLogService()->withName('kPlugin')->error(
+                'Plugin Lizenzprüfung: Das Plugin "' . $plugin->getMeta()->getName() .
+                '" hat keinen gültigen Lizenzschlüssel und wurde daher deaktiviert!',
+                [$plugin->getID()]
+            );
+            if (isset($params['cModulId']) && \mb_strlen($params['cModulId']) > 0) {
+                self::updatePaymentMethodState($plugin, 0);
             }
+            Shop::Container()->getCache()->flush('hook_list');
+            self::$hookList = null;
+            Shop::set('oplugin_' . $plugin->getID(), null);
+
+            return false;
         }
 
         return true;
@@ -247,7 +248,7 @@ class Helper
      */
     public static function updatePaymentMethodState($plugin, int $state): void
     {
-        foreach (\array_keys($plugin->oPluginZahlungsmethodeAssoc_arr) as $moduleID) {
+        foreach (\array_keys($plugin->getPaymentMethods()->getMethodsAssoc()) as $moduleID) {
             Shop::Container()->getDB()->update(
                 'tzahlungsart',
                 'cModulId',
@@ -380,7 +381,9 @@ class Helper
         }
         $new = [];
         foreach ($langVars as $lv) {
-            if (!isset($new[$lv['kPluginSprachvariable']])) {
+            if (isset($new[$lv['kPluginSprachvariable']])) {
+                $new[$lv['kPluginSprachvariable']]->oPluginSprachvariableSprache_arr[$lv['cISO']] = $lv['customValue'];
+            } else {
                 $var                                   = new stdClass();
                 $var->kPluginSprachvariable            = (int)$lv['kPluginSprachvariable'];
                 $var->kPlugin                          = (int)$lv['kPlugin'];
@@ -388,8 +391,6 @@ class Helper
                 $var->cBeschreibung                    = $lv['cBeschreibung'];
                 $var->oPluginSprachvariableSprache_arr = [$lv['cISO'] => $lv['customValue']];
                 $new[$lv['kPluginSprachvariable']]     = $var;
-            } else {
-                $new[$lv['kPluginSprachvariable']]->oPluginSprachvariableSprache_arr[$lv['cISO']] = $lv['customValue'];
             }
         }
 
@@ -452,7 +453,7 @@ class Helper
                 return null;
             }
             $bootstrapper = new $class($plugin, $loader->getDB(), $loader->getCache());
-            if (!\is_subclass_of($bootstrapper, Bootstrapper::class)) {
+            if (!$bootstrapper instanceof BootstrapperInterface) {
                 return null;
             }
             self::$bootstrapper[$id] = $bootstrapper;

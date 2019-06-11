@@ -17,14 +17,25 @@
                     {assign var=alt value=$Artikel->cName}
                 {/if}
 
-                {block name='productlist-item-box-include-searchspecials'}
-                    {if isset($Artikel->oSuchspecialBild)}
-                        {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
-                    {/if}
-                {/block}
-
-                {block name='productlist-item-box-include-image'}
+                {*{block name='productlist-item-box-include-image'}
                     {include file='snippets/image.tpl' src=$Artikel->Bilder[0]->cURLNormal alt=$alt}
+                {/block}*}
+                {block name='productlist-item-box-image'}
+                    {counter assign=imgcounter print=0}
+                    <div class="image-box">
+                        {block name='productlist-item-box-include-searchspecials'}
+                            {if isset($Artikel->oSuchspecialBild)}
+                                {include file='snippets/ribbon.tpl'}
+                                {*{include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}*}
+                            {/if}
+                        {/block}
+                        <div class="image-content">
+                            {image alt=$alt fluid=true lazy=true src="{$imageBaseURL}gfx/trans.png" data=["src" => $Artikel->Bilder[0]->cURLNormal, "id" => $imgcounter]}
+                            {if !empty($Artikel->Bilder[0]->cURLNormal)}
+                                <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
+                            {/if}
+                        </div>
+                    </div>
                 {/block}
 
                 {if $smarty.session.Kundengruppe->mayViewPrices()
@@ -143,7 +154,7 @@
                                                 class="quantity text-right"
                                                 name="anzahl"
                                                 autocomplete="off"
-                                                data=["decimals"=>"{if $Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                                data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                                 value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                         {/if}
                                         {button type="submit" variant="primary" id="submit{$Artikel->kArtikel}"

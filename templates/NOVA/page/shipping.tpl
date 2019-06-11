@@ -4,7 +4,7 @@
  *}
 {block name='page-shipping'}
     {if isset($Einstellungen.global.global_versandermittlung_anzeigen) && $Einstellungen.global.global_versandermittlung_anzeigen === 'Y'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_shipping_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_shipping'}
         {if isset($smarty.session.Warenkorb->PositionenArr) && $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='page-shipping-form'}
                 {form method="post"
@@ -21,6 +21,5 @@
                 {lang key='estimateShippingCostsNote' section='global'}
             {/block}
         {/if}
-        {include file='snippets/opc_mount_point.tpl' id='opc_shipping_append'}
     {/if}
 {/block}

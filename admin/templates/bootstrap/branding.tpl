@@ -14,7 +14,7 @@
                 <span class="input-group-wrap">
                     <select name="kBranding" class="form-control selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
                         {foreach $oBranding_arr as $oBrandingTMP}
-                            <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{$oBrandingTMP->cBildKategorie}</option>
+                            <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{__($oBrandingTMP->cBildKategorie)}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -31,7 +31,7 @@
                 <input type="hidden" name="speicher_einstellung" value="1" />
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Branding für {$oBranding->cBildKategorie} bearbeiten</h3>
+                        <h3 class="panel-title">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</h3>
                     </div>
                     <div class="panel-body">
                         {if $oBranding->cBrandingBild|strlen > 0}

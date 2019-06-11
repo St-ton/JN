@@ -20,45 +20,45 @@ class PageTypeToPageNiceName
     {
         switch ($type) {
             case \PAGE_STARTSEITE:
-                return __('pageHome');
+                return __('Startseite');
             case \PAGE_VERSAND:
-                return __('pageShipping');
+                return __('Informationen zum Versand');
             case \PAGE_WRB:
-                return __('pageWRB');
+                return __('WRB');
             case \PAGE_AGB:
-                return __('pageAGB');
+                return __('AGB');
             case \PAGE_LIVESUCHE:
-                return __('pageLiveSearch');
+                return __('Livesuche');
             case \PAGE_DATENSCHUTZ:
-                return __('pageDataProtection');
+                return __('Datenschutz');
             case \PAGE_HERSTELLER:
-                return __('pageManufacturer');
+                return __('Hersteller Übersicht');
             case \PAGE_SITEMAP:
-                return __('pageSitemap');
+                return __('Sitemap');
             case \PAGE_GRATISGESCHENK:
-                return __('pageGifts');
+                return __('Gratis Geschenk');
             case \PAGE_AUSWAHLASSISTENT:
-                return __('pageSelectionAssitant');
+                return __('Auswahlassistent');
             case \PAGE_EIGENE:
                 return __('pageCustom');
             case \PAGE_MEINKONTO:
                 return __('pageAccount');
             case \PAGE_LOGIN:
-                return __('pageLogin');
+                return __('Login');
             case \PAGE_REGISTRIERUNG:
-                return __('pageRegister');
+                return __('Registrieren');
             case \PAGE_WARENKORB:
-                return __('pageCart');
+                return __('Warenkorb');
             case \PAGE_PASSWORTVERGESSEN:
-                return __('pageForgotPassword');
+                return __('Passwort vergessen');
             case \PAGE_KONTAKT:
-                return __('pageContact');
+                return __('Kontakt');
             case \PAGE_NEWSLETTER:
-                return __('pageNewsletter');
+                return __('Newsletter');
             case \PAGE_NEWSLETTERARCHIV:
-                return __('pageNewsletterArchive');
+                return __('Newsletterarchiv');
             case \PAGE_NEWS:
-                return __('pageNews');
+                return __('News');
             case \PAGE_NEWSMONAT:
                 return __('pageNewsMonth');
             case \PAGE_NEWSKATEGORIE:
@@ -66,19 +66,19 @@ class PageTypeToPageNiceName
             case \PAGE_NEWSDETAIL:
                 return __('pageNewsDetail');
             case \PAGE_UMFRAGE:
-                return __('pagePoll');
+                return __('Umfrage');
             case \PAGE_PLUGIN:
                 return __('pagePlugin');
             case \PAGE_404:
-                return __('page404');
+                return __('404');
             case \PAGE_BESTELLVORGANG:
-                return __('pageOrderProcess');
+                return __('Bestellvorgang');
             case \PAGE_BESTELLABSCHLUSS:
-                return __('pageOrderFinalize');
+                return __('Bestellabschluss');
             case \PAGE_WUNSCHLISTE:
-                return __('pageWishList');
+                return __('Wunschliste');
             case \PAGE_VERGLEICHSLISTE:
-                return __('pageCompareList');
+                return __('Vergleichsliste');
             case \PAGE_ARTIKEL:
                 return __('pageProduct');
             case \PAGE_ARTIKELLISTE:

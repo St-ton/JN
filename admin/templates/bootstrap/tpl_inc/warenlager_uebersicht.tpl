@@ -27,7 +27,7 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="checkext">{__('watenlagerActive')}</th>
+                            <th class="checkext">{__('warenlagerActive')}</th>
                             <th>{__('warenlagerIntern')}</th>
                             <th>{__('description')}</th>
                             <th>{__('options')}</th>

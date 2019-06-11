@@ -11,6 +11,7 @@
 
     {block name='comparelist-index-content'}
         {block name='comparelist-index-heading'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
             <h1>{lang key='compare' section='global'}</h1>
         {/block}
         {block name='comparelist-index-include-extension'}
@@ -20,6 +21,7 @@
 
         {if $oVergleichsliste->oArtikel_arr|@count > 0}
             {block name='comparelist-index-filter'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_filter'}
                 <div id="filter-checkboxes" class="mb-3">
                     {row}
                         {col}
@@ -75,6 +77,7 @@
                 </div>
             {/block}
             {block name='comparelist-index-products'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_compare_list'}
                 <div class="comparelist table-responsive">
                     <table class="table table-bordered table-sm">
                         <thead>
@@ -129,12 +132,14 @@
                                                     {block name='comparelist-index-form-quantity'}
                                                         {formgroup class="quantity-wrapper"}
                                                         {inputgroup class="quantity-wrapper px-3"}
-                                                        {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
+                                                        {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                        min="0"
                                                         step="{if $oArtikel->fAbnahmeintervall > 0}{$oArtikel->fAbnahmeintervall}{/if}"
                                                         id="quantity{$oArtikel->kArtikel}"
                                                         class="quantity text-right"
                                                         name="anzahl"
                                                         autocomplete="off"
+                                                        data=["decimals"=>{getDecimalLength quantity=$oArtikel->fAbnahmeintervall}]
                                                         value="{if $oArtikel->fAbnahmeintervall > 0}{if $oArtikel->fMindestbestellmenge > $oArtikel->fAbnahmeintervall}{$oArtikel->fMindestbestellmenge}{else}{$oArtikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                                         {block name='comparelist-index-form-submit'}
                                                             {inputgroupaddon}

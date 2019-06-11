@@ -8,6 +8,7 @@ namespace JTL\Cart;
 
 use function Functional\select;
 use function Functional\some;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
 use JTL\Checkout\Eigenschaft;
@@ -22,6 +23,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Checkout\Kupon;
 use JTL\Catalog\Product\Preise;
+use JTL\Services\JTL\AlertService;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Checkout\Versandart;
@@ -816,9 +818,11 @@ class Warenkorb
      * gibt Gesamtanzahl Artikel des Warenkorbs zurueck
      *
      * @param int[] $posTypes
+     * @param string $iso
+     * @param bool $excludeShippingCostAttributes
      * @return int|float
      */
-    public function gibAnzahlArtikelExt($posTypes)
+    public function gibAnzahlArtikelExt(array $posTypes, bool $excludeShippingCostAttributes = false, string $iso = '')
     {
         if (!\is_array($posTypes)) {
             return 0;
@@ -827,6 +831,7 @@ class Warenkorb
         foreach ($this->PositionenArr as $Position) {
             if (\in_array($Position->nPosTyp, $posTypes)
                 && (empty($Position->cUnique) || (\mb_strlen($Position->cUnique) > 0 && $Position->kKonfigitem == 0))
+                && $Position->isUsedForShippingCostCalculation($iso, $excludeShippingCostAttributes)
             ) {
                 $anz += $Position->nAnzahl;
             }
@@ -956,6 +961,20 @@ class Warenkorb
                     $updatedPosition->cGesamtpreisLocalizedOld = $_oldPosition->cGesamtpreisLocalized;
                     $updatedPosition->istKonfigVater           = $pos->istKonfigVater();
                     self::addUpdatedPosition($updatedPosition);
+                    Shop::Container()->getAlertService()->addAlert(
+                        Alert::TYPE_WARNING,
+                        sprintf(
+                            Shop::Lang()->get('priceHasChanged', 'checkout'),
+                            \is_array($pos->cName) ? $pos->cName[Shop::getLanguageCode()] : $pos->cName
+                        ),
+                        'priceHasChanged_' . $pos->kArtikel,
+                        [
+                            'saveInSession' => true,
+                            'dismissable'   => false,
+                            'linkHref'      => Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php'),
+                            'linkText'      => Shop::Lang()->get('gotoBasket'),
+                        ]
+                    );
                 }
                 unset($pos->cHinweis);
                 if (isset($_SESSION['Kupon']->kKupon)
@@ -1141,16 +1160,24 @@ class Warenkorb
      * Gibt gesamte Warenkorbsumme eines positionstyps zurueck.
      * @param array $posTypes
      * @param bool  $gross
+     * @param string $iso
+     * @param bool $excludeShippingCostAttributes
      * @return float|int
      */
-    public function gibGesamtsummeWarenExt(array $posTypes, bool $gross = false)
-    {
+    public function gibGesamtsummeWarenExt(
+        array $posTypes,
+        bool $gross = false,
+        bool $excludeShippingCostAttributes = false,
+        string $iso = ''
+    ) {
         if (!\is_array($posTypes)) {
             return 0;
         }
         $total = 0;
         foreach ($this->PositionenArr as $pos) {
-            if (\in_array($pos->nPosTyp, $posTypes, true)) {
+            if (\in_array($pos->nPosTyp, $posTypes, true)
+                && $pos->isUsedForShippingCostCalculation($iso, $excludeShippingCostAttributes)
+            ) {
                 if ($gross) {
                     $total += $pos->fPreis * $pos->nAnzahl *
                         ((100 + Tax::getSalesTax($pos->kSteuerklasse)) / 100);
@@ -1533,13 +1560,17 @@ class Warenkorb
     }
 
     /**
+     * @param string $iso
+     * @param bool $excludeShippingCostAttributes
      * @return int|float
      */
-    public function getWeight()
+    public function getWeight(bool $excludeShippingCostAttributes = false, string $iso = '')
     {
         $weight = 0;
         foreach ($this->PositionenArr as $pos) {
-            $weight += $pos->fGesamtgewicht;
+            if ($pos->isUsedForShippingCostCalculation($iso, $excludeShippingCostAttributes)) {
+                $weight += $pos->fGesamtgewicht;
+            }
         }
 
         return $weight;

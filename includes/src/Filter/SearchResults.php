@@ -6,11 +6,11 @@
 
 namespace JTL\Filter;
 
+use Illuminate\Support\Collection;
 use JTL\Boxes\Items\AbstractBox;
 use JTL\Filter\Pagination\Info;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
-use Illuminate\Support\Collection;
 use function Functional\every;
 use function Functional\filter;
 use function Functional\invoke;

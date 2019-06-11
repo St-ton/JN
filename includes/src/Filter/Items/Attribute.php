@@ -6,6 +6,7 @@
 
 namespace JTL\Filter\Items;
 
+use JTL\Catalog\Category\Kategorie;
 use JTL\DB\ReturnType;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
@@ -15,7 +16,6 @@ use JTL\Filter\States\BaseAttribute;
 use JTL\Filter\StateSQL;
 use JTL\Filter\StateSQLInterface;
 use JTL\Filter\Type;
-use JTL\Catalog\Category\Kategorie;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 use JTL\Sprache;

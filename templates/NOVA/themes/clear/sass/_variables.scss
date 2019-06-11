@@ -73,6 +73,7 @@ $link-hover-color:                  $link-color;
 $link-hover-decoration:             none;
 
 $breadcrumb-divider:                "\f054";
+$breadcrumb-divider-back:           "\f053";
 $breadcrumb-active-color:           $gray-dark;
 
 $border-radius:                     .125rem !default;
@@ -147,4 +148,22 @@ $pagination-disabled-bg:            transparent;
 $breadcrumb-bg:                     transparent;
 $breadcrumb-divider-color:          $gray-dark;
 $breadcrumb-active-color:           $gray-dark;
-$breadcrumb-divider:                url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSI2cHgiIGhlaWdodD0iMTBweCIgdmlld0JveD0iMCAwIDYgMTAiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+ICAgICAgICA8dGl0bGU+74SFPC90aXRsZT4gICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+ICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiAgICAgICAgPHBhdGggZD0iTTUuODcxMDc5NzUsNS41MzEyNjU0MiBMMS43MjI2NTIxNCw5LjYwOTM4MDcgQzEuNjUyMzM5ODEsOS43MDMxMzA2NSAxLjU1ODU4OTg2LDkuNzUwMDA1MzYgMS40NDE0MDI4MSw5Ljc1MDAwNTM2IEMxLjMyNDIxNTc3LDkuNzUwMDA1MzYgMS4yMTg3NDcyNyw5LjcwMzEzMDY1IDEuMTI0OTk3MzIsOS42MDkzODA3IEwwLjg3ODkwNDE1NSw5LjM2MzI4NzU0IEMwLjc4NTE1NDE5OSw5LjI5Mjk3NTIgMC43MzgyNzk0OSw5LjE5OTIyNTI1IDAuNzM4Mjc5NDksOS4wODIwMzgyMSBDMC43MzgyNzk0OSw4Ljk2NDg1MTE3IDAuNzg1MTU0MTk5LDguODU5MzgyNjcgMC44Nzg5MDQxNTUsOC43NjU2MzI3MSBMNC40NjQ4MzMxLDUuMjUwMDE2MDkgTDAuODc4OTA0MTU1LDEuNzM0Mzk5NDggQzAuODA4NTkxODIyLDEuNjQwNjQ5NTIgMC43NzM0MzU2NTYsMS41MzUxODEwMiAwLjc3MzQzNTY1NiwxLjQxNzk5Mzk4IEMwLjc3MzQzNTY1NiwxLjMwMDgwNjk0IDAuODA4NTkxODIyLDEuMjA3MDU2OTggMC44Nzg5MDQxNTUsMS4xMzY3NDQ2NSBMMS4xMjQ5OTczMiwwLjg1NTQ5NTMyMSBDMS4yMTg3NDcyNywwLjc4NTE4Mjk4OCAxLjMyNDIxNTc3LDAuNzUwMDI2ODIyIDEuNDQxNDAyODEsMC43NTAwMjY4MjIgQzEuNTU4NTg5ODYsMC43NTAwMjY4MjIgMS42NTIzMzk4MSwwLjc4NTE4Mjk4OCAxLjcyMjY1MjE0LDAuODU1NDk1MzIxIEw1Ljg3MTA3OTc1LDQuOTMzNjEwNiBDNS45NDEzOTIwOCw1LjAyNzM2MDU1IDUuOTc2NTQ4MjUsNS4xMzI4MjkwNSA1Ljk3NjU0ODI1LDUuMjUwMDE2MDkgQzUuOTc2NTQ4MjUsNS4zNjcyMDMxNCA1Ljk0MTM5MjA4LDUuNDcyNjcxNjMgNS44NzEwNzk3NSw1LjU2NjQyMTU5IEw1Ljg3MTA3OTc1LDUuNTMxMjY1NDIgWiIgaWQ9Iu+EhSIgZmlsbD0iIzUyNTI1MiI+PC9wYXRoPiAgICA8L2c+PC9zdmc+);
+
+//BESTSELLER, 1
+$ribbon-bg-1:                       #eeb728;
+//SPECIALOFFERS, 2
+$ribbon-bg-2:                       #4bc223;
+//NEWPRODUCTS, 3
+$ribbon-bg-3:                       #525252;
+//TOPOFFERS, 4
+$ribbon-bg-4:                       #c3ebe6;
+//UPCOMINGPRODUCTS, 5
+$ribbon-bg-5:                       #b9056f;
+//TOPREVIEWS, 6
+$ribbon-bg-6:                       #ebebeb;
+//OUTOFSTOCK, 7
+$ribbon-bg-7:                       #b9080e;
+//ONSTOCK, 8
+$ribbon-bg-8:                       #11926b;
+//PREORDER, 9
+$ribbon-bg-9:                       #f78e26;

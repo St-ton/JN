@@ -160,9 +160,11 @@ $transition: 0.5s;
 
       ::placeholder {
         color: #BDBDBD;
+        font-family: "Font Awesome 5 Free", sans-serif;
+        font-weight: 600;
       }
 
-      .opc-filter-search {
+      #opc-filter-search {
         width: 191px;
         margin-right: 16px;
       }

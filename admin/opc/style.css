@@ -132,8 +132,10 @@
 }
 #opc #opc-sidebar #opc-sidebar-tools ::placeholder {
   color: #BDBDBD;
+  font-family: "Font Awesome 5 Free", sans-serif;
+  font-weight: 600;
 }
-#opc #opc-sidebar #opc-sidebar-tools .opc-filter-search {
+#opc #opc-sidebar #opc-sidebar-tools #opc-filter-search {
   width: 191px;
   margin-right: 16px;
 }

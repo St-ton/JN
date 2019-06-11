@@ -114,10 +114,7 @@
     {/block}
 
     {if !$bExclusive}
-        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-            {include file='../../../admin/opc/startmenu.tpl'}
-            <div id="opc-page-wrapper">
-        {/if}
+        {include file=$opcDir|cat:'startmenu.tpl'}
 
         {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
             {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}

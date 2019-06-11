@@ -308,9 +308,7 @@
     {/block}
 
     {if !$bExclusive}
-        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-            </div>{* .opc-page-wrapper *}
-        {/if}
+        {include file=$opcDir|cat:'footer.tpl'}
     {/if}
     </body>
     </html>

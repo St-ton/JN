@@ -1735,6 +1735,7 @@ class Artikel
         $db                     = Shop::Container()->getDB();
         $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
+        $this->mediaTypes       = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN])) {
             if ($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab') {
@@ -1803,12 +1804,9 @@ class Artikel
             if ($mediaFile->nMedienTyp === 4) {
                 $this->buildYoutubeEmbed($mediaFile);
             }
-        }
-        $this->mediaTypes = [];
-        foreach ($this->oMedienDatei_arr as $mediaFileTMP) {
-            $mediaTypeName = \mb_strlen($mediaFileTMP->cAttributTab) > 0
-                ? $mediaFileTMP->cAttributTab
-                : $mediaFileTMP->cMedienTyp;
+            $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
+                ? $mediaFile->cAttributTab
+                : $mediaFile->cMedienTyp;
             // group all tab names by corresponding seo tab name, use first found tab name
             $mediaTypeNameSeo = $this->getSeoString($mediaTypeName);
             if (isset($this->mediaTypes[$mediaTypeNameSeo])) {
@@ -1829,7 +1827,9 @@ class Artikel
      */
     public function getMediaTypeArr(): array
     {
-        return array_keys($this->getMediaTypes());
+        return map($this->getMediaTypes(), function ($mediaType) {
+            return $mediaType->name;
+        });
     }
 
     /**

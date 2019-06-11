@@ -98,7 +98,16 @@
                     <h2 id="opc-sidebar-second-title">Alle Entwürfe</h2>
                     <input type="text" class="opc-filter-control" placeholder="&#xF002; Suche"
                            oninput="filterOpcDrafts()" id="opc-filter-search">
-                    <input type="text" class="opc-filter-control opc-filter-status">
+                    <div class="opc-dropdown">
+                        <button type="button" class="opc-filter-control opc-dropdown-btn" id="opc-filter-status"
+                                data-toggle="dropdown">
+                            Status
+                        </button>
+                        <div class="dropdown-menu">
+                            <a>Status</a>
+                            <a>Name</a>
+                        </div>
+                    </div>
                     <button type="button" id="opc-bulk-actions">
                         <span id="opc-bulk-actions-label">Bulk Actions</span>
                         <i class="fas fa-fw fa-chevron-down"></i>
@@ -107,6 +116,7 @@
                 <div id="opc-sidebar-content">
                     <ul id="opc-draft-list">
                         {foreach $pageDrafts as $i => $draft}
+                            {$draftStatus = $draft->getStatus()}
                             <li class="opc-draft" id="opc-draft-{$draft->getKey()}">
                                 <form method="post" action="admin/onpage-composer.php">
                                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
@@ -114,9 +124,23 @@
                                     <button type="submit" name="action" value="edit" class="opc-btn-link opc-draft-name">
                                         {$draft->getName()}
                                     </button>
-                                    <span class="opc-draft-status">
-                                        <i class="fas fa-circle fa-xs"></i> ÖFFENTLICH
-                                    </span>
+                                    {if $draftStatus === 0}
+                                        <span class="opc-draft-status opc-public">
+                                            <i class="fas fa-circle fa-xs"></i> ÖFFENTLICH
+                                        </span>
+                                    {elseif $draftStatus === 1}
+                                        <span class="opc-draft-status opc-planned">
+                                            <i class="fas fa-circle fa-xs"></i> GEPLANT
+                                        </span>
+                                    {elseif $draftStatus === 2}
+                                        <span class="opc-draft-status opc-status-draft">
+                                            <i class="fas fa-circle fa-xs"></i> ENTWURF
+                                        </span>
+                                    {elseif $draftStatus === 3}
+                                        <span class="opc-draft-status opc-backdate">
+                                            <i class="fas fa-circle fa-xs"></i> VERGANGEN
+                                        </span>
+                                    {/if}
                                     <div class="opc-draft-info">
                                         <div class="opc-draft-info-line">
                                             updated

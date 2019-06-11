@@ -1,3 +1,4 @@
+@charset "UTF-8";
 #opc button {
   background: none;
   border: none;
@@ -129,17 +130,34 @@
   padding: 8px;
   float: left;
   margin-bottom: 24px;
+  text-align: left;
+}
+#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown .dropdown-menu {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+}
+#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown .dropdown-menu > * {
+  display: block;
+}
+#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown-btn:after {
+  display: block;
+  float: right;
+  content: "";
+  font-family: "Font Awesome 5 Free", sans-serif;
+  font-weight: 900;
 }
 #opc #opc-sidebar #opc-sidebar-tools ::placeholder {
   color: #BDBDBD;
   font-family: "Font Awesome 5 Free", sans-serif;
-  font-weight: 600;
+  font-weight: 900;
 }
 #opc #opc-sidebar #opc-sidebar-tools #opc-filter-search {
   width: 191px;
   margin-right: 16px;
 }
-#opc #opc-sidebar #opc-sidebar-tools .opc-filter-status {
+#opc #opc-sidebar #opc-sidebar-tools #opc-filter-status {
   width: 125px;
 }
 #opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions {
@@ -166,10 +184,11 @@
   background-color: #F5F7FA;
   border-radius: 5px;
   padding: 16px;
-  margin: 16px 0;
-}
-#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:first-child, #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:last-child {
   margin: 0;
+  margin-bottom: 16px;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:last-child {
+  margin-bottom: 0;
 }
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:hover .opc-draft-info .opc-draft-actions {
   visibility: visible;
@@ -180,6 +199,18 @@
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status {
   font-size: 12px;
   float: right;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-public {
+  color: #0F9D48;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-planned {
+  color: #F68B25;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-status-draft {
+  color: #BDBDBD;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-backdate {
+  color: #0B6AA2;
 }
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info {
   position: relative;

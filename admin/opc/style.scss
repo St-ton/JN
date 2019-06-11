@@ -156,12 +156,36 @@ $transition: 0.5s;
         padding: 8px;
         float: left;
         margin-bottom: 24px;
+        text-align: left;
+      }
+
+      .opc-dropdown {
+        .dropdown-menu {
+          margin: 0;
+          padding: 0;
+          border: none;
+          box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+
+          & > * {
+            display: block;
+          }
+        }
+      }
+
+      .opc-dropdown-btn {
+        &:after {
+          display: block;
+          float: right;
+          content: "\f078";
+          font-family: "Font Awesome 5 Free", sans-serif;
+          font-weight: 900;
+        }
       }
 
       ::placeholder {
         color: #BDBDBD;
         font-family: "Font Awesome 5 Free", sans-serif;
-        font-weight: 600;
+        font-weight: 900;
       }
 
       #opc-filter-search {
@@ -169,7 +193,7 @@ $transition: 0.5s;
         margin-right: 16px;
       }
 
-      .opc-filter-status {
+      #opc-filter-status {
         width: 125px;
       }
 
@@ -200,11 +224,11 @@ $transition: 0.5s;
           background-color: #F5F7FA;
           border-radius: 5px;
           padding: 16px;
-          margin: 16px 0;
+          margin: 0;
+          margin-bottom: 16px;
 
-          &:first-child ,
           &:last-child {
-            margin: 0;
+            margin-bottom: 0;
           }
 
           &:hover {
@@ -220,6 +244,19 @@ $transition: 0.5s;
           .opc-draft-status {
             font-size: 12px;
             float: right;
+
+            &.opc-public {
+              color: #0F9D48;
+            }
+            &.opc-planned {
+              color: #F68B25;
+            }
+            &.opc-status-draft {
+              color: #BDBDBD;
+            }
+            &.opc-backdate {
+              color: #0B6AA2;
+            }
           }
 
           .opc-draft-info {

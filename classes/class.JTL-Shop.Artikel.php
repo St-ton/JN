@@ -1184,9 +1184,10 @@ class Artikel
                     $EW_aufpreis = Shop::DB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
                 }
                 if (isset($EW_aufpreis->fAufpreisNetto)) {
-                    $fMaxRabatt = $this->getDiscount($kKundengruppe, $this->kArtikel);
-                    $aufpreis   = $EW_aufpreis->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
+                    $aufpreis   = $EW_aufpreis->fAufpreisNetto;
                 }
+                $fMaxRabatt = $this->getDiscount($kKundengruppe, $this->kArtikel);
+                $aufpreis  *= (1 - $fMaxRabatt / 100);
                 // Ticket #1247
                 $aufpreis = (!$nettopreise)
                     ? berechneBrutto($aufpreis, gibUst($this->kSteuerklasse), 4) / ((100 + gibUst($this->kSteuerklasse)) / 100)

@@ -98,30 +98,6 @@
         </div>
     {/block}
 {/if}
-{if $Einstellungen.sitemap.sitemap_globalemerkmale_anzeigen === 'Y' && $oGlobaleMerkmale_arr|@count > 0}
-    {block name='sitemap-global-attributes'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_attributes'}
-
-        <div class="sitemap panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{block name='sitemap-global-attributes-title'}{lang key='sitemapGlobalAttributes'}{/block}</h3></div>
-            <div class="panel-body">
-                {block name='sitemap-global-attributes-body'}
-                    {foreach $oGlobaleMerkmale_arr as $oGlobaleMerkmale}
-                        <strong>{$oGlobaleMerkmale->cName}</strong>
-                        <ul class="list-unstyled">
-                            {foreach $oGlobaleMerkmale->oMerkmalWert_arr as $oGlobaleMerkmaleWerte}
-                                <li class="p33">
-                                    <a href="{$oGlobaleMerkmaleWerte->cURL}">{$oGlobaleMerkmaleWerte->cWert}</a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                    {/foreach}
-                {/block}
-            </div>
-        </div>
-    {/block}
-{/if}
 {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
     {block name='sitemap-manufacturer'}
         {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}

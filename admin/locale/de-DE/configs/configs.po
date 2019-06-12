@@ -2678,12 +2678,6 @@ msgstr "Alle Kategorien anzeigen"
 msgid "sitemap_kategorien_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob alle Kategorie-Seiten in der Sitemap erscheinen sollen"
 
-msgid "sitemap_globalemerkmale_anzeigen_name"
-msgstr "Globale Merkmale anzeigen"
-
-msgid "sitemap_globalemerkmale_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob Seiten für globale Merkmale in der Sitemap erscheinen sollen."
-
 msgid "sitemap_hersteller_anzeigen_name"
 msgstr "Hersteller anzeigen"
 

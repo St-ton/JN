@@ -2672,12 +2672,6 @@ msgstr "Show all categories"
 msgid "sitemap_kategorien_anzeigen_desc"
 msgstr "Specify whether all category sites should appear in the sitemap."
 
-msgid "sitemap_globalemerkmale_anzeigen_name"
-msgstr "Show global characteristics"
-
-msgid "sitemap_globalemerkmale_anzeigen_desc"
-msgstr "Specify whether pages for global characteristics should appear in the sitemap."
-
 msgid "sitemap_hersteller_anzeigen_name"
 msgstr "Show manufacturer"
 

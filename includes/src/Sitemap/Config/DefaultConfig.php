@@ -7,7 +7,6 @@
 namespace JTL\Sitemap\Config;
 
 use JTL\DB\DbInterface;
-use JTL\Sitemap\Factories\Attribute;
 use JTL\Sitemap\Factories\Base;
 use JTL\Sitemap\Factories\Category;
 use JTL\Sitemap\Factories\LiveSearch;
@@ -72,9 +71,6 @@ final class DefaultConfig implements ConfigInterface
         }
         if ($this->config['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
             $res[] = new Manufacturer($this->db, $this->config, $this->baseURL, $this->baseImageURL);
-        }
-        if ($this->config['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
-            $res[] = new Attribute($this->db, $this->config, $this->baseURL, $this->baseImageURL);
         }
         if ($this->config['sitemap']['sitemap_livesuche_anzeigen'] === 'Y') {
             $res[] = new LiveSearch($this->db, $this->config, $this->baseURL, $this->baseImageURL);

@@ -39,6 +39,7 @@ use JTL\Catalog\Warenlager;
 use stdClass;
 use function Functional\select;
 use JTL\Country\Country;
+use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Artikel
@@ -46,6 +47,15 @@ use JTL\Country\Country;
  */
 class Artikel
 {
+    use MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected static $mapping = [
+        'cMedienTyp_arr' => 'MediaTypeArr'
+    ];
+
     /**
      * @var int
      */
@@ -394,7 +404,7 @@ class Artikel
     /**
      * @var array
      */
-    public $cMedienTyp_arr = [];
+    public $mediaTypes = [];
 
     /**
      * @var int
@@ -1720,6 +1730,7 @@ class Artikel
         $db                     = Shop::Container()->getDB();
         $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
+        $this->mediaTypes       = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN])) {
             if ($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab') {
@@ -1753,7 +1764,6 @@ class Artikel
                     ORDER BY tmediendatei.nSort ASC';
 
         $this->oMedienDatei_arr = $db->query($cSQL, ReturnType::ARRAY_OF_OBJECTS);
-        $cMedienTyp_arr         = []; // Wird im Template gebraucht um Tabs aufzubauen
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
@@ -1786,32 +1796,52 @@ class Artikel
                     }
                 }
             }
-            // Pruefen, ob Reiter bereits vorhanden
-            $tabExists = false;
-            foreach ($cMedienTyp_arr as $cMedienTyp) {
-                if (\mb_strlen($mediaFile->cAttributTab) > 0) {
-                    if ($this->getSeoString($cMedienTyp) === $this->getSeoString($mediaFile->cAttributTab)) {
-                        $tabExists = true;
-                        break;
-                    }
-                } elseif ($cMedienTyp === $mediaFile->cMedienTyp) {
-                    $tabExists = true;
-                    break;
-                }
-            }
-            // Falls nicht enthalten => eintragen
-            if (!$tabExists) {
-                $cMedienTyp_arr[] = \mb_strlen($mediaFile->cAttributTab) > 0
-                    ? $mediaFile->cAttributTab
-                    : $mediaFile->cMedienTyp;
-            }
             if ($mediaFile->nMedienTyp === 4) {
                 $this->buildYoutubeEmbed($mediaFile);
             }
+            $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
+                ? $mediaFile->cAttributTab
+                : $mediaFile->cMedienTyp;
+            // group all tab names by corresponding seo tab name, use first found tab name
+            $mediaTypeNameSeo = $this->getSeoString($mediaTypeName);
+            if (isset($this->mediaTypes[$mediaTypeNameSeo])) {
+                ++$this->mediaTypes[$mediaTypeNameSeo]->count;
+            } else {
+                $this->mediaTypes[$mediaTypeNameSeo] = (object)[
+                    'count' => 1,
+                    'name'  => $mediaTypeName
+                ];
+            }
         }
-        $this->cMedienTyp_arr = $cMedienTyp_arr;
 
         return $this;
+    }
+
+    /**
+     * used for MagicCompatibilityTrait
+     * @return array
+     */
+    public function getMediaTypeArr(): array
+    {
+        return map($this->getMediaTypes(), function ($mediaType) {
+            return $mediaType->name;
+        });
+    }
+
+    /**
+     * used for MagicCompatibilityTrait
+     */
+    public function setMediaTypeArr(): void
+    {
+        trigger_error('cMedienTyp_arr should not be set explicitly.', E_USER_DEPRECATED);
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypes(): array
+    {
+        return $this->mediaTypes;
     }
 
     /**
@@ -5540,9 +5570,9 @@ class Artikel
         if ((!empty($this->kStueckliste) && empty($this->oStueckliste_arr)) ||
             (!empty($this->oStueckliste_arr) && \count($this->oStueckliste_arr) !== $nAllPieces)
         ) {
-            $resetArray = true;
-            $partList   = $this->oStueckliste_arr;
-            unset($this->oStueckliste_arr);
+            $resetArray             = true;
+            $partList               = $this->oStueckliste_arr;
+            $this->oStueckliste_arr = [];
             $this->holeStueckliste(Frontend::getCustomerGroup()->getID(), true);
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
@@ -5583,7 +5613,6 @@ class Artikel
                 }
             }
             if (!empty($resetArray)) {
-                unset($this->oStueckliste_arr);
                 $this->oStueckliste_arr = $partList;
             }
         }

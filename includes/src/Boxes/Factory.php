@@ -22,7 +22,6 @@ use JTL\Boxes\Items\FilterPricerange;
 use JTL\Boxes\Items\FilterRating;
 use JTL\Boxes\Items\FilterSearch;
 use JTL\Boxes\Items\FilterTag;
-use JTL\Boxes\Items\GlobalAttributes;
 use JTL\Boxes\Items\LinkGroup;
 use JTL\Boxes\Items\Login;
 use JTL\Boxes\Items\Manufacturer;
@@ -84,8 +83,6 @@ class Factory implements FactoryInterface
                 return new SpecialOffers($this->config);
             case \BOX_LOGIN:
                 return new Login($this->config);
-            case \BOX_GLOBALE_MERKMALE:
-                return new GlobalAttributes($this->config);
             case \BOX_KATEGORIEN:
                 return new ProductCategories($this->config);
             case \BOX_NEWS_KATEGORIEN:

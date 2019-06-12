@@ -121,10 +121,6 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Quickview für Artikeldetails" Key="quickview_productlist" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
             <Setting Description="Filteroptionen bei Seitenanruf anzeigen?" Key="initial_display_filter" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

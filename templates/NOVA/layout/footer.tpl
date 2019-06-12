@@ -307,9 +307,9 @@
         {captchaMarkup getBody=false}
     {/block}
 
-    {if !$bExclusive}
-        {include file=$opcDir|cat:'footer.tpl'}
-    {/if}
+    {*{if !$bExclusive}*}
+        {*{include file=$opcDir|cat:'footer.tpl'}*}
+    {*{/if}*}
     </body>
     </html>
 {/block}

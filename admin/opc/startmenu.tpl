@@ -30,14 +30,10 @@
                         pageKey: draftKey,
                         jtl_token: '{$adminSessionToken}'
                     },
-                    success: function(jqxhr, textStatus) {
+                    success: function(jqxhr) {
                         if(jqxhr === 'ok') {
                             let draftItem = $('#opc-draft-' + draftKey);
-                            draftItem.animate(
-                                { opacity: 'toggle' },
-                                500,
-                                () => draftItem.remove()
-                            );
+                            draftItem.animate({ opacity: 'toggle' }, 500, () => draftItem.remove());
                             window.localStorage.removeItem('opcpage.' + draftKey);
                         }
                     }
@@ -60,6 +56,30 @@
                     item.show();
                 }
             });
+        }
+
+        function orderOpcDraftsBy(criteria)
+        {
+            let draftsList  = $('#opc-draft-list');
+            let draftsArray = draftsList.children().toArray();
+
+            if (criteria === 0) {
+                $('#opc-filter-status .opc-dropdown-btn').text('Status');
+                draftsArray.sort((a, b) => a.dataset.draftStatus - b.dataset.draftStatus);
+            } else if(criteria === 1) {
+                $('#opc-filter-status .opc-dropdown-btn').text('Name');
+                draftsArray.sort((a, b) => {
+                    if (a.dataset.draftName < b.dataset.draftName) {
+                        return -1;
+                    }
+                    if (a.dataset.draftName > b.dataset.draftName) {
+                        return +1;
+                    }
+                    return 0;
+                });
+            }
+            draftsArray.forEach(draft => draftsList.append(draft));
+
         }
     </script>
     <div id="opc">
@@ -85,60 +105,69 @@
             <div id="opc-sidebar" class="opc-open">
                 <header id="opc-header">
                     {*<button>*}
-                        {*<i class="fas fa-ellipsis-v"></i>*}
+                        {*<i class="fa fas fa-ellipsis-v"></i>*}
                     {*</button>*}
                     <h1 id="opc-sidebar-title">
                         Seite bearbeiten
                     </h1>
                     <button onclick="closeOpcStartMenu()" class="float-right">
-                        <i class="fas fa-times"></i>
+                        <i class="fa fas fa-times"></i>
                     </button>
                 </header>
                 <div id="opc-sidebar-tools">
                     <h2 id="opc-sidebar-second-title">Alle Entwürfe</h2>
-                    <input type="text" class="opc-filter-control" placeholder="&#xF002; Suche"
-                           oninput="filterOpcDrafts()" id="opc-filter-search">
-                    <div class="opc-dropdown">
-                        <button type="button" class="opc-filter-control opc-dropdown-btn" id="opc-filter-status"
-                                data-toggle="dropdown">
-                            Status
-                        </button>
-                        <div class="dropdown-menu">
-                            <a>Status</a>
-                            <a>Name</a>
+                    <div class="opc-group">
+                        <input type="text" class="opc-filter-control" placeholder="&#xF002; Suche"
+                               oninput="filterOpcDrafts()" id="opc-filter-search">
+                        <div class="opc-filter-control opc-dropdown" id="opc-filter-status">
+                            <button class="opc-dropdown-btn" data-toggle="dropdown">
+                                Status
+                            </button>
+                            <div class="dropdown-menu opc-dropdown-menu">
+                                <a href="#" onclick="orderOpcDraftsBy(0);return false">Status</a>
+                                <a href="#" onclick="orderOpcDraftsBy(1);return false">Name</a>
+                            </div>
                         </div>
                     </div>
-                    <button type="button" id="opc-bulk-actions">
-                        <span id="opc-bulk-actions-label">Bulk Actions</span>
-                        <i class="fas fa-fw fa-chevron-down"></i>
-                    </button>
+                    <div class="opc-dropdown">
+                        <button type="button" id="opc-bulk-actions" data-toggle="dropdown">
+                            <span id="opc-bulk-actions-label">Bulk Actions</span>
+                            <i class="fa fas fa-fw fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">
+                            <a href="#" onclick="">Duplizieren</a>
+                            <a href="#" onclick="">Löschen</a>
+                        </div>
+                    </div>
                 </div>
                 <div id="opc-sidebar-content">
                     <ul id="opc-draft-list">
                         {foreach $pageDrafts as $i => $draft}
                             {$draftStatus = $draft->getStatus()}
-                            <li class="opc-draft" id="opc-draft-{$draft->getKey()}">
-                                <form method="post" action="admin/onpage-composer.php">
+                            <li class="opc-draft" id="opc-draft-{$draft->getKey()}" data-draft-status="{$draftStatus}"
+                                data-draft-name="{$draft->getName()}">
+                                <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
                                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                                     <input type="hidden" name="pageKey" value="{$draft->getKey()}">
-                                    <button type="submit" name="action" value="edit" class="opc-btn-link opc-draft-name">
+                                    <input type="checkbox" id="check-{$draft->getKey()}">
+                                    <label for="check-{$draft->getKey()}" class="opc-draft-name">
                                         {$draft->getName()}
-                                    </button>
+                                    </label>
                                     {if $draftStatus === 0}
                                         <span class="opc-draft-status opc-public">
-                                            <i class="fas fa-circle fa-xs"></i> ÖFFENTLICH
+                                            <i class="fa fas fa-circle fa-xs"></i> ÖFFENTLICH
                                         </span>
                                     {elseif $draftStatus === 1}
                                         <span class="opc-draft-status opc-planned">
-                                            <i class="fas fa-circle fa-xs"></i> GEPLANT
+                                            <i class="fa fas fa-circle fa-xs"></i> GEPLANT
                                         </span>
                                     {elseif $draftStatus === 2}
                                         <span class="opc-draft-status opc-status-draft">
-                                            <i class="fas fa-circle fa-xs"></i> ENTWURF
+                                            <i class="fa fas fa-circle fa-xs"></i> ENTWURF
                                         </span>
                                     {elseif $draftStatus === 3}
                                         <span class="opc-draft-status opc-backdate">
-                                            <i class="fas fa-circle fa-xs"></i> VERGANGEN
+                                            <i class="fa fas fa-circle fa-xs"></i> VERGANGEN
                                         </span>
                                     {/if}
                                     <div class="opc-draft-info">
@@ -151,20 +180,20 @@
                                         <div class="opc-draft-actions">
                                             <button type="submit" name="action" value="edit" data-toggle="tooltip"
                                                     title="Bearbeiten" data-placement="bottom" data-container="#opc">
-                                                <i class="fa-lg fa-fw fas fa-pencil-alt"></i>
+                                                <i class="fa fa-lg fa-fw fas fa-pencil-alt"></i>
                                             </button>
                                             <button data-toggle="tooltip" title="Duplizieren" data-placement="bottom"
                                                     data-container="#opc">
-                                                <i class="fa-lg fa-fw far fa-clone"></i>
+                                                <i class="fa fa-lg fa-fw far fa-clone"></i>
                                             </button>
                                             <button data-toggle="tooltip" title="Für andere Sprache übernehmen"
                                                     data-placement="bottom" data-container="#opc">
-                                                <i class="fa-lg fa-fw fas fa-language"></i>
+                                                <i class="fa fa-lg fa-fw fas fa-language"></i>
                                             </button>
                                             <button type="button" onclick="deleteOpcDraft({$draft->getKey()})"
                                                     data-toggle="tooltip" title="Löschen"
                                                     data-placement="bottom" data-container="#opc">
-                                                <i class="fa-lg fa-fw fas fa-trash"></i>
+                                                <i class="fa fa-lg fa-fw fas fa-trash"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -186,5 +215,5 @@
             </div>
         {/if}
     </div>
-    <div id="opc-page-wrapper">
+    {*<div id="opc-page-wrapper">*}
 {/if}

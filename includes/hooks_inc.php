@@ -1872,11 +1872,17 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
  */
 define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
 
+/**
+ * @since 5.0.0
+ * @file includes/src/Sitemap/Export.php
+ * @param \JTL\Sitemap\Factories\FactoryInterface[] factories
+ * @param \JTL\Sitemap\Export instance
+ */
+define('HOOK_SITEMAP_EXPORT_GENERATE', 285);
 
 /**
  * @since 5.0.0
  * @file includes/src/Sitemap/Export.php
- * @param JTL\Sitemap\Factories\FactoryInterface[] factories
- * @param \JTL\Sitemap\Export exporter
+ * @param \JTL\Sitemap\Export instance
  */
-define('HOOK_SITEMAP_EXPORT_GET_FACTORIES', 285);
+define('HOOK_SITEMAP_EXPORT_INIT', 286);

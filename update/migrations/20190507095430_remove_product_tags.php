@@ -39,9 +39,9 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->execute('DELETE FROM `tspezialseite` WHERE `nLinkart` = 14');
         $this->execute("DELETE `tlink`, `tlinkgroupassociations`, `tseo`
                           FROM `tlink`
-                          JOIN `tlinkgroupassociations`
+                          LEFT JOIN `tlinkgroupassociations`
                             ON tlink.kLink = tlinkgroupassociations.linkID 
-                          JOIN `tseo`
+                          LEFT JOIN `tseo`
                             ON tlink.kLink = tseo.kKey AND tseo.cKey = 'kLink'
                           WHERE tlink.nLinkart = 14"
         );
@@ -50,12 +50,13 @@ class Migration_20190507095430 extends Migration implements IMigration
         $this->execute('DELETE FROM `tboxenanzeige` WHERE `nSeite` = 22');
         $this->execute('DELETE FROM `textensionpoint` WHERE `nSeite` = 22');
         //remove BOX_TAGWOLKE, BOX_FILTER_TAG
-        $this->execute('DELETE FROM `tboxvorlage` WHERE `kBoxvorlage` = 24 OR `kBoxvorlage` = 32');
-        $this->execute('DELETE `tboxen`, `tboxensichtbar`
-                          FROM `tboxen`
-                          JOIN `tboxensichtbar`
+        $this->execute('DELETE `tboxvorlage`, `tboxen`, `tboxensichtbar`
+                          FROM `tboxvorlage`
+                          LEFT JOIN `tboxen`
+                            ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                          LEFT JOIN `tboxensichtbar`
                             ON tboxen.kBox = tboxensichtbar.kBox
-                          WHERE tboxen.kBoxvorlage = 24 OR tboxen.kBoxvorlage = 32'
+                          WHERE tboxvorlage.kBoxvorlage = 24 OR tboxvorlage.kBoxvorlage = 32'
         );
 
         $this->execute("DELETE FROM `tseo` WHERE `cKey` = 'kTag'");
@@ -244,5 +245,8 @@ class Migration_20190507095430 extends Migration implements IMigration
                 ]
             ]
         );
+        $this->execute("INSERT INTO `tboxvorlage`   VALUES (24, 0, 'tpl', 'Filter (Tag)', '2', 'box_filter_tag.tpl')");
+        $this->execute("INSERT INTO `tboxvorlage`   VALUES (32, 0, 'tpl', 'Tagwolke', '0', 'box_tag_cloud.tpl')");
+        $this->execute("INSERT INTO `tspezialseite` VALUES (10,0,'Tagging Übersicht','',14,14)");
     }
 }

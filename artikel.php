@@ -222,8 +222,6 @@ $smarty->assign('nMaxUploadSize', $maxSize)
                $conf['artikeldetails']['benachrichtigung_nutzen']
            )
        )
-       ->assign('ProdukttagHinweis', null)
-       ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
        ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))

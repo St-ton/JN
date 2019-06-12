@@ -193,18 +193,6 @@ class JSONAPI
      * @param int               $limit
      * @param string            $keyName
      * @return string|bool
-     * @deprecated since 5.0.0
-     */
-    public function getTags($search = null, $limit = 0, $keyName = 'kTag')
-    {
-        return false;
-    }
-
-    /**
-     * @param string|array|null $search
-     * @param int               $limit
-     * @param string            $keyName
-     * @return string|bool
      */
     public function getAttributes($search = null, $limit = 0, $keyName = 'kMerkmalWert')
     {

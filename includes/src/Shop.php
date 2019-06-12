@@ -163,12 +163,6 @@ final class Shop
 
     /**
      * @var int
-     * @deprecated since 5.0.0
-     */
-    public static $kTag;
-
-    /**
-     * @var int
      */
     public static $kSuchspecial;
 
@@ -276,11 +270,6 @@ final class Shop
      * @var array
      */
     public static $SuchFilter;
-
-    /**
-     * @var array
-     */
-    public static $TagFilter;
 
     /**
      * @var int
@@ -1020,7 +1009,6 @@ final class Shop
             'kLink'                  => self::$kLink,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
-            'kTag'                   => self::$kTag,
             'kSuchspecial'           => self::$kSuchspecial,
             'kNews'                  => self::$kNews,
             'kNewsMonatsUebersicht'  => self::$kNewsMonatsUebersicht,
@@ -1034,7 +1022,6 @@ final class Shop
             'nSortierung'            => self::$nSortierung,
             'nSort'                  => self::$nSort,
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
-            'TagFilter_arr'          => self::$TagFilter ?? [],
             'SuchFilter_arr'         => self::$SuchFilter ?? [],
             'nArtikelProSeite'       => self::$nArtikelProSeite,
             'cSuche'                 => self::$cSuche,
@@ -1045,7 +1032,6 @@ final class Shop
             'kWunschliste'           => self::$kWunschliste,
             'MerkmalFilter'          => self::$MerkmalFilter,
             'SuchFilter'             => self::$SuchFilter,
-            'TagFilter'              => self::$TagFilter,
             'vergleichsliste'        => self::$vergleichsliste,
             'nDarstellung'           => self::$nDarstellung,
             'isSeoMainword'          => false,

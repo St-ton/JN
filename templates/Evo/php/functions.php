@@ -87,7 +87,6 @@ function get_product_list($params, $smarty)
         'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
         'nSortierung'            => $sort,
         'MerkmalFilter_arr'      => $attributeFilters,
-        'TagFilter_arr'          => [],
         'SuchFilter_arr'         => $searchFilters,
         'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
         'cSuche'                 => $params['cSuche'] ?? null,

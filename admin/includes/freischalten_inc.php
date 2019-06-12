@@ -59,18 +59,6 @@ function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true
  * @param object $cSuchSQL
  * @param bool   $checkLanguage
  * @return array
- * @deprecated since 5.0.0
- */
-function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
-{
-    return [];
-}
-
-/**
- * @param string $cSQL
- * @param object $cSuchSQL
- * @param bool   $checkLanguage
- * @return array
  */
 function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
 {

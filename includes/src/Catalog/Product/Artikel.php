@@ -978,12 +978,6 @@ class Artikel
 
     /**
      * @var array
-     * @deprecated since 5.0.0
-     */
-    public $tags = [];
-
-    /**
-     * @var array
      */
     public $staffelPreis_arr = [];
 

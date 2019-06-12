@@ -734,7 +734,6 @@ class Statusmail
         $mail->nAnzahlBewertungenNichtFreigeschaltet    = -1;
         $mail->oAnzahlGezahltesGuthaben                 = -1;
         $mail->nAnzahlTags                              = -1;
-        $mail->nAnzahlTagsNichtFreigeschaltet           = -1;
         $mail->nAnzahlGeworbenerKunden                  = -1;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = -1;
         $mail->nAnzahlVersendeterWunschlisten           = -1;

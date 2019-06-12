@@ -79,7 +79,6 @@ define('URLART_KATEGORIE', 2);
 define('URLART_SEITE', 3);
 define('URLART_HERSTELLER', 4);
 define('URLART_LIVESUCHE', 5);
-define('URLART_TAG', 6);
 define('URLART_MERKMAL', 7);
 define('URLART_NEWS', 8);
 define('URLART_NEWSMONAT', 9);
@@ -177,7 +176,6 @@ define('LINKTYP_PASSWORD_VERGESSEN', 10);
 define('LINKTYP_AGB', 11);
 define('LINKTYP_DATENSCHUTZ', 12);
 define('LINKTYP_KONTAKT', 13);
-define('LINKTYP_TAGGING', 14);
 define('LINKTYP_LIVESUCHE', 15);
 define('LINKTYP_HERSTELLER', 16);
 define('LINKTYP_NEWSLETTER', 17);
@@ -360,7 +358,6 @@ define('PAGE_STARTSEITE', 18); // Startseite
 define('PAGE_VERSAND', 19); // Versand
 define('PAGE_AGB', 20); // AGB
 define('PAGE_DATENSCHUTZ', 21); // Datenschutz
-define('PAGE_TAGGING', 22); // Tagging
 define('PAGE_LIVESUCHE', 23); // Livesuche
 define('PAGE_HERSTELLER', 24); // Hersteller
 define('PAGE_SITEMAP', 25); // Sitemap
@@ -402,7 +399,6 @@ define('BOX_GLOBALE_MERKMALE', 20);
 define('BOX_WARENKORB', 21);
 define('BOX_UMFRAGE', 22);
 define('BOX_LINKGRUPPE', 23);
-define('BOX_FILTER_TAG', 24);
 define('BOX_FILTER_PREISSPANNE', 25);
 define('BOX_FILTER_BEWERTUNG', 26);
 define('BOX_FILTER_MERKMALE', 27);
@@ -412,7 +408,6 @@ define('BOX_FILTER_HERSTELLER', 101);
 define('BOX_FILTER_KATEGORIE', 102);
 define('BOX_EIGENE_BOX_OHNE_RAHMEN', 30);
 define('BOX_EIGENE_BOX_MIT_RAHMEN', 31);
-define('BOX_TAGWOLKE', 32);
 define('BOX_KONFIGURATOR', 33);
 // Kampagnentypen
 define('KAMPAGNE_DEF_HIT', 1);

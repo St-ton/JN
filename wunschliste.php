@@ -39,7 +39,7 @@ if (!empty($_POST['addToCart'])) {
     $action          = 'addToCart';
     $kWunschlistePos = (int)$_POST['addToCart'];
 } elseif (!empty($_POST['remove'])) {
-    $action = 'remove';
+    $action          = 'remove';
     $kWunschlistePos = (int)$_POST['remove'];
 } elseif (isset($_POST['action'])) {
     $action = $_POST['action'];
@@ -78,7 +78,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                 if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                     if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
                         $cEmail_arr = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
-                        $cHinweis .= wunschlisteSenden($cEmail_arr, $kWunschliste);
+                        $cHinweis  .= wunschlisteSenden($cEmail_arr, $kWunschliste);
                         // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                         $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
                     }
@@ -124,9 +124,9 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
         case 'removeAll':
             if ($userOK === true) {
                 $oWunschliste = new Wunschliste($kWunschliste);
-                if ($oWunschliste->kKunde == $_SESSION['Kunde']->kKunde && $oWunschliste->kKunde) {
+                if ((int)$oWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde && $oWunschliste->kKunde) {
                     $oWunschliste->entferneAllePos();
-                    if ($_SESSION['Wunschliste']->kWunschliste == $oWunschliste->kWunschliste) {
+                    if ((int)$_SESSION['Wunschliste']->kWunschliste === (int)$oWunschliste->kWunschliste) {
                         $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
                     }
                     $cHinweis .= Shop::Lang()->get('wishlistDelAll', 'messages');
@@ -144,7 +144,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                 if (!empty($oWunschliste->kKunde) && !empty($_SESSION['Kunde']->kKunde) &&
                     (int)$oWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde
                 ) {
-                    $cHinweis .= wunschlisteAktualisieren($kWunschliste);
+                    $cHinweis               .= wunschlisteAktualisieren($kWunschliste);
                     $CWunschliste            = isset($_SESSION['Wunschliste']->kWunschliste)
                         ? new Wunschliste($_SESSION['Wunschliste']->kWunschliste)
                         : new Wunschliste($kWunschliste);
@@ -181,7 +181,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
 
         case 'createNew':
             $CWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
-            $cHinweis .= wunschlisteSpeichern($CWunschlisteName);
+            $cHinweis        .= wunschlisteSpeichern($CWunschlisteName);
             break;
 
         case 'delete':
@@ -194,13 +194,10 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
                         $kWunschliste           = (int)$newWishlist->kWunschliste;
                         $newWishlist->nStandard = 1;
                         Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $newWishlist);
-                    } else {
-                        //the only existing wishlist was deleted, create a new one
-                        if (empty($_SESSION['Wunschliste']->kWunschliste)) {
-                            $_SESSION['Wunschliste'] = new Wunschliste();
-                            $_SESSION['Wunschliste']->schreibeDB();
-                            $kWunschliste = $_SESSION['Wunschliste']->kWunschliste;
-                        }
+                    } elseif (empty($_SESSION['Wunschliste']->kWunschliste)) {
+                        $_SESSION['Wunschliste'] = new Wunschliste();
+                        $_SESSION['Wunschliste']->schreibeDB();
+                        $kWunschliste = $_SESSION['Wunschliste']->kWunschliste;
                     }
                 }
             }
@@ -208,7 +205,7 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
 
         case 'setAsDefault':
             if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
-                $cHinweis .= wunschlisteStandard((int)$_POST['kWunschlisteTarget']);
+                $cHinweis    .= wunschlisteStandard((int)$_POST['kWunschlisteTarget']);
                 $kWunschliste = (int)$_POST['kWunschlisteTarget'];
             }
             break;
@@ -275,9 +272,8 @@ if (verifyGPCDataInteger('error') === 1) {
     }
     if (!$kWunschliste) {
         header('Location: ' .
-            $linkHelper->getStaticRoute('jtl.php', true) .
-            '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
-        );
+            $linkHelper->getStaticRoute('jtl.php') .
+            '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE);
         exit;
     }
 }
@@ -301,9 +297,11 @@ $smarty->assign('CWunschliste', $CWunschliste)
        ->assign('oWunschliste_arr', $oWunschliste_arr)
        ->assign('wlsearch', $cSuche)
        ->assign('hasItems', !empty($CWunschliste->CWunschlistePos_arr))
-       ->assign('isCurrenctCustomer', isset($CWunschliste->kKunde) &&
-           isset($_SESSION['Kunde']->kKunde) &&
-           (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde)
+       ->assign(
+           'isCurrenctCustomer',
+           isset($CWunschliste->kKunde, $_SESSION['Kunde']->kKunde)
+               && (int)$CWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde
+       )
        ->assign('Einstellungen', $Einstellungen)
        ->assign('cURLID', $cURLID)
        ->assign('step', $step)

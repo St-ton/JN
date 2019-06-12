@@ -512,11 +512,7 @@ define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG', 66);
 define('HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH', 67);
 
 /**
- * Kurz vor der Rückgabe der Produktstags in den Artikeldetails
- *
- * @file artikel_inc.php
- * @param kArtikel
- * @param tags
+ * @removed in 5.0.0
  */
 define('HOOK_ARTIKEL_INC_PRODUKTTAGGING', 68);
 
@@ -662,9 +658,7 @@ define('HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE', 86);
 define('HOOK_BOXEN_INC_SUCHWOLKE', 87);
 
 /**
- * @file Boxen.php
- * @param JTL\Boxes\Items\BoxInterface box
- * @param array                        cache_tags
+ * @removed in 5.0.0
  */
 define('HOOK_BOXEN_INC_TAGWOLKE', 88);
 

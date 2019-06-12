@@ -8,6 +8,7 @@ namespace JTL\Cart;
 
 use function Functional\select;
 use function Functional\some;
+use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
 use JTL\Checkout\Eigenschaft;
@@ -22,6 +23,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Checkout\Kupon;
 use JTL\Catalog\Product\Preise;
+use JTL\Services\JTL\AlertService;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Checkout\Versandart;
@@ -959,6 +961,20 @@ class Warenkorb
                     $updatedPosition->cGesamtpreisLocalizedOld = $_oldPosition->cGesamtpreisLocalized;
                     $updatedPosition->istKonfigVater           = $pos->istKonfigVater();
                     self::addUpdatedPosition($updatedPosition);
+                    Shop::Container()->getAlertService()->addAlert(
+                        Alert::TYPE_WARNING,
+                        sprintf(
+                            Shop::Lang()->get('priceHasChanged', 'checkout'),
+                            \is_array($pos->cName) ? $pos->cName[Shop::getLanguageCode()] : $pos->cName
+                        ),
+                        'priceHasChanged_' . $pos->kArtikel,
+                        [
+                            'saveInSession' => true,
+                            'dismissable'   => false,
+                            'linkHref'      => Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php'),
+                            'linkText'      => Shop::Lang()->get('gotoBasket'),
+                        ]
+                    );
                 }
                 unset($pos->cHinweis);
                 if (isset($_SESSION['Kupon']->kKupon)

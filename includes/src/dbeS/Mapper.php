@@ -470,7 +470,6 @@ final class Mapper
         'mMerkmal' => [
             'nSort',
             'cName',
-            'nGlobal',
             'cTyp',
             'nMehrfachauswahl'
         ],

@@ -15,18 +15,8 @@ use JTL\Sitemap\Items\ItemInterface;
 final class GroupedRenderer extends AbstractItemRenderer
 {
     /**
-     * @var int
-     */
-    private $lastID;
-
-    /**
-     * @var array
-     */
-    public $queue = [];
-
-    /**
-     * @param ItemInterface $item
-     * @param array         $alternateItems
+     * @param ItemInterface   $item
+     * @param ItemInterface[] $alternateItems
      * @return string
      */
     public function actualRender(ItemInterface $item, array $alternateItems): string
@@ -48,13 +38,10 @@ final class GroupedRenderer extends AbstractItemRenderer
         if ($this->config['sitemap']['sitemap_insert_priority'] === 'Y' && !empty($item->getPriority())) {
             $xml .= '    <priority>' . $item->getPriority() . "</priority>\n";
         }
-        if ($alternateItems !== null && \is_array($alternateItems)) {
-            foreach ($alternateItems as $alternate) {
-                /** @var ItemInterface $alternate */
-                $xml .= '    <xhtml:link rel="alternate" hreflang="' .
-                    $alternate->getLanguageCode639() . '" href="' .
-                    $alternate->getLocation() . '" />' . "\n";
-            }
+        foreach ($alternateItems as $alternate) {
+            $xml .= '    <xhtml:link rel="alternate" hreflang="' .
+                $alternate->getLanguageCode639() . '" href="' .
+                $alternate->getLocation() . '" />' . "\n";
         }
 
         return $xml . "</url>\n";

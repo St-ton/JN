@@ -120,15 +120,11 @@ function gibSitemapKategorien()
 }
 
 /**
- * @return array
  * @deprecated since 5.0.0
  */
 function gibSitemapGlobaleMerkmale()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $sm = new Sitemap(Shop::Container()->getDB(), Shop::Container()->getCache(), Shop::getConfig([CONF_SITEMAP]));
-
-    return $sm->getGlobalAttributes();
+    trigger_error(__FUNCTION__ . ' is deprecated and does not do anything useful.', E_USER_DEPRECATED);
 }
 
 /**

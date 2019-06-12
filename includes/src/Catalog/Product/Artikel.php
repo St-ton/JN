@@ -1725,6 +1725,7 @@ class Artikel
         $db                     = Shop::Container()->getDB();
         $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
+        $mediaTypes             = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN])) {
             if ($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab') {
@@ -1758,7 +1759,6 @@ class Artikel
                     ORDER BY tmediendatei.nSort ASC';
 
         $this->oMedienDatei_arr = $db->query($cSQL, ReturnType::ARRAY_OF_OBJECTS);
-        $cMedienTyp_arr         = []; // Wird im Template gebraucht um Tabs aufzubauen
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
@@ -1791,30 +1791,43 @@ class Artikel
                     }
                 }
             }
-            // Pruefen, ob Reiter bereits vorhanden
-            $tabExists = false;
-            foreach ($cMedienTyp_arr as $cMedienTyp) {
-                if (\mb_strlen($mediaFile->cAttributTab) > 0) {
-                    if ($this->getSeoString($cMedienTyp) === $this->getSeoString($mediaFile->cAttributTab)) {
-                        $tabExists = true;
-                        break;
-                    }
-                } elseif ($cMedienTyp === $mediaFile->cMedienTyp) {
-                    $tabExists = true;
-                    break;
-                }
-            }
-            // Falls nicht enthalten => eintragen
-            if (!$tabExists) {
-                $cMedienTyp_arr[] = \mb_strlen($mediaFile->cAttributTab) > 0
-                    ? $mediaFile->cAttributTab
-                    : $mediaFile->cMedienTyp;
-            }
             if ($mediaFile->nMedienTyp === 4) {
                 $this->buildYoutubeEmbed($mediaFile);
             }
+            $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
+                ? $mediaFile->cAttributTab
+                : $mediaFile->cMedienTyp;
+            // group all tab names by corresponding seo tab name, use first found tab name
+            $mediaTypeNameSeo = $this->getSeoString($mediaTypeName);
+            if (isset($mediaTypes[$mediaTypeNameSeo])) {
+                ++$mediaTypes[$mediaTypeNameSeo]->count;
+            } else {
+                $mediaTypes[$mediaTypeNameSeo] = (object)[
+                    'count' => 1,
+                    'name'  => $mediaTypeName
+                ];
+            }
         }
-        $this->cMedienTyp_arr = $cMedienTyp_arr;
+        $this->setMediaTypes($mediaTypes);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypes(): array
+    {
+        return $this->cMedienTyp_arr;
+    }
+
+    /**
+     * @param array $mediaTypes
+     * @return Artikel
+     */
+    private function setMediaTypes(array $mediaTypes): self
+    {
+        $this->cMedienTyp_arr = $mediaTypes;
 
         return $this;
     }
@@ -5546,9 +5559,9 @@ class Artikel
         if ((!empty($this->kStueckliste) && empty($this->oStueckliste_arr)) ||
             (!empty($this->oStueckliste_arr) && \count($this->oStueckliste_arr) !== $nAllPieces)
         ) {
-            $resetArray = true;
-            $partList   = $this->oStueckliste_arr;
-            unset($this->oStueckliste_arr);
+            $resetArray             = true;
+            $partList               = $this->oStueckliste_arr;
+            $this->oStueckliste_arr = [];
             $this->holeStueckliste(Frontend::getCustomerGroup()->getID(), true);
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
@@ -5589,7 +5602,6 @@ class Artikel
                 }
             }
             if (!empty($resetArray)) {
-                unset($this->oStueckliste_arr);
                 $this->oStueckliste_arr = $partList;
             }
         }

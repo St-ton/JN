@@ -75,6 +75,9 @@
             {block name="wishlist"}
                 <input type="hidden" name="wla" value="1"/>
                 <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"/>
+                {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
+                    <input type="hidden" name="wlid" value="{$cURLID}" />
+                {/if}
                 {if !empty($wlsearch)}
                     <input type="hidden" name="wlsearch" value="1"/>
                     <input type="hidden" name="cSuche" value="{$wlsearch}"/>

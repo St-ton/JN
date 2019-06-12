@@ -52,8 +52,11 @@ if ($action !== null && isset($_POST['kWunschliste'], $_SESSION['Kunde']->kKunde
 
     switch ($action) {
         case 'addToCart':
+            $oWunschliste    = new Wunschliste($kWunschliste);
             $oWunschlistePos = giboWunschlistePos($kWunschlistePos);
-            if (isset($oWunschlistePos->kArtikel) && $oWunschlistePos->kArtikel > 0) {
+            if ($oWunschliste->kWunschliste === (int)$oWunschlistePos->kWunschliste
+                && isset($oWunschlistePos->kArtikel) && $oWunschlistePos->kArtikel > 0
+            ) {
                 $oEigenschaftwerte_arr = ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)
                     ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel)
                     : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);

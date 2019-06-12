@@ -84,29 +84,6 @@
             {/card}
         {/block}
     {/if}
-    {if $Einstellungen.sitemap.sitemap_globalemerkmale_anzeigen === 'Y' && $oGlobaleMerkmale_arr|@count > 0}
-        {block name='page-sitemap-global-attributes'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_attributes'}
-            {card header={lang key='sitemapGlobalAttributes'} class="mb-5"}
-                {block name='page-sitemap-global-attributes-content'}
-                    {row}
-                        {foreach $oGlobaleMerkmale_arr as $oGlobaleMerkmale}
-                            {col cols=6 md=4 lg=3}
-                                <strong>{$oGlobaleMerkmale->cName}</strong>
-                                <ul class="list-unstyled">
-                                    {foreach $oGlobaleMerkmale->oMerkmalWert_arr as $oGlobaleMerkmaleWerte}
-                                        <li class="my-2">
-                                            {link href=$oGlobaleMerkmaleWerte->cURL}{$oGlobaleMerkmaleWerte->cWert}{/link}
-                                        </li>
-                                    {/foreach}
-                                </ul>
-                            {/col}
-                        {/foreach}
-                    {/row}
-                {/block}
-            {/card}
-        {/block}
-    {/if}
     {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
         {block name='page-sitemap-manufacturer'}
             {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}

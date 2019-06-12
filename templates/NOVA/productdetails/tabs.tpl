@@ -27,7 +27,7 @@
         && !empty($Artikel->Attribute))}
         {$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
         && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
-        && !empty($Artikel->cMedienTyp_arr))}
+        && !empty($Artikel->getMediaTypes()))}
         {$useDescription = (($Artikel->cBeschreibung|strlen > 0) || $useDescriptionWithMediaGroup || $showAttributesTable)}
         {$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
         {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
@@ -36,7 +36,7 @@
         {$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung !== 0)}
         {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
         && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
-        && !empty($Artikel->cMedienTyp_arr))}
+        && !empty($Artikel->getMediaTypes()))}
         {$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
         || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
         {$hasVotesHash = isset($smarty.get.ratings_nPage)
@@ -80,10 +80,10 @@
                 {block name='productdetails-tabs-tabs'}
                     {include file='snippets/opc_mount_point.tpl' id='opc_before_tabs'}
                     {container}
-                        {tabs id="product-tabs" swipeable=true}
+                        {tabs id="product-tabs"}
                         {if $useDescription}
                             {block name='productdetails-tabs-tab-description'}
-                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc"}
+                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc" class="nav-item" swipeable=true}
                                     <div id="tab-description">
                                         {block name='productdetails-tabs-tab-content'}
                                             {block name='tab-description-media-types'}
@@ -91,7 +91,7 @@
                                                 <div class="desc">
                                                     {$Artikel->cBeschreibung}
                                                     {if $useDescriptionWithMediaGroup}
-                                                        {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                                        {foreach $Artikel->getMediaTypes() as $mediaType}
                                                             <div class="media mt-3">
                                                                 {include file='productdetails/mediafile.tpl'}
                                                             </div>
@@ -175,9 +175,9 @@
 
                         {if $useMediaGroup}
                             {block name='productdetails-tabs-tab-mediagroup'}
-                                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                                    {$cMedienTypId = $cMedienTyp|@seofy}
-                                    {tab title=$cMedienTyp active=$setActiveClass.mediaGroup && $cMedienTyp@first id="tb-{$cMedienTypId}"}
+                                {foreach $Artikel->getMediaTypes() as $mediaType}
+                                    {$cMedienTypId = $mediaType->name|@seofy}
+                                    {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
                                         <div id="tab-{$cMedienTypId}">
                                             {include file='productdetails/mediafile.tpl'}
                                         </div>
@@ -230,7 +230,7 @@
                                                                 {if $Artikel->cBeschreibung|strlen > 0}
                                                                     <hr>
                                                                 {/if}
-                                                                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                                                {foreach $Artikel->getMediaTypes() as $mediaType}
                                                                     <div class="media">
                                                                         {block name='productdetails-tabs-description-include-mediafile'}
                                                                             {include file='productdetails/mediafile.tpl'}
@@ -410,7 +410,7 @@
                                                 "controls" => "tab-availabilityNotification"
                                             ]
                                         }
-                                            {lang key='notifyMeWhenProductAvailableAgain'} <i class="fa fa-chevron-down float-right"></i>
+                                        {lang key='notifyMeWhenProductAvailableAgain'} <i class="fa fa-chevron-down float-right"></i>
                                         {/cardheader}
                                         {collapse id="tab-availabilityNotification" class="mb-5" visible=$setActiveClass.availabilityNotification
                                             data=["parent"=>"#tabAccordion"]
@@ -428,21 +428,21 @@
 
                             {if $useMediaGroup}
                                 {block name='productdetails-tabs-media-gorup'}
-                                    {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                                        {$cMedienTypId = $cMedienTyp|@seofy}
+                                    {foreach $Artikel->getMediaTypes() as $mediaType}
+                                        {$cMedienTypId = $mediaType->name|@seofy}
                                         {card no-body=true class="mb-3"}
                                             {cardheader id="tab-{$cMedienTypId}-head"
                                                 class="h6 mb-0"
                                                 data=["toggle" => "collapse",
                                                     "target"=>"#tab-{$cMedienTypId}"
                                                 ]
-                                                aria=["expanded" => $setActiveClass.mediaGroup && $cMedienTyp@first,
+                                                aria=["expanded" => $setActiveClass.mediaGroup && $mediaType@first,
                                                     "controls" => "tab-{$cMedienTypId}"
                                                 ]
                                             }
-                                                {$cMedienTyp} <i class="fa fa-chevron-down float-right"></i>
+                                                {$mediaType->name} <i class="fa fa-chevron-down float-right"></i>
                                             {/cardheader}
-                                            {collapse id="tab-{$cMedienTypId}" class="mb-5" visible=($setActiveClass.mediaGroup && $cMedienTyp@first)
+                                            {collapse id="tab-{$cMedienTypId}" class="mb-5" visible=($setActiveClass.mediaGroup && $mediaType@first)
                                                 data=["parent"=>"#tabAccordion"]
                                                 aria=["labelledby"=>"tab-{$cMedienTypId}-head"]
                                             }

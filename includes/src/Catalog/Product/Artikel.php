@@ -39,7 +39,6 @@ use JTL\Catalog\Warenlager;
 use stdClass;
 use function Functional\select;
 use JTL\Country\Country;
-use JTL\MagicCompatibilityTrait;
 
 /**
  * Class Artikel
@@ -47,15 +46,6 @@ use JTL\MagicCompatibilityTrait;
  */
 class Artikel
 {
-    use MagicCompatibilityTrait;
-
-    /**
-     * @var array
-     */
-    protected static $mapping = [
-        'cMedienTyp_arr' => 'MediaTypeArr'
-    ];
-
     /**
      * @var int
      */
@@ -404,7 +394,7 @@ class Artikel
     /**
      * @var array
      */
-    public $mediaTypes = [];
+    public $cMedienTyp_arr = [];
 
     /**
      * @var int
@@ -1735,7 +1725,7 @@ class Artikel
         $db                     = Shop::Container()->getDB();
         $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
-        $this->mediaTypes       = [];
+        $mediaTypes             = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN])) {
             if ($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab') {
@@ -1809,36 +1799,18 @@ class Artikel
                 : $mediaFile->cMedienTyp;
             // group all tab names by corresponding seo tab name, use first found tab name
             $mediaTypeNameSeo = $this->getSeoString($mediaTypeName);
-            if (isset($this->mediaTypes[$mediaTypeNameSeo])) {
-                ++$this->mediaTypes[$mediaTypeNameSeo]->count;
+            if (isset($mediaTypes[$mediaTypeNameSeo])) {
+                ++$mediaTypes[$mediaTypeNameSeo]->count;
             } else {
-                $this->mediaTypes[$mediaTypeNameSeo] = (object)[
+                $mediaTypes[$mediaTypeNameSeo] = (object)[
                     'count' => 1,
                     'name'  => $mediaTypeName
                 ];
             }
         }
+        $this->setMediaTypes($mediaTypes);
 
         return $this;
-    }
-
-    /**
-     * used for MagicCompatibilityTrait
-     * @return array
-     */
-    public function getMediaTypeArr(): array
-    {
-        return map($this->getMediaTypes(), function ($mediaType) {
-            return $mediaType->name;
-        });
-    }
-
-    /**
-     * used for MagicCompatibilityTrait
-     */
-    public function setMediaTypeArr(): void
-    {
-        trigger_error('cMedienTyp_arr should not be set explicitly.', E_USER_DEPRECATED);
     }
 
     /**
@@ -1846,7 +1818,18 @@ class Artikel
      */
     public function getMediaTypes(): array
     {
-        return $this->mediaTypes;
+        return $this->cMedienTyp_arr;
+    }
+
+    /**
+     * @param array $mediaTypes
+     * @return Artikel
+     */
+    private function setMediaTypes(array $mediaTypes): self
+    {
+        $this->cMedienTyp_arr = $mediaTypes;
+
+        return $this;
     }
 
     /**
